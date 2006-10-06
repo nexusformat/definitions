@@ -1,44 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 URL: http://definition.nexusformat.org/NXtofnigs
-Editor: Martyn Bull (m.j.bull@rl.ac.uk)
-Version 1: 2004-10-18
 $Id$
-
+  
 Instrument Definition for a Time-of-flight Inverse Geometry Spectrometer
-
-One of the interesting things about this definition is the need to
-decouple notions of logical neutron path in describing the instrument,
-and instead to consider the instrument symmetry. This is a very 
-different approach to constructing instrument definition files for 
-Monte Carlo simulations.
-
-The result is that analysers, collimators and filters are considered 
-in much the same way as banks of detectors. This leads to an implied 
-order and relationship between 'arms' of the instrument, which is 
-currently not handled by the definition. For example, it is implied 
-that the collimator in position 1 of the collimator bank array is 
-associated with the analyser in position 1 and the detector in 
-position 1. Currently, if these positions are mixed up, then it is 
-only by reconstructing the instrument via the (x,y,z) positions of 
-each element, and visually examining the result that any sense will be 
-made of the description.
-
-
-Primary spectrometer: refers to all components upstream of sample position
-Secondary spectrometer: refers to all components downstream of sample position
-
-      *   Element may occur 0 or more times
-      +   Element may occur one or more times (i.e. at least once)
-      ?   Element may occur 0 or one times (i.e. no more than once)
 
 -->
 <NXroot>
  <NXentry name="{Name of Entry}">+
-  <NXinstrument name="{name of instrument}">
-	<name short_name="{abbreviated name of instrument}">{Name of instrument}</name>
-	<!-- I'm guessing here that "short_name" is something like 'IRIS'? -->
-	<NXsource name="{Name of facility}">
+   <NXinstrument name="{instrument name}">
+
+    <name short_name="{short  name}">{name}</name>
+    
+    <NXsource name="{Name of facility}">
   			<name>{facility name}</name>
      	    <type>{type of beamline: "pulsed muon source" | "continuous muon source" | "low energy muon source"}</type>
      		<probe>"neutrons"</probe>
@@ -46,315 +20,63 @@ Secondary spectrometer: refers to all components downstream of sample position
 
 	<NXmoderator name="{Name of moderator}">
 		<distance type="NX_FLOAT">{Effective distance as seen by measuring radiation}?</distance>
-			<!-- 2004-10-18 MJB Distance from where? The sample or the target? Can this be combined with NXGeometry? What is engineering position?-->
 		<type type="NX_CHAR">{ "H20" | "D20"  |  "Liquid H2"  | "Liquid CH4" | "Liquid D2" | "Solid D2" | "C" |"Solid CH4" | "Solid H2"}?</type>
-        <poison_depth NAPItype="NX_FLOAT32" units="centimetre">
-                2.7000 
-        </poison_depth>
+        <poison_depth NAPItype="NX_FLOAT32" units="centimetre"></poison_depth>
         <poison_material>Gd</poison_material>
-        <temperature NAPItype="NX_FLOAT32" units="Kelvin">
-               21.0000 
-        </temperature>
+        <temperature NAPItype="NX_FLOAT32" units="Kelvin"></temperature>
 	</NXmoderator>
 
-	<!--Primary Spectrometer-->
-		
-	<NXdisk_chopper name="{Name of disk chopper}">*
-		<!--Some instruments can have multiple choppers in the incident beam-->
-		<type type="NX_CHAR">{Chopper type single|contra_rotating_pair|synchro_pair}?</type>
-	    <rotation_speed type="NX_FLOAT" units="hertz" exponent="?">{chopper rotation speed}?</rotation_speed>
-		<slits type="NX_INT">{Number of slits}</slits>
-	   <slit_angle type="NX_FLOAT" units="radians" exponent="?">{angular opening}</slit_angle>
-	   <pair_separation type="NX_FLOAT" units="metre" exponent="?"> {disc spacing in direction of beam}?</pair_separation>
-	   <radius type="NX_FLOAT" units="metre" exponent="?"> {radius to centre of slit}</radius>
-	   <slit_height type="NX_FLOAT" units="metre" exponent="?"> {total slit height}</slit_height>
-	   <phase type="NX_FLOAT" units="radians" exponent="?">{chopper phase angle}? </phase>
-	   <ratio type="NX_INT">{pulse reduction factor of this chopper in relation to other choppers/fastest pulse in the instrument}?</ratio>
-	   <distance type="NX_FLOAT" units="metre" exponent="?"> {Effective distance to the origin}?</distance>
-	   <wavelength_range type="NX_FLOAT[2]" units="metre" exponent="?">{low and high values of wavelength range transmitted}?</wavelength_range>
-	</NXdisk_chopper>   
-	
-	<NXaperture name="{Name of beamline aperture}">*		
-		<material type="NX_CHAR">{Absorbing material of the aperture}?</material>
-		<description type="NX_CHAR">{Description of aperture}?</description>
-		<!--Geometrical properties-->
-	</NXaperture>
-		
-	<NXmonitor name="{Name of monitor}">+
-		<type type="NX_CHAR">"Fission Chamber"|"Scintillator"?</type>
-		<mode type="NX_CHAR">"monitor"|"timer"?</mode>
-		<preset type="NX_FLOAT">{preset value for time or monitor}?</preset>
-		<distance type="NX_FLOAT" units="metre" exponent="?">{Distance of monitor from sample position}?</distance>
-		<efficiency type="Nxdata">{Monitor efficiency as a function of wavelength}?</efficiency>
-		<sampled_fraction type="NX_FLOAT" units="dimensionless">{Proportion of incident beam sampled by the monitor}</sampled_fraction>
-	</NXmonitor>
-
-	<!-- Reference Sample position for clarity. Could be an isolated NXGeometry instance-->
-	<NXsample name="samplePosition">
-	</NXsample>
-
-	<!-- Secondary Spectrometer-->
-	<!-- In secondary spectrometer, index order is assumed to be consistently applied eg analyser 1 will be associated with detector 1, filter 1, collimator 1 etc. -->
-	
-	<NXfilter name="(Name of filter bank}">*
-		<!--More than one instance of NXfilter may be needed if filters are placed both before and after analysers, or in incident beam-->
-		<!--Physical properties-->
-		<description type="NX_CHAR[i]">{"Beryllium" | "Pyrolytic Graphite" | "Graphite" | "Sapphire" | "Silicon"}?</description>
-		<status type="NX_CHAR[i]"> {in | out}?</status>
-		<transmission type="NXdata[i]">{Wavelength transmission profile of filter}?</transmission>
-		<temperature type="NX_FLOAT[i]" Units="Kelvin">{average/nominal filter temperature}</temperature>
-		<temperature_log type="NXlog[i]">{Linked temperature_log for the filter}?</temperature_log>
-		<sensor_type type="NXsensor[i]">{Sensor(s) used to monitor the filter temperature}?</sensor_type>
-		<unit_cell type="NX_FLOAT[i,6])">{Unit cell parameters for single crystal filter(lengths and angles)}?</unit_cell>
-		<unit_cell_volume type="NX_FLOAT[i]" units="Angstroms3" rank="1">{Unit cell}?</unit_cell_volume>
-		<orientation_matrix type="NX_FLOAT[i,6]">{Orientation matrix of single crystal filter}?</orientation_matrix>
-	</NXfilter>
-
-	<NXcollimator name="{Name of collimator bank}">*
-		<!--More than one instance of NXcollimator may be needed if collimators are placed both before and after analysers, or in incident beam-->
-		<!--Physical properties-->
-		<type type="NX_CHAR[i]">"Soller"|"radial"</type>
-		<divergence_x type="NX_FLOAT[i]" units="radians" exponent="?">{divergence of collimator in local x direction}</divergence_x>
-		<divergence_y type="NX_FLOAT[i]" units="radians" exponent="?">{divergence of collimator in local y direction}?</divergence_y>
-		<blade_thickness type="NX_FLOAT[i]" units="metre" exponent="?">{thickness of absorbing blades}?</blade_thickness> 
-		<blade_spacing type="NX_FLOAT[i]" units="metre" exponent="?"> {gap between absorbing blades}?</blade_spacing> 
-		<absorbing_material type="NX_CHAR[i]">{coating on or complete material of blades}?</absorbing_material> 
-		<transmitting_material type="NX_CHAR[i]">{material separating absorbing blades}?</transmitting_material>
-	</NXcollimator>
-
-	<NXcrystal name="{Name of crystal analyser bank}">+
-		<!--More than one instance of NXcrystal may be needed for multi-analyser instruments eg. double-analyser instruments-->
-		<!-- Indices are: i - detector number counting integer, x-axis counter; j,k - y,z-axis counters;l - time channel counting integer -->
-		<!-- Units: measurement quantity; Exponent: power of 10 to be applied to values. eg. exponent="-3" means values are given in millimetres-->
-		<!--Physical properties-->
-		<type type="NX_CHAR[i]">{ "PG (Highly Oriented Pyrolytic Graphite)" | "Ge" | "Si" | "Cu" | "Fe3Si" | "CoFe" | "Cu2MnAl (Heusler)" | "Multilayer" }</type>
-		<mosaic_horizontal type="NXFLOAT[i]" units="radians">{horizontal mosaic Full Width Half Maximum}?</mosaic_horizontal>
-		<mosaic_vertical type="NXFLOAT[i]" units="radians">{vertical mosaic Full Width Half Maximum}?</mosaic_vertical>
-		<wavelength type="NX_FLOAT[i]" units="metre" exponent="?">{Optimum diffracted wavelength}</wavelength>
-		<bragg_angle type="NX_FLOAT[i]" units="radians">{Bragg angle of nominal reflection}</bragg_angle>
-		<lattice_parameter type="NX_FLOAT[i]" units="metre" exponent="?">{Lattice parameter of the nominal reflection}?</lattice_parameter>
-		<scattering_vector type="NX_FLOAT[i]" units="metre" exponent="?">{Scattering vector, Q, of nominal reflection}?</scattering_vector>
-		<unit_cell type="NX_FLOAT[i,6])">{Unit cell parameters (lengths and angles)}?</unit_cell>
-		<unit_cell_volume type="NX_FLOAT[i]" units="Angstroms3" rank="1">{Volume of the unit cell}?</unit_cell_volume>
-		<reflection type="NX_INT[i,3]">{(hkl) values of nominal reflection}?</reflection>
-		<temperature type="NX_FLOAT[i]" Units="Kelvin">{average/nominal crystal temperature}?</temperature>
-		<temperature_log type="NXlog[i]">{log file of crystal temperature}?</temperature_log>
-		<reflectivity type="NXdata[i]">{crystal reflectivity versus wavelength}?</reflectivity>
-		<transmission type="NXdata[i]">{crystal transmission versus wavelength}?</transmission>
-		<!-- Geometrical properties-->
-		<!-- 2004-10-18 MJB Defining properties this way, can cope with a curved array of segments focussed on one detector, and repeated-->
-		<segment_width type="NX_FLOAT[i]" units="metre">{Horizontal width of individual segment}?</segment_width>
-		<segment_height type="NX_FLOAT[i]" units="metre">{Vertical height of individual segment}?</segment_height>
-		<segment_thickness type="NX_FLOAT[i]" units="metre">{Thickness of individual segment}?</segment_thickness>
-		<segment_gap type="NX_FLOAT[i]" units="metre">{Typical gap between adjacent segments}?</segment_gap>
-		<segment_columns type="NXFLOAT[i]" units="metre">{number of segment columns in horizontal direction}?</segment_columns>
-		<segment_rows type="NXFLOAT[i]" units="metre">{number of segment rows in vertical direction}?</segment_rows>
-		<curvature_horizontal type="NX_FLOAT[i]" units="radians">{Horizontal curvature of focusing crystal}?</curvature_horizontal>
-		<curvature_vertical type="NX_FLOAT[i]" units="radians">{Vertical curvature of focusing crystal}?</curvature_vertical>
-		<cut_angle type="NXFLOAT" units="degrees">{Cut angle of reflecting Bragg plane and plane of crystal surface}?</cut_angle>
-	</NXcrystal>
-
-	<NXdetector name="{Name of detector bank}">+
-		<!-- 2004-10-18 MJB Major hacking around of NXdetector to make sense of it.-->
-		<!-- Indices are: i - detector number counting integer, x-axis counter; j,k - y,z-axis counters;l - time channel counting integer -->
-		<!-- Units: measurement quantity; Exponent: power of 10 to be applied to values. eg. exponent="-3" means values are given in millimetres-->
-		<!--Physical properties-->
-		<detector_number type="NX_INT[i]">{Identifier for detector}</detector_number>
-		<description type="NX_CHAR[i]">{name/manufacturer/model/etc. information}?</description>
-		<gas_pressure type="NX_FLOAT[i]" units="pascal" exponent="?">{Detector gas pressure}?</gas_pressure>
-		<detection_gas_path type="NX_FLOAT" units="metre" exponent="?">{maximum drift space dimension}?</detection_gas_path>
-		<crate type="NX_INT[i]" local_name="{Equivalent local term}">{Crate number of detector}?</crate>
-		<slot type="NX_INT[i]" local_name="{Equivalent local term}">{Slot number of detector}?</slot>
-		<input type="NX_INT[i]" local_name="{Equivalent local term}">{Input number of detector}?</input>
-		<type type="NX_CHAR[i]">{"He3 gas cylinder"|He3 PSD"|"He3 planar multidetector"| "He3 curved multidetector"| "multi-tube He3 PSD"|"BF3 gas"|"scintillator"?</type>
-		<!-- 2004-10-18 MJB A lot of these detector types are replicas of each other-->
-  		<!-- Geometrical properties-->
-		<distance type="NX_FLOAT[i]">{Total distance from sample position to detector through secondary spectrometer}</distance>		
-		<NXgeometry name="geometry">{Position and orientation of detector elements in bank}?
-			<NXtranslation name="?">
-				<value type="NX_FLOAT[i,3]" units="metre" exponent="?">{(x,y,z) position coordinates relative to origin at sample position}?</value>
-			</NXtranslation>
-			<NXorientation name="?">
-				<value type="NX_FLOAT[i,6]">{The orientation information is stored as direction cosines relative to origin at sample position.}</value>
-			</NXorientation>
-			<NXshape name="{name of shape}">
-				<shape type="NX_CHAR[i]">{"nxcylinder", "nxbox", "nxsphere", ...}?</shape>
-				<size type="NX_FLOAT[i,nshapepar]" units="metre" exponent="?">{ nshapepar dimensions for selected shape}?</size>
-			</NXshape>
-			<component_index type="NX_INT">{Sequential order of detector bank along beam path}</component_index>
-		 </NXgeometry>
-		<!--Timing properties-->
-		<time_of_flight type="NX_FLOAT[l+1]" units="second" exponent="?">{Total time of flight from sample position to detector through secondary spectrometer}</time_of_flight>
-		<dead_time type="NX_FLOAT[i]" units="second" exponent="?">{Detector dead time}?</dead_time>
-		<hold_off type="NX_FLOAT[i]" units="second" exponent="?">{Delay in detector registering an event}?</hold_off>
-		<calibration_date type="ISO8601">{date of last calibration (geometry and/or efficiency)  measurements}?</calibration_date>
-		<calibration_method type="NXnote">{details of the calibration method}?</calibration_method>
-		<NXdata name="efficiency">{Efficiency of detector with respect to e.g. wavelength}?</NXdata>
-	</NXdetector>
-	
-	<NXbeam_stop name="">*</NXbeam_stop>?
+    <NXdetector name="{name of bank}">+
+        <counts type="NX_INT32[i]" units="counts" signal="1">{array of counts}</counts>
+        <x_pixel_offset NAPItype="NX_FLOAT32[i]" axis="NX_INT16:1" units="metre" primary="NX_INT16:1"></x_pixel_offset>
+        <y_pixel_offset NAPItype="NX_FLOAT32[i]" axis="NX_INT16:2" units="metre" primary="NX_INT16:1"></y_pixel_offset>
+        <polar_angle NAPItype="NX_FLOAT32[i]" axis="NX_INT16:1" units="radian" primary="NX_INT16:2"></polar_angle>
+        <azimuthal_angle NAPItype="NX_FLOAT32[i]" units="radian"></azimuthal_angle>
+        <distance NAPItype="NX_FLOAT32[i]" axis="NX_INT16:2" units="metre" primary="NX_INT16:2"></distance>
+        <NXgeometry name="origin">
+          <description>Position of the detector ceter relative to the origin of the instrument</description>
+          <NXtranslation name="translation">
+            <distance NAPItype="NX_FLOAT32[3]" units="metre"></distance>
+          </NXtranslation>
+          <NXorientation name="orientation">
+            <description>The orientation is with the positive x-axis pointing in the original positive z-direction</description>
+            <value NAPItype="NX_FLOAT32[3]"></value>
+          </NXorientation>
+          <NXshape name="shape">
+            <description>diameter,height</description>
+            <shape>nxcylinder</shape>
+            <size NAPItype="NX_FLOAT32[2]" units="metre"></size>
+          </NXshape>
+        </NXgeometry>
+    </NXdetector>
+    
+    <NXcrystal name="{analyzer}">
+        <type>{type}</type>
+        <wavelength NAPItype="NX_FLOAT32[i]" units="Angstroms"></wavelength>
+        <NXgeometry name="origin">
+          <description>Position of the analyzer crystal relative to the origin of the instrument</description>
+          <NXtranslation name="translation">
+            <distance NAPItype="NX_FLOAT32[3]" units="metre"></distance>
+          </NXtranslation>
+          <NXorientation name="orientation">
+            <description>The orientation is with the positive x-axis pointing in the original positive z-direction</description>
+            <value NAPItype="NX_FLOAT32[6]"></value>
+          </NXorientation>
+          <NXshape name="shape">
+            <shape>nxsphere</shape>
+            <size NAPItype="NX_FLOAT32" units="metre"></size>
+          </NXshape>
+        </NXgeometry>
+    </NXcrystal>
 
    </NXinstrument>
-
+   
+   <NXmonitor name="monitor">
+      <distance NAPItype="NX_FLOAT32" units="metre"></distance>
+   </NXmonitor>
+   
    <NXdata name="{name of detector bank}">
-     		<counts type="NX_INT32[np][ntc]" units="counts" signal="1" long_name="positron_counts" number="{number of histograms}">{array of counts}</counts>
-     		<raw_time type="NX_FLOAT32[ntc+1]" axis="1" primary="1" long_name="time" units="us">{time channel bin boundaries}</raw_time>
-			<histogram_resolution type="NX_FLOAT32" units="ns">{histogram resolution in this NXdata group}</histogram_resolution>
-			<first_good_time type="NX_FLOAT32[np][ns]" units="us">{time for first good data}</first_good_time>
-			<last_good_time type="NX_FLOAT32[np][ns]" units="us">{time for last good data}</last_good_time>
-			<spectrum_index type="NX_INT32[ns]" axis="2" long_name="spectrum number" units="none">{spectrum number}</spectrum_index>
-			<period type="NX_INT32[np]" axis="3" long_name="period number" units="none" labels="{comma separated list of period names}">{period number}</period>
+     		<NAPIlink name="counts"></NAPIlink>
    </NXdata>
- </NXentry>
-<!--
-</NXroot>
-
-  <NXroot NeXus_version="3.0.0" XML_version="mxml" file_name="bss.xml"
-file_time="2006-10-06 00:52:31+0100">
---> 
-   <NXinstrument name="instrument-inelastic">
-      <name short_name="BSS">BSS</name>
-      <NXcrystal name="analyzer1">
-        <type>Si</type>
-        <wavelength NAPItype="NX_FLOAT32[64]" units="Angstroms">
-        </wavelength>
-        <NXgeometry name="origin">
-          <description>Position of the analyzer crystal relative to the origin of the instrument</description>
-          <NXtranslation name="translation">
-            <distance NAPItype="NX_FLOAT32[3]" units="metre">
-                    0.0000       0.0900       0.0000 
-            </distance>
-          </NXtranslation>
-          <NXorientation name="orientation">
-            <description>The orientation is with the positive x-axis pointing in the original positive z-direction</description>
-            <value NAPItype="NX_FLOAT32[6]">
-                    0.0000       0.0000       1.0000       0.0000 
-                    1.0000       0.0000 
-            </value>
-          </NXorientation>
-          <NXshape name="shape">
-            <shape>nxsphere</shape>
-            <size NAPItype="NX_FLOAT32" units="metre">
-                    4.9980 
-            </size>
-          </NXshape>
-        </NXgeometry>
-      </NXcrystal>
-      <NXdetector name="bank1">
-        <x_pixel_offset NAPItype="NX_FLOAT32[64]" axis="NX_INT16:1"
-units="metre" primary="NX_INT16:1">
-                0.3751       0.3882       0.4014       0.4145 
-        </x_pixel_offset>
-        <y_pixel_offset NAPItype="NX_FLOAT32[64]" axis="NX_INT16:2"
-units="metre" primary="NX_INT16:1">
-                0.0668       0.0691       0.0714       0.0738 
-        </y_pixel_offset>
-        <polar_angle NAPItype="NX_FLOAT32[64]" axis="NX_INT16:1"
-units="radian" primary="NX_INT16:2">
-                2.9286       2.9762       3.0239       3.0715 
-        </polar_angle>
-        <azimuthal_angle NAPItype="NX_FLOAT32[64]" units="radian">
-        </azimuthal_angle>
-        <distance NAPItype="NX_FLOAT32[64]" axis="NX_INT16:2"
-units="metre" primary="NX_INT16:2">
-        </distance>
-        <NXgeometry name="origin">
-          <description>Position of the detector ceter relative to the origin of the instrument</description>
-          <NXtranslation name="translation">
-            <distance NAPItype="NX_FLOAT32[3]" units="metre">
-                    0.0000       0.1119       0.0000 
-            </distance>
-          </NXtranslation>
-          <NXorientation name="orientation">
-            <description>The orientation is with the positive x-axis pointing in the original positive z-direction</description>
-            <value NAPItype="NX_FLOAT32[6]">
-                    0.0000       0.0000       1.0000       0.0000 
-                    1.0000       0.0000 
-            </value>
-          </NXorientation>
-          <NXshape name="shape">
-            <description>diameter,height</description>
-            <shape>nxcylinder</shape>
-            <size NAPItype="NX_FLOAT32[2]" units="metre">
-                    0.5525       0.1500 
-            </size>
-          </NXshape>
-        </NXgeometry>
-      </NXdetector>
-      <NXcrystal name="analyzer2">
-        <type>Si</type>
-        <wavelength NAPItype="NX_FLOAT32[64]" units="Angstroms">
-        </wavelength>
-        <NXgeometry name="origin">
-          <description>Position of the analyzer crystal relative to the origin of the instrument</description>
-          <NXtranslation name="translation">
-            <distance NAPItype="NX_FLOAT32[3]" units="metre">
-                    0.0000      -0.0900       0.0000 
-            </distance>
-          </NXtranslation>
-          <NXorientation name="orientation">
-            <description>The orientation is with the positive x-axis pointing in the original positive z-direction</description>
-            <value NAPItype="NX_FLOAT32[6]">
-                    0.0000       0.0000       1.0000       0.0000 
-                    1.0000       0.0000 
-            </value>
-          </NXorientation>
-          <NXshape name="shape">
-            <shape>nxsphere</shape>
-            <size NAPItype="NX_FLOAT32" units="metre">
-                    4.9980 
-            </size>
-          </NXshape>
-        </NXgeometry>
-      </NXcrystal>
-      <NXdetector name="bank2">
-        <x_pixel_offset NAPItype="NX_FLOAT32[64]" axis="NX_INT16:1"
-units="metre" primary="NX_INT16:1">
-                0.3751       0.3882       0.4014       0.4145 
-        </x_pixel_offset>
-        <y_pixel_offset NAPItype="NX_FLOAT32[64]" axis="NX_INT16:2"
-units="metre" primary="NX_INT16:1">
-        </y_pixel_offset>
-        <polar_angle NAPItype="NX_FLOAT32[64]" axis="NX_INT16:1"
-units="radian" primary="NX_INT16:2">
-                0.0701       0.1177       0.1653       0.2130 
-                2.9286       2.9762       3.0239       3.0715 
-        </polar_angle>
-        <azimuthal_angle NAPItype="NX_FLOAT32[64]" units="radian">
-                6.5444       6.5364       6.5285       6.5205 
-                6.0461       6.0381       6.0302       6.0222 
-        </azimuthal_angle>
-        <distance NAPItype="NX_FLOAT32[64]" axis="NX_INT16:2"
-units="metre" primary="NX_INT16:2">
-        </distance>
-        <NXgeometry name="origin">
-          <description>Position of the detector ceter relative to the origin of the instrument</description>
-          <NXtranslation name="translation">
-            <distance NAPItype="NX_FLOAT32[3]" units="metre">
-                    0.0000      -0.1119       0.0000 
-            </distance>
-          </NXtranslation>
-          <NXorientation name="orientation">
-            <description>The orientation is with the positive x-axis pointing in the original positive z-direction</description>
-            <value NAPItype="NX_FLOAT32[6]">
-                    0.0000       0.0000       1.0000       0.0000 
-                    1.0000       0.0000 
-            </value>
-          </NXorientation>
-          <NXshape name="shape">
-            <description>diameter,height</description>
-            <shape>nxcylinder</shape>
-            <size NAPItype="NX_FLOAT32[2]" units="metre">
-                    0.5525       0.1500 
-            </size>
-          </NXshape>
-        </NXgeometry>
-      </NXdetector>
-    </NXinstrument>
-    <name short_name="BSS">BSS</name>
-    <NXmonitor name="monitor">
-      <distance NAPItype="NX_FLOAT32" units="metre">
-             -0.2337 
-      </distance>
-    </NXmonitor>
+   </NXentry>
   </NXroot>
