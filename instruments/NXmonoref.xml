@@ -1,10 +1,10 @@
 <?xml version="1.0" ?>
 <!--
 Instrument Definition for Monochromatic Source Reflectometers.
-Editor: Paul Kienzle <pkienzle@nist.gov>
-Mangled_by: Nick Maliszewskyj <nickm@nist.gov>
+Editor: Paul Kienzle <pkienzle at nist.gov>
+Mangled_by: Nick Maliszewskyj <nickm at nist.gov>
 $Id$
-See http://www.neutron.anl.gov:8080/NeXus/5 for component definitions.
+See http://www.nexusformat.org/ for component definitions.
   
 Not handled: recording both the transmitted and the reflected beam off
 the polarizer onto the 2D detector.  Multiple analyzers is a similar
@@ -13,39 +13,57 @@ problem.  In either case a solution similar to that in TAS can be applied.
 2006-02-03 Refined by NIAC group meetings.
 2006-10-04 Refined by NIAC group meetings.
 2007-01-21 Tidy up formatting
+2007-09-25 Refined by Paul Kienzle
 -->
 
 <NXentry name="{name of entry}">+
 
   <definition version="1.0" 
-      URL="http://www.nexusformat.org/instruments/xml/monoref.xml"
-      instrument_geometry="vertical|horizontal"
-      >
+      URL="http://www.nexusformat.org/instruments/xml/monoref.xml">
     NXmonoref
   </definition>
   <start_time type="ISO8601" />
 
-  <NXcharacterization name="intensity">*
-    {Suggested spectrum measurement for intensity vs. wavelength
+  <NXcharacterization name="empty_container">?
+    {Suggested spectrum measurement for intensity vs. wavelength 
      for a given slit setting.  Warning: beam profile is not 
-     regular, but this effect is accomodated in the spectrum measurement}
+     regular, but this effect is accommodated in the 
+     spectrum measurement}
   </NXcharacterization>
-  <NXcharacterization name="background">*
-    {Suggested background measurement}
+  <NXcharacterization name="specular_offset_background">?
+    {Suggested background measurement.  The referenced background
+     measurement should indicate whether it is sample offset, detector
+     offset or Qx offset.}
   </NXcharacterization>
 
   <!-- Scan identification tags for the specific measurement type -->
   <measurement_type type="NX_CHAR">
-      { "intensity"|"background"|"specular"|"rock"|"slice"|"area" }
+      { "specular"|"intensity"|"q_offset"|"sample_offset"|"detector_offset"|"slice"|"area"|"alignment"|"other"
+
+        Reflectometry has a variety of standard scan types.  Chief among these
+        is the specular scan, which is the signal of interest.  The 
+        intensity scan is required to normalize the signal and compute
+        reflectivity.  Background scans are made offsetting the sample or 
+        the detector, or offsetting both such that the background is measured
+        at the same Qz (which measurement is used depends on the expected
+        nature of the background).  Slice scans are used to determine
+        resolution or measure off-specular diffraction peaks.  Area scans
+        can measure a swathe of Q, yielding specular, background and slice
+        measurements simultaneously.  Various alignment scans are performed.
+        Generally the user is not interested in these during reduction and
+        analysis.  Other scans are done for unusual measurements not
+        related to reflectivity.
+      }
   </measurement_type>
+  <range name="{fieldname}" type="NX_FLOAT[2]" units="{variable}">*
+     {scan range for the named field; for display and sorting purposes;
+      the field name(s) can be instrument and measurement specific.}
+  </range>
 
   <NXsample name="sample">
     <polar_angle type="NX_FLOAT[np]" units="degree">?
-       {Angle relative to beam}
+       {Sample angle relative to beam from the monochromator}
     </polar_angle>
-    <polarization type="NX_CHAR">?
-      { "++"|"+-"|"-+"|"--"|"+"|"-" }
-    </polarization>
   </NXsample>
 
   <NXinstrument name="{name of instrument}">
@@ -54,7 +72,7 @@ problem.  In either case a solution similar to that in TAS can be applied.
     <!-- wavelength selection -->
     <NXsource name="{name of source}"><probe /></NXsource>
     <NXmonochromator name="monochromator">
-      <wavelength />
+      <wavelength type="NX_FLOAT" units="Angstrom" />
       <wavelength_error type="NX_FLOAT" units="Angstrom" />
     </NXmonochromator>
 
@@ -62,32 +80,44 @@ problem.  In either case a solution similar to that in TAS can be applied.
     <NXaperture name="pre[sample|detector]_slit#">
       <NXgeometry name="geometry">?
         <NXtranslation name="translation">
-          <distances type="NX_FLOAT" units="">
+          <distances type="NX_FLOAT" units="millimeter">
             { Location of slit along beamline (midway between slits 
               if slits are not coplanar).  This is required to compute 
               instrument resolution. }
           </distances>          
         </NXtranslation>
         <NXshape name="shape">
-          <shape>"nxsquare"</shape>
-          <size type="NX_FLOAT[np,nshapepars]" units="" />
+          <shape>"nxvertical_slit|nxhorizontal_slit"</shape>
+          <size type="NX_FLOAT[np]" units="millimeter">
+            { Aperature opening. Use the instrument_geometry field
+              to determine if the slit defines resolution in Qz.
+              Square aperatures should be represented by two
+              vertical and horizontal slits at the same location. 
+              Warning: vertical slits refers to the orientation
+              of the slit blades.  They open horizontally.
+            }
         </NXshape>
       </NXgeometry>
     </NXaperture>
 
-    <NXspin name="presample_spin">
-      <azimuthal_angle type="NX_FLOAT[np]" units="" />
-    </NXspin>
-    <NXspin name="predetector_spin">
-      <azimuthal_angle type="NX_FLOAT[np]" units="" />
+    <NXspin name="pre[sample|detector]_spin">
+      <azimuthal_angle type="NX_FLOAT[np]" units="degree">
+      {Use 90 for spin up, -90 for spin down for neutrons perpendicular
+       to the beam.}
+      </azimuthal_angle>
+      <polar_angle type="NX_FLOAT[np]" units="degree">
+      {Use 0 for neutrons perpendicular to the beam and 90 for neutrons
+       parallel to the beam, or -90 for neutrons antiparallel.}
+      </polar_angle>
     </NXspin>
 
     <!-- detector may be protected by an attenuator and/or a beam stop -->
     <NXattenuator name="{name of attenuator}">?
-      <attenuator_transmission />
+      <attenuator_transmission type="NX_FLOAT[np]" />
     </NXattenuator>
     <NXbeam_stop name="{name of beamstop}">
-      { Need all fields so that we can calculate shadow of beam stop on detector, and not use those pixels when calculating background. }?
+      { Need all fields so that we can calculate shadow of beam stop on 
+        detector, and not use those pixels when calculating background. }?
     </NXbeam_stop>
 
     <NXdetector name="{name of detector}">
@@ -95,47 +125,81 @@ problem.  In either case a solution similar to that in TAS can be applied.
         { Angle of the detector relative to the scattering center. }
       </polar_angle>
       <azimuthal_angle type="NX_FLOAT" units="degree">
-        { Indicate sense of scattering: 0 is front surface of sample, 
-          180 is back surface of sample.  If 180, change the sign of the
-          reflected angle in the data.  It is also possible for the beam
-          to enter the substrate from the side and reflect off the back 
-          surface of a film, in which case negative angles can be 
-          interpreted as inverting the scattering length density profile
-          of the film (after accounting for absorption in the substrate.
-          90
+        { Indicate sense of scattering: 
+
+              0 = front of sample, 180 = back of sample.
+
+          If the beam is entering the side of the sample and reflecting 
+          off the back surface of the film then the polar angle will be 
+          negative, with negative angles interpreted as inverting the 
+          scattering length density profile of the film.  Note that the
+          absorption is likely to be high in these circumstances, though
+          measuring the intensity scan through the sample will normalize 
+          for this automatically.
+
+          Users beware that the NeXus file writer may not know whether the
+          instrument geometry is measuring reflection off the back of the
+          sample (azimuthal_angle=180, polar_angle>0) or reflection 
+          off the back surface of the front of the sample (azimuthal_angle=0,
+          polar_angle<0), so software needs to allow the polar_angle
+          to be negated.
         }
       </azimuthal_angle>
     </NXdetector>
 
   </NXinstrument>
 
-  <NXdata name="{name of data}">
-    <!-- NXdata is broken and should not be required; propose dropping it -->
+  <NXdata name="{name of data}">?
+    <!-- 
+       Not a required component.  Because of limitations in HDF, we cannot
+       link scan variables with identical names from different groups
+       into the same field in the NXdata group, so for example slit
+       openings will not be available.  Interested parties will have
+       to examine all fields to determine which elements are varying
+       through the scan; these should be listed as range fields in the NXentry.
+    -->
 
   </NXdata>
 
-  <NXtimer name="{name of timer}">?
+  <NXmonitor name="control">
+    <mode type="NX_CHAR">
+      {"monitor"|"timer"}
+    </mode>
+    <preset type="NX_FLOAT">
+       {preset value for time in seconds or monitor in counts}
+    </preset>
+    <data type="NX_INT[np]">
+       {Monitor counts, absent if no monitor}?
+    </data>
+    <count_time type="NX_FLOAT[np]" units="second">
+       {Elapsed time for each scan point}
+    </count_time>
     <start_time type="NX_FLOAT[np]" units="second">
-      { Start of measurement relative to start of measurement }
+       {Start time for each scan point relative to start of the measurement}
     </start_time>
-    <elapsed_time type="NX_FLOAT[np]" units="second">
-      { Elapsed time during measurement (in general not equal to count_time)
-        because the detector may be off e.g., when the field is outside
-        a particular range}
-    </elapsed_time>
-  </NXtimer>
+  </NXmonitor>
 
   <NXlog name="{name of log}">*
     { Various logs for temperature, field, etc. which are assumed to
       be constant over the duration of the run.  The reduction program
       should be able to display their values on a parallel graph.  Note
       that logs are not necessarily sampled synchronously with the
-      data points; use NXtimer and plot data points vs. start_time}
+      data points; use NXtimer and plot data points vs. start_time }
   </NXlog>
-  <NXlog name="elapsed">?
-     <time type="FLOAT[np]" unit="second">{Start of the measurement of point np}</time>
-     <value type="FLOAT[np]" unit="second">{Duration of the measurement of point}</value>
+
+  <!-- Include the following only if start_time is not part of NXmonitor.
+
+  <NXlog start_time="ISO8601" name="elapsed_time">?
+     <time type="FLOAT[np]" unit="second">
+        {Start of the measurement of point np}
+     </time>
+     <value type="FLOAT[np]" unit="second">
+        {Elapsed time during the measurement of point, including dead time
+         when the detector/monitor were off.  This will be greater than or
+         equal to the count_time field recorded in the monitor.}
+     </value>
   </NXlog>
+
+  -->
 
 </NXentry>
-
