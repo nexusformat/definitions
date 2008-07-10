@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+$Id: $
+First go at an XML schema for NeXus. This file is included by other NeXus schema 
+and provides type defintions.
+
+Freddie Akeroyd 10/7/2008
+ 
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://svn.nexusformat.org/definitions/tags/1.0/schema" 
+	xmlns:nx="http://svn.nexusformat.org/definitions/tags/1.0/schema"
+	elementFormDefault="qualified">
+
+	<xs:annotation>
+	<xs:documentation xml:lang="en-GB">
+	Freddie's first go at a NeXus schema... 
+	More documentation to follow...
+	</xs:documentation>
+	</xs:annotation>
+	
+	<!-- used for allowed names of elements and attributes - need to be restricted to valid program variable names -->
+	<xs:simpleType name="validName">
+	  <xs:restriction base="xs:token">
+	    <xs:maxLength value="50" />
+	    <xs:pattern value="[A-Za-z0-9_]+" />
+	  </xs:restriction>
+	</xs:simpleType>
+
+	<!-- NX_FLOAT32 -->
+	<xs:simpleType name="float32">
+	  <xs:restriction base="xs:float" />
+	</xs:simpleType>
+	<xs:simpleType name="float32Attr">
+	  <xs:restriction base="xs:string">
+	    <xs:pattern value="NX_FLOAT32:.*" />
+	  </xs:restriction>
+	</xs:simpleType>
+	  
+	<!-- NX_FLOAT64 -->
+	<xs:simpleType name="float64">
+	  <xs:restriction base="xs:double" />
+	</xs:simpleType>
+	<xs:simpleType name="float64Attr">
+	  <xs:restriction base="xs:string">
+	    <xs:pattern value="NX_FLOAT64:.*" />
+	  </xs:restriction>
+	</xs:simpleType>
+
+	<!-- NX_INT32 -->
+	  <xs:simpleType name="int32">
+	  <xs:restriction base="xs:int" />
+	</xs:simpleType>
+	<xs:simpleType name="int32attr">
+	  <xs:restriction base="xs:string">
+	    <xs:pattern value="NX_INT32:[+-]?\d+" />
+	  </xs:restriction>
+	</xs:simpleType>
+
+	<!-- NX_CHAR -->
+	<xs:simpleType name="char">
+	  <xs:restriction base="xs:string" />
+	</xs:simpleType>
+	<xs:simpleType name="charAttr">
+	  <xs:restriction base="xs:string" />
+	</xs:simpleType>
+
+	<!-- NX_CHAR holding an ISO 8601 date string -->
+	<xs:simpleType name="ISO8601">
+	  <xs:restriction base="xs:dateTime">
+		<xs:pattern value="\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d" />
+	  </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="ISO8601Attr">
+		<xs:restriction base="xs:dateTime">
+			<xs:pattern value="\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<!-- Valid strings describing data types that can be contained in a NAPItype attribute -->
+	<xs:simpleType name="NAPITypes">
+	  <xs:restriction base="xs:string">
+	  	<xs:pattern value="NX_(CHAR|FLOAT32|FLOAT64|INT32)\[.*\]" /> 	
+	  </xs:restriction>
+	</xs:simpleType>
+
+	<!-- Attributes of elements that are not classes i.e. that can contain floats, chars etc -->
+	<xs:attributeGroup name="standardDataAttributes">
+	  <xs:attribute name="NAPItype" type="nx:NAPITypes" />
+	  <xs:attribute name="units" type="nx:charAttr" />
+	  <xs:attribute name="name" use="prohibited" />
+	</xs:attributeGroup>
+
+	<!-- A generic data item  -->
+	<xs:complexType name="baseDataType">
+		<xs:simpleContent>
+		<xs:extension base="xs:string">
+		<xs:attributeGroup ref="nx:standardDataAttributes" />
+		</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<!-- An NX_FLOAT32 item -->
+	<xs:complexType name="float32DataType">
+		<xs:simpleContent>
+		<xs:restriction base="nx:baseDataType">
+			<xs:attribute name="NAPItype" use="required" >
+			<xs:simpleType>
+				<xs:restriction base="nx:NAPITypes">
+					<xs:pattern value="NX_FLOAT32\[.*\]" />					
+				</xs:restriction>
+			</xs:simpleType>	
+			</xs:attribute>		
+		</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<!-- An NX_CHAR item -->
+	<xs:complexType name="charDataType">
+	<xs:simpleContent>
+		<xs:restriction base="nx:baseDataType">
+			<xs:attribute name="NAPItype" use="required" >
+				<xs:simpleType>
+					<xs:restriction base="nx:NAPITypes">
+						<xs:pattern value="NX_CHAR\[.*\]" />					
+					</xs:restriction>
+				</xs:simpleType>	
+			</xs:attribute>		
+		</xs:restriction>
+	</xs:simpleContent>
+	</xs:complexType>
+
+	<!-- An NX_CHAR item that holds an ISO8601 timestamp -->
+	<xs:complexType name="ISO8601DataType">
+		<xs:simpleContent>
+			<xs:restriction base="nx:baseDataType">
+				<xs:attribute name="NAPItype" use="required" >
+					<xs:simpleType>
+						<xs:restriction base="nx:NAPITypes">
+							<xs:pattern value="NX_CHAR\[.*\]" />					
+						</xs:restriction>
+					</xs:simpleType>	
+				</xs:attribute>		
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+
+	<!-- attributes that may be on any NX* class -->
+	<xs:attributeGroup name="standardClassAttributes">
+	  <xs:attribute name="name" type="nx:validName" use="required" />
+	  <xs:attribute name="NAPItype" use="prohibited" />
+	</xs:attributeGroup>
+	
+	<!-- base type for NX* classes -->
+	<xs:complexType name="classBaseType">
+	  <xs:attributeGroup ref="nx:standardClassAttributes" />
+	</xs:complexType>
+	
+</xs:schema>
