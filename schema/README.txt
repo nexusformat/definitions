@@ -14,5 +14,16 @@ The structure I'm currently trying is:
 The *.html files are auto-generated schema documentation files
 testfile.xml is a simple example file that validates against the schema
 
+The subversion checked-in files are available from http://definition.nexusformat.org/schema/1.0/
+These files have the schemaLocation attribute editied so that they will self include from the
+web when used for validation purposes. The trunk version of the NeXus XML API now adds a schema
+attribute automatically.
+
+To validate a file on the web you can use the following sites:
+
+http://www.w3.org/2001/03/webdata/xsv          - Go to the second section (file to upload), browse and then "upload and get results"
+
+http://tools.decisionsoft.com/schemaValidate/  - Upload file to XML instance (no need to add a schema) and press validate
+
 Freddie Akeroyd
 11/07/2008
