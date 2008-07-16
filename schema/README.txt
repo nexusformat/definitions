@@ -25,6 +25,11 @@ http://www.w3.org/2001/03/webdata/xsv          - Go to the second section (file 
 
 http://tools.decisionsoft.com/schemaValidate/  - Upload file to XML instance (no need to add a schema) and press validate
 
+You can also use the "xmllint" tool, which is part of libxml2. This doesn;t seem to pick up the xsi:schemaLocation tag so you
+need to give the schema path by hand
+
+    xmllint --schema http://definition.nexusformat.org/schema/1.0/BASE.xsd  my_nexus_file.xml
+
 Freddie Akeroyd
 11/07/2008
 
