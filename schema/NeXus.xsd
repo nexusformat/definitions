@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?xml-stylesheet type="text/xsl" href="nexus-class-documentation.xsl" ?>
 
 <!--
   NeXus - Neutron & X-ray Common Data Format
@@ -68,6 +67,9 @@
 	  </xs:restriction>
 	</xs:simpleType>
 
+
+    <!-- valid shapes -->
+	
 	<xs:simpleType name="validShape">
 	 <xs:restriction base="xs:string">
 	  <xs:enumeration value="nxcylinder" />
@@ -100,6 +102,19 @@
 	</xs:simpleType>
 	<xs:simpleType name="float64Data">
 	  <xs:list itemType="nx:float64" />
+	</xs:simpleType>
+
+	<!-- NX_FLOAT -->
+	<xs:simpleType name="float">
+	  <xs:restriction base="xs:double" />
+	</xs:simpleType>
+	<xs:simpleType name="floatAttr">
+	  <xs:restriction base="xs:string">
+	    <xs:pattern value="NX_FLOAT(64|32):.*" />
+	  </xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="floatData">
+	  <xs:list itemType="nx:float" />
 	</xs:simpleType>
 
 	<!-- NX_INT64 -->
@@ -154,7 +169,19 @@
 		<xs:list itemType="nx:int8" />
 	</xs:simpleType>
 	
-	
+	<!-- NX_INT -->
+	<xs:simpleType name="int">
+		<xs:restriction base="xs:long" />
+	</xs:simpleType>
+	<xs:simpleType name="intAttr">
+		<xs:restriction base="xs:string">
+			<xs:pattern value="NX_INT(8|16|32|64):[+\-]?\d+" />
+		</xs:restriction>
+	</xs:simpleType>
+	<xs:simpleType name="intData">
+		<xs:list itemType="nx:int" />
+	</xs:simpleType>
+
 	<!-- NX_CHAR -->
 	<xs:simpleType name="char">
 	  <xs:restriction base="xs:string" />
@@ -187,9 +214,47 @@
 	  </xs:restriction>
 	</xs:simpleType>
 
+	<!-- valid units for various things -->
+	
+	<xs:simpleType name="unit">
+		<xs:restriction base="nx:charAttr" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="lengthUnit">
+		<xs:restriction base="nx:unit">
+			<xs:enumeration value="metre" />	    
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="wavelengthUnit">
+		<xs:restriction base="nx:unit">
+			<xs:enumeration value="angstroms" />	    
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="timeUnit">
+		<xs:restriction base="nx:unit">
+			<xs:enumeration value="second" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="frequencyUnit">
+		<xs:restriction base="nx:unit">
+			<xs:enumeration value="hertz" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="angleUnit">
+		<xs:restriction base="nx:unit">
+			<xs:enumeration value="radian" />
+			<xs:enumeration value="degree" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+
 	<!-- Attributes of elements that are not classes i.e. that can contain floats, chars etc -->
 	<xs:attributeGroup name="standardDataAttributes">
-	  <xs:attribute name="units" type="nx:charAttr" />
+	  <xs:attribute name="units" type="nx:unit" />
 	<!-- allow user defined attributes -->
 	<xs:anyAttribute namespace="##any" processContents="lax" />
 	</xs:attributeGroup>
@@ -229,6 +294,25 @@
 		</xs:extension>
 		</xs:simpleContent>
 	</xs:complexType>
+
+	<!-- An NX_FLOAT item -->
+	<xs:complexType name="floatDataType">
+		<xs:simpleContent>
+			<xs:extension base="nx:floatData">
+				<xs:attributeGroup ref="nx:standardDataAttributes" /> 
+				<!-- xs:attribute name="name" use="prohibited" / -->
+				<xs:attribute name="NAPItype" use="required" >
+				<xs:simpleType>
+					<xs:restriction base="nx:NAPITypes">
+						<!--xs:pattern value="NX_FLOAT32\[.*\]" /-->					
+						<xs:pattern value="NX_FLOAT(32|64).*" />					
+					</xs:restriction>
+				</xs:simpleType>	
+			</xs:attribute>
+		</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
 
 	<!-- An NX_INT64 item -->
 	<xs:complexType name="int64DataType">
@@ -302,6 +386,23 @@
 		</xs:simpleContent>
 	</xs:complexType>
 	
+	<!-- An NX_INT item -->
+	<xs:complexType name="intDataType">
+		<xs:simpleContent>
+			<xs:extension base="nx:intData">
+				<xs:attributeGroup ref="nx:standardDataAttributes" /> 
+				<xs:attribute name="NAPItype" use="required" >
+					<xs:simpleType>
+						<xs:restriction base="nx:NAPITypes">
+							<!--xs:pattern value="NX_INT64\[.*\]" /-->					
+							<xs:pattern value="NX_INT(8|16|32|64).*" />					
+						</xs:restriction>
+					</xs:simpleType>	
+				</xs:attribute>
+			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+
 	<!-- An NX_CHAR item -->
 	<xs:complexType name="charDataType">
 		<xs:simpleContent>
@@ -335,6 +436,39 @@
 					</xs:simpleType>	
 				</xs:attribute>
 			</xs:extension>
+		</xs:simpleContent>
+	</xs:complexType>
+	
+	<xs:complexType name="floatLengthDataType">
+		<xs:simpleContent>
+			<xs:restriction base="nx:floatDataType">
+				<xs:attribute name="units" use="required" type="nx:lengthUnit" />
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+		
+	<xs:complexType name="floatWavelengthDataType">
+		<xs:simpleContent>
+			<xs:restriction base="nx:floatDataType">
+				<xs:attribute name="units" use="required" type="nx:wavelengthUnit" />
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	
+	
+	<xs:complexType name="floatAngleDataType">
+		<xs:simpleContent>
+			<xs:restriction base="nx:floatDataType">
+				<xs:attribute name="units" use="required" type="nx:angleUnit" />
+			</xs:restriction>
+		</xs:simpleContent>
+	</xs:complexType>
+	
+	<xs:complexType name="floatFrequencyDataType">
+		<xs:simpleContent>
+			<xs:restriction base="nx:floatDataType">
+				<xs:attribute name="units" use="required" type="nx:frequencyUnit" />
+			</xs:restriction>
 		</xs:simpleContent>
 	</xs:complexType>
 	
@@ -418,8 +552,7 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	
-	
+		
 	<xs:complexType name="NXgeometryType">
 		<xs:complexContent>
 			<xs:extension base="nx:classBaseType">
@@ -432,7 +565,6 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-
 
 	<!-- an instrument component i.e. something that has a location, orientation etc. -->
 	<xs:complexType name="componentType">
