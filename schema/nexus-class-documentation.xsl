@@ -15,6 +15,31 @@
 	
 	<xsl:variable name="nxnod" select="document(//xs:include/@schemaLocation)//xs:complexType"/>
 	
+	<xsl:template name="clean-type">
+		<xsl:param name="var"/>
+		<xsl:variable name="first">
+		<xsl:choose >
+			<xsl:when  test="contains($var, 'nx:')">
+				<xsl:value-of select="substring-after($var, 'nx:')"/>
+			</xsl:when>
+			<xsl:otherwise>
+				<xsl:value-of select="$var" />
+			</xsl:otherwise>
+		</xsl:choose>
+		</xsl:variable>
+		<xsl:variable name="second">
+			<xsl:choose >
+				<xsl:when  test="contains($first, 'Type')">
+					<xsl:value-of select="substring-before($first, 'Type')"/>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:value-of select="$first" />
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:variable>
+		<xsl:value-of select="$second"/>
+	</xsl:template>
+	
 	<xsl:template match="/">
 		<html>
 			<head>
@@ -50,10 +75,12 @@
     </xsl:template>
 
 	<xsl:template match="xs:complexType" mode="output">
-		<h1><xsl:value-of select="@name"/></h1> 
-		<table>
+		<h1><xsl:call-template name="clean-type">
+			<xsl:with-param name="var" select="@name"></xsl:with-param>
+		</xsl:call-template></h1> 
+		<table border="2" cellpadding="5">
 		<tr>
-			<td><b>Element</b></td><td><b>Type</b></td><td><b>Description</b></td>
+			<td><b>Element</b></td><td><b>Type</b></td><td><b>Defined In</b></td><td><b>Description</b></td>
 		</tr>
 		<xsl:apply-templates select="./xs:complexContent/xs:extension" mode="inherited"/>
 		<xsl:apply-templates select=".//xs:element" mode="output" />
@@ -84,13 +111,18 @@
 			</xsl:choose>
 		</xsl:for-each>
 	</xsl:template>
+	
 
 	<xsl:template match="xs:element" mode="output">
 		<tr>
 			<td> <xsl:value-of select="@name"/> </td>  
-			<td> <xsl:value-of select="@type"/> </td>
-			<td> <xsl:value-of select="xsd:annotation/xsd:documentation"/> </td>
-			<td> <xsl:for-each select="xsd:attribute/@name"> <xsl:value-of select="."/> </xsl:for-each> </td>			
+			<td> <xsl:call-template name="clean-type">
+				<xsl:with-param name="var" select="@type" />
+			</xsl:call-template> </td>
+			<td> <xsl:call-template name="clean-type">
+				<xsl:with-param name="var" select="../../../../@name" />
+			</xsl:call-template> </td>
+			<td> <xsl:value-of select="xs:annotation/xs:documentation"/> </td>
 		</tr>
 	</xsl:template>
 	
