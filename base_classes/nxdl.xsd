@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="xsd-documentation.xsl" ?>
+<xs:schema xmlns="http://www.w3.org/2001/XMLSchema"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://www.nexusformat.org"
+	xmlns:nx="http://www.nexusformat.org"
+	elementFormDefault="qualified">
+	
+	<!-- define the document root element -->
+	<xs:element name="definition" type="nx:definitionType" />
+
+	<xs:complexType name="definitionType">
+		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded" />
+		<xs:attribute name="name" use="required"/>
+		<xs:attribute name="type" use="required" type="nx:definitionTypeAttr"/>
+		<xs:attribute name="extends" use="required"/>
+	</xs:complexType>
+
+	<xs:simpleType name="definitionTypeAttr">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="group"/>
+			<xs:enumeration value="definition"/>
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:group name="groupGroup">
+		<xs:sequence>
+			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="group" type="nx:groupType" minOccurs="0" maxOccurs="unbounded" />
+			<xs:element name="field" type="nx:fieldType" minOccurs="0" maxOccurs="unbounded" />
+		</xs:sequence>
+	</xs:group>
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<xs:complexType name="basicComponent">
+		<xs:sequence>
+			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1" />
+		</xs:sequence>
+		<xs:attribute name="type" use="required" />
+	</xs:complexType>
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	<xs:simpleType name="docType">
+		<xs:annotation>
+			<xs:documentation>
+				This is the basic definition of a new type.
+				Components must derive from an existing type 
+				and optionally provide documentation.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string"></xs:restriction>
+	</xs:simpleType>
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	<xs:complexType name="groupType">
+		<xs:annotation>
+			<xs:documentation>
+				A group element will be used to refer to an existing NX object or locally-defined component.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded"/>
+		<xs:attribute name="type" use="required"></xs:attribute>
+	</xs:complexType>
+
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<xs:complexType name="fieldType">
+		<xs:complexContent>
+			<xs:annotation>
+				<xs:documentation>
+					A field element will be used to declare a new element in the component being defined.
+    	       	</xs:documentation>
+			</xs:annotation>
+			<xs:extension base="nx:basicComponent">
+				<xs:sequence>
+					<xs:element name="attribute" minOccurs="0" maxOccurs="unbounded">
+						<xs:annotation>
+							<xs:documentation>
+								A new element may expect or require some attributes.
+    	    			   	</xs:documentation>
+						</xs:annotation>
+					</xs:element>
+				</xs:sequence>
+				<xs:attribute name="name" use="required" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+</xs:schema>
