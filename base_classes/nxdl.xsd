@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 ########### SVN repository information ###################
-# $Date$
-# $Author$
-# $Revision$
+# $LastChangedDate$
+# $LastChangedBy$
+# $LastChangedRevision$
 # $HeadURL$
-# $Id$
 ########### SVN repository information ###################
 -->
 
-<xs:schema xmlns="http://www.w3.org/2001/XMLSchema"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
 	targetNamespace="http://www.nexusformat.org"
 	xmlns:nx="http://www.nexusformat.org"
 	elementFormDefault="qualified">
@@ -25,6 +23,20 @@
 		<xs:attribute name="extends" use="required"/>
 	</xs:complexType>
 
+		<xs:complexType name="attributeType">
+				<xs:annotation>
+				<xs:documentation>
+					A new element may expect or require some attributes.
+				</xs:documentation>
+				</xs:annotation>
+			<xs:sequence>			
+			<xs:element name="doc" type="nx:docType"/>
+			</xs:sequence>
+			<xs:attribute name="name" use="required"/>						
+			<xs:attribute name="type" use="required"/>
+		</xs:complexType>
+	
+	
 	<xs:simpleType name="definitionTypeAttr">
 		<xs:restriction base="xs:string">
 			<xs:enumeration value="group"/>
@@ -35,6 +47,7 @@
 	<xs:group name="groupGroup">
 		<xs:sequence>
 			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1"/>
+			<xs:element name="attribute" type="nx:attributeType" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="group" type="nx:groupType" minOccurs="0" maxOccurs="unbounded" />
 			<xs:element name="field" type="nx:fieldType" minOccurs="0" maxOccurs="unbounded" />
 		</xs:sequence>
@@ -47,6 +60,7 @@
 			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
 		<xs:attribute name="type" use="required" />
+		<xs:attribute name="name" use="optional" />
 	</xs:complexType>
 
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -69,7 +83,9 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded"/>
-		<xs:attribute name="type" use="required"></xs:attribute>
+		<xs:attribute name="type" use="required" />
+		<xs:attribute name="minOccurs" use="optional" default="0" />
+		<xs:attribute name="maxOccurs" use="optional"  default="unlimited" />
 	</xs:complexType>
 
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -83,12 +99,10 @@
 			</xs:annotation>
 			<xs:extension base="nx:basicComponent">
 				<xs:sequence>
-					<xs:element name="attribute" minOccurs="0" maxOccurs="unbounded">
-						<xs:annotation>
-							<xs:documentation>
-								A new element may expect or require some attributes.
-    	    			   	</xs:documentation>
-						</xs:annotation>
+					<xs:element name="attribute" type="nx:attributeType" minOccurs="0" maxOccurs="unbounded" >
+					<xs:annotation>
+						<xs:documentation>attributes of field</xs:documentation>
+					</xs:annotation>
 					</xs:element>
 					<xs:element name="enumeration" type="nx:enumerationType" minOccurs="0" maxOccurs="1">
 						<xs:annotation>
@@ -96,7 +110,6 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="name" use="required" />
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
