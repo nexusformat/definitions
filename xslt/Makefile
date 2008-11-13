@@ -34,7 +34,7 @@
 # Usage:
 #	make xsd	builds all XML Schemas from NeXus base class NXDL files
 #	make metaDTD	builds all metaDTD from NeXus base class NXDL files for comparison with existing metaDTD files
-#	make all	builds xsd and metaDTD
+#	make all	builds xsd, metaDTD, and tables
 #	make tables	builds units.html and dimensions.html
 #	make clean	removes files built in this directory
 #	make rebuild	does a make clean then make all
@@ -52,7 +52,7 @@ BASE_CLASS_PATH = ../base_classes
 XSDS =  $(BASE_CLASSES:%= %.xsd)
 META_DTDS =  $(BASE_CLASSES:%= %.metaDTD.xml)
 
-all: xsd metaDTD
+all: xsd metaDTD tables
 
 xsd nxdl2xsd : $(XSDS)
 
