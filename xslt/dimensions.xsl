@@ -45,18 +45,6 @@ Usage:
 
 	<!-- http://www.w3schools.com/xsl/xsl_transformation.asp -->
 
-<!-- 
-	method="html"
-	version="string"
-	encoding="string"
-	omit-xml-declaration="yes"
-	standalone="no"
-	doctype-public="string"
-	doctype-system="string"
-	cdata-section-elements="namelist"
-	indent="yes"
-	media-type="string"
- -->
 	<xs:output method="html" omit-xml-declaration="yes" indent="yes" />
 
 	<xs:template match="/">
