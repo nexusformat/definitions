@@ -35,7 +35,6 @@ Purpose:
 
 Usage:
 	xsltproc units.xsl $(NX_CLASS).nxdl >> units.html
-
 -->
 
 <xs:stylesheet version="1.0"
