@@ -36,7 +36,6 @@ Purpose:
 
 Usage:
 	xsltproc nxdl2xsd.xsl $(NX_CLASS).nxdl > $(NX_CLASS).xsd
-
 -->
 
 <xsl:stylesheet version="1.0"
