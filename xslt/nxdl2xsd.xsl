@@ -84,7 +84,7 @@ Usage:
 	<!-- nxdl:definition is complete -->
 	<xsl:template match="nxdl:definition">
 		<xsl:element name="xs:complexType" >
-			<xsl:attribute name="name" ><xsl:value-of select="@name" />Type</xsl:attribute>
+			<xsl:attribute name="name" >type_<xsl:value-of select="@name" /></xsl:attribute>
 			<xsl:element name="xs:sequence" >
 				<xsl:apply-templates select="*"/>
 			</xsl:element>
@@ -95,7 +95,7 @@ Usage:
 	<xsl:template match="nxdl:field">
 		<xsl:element name="xs:element" >
 			<xsl:attribute name="name" ><xsl:value-of select="@name" /></xsl:attribute>
-			<xsl:attribute name="type" >nx:<xsl:value-of select="@type" />type</xsl:attribute>
+			<xsl:attribute name="type" >nx:type_<xsl:value-of select="@type" /></xsl:attribute>
 			<!-- 
 			This is NOT the place to put the units.
 			Put it in an attribute element after the sequence
@@ -111,7 +111,7 @@ Usage:
 	<xsl:template match="nxdl:group">
 		<xsl:element name="xs:element" >
 			<xsl:attribute name="name" ><xsl:value-of select="@name" /></xsl:attribute>
-			<xsl:attribute name="type" >nx:<xsl:value-of select="@type" />Type</xsl:attribute>
+			<xsl:attribute name="type" >nx:type_<xsl:value-of select="@type" /></xsl:attribute>
 			<xsl:choose>
 				<!-- every xs:element needs a name, make a choice -->
 				<xsl:when test="@name!=''">
