@@ -64,7 +64,7 @@ Usage:
 			  Perhaps this might be useful to define a nx:version here?
 			-->
 			<xsl:attribute name="nx:name">NXDL-Schema</xsl:attribute>
-			<xsl:attribute name="nx:version">$Id:</xsl:attribute>
+			<xsl:attribute name="nx:version"> $Id: <!-- SVN ID --></xsl:attribute>
 			<xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.0</xsl:attribute>
 			<xsl:attribute name="elementFormDefault">qualified</xsl:attribute>
 			<xsl:comment>The NXDL extends the <xsl:value-of select="./*/@extends" /> class</xsl:comment>
