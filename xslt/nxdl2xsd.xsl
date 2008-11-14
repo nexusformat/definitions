@@ -25,7 +25,6 @@
 # $Author$
 # $Revision$
 # $HeadURL$
-# $Id$
 ########### SVN repository information ###################
 
 Purpose:
