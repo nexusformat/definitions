@@ -53,9 +53,32 @@ Usage:
 	<!-- root element is complete except for a few headers/comments/disclaimers -->
 	<xsl:template match="/">
 		<xsl:comment>
-			This xsd file was auto-generated from an NXDL file by an XSLT transformation.
-			Do NOT edit this XML Schema file.
-		</xsl:comment>
+######	 This xsd file was auto-generated from an NXDL file by an XSLT transformation.  ######
+######	 Do NOT edit this XML Schema file.						######
+
+
+# NeXus - Neutron, X-ray, and Muon Science Common Data Format
+# 
+# Copyright (C) 2008 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org</xsl:comment>
+<xsl:text>
+
+</xsl:text>
 		<xsl:element name="xs:schema" >
 			<!-- 
 			  define nx:{something} here so the "nx" namespace prefix will be 
@@ -63,7 +86,6 @@ Usage:
 			  Perhaps this might be useful to define a nx:version here?
 			-->
 			<xsl:attribute name="nx:name">NXDL-Schema</xsl:attribute>
-			<xsl:attribute name="nx:version"> $Id: <!-- SVN ID --></xsl:attribute>
 			<xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.0</xsl:attribute>
 			<xsl:attribute name="elementFormDefault">qualified</xsl:attribute>
 			<xsl:element name="xs:include" >
