@@ -66,14 +66,20 @@ Usage:
 			<xsl:attribute name="nx:version"> $Id: <!-- SVN ID --></xsl:attribute>
 			<xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.0</xsl:attribute>
 			<xsl:attribute name="elementFormDefault">qualified</xsl:attribute>
-			<xsl:comment>The NXDL extends the <xsl:value-of select="./*/@extends" /> class</xsl:comment>
 			<xsl:element name="xs:include" >
 				<xsl:attribute name="schemaLocation"><xsl:value-of select="./*/@extends" />.xsd</xsl:attribute>
+				<xsl:element 
+					name="xs:annotation" ><xsl:element 
+					name="xs:documentation" >extends="<xsl:value-of 
+					select="./*/@extends" />" from the definition element in the NXDL</xsl:element></xsl:element>
 			</xsl:element>
-			<xsl:comment>These classes were called out in group elements from the NXDL</xsl:comment>
 			<xsl:for-each select="//nxdl:group">
 				<xsl:element name="xs:include" >
 					<xsl:attribute name="schemaLocation"><xsl:value-of select="@type" />.xsd</xsl:attribute>
+					<xsl:element 
+						name="xs:annotation" ><xsl:element 
+						name="xs:documentation" >extends="<xsl:value-of 
+						select="@type" />" from a group element in the NXDL</xsl:element></xsl:element>
 				</xsl:element>
 			</xsl:for-each>
 			<xsl:comment> +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ </xsl:comment>
