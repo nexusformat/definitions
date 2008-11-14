@@ -103,7 +103,7 @@ Usage:
 					<xsl:attribute name="schemaLocation"><xsl:value-of select="@type" />.xsd</xsl:attribute>
 					<xsl:element 
 						name="xs:annotation" ><xsl:element 
-						name="xs:documentation" >extends="<xsl:value-of 
+						name="xs:documentation" >type="<xsl:value-of 
 						select="@type" />" from a group element in the NXDL</xsl:element></xsl:element>
 				</xsl:element>
 			</xsl:for-each>
