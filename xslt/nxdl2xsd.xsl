@@ -84,10 +84,11 @@ Usage:
 			<!-- 
 			  define nx:{something} here so the "nx" namespace prefix will be 
 			  added automatically to the schema element declaration
-			  Perhaps this might be useful to define a nx:version here?
+			  Adding the date/time when the XSD was created is an XSLT v2 feature. (Can't be done by xsltproc.)
 			-->
-			<xsl:attribute name="nx:name">NXDL-Schema</xsl:attribute>
-			<xsl:attribute name="nx:version">$Date$, $Revision$</xsl:attribute>
+			<xsl:attribute name="nx:xslt_name">nxdl2xsd.xsl</xsl:attribute>
+			<xsl:attribute name="nx:xslt_version">$Date$, $Revision$</xsl:attribute>
+			<!-- XSLT2: <xsl:attribute name="nx:xsd_created"><xsl:value-of select="fn:current-dateTime()" /></xsl:attribute>-->
 			<xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.0</xsl:attribute>
 			<xsl:attribute name="elementFormDefault">qualified</xsl:attribute>
 			<xsl:element name="xs:include" >
