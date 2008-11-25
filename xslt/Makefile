@@ -32,6 +32,7 @@
 #	manage various resources in this directory
 
 # Usage:
+#	make		default (1st) rule: same as "make xsd"
 #	make xsd	builds all XML Schemas from NeXus base class NXDL files
 #	make metaDTD	builds all metaDTD from NeXus base class NXDL files for comparison with existing metaDTD files
 #	make all	builds xsd, metaDTD, and tables
@@ -52,17 +53,19 @@ BASE_CLASS_PATH = ../base_classes
 XSDS =  $(BASE_CLASSES:%= %.xsd)
 META_DTDS =  $(BASE_CLASSES:%= %.metaDTD.xml)
 
-all: xsd metaDTD tables
+# === Rules ===
 
 xsd nxdl2xsd : $(XSDS)
+
+all: xsd metaDTD tables
 
 metaDTD nxdl2metaDTD : $(META_DTDS)
 
 %.xsd: $(BASE_CLASS_PATH)/%.nxdl.xml Makefile nxdl2xsd.xsl
-	xsltproc nxdl2xsd.xsl $< > $@
+	xsltproc -o $@ nxdl2xsd.xsl $<
 
 %.metaDTD.xml: $(BASE_CLASS_PATH)/%.nxdl.xml Makefile nxdl2metaDTD.xsl
-	xsltproc nxdl2metaDTD.xsl $< > $@
+	xsltproc -o $@ nxdl2metaDTD.xsl $<
 	diff -bByW 200 $(BASE_CLASS_PATH)/$*.xml $@ || echo "# ++++++++++++++++++++++++++ #"
 
 tables ::
@@ -72,3 +75,6 @@ clean ::
 	/bin/rm -f $(XSDS) $(META_DTDS) units.html dimensions.html
 
 rebuild :: clean all
+
+NXobject.xsd :
+	echo "NXobject.xsd is manually-generated.  Do not remove or rebuild it."
