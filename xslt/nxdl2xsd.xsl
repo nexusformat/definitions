@@ -39,9 +39,9 @@ Usage:
             <xsl:attribute name="nx:xslt_name">nxdl2xsd.xsl</xsl:attribute>
             <xsl:attribute name="nx:xslt_id">$Id$</xsl:attribute>
             <!-- XSLT v2.0 feature: <xsl:attribute name="nx:xsd_created"><xsl:value-of select="fn:current-dateTime()" /></xsl:attribute>-->
-            <!--<xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.0</xsl:attribute>-->
+            <xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.0</xsl:attribute>
             <!--<xsl:attribute name="elementFormDefault">qualified</xsl:attribute>-->
-            <xsl:attribute name="attributeFormDefault">qualified</xsl:attribute>
+		    <!--<xsl:attribute name="attributeFormDefault">qualified</xsl:attribute>-->
 			<!-- special case for nxdl:attribute elements 
 			     because they have to come before documentation -->
             <xsl:for-each select="nxdl:attribute">
@@ -110,26 +110,18 @@ Usage:
             </xsl:attribute>
             <xsl:comment>extends: <xsl:value-of select="@extends"/></xsl:comment>
             <xsl:element name="xs:sequence">
-                <xsl:if test="nxdl:attribute!=''">
-                    <!--  special case: need to handle nxdl:attribute _before_ nxdl:doc!   -->
-                    <xsl:element name="xs:complexType">
-                        <xsl:element name="xs:simpleContent">
-                            <xsl:element name="xs:extension">
-                                <xsl:attribute name="nx:{@type}">
-                                    <xsl:for-each select="nxdl:attribute">
-                                        <xsl:element name="xs:attribute">
-                                            <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-                                            <xsl:apply-templates select="@*"/>
-                                            <!-- anything else? -->
-                                        </xsl:element>
-                                    </xsl:for-each>
-                                </xsl:attribute>
-                            </xsl:element>
-                        </xsl:element>
-                    </xsl:element>
-                </xsl:if>
                 <xsl:apply-templates select="*"/>
             </xsl:element>
+            <xsl:if test="count(nxdl:attribute)>0">
+                <!-- special case: need to handle nxdl:attribute _after_ the sequence! -->
+                <xsl:for-each select="nxdl:attribute">
+                    <xsl:element name="xs:attribute">
+                        <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+                        <xsl:apply-templates select="@*"/>
+                        <xsl:apply-templates select="*"/>
+                    </xsl:element>
+                </xsl:for-each>
+            </xsl:if>
         </xsl:element>
     </xsl:template>
 
@@ -172,13 +164,18 @@ Usage:
             <xsl:element name="xs:complexType">
                 <xsl:element name="xs:simpleContent">
                     <xsl:element name="xs:extension">
-                        <xsl:attribute name="base">nx:<xsl:value-of select="@type"/></xsl:attribute>
-                        <!-- @name and @type are handled already -->
+                        <!-- @name is handled already -->
+                        <xsl:call-template name="typeAttributeDefaultHandler" >
+                            <!-- handle @type attribute -->
+							<xsl:with-param name="item">base</xsl:with-param>
+                        </xsl:call-template>
                         <!-- dimensions declaration -->
                         <xsl:if test="nxdl:dimensions!=''">
                             <xsl:element name="xs:attribute">
                                 <xsl:attribute name="name">dimensions</xsl:attribute>
-                                <xsl:attribute name="type">nx:<xsl:value-of select="@type"/></xsl:attribute>
+                                <xsl:call-template name="typeAttributeDefaultHandler" >
+                                    <xsl:with-param name="item">type</xsl:with-param>
+                                </xsl:call-template>
                                 <xsl:apply-templates select="nxdl:dimensions/nxdl:doc"/>
                             </xsl:element>
                         </xsl:if>
@@ -187,8 +184,10 @@ Usage:
                         <xsl:for-each select="nxdl:attribute">
                             <xsl:element name="xs:attribute">
                                 <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-                                <xsl:attribute name="type">nx:<xsl:value-of select="@type"/></xsl:attribute>
-                                <xsl:apply-templates select="*"/>
+                                <xsl:call-template name="typeAttributeDefaultHandler" >
+                                    <xsl:with-param name="item">type</xsl:with-param>
+                                </xsl:call-template>
+                               <xsl:apply-templates select="*"/>
                             </xsl:element>
                         </xsl:for-each>
                         <!-- process any sub-elements -->
@@ -210,19 +209,38 @@ Usage:
         </xsl:call-template>
         <xsl:element name="xs:element">
             <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-            <xsl:attribute name="type">nx:<xsl:value-of select="@type"/></xsl:attribute>
+            <!-- 
+                2008-11-26: name="{@type}" but now need to allow for multiple instances
+                where the name attribute in the XML file is varied.
+                How do we report the declaration then?
+            -->
+            <!-- every xs:element needs a name, make a choice -->
+            <xsl:attribute name="name">
+                <xsl:choose>
+                    <xsl:when test="count(@name)!=0"><xsl:value-of select="@name"/></xsl:when>
+                    <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
             <xsl:choose>
-                <!-- every xs:element needs a name, make a choice -->
-                <xsl:when test="@name!=''">
-                    <!-- name is given in the NXDL -->
-                    <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+                <xsl:when test="count(nxdl:field)+count(nxdl:group)>0">
+                    <xsl:apply-templates select="nxdl:doc"/>
+                    <!-- fields or groups within this group element  -->
+                    <xsl:comment> this is part of an <xsl:value-of select="@type"/> object </xsl:comment>
+                    <xsl:element name="xs:complexType">
+                        <xsl:element name="xs:sequence">
+                            <xsl:apply-templates select="nxdl:field|nxdl:group"/>
+                        </xsl:element>
+                    </xsl:element>
                 </xsl:when>
                 <xsl:otherwise>
-                    <!-- use @type as the name -->
-                    <xsl:attribute name="name"><xsl:value-of select="@type"/></xsl:attribute>
+                    <!-- no fields or groups within this group element -->
+                    <xsl:call-template name="typeAttributeDefaultHandler" >
+                        <xsl:with-param name="item">type</xsl:with-param>
+                    </xsl:call-template>
+                    <xsl:apply-templates select="nxdl:doc"/>
+                    <xsl:comment> - - - no fields or groups below this point - - - </xsl:comment>
                 </xsl:otherwise>
             </xsl:choose>
-            <xsl:apply-templates select="*"/>
         </xsl:element>
     </xsl:template>
 
@@ -232,13 +250,28 @@ Usage:
         </xsl:attribute>
     </xsl:template>
     
-    <xsl:template match="nxdl:enumeration|nxdl:item">
+    <xsl:template match="nxdl:enumeration">
         <!-- enumeration: list of possibilities -->
         <!-- item:        part of an nxdl:enumeration -->
         <xsl:call-template name="comment">
             <xsl:with-param name="msg"><xsl:value-of select="name()"/> declaration</xsl:with-param>
         </xsl:call-template>
-		<xsl:apply-templates select="*"/>
+        <!-- 
+            <xs:simpleType>
+            <xs:restriction base="xs:string">
+        -->
+        <xsl:element name="xs:simpleType">
+            <xsl:element name="xs:restriction">
+                <xsl:attribute name="base">xs:string</xsl:attribute>
+                <xsl:apply-templates select="nxdl:item"/>
+            </xsl:element>
+        </xsl:element>
+    </xsl:template>
+    
+    <xsl:template match="nxdl:item">
+        <xsl:element name="xs:enumeration">
+            <xsl:attribute name="value"><xsl:value-of select="@value"/></xsl:attribute>
+        </xsl:element>
 	</xsl:template>
     
     <xsl:template name="commentxx" />
@@ -246,6 +279,16 @@ Usage:
         <xsl:param name="msg"/>
         <!-- put a comment into the XSD (usually before every declaration) -->
         <xsl:comment>+++++ <xsl:value-of select="$msg"/> +++++</xsl:comment>
+    </xsl:template>
+
+    <xsl:template name="typeAttributeDefaultHandler">
+        <xsl:param name="item"/>
+        <xsl:attribute name="{$item}">
+            <xsl:choose>
+                <!-- default --><xsl:when test="count(@type)=0">nx:NX_CHAR</xsl:when>
+                <!-- present --><xsl:otherwise>nx:<xsl:value-of select="@type"/></xsl:otherwise>
+            </xsl:choose>
+        </xsl:attribute>
     </xsl:template>
     
     <!--leave these templates empty, they are handled by special case code as needed	-->
