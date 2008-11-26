@@ -208,19 +208,11 @@ Usage:
             <xsl:with-param name="msg">group declaration</xsl:with-param>
         </xsl:call-template>
         <xsl:element name="xs:element">
-            <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+            <xsl:attribute name="name"><xsl:value-of select="@type"/></xsl:attribute>
             <!-- 
-                2008-11-26: name="{@type}" but now need to allow for multiple instances
-                where the name attribute in the XML file is varied.
-                How do we report the declaration then?
+                How do we report the @name declaration then?
+                Put it below the sequence as a comment for now.
             -->
-            <!-- every xs:element needs a name, make a choice -->
-            <xsl:attribute name="name">
-                <xsl:choose>
-                    <xsl:when test="count(@name)!=0"><xsl:value-of select="@name"/></xsl:when>
-                    <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
-                </xsl:choose>
-            </xsl:attribute>
             <xsl:choose>
                 <xsl:when test="count(nxdl:field)+count(nxdl:group)>0">
                     <xsl:apply-templates select="nxdl:doc"/>
@@ -241,6 +233,7 @@ Usage:
                     <xsl:comment> - - - no fields or groups below this point - - - </xsl:comment>
                 </xsl:otherwise>
             </xsl:choose>
+            <xsl:comment> NXDL specified name: <xsl:value-of select="@name"/> </xsl:comment>
         </xsl:element>
     </xsl:template>
 
