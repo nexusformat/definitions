@@ -22,7 +22,7 @@ Usage:
 <xsl:stylesheet 
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" 
 	version="1.0" 
-	xmlns:nx="http://definition.nexusformat.org/schema/3.0" 
+	xmlns:nx="http://definition.nexusformat.org/schema/3.1" 
 	xmlns:nxdl="http://www.nexusformat.org" 
 	xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
@@ -39,7 +39,7 @@ Usage:
             <xsl:attribute name="nx:xslt_name">nxdl2xsd.xsl</xsl:attribute>
             <xsl:attribute name="nx:xslt_id">$Id$</xsl:attribute>
             <!-- XSLT v2.0 feature: <xsl:attribute name="nx:xsd_created"><xsl:value-of select="fn:current-dateTime()" /></xsl:attribute>-->
-            <xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.0</xsl:attribute>
+            <xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.1</xsl:attribute>
             <!--<xsl:attribute name="elementFormDefault">qualified</xsl:attribute>-->
 		    <!--<xsl:attribute name="attributeFormDefault">qualified</xsl:attribute>-->
 			<!-- special case for nxdl:attribute elements 
