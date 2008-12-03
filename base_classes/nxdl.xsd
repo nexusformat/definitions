@@ -46,7 +46,7 @@
 		<xs:attribute name="type" use="required" type="nx:definitionTypeAttr" />
 		<xs:attribute name="extends" use="required" />
 	</xs:complexType>
-
+	
 	<xs:complexType name="attributeType">
 		<xs:annotation>
 			<xs:documentation>
@@ -234,51 +234,99 @@
 		</xs:restriction>
 	</xs:simpleType>
 
-           <xs:simpleType name="primitiveType">
-           	<xs:annotation>
-           		<xs:documentation>Valid names for the type attribute on fields and attributes.</xs:documentation>
-           	</xs:annotation>
-           	<xs:restriction base="xs:string">
-           		<xs:enumeration value="NX_FLOAT">
-           		<xs:annotation>
-           			<xs:documentation>Fields of this type can be floating point numbers.</xs:documentation>
-           		</xs:annotation>
-           		</xs:enumeration>
-           		<xs:enumeration value="NX_INT">
-           		<xs:annotation>
-           			<xs:documentation>Fields of this type can be signed integers.</xs:documentation>
-           		</xs:annotation>
-           		</xs:enumeration>
-           		<xs:enumeration value="NX_UINT">
-           		<xs:annotation>
-           			<xs:documentation>Fields of this type can be unsigned integers.</xs:documentation>
-           		</xs:annotation>
-           		</xs:enumeration>
-           		<xs:enumeration value="NX_NUMBER">
-           			<xs:annotation>
-           				<xs:documentation>Fields of this type can be signed integers, unsigned integers, or floating point numbers.</xs:documentation>
-           			</xs:annotation>
-           		</xs:enumeration>
-           		<xs:enumeration value="NX_CHAR">
-           			<xs:annotation>
-           				<xs:documentation>Fields with this type are strings.</xs:documentation>
-           			</xs:annotation>
-           		</xs:enumeration>
-           		<xs:enumeration value="NX_BOOLEAN">
-           			<xs:annotation>
-           				<xs:documentation>Fields with this type are boolean.</xs:documentation>
-           			</xs:annotation>
-           		</xs:enumeration>
-           		<xs:enumeration value="NX_DATE_TIME">
-           			<xs:annotation>
-           				<xs:documentation>Fields with this type should be ISO8601 compliant.</xs:documentation>
-           			</xs:annotation>
-           		</xs:enumeration>
-           		<xs:enumeration value="NX_BINARY">
-           			<xs:annotation>
-           				<xs:documentation>Fields of this type can be binary data. (always a uint8)</xs:documentation>
-           			</xs:annotation>
-           		</xs:enumeration>
-           	</xs:restriction>
-           </xs:simpleType>
+	<xs:simpleType name="primitiveType">
+		<xs:annotation>
+			<xs:documentation>Valid names for the type attribute on fields and attributes.  This is an alias for NAPI (which is any valid NeXus type).</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="nx:NAPI" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="NAPI">
+		<xs:annotation>
+			<xs:documentation>any valid NeXus type</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="nx:NX_CHAR 
+			nx:NX_FLOAT nx:NX_INT nx:NX_UINT nx:NX_NUMBER 
+			nx:NX_DATE_TIME nx:ISO8601 nx:NX_BOOLEAN nx:NX_BINARY nx:NX_RANK" />
+	</xs:simpleType>
+    
+    <xs:simpleType name="NX_CHAR">
+		<xs:annotation>
+			<xs:documentation>any string representation</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:string" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="NX_FLOAT">
+		<xs:annotation>
+			<xs:documentation>any representation of a floating point number</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:float" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="NX_INT">
+		<xs:annotation>
+			<xs:documentation>any representation of an integer number</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:integer" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="NX_UINT">
+		<xs:annotation>
+			<xs:documentation>any representation of an unsigned integer number</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:unsignedInt" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="NX_NUMBER">
+		<xs:annotation>
+			<xs:documentation>any valid NeXus number representation</xs:documentation>
+		</xs:annotation>
+		<xs:union memberTypes="nx:NX_INT nx:NX_UINT nx:NX_FLOAT"></xs:union>
+	</xs:simpleType>
+	
+	<xs:simpleType name="NX_DATE_TIME">
+		<xs:annotation>
+			<xs:documentation>alias for the ISO8601 date/time stamp</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="nx:ISO8601" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="ISO8601">
+		<xs:annotation>
+			<xs:documentation>ISO8601 date/time stamp</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:dateTime" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="NX_BOOLEAN">
+		<xs:annotation>
+			<xs:documentation>true/false value</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:boolean" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="NX_BINARY">
+		<xs:annotation>
+			<xs:documentation>Binary data - if text, line terminator is [CR][LF]</xs:documentation>
+		</xs:annotation>
+		<!-- Is this the way to describe pure binary?  unit8, byte, hex64binary -->
+		<xs:restriction base="xs:byte" />
+	</xs:simpleType>
+	
+	<xs:simpleType name="NX_RANK">
+		<xs:annotation>
+			<xs:documentation>Number of dimensions of an array [1..NX_MAXRANK], where NX_MAXRANK=32</xs:documentation>
+			<xs:appinfo>http://www.nexusformat.org/Application_Program_Interface#Fortran_90_Interface</xs:appinfo>
+		</xs:annotation>
+		<xs:restriction base="nx:NX_INT">
+			<xs:minInclusive value="1">
+				<xs:annotation><xs:documentation> ????????? Should this be zero? ????????? </xs:documentation></xs:annotation>
+			</xs:minInclusive>
+			<xs:maxInclusive value="32">
+				<xs:annotation><xs:documentation>NX_MAXRANK=32</xs:documentation></xs:annotation>
+			</xs:maxInclusive>
+		</xs:restriction>
+	</xs:simpleType>
+	
 </xs:schema>
