@@ -89,7 +89,7 @@ Usage:
         <xsl:call-template name="comment">
             <xsl:with-param name="msg">other objects used by this NXDL</xsl:with-param>
         </xsl:call-template>
-        <xsl:for-each select="//nx:group">
+        <xsl:for-each select="nx:group">
             <xsl:element name="xs:include">
                 <xsl:attribute name="schemaLocation"><xsl:value-of select="@type"/>.xsd</xsl:attribute>
                 <xsl:element name="xs:annotation">

@@ -41,7 +41,7 @@
 #	make rebuild	does a make clean then make all
 
 BASE_CLASSES  = NXaperture NXattenuator NXbeam NXbeam_stop NXbending_magnet 
-BASE_CLASSES += NXcharacterization NXcollimator NXcrystal NXdata NXdetector 
+BASE_CLASSES += NXcharacterization NXcollimator NXcrystal NXdata NXdetector NXdetector_group
 BASE_CLASSES += NXdisk_chopper NXentry NXenvironment NXevent_data NXfermi_chopper 
 BASE_CLASSES += NXfilter NXflipper NXgeometry NXguide NXinsertion_device NXinstrument 
 BASE_CLASSES += NXlog NXmirror NXmoderator NXmonitor NXmonochromator NXnote 
