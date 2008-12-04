@@ -102,9 +102,8 @@ Usage:
             <xsl:with-param name="msg">declarations (attributes, docs, groups, and fields)</xsl:with-param>
         </xsl:call-template>
         <xsl:element name="xs:complexType">
-            <xsl:attribute name="name">
-                <xsl:value-of select="@name"/>
-            </xsl:attribute>
+            <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+            <xsl:attribute name="mixed">true</xsl:attribute>
             <xsl:element name="xs:sequence">
                 <xsl:apply-templates select="*"/>
             </xsl:element>
@@ -128,8 +127,6 @@ Usage:
         </xsl:element>
     </xsl:template>
     
-    <!-- nx:doc is complete -->
-    <xsl:template match="nx:docXX" />
     <xsl:template match="nx:doc">
         <!-- documentation -->
         <xsl:element name="xs:annotation">
@@ -141,6 +138,18 @@ Usage:
         <!-- named element declaration -->
         <xsl:element name="xs:element">
             <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+            <xsl:attribute name="minOccurs">
+                <xsl:choose>
+                    <!-- specified --><xsl:when test="count(@minOccurs)>0"><xsl:value-of select="@minOccurs"/></xsl:when>
+                    <!-- default --><xsl:otherwise>0</xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
+            <xsl:attribute name="maxOccurs">
+                <xsl:choose>
+                    <!-- specified --><xsl:when test="count(@maxOccurs)>0"><xsl:value-of select="@maxOccurs"/></xsl:when>
+                    <!-- default --><xsl:otherwise>1</xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
             <xsl:call-template name="comment">
                 <xsl:with-param name="msg"><xsl:value-of select="name()"/> declaration: <xsl:value-of select="@name"/></xsl:with-param>
             </xsl:call-template>
@@ -202,7 +211,26 @@ Usage:
             <xsl:with-param name="msg">group declaration</xsl:with-param>
         </xsl:call-template>
         <xsl:element name="xs:element">
-            <xsl:attribute name="name"><xsl:value-of select="@type"/></xsl:attribute>
+            <xsl:attribute name="name">
+                <xsl:choose>
+                    <!-- @name was specified, use it (to avoid multiple elements with same name) -->
+                    <xsl:when test="count(@name)>0"><xsl:value-of select="@name"/></xsl:when>
+                    <!-- default -->
+                    <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
+            <xsl:attribute name="minOccurs">
+                <xsl:choose>
+                    <!-- specified --><xsl:when test="count(@minOccurs)>0"><xsl:value-of select="@minOccurs"/></xsl:when>
+                    <!-- default --><xsl:otherwise>0</xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
+            <xsl:attribute name="maxOccurs">
+                <xsl:choose>
+                    <!-- specified --><xsl:when test="count(@maxOccurs)>0"><xsl:value-of select="@maxOccurs"/></xsl:when>
+                    <!-- default --><xsl:otherwise>unbounded</xsl:otherwise>
+                </xsl:choose>
+            </xsl:attribute>
             <xsl:choose>
                 <xsl:when test="count(nx:field)+count(nx:group)>0">
                     <!-- if there are fields or groups, then documentation comes afterwards -->
@@ -235,16 +263,13 @@ Usage:
         </xsl:element>
     </xsl:template>
     
-    <xsl:template match="@units">
+    <xsl:template match="@units|@minOccurs|@maxOccurs">
         <xsl:attribute name="{name()}">
             <xsl:value-of select="."/>
         </xsl:attribute>
     </xsl:template>
     
     <xsl:template match="nx:enumeration">
-        <!--<xsl:call-template name="comment">
-            <xsl:with-param name="msg"><xsl:value-of select="name()"/> declaration</xsl:with-param>
-            </xsl:call-template>-->
         <xsl:element name="xs:simpleType">
             <xsl:element name="xs:restriction">
                 <xsl:attribute name="base">
