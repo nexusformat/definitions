@@ -107,10 +107,12 @@ Usage:
             <xsl:element name="xs:sequence">
                 <xsl:apply-templates select="*"/>
             </xsl:element>
-            <xsl:element name="xs:attribute">
-                <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-                <xsl:attribute name="use">optional</xsl:attribute>
-            </xsl:element>
+            <xsl:if test="count(nx:attribute/@name)=0">
+                <xsl:element name="xs:attribute">
+                    <xsl:attribute name="name">name</xsl:attribute>
+                    <xsl:attribute name="use">optional</xsl:attribute>
+                </xsl:element>
+            </xsl:if>
             <xsl:if test="count(nx:attribute)>0">
                 <!-- special case: need to handle nx:attribute _after_ the sequence! -->
                 <xsl:for-each select="nx:attribute">

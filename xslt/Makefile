@@ -78,3 +78,6 @@ rebuild :: clean all
 
 NXobject.xsd :
 	echo "NXobject.xsd is manually-generated.  Do not remove or rebuild it."
+
+NeXus.xsd :
+	echo "NeXus.xsd is manually-generated.  Do not remove or rebuild it."
