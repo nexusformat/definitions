@@ -27,6 +27,13 @@ Usage:
 
     <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
 
+    <!-- 
+        +++++++++++++++++
+        matched templates
+        +++++++++++++++++
+    -->
+    
+    
     <xsl:template match="/">
 
 <xsl:comment>#########################################################
@@ -74,30 +81,8 @@ Usage:
     </xsl:template>
     
     <xsl:template match="nx:definition">
-        <!-- extends from this NeXus object -->
-        <xsl:element name="xs:include">
-            <!-- add special case condition for NXobject (should really convert all NXDL to use the proper base class) -->
-            <xsl:attribute name="schemaLocation"><xsl:value-of select="@extends"/>.xsd</xsl:attribute>
-            <xsl:call-template name="comment">
-                <xsl:with-param name="msg"><xsl:value-of select="name()"/> declaration: <xsl:value-of select="@name"/></xsl:with-param>
-            </xsl:call-template>
-            <xsl:element name="xs:annotation">
-                <xsl:element name="xs:documentation">NXDL "<xsl:value-of select="@name"/>" extends the <xsl:value-of select="@extends"/> class</xsl:element>
-            </xsl:element>
-        </xsl:element>
-        <!-- calls these NeXus or application objects -->
-        <xsl:call-template name="comment">
-            <xsl:with-param name="msg">other objects used by this NXDL</xsl:with-param>
-        </xsl:call-template>
-        <xsl:for-each select="nx:group">
-            <xsl:element name="xs:include">
-                <xsl:attribute name="schemaLocation"><xsl:value-of select="@type"/>.xsd</xsl:attribute>
-                <xsl:element name="xs:annotation">
-                    <xsl:element name="xs:documentation">type="<xsl:value-of select="@type"/>" from a group element in the NXDL</xsl:element>
-                </xsl:element>
-            </xsl:element>
-        </xsl:for-each>
-        <!-- elements that define this object -->
+        <!-- identify all the XSD files to be included -->
+        <xsl:call-template name="groupIncludes"/>
         <xsl:call-template name="comment">
             <xsl:with-param name="msg">declarations (attributes, docs, groups, and fields)</xsl:with-param>
         </xsl:call-template>
@@ -113,19 +98,8 @@ Usage:
                     <xsl:attribute name="use">optional</xsl:attribute>
                 </xsl:element>
             </xsl:if>
-            <xsl:if test="count(nx:attribute)>0">
-                <!-- special case: need to handle nx:attribute _after_ the sequence! -->
-                <xsl:for-each select="nx:attribute">
-                    <xsl:element name="xs:attribute">
-                        <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-                        <xsl:apply-templates select="@*"/>
-                        <xsl:choose>
-                            <xsl:when test="count(nx:enumeration)>0"><xsl:apply-templates select="nx:enumeration"/></xsl:when>
-                            <xsl:otherwise><xsl:apply-templates select="*"/></xsl:otherwise>
-                        </xsl:choose>
-                    </xsl:element>
-                </xsl:for-each>
-            </xsl:if>
+            <!-- special case: need to handle nx:attribute _after_ the sequence! -->
+            <xsl:apply-templates select="nx:attribute" mode="after_sequence"/>
         </xsl:element>
     </xsl:template>
     
@@ -159,7 +133,7 @@ Usage:
             <xsl:apply-templates select="nx:doc"/>
             <xsl:choose>
                 <xsl:when test="count(nx:enumeration)>0">
-                    <xsl:apply-templates select="nx:enumeration"/>
+                    <xsl:apply-templates select="nx:enumeration" mode="standard"/>
                 </xsl:when>
                 <xsl:otherwise><!-- no nx:enumeration -->
                     <xsl:element name="xs:complexType">
@@ -171,28 +145,9 @@ Usage:
                                     <xsl:with-param name="item">base</xsl:with-param>
                                 </xsl:call-template>
                                 <!-- dimensions declaration -->
-                                <xsl:if test="nx:dimensions!=''">
-                                    <xsl:element name="xs:attribute">
-                                        <xsl:attribute name="name">dimensions</xsl:attribute>
-                                        <xsl:call-template name="typeAttributeDefaultHandler" >
-                                            <xsl:with-param name="item">type</xsl:with-param>
-                                        </xsl:call-template>
-                                        <xsl:apply-templates select="nx:dimensions/nx:doc"/>
-                                    </xsl:element>
-                                </xsl:if>
-                                <!-- special case for nx:attribute elements 
-                                    because they have to come before documentation -->
-                                <xsl:for-each select="nx:attribute">
-                                    <xsl:element name="xs:attribute">
-                                        <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-                                        <xsl:if test="count(nx:enumeration)=0">
-                                            <xsl:call-template name="typeAttributeDefaultHandler" >
-                                                <xsl:with-param name="item">type</xsl:with-param>
-                                            </xsl:call-template>
-                                        </xsl:if>
-                                        <xsl:apply-templates select="*"/>
-                                    </xsl:element>
-                                </xsl:for-each>
+                                <xsl:apply-templates select="nx:dimensions" mode="field"/>
+                                <!-- nx:attribute elements have to come before documentation -->
+                                <xsl:apply-templates select="nx:attribute" mode="field"/>
                                 <!-- process any sub-elements -->
                                 <xsl:for-each select="*">
                                     <xsl:if test="name()!='doc'">
@@ -235,7 +190,7 @@ Usage:
             </xsl:attribute>
             <xsl:choose>
                 <xsl:when test="count(nx:field)+count(nx:group)>0">
-                    <!-- if there are fields or groups, then documentation comes afterwards -->
+                    <!-- if there are fields or groups, then documentation comes afterwards ?????(then why is it before?)????? -->
                     <xsl:apply-templates select="nx:doc"/>
                     <!-- fields or groups within this group element  -->
                     <xsl:comment> this is part of an <xsl:value-of select="@type"/> object </xsl:comment>
@@ -259,7 +214,6 @@ Usage:
                         <xsl:with-param name="item">type</xsl:with-param>
                     </xsl:call-template>
                     <xsl:apply-templates select="nx:doc"/>
-                    <!--<xsl:comment> - - - no fields or groups below this point - - - </xsl:comment>-->
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:element>
@@ -271,13 +225,15 @@ Usage:
         </xsl:attribute>
     </xsl:template>
     
-    <xsl:template match="nx:enumeration">
+    <xsl:template match="nx:enumeration" mode="standard">
         <xsl:element name="xs:simpleType">
             <xsl:element name="xs:restriction">
                 <xsl:attribute name="base">
                     <xsl:choose>
-                        <!-- specified --><xsl:when test="count(@type)>0">nx:<xsl:value-of select="@type"/></xsl:when>
-                        <!-- default --><xsl:otherwise>nx:NX_CHAR</xsl:otherwise>
+                        <!-- specified -->
+                        <xsl:when test="count(@type)>0">nx:<xsl:value-of select="@type"/></xsl:when>
+                        <!-- default -->
+                        <xsl:otherwise>nx:NX_CHAR</xsl:otherwise>
                     </xsl:choose>
                 </xsl:attribute>
                 <xsl:apply-templates select="nx:item"/>
@@ -291,18 +247,90 @@ Usage:
         </xsl:element>
     </xsl:template>
     
+    <xsl:template match="nx:dimensions" mode="field">
+        <xsl:element name="xs:attribute">
+            <xsl:attribute name="name">dimensions</xsl:attribute>
+            <xsl:call-template name="typeAttributeDefaultHandler" >
+                <xsl:with-param name="item">type</xsl:with-param>
+            </xsl:call-template>
+            <xsl:apply-templates select="nx:dimensions/nx:doc"/>
+        </xsl:element>
+    </xsl:template>
+    
+    <xsl:template match="nx:attribute" mode="field">
+        <xsl:element name="xs:attribute">
+            <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+            <xsl:if test="count(nx:enumeration)=0">
+                <xsl:call-template name="typeAttributeDefaultHandler" >
+                    <xsl:with-param name="item">type</xsl:with-param>
+                </xsl:call-template>
+            </xsl:if>
+            <xsl:apply-templates select="*"/>
+        </xsl:element>
+    </xsl:template>
+    
+    <xsl:template match="nx:attribute" mode="after_sequence">
+        <xsl:element name="xs:attribute">
+            <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+            <xsl:apply-templates select="@*"/>
+            <xsl:choose>
+                <xsl:when test="count(nx:enumeration)>0">
+                    <xsl:apply-templates select="nx:enumeration" mode="standard"/>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:apply-templates select="*"/>
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:element>
+    </xsl:template>
+    
+    <!-- 
+        +++++++++++++++
+        named templates
+        +++++++++++++++
+    -->
+
     <xsl:template name="comment">
         <xsl:param name="msg"/>
         <!-- put a comment into the XSD (usually before every declaration) -->
         <xsl:comment>+++++ <xsl:value-of select="$msg"/> +++++</xsl:comment>
     </xsl:template>
     
+    <xsl:template name="groupIncludes">
+        <!-- extends from this NeXus object -->
+        <xsl:element name="xs:include">
+            <!-- add special case condition for NXobject (should really convert all NXDL to use the proper base class) -->
+            <xsl:attribute name="schemaLocation"><xsl:value-of select="@extends"/>.xsd</xsl:attribute>
+            <xsl:call-template name="comment">
+                <xsl:with-param name="msg"><xsl:value-of select="name()"/> declaration: <xsl:value-of select="@name"/></xsl:with-param>
+            </xsl:call-template>
+            <xsl:element name="xs:annotation">
+                <xsl:element name="xs:documentation">NXDL "<xsl:value-of select="@name"/>" extends the <xsl:value-of select="@extends"/> class</xsl:element>
+            </xsl:element>
+        </xsl:element>
+        <!-- calls these NeXus or application objects -->
+        <xsl:call-template name="comment">
+            <xsl:with-param name="msg">other objects used by this NXDL</xsl:with-param>
+        </xsl:call-template>
+        <xsl:for-each select="nx:group">
+            <xsl:element name="xs:include">
+                <xsl:attribute name="schemaLocation"><xsl:value-of select="@type"/>.xsd</xsl:attribute>
+                <xsl:element name="xs:annotation">
+                    <xsl:element name="xs:documentation">type="<xsl:value-of select="@type"/>" from a group element in the NXDL</xsl:element>
+                </xsl:element>
+            </xsl:element>
+        </xsl:for-each>
+        <!-- elements that define this object -->
+    </xsl:template>
+    
     <xsl:template name="typeAttributeDefaultHandler">
         <xsl:param name="item"/>
         <xsl:attribute name="{$item}">
             <xsl:choose>
-                <!-- default --><xsl:when test="count(@type)=0">nx:NX_CHAR</xsl:when>
-                <!-- present --><xsl:otherwise>nx:<xsl:value-of select="@type"/></xsl:otherwise>
+                <!-- default -->
+                <xsl:when test="count(@type)=0">nx:NX_CHAR</xsl:when>
+                <!-- present -->
+                <xsl:otherwise>nx:<xsl:value-of select="@type"/></xsl:otherwise>
             </xsl:choose>
         </xsl:attribute>
     </xsl:template>
