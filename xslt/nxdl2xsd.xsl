@@ -82,7 +82,16 @@ Usage:
     
     <xsl:template match="nx:definition">
         <!-- identify all the XSD files to be included -->
-        <xsl:call-template name="groupIncludes"/>
+        <xsl:call-template name="groupIncludes">
+            <!-- 
+                need to sort these elements,
+                How can this be restricted to unique?
+            -->
+            <!--
+                <xsl:sort select="@type"/>
+                sort must be a child of apply-templates or for but not call-templates, fix this
+            -->
+        </xsl:call-template>
         <xsl:call-template name="comment">
             <xsl:with-param name="msg">declarations (attributes, docs, groups, and fields)</xsl:with-param>
         </xsl:call-template>
