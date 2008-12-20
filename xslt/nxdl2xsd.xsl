@@ -29,6 +29,17 @@ Usage:
 
     <!-- 
         +++++++++++++++++
+          grouping keys
+        +++++++++++++++++
+    -->
+
+    <!-- identify all group elements by @type for the include statements -->
+    <!-- advice: http://sources.redhat.com/ml/xsl-list/2000-07/msg00458.html -->
+    <xsl:key name="group-include" match="//nx:group" use="@type"/>
+    
+
+    <!-- 
+        +++++++++++++++++
         matched templates
         +++++++++++++++++
     -->
@@ -82,16 +93,7 @@ Usage:
     
     <xsl:template match="nx:definition">
         <!-- identify all the XSD files to be included -->
-        <xsl:call-template name="groupIncludes">
-            <!-- 
-                need to sort these elements,
-                How can this be restricted to unique?
-            -->
-            <!--
-                <xsl:sort select="@type"/>
-                sort must be a child of apply-templates or for but not call-templates, fix this
-            -->
-        </xsl:call-template>
+        <xsl:call-template name="groupIncludes" />
         <xsl:call-template name="comment">
             <xsl:with-param name="msg">declarations (attributes, docs, groups, and fields)</xsl:with-param>
         </xsl:call-template>
@@ -321,15 +323,25 @@ Usage:
         <xsl:call-template name="comment">
             <xsl:with-param name="msg">other objects used by this NXDL</xsl:with-param>
         </xsl:call-template>
-        <xsl:for-each select="nx:group">
-            <xsl:element name="xs:include">
-                <xsl:attribute name="schemaLocation"><xsl:value-of select="@type"/>.xsd</xsl:attribute>
-                <xsl:element name="xs:annotation">
-                    <xsl:element name="xs:documentation">type="<xsl:value-of select="@type"/>" from a group element in the NXDL</xsl:element>
-                </xsl:element>
+
+        <!-- Be sure to include XSD of any base_class or application elements that define this object -->
+        <xsl:apply-templates 
+            mode="group-include"
+            select="  //nx:group[generate-id(.) = generate-id(key('group-include', @type)[1])]  " >
+            <!-- advice: http://sources.redhat.com/ml/xsl-list/2000-07/msg00458.html -->
+            <!-- Muenchian method to sort+unique on group/@type -->
+            <xsl:sort select="@type"/>
+        </xsl:apply-templates>
+    
+    </xsl:template>
+
+    <xsl:template match="nx:group" mode="group-include">
+        <xsl:element name="xs:include">
+            <xsl:attribute name="schemaLocation"><xsl:value-of select="@type"/>.xsd</xsl:attribute>
+            <xsl:element name="xs:annotation">
+                <xsl:element name="xs:documentation">type="<xsl:value-of select="@type"/>" from a group element in the NXDL</xsl:element>
             </xsl:element>
-        </xsl:for-each>
-        <!-- elements that define this object -->
+        </xsl:element>
     </xsl:template>
     
     <xsl:template name="typeAttributeDefaultHandler">
