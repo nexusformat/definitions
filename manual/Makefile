@@ -60,6 +60,8 @@ docbook : $(TARGETS)
 
 all: docbook
 
+#  docbook2html -d docbook-utils.dsl#html myfile.docbook
+
 %.xml: $(NXDL) Makefile $(XSLT)
 	xsltproc -o $@ $(XSLT) $<
 

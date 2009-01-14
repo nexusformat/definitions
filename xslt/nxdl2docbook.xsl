@@ -11,19 +11,17 @@
 
 Purpose:
 	This stylesheet is used to translate the NeXus Definition Language
-	specifications into XML Schema (.xsd) files for use in
-	validating candidate NeXus data files and also in preparing
-	additional application definitions and XML schemas for use by NeXus.
+	specifications into DocBook (.xml) files for use in
+	assembling NeXus about the class definitions from NXDL.
 
 Usage:
-	xsltproc nxdl2xsd.xsl $(NX_CLASS).nxdl > $(NX_CLASS).xsd
+    xsltproc -o $(NX_CLASS).xml  nxdl2docbook.xsl $(NX_CLASS).nxdl.xml
 -->
 
 <xsl:stylesheet
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	version="1.0"
-	xmlns:nx="http://definition.nexusformat.org/schema/3.1"
-	xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	xmlns:nx="http://definition.nexusformat.org/schema/3.1">
 
     <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
 
@@ -51,23 +49,11 @@ Usage:
 ##########################################################
 ######	 This XML file was auto-generated from      ######
 ######	 an NXDL file by an XSLT transformation.    ######
-######	 Do NOT edit this XML Schema file.          ######
+######	 Do NOT edit this DocBook XML file.         ######
 ##########################################################
 </xsl:comment>
 
-        <xsl:element name="xs:schema">
-            <xsl:attribute name="nx:xslt_name">nxdl2xsd.xsl</xsl:attribute>
-            <xsl:attribute name="nx:xslt_id">$Id$</xsl:attribute>
-            <!-- XSLT v2.0 feature: <xsl:attribute name="nx:xsd_created"><xsl:value-of select="fn:current-dateTime()" /></xsl:attribute>-->
-            <xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.1</xsl:attribute>
-            <!--<xsl:attribute name="elementFormDefault">qualified</xsl:attribute>-->
-            <!--<xsl:attribute name="attributeFormDefault">qualified</xsl:attribute>-->
-            <!-- special case for nx:attribute elements because they have to come before documentation -->
-            <xsl:for-each select="nx:attribute">
-                <xsl:attribute name="{name()}"><xsl:value-of select="."/></xsl:attribute>
-                <xsl:apply-templates select="*"/>
-            </xsl:for-each>
-            <xsl:comment><!-- NeXus license comes next -->
+ <xsl:comment><!-- NeXus license comes next -->
 # NeXus - Neutron, X-ray, and Muon Science Common Data Format
 # 
 # Copyright (C) 2008 NeXus International Advisory Committee (NIAC)
@@ -87,16 +73,28 @@ Usage:
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # For further information, see http://www.nexusformat.org
-            </xsl:comment>
-		    <xsl:apply-templates select="nx:definition"/>
-		</xsl:element>
+</xsl:comment>
+        <xsl:apply-templates select="nx:definition"/>
+        <!-- Needs this on 2nd line of XML file: 
+            <?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
+        -->
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xsl:template match="nx:definition">
-        <xsl:element name="section">
+        <xsl:element name="section"><!-- root element -->
+            <xsl:attribute name="xmlns">http://docbook.org/ns/docbook</xsl:attribute>
+            <!-- 
+                xmlns:xi="http://www.w3.org/2001/XInclude"
+                xmlns:xlink="http://www.w3.org/1999/xlink"
+                xmlns:=""
+                xmlns:=""
+                xmlns:=""
+            -->
+            <xsl:attribute name="version">5.0</xsl:attribute><!-- required, matches NeXusManual.xml -->
             <xsl:element name="title"><xsl:value-of select="@name"/></xsl:element>
+            <xsl:element name="para">... about <xsl:value-of select="@name"/></xsl:element>
         </xsl:element>
     </xsl:template>
     
