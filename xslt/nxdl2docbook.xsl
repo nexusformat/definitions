@@ -21,7 +21,10 @@ Usage:
 <xsl:stylesheet
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	version="1.0"
-	xmlns:nx="http://definition.nexusformat.org/schema/3.1">
+	xmlns:nx="http://definition.nexusformat.org/schema/3.1"
+	xmlns:xi="http://www.w3.org/2001/XInclude"
+	xmlns:xlink="http://www.w3.org/1999/xlink"
+    >
 
     <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
 
@@ -95,8 +98,46 @@ Usage:
             -->
             <xsl:attribute name="version">5.0</xsl:attribute><!-- required, matches NeXusManual.xml -->
             <xsl:element name="title"><xsl:value-of select="@name"/></xsl:element>
-            <xsl:element name="para">... about <xsl:value-of select="@name"/></xsl:element>
-        </xsl:element>
+            <!-- show where to find the source -->
+            <xsl:element name="para">
+                <xsl:value-of select="@name"/> source:
+                <xsl:element name="link">
+                    <xsl:attribute name="xlink:href">http://svn.nexusformat.org/definitions/trunk/base_classes/<xsl:value-of select="@name"/>.nxdl.xml</xsl:attribute>
+                    http://svn.nexusformat.org/definitions/trunk/base_classes/<xsl:value-of select="@name"/>.nxdl.xml
+                </xsl:element>
+            </xsl:element><!-- para -->
+            <!-- show how to learn more about NXDL -->
+            <xsl:element name="para">
+                NXDL description:
+                <xsl:element name="link">
+                    <xsl:attribute name="xlink:href">http://www.nexusformat.org/NXDL</xsl:attribute>
+                    NXDL: NeXus Definitional Language
+                </xsl:element>
+            </xsl:element>
+            <!-- describe what is defined -->
+            <xsl:element name="table">
+                <xsl:element name="title">Tabular representation of <xsl:value-of select="@name"/>:</xsl:element>
+                <xsl:element name="tgroup">
+                    <xsl:attribute name="cols">4</xsl:attribute>
+                    <xsl:element name="thead">
+                        <xsl:element name="row">
+                            <xsl:element name="entry">Name</xsl:element>
+                            <xsl:element name="entry">Type</xsl:element>
+                            <xsl:element name="entry">Description</xsl:element>
+                            <xsl:element name="entry">Attributes</xsl:element>
+                        </xsl:element><!-- row -->
+                    </xsl:element><!-- thead -->
+                    <xsl:element name="tbody">
+                        <xsl:element name="row">
+                            <xsl:element name="entry">Name content</xsl:element>
+                            <xsl:element name="entry">Type content</xsl:element>
+                            <xsl:element name="entry">Description content</xsl:element>
+                            <xsl:element name="entry">Attributes content</xsl:element>
+                        </xsl:element><!-- row -->
+                    </xsl:element><!-- thead -->
+                </xsl:element><!-- tgroup -->
+            </xsl:element><!-- table -->
+        </xsl:element><!-- section -->
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
