@@ -46,10 +46,9 @@ BASE_CLASSES += NXlog NXmirror NXmoderator NXmonitor NXmonochromator NXnote
 BASE_CLASSES += NXorientation NXpolarizer NXpositioner NXprocess NXroot NXsample 
 BASE_CLASSES += NXsensor NXshape NXsource NXtranslation NXuser NXvelocity_selector 
 
-EXTENSION = xml
 TARGETS =  $(BASE_CLASSES:%= %.xml)
-NXDL = $(BASE_CLASS_PATH)/%.nxdl.xml
 
+BASE_CLASS_PATH = ../base_classes
 XSLT_PATH = ../xslt
 
 XSLT = $(XSLT_PATH)/nxdl2docbook.xsl
@@ -60,9 +59,7 @@ docbook : $(TARGETS)
 
 all: docbook
 
-#  docbook2html -d docbook-utils.dsl#html myfile.docbook
-
-%.xml: $(NXDL) Makefile $(XSLT)
+%.xml: $(BASE_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT)
 	xsltproc -o $@ $(XSLT) $<
 
 clean ::
