@@ -86,11 +86,9 @@ Usage:
         <xsl:element name="section"><!-- root element -->
             <xsl:attribute name="xmlns">http://docbook.org/ns/docbook</xsl:attribute>
             <!-- 
+                These namespaces will be added to the document (by xsltproc) if they are used.
                 xmlns:xi="http://www.w3.org/2001/XInclude"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
-                xmlns:=""
-                xmlns:=""
-                xmlns:=""
             -->
             <xsl:attribute name="version">5.0</xsl:attribute><!-- required, matches NeXusManual.xml -->
             <xsl:element name="title"><xsl:value-of select="@name"/></xsl:element>
