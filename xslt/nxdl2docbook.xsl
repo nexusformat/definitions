@@ -47,7 +47,7 @@ Usage:
         <xsl:processing-instruction name="oxygen">RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"</xsl:processing-instruction>
 
         <xsl:comment/><!-- Puts the ID string on a new line. -->
-        <xsl:comment><xsl:text> $</xsl:text> Id: <xsl:text>$ </xsl:text></xsl:comment>
+        <xsl:comment><xsl:text> $</xsl:text>Id: <xsl:text>$ </xsl:text></xsl:comment>
 <xsl:comment>
 ##########################################################
 ######	 This XML file was auto-generated from      ######
