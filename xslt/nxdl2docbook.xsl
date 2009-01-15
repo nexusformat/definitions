@@ -34,7 +34,7 @@ Usage:
         +++++++++++++++++
     -->
 
-    <!-- identify all group elements by @type for the include statements -->
+    <!-- identify all group elements by @type -->
     <!-- advice: http://sources.redhat.com/ml/xsl-list/2000-07/msg00458.html -->
     <xsl:key name="group-include" match="//nx:group" use="@type"/>
     
@@ -108,10 +108,10 @@ Usage:
             </xsl:element><!-- para -->
             <!-- show how to learn more about NXDL -->
             <xsl:element name="para">
-                NXDL description:
+                NeXus Definitional Language (NXDL):
                 <xsl:element name="link">
                     <xsl:attribute name="xlink:href">http://www.nexusformat.org/NXDL</xsl:attribute>
-                    NXDL: NeXus Definitional Language
+                    http://www.nexusformat.org/NXDL
                 </xsl:element>
             </xsl:element>
             <!-- describe what is defined -->
