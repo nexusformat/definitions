@@ -1,0 +1,492 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
+<!-- # $Id:  $ -->
+<chapter xmlns="http://docbook.org/ns/docbook" xmlns:xlink="http://www.w3.org/1999/xlink"
+    version="5.0">
+    <title>MediaWiki Manual</title>
+    
+    <!-- NEXUS INTRODUCTION SECTION -->
+    <section>
+        <title>NeXus Introduction</title>
+        <para>In recent years, a number of scientists and computer programmers working in neutron
+            and synchrotron facilities around the world came to the conclusion that a common data
+            format would fulfil a valuable function in the scattering community. As instrumentation
+            becomes more complex and data visualization become more challenging, individual
+            scientists, or even institutions, have found it difficult to keep up with new
+            developments. A common data format makes it easier, both to exchange experimental
+            results and to exchange ideas about how to analyze them. It promotes greater cooperation
+            in software development and stimulate the design of more sophisticated visualization
+            tools. For additional background information see the [[History|history of the NeXus
+            format]]TKlink.</para>
+        <para>This section is designed to give a brief introduction to NeXus, the data format that
+            has been developed in response to these needs. It explains what a modern data format
+            such as NeXus is and how to write simple programs to read and write NeXus files. </para>
+        <section>
+            <title>What is NeXus?</title>
+            <para>The NeXus data format has four components: <variablelist>
+                    <varlistentry>
+                        <term>A set of subroutines</term>
+                        <listitem>
+                            <para>to make it easy to read and write NeXus files.</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>A set of design principles</term>
+                        <listitem>
+                            <para>to help people understand what is in them.</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>A set of instrument definitions</term>
+                        <listitem>
+                            <para>to allow the development of more portable analysis
+                            software.</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>A set of low-level file formats</term>
+                        <listitem>
+                            <para>to actually store NeXus files on physical media.</para>
+                        </listitem>
+                    </varlistentry>
+                </variablelist>
+            </para>
+            <section>
+                <title>A Set of Subroutines</title>
+                <para>In the past, a data format was defined by a document describing the precise
+                    location of every item in the data file, either as row and column numbers in an
+                    ASCII file, or as record and byte numbers in a binary file. In modern data
+                    formats, such as NeXus, the user does not need to know where the data are
+                    stored, just what they are called. It is the job of the subroutine library to
+                    retrieve the data.</para>
+                <para>For example, in NeXus, a program to read in the wavelength of an experiment
+                    would contain lines similar to the following: <example>
+                        <title>Simple example of reading data</title>
+                        <programlisting>
+NXopendata (fileID, "wavelength");
+NXgetdata (fileID, lambda);
+NXclosedata (fileID);
+</programlisting>
+                    </example> In this example, the program requests the value of the data that has
+                    the label <code>wavelength</code>, storing the result in the variable lambda.
+                        <code>fileID</code> is a file identifier that is provided by NeXus when the
+                    file is opened. </para>
+                <para>We shall provide a more complete example when we have discussed the contents
+                    of the NeXus files.</para>
+            </section>
+            <section>
+                <title>A Set of Design Principles</title>
+                <para>NeXus data files contain two types of entity: data items and data groups. <variablelist>
+                        <varlistentry>
+                            <term>Data Items</term>
+                            <listitem>
+                                <para>These can be scalar values or multidimensional arrays of a
+                                    variety of sizes (1-byte, 2-byte, 4-byte, 8-byte) and types
+                                    (characters, integers, floats). Extra information required to
+                                    describe a particular data item, such as the data units, can be
+                                    stored as a data attribute. </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term>Data Groups</term>
+                            <listitem>
+                                <para>These are like folders that can contain a number of data items
+                                    and/or other groups.</para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist>
+                </para>
+                <para>In fact, a NeXus file can be viewed as a computer file system. Just as files
+                    are stored in folders (or subdirectories) to make them easy to locate, so NeXus
+                    data items are stored in groups. The group hierarchy is designed to make it easy
+                    to navigate a NeXus file.</para>
+                <section>
+                    <title>Example of a NeXus File</title>
+                    <para>The following diagram shows an example of a NeXus file represented as a
+                        tree structure. <figure>
+                            <title>Example of a NeXus files</title>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="img/Hierarchy.gif"/>
+                                </imageobject>
+                            </mediaobject>
+                        </figure> Note that each data item is identified by a name, e.g., counts,
+                        but each group is identified both by a name and, in parentheses, a class
+                        identifier, e.g., monitor (NXmonitor). The class names, which all begin with
+                        NX, define the sort of data items that the group should contain, in this
+                        case, counts from a beamline monitor. The hierarchical design, with data
+                        items nested in groups, makes it easy to identify information if you are
+                        browsing through a file. </para>
+                </section>
+                <section>
+                    <title>Important Classes</title>
+                    <para>Here are some of the important classes found in nearly all NeXus files. A
+                        complete list can be found in the [[Design|NeXus Design page]]TKlink. <variablelist>
+                            <varlistentry>
+                                <term>NXentry</term>
+                                <listitem>
+                                    <para>The top level of any NeXus file contains one or more
+                                        groups with the class NXentry. These contain all the data
+                                        that is required to describe an experimental run or scan.
+                                        Each NXentry typically contains a number of groups
+                                        describing sample information (class NXsample), instrument
+                                        details (class NXinstrument), and monitor counts (class
+                                        NXmonitor). </para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                                <term>NXdata</term>
+                                <listitem>
+                                    <para>Each NXentry group contains one or more groups with class
+                                        NXdata. These groups contain the experimental results in a
+                                        self-contained way, i.e., it should be possible to generate
+                                        a sensible plot of the data from the information contained
+                                        in each NXdata group. That means it should contain the axis
+                                        labels and titles as well as the data.</para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                                <term>NXsample</term>
+                                <listitem>
+                                    <para>A NXentry group will often contain a group with class
+                                        NXsample. This group contains information pertaining to the
+                                        sample, such as its chemical composition, mass, and
+                                        environment variables (temperature, pressure, magnetic
+                                        field, etc.).</para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                                <term>NXinstrument</term>
+                                <listitem>
+                                    <para>There might also be a group with class NXinstrument. This
+                                        is designed to encapsulate all the instrumental information
+                                        that might be relevant to a measurement, such as flight
+                                        paths, collimations, chopper frequencies, etc.</para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>
+                        <figure>
+                            <title>NXinstrument excerpt</title>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="img/NXinstrument.gif"/>
+                                </imageobject>
+                            </mediaobject>
+                        </figure> Since an instrument can comprise several beamline components each
+                        defined by several parameters, they are each specified by a separate group.
+                        This hides the complexity from generic file browsers, but makes the
+                        information available in an intuitively obvious way if it is required.
+                    </para>
+                </section>
+                <section>
+                    <title>Simple Example</title>
+                    <para>NeXus data files do not need to be complicated. In fact, the following
+                        diagram shows an extremely simple NeXus file that could be used to transfer
+                        data between programs. <figure>
+                            <title>Simple Example</title>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="img/Simple.gif"/>
+                                </imageobject>
+                            </mediaobject>
+                        </figure> This illustrates the fact that the structure of NeXus files is
+                        extremely flexible. It can accommodate very complex instrumental
+                        information, if required, but it can also be used to store very simple data
+                        sets. </para>
+                </section>
+            </section>
+            <section>
+                <title>A Set of Instrument Definitions</title>
+                <para>If the design principles are followed, it will be easy for anyone browsing a
+                    NeXus file to understand what it contains, without any prior information.
+                    However, if you are writing visualization or analysis software, you will need to
+                    know precisely what information is contained in advance. For that reason, NeXus
+                    provides a way of defining the format for particular instrument types, e.g.,
+                    time-of-flight small angle neutron scattering. This requires some agreement by
+                    the relevant communities, but would allow the development of much more portable
+                    software.</para>
+                <para>These instrument definitions are being formalized as XML files, using a
+                    specially devised syntax that specifies the names of data items, and whether
+                    they are optional or required. The following is an example of such a file for
+                    the simple NeXus file shown above. <example>
+                        <title>A very simple NeXus file</title>
+                        <programlisting><![CDATA[
+<?xml version="1.0" ?> 
+<!--
+URL: http://www.neutron.anl.gov/nexus/xml/simple.xml
+Editor: Ray Osborn <ROsborn@anl.gov>
+$Id$
+
+A very simple NeXus file
+
+-->
+<NXentry name="{Name of entry}">
+   <NXdata name="{Name of data}">
+     <time_of_flight units="microseconds" type="NX_FLOAT32[i]">{Time-of-flight}</time_of_flight>
+     <data type="NX_INT32[i]" axes="time_of_flight"> {Counts} </data>
+   </NXdata>
+</NXentry>
+]]></programlisting>
+                    </example> If you want to define the format of a particular type of NeXus file
+                    for your own use, e.g. as the standard output from a program, you are encouraged
+                    to "publish" the format using this XML format. </para>
+            </section>
+            <section>
+                <title>A Set of Low-Level File Formats</title>
+                <para>To actually store NeXus files on physical media, different low-level file
+                    formats are available, namely HDF4, HDF5, and XML. The NeXus library may be
+                    configured to support all of them, or any nonempty subset. Applications that
+                    create NeXus files need to decide (or let the user decide) in which low-level
+                    format data shall be stored. Generic data analysis applications should be able
+                    to read any low-level format.</para>
+            </section>
+        </section>
+        <section>
+            <title>How do I write a NeXus file?</title>
+            <para>The NeXus Application Program Interface (API) provides a set of subroutines that
+                make it easy to read and write NeXus files. These subroutines are available in C,
+                Fortran 77, Fortran 90, Java, and IDL. Access from other languages, such as Python,
+                is anticipated in the near future. It is also possible to read NeXus files in a
+                number of data analysis tools, such as LAMP, ISAW, and Open GENIE.</para>
+
+            <para>The API uses a very simple "state" model to navigate through a NeXus file. When
+                you open a file, the API provides a file "handle", which then stores the current
+                location, i.e. which group and/or data item is currently open. Read and write
+                operations then act on the currently open entity. In the following, we walk through
+                some parts of a typical NeXus program written in C. See the API section for a more
+                complete version.</para>
+
+            <para> First, it is necessary to open the file, specifying whether we want read or write
+                access. 
+                <example>
+                    <title>Open a file</title>
+                    <programlisting>#include "napi.h"
+
+ int main()
+ {
+   NXhandle fileID;
+   NXopen ('NXfile.nxs', NXACC_CREATE, &amp;fileID);</programlisting>
+                </example>
+                The file is opened with "create" access (implying write access), and the
+                API returns a file identifier of type NXhandle. Next, we create an NXentry group to
+                contain the scan using NXmakegroup and then open it for access using NXopengroup.
+                <example>
+                    <title>Create an entry</title>
+                    <programlisting>
+NXmakegroup (fileID, "Entry", "NXentry");
+NXopengroup (fileID, "Entry", "NXentry");
+    </programlisting>
+                </example>
+                The plottable data is contained within an NXdata group, which must also
+                be created and opened.
+                <example>
+                    <title>Create data group</title>
+                    <programlisting>
+NXmakegroup (fileID, "Data", "NXdata");
+NXopengroup (fileID, "Data", "NXdata");</programlisting>
+                </example>
+                To create a data item, call NXmakedata, specifying the data name, type
+                (NX_FLOAT32), rank (in this case, 1), and length of the array (n_t). Then, it can be
+                opened for writing.
+                <example>
+                    <title>Create data array</title>
+                    <programlisting> NXmakedata (fileID, "time_of_flight", NX_FLOAT32, 1, &amp;n_t);
+  NXopendata (fileID, "time_of_flight")</programlisting>
+                </example>
+                Then write the data using NXputdata.
+                <example>
+                    <title>Write the data</title>
+                    <programlisting>  NXputdata (fileID, t);</programlisting>
+                </example>
+                With data item is still open, we can also add some data attributes, such
+                as the data units, which are specified as a character string (type NX_CHAR) that is
+                12 bytes long.
+                <example>
+                    <title>Add an attribute</title>
+                    <programlisting>NXputattr (fileID, "units", "microseconds", 12, NX_CHAR);</programlisting>
+                </example>
+                Then we close the data item before opening another. In fact, the API will
+                do this automatically if you attempt to open another data item, but it is better
+                style to close it yourself.
+                <example>
+                    <title>Close the data array</title>
+                    <programlisting>NXclosedata (fileID);</programlisting>
+                </example>
+                The remaining data items in this group are added in a similar fashion.
+                Note that the indentation whenever a new data item or group are opened is just
+                intended to make the structure of the NeXus file more transparent.
+                <example>
+                    <title>The rest of the data group</title>
+                    <programlisting>    NXmakedata (fileID, "polar_angle", NX_FLOAT32, 1, &amp;n_p);
+       NXopendata (fileID, "polar_angle");
+         NXputdata (fileID, polar_angle);
+         NXputattr (fileID, "units", "degrees", 7, NX_CHAR);
+       NXclosedata (fileID);
+       dims[0] = n_t;
+       dims[1] = n_p;
+       NXmakedata (fileID, "counts", NX_INT32, 2, dims);
+       NXopendata (fileID, "counts");
+         NXputdata (fileID, counts);
+       NXclosedata (fileID);</programlisting>
+                </example>
+                Finally, close the groups (NXdata and NXentry) before closing the file
+                itself.
+                <example>
+                    <title>Cleanup</title>
+                    <programlisting>   NXclosegroup (fileID);
+   NXclosegroup (fileID);
+   NXclose (&amp;fileID);
+   return;
+}</programlisting>
+                </example>
+            </para>
+        </section>
+        <section>
+            <title>How do I read a NeXus file?</title>
+            <para>Reading a NeXus file is almost identical to writing one. Obviously, it is not necessary to call NXmakedata since the item already exists, but it is necessary to call one of the query routines to find out the rank and length of the data before allocating an array to store it.</para>
+            <para>Here is part of a program to read the time-of-flight array from the file created
+                by the example above. <example>
+                    <title>File read example</title>
+                    <programlisting> NXopen ('NXfile.nxs', NXACC_READ, &amp;fileID);
+   NXopengroup (fileID, "Entry", "NXentry");
+     NXopengroup (fileID, "Data", "NXdata");
+       NXopendata (fileID, "time_of_flight");
+         NXgetinfo (fileID, &amp;rank, dims, &amp;datatype);
+         NXmalloc ((void **) &amp;tof, rank, dims, datatype);
+         NXgetdata (fileID, tof);
+       NXclosedata (fileID);
+     NXclosegroup (fileID);
+   NXclosegroup (fileID);
+ NXclose (fileID);</programlisting>
+                </example>
+            </para>
+
+            <para>NeXus files can also be viewed by a command-line browser, NXbrowse, which is
+                included with the NeXus API. The following is an example session of using NXbrowse
+                to view a data file from the LRMECS spectrometer at IPNS. The following commands are
+                used (see the NXbrowse web page ):
+                <table>
+                    <title>NXbrowse Command Description</title>
+                    <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <thead>
+                            <row>
+                                <entry>Command</entry>
+                                <entry>Description</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>dir</entry>
+                                <entry>List the contents of the current group</entry>
+                            </row>
+                            <row>
+                                <entry>open Histogram1</entry>
+                                <entry>Open the NeXus group "Histogram1"</entry>
+                            </row>
+                            <row>
+                                <entry>read title</entry>
+                                <entry>Print the contents of the NeXus data labelled "title"</entry>
+                            </row>
+                            <row>
+                                <entry>close</entry>
+                                <entry>Close the current group</entry>
+                            </row>
+                            <row>
+                                <entry>quit</entry>
+                                <entry>Quit the browser</entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+
+                <example>
+                    <title>Using NXbrowse</title>
+                    <programlisting>
+%> nxbrowse lrcs3701.nxs
+
+NXBrowse 3.0.0. Copyright (C) 2000 R. Osborn, M. Koennecke, P. Klosowski
+    NeXus_version = 1.3.3
+    file_name = lrcs3701.nxs
+    file_time = 2001-02-11 00:02:35-0600
+    user = EAG/RO
+NX> dir
+  NX Group : Histogram1 (NXentry)
+  NX Group : Histogram2 (NXentry)
+NX> open Histogram1
+NX/Histogram1> dir
+  NX Data  : title[44] (NX_CHAR)
+  NX Data  : analysis[7] (NX_CHAR)
+  NX Data  : start_time[24] (NX_CHAR)
+  NX Data  : end_time[24] (NX_CHAR)
+  NX Data  : run_number (NX_INT32)
+  NX Group : sample (NXsample)
+  NX Group : LRMECS (NXinstrument)
+  NX Group : monitor1 (NXmonitor)
+  NX Group : monitor2 (NXmonitor)
+  NX Group : data (NXdata)
+NX/Histogram1> read title
+  title[44] (NX_CHAR) = MgB2 PDOS 43.37g 8K 120meV E0@240Hz T0@120Hz
+NX/Histogram1> open data
+NX/Histogram1/data> dir
+  NX Data  : title[44] (NX_CHAR)
+  NX Data  : data[148,750] (NX_INT32)
+  NX Data  : time_of_flight[751] (NX_FLOAT32)
+  NX Data  : polar_angle[148] (NX_FLOAT32)
+NX/Histogram1/data> read time_of_flight
+  time_of_flight[751] (NX_FLOAT32) = [ 1900.000000 1902.000000 1904.000000 ...]
+    units = microseconds
+    long_name = Time-of-Flight [microseconds]
+NX/Histogram1/data> read data
+  data[148,750] (NX_INT32) = [ 1 1 0 ...]
+    units = counts
+    signal = 1 
+    long_name = Neutron Counts
+    axes = polar_angle:time_of_flight
+NX/Histogram1/data> close
+NX/Histogram1> close
+NX> quit</programlisting>
+                </example>
+            </para>
+
+            <para>The source code provides an example of how to write a NeXus reader. The test
+                programs included in the NeXus API may also be useful to study. </para>
+        </section>
+        <section>
+            <title>Where to go from here?</title>
+            <para>The other sections of this web site give much more detailed descriptions of the
+                NeXus data format. <variablelist>
+                    <varlistentry>
+                        <term>[[Design|NeXus Design]]TKlink</term>
+                        <listitem>
+                            <para>This describes NeXus' hierarchical design, and gives more
+                                information on how to construct valid groups.</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>[[Application_Program_Interface|NeXus API]]TKlink</term>
+                        <listitem>
+                            <para>This describes the NeXus programming interface, with lists of all
+                                the subroutines and supported languages</para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>[[MailingLists|NeXus Mailing Lists]]TKlink</term>
+                        <listitem>
+                            <para>NeXus mailing lists</para>
+                        </listitem>
+                    </varlistentry>
+                </variablelist>
+            </para>
+        </section>
+    </section>
+    
+    <!-- NEXUS DESIGN SECTION -->
+    
+    <!-- NEXUS CLASSES 
+    The section of the classes that describes the philosophy of NXdata and header needs to be copied-->
+    
+    <!-- NEXUS INSTRUMENTS
+    The header needs to be copied-->
+ 
+    <!-- FAQ -->
+</chapter>
