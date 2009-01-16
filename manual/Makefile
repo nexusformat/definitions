@@ -38,31 +38,41 @@
 #	make clean	removes files built in this directory
 #	make rebuild	does a make clean then make all
 
-BASE_CLASSES  = NXaperture NXattenuator NXbeam NXbeam_stop NXbending_magnet 
-BASE_CLASSES += NXcharacterization NXcollimator NXcrystal NXdata NXdetector NXdetector_group
-BASE_CLASSES += NXdisk_chopper NXentry NXenvironment NXevent_data NXfermi_chopper 
-BASE_CLASSES += NXfilter NXflipper NXgeometry NXguide NXinsertion_device NXinstrument 
-BASE_CLASSES += NXlog NXmirror NXmoderator NXmonitor NXmonochromator NXnote 
-BASE_CLASSES += NXorientation NXpolarizer NXpositioner NXprocess NXroot NXsample 
-BASE_CLASSES += NXsensor NXshape NXsource NXtranslation NXuser NXvelocity_selector 
+NXDL_SUFFIX = nxdl.xml
 
-TARGETS =  $(BASE_CLASSES:%= %.xml)
+# relative locations for the NXDL instance files
+BASE_CLASS_PATH          = ../base_classes
+APPLICATIONS_CLASS_PATH  = ../applications
+CONTRIBUTED_CLASS_PATH   = ../contributed_definitions
 
-BASE_CLASS_PATH = ../base_classes
+# make lists of all the NXDL instances 
+# (useful to make separate lists for category)
+NXDL_BASE_CLASSES = $(BASE_CLASS_PATH)/*.$(NXDL_SUFFIX)
+NXDL_APPLICATIONS = $(APPLICATIONS_CLASS_PATH)/*.$(NXDL_SUFFIX)
+NXDL_CONTRIBUTED  = $(CONTRIBUTED_CLASS_PATH)/*.$(NXDL_SUFFIX)
+# be careful, empty directories wil return the $(DIR)/*.$(NXDL_SUFFIX) search pattern
+ALL_NXDL = $(wildcard $(NXDL_BASE_CLASSES) $(NXDL_APPLICATIONS) $(NXDL_CONTRIBUTED))
+
+# list of all classes with path but without the traling .$(NXDL_SUFFIX) suffix
+BASE_CLASS_NAMES = $(patsubst $(BASE_CLASS_PATH)/%.$(NXDL_SUFFIX), %, $(ALL_NXDL) )
+XML_BASE_CLASS_TARGETS =  $(BASE_CLASS_NAMES:%= %.xml)
+
+# XSLT definitions
 XSLT_PATH = ../xslt
-
 XSLT = $(XSLT_PATH)/nxdl2docbook.xsl
 
 # === Rules ===
 
-docbook : $(TARGETS)
+docbook : $(XML_BASE_CLASS_TARGETS)
 
 all: docbook
 
+# need to revise this rule once there NXDL instances
+# in applications and contributed_definitions
 %.xml: $(BASE_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT)
 	xsltproc -o $@ $(XSLT) $<
 
 clean ::
-	/bin/rm -f $(TARGETS)
+	/bin/rm -f $(XML_TARGETS)
 
 rebuild :: clean all
