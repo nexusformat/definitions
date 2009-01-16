@@ -76,7 +76,7 @@ all: docbook BaseClassSections.xml
 	xsltproc -o $@ $(XSLT) $<
 
 test ::
-	@echo $(XML_BASE_CLASS_TARGETS) > BaseClassSections
+	@echo $(ALL_CLASS_TARGETS)
 
 
 BaseClassSections.xml :: $(ALL_NXDL) Makefile
@@ -84,7 +84,7 @@ BaseClassSections.xml :: $(ALL_NXDL) Makefile
 	@echo '<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>' >> $@
 	@echo '<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xi="http://www.w3.org/2001/XInclude">' >> $@
 	@echo '<title>Base Classes</title>' >> $@
-	@echo $(patsubst %,  "<xi:include href=\""%"\"/>", $(wildcard $(XML_BASE_CLASS_TARGETS)) ) >> $@
+	@echo $(patsubst %,  "<xi:include href=\""%"\"/>", $(wildcard $(ALL_CLASS_TARGETS)) ) >> $@
 	@echo '</section>' >> $@
 	@echo "(Re)Created $@"
 
