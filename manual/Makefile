@@ -34,7 +34,7 @@
 # Usage:
 #	make		default (1st) rule: same as "make docbook"
 #	make docbook	builds DocBook sections from all NeXus base class NXDL files
-#	make all	builds docbook
+#	make all	builds docbook and BaseClassSections.xml
 #	make clean	removes files built in this directory
 #	make rebuild	does a make clean then make all
 
@@ -56,7 +56,7 @@ NXDL_CONTRIBUTED  = $(CONTRIBUTED_CLASS_PATH)/*.$(NXDL_SUFFIX)
 ALL_NXDL = $(wildcard $(NXDL_BASE_CLASSES) $(NXDL_APPLICATIONS) $(NXDL_CONTRIBUTED))
 
 # list of all classes without path and without the trailing .$(NXDL_SUFFIX) suffix
-BASE_CLASS_NAMES = $(patsubst $(BASE_CLASS_PATH)/%.$(NXDL_SUFFIX), %, $(NXDL_BASE_CLASSES) )
+BASE_CLASS_NAMES = $(patsubst $(BASE_CLASS_PATH)/%.$(NXDL_SUFFIX), %, $(ALL_NXDL) )
 XML_BASE_CLASS_TARGETS =  $(BASE_CLASS_NAMES:%= %.xml)
 
 # XSLT definitions
@@ -67,14 +67,27 @@ XSLT = $(XSLT_PATH)/nxdl2docbook.xsl
 
 docbook : $(XML_BASE_CLASS_TARGETS)
 
-all: docbook
+all: docbook BaseClassSections.xml
 
 # need to revise this rule once there NXDL instances
 # in applications and contributed_definitions
 %.xml: $(BASE_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT)
 	xsltproc -o $@ $(XSLT) $<
 
+test ::
+	@echo $(XML_BASE_CLASS_TARGETS) > BaseClassSections
+
+
+BaseClassSections.xml :: $(ALL_NXDL) Makefile
+	@echo '<?xml version="1.0" encoding="UTF-8"?>' > $@
+	@echo '<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>' >> $@
+	@echo '<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xi="http://www.w3.org/2001/XInclude">' >> $@
+	@echo '<title>Base Classes</title>' >> $@
+	@echo $(patsubst %,  "<xi:include href=\""%"\"/>", $(wildcard $(XML_BASE_CLASS_TARGETS)) ) >> $@
+	@echo '</section>' >> $@
+	@echo "(Re)Created $@"
+
 clean ::
-	/bin/rm -f $(XML_TARGETS)
+	/bin/rm -f $(XML_BASE_CLASS_TARGETS) BaseClassSections.xml
 
 rebuild :: clean all
