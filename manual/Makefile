@@ -50,11 +50,13 @@ CONTRIBUTED_CLASS_PATH   = ../contributed_definitions
 NXDL_BASE_CLASSES = $(BASE_CLASS_PATH)/*.$(NXDL_SUFFIX)
 NXDL_APPLICATIONS = $(APPLICATIONS_CLASS_PATH)/*.$(NXDL_SUFFIX)
 NXDL_CONTRIBUTED  = $(CONTRIBUTED_CLASS_PATH)/*.$(NXDL_SUFFIX)
-# be careful, empty directories wil return the $(DIR)/*.$(NXDL_SUFFIX) search pattern
+
+# put them all together in one big list
+# be careful, empty directories will return the $(DIR)/*.$(NXDL_SUFFIX) search pattern
 ALL_NXDL = $(wildcard $(NXDL_BASE_CLASSES) $(NXDL_APPLICATIONS) $(NXDL_CONTRIBUTED))
 
-# list of all classes with path but without the traling .$(NXDL_SUFFIX) suffix
-BASE_CLASS_NAMES = $(patsubst $(BASE_CLASS_PATH)/%.$(NXDL_SUFFIX), %, $(ALL_NXDL) )
+# list of all classes without path and without the trailing .$(NXDL_SUFFIX) suffix
+BASE_CLASS_NAMES = $(patsubst $(BASE_CLASS_PATH)/%.$(NXDL_SUFFIX), %, $(NXDL_BASE_CLASSES) )
 XML_BASE_CLASS_TARGETS =  $(BASE_CLASS_NAMES:%= %.xml)
 
 # XSLT definitions
