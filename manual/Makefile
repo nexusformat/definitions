@@ -45,19 +45,21 @@ BASE_CLASS_PATH          = ../base_classes
 APPLICATIONS_CLASS_PATH  = ../applications
 CONTRIBUTED_CLASS_PATH   = ../contributed_definitions
 
+VPATH = $(BASE_CLASS_PATH) $(APPLICATIONS_CLASS_PATH) $(CONTRIBUTED_CLASS_PATH)
+
 # make lists of all the NXDL instances 
 # (useful to make separate lists for category)
-NXDL_BASE_CLASSES = $(BASE_CLASS_PATH)/*.$(NXDL_SUFFIX)
-NXDL_APPLICATIONS = $(APPLICATIONS_CLASS_PATH)/*.$(NXDL_SUFFIX)
-NXDL_CONTRIBUTED  = $(CONTRIBUTED_CLASS_PATH)/*.$(NXDL_SUFFIX)
+NXDL_BASE_CLASSES = $(wildcard $(BASE_CLASS_PATH)/*.$(NXDL_SUFFIX) )
+NXDL_APPLICATIONS = $(wildcard $(APPLICATIONS_CLASS_PATH)/*.$(NXDL_SUFFIX) )
+NXDL_CONTRIBUTED  = $(wildcard $(CONTRIBUTED_CLASS_PATH)/*.$(NXDL_SUFFIX) )
 
 # put them all together in one big list
 # be careful, empty directories will return the $(DIR)/*.$(NXDL_SUFFIX) search pattern
-ALL_NXDL = $(wildcard $(NXDL_BASE_CLASSES) $(NXDL_APPLICATIONS) $(NXDL_CONTRIBUTED))
+ALL_NXDL = $(NXDL_BASE_CLASSES) # $(NXDL_APPLICATIONS) $(NXDL_CONTRIBUTED)
 
 # list of all classes without path and without the trailing .$(NXDL_SUFFIX) suffix
-BASE_CLASS_NAMES = $(patsubst $(BASE_CLASS_PATH)/%.$(NXDL_SUFFIX), %, $(ALL_NXDL) )
-XML_BASE_CLASS_TARGETS =  $(BASE_CLASS_NAMES:%= %.xml)
+ALL_CLASS_NAMES = $(notdir $(ALL_NXDL) )
+ALL_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xml, $(ALL_CLASS_NAMES) )
 
 # XSLT definitions
 XSLT_PATH = ../xslt
@@ -65,13 +67,12 @@ XSLT = $(XSLT_PATH)/nxdl2docbook.xsl
 
 # === Rules ===
 
-docbook : $(XML_BASE_CLASS_TARGETS)
+docbook : $(ALL_CLASS_TARGETS)
 
 all: docbook BaseClassSections.xml
 
-# need to revise this rule once there NXDL instances
-# in applications and contributed_definitions
-%.xml: $(BASE_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT)
+# This uses VPATH to locate the source directory for the target
+%.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT)
 	xsltproc -o $@ $(XSLT) $<
 
 test ::
@@ -88,6 +89,6 @@ BaseClassSections.xml :: $(ALL_NXDL) Makefile
 	@echo "(Re)Created $@"
 
 clean ::
-	/bin/rm -f $(XML_BASE_CLASS_TARGETS) BaseClassSections.xml
+	/bin/rm -f $(ALL_CLASS_TARGETS) BaseClassSections.xml
 
 rebuild :: clean all
