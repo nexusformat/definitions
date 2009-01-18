@@ -223,7 +223,12 @@ Usage:
                             <xsl:value-of select="@type"/>
                         </xsl:element>
                     </xsl:when>
-                    <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+                    <xsl:when test="count(nx:enumeration)!=0">
+                        <xsl:apply-templates select="nx:enumeration"/>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:value-of select="@type"/>
+                    </xsl:otherwise>
                 </xsl:choose>
             </xsl:element>
             <xsl:element name="entry"><xsl:apply-templates select="nx:doc"/></xsl:element>
@@ -246,6 +251,32 @@ Usage:
             (<xsl:value-of select="@type"/>):
             <xsl:apply-templates select="nx:doc"/>
         </xsl:element>
+    </xsl:template>
+    
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    
+    <xsl:template match="nx:enumeration">
+        <!-- report each item in a list such as [ a | "b b" | c | d] -->
+        [ 
+        <!-- list of items -->
+        <xsl:apply-templates select="nx:item"/>
+        ]
+    </xsl:template>
+    
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    
+    <xsl:template match="nx:item">
+        <!-- How do we report documentation on any item? -->
+        <xsl:choose>
+            <xsl:when test="contains(@value, ' ')">
+                <!-- surround with quotes when there is white-space -->
+                "<xsl:value-of select="@value"/>"
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:value-of select="@value"/>
+            </xsl:otherwise>
+        </xsl:choose>
+        <xsl:if test="position()!=last()"> | </xsl:if>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
