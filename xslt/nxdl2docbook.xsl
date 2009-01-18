@@ -227,7 +227,10 @@ Usage:
                         <xsl:apply-templates select="nx:enumeration"/>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:value-of select="@type"/>
+                        <xsl:choose>
+                            <xsl:when test="count(@type)=0">NX_CHAR</xsl:when>
+                            <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+                        </xsl:choose>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:element>
