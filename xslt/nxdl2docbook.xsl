@@ -168,9 +168,6 @@ Usage:
                 <xsl:element name="varlistentry"><!-- doc element of this class -->
                     <xsl:element name="term">documentation</xsl:element>
                     <xsl:element name="listitem">
-                        <!--<xsl:for-each select="nx:doc">
-                            <xsl:element name="literallayout"><xsl:copy-of select="node()"/></xsl:element>
-                            </xsl:for-each>-->
                         <xsl:element name="para">
                             <xsl:comment>empty list</xsl:comment>
                             <xsl:apply-templates select="nx:doc"/>
@@ -237,6 +234,11 @@ Usage:
             <xsl:element name="entry"><xsl:apply-templates select="nx:doc"/></xsl:element>
             <xsl:element name="entry"><xsl:value-of select="@units"/></xsl:element>
             <xsl:element name="entry"><xsl:apply-templates select="nx:attribute"/></xsl:element>
+            <xsl:for-each select="nx:group|nx:field">
+                <xsl:comment
+                    >subitem: <xsl:value-of select="name()"/>, <xsl:value-of select="@name"/>, <xsl:value-of select="@type"/>
+                </xsl:comment>
+            </xsl:for-each>
         </xsl:element><!-- row -->
     </xsl:template>
     
@@ -269,7 +271,12 @@ Usage:
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xsl:template match="nx:item">
-        <!-- How do we report documentation on any item? -->
+        <!-- 
+            Q: How do we report documentation on any item?  
+            A: Ignore it for this table.  No space to report it.
+            Q: Then why have it?  
+            A: So schema-aware editors can describe the item.
+        -->
         <xsl:choose>
             <xsl:when test="contains(@value, ' ')">
                 <!-- surround with quotes when there is white-space -->
