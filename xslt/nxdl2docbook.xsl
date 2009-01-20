@@ -116,7 +116,7 @@ Usage:
                             <xsl:element name="link">
                                 <xsl:attribute  name="xlink:href"
                                         >http://svn.nexusformat.org/definitions/trunk/base_classes/<xsl:value-of
-                                        select="@name"/>.nxdl.xml </xsl:attribute>
+                                        select="@name"/>.nxdl.xml</xsl:attribute>
                                 <xsl:value-of select="@name"/>
                             </xsl:element>
                         </xsl:element>
