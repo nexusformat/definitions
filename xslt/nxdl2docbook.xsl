@@ -227,7 +227,20 @@ Usage:
             <!-- +++++++++++++++++++++
                 +++ column: Occurences/Attributes
                 +++++++++++++++++++++ -->
-            <xsl:element name="entry"/>
+            <xsl:element name="entry">
+                <!--<xsl:comment>
+                    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                    To properly populate the column for "Occurences," we need
+                    to also parse the nxdl.xsd file.  Is this easy?  Otherwise,
+                    can only list apparent restrictions at this point.
+                    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                </xsl:comment>-->
+                <xsl:if test="count(@minOccurs)!=0"><xsl:value-of select="@minOccurs"/>:</xsl:if>
+                <xsl:if test="count(@maxOccurs)!=0">
+                    <xsl:if test="count(@minOccurs)=0">:</xsl:if>
+                    <xsl:value-of select="@maxOccurs"/>
+                </xsl:if>
+            </xsl:element>
             <!-- +++++++++++++++++++++
                 +++ column: Type
                 +++++++++++++++++++++ -->
@@ -290,6 +303,9 @@ Usage:
             <xsl:element name="entry">
                 <xsl:element name="emphasis">
                     <xsl:attribute name="role">italic</xsl:attribute>
+                    <!-- make it bold-italic if it is required
+                        But, at present (2009-01-20), attributes are always optional.
+                    -->
                     @<xsl:value-of select="@name"/>
                 </xsl:element>
             </xsl:element>
@@ -307,10 +323,8 @@ Usage:
     
     <xsl:template match="nx:enumeration">
         <!-- report each item in a list such as [ a | "b b" | c | d] -->
-        [ 
-        <!-- list of items -->
-        <xsl:apply-templates select="nx:item"/>
-        ]
+        <!--<xsl:element name="para">enumeration:</xsl:element>-->
+            <xsl:apply-templates select="nx:item"/>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -322,16 +336,26 @@ Usage:
             Q: Then why have it?  
             A: So schema-aware editors can describe the item.
         -->
-        <xsl:choose>
-            <xsl:when test="contains(@value, ' ')">
-                <!-- surround with quotes when there is white-space -->
-                "<xsl:value-of select="@value"/>"
-            </xsl:when>
-            <xsl:otherwise>
-                <xsl:value-of select="@value"/>
-            </xsl:otherwise>
-        </xsl:choose>
-        <xsl:if test="position()!=last()"> | </xsl:if>
+        <xsl:element name="para">
+            <!--<xsl:if test="position()=1">
+                [ 
+            </xsl:if>-->
+            <xsl:if test="position()!=1">
+                |
+            </xsl:if>
+            <xsl:choose>
+                <xsl:when test="contains(@value, ' ')">
+                    <!-- surround with quotes when there is white-space -->
+                    "<xsl:value-of select="@value"/>"
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:value-of select="@value"/>
+                </xsl:otherwise>
+            </xsl:choose>
+            <!--<xsl:if test="position()=last()">
+                ]
+            </xsl:if>-->
+        </xsl:element>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
