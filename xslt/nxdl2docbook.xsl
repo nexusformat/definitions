@@ -47,10 +47,11 @@ Usage:
     
     
     <xsl:template match="/">
+        <!-- Needs this on 2nd line of XML file: 
+            <?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
+        -->
         <xsl:processing-instruction name="oxygen">RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"</xsl:processing-instruction>
-
-        <xsl:comment/><!-- Puts the ID string on a new line. -->
-        <xsl:comment><xsl:text> $</xsl:text>Id: <xsl:text>$ </xsl:text></xsl:comment>
+        <xsl:comment/><!-- tricks XSLT to start a new line -->
 <xsl:comment>
 ##########################################################
 ######	 This XML file was auto-generated from      ######
@@ -81,9 +82,6 @@ Usage:
 # For further information, see http://www.nexusformat.org
 </xsl:comment>
         <xsl:apply-templates select="nx:definition"/>
-        <!-- Needs this on 2nd line of XML file: 
-            <?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
-        -->
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -176,6 +174,14 @@ Usage:
                 </xsl:element><!-- varlistentry -->
             </xsl:element><!-- variablelist -->
             <!-- ...................................................... -->
+            <!--
+                table formatting suggestion: examine http://www.nexusformat.org/TOFRaw#NXentry
+                for hierarchical groups, link to subgroup in parent table row
+                    and display subgroup in table below.
+                For attributes, remove from last column and place on new row in last n-1 columns.
+                Add column for # of occurences:
+                Occurences Name Type Units Description
+            -->
             <xsl:element name="table">
                 <!-- describe what is defined -->
                 <xsl:element name="title">Tabular representation of <xsl:value-of select="@name"
@@ -185,10 +191,10 @@ Usage:
                     <xsl:element name="thead">
                         <xsl:element name="row">
                             <xsl:element name="entry">Name</xsl:element>
+                            <xsl:element name="entry">Occurences/Attributes</xsl:element>
                             <xsl:element name="entry">Type</xsl:element>
-                            <xsl:element name="entry">Description</xsl:element>
                             <xsl:element name="entry">Units</xsl:element>
-                            <xsl:element name="entry">Attributes</xsl:element>
+                            <xsl:element name="entry">Description</xsl:element>
                         </xsl:element>
                         <!-- row -->
                     </xsl:element>
@@ -209,7 +215,22 @@ Usage:
     
     <xsl:template match="nx:field|nx:group" mode="tableRow">
         <xsl:element name="row">
-            <xsl:element name="entry"><xsl:value-of select="@name"/></xsl:element>
+            <!-- +++++++++++++++++++++
+                +++ column: Name
+                +++++++++++++++++++++ -->
+            <xsl:element name="entry">
+                <xsl:if test="count(nx:attribute)!=0">
+                    <xsl:attribute name="morerows"><xsl:value-of select="count(nx:attribute)"/></xsl:attribute>
+                </xsl:if>
+                <xsl:value-of select="@name"/>
+            </xsl:element>
+            <!-- +++++++++++++++++++++
+                +++ column: Occurences/Attributes
+                +++++++++++++++++++++ -->
+            <xsl:element name="entry"/>
+            <!-- +++++++++++++++++++++
+                +++ column: Type
+                +++++++++++++++++++++ -->
             <xsl:element name="entry">
                 <xsl:choose>
                     <xsl:when test="name()='group'">
@@ -231,15 +252,29 @@ Usage:
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:element>
-            <xsl:element name="entry"><xsl:apply-templates select="nx:doc"/></xsl:element>
+            <!-- +++++++++++++++++++++
+                +++ column: Units
+                +++++++++++++++++++++ -->
             <xsl:element name="entry"><xsl:value-of select="@units"/></xsl:element>
-            <xsl:element name="entry"><xsl:apply-templates select="nx:attribute"/></xsl:element>
+            <!-- +++++++++++++++++++++
+                +++ column: Description
+                +++++++++++++++++++++ -->
+            <xsl:element name="entry"><xsl:apply-templates select="nx:doc"/></xsl:element>
+            <!-- +++++++++++++++++++++
+                +++ situation: Hierarchy of group elements
+                +++++++++++++++++++++ -->
             <xsl:for-each select="nx:group|nx:field">
                 <xsl:comment
                     >subitem: <xsl:value-of select="name()"/>, <xsl:value-of select="@name"/>, <xsl:value-of select="@type"/>
                 </xsl:comment>
             </xsl:for-each>
         </xsl:element><!-- row -->
+        <!-- +++++++++++++++++++++
+            +++ situation: attribute declarations
+            +++++++++++++++++++++ -->
+        <xsl:if test="count(nx:attribute)!=0">
+            <xsl:apply-templates select="nx:attribute" mode="newRow"/>
+        </xsl:if>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -250,11 +285,21 @@ Usage:
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
-    <xsl:template match="nx:attribute">
-        <xsl:element name="para">
-            @<xsl:value-of select="@name"/> 
-            (<xsl:value-of select="@type"/>):
-            <xsl:apply-templates select="nx:doc"/>
+    <xsl:template match="nx:attribute" mode="newRow">
+        <xsl:element name="row">
+            <xsl:element name="entry">
+                <xsl:element name="emphasis">
+                    <xsl:attribute name="role">italic</xsl:attribute>
+                    @<xsl:value-of select="@name"/>
+                </xsl:element>
+            </xsl:element>
+            <xsl:element name="entry">
+                <xsl:choose>
+                    <xsl:when test="count(@type)=0">NX_CHAR</xsl:when>
+                    <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
+                </xsl:choose></xsl:element>
+            <xsl:element name="entry"/>
+            <xsl:element name="entry"><xsl:apply-templates select="nx:doc"/></xsl:element>
         </xsl:element>
     </xsl:template>
     
