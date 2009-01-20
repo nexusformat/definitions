@@ -32,7 +32,7 @@
 #	manage various resources in this directory
 
 # Usage:
-#	make		default (1st) rule: same as "make docbook"
+#	make		default (1st) rule: same as "make all"
 #	make docbook	builds DocBook sections from all NeXus base class NXDL files
 #	make all	builds docbook and BaseClassSections.xml
 #	make clean	removes files built in this directory
@@ -67,9 +67,9 @@ XSLT = $(XSLT_PATH)/nxdl2docbook.xsl
 
 # === Rules ===
 
-docbook : $(ALL_CLASS_TARGETS)
-
 all: docbook BaseClassSections.xml
+
+docbook : $(ALL_CLASS_TARGETS)
 
 # This uses VPATH to locate the source directory for the target
 %.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT)
@@ -84,6 +84,7 @@ BaseClassSections.xml :: $(ALL_NXDL) Makefile
 	@echo '<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>' >> $@
 	@echo '<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xi="http://www.w3.org/2001/XInclude">' >> $@
 	@echo '<title>Base Classes</title>' >> $@
+	@echo '<para>A description of each NeXus Base Class is given.</para>' >> $@
 	@echo $(patsubst %,  "<xi:include href=\""%"\"/>", $(wildcard $(ALL_CLASS_TARGETS)) ) >> $@
 	@echo '</section>' >> $@
 	@echo "(Re)Created $@"
