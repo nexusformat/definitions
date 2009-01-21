@@ -79,13 +79,13 @@ test ::
 	@echo $(ALL_CLASS_TARGETS)
 
 
-BaseClassSections.xml : $(ALL_NXDL) Makefile
+BaseClassSections.xml : $(ALL_CLASS_TARGETS) Makefile
 	@echo '<?xml version="1.0" encoding="UTF-8"?>' > $@
 	@echo '<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>' >> $@
 	@echo '<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xi="http://www.w3.org/2001/XInclude">' >> $@
 	@echo '<title>Base Classes</title>' >> $@
 	@echo '<para>A description of each NeXus Base Class is given.</para>' >> $@
-	@echo $(patsubst %,  "<xi:include href=\""%"\"/>", $(wildcard $(ALL_CLASS_TARGETS)) ) >> $@
+	@echo $(patsubst %,  "<xi:include href=\""%"\"/>", $(ALL_CLASS_TARGETS) ) >> $@
 	@echo '</section>' >> $@
 	@echo "(Re)Created $@"
 
