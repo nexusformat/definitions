@@ -179,8 +179,8 @@ Usage:
                 for hierarchical groups, link to subgroup in parent table row
                     and display subgroup in table below.
                 For attributes, remove from last column and place on new row in last n-1 columns.
-                Add column for # of occurences:
-                Occurences Name Type Units Description
+                Add column for # of occurrences:
+                Occurrences Name Type Units Description
             -->
             <xsl:element name="table">
                 <!-- describe what is defined -->
@@ -188,10 +188,25 @@ Usage:
                     />:</xsl:element>
                 <xsl:element name="tgroup">
                     <xsl:attribute name="cols">5</xsl:attribute>
+		    <!-- all columns *should* have adjustable width
+		    So far, the PDF table columns all have fixed width.
+		    How to change this? 
+		    So far, the next set of instructions result in fixed column widths, but the widths are tuned somewhat.
+		    The numbers are "weightings": the sum of all will be divided into each to get proportional width.
+		    Asterisk (*) is necessary.
+		    -->
+		    <xsl:element name="colspec"><xsl:attribute name="colnum">1</xsl:attribute><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
+		    <xsl:element name="colspec"><xsl:attribute name="colnum">2</xsl:attribute><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
+		    <xsl:element name="colspec"><xsl:attribute name="colnum">3</xsl:attribute><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
+		    <xsl:element name="colspec"><xsl:attribute name="colnum">4</xsl:attribute><xsl:attribute name="colwidth">10*</xsl:attribute></xsl:element>
+		    <xsl:element name="colspec"><xsl:attribute name="colnum">5</xsl:attribute><xsl:attribute name="colwidth">35*</xsl:attribute></xsl:element>
                     <xsl:element name="thead">
                         <xsl:element name="row">
                             <xsl:element name="entry">Name</xsl:element>
-                            <xsl:element name="entry">Occurences/Attributes</xsl:element>
+                            <xsl:element name="entry">
+			        <para>Occurrences</para>
+				<para>/ Attributes</para>
+			    </xsl:element>
                             <xsl:element name="entry">Type</xsl:element>
                             <xsl:element name="entry">Units</xsl:element>
                             <xsl:element name="entry">Description</xsl:element>
@@ -225,12 +240,12 @@ Usage:
                 <xsl:value-of select="@name"/>
             </xsl:element>
             <!-- +++++++++++++++++++++
-                +++ column: Occurences/Attributes
+                +++ column: Occurrences/Attributes
                 +++++++++++++++++++++ -->
             <xsl:element name="entry">
                 <!--<xsl:comment>
                     XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-                    To properly populate the column for "Occurences," we need
+                    To properly populate the column for "Occurrences," we need
                     to also parse the nxdl.xsd file.  Is this easy?  Otherwise,
                     can only list apparent restrictions at this point.
                     XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
@@ -302,11 +317,8 @@ Usage:
         <xsl:element name="row">
             <xsl:element name="entry">
                 <xsl:element name="emphasis">
-                    <xsl:attribute name="role">italic</xsl:attribute>
-                    <!-- make it bold-italic if it is required
-                        But, at present (2009-01-20), attributes are always optional.
-                    -->
-                    @<xsl:value-of select="@name"/>
+                    <xsl:attribute name="role">italic</xsl:attribute
+                    >@<xsl:value-of select="@name"/>
                 </xsl:element>
             </xsl:element>
             <xsl:element name="entry">
@@ -365,8 +377,8 @@ Usage:
         <!-- http://www.nexusformat.org/NXclassname -->
         <xsl:element name="para">
             <xsl:element name="link">
-                <xsl:attribute name="xlink:href">
-                    http://www.nexusformat.org/<xsl:value-of select="@type"/>
+                <xsl:attribute name="xlink:href"
+                    >http://www.nexusformat.org/<xsl:value-of select="@type"/>
                 </xsl:attribute>
                 <xsl:value-of select="@type"/>
             </xsl:element>
