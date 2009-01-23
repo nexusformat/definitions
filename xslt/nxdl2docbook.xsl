@@ -50,7 +50,8 @@ Usage:
         <!-- Needs this on 2nd line of XML file: 
             <?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
         -->
-        <xsl:processing-instruction name="oxygen">RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"</xsl:processing-instruction>
+        <xsl:processing-instruction 
+            name="oxygen">RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"</xsl:processing-instruction>
         <xsl:comment/><!-- tricks XSLT to start a new line -->
 <xsl:comment>
 ##########################################################
@@ -88,6 +89,7 @@ Usage:
     
     <xsl:template match="nx:definition">
         <xsl:element name="section"><!-- root element -->
+            <xsl:attribute name="xml:id"><xsl:value-of select="@name"/>Section</xsl:attribute>
             <xsl:attribute name="xmlns">http://docbook.org/ns/docbook</xsl:attribute>
             <!-- 
                 These namespaces will be added to the document (by xsltproc) if they are used.
@@ -195,11 +197,12 @@ Usage:
 		    The numbers are "weightings": the sum of all will be divided into each to get proportional width.
 		    Asterisk (*) is necessary.
 		    -->
-		    <xsl:element name="colspec"><xsl:attribute name="colnum">1</xsl:attribute><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
-		    <xsl:element name="colspec"><xsl:attribute name="colnum">2</xsl:attribute><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
-		    <xsl:element name="colspec"><xsl:attribute name="colnum">3</xsl:attribute><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
-		    <xsl:element name="colspec"><xsl:attribute name="colnum">4</xsl:attribute><xsl:attribute name="colwidth">10*</xsl:attribute></xsl:element>
-		    <xsl:element name="colspec"><xsl:attribute name="colnum">5</xsl:attribute><xsl:attribute name="colwidth">35*</xsl:attribute></xsl:element>
+		   
+                    <xsl:element name="colspec"><xsl:attribute name="colnum">1</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
+                    <xsl:element name="colspec"><xsl:attribute name="colnum">2</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
+                    <xsl:element name="colspec"><xsl:attribute name="colnum">3</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
+                    <xsl:element name="colspec"><xsl:attribute name="colnum">4</xsl:attribute><xsl:attribute name="colwidth">1*</xsl:attribute></xsl:element>
+                    <xsl:element name="colspec"><xsl:attribute name="colnum">5</xsl:attribute><xsl:attribute name="colwidth">3*</xsl:attribute></xsl:element>
                     <xsl:element name="thead">
                         <xsl:element name="row">
                             <xsl:element name="entry">Name</xsl:element>
