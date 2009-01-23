@@ -113,12 +113,11 @@ Usage:
                     <xsl:element name="term">NXDL source</xsl:element>
                     <xsl:element name="listitem">
                         <xsl:element name="para">
-                            <xsl:element name="link">
-                                <xsl:attribute  name="xlink:href"
+                            <xsl:element name="link"
+                                ><xsl:attribute  name="xlink:href"
                                         >http://svn.nexusformat.org/definitions/trunk/base_classes/<xsl:value-of
-                                        select="@name"/>.nxdl.xml</xsl:attribute>
-                                <xsl:value-of select="@name"/>
-                            </xsl:element>
+                                        select="@name"/>.nxdl.xml</xsl:attribute
+                                ><xsl:value-of select="@name"/></xsl:element>
                         </xsl:element>
                     </xsl:element>
                 </xsl:element><!-- varlistentry -->
