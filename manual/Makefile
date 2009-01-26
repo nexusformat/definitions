@@ -45,7 +45,7 @@ BASE_CLASS_PATH          = ../base_classes
 APPLICATIONS_CLASS_PATH  = ../applications
 CONTRIBUTED_CLASS_PATH   = ../contributed_definitions
 
-VPATH = $(BASE_CLASS_PATH) $(APPLICATIONS_CLASS_PATH) $(CONTRIBUTED_CLASS_PATH)
+VPATH = $(BASE_CLASS_PATH) $(APPLICATIONS_CLASS_PATH) $(CONTRIBUTED_CLASS_PATH)5
 
 # make lists of all the NXDL instances 
 # (useful to make separate lists for category)
@@ -55,11 +55,18 @@ NXDL_CONTRIBUTED  = $(wildcard $(CONTRIBUTED_CLASS_PATH)/*.$(NXDL_SUFFIX) )
 
 # put them all together in one big list
 # be careful, empty directories will return the $(DIR)/*.$(NXDL_SUFFIX) search pattern
-ALL_NXDL = $(NXDL_BASE_CLASSES) # $(NXDL_APPLICATIONS) $(NXDL_CONTRIBUTED)
+ALL_NXDL = $(NXDL_BASE_CLASSES) $(NXDL_APPLICATIONS) $(NXDL_CONTRIBUTED)
 
 # list of all classes without path and without the trailing .$(NXDL_SUFFIX) suffix
 ALL_CLASS_NAMES = $(notdir $(ALL_NXDL) )
 ALL_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xml, $(ALL_CLASS_NAMES) )
+
+BASE_CLASS_NAMES          = $(notdir $(NXDL_BASE_CLASSES) )
+APPLICATION_CLASS_NAMES   = $(notdir $(NXDL_APPLICATIONS) )
+CONTRIBUTED_CLASS_NAMES   = $(notdir $(NXDL_CONTRIBUTED) )
+BASE_CLASS_TARGETS        = $(patsubst %.$(NXDL_SUFFIX), %.xml, $(BASE_CLASS_NAMES) )
+APPLICATION_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xml, $(APPLICATION_CLASS_NAMES) )
+CONTRIBUTED_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xml, $(CONTRIBUTED_CLASS_NAMES) )
 
 # XSLT definitions
 XSLT_PATH = ../xslt
@@ -67,7 +74,7 @@ XSLT = $(XSLT_PATH)/nxdl2docbook.xsl
 
 # === Rules ===
 
-all: docbook BaseClassSections.xml
+all: docbook BaseClassSections.xml ApplicationClassSections.xml ContributedClassSections.xml
 
 docbook : $(ALL_CLASS_TARGETS)
 
@@ -79,15 +86,36 @@ test ::
 	@echo $(ALL_CLASS_TARGETS)
 
 
-BaseClassSections.xml : $(ALL_CLASS_TARGETS) Makefile
+BaseClassSections.xml : $(BASE_CLASS_TARGETS) Makefile
 	@echo '<?xml version="1.0" encoding="UTF-8"?>' > $@
 	@echo '<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>' >> $@
 	@echo '<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xi="http://www.w3.org/2001/XInclude">' >> $@
-	@echo '<title>Base Classes</title>' >> $@
+	@echo '<title>NeXus Base Classes</title>' >> $@
 	@echo '<para>A description of each NeXus Base Class is given.</para>' >> $@
-	@echo $(patsubst %,  "<xi:include href=\""%"\"/>", $(ALL_CLASS_TARGETS) ) >> $@
+	@echo $(patsubst %,  "<xi:include href=\""%"\"/>", $(BASE_CLASS_TARGETS) ) >> $@
 	@echo '</section>' >> $@
 	@echo "(Re)Created $@"
+
+ApplicationClassSections.xml : $(APPLICATION_CLASS_TARGETS) Makefile
+	@echo '<?xml version="1.0" encoding="UTF-8"?>' > $@
+	@echo '<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>' >> $@
+	@echo '<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xi="http://www.w3.org/2001/XInclude">' >> $@
+	@echo '<title>NeXus Application Classes</title>' >> $@
+	@echo '<para>A description of each NeXus Application Class is given.</para>' >> $@
+	@echo $(patsubst %,  "<xi:include href=\""%"\"/>", $(APPLICATION_CLASS_TARGETS) ) >> $@
+	@echo '</section>' >> $@
+	@echo "(Re)Created $@"
+
+ContributedClassSections.xml : $(CONTRIBUTED_CLASS_TARGETS) Makefile
+	@echo '<?xml version="1.0" encoding="UTF-8"?>' > $@
+	@echo '<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>' >> $@
+	@echo '<section xmlns="http://docbook.org/ns/docbook" version="5.0" xmlns:xi="http://www.w3.org/2001/XInclude">' >> $@
+	@echo '<title>NeXus Contributed Classes</title>' >> $@
+	@echo '<para>A description of each NeXus Contributed Class is given.</para>' >> $@
+	@echo $(patsubst %,  "<xi:include href=\""%"\"/>", $(CONTRIBUTED_CLASS_TARGETS) ) >> $@
+	@echo '</section>' >> $@
+	@echo "(Re)Created $@"
+
 
 # dblatex.sf.net can be used to build a PDF version of the NeXus Manual
 dblatex ::
