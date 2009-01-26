@@ -126,10 +126,10 @@ Usage:
                     <xsl:element name="term">NeXus Definitional Language</xsl:element>
                     <xsl:element name="listitem">
                         <xsl:element name="para">
-                            <xsl:element name="link">
-                                <xsl:attribute name="xlink:href"
-                                    >http://www.nexusformat.org/NXDL</xsl:attribute> NXDL
-                            </xsl:element>
+                            <xsl:element name="link"
+                                ><xsl:attribute name="xlink:href"
+                                    >http://www.nexusformat.org/NXDL</xsl:attribute
+                                >NXDL</xsl:element>
                         </xsl:element>
                     </xsl:element>
                 </xsl:element><!-- varlistentry -->
