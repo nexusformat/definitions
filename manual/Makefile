@@ -72,9 +72,13 @@ CONTRIBUTED_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xml, $(CONTRIBUTED_CL
 XSLT_PATH = ../xslt
 XSLT = $(XSLT_PATH)/nxdl2docbook.xsl
 
+DYNAMIC_DOCBOOK_SECTIONS  = BaseClassSections.xml 
+DYNAMIC_DOCBOOK_SECTIONS += ApplicationClassSections.xml 
+DYNAMIC_DOCBOOK_SECTIONS += ContributedClassSections.xml
+
 # === Rules ===
 
-all: docbook BaseClassSections.xml ApplicationClassSections.xml ContributedClassSections.xml
+all: docbook $(DYNAMIC_DOCBOOK_SECTIONS)
 
 docbook : $(ALL_CLASS_TARGETS)
 
@@ -126,6 +130,6 @@ NeXusManual.ps ::NeXusManual.pdf
 	pdftops $<
 
 clean ::
-	/bin/rm -f $(ALL_CLASS_TARGETS) BaseClassSections.xml
+	/bin/rm -f $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS)
 
 rebuild :: clean all
