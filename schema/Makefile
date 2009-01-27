@@ -38,31 +38,49 @@
 #	make clean	removes files built in this directory
 #	make rebuild	does a make clean then make all
 
-BASE_CLASSES  = NXaperture NXattenuator NXbeam NXbeam_stop NXbending_magnet 
-BASE_CLASSES += NXcharacterization NXcollimator NXcrystal NXdata NXdetector NXdetector_group
-BASE_CLASSES += NXdisk_chopper NXentry NXenvironment NXevent_data NXfermi_chopper 
-BASE_CLASSES += NXfilter NXflipper NXgeometry NXguide NXinsertion_device NXinstrument 
-BASE_CLASSES += NXlog NXmirror NXmoderator NXmonitor NXmonochromator NXnote 
-BASE_CLASSES += NXorientation NXpolarizer NXpositioner NXprocess NXroot NXsample 
-BASE_CLASSES += NXsensor NXshape NXsource NXtranslation NXuser NXvelocity_selector 
 
-BASE_CLASS_PATH = ../base_classes
+NXDL_SUFFIX = nxdl.xml
 
-XSDS =  $(BASE_CLASSES:%= %.xsd)
+# relative locations for the NXDL instance files
+BASE_CLASS_PATH          = ../base_classes
+APPLICATIONS_CLASS_PATH  = ../applications
+CONTRIBUTED_CLASS_PATH   = ../contributed_definitions
+
+# make lists of all the NXDL instances 
+# (useful to make separate lists for category)
+NXDL_BASE_CLASSES = $(wildcard $(BASE_CLASS_PATH)/*.$(NXDL_SUFFIX) )
+NXDL_APPLICATIONS = $(wildcard $(APPLICATIONS_CLASS_PATH)/*.$(NXDL_SUFFIX) )
+NXDL_CONTRIBUTED  = $(wildcard $(CONTRIBUTED_CLASS_PATH)/*.$(NXDL_SUFFIX) )
+
+# put them all together in one big list
+# be careful, empty directories will return the $(DIR)/*.$(NXDL_SUFFIX) search pattern
+ALL_NXDL = $(NXDL_BASE_CLASSES) $(NXDL_APPLICATIONS) $(NXDL_CONTRIBUTED)
+
+# list of all classes without path and without the trailing .$(NXDL_SUFFIX) suffix
+ALL_CLASS_NAMES = $(notdir $(ALL_NXDL) )
+ALL_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xsd, $(ALL_CLASS_NAMES) )
+
 
 XSLT_PATH = ../xslt
 
 # === Rules ===
 
-xsd : $(XSDS)
+xsd : $(ALL_CLASS_TARGETS)
 
 all: xsd
 
+# NXDL files come from three source directories 
+#   but end up in one schema directory.  This means 
+#   that no two NXDL files can have the same class name. 
 %.xsd: $(BASE_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl
+	xsltproc -o $@ $(XSLT_PATH)/nxdl2xsd.xsl $<
+%.xsd: $(APPLICATIONS_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl
+	xsltproc -o $@ $(XSLT_PATH)/nxdl2xsd.xsl $<
+%.xsd: $(CONTRIBUTED_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl
 	xsltproc -o $@ $(XSLT_PATH)/nxdl2xsd.xsl $<
 
 clean ::
-	/bin/rm -f $(XSDS)
+	/bin/rm -f $(ALL_CLASS_TARGETS)
 
 rebuild :: clean all
 
