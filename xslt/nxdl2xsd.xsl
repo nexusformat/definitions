@@ -22,7 +22,7 @@ Usage:
 <xsl:stylesheet
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	version="1.0"
-	xmlns:nx="http://definition.nexusformat.org/schema/3.1"
+	xmlns:nx="http://definition.nexusformat.org/nxdl/3.1"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
