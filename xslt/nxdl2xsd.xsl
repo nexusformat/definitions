@@ -22,7 +22,8 @@ Usage:
 <xsl:stylesheet
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	version="1.0"
-	xmlns:nx="http://definition.nexusformat.org/nxdl/3.1"
+	xmlns:nx="http://definition.nexusformat.org/schema/3.1"
+	xmlns:nxd="http://definition.nexusformat.org/nxdl/3.1"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
@@ -35,7 +36,7 @@ Usage:
 
     <!-- identify all group elements by @type for the include statements -->
     <!-- advice: http://sources.redhat.com/ml/xsl-list/2000-07/msg00458.html -->
-    <xsl:key name="group-include" match="//nx:group" use="@type"/>
+    <xsl:key name="group-include" match="//nxd:group" use="@type"/>
     
 
     <!-- 
@@ -56,14 +57,16 @@ Usage:
 </xsl:comment>
 
         <xsl:element name="xs:schema">
-            <xsl:attribute name="nx:xslt_name">nxdl2xsd.xsl</xsl:attribute>
-            <xsl:attribute name="nx:xslt_id">$Id$</xsl:attribute>
-            <!-- XSLT v2.0 feature: <xsl:attribute name="nx:xsd_created"><xsl:value-of select="fn:current-dateTime()" /></xsl:attribute>-->
+            <xsl:attribute name="nxd:xslt_name">nxdl2xsd.xsl</xsl:attribute>
+            <xsl:attribute name="nxd:xslt_id">$Id$</xsl:attribute>
+            <!-- XSLT v2.0 feature: <xsl:attribute name="nxd:xsd_created"><xsl:value-of select="fn:current-dateTime()" /></xsl:attribute>-->
             <xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.1</xsl:attribute>
+	    <!-- force a reference so declaration included -->
+            <xsl:attribute name="nx:something">1</xsl:attribute>
             <!--<xsl:attribute name="elementFormDefault">qualified</xsl:attribute>-->
             <!--<xsl:attribute name="attributeFormDefault">qualified</xsl:attribute>-->
-            <!-- special case for nx:attribute elements because they have to come before documentation -->
-            <xsl:for-each select="nx:attribute">
+            <!-- special case for nxd:attribute elements because they have to come before documentation -->
+            <xsl:for-each select="nxd:attribute">
                 <xsl:attribute name="{name()}"><xsl:value-of select="."/></xsl:attribute>
                 <xsl:apply-templates select="*"/>
             </xsl:for-each>
@@ -90,13 +93,13 @@ Usage:
 # For further information, see http://www.nexusformat.org
                 </xsl:element>
             </xsl:element>
-		    <xsl:apply-templates select="nx:definition"/>
+		    <xsl:apply-templates select="nxd:definition"/>
 		</xsl:element>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
-    <xsl:template match="nx:definition">
+    <xsl:template match="nxd:definition">
         <!-- identify all the XSD files to be included -->
         <xsl:call-template name="groupIncludes" />
         <xsl:call-template name="comment">
@@ -109,20 +112,20 @@ Usage:
                 <!--<xsl:apply-templates select="*"/>-->    <!-- standard order for fields & groups from NXDL -->
                 <xsl:call-template name="groupGroup"/>    <!-- special sort order for fields & groups -->
             </xsl:element>
-            <xsl:if test="count(nx:attribute/@name)=0">
+            <xsl:if test="count(nxd:attribute/@name)=0">
                 <xsl:element name="xs:attribute">
                     <xsl:attribute name="name">name</xsl:attribute>
                     <xsl:attribute name="use">optional</xsl:attribute>
                 </xsl:element>
             </xsl:if>
-            <!-- special case: need to handle nx:attribute _after_ the sequence! -->
-            <xsl:apply-templates select="nx:attribute" mode="after_sequence"/>
+            <!-- special case: need to handle nxd:attribute _after_ the sequence! -->
+            <xsl:apply-templates select="nxd:attribute" mode="after_sequence"/>
         </xsl:element>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
-    <xsl:template match="nx:doc">
+    <xsl:template match="nxd:doc">
         <!-- documentation -->
         <xsl:element name="xs:annotation">
             <xsl:element name="xs:documentation"><xsl:value-of select="."/></xsl:element>
@@ -131,7 +134,7 @@ Usage:
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
-    <xsl:template match="nx:field">
+    <xsl:template match="nxd:field">
         <!-- named element declaration -->
         <xsl:element name="xs:element">
             <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
@@ -151,12 +154,12 @@ Usage:
                 <xsl:with-param name="msg"><xsl:value-of select="name()"/> declaration: <xsl:value-of select="@name"/></xsl:with-param>
             </xsl:call-template>
             <!-- documentation comes before the sequence -->
-            <xsl:apply-templates select="nx:doc"/>
+            <xsl:apply-templates select="nxd:doc"/>
             <xsl:choose>
-                <xsl:when test="count(nx:enumeration)>0">
-                    <xsl:apply-templates select="nx:enumeration" mode="standard"/>
+                <xsl:when test="count(nxd:enumeration)>0">
+                    <xsl:apply-templates select="nxd:enumeration" mode="standard"/>
                 </xsl:when>
-                <xsl:otherwise><!-- no nx:enumeration -->
+                <xsl:otherwise><!-- no nxd:enumeration -->
                     <xsl:element name="xs:complexType">
                         <xsl:element name="xs:simpleContent">
                             <xsl:element name="xs:extension">
@@ -170,14 +173,14 @@ Usage:
                             </xsl:element><!-- xs:extension -->
                         </xsl:element><!-- xs:simpleContent -->
                     </xsl:element><!-- xs:complexType -->
-                </xsl:otherwise><!-- no nx:enumeration -->
+                </xsl:otherwise><!-- no nxd:enumeration -->
             </xsl:choose>
         </xsl:element>
     </xsl:template>
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
-    <xsl:template match="nx:group">
+    <xsl:template match="nxd:group">
         <!-- reference to another NX object (requires that object's XSD) -->
         <xsl:call-template name="comment">
             <xsl:with-param name="msg">group declaration</xsl:with-param>
@@ -204,14 +207,14 @@ Usage:
                 </xsl:choose>
             </xsl:attribute>
             <xsl:choose>
-                <xsl:when test="count(nx:field)+count(nx:group)>0">
+                <xsl:when test="count(nxd:field)+count(nxd:group)>0">
                     <!-- if there are fields or groups, then documentation comes afterwards ?????(then why is it before?)????? -->
-                    <xsl:apply-templates select="nx:doc"/>
+                    <xsl:apply-templates select="nxd:doc"/>
                     <!-- fields or groups within this group element  -->
                     <xsl:comment> this is part of an <xsl:value-of select="@type"/> object </xsl:comment>
                     <xsl:element name="xs:complexType">
                         <xsl:element name="xs:sequence">
-                            <xsl:apply-templates select="nx:field|nx:group"/>
+                            <xsl:apply-templates select="nxd:field|nxd:group"/>
                         </xsl:element>
                         <xsl:if test="count(@name)>0">
                             <xsl:element name="xs:attribute">
@@ -228,7 +231,7 @@ Usage:
                     <xsl:call-template name="typeAttributeDefaultHandler" >
                         <xsl:with-param name="item">type</xsl:with-param>
                     </xsl:call-template>
-                    <xsl:apply-templates select="nx:doc"/>
+                    <xsl:apply-templates select="nxd:doc"/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:element>
@@ -244,7 +247,7 @@ Usage:
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
-    <xsl:template match="nx:enumeration" mode="standard">
+    <xsl:template match="nxd:enumeration" mode="standard">
         <xsl:element name="xs:simpleType">
             <xsl:element name="xs:restriction">
                 <xsl:attribute name="base">
@@ -255,47 +258,47 @@ Usage:
                         <xsl:otherwise>nx:NX_CHAR</xsl:otherwise>
                     </xsl:choose>
                 </xsl:attribute>
-                <xsl:apply-templates select="nx:item" mode="field"/>
+                <xsl:apply-templates select="nxd:item" mode="field"/>
             </xsl:element>
         </xsl:element>
     </xsl:template>
     
-    <xsl:template match="nx:item" mode="field">
+    <xsl:template match="nxd:item" mode="field">
         <xsl:element name="xs:enumeration">
             <xsl:attribute name="value"><xsl:value-of select="@value"/></xsl:attribute>
         </xsl:element>
     </xsl:template>
 
-    <xsl:template match="nx:dimensions" mode="field">
+    <xsl:template match="nxd:dimensions" mode="field">
         <xsl:element name="xs:attribute">
             <xsl:attribute name="name">dimensions</xsl:attribute>
             <xsl:call-template name="typeAttributeDefaultHandler" >
                 <xsl:with-param name="item">type</xsl:with-param>
             </xsl:call-template>
-            <xsl:apply-templates select="nx:dimensions/nx:doc"/>
+            <xsl:apply-templates select="nxd:dimensions/nxd:doc"/>
         </xsl:element>
     </xsl:template>
     
-    <xsl:template match="nx:attribute" mode="field">
+    <xsl:template match="nxd:attribute" mode="field">
         <xsl:element name="xs:attribute">
             <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-            <xsl:if test="count(nx:enumeration)=0">
+            <xsl:if test="count(nxd:enumeration)=0">
                 <xsl:call-template name="typeAttributeDefaultHandler" >
                     <xsl:with-param name="item">type</xsl:with-param>
                 </xsl:call-template>
             </xsl:if>
-            <xsl:apply-templates select="nx:doc"/>
-            <xsl:apply-templates select="nx:enumeration" mode="standard"/>
+            <xsl:apply-templates select="nxd:doc"/>
+            <xsl:apply-templates select="nxd:enumeration" mode="standard"/>
         </xsl:element>
     </xsl:template>
     
-    <xsl:template match="nx:attribute" mode="after_sequence">
+    <xsl:template match="nxd:attribute" mode="after_sequence">
         <xsl:element name="xs:attribute">
             <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
             <xsl:apply-templates select="@*"/>
             <xsl:choose>
-                <xsl:when test="count(nx:enumeration)>0">
-                    <xsl:apply-templates select="nx:enumeration" mode="standard"/>
+                <xsl:when test="count(nxd:enumeration)>0">
+                    <xsl:apply-templates select="nxd:enumeration" mode="standard"/>
                 </xsl:when>
                 <xsl:otherwise>
                     <xsl:apply-templates select="*"/>
@@ -304,7 +307,7 @@ Usage:
         </xsl:element>
     </xsl:template>
 
-    <xsl:template match="nx:group" mode="group-include">
+    <xsl:template match="nxd:group" mode="group-include">
         <!-- include the XSD from a group declared in the NXDL -->
         <xsl:element name="xs:include">
             <xsl:attribute name="schemaLocation"><xsl:value-of select="@type"/>.xsd</xsl:attribute>
@@ -346,7 +349,7 @@ Usage:
         <!-- Be sure to include XSD of any base_class or application elements that define this object -->
         <xsl:apply-templates 
             mode="group-include"
-            select="  //nx:group[generate-id(.) = generate-id(key('group-include', @type)[1])]  " >
+            select="  //nxd:group[generate-id(.) = generate-id(key('group-include', @type)[1])]  " >
             <!-- advice: http://sources.redhat.com/ml/xsl-list/2000-07/msg00458.html -->
             <!-- Muenchian method to sort+unique on group/@type -->
             <xsl:sort select="@type"/>
@@ -354,11 +357,11 @@ Usage:
     </xsl:template>
 
     <xsl:template name="groupGroup">
-        <xsl:apply-templates select="nx:group">
+        <xsl:apply-templates select="nxd:group">
             <xsl:sort select="@type"/><!-- sort by group type -->
             <xsl:sort select="@name"/><!-- then sort by field names -->
         </xsl:apply-templates>
-        <xsl:apply-templates select="nx:field">
+        <xsl:apply-templates select="nxd:field">
             <xsl:sort select="@name"/><!-- sort by field names -->
         </xsl:apply-templates>
         <xsl:for-each select="*">
@@ -388,9 +391,9 @@ Usage:
     </xsl:template>
     
     <!--leave these templates empty, they are handled by special case code as needed	-->
-    <xsl:template match="nx:attribute"/>
-    <xsl:template match="nx:dimensions"/>
-    <xsl:template match="nx:item"/>
+    <xsl:template match="nxd:attribute"/>
+    <xsl:template match="nxd:dimensions"/>
+    <xsl:template match="nxd:item"/>
     <xsl:template match="@name"/>
     <xsl:template match="@type"/>
     
