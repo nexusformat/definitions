@@ -21,7 +21,7 @@ Usage:
 <xsl:stylesheet
 	xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	version="1.0"
-	xmlns:nx="http://definition.nexusformat.org/schema/3.1"
+	xmlns:nx="http://definition.nexusformat.org/nxdl/3.1"
 	xmlns:xi="http://www.w3.org/2001/XInclude"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
     >

@@ -78,9 +78,9 @@ DYNAMIC_DOCBOOK_SECTIONS += ContributedClassSections.xml
 
 # === Rules ===
 
-all: docbook $(DYNAMIC_DOCBOOK_SECTIONS)
+all: docbook
 
-docbook : $(ALL_CLASS_TARGETS)
+docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.pdf
 
 # This uses VPATH to locate the source directory for the target
 %.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT)
@@ -123,8 +123,10 @@ ContributedClassSections.xml : $(CONTRIBUTED_CLASS_TARGETS) Makefile
 
 # dblatex.sf.net can be used to build a PDF version of the NeXus Manual
 dblatex NeXusManual.pdf ::
-	#dblatex -P table.in.float=0 -ttex NeXusManual.xml
+	@#dblatex -P table.in.float=0 -ttex NeXusManual.xml
 	dblatex -P table.in.float=0 -tpdf NeXusManual.xml
+	@#pdftops $< temporaryNeXusManual.ps
+	@#ps2pdf temporaryNeXusManual.ps $<
 
 NeXusManual.ps ::NeXusManual.pdf
 	pdftops $<
