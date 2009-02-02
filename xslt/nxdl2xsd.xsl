@@ -61,8 +61,6 @@ Usage:
             <xsl:attribute name="nxd:xslt_id">$Id$</xsl:attribute>
             <!-- XSLT v2.0 feature: <xsl:attribute name="nxd:xsd_created"><xsl:value-of select="fn:current-dateTime()" /></xsl:attribute>-->
             <xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.1</xsl:attribute>
-	    <!-- force a reference so declaration included -->
-            <xsl:attribute name="nx:something">1</xsl:attribute>
             <!--<xsl:attribute name="elementFormDefault">qualified</xsl:attribute>-->
             <!--<xsl:attribute name="attributeFormDefault">qualified</xsl:attribute>-->
             <!-- special case for nxd:attribute elements because they have to come before documentation -->
