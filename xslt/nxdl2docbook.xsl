@@ -183,47 +183,56 @@ Usage:
                 Add column for # of occurrences:
                 Occurrences Name Type Units Description
             -->
-            <xsl:element name="table">
-                <!-- describe what is defined -->
-                <xsl:element name="title">Tabular representation of <xsl:value-of select="@name"
-                    />:</xsl:element>
-                <xsl:element name="tgroup">
-                    <xsl:attribute name="cols">5</xsl:attribute>
-		    <!-- all columns *should* have adjustable width
-		    So far, the PDF table columns all have fixed width.
-		    How to change this? 
-		    So far, the next set of instructions result in fixed column widths, but the widths are tuned somewhat.
-		    The numbers are "weightings": the sum of all will be divided into each to get proportional width.
-		    Asterisk (*) is necessary.
-		    -->
-		   
-                    <xsl:element name="colspec"><xsl:attribute name="colnum">1</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
-                    <xsl:element name="colspec"><xsl:attribute name="colnum">2</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
-                    <xsl:element name="colspec"><xsl:attribute name="colnum">3</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
-                    <xsl:element name="colspec"><xsl:attribute name="colnum">4</xsl:attribute><xsl:attribute name="colwidth">1*</xsl:attribute></xsl:element>
-                    <xsl:element name="colspec"><xsl:attribute name="colnum">5</xsl:attribute><xsl:attribute name="colwidth">3*</xsl:attribute></xsl:element>
-                    <xsl:element name="thead">
-                        <xsl:element name="row">
-                            <xsl:element name="entry">Name</xsl:element>
-                            <xsl:element name="entry">
-			        <para>Occurrences</para>
-				<para>/ Attributes</para>
-			    </xsl:element>
-                            <xsl:element name="entry">Type</xsl:element>
-                            <xsl:element name="entry">Units</xsl:element>
-                            <xsl:element name="entry">Description</xsl:element>
+            <xsl:choose>
+                <xsl:when test="count(nx:field)+count(nx:group)!=0">
+                    <xsl:element name="table">
+                        <!-- describe what is defined -->
+                        <xsl:element name="title">Tabular representation of <xsl:value-of select="@name"
+                            />:</xsl:element>
+                        <xsl:element name="tgroup">
+                            <xsl:attribute name="cols">5</xsl:attribute>
+        		    <!-- all columns *should* have adjustable width
+        		    So far, the PDF table columns all have fixed width.
+        		    How to change this? 
+        		    So far, the next set of instructions result in fixed column widths, but the widths are tuned somewhat.
+        		    The numbers are "weightings": the sum of all will be divided into each to get proportional width.
+        		    Asterisk (*) is necessary.
+        		    -->
+        		   
+                            <xsl:element name="colspec"><xsl:attribute name="colnum">1</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
+                            <xsl:element name="colspec"><xsl:attribute name="colnum">2</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
+                            <xsl:element name="colspec"><xsl:attribute name="colnum">3</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
+                            <xsl:element name="colspec"><xsl:attribute name="colnum">4</xsl:attribute><xsl:attribute name="colwidth">1*</xsl:attribute></xsl:element>
+                            <xsl:element name="colspec"><xsl:attribute name="colnum">5</xsl:attribute><xsl:attribute name="colwidth">3*</xsl:attribute></xsl:element>
+                            <xsl:element name="thead">
+                                <xsl:element name="row">
+                                    <xsl:element name="entry">Name</xsl:element>
+                                    <xsl:element name="entry">
+        			        <para>Occurrences</para>
+        				<para>/ Attributes</para>
+        			    </xsl:element>
+                                    <xsl:element name="entry">Type</xsl:element>
+                                    <xsl:element name="entry">Units</xsl:element>
+                                    <xsl:element name="entry">Description</xsl:element>
+                                </xsl:element>
+                                <!-- row -->
+                            </xsl:element>
+                            <!-- thead -->
+                            <xsl:element name="tbody">
+                                <xsl:apply-templates select="nx:field|nx:group" mode="tableRow"/>
+                                <!-- row -->
+                            </xsl:element>
+                            <!-- tbody -->
                         </xsl:element>
-                        <!-- row -->
+                        <!-- tgroup -->
+                    </xsl:element><!-- table -->
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:element name="para">
+                        No fields or groups are defined (nothing to show in a table at this point).
                     </xsl:element>
-                    <!-- thead -->
-                    <xsl:element name="tbody">
-                        <xsl:apply-templates select="nx:field|nx:group" mode="tableRow"/>
-                        <!-- row -->
-                    </xsl:element>
-                    <!-- tbody -->
-                </xsl:element>
-                <!-- tgroup -->
-            </xsl:element><!-- table -->
+                </xsl:otherwise>
+            </xsl:choose>
             <!-- ...................................................... -->
         </xsl:element><!-- section -->
     </xsl:template>
