@@ -76,6 +76,15 @@ DYNAMIC_DOCBOOK_SECTIONS  = BaseClassSections.xml
 DYNAMIC_DOCBOOK_SECTIONS += ApplicationClassSections.xml 
 DYNAMIC_DOCBOOK_SECTIONS += ContributedClassSections.xml
 
+CLEANING_LIST = $(ALL_CLASS_TARGETS) 
+CLEANING_LIST += $(DYNAMIC_DOCBOOK_SECTIONS)
+CLEANING_LIST += $(patsubst %.xml, %.pdf, $(ALL_CLASS_TARGETS))
+CLEANING_LIST += $(patsubst %.xml, %.html, $(ALL_CLASS_TARGETS))
+#CLEANING_LIST += $(patsubst %.xml, %.ps, $(ALL_CLASS_TARGETS))
+CLEANING_LIST += NeXusManual.pdf
+CLEANING_LIST += NeXusManual.html
+CLEANING_LIST += NeXusManual.ps
+
 # === Rules ===
 
 all: docbook
@@ -87,7 +96,7 @@ docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.pdf
 	xsltproc -o $@ $(XSLT) $<
 
 test ::
-	@echo $(ALL_CLASS_TARGETS)
+	@echo $(CLEANING_LIST)
 
 
 BaseClassSections.xml : $(BASE_CLASS_TARGETS) Makefile
@@ -132,6 +141,6 @@ NeXusManual.ps ::NeXusManual.pdf
 	pdftops $<
 
 clean ::
-	/bin/rm -f $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS)
+	/bin/rm -f $(CLEANING_LIST)
 
 rebuild :: clean all

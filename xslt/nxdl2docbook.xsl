@@ -26,7 +26,7 @@ Usage:
 	xmlns:xlink="http://www.w3.org/1999/xlink"
     >
 
-    <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
+    <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8" cdata-section-elements="programlisting"/>
 
     <!-- 
         +++++++++++++++++
@@ -113,6 +113,13 @@ Usage:
                     <xsl:element name="term">NXDL source</xsl:element>
                     <xsl:element name="listitem">
                         <xsl:element name="para">
+                            <!-- 
+                                ***************************************************************
+                                This does not work properly.
+                                Need to figure out how to determine if in base_classes or other
+                                or just report NXDL source below.
+                                *************************************************************** 
+                            -->
                             <xsl:element name="link"
                                 ><xsl:attribute  name="xlink:href"
                                         >http://svn.nexusformat.org/definitions/trunk/base_classes/<xsl:value-of
@@ -150,19 +157,24 @@ Usage:
                 </xsl:element><!-- varlistentry -->
                 <xsl:element name="varlistentry"><!-- show other classes included by this class -->
                     <xsl:element name="term">other classes included:</xsl:element>
-                    <xsl:element name="listitem">
-                        <xsl:apply-templates 
-                            mode="group-include"
-                            select="  //nx:group[generate-id(.) = generate-id(key('group-include', @type)[1])]  " >
-                            <!-- advice: http://sources.redhat.com/ml/xsl-list/2000-07/msg00458.html -->
-                            <!-- Muenchian method to sort+unique on group/@type -->
-                            <xsl:sort select="@type"/>
-                        </xsl:apply-templates>
-                        <xsl:element name="para">
-                            <!-- should code against this situation instead -->
-                            <xsl:comment>formatting placeholder in case this list is empty</xsl:comment>
-                        </xsl:element>
-                    </xsl:element>
+                    <xsl:choose>
+                        <xsl:when test="count(nx:group)!=0">
+                            <xsl:element name="listitem">
+                                <xsl:apply-templates 
+                                    mode="group-include"
+                                    select="  //nx:group[generate-id(.) = generate-id(key('group-include', @type)[1])]  " >
+                                    <!-- advice: http://sources.redhat.com/ml/xsl-list/2000-07/msg00458.html -->
+                                    <!-- Muenchian method to sort+unique on group/@type -->
+                                    <xsl:sort select="@type"/>
+                                </xsl:apply-templates>
+                            </xsl:element>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:element name="listitem">
+                                <xsl:element name="para">no included classes</xsl:element>
+                            </xsl:element>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:element><!-- varlistentry -->
                 <xsl:element name="varlistentry"><!-- doc element of this class -->
                     <xsl:element name="term">documentation</xsl:element>
@@ -173,15 +185,21 @@ Usage:
                         </xsl:element>
                     </xsl:element>
                 </xsl:element><!-- varlistentry -->
+                <xsl:element name="varlistentry"><!-- NXDL listing -->
+                    <xsl:element name="term">NXDL listing</xsl:element>
+                    <xsl:element name="listitem">
+                        <xsl:element name="para">
+                            <programlisting>___COPY_NXDL_HERE___</programlisting>
+                        </xsl:element>
+                    </xsl:element>
+                </xsl:element><!-- varlistentry -->
             </xsl:element><!-- variablelist -->
+            <!-- ++++++++++++++++++++++++++++++++++++++++++++++ -->
             <!-- ...................................................... -->
             <!--
                 table formatting suggestion: examine http://www.nexusformat.org/TOFRaw#NXentry
                 for hierarchical groups, link to subgroup in parent table row
                     and display subgroup in table below.
-                For attributes, remove from last column and place on new row in last n-1 columns.
-                Add column for # of occurrences:
-                Occurrences Name Type Units Description
             -->
             <xsl:choose>
                 <xsl:when test="count(nx:field)+count(nx:group)!=0">
@@ -190,7 +208,7 @@ Usage:
                         <xsl:element name="title">Tabular representation of <xsl:value-of select="@name"
                             />:</xsl:element>
                         <xsl:element name="tgroup">
-                            <xsl:attribute name="cols">5</xsl:attribute>
+                            <xsl:attribute name="cols">4</xsl:attribute>
         		    <!-- all columns *should* have adjustable width
         		    So far, the PDF table columns all have fixed width.
         		    How to change this? 
@@ -199,21 +217,16 @@ Usage:
         		    Asterisk (*) is necessary.
         		    -->
         		   
-                            <xsl:element name="colspec"><xsl:attribute name="colnum">1</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
-                            <xsl:element name="colspec"><xsl:attribute name="colnum">2</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
-                            <xsl:element name="colspec"><xsl:attribute name="colnum">3</xsl:attribute><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
-                            <xsl:element name="colspec"><xsl:attribute name="colnum">4</xsl:attribute><xsl:attribute name="colwidth">1*</xsl:attribute></xsl:element>
-                            <xsl:element name="colspec"><xsl:attribute name="colnum">5</xsl:attribute><xsl:attribute name="colwidth">3*</xsl:attribute></xsl:element>
+                            <xsl:element name="colspec"><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
+                            <xsl:element name="colspec"><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
+                            <xsl:element name="colspec"><xsl:attribute name="colwidth">1*</xsl:attribute></xsl:element>
+                            <xsl:element name="colspec"><xsl:attribute name="colwidth">3*</xsl:attribute></xsl:element>
                             <xsl:element name="thead">
                                 <xsl:element name="row">
-                                    <xsl:element name="entry">Name</xsl:element>
-                                    <xsl:element name="entry">
-        			        <para>Occurrences</para>
-        				<para>/ Attributes</para>
-        			    </xsl:element>
+                                    <xsl:element name="entry">Name and Attributes</xsl:element>
                                     <xsl:element name="entry">Type</xsl:element>
                                     <xsl:element name="entry">Units</xsl:element>
-                                    <xsl:element name="entry">Description</xsl:element>
+                                    <xsl:element name="entry">Description (and Occurrences)</xsl:element>
                                 </xsl:element>
                                 <!-- row -->
                             </xsl:element>
@@ -238,33 +251,20 @@ Usage:
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-    
+
     <xsl:template match="nx:field|nx:group" mode="tableRow">
         <xsl:element name="row">
+            <xsl:if test="count(nx:attribute)!=0">
+                <xsl:attribute name="rowsep">0</xsl:attribute>
+            </xsl:if>
             <!-- +++++++++++++++++++++
                 +++ column: Name
                 +++++++++++++++++++++ -->
             <xsl:element name="entry">
-                <xsl:if test="count(nx:attribute)!=0">
-                    <xsl:attribute name="morerows"><xsl:value-of select="count(nx:attribute)"/></xsl:attribute>
-                </xsl:if>
-                <xsl:value-of select="@name"/>
-            </xsl:element>
-            <!-- +++++++++++++++++++++
-                +++ column: Occurrences/Attributes
-                +++++++++++++++++++++ -->
-            <xsl:element name="entry">
-                <!--<xsl:comment>
-                    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-                    To properly populate the column for "Occurrences," we need
-                    to also parse the nxdl.xsd file.  Is this easy?  Otherwise,
-                    can only list apparent restrictions at this point.
-                    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
-                </xsl:comment>-->
-                <xsl:if test="count(@minOccurs)!=0"><xsl:value-of select="@minOccurs"/>:</xsl:if>
-                <xsl:if test="count(@maxOccurs)!=0">
-                    <xsl:if test="count(@minOccurs)=0">:</xsl:if>
-                    <xsl:value-of select="@maxOccurs"/>
+                <xsl:if test="count(@name)!=0">
+                    <xsl:element name="literal">
+                        <xsl:value-of select="@name"/>
+                    </xsl:element>
                 </xsl:if>
             </xsl:element>
             <!-- +++++++++++++++++++++
@@ -298,7 +298,44 @@ Usage:
             <!-- +++++++++++++++++++++
                 +++ column: Description
                 +++++++++++++++++++++ -->
-            <xsl:element name="entry"><xsl:apply-templates select="nx:doc"/></xsl:element>
+            <xsl:element name="entry">
+                <xsl:if test="count(nx:doc)!=0">
+                    <xsl:element name="para">
+                        <xsl:apply-templates select="nx:doc"/>
+                    </xsl:element>
+                </xsl:if>
+                <xsl:if test="count(@minOccurs)+count(@maxOccurs)!=0">
+                    <xsl:element name="para">
+                        <!--<xsl:comment>
+                            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                            To properly populate the column for "Occurrences," we need
+                            to also parse the nxdl.xsd file.  Is this easy?  Otherwise,
+                            can only list apparent restrictions at this point.
+                            XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+                            </xsl:comment>-->
+                        Occurences: 
+                        <xsl:choose>
+                            <xsl:when test="count(@minOccurs)!=0"><xsl:value-of select="@minOccurs"/></xsl:when>
+                            <xsl:otherwise>
+                                <xsl:element name="emphasis">
+                                    <xsl:attribute name="role">italic</xsl:attribute>
+                                    default
+                                </xsl:element>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                        :
+                        <xsl:choose>
+                            <xsl:when test="count(@maxOccurs)!=0"><xsl:value-of select="@maxOccurs"/></xsl:when>
+                            <xsl:otherwise>
+                                <xsl:element name="emphasis">
+                                    <xsl:attribute name="role">italic</xsl:attribute>
+                                    default
+                                </xsl:element>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:element>
+                </xsl:if>
+            </xsl:element>
             <!-- +++++++++++++++++++++
                 +++ situation: Hierarchy of group elements
                 +++++++++++++++++++++ -->
@@ -323,14 +360,16 @@ Usage:
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-    
+
     <xsl:template match="nx:attribute" mode="newRow">
         <xsl:element name="row">
+            <xsl:if test="position()!=last()">
+                <xsl:attribute name="rowsep">0</xsl:attribute>
+            </xsl:if>
             <xsl:element name="entry">
-                <xsl:element name="emphasis">
-                    <xsl:attribute name="role">italic</xsl:attribute
-                    >@<xsl:value-of select="@name"/>
-                </xsl:element>
+                <xsl:element name="literal"
+                    >  @<xsl:value-of select="@name"
+                /></xsl:element>
             </xsl:element>
             <xsl:element name="entry">
                 <xsl:choose>
