@@ -308,9 +308,11 @@ Usage:
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
-    <xsl:template match="nx:group" mode="showParentChild">
+    <xsl:template match="*" mode="showParentChild">
         <xsl:apply-templates select="." mode="showNameType"/>
-        (within <xsl:apply-templates select=".." mode="showNameType"/>)
+        <xsl:if test="name()!='definition'">
+            (within <xsl:apply-templates select=".." mode="showNameType"/>)
+        </xsl:if>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -441,7 +443,7 @@ Usage:
             <xsl:element name="title">
                 Tabular representation of 
                 <!--<xsl:value-of select="@name"/>:-->
-                <xsl:apply-templates select="." mode="showNameType"/>
+                <xsl:apply-templates select="." mode="showParentChild"/>
             </xsl:element>
             <xsl:element name="tgroup">
                 <xsl:attribute name="cols">4</xsl:attribute>
