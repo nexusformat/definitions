@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 """
    Insert the NXDL instance file into the Docbook XML file
-   at the designated location (indicated by the text
-   ___COPY_NXDL_HERE___)
+   at the designated location 
+   (matched by text ___COPY_NXDL_HERE___)
+   and also the correct path for the URL
+   (matched by text ___NXDL_INSTANCE_FILE_LOCATION___)
 """
 
 ########### SVN repository information ###################
@@ -41,12 +43,20 @@ def _main():
     fd = open(docbookfile, 'r')
     db = fd.read()
     fd.close()
-    # find and replace the text
+    
+    # find and replace text
     matchtext = '___COPY_NXDL_HERE___'
     newdocbook = db.replace(matchtext, nxdl)
+    db = newdocbook
+    
+    # find and replace text
+    matchtext = '___NXDL_INSTANCE_FILE_LOCATION___'
+    newdocbook = db.replace(matchtext, nxdlfile.strip('../'))
+    db = newdocbook
+
     # write the docbook file again
     fd = open(docbookfile, 'w')
-    fd.write(newdocbook)
+    fd.write(db)
     fd.close()
     return
 

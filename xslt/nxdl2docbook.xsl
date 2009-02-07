@@ -354,15 +354,12 @@ Usage:
                     <xsl:element name="para">
                         <!-- 
                             ***************************************************************
-                            This does not work properly.
-                            Need to figure out how to determine if in base_classes or other
-                            or just report NXDL source below.
+                            Need an external program to get the correct URL to the NXDL source.
                             *************************************************************** 
                         -->
                         <xsl:element name="link"
                             ><xsl:attribute  name="xlink:href"
-                                >http://svn.nexusformat.org/definitions/trunk/base_classes/<xsl:value-of
-                                    select="@name"/>.nxdl.xml</xsl:attribute
+                                >http://svn.nexusformat.org/definitions/trunk/___NXDL_INSTANCE_FILE_LOCATION___</xsl:attribute
                             ><xsl:value-of select="@name"/></xsl:element>
                     </xsl:element>
                 </xsl:element>
@@ -484,8 +481,8 @@ Usage:
         <!--<xsl:comment>
             XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
             To properly populate the column for "Occurrences," we need
-            to also parse the nxdl.xsd file.  Is this easy?  Otherwise,
-            can only list apparent restrictions at this point.
+            to also parse the nxdl.xsd file.  Is this easy?  
+            Otherwise, can only list apparent restrictions at this point.
             XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
             </xsl:comment>-->
         Occurences: 
