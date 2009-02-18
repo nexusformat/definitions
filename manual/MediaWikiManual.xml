@@ -201,6 +201,206 @@ NXclosedata (fileID);
                         information, if required, but it can also be used to store very simple data
                         sets. </para>
                 </section>
+                <section>
+                    <title>NeXus Coordinate System</title>
+                    <para>This text taken directly from the wiki:
+                        <link
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            xlink:href="http://www.nexusformat.org/Coordinate_Systems"
+                            > http://www.nexusformat.org/Coordinate_Systems </link>
+                        <note><para>Various links from the wiki (http://www.nexusformat.org/Coordinate_Systems) have not been preserved in the copy.</para></note>
+                        
+                        Nexus provide two coordinate system: an NXgeometry based system for physical coordinates 
+                        of beamline components and a polar coordinate based system for "neutronic" coordinates. 
+                        The usage of these two system can be seen by considering a 3He gas tube detector:
+                        
+                        <simplelist>
+                            <member>
+                                The NXgeometry system represents true spatial location and would describe 
+                                a cylinder at a certain distance from the sample that never changes 
+                                from one run to another
+                            </member>
+                            <member>
+                                The polar system would describe the neutronic, rather than actual, 
+                                geometry. For example, the "distance" coordinate would refer to the 
+                                distance from the sample to an effective measurement point within 
+                                the gas tube, which would depend on neutron energy; lower energy 
+                                neutrons would tend to penetrate a smaller distance within the 
+                                tube, and so have a shorter secondary flight path.
+                            </member>
+                        </simplelist>
+                    </para>
+                    <section>
+                        <title>Simple (Spherical Polar) Coordinate System</title>
+                        <para>
+                            In this system the instrument is considered as a set of components 
+                            through which the incident beam passes. The variable distance is assigned 
+                            to each component and represents the effective beam flight path length 
+                            between this component and the sample. A sign convention is used 
+                            where -ve numbers represent components pre-sample and +ve numbers 
+                            components post-sample.
+                        </para>
+                        <para>
+                            For angular information, the quantities polar_angle and azimuthal_angle 
+                            are used and these quantities correspond exactly to the usual spherical 
+                            polar coordinate definitions i.e. the polar_angle is the zenith angle and 
+                            measured with respect to a z axis and the azimuthal_angle to the x axis 
+                            in the xy plane. The direction of these local axes may be different for 
+                            each component: z is the incident beam direction for the previous component 
+                            and we then follow McStas for x and y i.e. the x axis is perpendicular to 
+                            the beam in the horizontal plane pointing left as seen from the source, 
+                            and the y axis points upwards (see diagram below). The z axis thus represents 
+                            the direction of the beam if it was un-deviated by the previous component, 
+                            and so the polar_angle and azimuthal_angle for a component indicate how 
+                            much the beam was bent/scattered by the previous component.
+                        </para>
+                        <para>
+                            If we consider an NXdetector element placed directly after an NXsample, 
+                            the z axis would be in the direction of the beam incident on NXsample. 
+                            The polar_angle for the NXdetector would be the angle between the scattered 
+                            beam and this z axis and so correspond to the Bragg angle or two theta 
+                            even for out-of-plane scattering. The azimuthal_angle would be the angle 
+                            between the positive x-axis and the scattered beam projected onto the 
+                            xy-plane - scattering to the left as seen from the source would have 
+                            azimuthal_angle=0 and scattering to the right azimuthal_angle=pi. 
+                            The distance would correspond to what is often called the secondary 
+                            flight path length or L2. 
+                        </para>
+                    </section>
+                    <section>
+                        <title>NXgeometry based system</title>
+                        <para>
+                            This coordinate system is based on more fully on the 
+                            <link
+                                xmlns:xlink="http://www.w3.org/1999/xlink"
+                                xlink:href="http://mcstas.risoe.dk/"
+                                > McStas coordinate system</link>.
+                            The instrument is given a global, absolute coordinate 
+                            system where the z axis points in the direction of the 
+                            incident beam, the x axis is perpendicular to the beam in the 
+                            horizontal plane pointing left as seen from the source, and the 
+                            y axis points upwards. Each beamline component also has a local 
+                            coordinate system, which is defined by the NXgeometry object. 
+                            The local z direction for a component is taken as the incident 
+                            beam direction, with x and y defined as before i.e. the x axis 
+                            is perpendicular to the beam in the horizontal plane pointing 
+                            left as seen from the source, and the y axis points upwards. 
+                            Information about these coordinate systems and the placement 
+                            of components is described by the NXgeometry class via its 
+                            NXtranslation and NXorientation members. 
+                            <figure>
+                                <title>Definition of translation and orientation geometry 
+                                    (viewed from the source towards the detector).</title>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata fileref="img/translation-orientation-geometry.jpg"/>
+                                    </imageobject>
+                                </mediaobject>
+                            </figure>
+                            <figure>
+                                <title>Definition of translation and orientation geometry 
+                                    (viewed from the detector towards the source).</title>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata fileref="img/translation-orientation-geometry-2.jpg"/>
+                                    </imageobject>
+                                </mediaobject>
+                            </figure>
+                        </para>
+                        <para>
+                            When computing a transformation, NXtranslation is applied before NXorientation. 
+                            All of our axes are right handed and orthogonal. Orientation information is 
+                            stored as direction cosines. The direction cosines will be between the local 
+                            coordinate directions and the reference directions (to origin or relative 
+                            NXgeometry). Calling the local unit vectors (x',y',z') and the reference 
+                            unit vectors (x,y,z) the six numbers will be [x' dot x, x' dot y, x' dot 
+                            z, y' dot x, y' dot y, y' dot z] where "dot" is the scalar dot product 
+                            (cosine of the angle between the unit vectors). The unit vectors in both 
+                            the local and reference coordinates are right-handed and orthonormal: 
+                            with this restriction we only ned to store 6 rather than 9 direction 
+                            cosines as the z' axis can be obtained by the vector cross product of x' and y'.
+                        </para>
+                        <para>
+                            The origin of coordinates is arbitrary, but all components in the file must 
+                            either agree on its absolute location or use relative positioning. To allow 
+                            for this generality, an origin member can be defined in NXentry; its use 
+                            will be detailed shortly.
+                        </para>
+                        <para>
+                            We choose as our absolute the origin the scattering center, which is where 
+                            a perfectly aligned sample would be. Note that the centre of the sample 
+                            itself may not always be at this point if the sample is being scanned across 
+                            the beam. With an origin at the “scattering centre” the spherical polar 
+                            coordinate specifications of the detector positions conveniently relates 
+                            to scattering angles and lengths for direct geometry instruments.
+                        </para>
+                        <para>
+                            Individual components of the instrument (e.g. jaws) will have their own 
+                            set of local axes (x,y,z) which will be fixed to their body in a way 
+                            defined by their shape. These local axes will probably not coincide with 
+                            the global instrument axes and so a set of rotation angles will also 
+                            need to be stored. For this an NXgeometry class is defined, along with 
+                            NXtranslation and NXorientation; the hope is to provide a general enough 
+                            method for relating the location of any object with respect to another 
+                            object. The mechanism also allows for specifying one position relative 
+                            to another component: a NeXus file link is made in one instance of an 
+                            NXgeometry object to another NXgeometry object and a program can then 
+                            traverse the chain of links to calculate an absolute position.
+                        </para>
+                        <para>
+                            NeXus does not need to define absolutely where to place the “origin”. 
+                            All components can instead be declared with a relative position that 
+                            ultimately follows a chain back to one object; this will be named “origin1”, 
+                            be of class NXgeometry and a member of NXentry. The real space location 
+                            of this origin is chosen for convenience and should be mentioned in the 
+                            description attached to “origin1”. If the origin is taken at the sample, 
+                            then “sample.geometry.distance” will always be (0,0,0) relative to 
+                            “origin1”; if the origin is taken elsewhere this will not be so, but 
+                            everything will still work. It may be convenient to define extra origins 
+                            (similar to “arms” in McStas) at other parts of the instrument. For example, 
+                            defining one at the centre of a circular array of detectors would allow 
+                            their positions to be conveniently specified in spherical polar coordinates. 
+                            Another possibility would be to define the sample relative to “origin1” 
+                            and the detectors to “origin2”; the detectors could then be rotated by 
+                            a rotation of “origin2” without modifying NXdetector.
+                        </para>
+                        <para>
+                            As well as specifying the component location, it is also necessary to 
+                            specify the beam direction. Unless otherwise given in an NXbeam member 
+                            of the component, the incident beam is assumed to be travelling along 
+                            (0,0,+z) in the coordinate system of the object (or origin) our position 
+                            was defined relative to. Thus, for a component with absolute positioning 
+                            the beam will always be in the incident beam direction unless specified 
+                            by an NXbeam member.
+                        </para>
+                    </section>
+                    <section>
+                        <title>Size and Shape (NXshape)</title>
+                        <para>
+                            Many instrument components define “height” and “width” variables to 
+                            specify their size when rectangular, a “radius” variable for when circular etc. 
+                            Rather than all these different names, an alternative scheme is proposed 
+                            based on the “shape” of the object and the local coordinate axes this shape 
+                            defines. All object would just need to specify a shape (“cuboid”, 
+                            “cylinder” etc.) and a size array. Specifying size[3] would give the 
+                            dimensions of the object along its local (±x,±y,±z) axes; specifying 
+                            size[6] would give the extent along (+x,+y,+z,-x,-y,-z) and allow for 
+                            e.g. asymmetric jaws where the reference point may not be the centre 
+                            of the rectangle. For example take shape=“cylinder”: the NXtranslation 
+                            variable of position would define the location of the reference point 
+                            for the origin of the local axes: z in the direction of the cylinder 
+                            axis, x and y in plane. With no rotation the object would be oriented 
+                            with its local axes pointing in the direction of axes of the object 
+                            it was defined relative to, but this can be altered with the NXorientation 
+                            variable within position. If a size[3] array variable was specified, 
+                            the reference point must be the centre of the cylinder and the 
+                            dimension are size[0]=size[1]=radius, size[2]=length/2). If size[6] 
+                            was specified then the reference point would be elsewhere in the object, 
+                            with its distance from the cylinder edges along the various axes 
+                            given by elements of the size[6] array. 
+                        </para>
+                    </section>
+                </section>
             </section>
             <section>
                 <title>A Set of Instrument Definitions</title>
