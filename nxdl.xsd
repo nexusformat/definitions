@@ -113,6 +113,7 @@
 	</xs:complexType>
 
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
 	<xs:simpleType name="docType">
 		<xs:annotation>
 			<xs:documentation>
@@ -147,10 +148,64 @@
 
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
-	<xs:simpleType name="dimsType">
-		<xs:list itemType="xs:string" />
-	</xs:simpleType>
-
+	<xs:complexType name="dimsType">
+		<!--
+			Here is a model:
+			<field name="data">
+			    <dimensions size="3"/>
+			    ...
+			</field><field name="time-of-flight">
+				<dimensions size="1">
+					<dim index="1" ref="data" refindex="3" incr="1"/>
+				</dimensions>
+				...
+			</field>
+			
+			In old terms this would make data[i,j,k] and time-of-flight[k+1]. 
+			We need to get to the stage where people
+			don't need to read a manual to understand an existing NXDL.
+		-->
+		<xs:annotation>
+			<xs:documentation>dimensions of a data element in a NeXus file</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dim" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType mixed="true">
+					<xs:attribute name="index" type="nx:NX_CHAR">
+						<xs:annotation>
+							<xs:documentation>Number indicating which subscript is being referenced, 
+								ranging from 1 up to RANK (rank of the data structure).  For example, 
+								given an array A[i,j,k], index="1" would refer to the "i" subscript.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="ref" type="nx:NX_CHAR">
+						<xs:annotation>
+							<xs:documentation>Name of the data structure being referenced indirectly.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="refindex" type="nx:NX_CHAR">
+						<xs:annotation>
+							<xs:documentation>Index within the data structure being referenced indirectly.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="incr" type="nx:NX_CHAR">
+						<xs:annotation>
+							<xs:documentation>What is this?</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="size" type="nx:NX_CHAR">
+			<xs:annotation>
+				<xs:documentation>Rank (number of dimensions) of the data structure.  
+					For example: a[5] has size="1" while b[8,5,6,4] has size="4".  
+					See http://en.wikipedia.org/wiki/Rank_(computer_programming) 
+					for more details.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	
 	<xs:complexType name="fieldType">
 		<xs:complexContent>
 			<xs:annotation>
@@ -159,7 +214,11 @@
 			<xs:extension base="nx:basicComponent">
 				<xs:sequence>
 					<xs:element name="dimensions" type="nx:dimsType"
-						minOccurs="0" />
+						minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+							<xs:documentation>dimensions of a data element in a NeXus file</xs:documentation>
+						</xs:annotation>
+					</xs:element>
 					<xs:element name="attribute" type="nx:attributeType"
 						minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>

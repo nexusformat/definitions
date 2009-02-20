@@ -195,6 +195,11 @@ Usage:
                         <xsl:call-template name="showOccurencesEntry"/>
                     </xsl:element>
                 </xsl:if>
+                <xsl:if test="count(nx:dimensions)">
+                    <xsl:element name="para"> Dimensions:
+                        <xsl:apply-templates select="nx:dimensions" mode="showDimensionsEntry"/>
+                    </xsl:element>
+                </xsl:if>
                 <xsl:if test="count(./nx:group)+count(./nx:field)">
                     <xsl:element name="para">
                         Look for special case table
@@ -324,6 +329,27 @@ Usage:
                 <xsl:when test="name()='definition'">[<xsl:value-of select="name()"/>]</xsl:when>
                 <xsl:otherwise>[<xsl:value-of select="@type"/>]</xsl:otherwise>
             </xsl:choose>
+        </xsl:if>
+    </xsl:template>
+    
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    
+    <xsl:template match="*" mode="showDimensionsEntry">
+        <xsl:choose>
+            <xsl:when test="count(@size)">size="<xsl:value-of select="@size"/>"</xsl:when>
+            <xsl:when test="count(nx:dim)">apparent size="<xsl:value-of select="count(nx:dim)"/>"</xsl:when>
+        </xsl:choose>
+        <xsl:if test="count(nx:dim)">
+            <xsl:element name="itemizedlist">
+                <xsl:for-each select="nx:dim">
+                    <xsl:element name="listitem"> <xsl:element name="para"> dim: 
+                        <xsl:for-each select="@*">
+                            <xsl:value-of select="name()"/>="<xsl:value-of select="."/>"
+                        </xsl:for-each>
+                        <xsl:if test="count(.)"> value="<xsl:value-of select="."/>"</xsl:if>
+                    </xsl:element></xsl:element>
+                </xsl:for-each>
+            </xsl:element>
         </xsl:if>
     </xsl:template>
     
