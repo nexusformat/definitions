@@ -41,27 +41,23 @@
         <field name="title"/>
         <field name="start_time" type="NX_DATE_TIME"/>
         <field name="end_time" type="NX_DATE_TIME"/>
-        <group type="NXinstrument">
-            <group type="NXsource">
-                <field name="type"/>
-                <field name="name"/>
-                <field name="probe">
-                    <enumeration>
-                        <item value="neutron"/>
-                        <item value="x-ray"/>
-                        <item value="electron"/>
-                    </enumeration>
-                </field>
-            </group>
-            <group type="NXcrystal">
-                <field name="wavelength" type="NX_FLOAT" units="NX_LENGTH">
-                    <doc>Optimum diffracted wavelength</doc>
-                    <dimensions size="1">
-                        <dim index="1" value="i"/>
-                    </dimensions>
-                </field>
-            </group>
+        <field name="definition" type="NX_CHAR">
+            <doc>
+                Identifies the NXDL that describes the structure of this data file
+                <!-- possibly a single enumeration of the URL for the XSD derived from this NXDL? -->
+            </doc>
+            <attribute name="URL" type="NX_CHAR">
+                <doc>
+                    Uniform Resource Locator for the base_class, application, or contributed 
+                    NXDL that describes the structure of this data file
+                </doc>
+            </attribute>
+        </field>
+        <group type="NXinstrument"> <!-- overrides NXdetector (see below) -->
+            <group type="NXsource"/> <!-- use the standard definition of NXsource -->
+            <group type="NXcrystal"/>  <!-- use the standard definition of NXcrystal -->
             <group type="NXdetector">
+                <!-- override standard definition of NXcrystal for the dimension quantity "ndet" -->
                 <field name="polar_angle" type="NX_FLOAT">
                     <doc>where ndet = number of detectors</doc>
                     <dimensions size="1">
@@ -81,45 +77,22 @@
                 </field>
             </group>
         </group>
-    </group>
-    <group type="NXsample">
-        <field name="name">
-            <doc>Descriptive name of sample</doc>
-        </field>
-        <field name="rotation_angle" type="NX_FLOAT" units="NX_ANGLE">
-            <doc> Optional rotation angle for the case when the powder diagram has been obtained
-                through an omega-2theta scan like from a traditional single detector powder
-                diffractometer </doc>
-        </field>
-    </group>
-    <group type="NXmonitor">
-        <field name="mode">
-            <doc>Count to a preset value based on either clock time (timer) or received monitor
-                counts (monitor).</doc>
-            <enumeration>
-                <item value="monitor"/>
-                <item value="timer"/>
-            </enumeration>
-        </field>
-        <field name="preset" type="NX_FLOAT">
-            <doc>preset value for time or monitor</doc>
-        </field>
-        <field name="integral" type="NX_FLOAT" units="NX_ANY">
-            <doc>Total integral monitor counts</doc>
-        </field>
-    </group>
-    <group type="NXdata">
-        <field name="polar_angle" type="NX_FLOAT">
-            <doc>Link to polar angle in /NXentry/NXinstrument/NXdetector, ndp = number of detectors or data points</doc>
-            <dimensions size="1">
-                <dim index="1" value="ndp"/>
-            </dimensions>
-        </field>
-        <field name="data" type="NX_INT">
-            <doc>Link to data in /NXentry/NXinstrument/NXdetector</doc>
-            <dimensions size="1">
-                <dim index="1" value="ndp"/>
-            </dimensions>
-        </field>
+        <group type="NXsample"/> <!-- use the standard definition of NXsample -->
+        <group type="NXmonitor"/> <!-- use the standard definition of NXmonitor -->
+        <group type="NXdata"> <!-- overrides default spec (see below) -->
+            <field name="polar_angle" type="NX_FLOAT">
+                <doc>Link to polar angle in /NXentry/NXinstrument/NXdetector, ndp = number of detectors or data points</doc>
+                <!-- but /NXentry/NXinstrument/NXdetector uses "ndet"! -->
+                <dimensions size="1">
+                    <dim index="1" value="ndp"/>
+                </dimensions>
+            </field>
+            <field name="data" type="NX_INT">
+                <doc>Link to data in /NXentry/NXinstrument/NXdetector</doc>
+                <dimensions size="1">
+                    <dim index="1" value="ndp"/>
+                </dimensions>
+            </field>
+        </group>
     </group>
 </definition>
