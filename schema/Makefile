@@ -41,6 +41,23 @@
 
 NXDL_SUFFIX = nxdl.xml
 
+# xsltproc has arguments os         "xsl file"
+# others such as msxsl, nxslt have  "file xsl"
+# so either XSL_BEFORE or XSL_AFTER need to be set
+
+# xsltproc
+XSLTPROC=xsltproc # Linux
+#XSLTPROC="/c/Program Files/Oxygen XML Editor 10/xsltproc" # Windows/MinGW
+XSL_BEFORE=$(XSLT_PATH)/nxdl2xsd.xsl
+
+# msxsl
+#XSLTPROC="/c/Program Files/Oxygen XML Editor 10/msxsl"
+#XSL_AFTER=$(XSLT_PATH)/nxdl2xsd.xsl
+
+# nxslt
+#XSLTPROC="/c/Program Files/Oxygen XML Editor 10/nxslt"
+#XSL_AFTER=$(XSLT_PATH)/nxdl2xsd.xsl
+
 # relative locations for the NXDL instance files
 BASE_CLASS_PATH          = ../base_classes
 APPLICATIONS_CLASS_PATH  = ../applications
@@ -69,15 +86,16 @@ xsd : $(ALL_CLASS_TARGETS)
 
 all: xsd
 
+
 # NXDL files come from three source directories 
 #   but end up in one schema directory.  This means 
 #   that no two NXDL files can have the same class name. 
 %.xsd: $(BASE_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl
-	xsltproc -o $@ $(XSLT_PATH)/nxdl2xsd.xsl $<
+	$(XSLTPROC) -o $@ $(XSL_BEFORE) $< $(XSL_AFTER)
 %.xsd: $(APPLICATIONS_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl
-	xsltproc -o $@ $(XSLT_PATH)/nxdl2xsd.xsl $<
+	$(XSLTPROC) -o $@ $(XSL_BEFORE) $< $(XSL_AFTER)
 %.xsd: $(CONTRIBUTED_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl
-	xsltproc -o $@ $(XSLT_PATH)/nxdl2xsd.xsl $<
+	$(XSLTPROC) -o $@ $(XSL_BEFORE) $< $(XSL_AFTER)
 
 clean ::
 	/bin/rm -f $(ALL_CLASS_TARGETS)
