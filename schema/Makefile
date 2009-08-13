@@ -75,14 +75,27 @@ ALL_NXDL = $(NXDL_BASE_CLASSES) $(NXDL_APPLICATIONS) $(NXDL_CONTRIBUTED)
 
 # list of all classes without path and without the trailing .$(NXDL_SUFFIX) suffix
 ALL_CLASS_NAMES = $(notdir $(ALL_NXDL) )
+APPLICATION_CLASS_NAMES = $(notdir $(NXDL_APPLICATIONS) )
 ALL_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xsd, $(ALL_CLASS_NAMES) )
+APPLICATION_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xsd, $(APPLICATION_CLASS_NAMES) )
 
 
 XSLT_PATH = ../xslt
 
 # === Rules ===
 
-xsd : $(ALL_CLASS_TARGETS)
+xsd : $(ALL_CLASS_TARGETS) BASE.xsd
+
+BASE.xsd : ../BASE.xsd $(APPLICATION_CLASS_TARGETS)
+	rm -f schema.tmp
+	for i in $(APPLICATION_CLASS_TARGETS); do\
+	    echo "  <xs:include schemaLocation=\"$$i\"/>" >> schema.tmp; \
+	done
+	# for now just monopd
+	echo "  <xs:include schemaLocation=\"NXmonopd.xsd\"/>" > schema.tmp; \
+	rm -f BASE.xsd
+	sed -e "/SCHEMA_INCLUDE_SUB_START/ r schema.tmp" < ../BASE.xsd > BASE.xsd
+	rm -f schema.tmp
 
 all: xsd
 
