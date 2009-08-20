@@ -101,25 +101,36 @@ Usage:
     
     <xsl:template match="nxdl:definition">
         <!-- identify all the XSD files to be included -->
+	<xsl:variable name="baseClass">
+	<xsl:choose>
+	<xsl:when test="@extends"><xsl:text>nxsd:</xsl:text><xsl:value-of select="@extends" /></xsl:when>
+	<xsl:otherwise><xsl:text>nxsd:classSuperBaseType</xsl:text></xsl:otherwise>
+	</xsl:choose>
+	</xsl:variable>
         <xsl:call-template name="groupIncludes" />
         <xsl:call-template name="comment">
             <xsl:with-param name="msg">declarations (attributes, docs, groups, and fields)</xsl:with-param>
         </xsl:call-template>
         <xsl:element name="xs:complexType">
-            <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
-            <xsl:attribute name="mixed">true</xsl:attribute>
+          <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+          <!--xsl:attribute name="mixed">true</xsl:attribute-->
+          <xsl:element name="xs:complexContent">
+           <xsl:element name="xs:extension"> 
+            <xsl:attribute name="base"><xsl:value-of select="$baseClass"/></xsl:attribute>
             <xsl:element name="xs:sequence">
                 <!--<xsl:apply-templates select="*"/>-->    <!-- standard order for fields & groups from NXDL -->
                 <xsl:call-template name="groupGroup"/>    <!-- special sort order for fields & groups -->
             </xsl:element>
-            <xsl:if test="count(nxdl:attribute/@name)=0">
+            <!--xsl:if test="count(nxdl:attribute/@name)=0">
                 <xsl:element name="xs:attribute">
                     <xsl:attribute name="name">name</xsl:attribute>
                     <xsl:attribute name="use">optional</xsl:attribute>
                 </xsl:element>
-            </xsl:if>
+            </xsl:if-->
             <!-- special case: need to handle nxdl:attribute _after_ the sequence! -->
             <xsl:apply-templates select="nxdl:attribute" mode="after_sequence"/>
+           </xsl:element>
+         </xsl:element>
         </xsl:element>
     </xsl:template>
     
@@ -213,6 +224,12 @@ Usage:
                     <!-- fields or groups within this group element  -->
                     <xsl:comment> this is part of an <xsl:value-of select="@type"/> object </xsl:comment>
                     <xsl:element name="xs:complexType">
+                    <!--xsl:attribute name="mixed">true</xsl:attribute-->
+                    <xsl:element name="xs:complexContent">
+                    <xsl:element name="xs:extension">
+                    <xsl:attribute name="base">
+                      <xsl:text>nxsd:</xsl:text><xsl:value-of select="@type"/>
+                    </xsl:attribute>
                         <xsl:element name="xs:sequence">
                             <xsl:apply-templates select="nxdl:field|nxdl:group"/>
                         </xsl:element>
@@ -221,6 +238,8 @@ Usage:
                                 <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
                             </xsl:element>
                         </xsl:if>
+                    </xsl:element>
+                    </xsl:element>
                     </xsl:element>
                 </xsl:when>
                 <xsl:when test="count(@name)>0">
@@ -331,6 +350,7 @@ Usage:
     
     <xsl:template name="groupIncludes">
         <!-- extends from this NeXus object -->
+       <xsl:if test="@extends">
         <xsl:element name="xs:include">
             <!-- add special case condition for NXobject (should really convert all NXDL to use the proper base class) -->
             <xsl:attribute name="schemaLocation"><xsl:value-of select="@extends"/>.xsd</xsl:attribute>
@@ -341,10 +361,19 @@ Usage:
                 <xsl:element name="xs:documentation">NXDL "<xsl:value-of select="@name"/>" extends the <xsl:value-of select="@extends"/> class</xsl:element>
             </xsl:element>
         </xsl:element>
+        </xsl:if>
         <!-- ++++++++++++++++++++++++++++++++++++ -->
         <xsl:element name="xs:import">
-            <xsl:attribute name="schemaLocation">nxdlTypes.xsd</xsl:attribute>
+            <xsl:attribute name="schemaLocation">../nxdlTypes.xsd</xsl:attribute>
             <xsl:attribute name="namespace">http://definition.nexusformat.org/nxdl/3.1</xsl:attribute>
+            <xsl:element name="xs:annotation">
+                <xsl:element name="xs:documentation"
+                    >Definitions of the basic data types and unit types allowed in NXDL instance files.</xsl:element>
+            </xsl:element>
+        </xsl:element>
+        <!-- ++++++++++++++++++++++++++++++++++++ -->
+        <xsl:element name="xs:include">
+            <xsl:attribute name="schemaLocation">../NeXus.xsd</xsl:attribute>
             <xsl:element name="xs:annotation">
                 <xsl:element name="xs:documentation"
                     >Definitions of the basic data types and unit types allowed in NXDL instance files.</xsl:element>
