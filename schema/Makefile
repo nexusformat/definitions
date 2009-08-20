@@ -78,13 +78,15 @@ ALL_CLASS_NAMES = $(notdir $(ALL_NXDL) )
 APPLICATION_CLASS_NAMES = $(notdir $(NXDL_APPLICATIONS) )
 ALL_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xsd, $(ALL_CLASS_NAMES) )
 APPLICATION_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xsd, $(APPLICATION_CLASS_NAMES) )
+# additional target for cleanup
+ALL_CLASS_TARGETS += BASE.xsd
 
 
 XSLT_PATH = ../xslt
 
 # === Rules ===
 
-xsd : $(ALL_CLASS_TARGETS) BASE.xsd
+xsd : $(ALL_CLASS_TARGETS)
 
 BASE.xsd : ../BASE.xsd $(APPLICATION_CLASS_TARGETS)
 	rm -f schema.tmp
