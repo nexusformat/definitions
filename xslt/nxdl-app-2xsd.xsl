@@ -30,7 +30,7 @@ Usage:
     
     <!-- comment specific to this NXDL category -->
     <xsl:template name="nxdl-category-comment">
-        <xsl:comment> *** This is an Application Class *** </xsl:comment>
+        <xsl:comment> **** This is an Application Class **** </xsl:comment>
     </xsl:template>
     
 </xsl:stylesheet>
