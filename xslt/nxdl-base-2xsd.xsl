@@ -27,7 +27,6 @@ Usage:
 	xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
     <xsl:import href="nxdl2xsd.xsl"/>
-    <!--<xsl:include href="nxdl2xsd.xsl"/>-->
 
     <!-- comment specific to this NXDL category -->
     <xsl:template name="nxdl-category-comment">
