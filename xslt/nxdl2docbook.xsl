@@ -26,7 +26,11 @@ Usage:
 	xmlns:xlink="http://www.w3.org/1999/xlink"
     >
 
-    <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8" cdata-section-elements="programlisting"/>
+    <!-- 
+        The CDATA section does not work the same when this XSLT is "xsl:import"ed.
+        Modify the Python code to provide hte proper syntax.
+     -->
+    <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
 
     <!-- 
         +++++++++++++++++

@@ -46,7 +46,8 @@ def _main():
     
     # find and replace text
     matchtext = '___COPY_NXDL_HERE___'
-    newdocbook = db.replace(matchtext, nxdl)
+    cdata = "<![CDATA[" + nxdl + "]]>"
+    newdocbook = db.replace(matchtext, cdata)
     db = newdocbook
     
     # find and replace text

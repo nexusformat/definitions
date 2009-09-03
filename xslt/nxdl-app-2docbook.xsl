@@ -11,7 +11,7 @@
 
 Purpose:
 	This stylesheet is used to translate the NeXus Definition Language
-	specifications of Base Class Definitions into DocBook (.xml) files 
+	specifications of Application Definitions into DocBook (.xml) files 
 	for use in assembling NeXus about the class definitions from NXDL.
 
 Usage:
@@ -30,7 +30,7 @@ Usage:
     
     <!-- comment specific to this NXDL category -->
     <xsl:template name="nxdl-category-comment">
-        <xsl:comment> **** This is a BASE Class **** </xsl:comment>
+        <xsl:comment> **** This is an Application Definition Class **** </xsl:comment>
     </xsl:template>
 
 </xsl:stylesheet>

@@ -71,6 +71,9 @@ CONTRIBUTED_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xml, $(CONTRIBUTED_CL
 # XSLT definitions
 XSLT_PATH = ../xslt
 XSLT = $(XSLT_PATH)/nxdl2docbook.xsl
+XSLT_APPS = $(XSLT_PATH)/nxdl-app-2docbook.xsl
+XSLT_BASE = $(XSLT_PATH)/nxdl-base-2docbook.xsl
+XSLT_CNTR = $(XSLT_PATH)/nxdl-contrib-2docbook.xsl
 
 DYNAMIC_DOCBOOK_SECTIONS  = BaseClassSections.xml 
 DYNAMIC_DOCBOOK_SECTIONS += ApplicationClassSections.xml 
@@ -92,8 +95,17 @@ all: docbook
 docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.pdf
 
 # This uses VPATH to locate the source directory for the target
-%.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT)
-	xsltproc -o $@ $(XSLT) $<
+# NXDL files come from three source directories 
+#   but end up in one schema directory.  This means 
+#   that no two NXDL files can have the same class name. 
+%.xml: $(BASE_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl $(XSLT_PATH)/$(XSLT_BASE)
+	xsltproc -o $@ $(XSLT_BASE) $<
+	python ./addnxdlcode.py $< $@
+%.xml: $(APPLICATIONS_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl $(XSLT_PATH)/$(XSLT_APPS)
+	xsltproc -o $@ $(XSLT_APPS) $<
+	python ./addnxdlcode.py $< $@
+%.xml: $(CONTRIBUTED_CLASS_PATH)/%.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl $(XSLT_PATH)/$(XSLT_CNTR)
+	xsltproc -o $@ $(XSLT_CNTR) $<
 	python ./addnxdlcode.py $< $@
 
 test ::
