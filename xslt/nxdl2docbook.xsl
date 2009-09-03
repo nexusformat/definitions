@@ -53,6 +53,8 @@ Usage:
         <xsl:processing-instruction 
             name="oxygen">RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"</xsl:processing-instruction>
         <xsl:comment/><!-- tricks XSLT to start a new line -->
+        
+        <xsl:call-template name="nxdl-category-comment"/><!-- comment -->
 <xsl:comment>
 ##########################################################
 ######	 This XML file was auto-generated from      ######
@@ -534,5 +536,9 @@ Usage:
     </xsl:template>
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
- 
+
+
+    <!-- override these templates in each NXDL's specific XSLT file -->
+    <xsl:template name="nxdl-category-comment"/> <!--  *** override for each NXDL category ***  -->
+
 </xsl:stylesheet>

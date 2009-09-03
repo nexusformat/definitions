@@ -434,7 +434,8 @@ Usage:
             </xsl:choose>
         </xsl:attribute>
     </xsl:template>
-    
+
+
     <!--leave these templates empty, they are handled by special case code as needed	-->
     <xsl:template match="nxdl:attribute"/>
     <xsl:template match="nxdl:dimensions"/>
@@ -445,6 +446,5 @@ Usage:
 
     <!-- override these templates in each NXDL's specific XSLT file -->
     <xsl:template name="nxdl-category-comment"/> <!--  *** override for each NXDL category ***  -->
-    
 
 </xsl:stylesheet>
