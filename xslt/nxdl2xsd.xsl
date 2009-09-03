@@ -48,6 +48,8 @@ Usage:
     
     <xsl:template match="/">
 
+        <xsl:call-template name="nxdl-category-comment"/>
+
 <xsl:comment>
 ##########################################################
 ######	 This xsd file was auto-generated from      ######
@@ -439,5 +441,10 @@ Usage:
     <xsl:template match="nxdl:item"/>
     <xsl:template match="@name"/>
     <xsl:template match="@type"/>
+
+
+    <!-- override these templates in each NXDL's specific XSLT file -->
+    <xsl:template name="nxdl-category-comment"/> <!--  *** override for each NXDL category ***  -->
     
+
 </xsl:stylesheet>
