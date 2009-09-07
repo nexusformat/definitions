@@ -192,11 +192,11 @@ Usage:
     </xsl:template>
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
+    
     <xsl:template match="nxdl:group">
         <!-- reference to another NX object (requires that object's XSD) -->
         <xsl:call-template name="comment">
-            <xsl:with-param name="msg">group declaration</xsl:with-param>
+            <xsl:with-param name="msg">general: group declaration</xsl:with-param>
         </xsl:call-template>
         <xsl:element name="xs:element">
             <xsl:attribute name="name">
@@ -226,22 +226,22 @@ Usage:
                     <!-- fields or groups within this group element  -->
                     <xsl:comment> this is part of an <xsl:value-of select="@type"/> object </xsl:comment>
                     <xsl:element name="xs:complexType">
-                    <!--xsl:attribute name="mixed">true</xsl:attribute-->
-                    <xsl:element name="xs:complexContent">
-                    <xsl:element name="xs:extension">
-                    <xsl:attribute name="base">
-                      <xsl:text>nxsd:</xsl:text><xsl:value-of select="@type"/>
-                    </xsl:attribute>
-                        <xsl:element name="xs:sequence">
-                            <xsl:apply-templates select="nxdl:field|nxdl:group"/>
-                        </xsl:element>
-                        <xsl:if test="count(@name)>0">
-                            <xsl:element name="xs:attribute">
-                                <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+                        <!--xsl:attribute name="mixed">true</xsl:attribute-->
+                        <xsl:element name="xs:complexContent">
+                            <xsl:element name="xs:extension">
+                                <xsl:attribute name="base">
+                                    <xsl:text>nxsd:</xsl:text><xsl:value-of select="@type"/>
+                                </xsl:attribute>
+                                <xsl:element name="xs:sequence">
+                                    <xsl:apply-templates select="nxdl:field|nxdl:group"/>
+                                </xsl:element>
+                                <xsl:if test="count(@name)>0">
+                                    <xsl:element name="xs:attribute">
+                                        <xsl:attribute name="name"><xsl:value-of select="@name"/></xsl:attribute>
+                                    </xsl:element>
+                                </xsl:if>
                             </xsl:element>
-                        </xsl:if>
-                    </xsl:element>
-                    </xsl:element>
+                        </xsl:element>
                     </xsl:element>
                 </xsl:when>
                 <xsl:when test="count(@name)>0">
@@ -257,7 +257,7 @@ Usage:
             </xsl:choose>
         </xsl:element>
     </xsl:template>
-    
+        
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xsl:template match="@units|@minOccurs|@maxOccurs">

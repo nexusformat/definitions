@@ -32,5 +32,7 @@ Usage:
     <xsl:template name="nxdl-category-comment">
         <xsl:comment> **** This is a BASE Class **** </xsl:comment>
     </xsl:template>
+    
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 </xsl:stylesheet>
