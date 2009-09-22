@@ -129,7 +129,8 @@ all.nxdl.xml : Makefile $(ALL_NXDL)
 	$(XSLTPROC) -o $@ $(XSL_BEFORE) $< $(XSL_AFTER)
 
 clean ::
-	/bin/rm -f $(ALL_CLASS_TARGETS)
+	rm -f $(ALL_CLASS_TARGETS)
+	rm -f all.xsd all_unsorted.xsd all.nxdl.xml
 
 rebuild :: clean all
 
