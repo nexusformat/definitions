@@ -66,7 +66,6 @@ Usage:
             <xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.1</xsl:attribute>
             <xsl:attribute name="elementFormDefault">qualified</xsl:attribute>
             <xsl:attribute name="nxsd:something">1<!-- force the namespace to be present --></xsl:attribute>
-            <!--<xsl:attribute name="elementFormDefault">qualified</xsl:attribute>-->
             <!--<xsl:attribute name="attributeFormDefault">qualified</xsl:attribute>-->
             <!-- special case for nxdl:attribute elements because they have to come before documentation -->
             <xsl:for-each select="nxdl:attribute">
@@ -188,7 +187,7 @@ Usage:
         <xsl:choose>
             <xsl:when test="$cdef/nxdl:group[@type=$ggg]" />
             <xsl:otherwise>
-                <!--xsl:apply-templates select="." /-->                                            
+                <xsl:apply-templates select="." />                                            
             </xsl:otherwise>
         </xsl:choose>
     </xsl:for-each>
@@ -198,7 +197,7 @@ Usage:
             <xsl:choose>
                 <xsl:when test="$cdef/nxdl:field[@name=$ggg]" />
                 <xsl:otherwise>
-                    <!--xsl:apply-templates select="." /-->                                            
+                    <xsl:apply-templates select="." />                                            
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
@@ -266,6 +265,7 @@ Usage:
         </xsl:for-each>
     </xsl:template>
     
+    <!-- old version of get_field_base_type just here for reference -->
     <xsl:template name="get_base_type_not_used">
         <xsl:for-each select="ancestor-or-self::*">
             <xsl:choose>
@@ -288,6 +288,10 @@ Usage:
         </xsl:for-each>
     </xsl:template>
     
+    <!-- if we are a restriction, work out what we are a restriction of and generate the
+         name of that type. It assumes the same namimng convention for types
+         used in "generate-types" 
+    -->
     <xsl:template name="get_field_base_type">
         <xsl:text>_</xsl:text>
         <xsl:choose>
@@ -331,11 +335,19 @@ Usage:
             <xsl:call-template name="get_inherit_type" />
         </xsl:variable>
         
+        <xsl:variable name="base_type">
+            <xsl:choose>
+                <xsl:when test="$inherit_type = 'xs:restriction'">nxsd:<xsl:call-template name="get_field_base_type"/></xsl:when>
+            </xsl:choose>            
+        </xsl:variable>
+                    
         <xsl:element name="xs:complexType">
             <xsl:attribute name="name"><xsl:value-of select="$field_type"/></xsl:attribute>
                     <xsl:choose>
                         <xsl:when test="count(nxdl:enumeration)>0">
-                            <xsl:apply-templates select="nxdl:enumeration" mode="complex"/>
+                            <xsl:apply-templates select="nxdl:enumeration" mode="complex">
+                                <xsl:with-param name="base_type" select="$base_type"/>
+                            </xsl:apply-templates>
                         </xsl:when>
                         <xsl:otherwise><!-- no nxdl:enumeration -->
                             <xsl:element name="xs:simpleContent">
@@ -343,7 +355,7 @@ Usage:
                                     <!-- @name is handled already -->
                                     <xsl:choose>
                                         <xsl:when test="$inherit_type = 'xs:restriction'">
-                                            <xsl:attribute name="base">nxsd:<xsl:call-template name="get_field_base_type"/></xsl:attribute>
+                                            <xsl:attribute name="base"><xsl:value-of select="$base_type"/></xsl:attribute>
                                         </xsl:when>
                                         <xsl:otherwise>
                                             <xsl:call-template name="typeAttributeDefaultHandler" >
@@ -458,10 +470,12 @@ Usage:
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xsl:template match="nxdl:enumeration" mode="standard">
+        <xsl:param name="base_type" />
         <xsl:element name="xs:simpleType">
             <xsl:element name="xs:restriction">
                 <xsl:attribute name="base">
                     <xsl:choose>
+                        <xsl:when test="string-length($base_type) > 0"><xsl:value-of select="$base_type"/></xsl:when>
                         <!-- base or type was specified in the parent field -->
                         <xsl:when test="count(../@type)>0">nxsd:<xsl:value-of select="../@type"/></xsl:when>
                         <!-- default -->
@@ -474,10 +488,12 @@ Usage:
     </xsl:template>
 
     <xsl:template match="nxdl:enumeration" mode="complex">
+        <xsl:param name="base_type" />
         <xsl:element name="xs:simpleContent">
             <xsl:element name="xs:restriction">
                 <xsl:attribute name="base">
                     <xsl:choose>
+                        <xsl:when test="string-length($base_type) > 0"><xsl:value-of select="$base_type"/></xsl:when>
                         <!-- base or type was specified in the parent field -->
                         <xsl:when test="count(../@type)>0">nxsd:<xsl:value-of select="../@type"/></xsl:when>
                         <!-- default -->

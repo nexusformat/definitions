@@ -49,14 +49,17 @@ NXDL_SUFFIX = nxdl.xml
 #XSLTPROC=xsltproc # Linux
 #XSLTPROC="/c/Program Files/Oxygen XML Editor 10/xsltproc" # Windows/MinGW
 #XSL_BEFORE=$(XSLT_PATH)/nxdl2xsd.xsl
+#XSLSORT_BEFORE=$(XSLT_PATH)/sort_xsd.xsl
 
 # msxsl
 XSLTPROC="/c/Program Files/Oxygen XML Editor 10/msxsl"
 XSL_AFTER=$(XSLT_PATH)/nxdl2xsd.xsl
+XSLSORT_AFTER=$(XSLT_PATH)/sort_xsd.xsl
 
 # nxslt
 #XSLTPROC="/c/Program Files/Oxygen XML Editor 10/nxslt"
 #XSL_AFTER=$(XSLT_PATH)/nxdl2xsd.xsl
+#XSLSORT_AFTER=$(XSLT_PATH)/sort_xsd.xsl
 
 # relative locations for the NXDL instance files
 BASE_CLASS_PATH          = ../base_classes
@@ -101,8 +104,11 @@ BASE.xsd : ../BASE.xsd $(APPLICATION_CLASS_TARGETS)
 	sed -e "/SCHEMA_INCLUDE_SUB_START/ r schema.tmp" < ../BASE.xsd > BASE.xsd
 	rm -f schema.tmp
 
-all.xsd : all.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl
+all_unsorted.xsd : all.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl
 	$(XSLTPROC) -o $@ $(XSL_BEFORE) $< $(XSL_AFTER)
+
+all.xsd : all_unsorted.xsd Makefile $(XSLT_PATH)/sort_xsd.xsl
+	$(XSLTPROC) -o $@ $(XSLSORT_BEFORE) $< $(XSLSORT_AFTER)
 
 all.nxdl.xml : Makefile $(ALL_NXDL)
 	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " > all.nxdl.xml
