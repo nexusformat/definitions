@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     ########### SVN repository information ###################
-    # $Date: 2009-09-22 13:21:29 +0100 (Tue, 22 Sep 2009) $
-    # $Author: Freddie Akeroyd $
-    # $Revision: 369 $
-    # $HeadURL: https://svn.nexusformat.org/definitions/trunk/xslt/nxdl2xsd.xsl $
-    # $Id: nxdl2xsd.xsl 369 2009-09-22 12:21:29Z Freddie Akeroyd $
+    # $Date$
+    # $Author$
+    # $Revision$
+    # $HeadURL$
+    # $Id$
     ########### SVN repository information ###################
     
     Purpose:
