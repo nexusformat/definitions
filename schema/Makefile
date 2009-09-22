@@ -46,15 +46,15 @@ NXDL_SUFFIX = nxdl.xml
 # so either XSL_BEFORE or XSL_AFTER need to be set
 
 # xsltproc
-#XSLTPROC=xsltproc # Linux
+XSLTPROC=xsltproc # Linux
 #XSLTPROC="/c/Program Files/Oxygen XML Editor 10/xsltproc" # Windows/MinGW
-#XSL_BEFORE=$(XSLT_PATH)/nxdl2xsd.xsl
-#XSLSORT_BEFORE=$(XSLT_PATH)/sort_xsd.xsl
+XSL_BEFORE=$(XSLT_PATH)/nxdl2xsd.xsl
+XSLSORT_BEFORE=$(XSLT_PATH)/sort_xsd.xsl
 
 # msxsl
-XSLTPROC="/c/Program Files/Oxygen XML Editor 10/msxsl"
-XSL_AFTER=$(XSLT_PATH)/nxdl2xsd.xsl
-XSLSORT_AFTER=$(XSLT_PATH)/sort_xsd.xsl
+#XSLTPROC="/c/Program Files/Oxygen XML Editor 10/msxsl"
+#XSL_AFTER=$(XSLT_PATH)/nxdl2xsd.xsl
+#XSLSORT_AFTER=$(XSLT_PATH)/sort_xsd.xsl
 
 # nxslt
 #XSLTPROC="/c/Program Files/Oxygen XML Editor 10/nxslt"
