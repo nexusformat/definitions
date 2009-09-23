@@ -42,6 +42,8 @@ Usage:
     <xsl:key name="def-extends" match="//nxdl:definition" use="@extends"/>
     <xsl:key name="def-restricts" match="//nxdl:definition" use="@restricts"/>    
 
+    <xsl:key name="link-target" match="//nxdl:link" use="@target"/>
+    
     <!-- 
         +++++++++++++++++
         matched templates
@@ -201,6 +203,16 @@ Usage:
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:for-each>
+        <xsl:for-each select="$bdef/nxdl:link">
+            <xsl:sort select="@name"/>
+            <xsl:variable name="ggg" select="string(@name)" />
+            <xsl:choose>
+                <xsl:when test="$cdef/nxdl:link[@name=$ggg]" />
+                <xsl:otherwise>
+                    <xsl:apply-templates select="." />                                            
+                </xsl:otherwise>
+            </xsl:choose>
+        </xsl:for-each>
         <xsl:call-template name="comment">
             <xsl:with-param name="msg">end inherited fields from <xsl:value-of select="$baseClass"/></xsl:with-param>
         </xsl:call-template>
@@ -216,6 +228,31 @@ Usage:
     </xsl:template>
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    
+    <xsl:template match="nxdl:link">
+        <xsl:element name="xs:element">
+            <xsl:attribute name="name">NAPIlink</xsl:attribute>
+            <xsl:element name="xs:complexType">
+                <xsl:element name="xs:simpleContent">
+                    <xsl:element name="xs:restriction">
+                        <xsl:attribute name="base">nxsd:NAPIlinkType</xsl:attribute>
+                        <xsl:element name="xs:attribute">
+                            <xsl:attribute name="name">name</xsl:attribute>
+                            <xsl:attribute name="use">required</xsl:attribute>
+                            <xsl:attribute name="type">nxsd:validName</xsl:attribute>
+                            <xsl:attribute name="fixed"><xsl:value-of select="@name"/></xsl:attribute>
+                        </xsl:element>
+                        <xsl:element name="xs:attribute">
+                            <xsl:attribute name="name">target</xsl:attribute>
+                            <xsl:attribute name="use">required</xsl:attribute>
+                            <xsl:attribute name="type">nxsd:validTarget</xsl:attribute>
+                            <xsl:attribute name="fixed"><xsl:value-of select="@target"/></xsl:attribute>
+                        </xsl:element>
+                    </xsl:element>
+                 </xsl:element>   
+            </xsl:element>
+        </xsl:element>
+    </xsl:template>
     
     <xsl:template match="nxdl:field">
         <!-- named element declaration -->
@@ -401,7 +438,7 @@ Usage:
                 </xsl:choose>
             </xsl:attribute>
             <xsl:choose>
-                <xsl:when test="count(nxdl:field)+count(nxdl:group)>0">
+                <xsl:when test="count(nxdl:link)+count(nxdl:field)+count(nxdl:group)>0">
                     <!-- if there are fields or groups, then documentation comes afterwards ?????(then why is it before?)????? -->
                     <xsl:apply-templates select="nxdl:doc"/>
                     <!-- fields or groups within this group element  -->
@@ -419,7 +456,7 @@ Usage:
                                 <xsl:sort select="@name"/>
                                 <xsl:sort select="@type"/>
                             </xsl:apply-templates>
-                            <xsl:apply-templates select="nxdl:field">
+                            <xsl:apply-templates select="nxdl:field|nxdl:link">
                                 <xsl:with-param name="extendType" select="$extendType"></xsl:with-param>
                                 <xsl:sort select="@name"/>
                             </xsl:apply-templates>
@@ -594,7 +631,7 @@ Usage:
             <xsl:sort select="@name"/><!-- then sort by field names -->
             <xsl:sort select="@type"/><!-- sort by group type -->
         </xsl:apply-templates>
-        <xsl:apply-templates select="nxdl:field">
+        <xsl:apply-templates select="nxdl:field|nxdl:link">
             <xsl:with-param name="extendType" select="$extendType" />
             <xsl:with-param name="baseClass" select="$baseClass"/>
             <xsl:sort select="@name"/><!-- sort by field names -->
