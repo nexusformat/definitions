@@ -468,6 +468,8 @@ Usage:
     
     <xsl:template name="makeTable">
         <xsl:element name="table">
+			<!--  This is markup for dblatex to make the font smaller in the table -->
+			<xsl:attribute name="role">small</xsl:attribute>
             <!-- describe what is defined -->
             <xsl:element name="title">
                 Tabular representation of 
@@ -482,17 +484,20 @@ Usage:
                     So far, the next set of instructions result in fixed column widths, but the widths are tuned somewhat.
                     The numbers are "weightings": the sum of all will be divided into each to get proportional width.
                     Asterisk (*) is necessary.
+					
+					http://dblatex.sourceforge.net/html/manual/ch03s04.html
                 -->
-                <xsl:element name="colspec"><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
-                <xsl:element name="colspec"><xsl:attribute name="colwidth">1.5*</xsl:attribute></xsl:element>
-                <xsl:element name="colspec"><xsl:attribute name="colwidth">1*</xsl:attribute></xsl:element>
-                <xsl:element name="colspec"><xsl:attribute name="colwidth">3*</xsl:attribute></xsl:element>
+                <xsl:element name="colspec"><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
+                <xsl:element name="colspec"><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
+                <xsl:element name="colspec"><xsl:attribute name="colwidth">10*</xsl:attribute></xsl:element>
+                <xsl:element name="colspec"><xsl:attribute name="colwidth">30*</xsl:attribute></xsl:element>
                 <xsl:element name="thead">
                     <xsl:element name="row">
-                        <xsl:element name="entry">Name and Attributes</xsl:element>
-                        <xsl:element name="entry">Type</xsl:element>
-                        <xsl:element name="entry">Units</xsl:element>
-                        <xsl:element name="entry">Description (and Occurrences)</xsl:element>
+                        <!-- more dblatex markup to set the background color of the column labels -->
+						<xsl:element name="entry"><?dblatex bgcolor="[gray]{0.8}"?>Name and Attributes</xsl:element>
+                        <xsl:element name="entry"><?dblatex bgcolor="[gray]{0.8}"?>Type</xsl:element>
+                        <xsl:element name="entry"><?dblatex bgcolor="[gray]{0.8}"?>Units</xsl:element>
+                        <xsl:element name="entry"><?dblatex bgcolor="[gray]{0.8}"?>Description (and Occurrences)</xsl:element>
                     </xsl:element>
                     <!-- row -->
                 </xsl:element>
