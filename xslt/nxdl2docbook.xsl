@@ -28,7 +28,7 @@ Usage:
 
     <!-- 
         The CDATA section does not work the same when this XSLT is "xsl:import"ed.
-        Modify the Python code to provide hte proper syntax.
+        Modify the Python code to provide the proper syntax.
      -->
     <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
 
@@ -118,6 +118,12 @@ Usage:
                     </xsl:element>
                 </xsl:otherwise>
             </xsl:choose>
+            <!-- ...................................................... -->
+            <!-- listing of the NXDL source file -->
+            <section>
+                <title><literal><xsl:value-of select="@name"/>.nxdl.xml</literal>: NXDL specification</title>
+                <programlisting language="xml" linenumbering="numbered">___COPY_NXDL_HERE___</programlisting>
+            </section>
             <!-- ...................................................... -->
             <xsl:apply-templates select="nx:group" mode="checkHierarchy"/>
             <!-- ...................................................... -->
@@ -398,7 +404,7 @@ Usage:
             </xsl:element><!-- varlistentry -->
             <xsl:element name="varlistentry">
                 <!-- show how to learn more about NXDL -->
-                <xsl:element name="term">NeXus Definitional Language</xsl:element>
+                <xsl:element name="term">NeXus Definition Language</xsl:element>
                 <xsl:element name="listitem">
                     <xsl:element name="para">
                         <xsl:element name="link"
@@ -453,14 +459,6 @@ Usage:
                     </xsl:element>
                 </xsl:element>
             </xsl:element><!-- varlistentry -->
-            <xsl:element name="varlistentry"><!-- NXDL listing -->
-                <xsl:element name="term">NXDL listing</xsl:element>
-                <xsl:element name="listitem">
-                    <xsl:element name="para">
-                        <programlisting>___COPY_NXDL_HERE___</programlisting>
-                    </xsl:element>
-                </xsl:element>
-            </xsl:element><!-- varlistentry -->
         </xsl:element><!-- variablelist -->
     </xsl:template>
     
@@ -468,8 +466,9 @@ Usage:
     
     <xsl:template name="makeTable">
         <xsl:element name="table">
-			<!--  This is markup for dblatex to make the font smaller in the table -->
-			<xsl:attribute name="role">small</xsl:attribute>
+            <!--  This is markup for dblatex: -->
+            <xsl:attribute name="orient">port</xsl:attribute> <!-- portrait -->
+            <xsl:attribute name="role">small</xsl:attribute> <!-- smaller font -->
             <!-- describe what is defined -->
             <xsl:element name="title">
                 Tabular representation of 
@@ -494,10 +493,15 @@ Usage:
                 <xsl:element name="thead">
                     <xsl:element name="row">
                         <!-- more dblatex markup to set the background color of the column labels -->
-						<xsl:element name="entry"><?dblatex bgcolor="[gray]{0.8}"?>Name and Attributes</xsl:element>
-                        <xsl:element name="entry"><?dblatex bgcolor="[gray]{0.8}"?>Type</xsl:element>
-                        <xsl:element name="entry"><?dblatex bgcolor="[gray]{0.8}"?>Units</xsl:element>
-                        <xsl:element name="entry"><?dblatex bgcolor="[gray]{0.8}"?>Description (and Occurrences)</xsl:element>
+                        <!--<?dblatex bgcolor="[gray]{0.8}"?>-->
+                        <xsl:element name="entry"><xsl:processing-instruction name="dblatex"
+                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Name and Attributes</xsl:element>
+                        <xsl:element name="entry"><xsl:processing-instruction name="dblatex"
+                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Type</xsl:element>
+                        <xsl:element name="entry"><xsl:processing-instruction name="dblatex"
+                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Units</xsl:element>
+                        <xsl:element name="entry"><xsl:processing-instruction name="dblatex"
+                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Description (and Occurrences)</xsl:element>
                     </xsl:element>
                     <!-- row -->
                 </xsl:element>
