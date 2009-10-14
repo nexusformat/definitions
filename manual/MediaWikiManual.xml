@@ -2,7 +2,7 @@
 <?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
 <!-- # $Id$ -->
 <chapter xml:id="MediaWikiManualChapter" xmlns="http://docbook.org/ns/docbook" version="5.0"
-    xmlns:xlink="http://www.w3.org/1999/xlink">
+    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>MediaWiki Manual</title>
     <!--
         Note there is WWW-based converter from MediaWiki to DocBook:
@@ -70,8 +70,7 @@
                 <para>For example, in NeXus, a program to read in the wavelength of an experiment
                     would contain lines similar to the following: <example>
                         <title>Simple example of reading data</title>
-                        <programlisting>
-NXopendata (fileID, "wavelength");
+                        <programlisting language="c">NXopendata (fileID, "wavelength");
 NXgetdata (fileID, lambda);
 NXclosedata (fileID);
 </programlisting>
@@ -217,25 +216,13 @@ NXclosedata (fileID);
                 <para>These instrument definitions are being formalized as XML files, using a
                     specially devised syntax that specifies the names of data items, and whether
                     they are optional or required. The following is an example of such a file for
-                    the simple NeXus file shown above. <example>
-                        <title>A very simple NeXus file</title>
-                        <programlisting><![CDATA[
-<?xml version="1.0" ?> 
-<!--
-URL: http://www.neutron.anl.gov/nexus/xml/simple.xml
-Editor: Ray Osborn <ROsborn@anl.gov>
-
-A very simple NeXus file
-
--->
-<NXentry name="{Name of entry}">
-   <NXdata name="{Name of data}">
-     <time_of_flight units="microseconds" type="NX_FLOAT32[i]">{Time-of-flight}</time_of_flight>
-     <data type="NX_INT32[i]" axes="time_of_flight"> {Counts} </data>
-   </NXdata>
-</NXentry>
-]]></programlisting>
-                    </example> If you want to define the format of a particular type of NeXus file
+                    the simple NeXus file shown above. 
+                    <example>
+                        <title><citetitle>verysimple.xml</citetitle>: A very simple NeXus file</title>
+                        <programlisting language="xml" linenumbering="numbered"
+                            ><xi:include href="verysimple.xml" parse="text"
+                            /></programlisting></example> 
+                    If you want to define the format of a particular type of NeXus file
                     for your own use, e.g. as the standard output from a program, you are encouraged
                     to "publish" the format using this XML format. </para>
             </section>
@@ -271,7 +258,7 @@ A very simple NeXus file
                 <para> First, it is necessary to open the file, specifying whether we want read or
                     write access. <example>
                         <title>Open a file</title>
-                        <programlisting>#include "napi.h"
+                        <programlisting language="c">#include "napi.h"
 
  int main()
  {
@@ -282,40 +269,40 @@ A very simple NeXus file
                     group to contain the scan using NXmakegroup and then open it for access using
                     NXopengroup. <example>
                         <title>Create an entry</title>
-                        <programlisting>
-NXmakegroup (fileID, "Entry", "NXentry");
+                        <programlisting language="c">NXmakegroup (fileID, "Entry", "NXentry");
 NXopengroup (fileID, "Entry", "NXentry");
     </programlisting>
                     </example> The plottable data is contained within an NXdata group, which must
                     also be created and opened. <example>
                         <title>Create data group</title>
-                        <programlisting>
-NXmakegroup (fileID, "Data", "NXdata");
+                        <programlisting language="c">NXmakegroup (fileID, "Data", "NXdata");
 NXopengroup (fileID, "Data", "NXdata");</programlisting>
                     </example> To create a data item, call NXmakedata, specifying the data name,
                     type (NX_FLOAT32), rank (in this case, 1), and length of the array (n_t). Then,
                     it can be opened for writing. <example>
                         <title>Create data array</title>
-                        <programlisting> NXmakedata (fileID, "time_of_flight", NX_FLOAT32, 1, &amp;n_t);
+                        <programlisting language="c"> NXmakedata (fileID, "time_of_flight", NX_FLOAT32, 1, &amp;n_t);
   NXopendata (fileID, "time_of_flight")</programlisting>
                     </example> Then write the data using NXputdata. <example>
                         <title>Write the data</title>
-                        <programlisting>  NXputdata (fileID, t);</programlisting>
+                        <programlisting language="c">  NXputdata (fileID, t);</programlisting>
                     </example> With data item is still open, we can also add some data attributes,
                     such as the data units, which are specified as a character string (type NX_CHAR)
                     that is 12 bytes long. <example>
                         <title>Add an attribute</title>
-                        <programlisting>NXputattr (fileID, "units", "microseconds", 12, NX_CHAR);</programlisting>
+                        <programlisting language="c"
+                            >NXputattr (fileID, "units", "microseconds", 12, NX_CHAR);</programlisting>
                     </example> Then we close the data item before opening another. In fact, the API
                     will do this automatically if you attempt to open another data item, but it is
                     better style to close it yourself. <example>
                         <title>Close the data array</title>
-                        <programlisting>NXclosedata (fileID);</programlisting>
+                        <programlisting language="c">NXclosedata (fileID);</programlisting>
                     </example> The remaining data items in this group are added in a similar
                     fashion. Note that the indentation whenever a new data item or group are opened
                     is just intended to make the structure of the NeXus file more transparent. <example>
                         <title>The rest of the data group</title>
-                        <programlisting>    NXmakedata (fileID, "polar_angle", NX_FLOAT32, 1, &amp;n_p);
+                        <programlisting linenumbering="numbered" language="c"
+                            >    NXmakedata (fileID, "polar_angle", NX_FLOAT32, 1, &amp;n_p);
        NXopendata (fileID, "polar_angle");
          NXputdata (fileID, polar_angle);
          NXputattr (fileID, "units", "degrees", 7, NX_CHAR);
@@ -329,7 +316,7 @@ NXopengroup (fileID, "Data", "NXdata");</programlisting>
                     </example> Finally, close the groups (NXdata and NXentry) before closing the
                     file itself. <example>
                         <title>Cleanup</title>
-                        <programlisting>   NXclosegroup (fileID);
+                        <programlisting language="c">   NXclosegroup (fileID);
    NXclosegroup (fileID);
    NXclose (&amp;fileID);
    return;
@@ -345,7 +332,8 @@ NXopengroup (fileID, "Data", "NXdata");</programlisting>
                 <para>Here is part of a program to read the time-of-flight array from the file
                     created by the example above. <example>
                         <title>File read example</title>
-                        <programlisting> NXopen ('NXfile.nxs', NXACC_READ, &amp;fileID);
+                        <programlisting linenumbering="numbered" language="c"
+                            > NXopen ('NXfile.nxs', NXACC_READ, &amp;fileID);
    NXopengroup (fileID, "Entry", "NXentry");
      NXopengroup (fileID, "Data", "NXdata");
        NXopendata (fileID, "time_of_flight");
@@ -365,10 +353,12 @@ NXopengroup (fileID, "Data", "NXdata");</programlisting>
                     web page ): <table>
                         <title>NXbrowse Command Description</title>
                         <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                            <colspec colwidth="1*"/>
+                            <colspec colwidth="3*"/>
                             <thead>
                                 <row>
-                                    <entry>Command</entry>
-                                    <entry>Description</entry>
+                                    <entry><?dblatex bgcolor="[gray]{0.8}"?>Command</entry>
+                                    <entry><?dblatex bgcolor="[gray]{0.8}"?>Description</entry>
                                 </row>
                             </thead>
                             <tbody>
@@ -397,7 +387,7 @@ NXopengroup (fileID, "Data", "NXdata");</programlisting>
                         </tgroup>
                     </table><example>
                         <title>Using NXbrowse</title>
-                        <programlisting>
+                        <programlisting linenumbering="numbered">
 %> nxbrowse lrcs3701.nxs
 
 NXBrowse 3.0.0. Copyright (C) 2000 R. Osborn, M. Koennecke, P. Klosowski
@@ -598,7 +588,8 @@ NX> quit</programlisting>
                                 data(i,j) in Fortran, where i is the time-of-flight index and j is
                                 the polar angle index, the NXdata group would contain : <example>
                                     <title>Old way of denoting axes</title>
-                                    <programlisting><![CDATA[<NXdata name=" data " > 
+                                    <programlisting language="xml" linenumbering="numbered"
+                                        ><![CDATA[<NXdata name=" data " > 
          <time_of_flight axis= 1 primary= 1 > 1500.0 1502.0 1504.0 … </time_of_flight> 
          <polar_angle axis= 2 primary= 1 > 15.0 15.6 16.2 … </polar_angle> 
          <data > 5 7 14 … </data> 
@@ -613,7 +604,8 @@ NX> quit</programlisting>
                                 Optionally, the list can be enclosed in brackets, but should not
                                 contain any spaces, e.g. <example>
                                     <title>Preferred way of denoting axes</title>
-                                    <programlisting><![CDATA[<NXdata name=" data " > 
+                                    <programlisting  language="c" linenumbering="numbered"
+                                        ><![CDATA[<NXdata name=" data " > 
          <time_of_flight > 1500.0 1502.0 1504.0 … </time_of_flight> 
          <polar_angle > 15.0 15.6 16.2 … </polar_angle> 
          <data axes="polar_angle:time_of_flight" > 5 7 14 … </data> 
@@ -649,7 +641,7 @@ NX> quit</programlisting>
                     metadata can be accessed. </para>
                 <para>Here is a simple example to illustrate the concept: <example>
                         <title>Abbreviated NeXus file</title>
-                        <programlisting><![CDATA[<NXentry name="entry">
+                        <programlisting linenumbering="numbered" language="xml"><![CDATA[<NXentry name="entry">
     <NXsample name="sample">
         <magnetic_field link="/entry/sample">10.0</magnetic_field>
     </NXsample>
@@ -711,7 +703,7 @@ NX> quit</programlisting>
                     <tgroup cols="3" align="left" colsep="1" rowsep="1">
                         <colspec colwidth="1*"/>
                         <colspec colwidth="1*"/>
-                        <colspec colwidth="2*"/>
+                        <colspec colwidth="3*"/>
                         <thead>
                             <row>
                                 <entry><?dblatex bgcolor="[gray]{0.8}"?>Name</entry>
@@ -752,11 +744,14 @@ NX> quit</programlisting>
                 <table>
                     <title>Data Attributes</title>
                     <tgroup cols="3" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="3*"/>
                         <thead>
                             <row>
-                                <entry>Name</entry>
-                                <entry>Type</entry>
-                                <entry>Description</entry>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>Name</entry>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>Type</entry>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>Description</entry>
                             </row>
                         </thead>
                         <tbody>
@@ -949,8 +944,8 @@ NX> quit</programlisting>
                 <para>
                     <figure>
                         <title>Definition of translation and orientation geometry</title>
-                        <table>
-                            <title>Figure AND table?</title>
+                        <informaltable>
+                            <!--<title>Figure AND table?</title>-->
                             <tgroup cols='2'>
                                 <tbody>
                                     <row>
@@ -980,7 +975,7 @@ NX> quit</programlisting>
                                         </entry>
                                     </row>
                                 </tbody></tgroup>
-                        </table>
+                        </informaltable>
                         </figure>
                 </para>
                 <para> When computing a transformation, NXtranslation is applied before
@@ -1086,7 +1081,10 @@ NX> quit</programlisting>
         <section xml:id="NeXus_dimensions">
             <title>NeXus array dimensions</title>
             <para>Here are a couple of examples to get this section started:
-                <programlisting><![CDATA[<field name="data">
+                <example>
+                    <title>Example of array dimensions.</title>
+                    <programlisting linenumbering="numbered" language="xml"
+                        ><![CDATA[<field name="data">
   <dimensions size="3"/>
   <!-- other definitions might appear -->
 </field><field name="time-of-flight">
@@ -1094,7 +1092,7 @@ NX> quit</programlisting>
     <dim index="1" ref="data" refindex="3" incr="1"/>
   </dimensions>
   <!-- other definitions might appear -->
-</field>]]></programlisting>
+</field>]]></programlisting></example>
                 In some programming language, this would make data[i,j,k] and time-of-flight[k+1].
             </para>
         </section>

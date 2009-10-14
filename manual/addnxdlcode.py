@@ -36,9 +36,9 @@ def _main():
     nxdlfile = sys.argv[1]
     docbookfile = sys.argv[2]
     # read the NXDL instance
-    fd = open(nxdlfile, 'r')
-    nxdl = fd.read()
-    fd.close()
+    #fd = open(nxdlfile, 'r')
+    #nxdl = fd.read()
+    #fd.close()
     # read the docbook file
     fd = open(docbookfile, 'r')
     db = fd.read()
@@ -46,7 +46,10 @@ def _main():
     
     # find and replace text
     matchtext = '___COPY_NXDL_HERE___'
-    cdata = "<![CDATA[" + nxdl + "]]>"
+    cdata = '<xi:include'
+    cdata += ' xmlns:xi="http://www.w3.org/2001/XInclude"'
+    cdata += ' href="' + nxdlfile + '"'
+    cdata += ' parse="text"/>'
     newdocbook = db.replace(matchtext, cdata)
     db = newdocbook
     
