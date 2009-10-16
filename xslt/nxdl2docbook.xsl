@@ -120,10 +120,11 @@ Usage:
             </xsl:choose>
             <!-- ...................................................... -->
             <!-- listing of the NXDL source file -->
-            <section>
+            <!-- 2009-10-16,PRJ: lighten the document, remove NXDL source -->
+            <!--<section>
                 <title><literal><xsl:value-of select="@name"/>.nxdl.xml</literal>: NXDL specification</title>
                 <programlisting language="xml" linenumbering="numbered">___COPY_NXDL_HERE___</programlisting>
-            </section>
+            </section>-->
             <!-- ...................................................... -->
             <xsl:apply-templates select="nx:group" mode="checkHierarchy"/>
             <!-- ...................................................... -->
@@ -387,7 +388,7 @@ Usage:
                 </xsl:element>
             </xsl:element><!-- varlistentry -->
             <xsl:element name="varlistentry"><!-- show where to find the source -->
-                <xsl:element name="term">NXDL source</xsl:element>
+                <xsl:element name="term">NXDL source:</xsl:element>
                 <xsl:element name="listitem">
                     <xsl:element name="para">
                         <!-- 
@@ -399,6 +400,14 @@ Usage:
                             ><xsl:attribute  name="xlink:href"
                                 >http://svn.nexusformat.org/definitions/trunk/___NXDL_INSTANCE_FILE_LOCATION___</xsl:attribute
                             ><xsl:value-of select="@name"/></xsl:element>
+                    </xsl:element>
+                </xsl:element>
+            </xsl:element><!-- varlistentry -->
+            <xsl:element name="varlistentry"><!-- show where to find the source -->
+                <xsl:element name="term">URL:</xsl:element>
+                <xsl:element name="listitem">
+                    <xsl:element name="para">
+                        http://svn.nexusformat.org/definitions/trunk/___NXDL_INSTANCE_FILE_LOCATION___
                     </xsl:element>
                 </xsl:element>
             </xsl:element><!-- varlistentry -->
