@@ -53,10 +53,6 @@
             <sch:assert test="@NAPItype">Missing "NAPItype" attribute.</sch:assert>
             <!-- NAPItype MUST start with "NX_" -->
             <sch:assert test="starts-with(@NAPItype,'NX_')">NAPItype value should start with 'NX_'.</sch:assert>
-            <sch:report test="starts-with(@NAPItype,'NX_INT')">NX_INT identified.</sch:report>
-            <sch:report test="substring(@NAPItype,1,10)='NX_FLOAT32'">NX_FLOAT32 identified.</sch:report>
-            <sch:report test="substring(@NAPItype,1,10)='NX_FLOAT64'">NX_FLOAT64 identified.</sch:report>
-            <sch:assert test="exists(index-of ((15, 40, 25, 40, 10), 40))"> something </sch:assert>
             <sch:assert test="matches(@NAPItype,$NAPItype_regexp)">
                 NAPItype must be one of the allowed data types.
                 '<sch:value-of select="@NAPItype"/>' was found in 
