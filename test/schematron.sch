@@ -52,6 +52,12 @@
                 <sch:value-of select="name()"/>.
             </sch:assert>
         </sch:rule>
+        <sch:rule abstract="true" id="rule_check_field">
+            <sch:extends rule="rule_check_NAPItype_attribute"/>
+        </sch:rule>
+        <sch:rule abstract="true" id="rule_check_group">
+            <sch:extends rule="rule_check_NXclass"/>
+        </sch:rule>
     </sch:pattern>
     
     <!-- ++++++++++++++++++++++++++++++++++++++ -->
@@ -99,5 +105,5 @@
             <sch:extends rule="rule_check_NAPItype_attribute"/>
         </sch:rule>
     </sch:pattern>
-
+        
 </sch:schema>
