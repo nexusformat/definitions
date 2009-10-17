@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <sch:schema 
     xmlns:sch="http://purl.oclc.org/dsdl/schematron" 
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     queryBinding="xslt2">
     <sch:ns uri="http://definition.nexusformat.org/schema/3.1" prefix="nx"/>
+    <xsl:key name="targets" match="//*[not(name()='NAPIlink')]" use="@target" />
     
     <!-- ++++++++++++++++++++++++++++++++++++++ -->
     <!-- defined variables -->
@@ -79,6 +81,16 @@
     <sch:pattern>
         <sch:rule context="//nx:NAPIlink">
             <sch:extends rule="rule_check_NAPIlink_element"/>
+            <!--
+                Evaluate each NAPIlink element to verify that its @target 
+                attribute points to one and only one data elements (field 
+                that is not NAPIlink) with the same attribute and value.
+                This does not evaluate if the value of the target (a path in the 
+                NXentry) is correct.  That will come.
+            -->
+            <sch:let name="t" value="count(key('targets',@target))"/>
+            <sch:assert test="$t > 0">Target not found in file</sch:assert>
+            <sch:assert test="$t &lt;= 1">Multiple targets found in file</sch:assert>
         </sch:rule>
     </sch:pattern>
     
