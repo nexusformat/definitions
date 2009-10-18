@@ -29,16 +29,17 @@
     <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
     
     <xsl:template match="/">
-        <xsl:apply-templates select="*"/>
-    </xsl:template>
-    
-    <xsl:template match="nxdl:definition">
         <xsl:element name="sch:schema">
             <xsl:attribute name="queryBinding">xslt2</xsl:attribute>
             <xsl:element name="sch:ns">
                 <xsl:attribute name="uri">http://definition.nexusformat.org/schema/3.1</xsl:attribute>
                 <xsl:attribute name="prefix">nx</xsl:attribute>
             </xsl:element>
+        <xsl:apply-templates select="*"/>
+            </xsl:element>
+    </xsl:template>
+    
+    <xsl:template match="nxdl:definition">
             <xsl:element name="sch:pattern">
                 <xsl:attribute name="fpi">
                     <xsl:value-of select="name()"/>: <xsl:value-of select="@name"
@@ -92,7 +93,6 @@
             </xsl:element>
             <xsl:apply-templates select="nxdl:field"/>
             <xsl:apply-templates select="nxdl:group"/>
-        </xsl:element>
     </xsl:template>
     
     <xsl:template match="nxdl:field">

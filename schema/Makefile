@@ -50,6 +50,7 @@ XSLTPROC=xsltproc # Linux
 #XSLTPROC="/c/Program Files/Oxygen XML Editor 10/xsltproc" # Windows/MinGW
 XSL_BEFORE=$(XSLT_PATH)/nxdl2xsd.xsl
 XSLSORT_BEFORE=$(XSLT_PATH)/sort_xsd.xsl
+XSLSCH_BEFORE=$(XSLT_PATH)/nxdl2sch.xsl
 
 # msxsl
 #XSLTPROC="/c/Program Files/Oxygen XML Editor 10/msxsl"
@@ -89,7 +90,7 @@ XSLT_PATH = ../xslt
 
 # === Rules ===
 
-all: all.xsd
+all: all.xsd all.sch
 
 xsd : $(ALL_CLASS_TARGETS)
 
@@ -109,6 +110,9 @@ all_unsorted.xsd : all.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl
 
 all.xsd : all_unsorted.xsd Makefile $(XSLT_PATH)/sort_xsd.xsl
 	$(XSLTPROC) -o $@ $(XSLSORT_BEFORE) $< $(XSLSORT_AFTER)
+
+all.sch : all.nxdl.xml Makefile $(XSLSCH_BEFORE) $< $(XSLSCH_AFTER)
+	$(XSLTPROC) -o $@ $(XSLSCH_BEFORE) $< $(XSLSCH_AFTER)
 
 all.nxdl.xml : Makefile $(ALL_NXDL)
 	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " > all.nxdl.xml
@@ -130,7 +134,7 @@ all.nxdl.xml : Makefile $(ALL_NXDL)
 
 clean ::
 	rm -f $(ALL_CLASS_TARGETS)
-	rm -f all.xsd all_unsorted.xsd all.nxdl.xml
+	rm -f all.xsd all_unsorted.xsd all.nxdl.xml all.sch
 
 rebuild :: clean all
 
