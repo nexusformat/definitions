@@ -131,7 +131,7 @@
                 <xsl:element name="sch:rule">
                     <xsl:attribute name="context">//<xsl:value-of select="$context"/></xsl:attribute>
                     <xsl:element name="sch:assert">
-                        <xsl:attribute name="test">/nx:<xsl:value-of select="@name"/></xsl:attribute>                        
+                        <xsl:attribute name="test">nx:<xsl:value-of select="@name"/></xsl:attribute>                        
                         Missing field '<xsl:value-of select="@name"/>' in <sch:value-of select="name()"/>
                     </xsl:element> 
                 </xsl:element>
