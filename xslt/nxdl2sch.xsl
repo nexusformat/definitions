@@ -120,6 +120,39 @@
                 </xsl:element>
             </xsl:element>
         </xsl:element>
+        <!-- handle enumerations -->
+        <xsl:if test="nxdl:enumeration">
+            <xsl:element name="sch:pattern">
+                <xsl:attribute name="fpi">
+                    <xsl:value-of select="../@name"/>/<xsl:value-of 
+                        select="@name"/>_enumeration</xsl:attribute>
+                <xsl:comment> check value against enumeration </xsl:comment>
+                <xsl:variable name="enum_name">enumeration</xsl:variable>
+                <xsl:element name="sch:rule">
+                    <xsl:attribute name="context">//nx:<xsl:value-of 
+                        select="../@name"/>/nx:<xsl:value-of 
+                            select="@name"/></xsl:attribute>
+                    <xsl:element name="sch:let">
+                        <xsl:attribute name="name">enumeration</xsl:attribute>
+                        <xsl:attribute name="value">(<xsl:for-each 
+                            select="nxdl:enumeration/nxdl:item"><xsl:if 
+                                test="position()>1">,</xsl:if>'<xsl:value-of 
+                                    select="@value"/>'</xsl:for-each>)</xsl:attribute>
+                    </xsl:element>
+                    <xsl:element name="sch:assert">
+                        <xsl:attribute name="test">count(index-of($enumeration,.))=1</xsl:attribute>
+                        type 
+                        <xsl:element name="sch:value-of">
+                            <xsl:attribute name="select">.</xsl:attribute>
+                        </xsl:element>
+                        must be one of 
+                        <xsl:element name="sch:value-of">
+                            <xsl:attribute name="select">$enumeration</xsl:attribute>
+                        </xsl:element>
+                    </xsl:element>
+                </xsl:element>
+            </xsl:element>
+        </xsl:if>
     </xsl:template>
     
     <xsl:template match="nxdl:group">
