@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+NXCONVERT = "nxconvert"
 
 def getSourceDir():
   """Returns the location of the source code."""
@@ -19,6 +20,18 @@ def run(cmd, **kwargs):
   (stdout, stderr) = proc.communicate()
   return_code = proc.wait()
   return (return_code, stdout)
+
+def nxconvert(definition=None, input=None, output=None, verbose=0):
+  if definition is None:
+    command = "%s -d %s %s" % (NXCONVERT, input, output)
+  else:
+    command = "%s -D%s %s %s" % (NXCONVERT, definition, input, output)
+  (code, stdout) = run(command)
+  if verbose > 1 or code != 0:
+    print command
+    print stdout
+  if code != 0:
+    raise RuntimeError(NXCONVERT + " returned " + str(code))
 
 def process(xml=None, xslt=None, output=None, verbose=0):
   if xml is None:
@@ -72,8 +85,8 @@ if __name__ == "__main__":
   schematron = sys.argv[1]
 
   if len(sys.argv) < 3 :
-    raise RuntimeError("Must give arg 2 (xml file)")
-  xml_file = sys.argv[2]
+    raise RuntimeError("Must give arg 2 (input file)")
+  in_file = sys.argv[2]
 
   if len(sys.argv) < 4 :
     out_file = None
@@ -81,6 +94,10 @@ if __name__ == "__main__":
     out_file = sys.argv[3]
 
   temp_xsl = "schema.xslt"
+
+  xml_file = "reducednexus.xml"
+  #nxconvert(None, in_file, xml_file, VERBOSE)
+  xml_file = in_file
 
   schematron2xslt(schematron, temp_xsl, VERBOSE)
   process(xml_file, temp_xsl, out_file, VERBOSE)

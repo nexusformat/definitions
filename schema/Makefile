@@ -56,11 +56,13 @@ XSLSCH_BEFORE=$(XSLT_PATH)/nxdl2sch.xsl
 #XSLTPROC="/c/Program Files/Oxygen XML Editor 10/msxsl"
 #XSL_AFTER=$(XSLT_PATH)/nxdl2xsd.xsl
 #XSLSORT_AFTER=$(XSLT_PATH)/sort_xsd.xsl
+#XSLSCH_AFTER=$(XSLT_PATH)/nxdl2sch.xsl
 
 # nxslt
 #XSLTPROC="/c/Program Files/Oxygen XML Editor 10/nxslt"
 #XSL_AFTER=$(XSLT_PATH)/nxdl2xsd.xsl
 #XSLSORT_AFTER=$(XSLT_PATH)/sort_xsd.xsl
+#XSLSCH_AFTER=$(XSLT_PATH)/nxdl2sch.xsl
 
 # relative locations for the NXDL instance files
 BASE_CLASS_PATH          = ../base_classes
