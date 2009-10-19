@@ -108,11 +108,7 @@
                     </xsl:if>
                 </xsl:element>
             </xsl:element>
-            <xsl:apply-templates select="nxdl:field">
-                <xsl:with-param name="restricts" select="@restricts"></xsl:with-param>
-                <xsl:with-param name="context" select="$mycontext"></xsl:with-param>
-            </xsl:apply-templates>
-            <xsl:apply-templates select="nxdl:group">
+            <xsl:apply-templates select="nxdl:field|nxdl:group">
                 <xsl:with-param name="restricts" select="@restricts"></xsl:with-param>
                 <xsl:with-param name="context" select="$mycontext"></xsl:with-param>
             </xsl:apply-templates>
@@ -125,7 +121,7 @@
         </xsl:text>
         <xsl:element name="sch:pattern">
             <xsl:attribute name="fpi">
-                <xsl:value-of select="../@name"/>/<xsl:value-of select="@name"/>
+                <xsl:value-of select="$context"/>/<xsl:value-of select="@name"/>
             </xsl:attribute>
             <xsl:if test="$restricts">
                 <xsl:element name="sch:rule">
@@ -162,13 +158,13 @@
         <xsl:if test="nxdl:enumeration">
             <xsl:element name="sch:pattern">
                 <xsl:attribute name="fpi">
-                    <xsl:value-of select="../@name"/>/<xsl:value-of 
+                    <xsl:value-of select="$context"/>/<xsl:value-of 
                         select="@name"/>_enumeration</xsl:attribute>
                 <xsl:comment> check value against enumeration </xsl:comment>
                 <xsl:variable name="enum_name">enumeration</xsl:variable>
                 <xsl:element name="sch:rule">
-                    <xsl:attribute name="context">//nx:<xsl:value-of 
-                        select="../@name"/>/nx:<xsl:value-of 
+                    <xsl:attribute name="context">//<xsl:value-of 
+                        select="$context"/>/nx:<xsl:value-of 
                             select="@name"/></xsl:attribute>
                     <xsl:element name="sch:let">
                         <xsl:attribute name="name">enumeration</xsl:attribute>
@@ -200,6 +196,29 @@
                 select="@type"/><xsl:if 
                     test="count(@name)>0">[<xsl:value-of 
                         select="@name"/>]</xsl:if>::</xsl:comment>
+        <xsl:if test="$restricts">
+            <xsl:element name="sch:pattern">
+                <xsl:attribute name="fpi">
+                    <xsl:value-of select="$context"/>/<xsl:value-of select="@name"/>
+                </xsl:attribute>
+                <xsl:element name="sch:rule">
+                <xsl:attribute name="context">//<xsl:value-of select="$context"/></xsl:attribute>
+                <xsl:element name="sch:assert">
+                    <xsl:attribute name="test">nx:<xsl:value-of select="@type"/></xsl:attribute>                        
+                    Missing group '<xsl:value-of select="@type"/>' in <sch:value-of select="name()"/>
+                </xsl:element> 
+                </xsl:element>
+            </xsl:element>
+        </xsl:if>
+        <xsl:variable name="mycontext">
+            <xsl:value-of select="$context"/>/nx:<xsl:value-of select="@type"/>
+            <xsl:if test="@name">[@name='<xsl:value-of select="@name"/>']</xsl:if>
+        </xsl:variable>        
+        <xsl:apply-templates select="nxdl:field|nxdl:group">
+            <xsl:with-param name="restricts" select="$restricts"></xsl:with-param>
+            <xsl:with-param name="context" select="$mycontext"></xsl:with-param>
+        </xsl:apply-templates>
+        
     </xsl:template>
     
     <!-- return a sequence of valid types for an NXDL type -->
