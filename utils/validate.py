@@ -69,7 +69,9 @@ def schematron2xslt(schematron=None, xslt=None, verbose=0):
 
   #process(schematron, xslt1, schematron1, verbose)
   #process(schematron1, xslt2, schematron2, verbose)
+  #os.remove(schematron1)
   #process(schematron2, xslt3, xslt, verbose)
+  #os.remove(schematron2)
   process(schematron, xslt_skel, xslt, verbose)
   
   "xslt -stylesheet theSchema.xsl  myDocument.xml > myResult.xml"
@@ -101,3 +103,4 @@ if __name__ == "__main__":
 
   schematron2xslt(schematron, temp_xsl, VERBOSE)
   process(xml_file, temp_xsl, out_file, VERBOSE)
+  os.remove(temp_xsl)

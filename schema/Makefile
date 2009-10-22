@@ -47,7 +47,7 @@ NXDL_SUFFIX = nxdl.xml
 
 # xsltproc
 XSLTPROC=xsltproc # Linux
-#XSLTPROC="/c/Program Files/Oxygen XML Editor 10/xsltproc" # Windows/MinGW
+XSLTPROC="/c/Program Files/Oxygen XML Editor 10/xsltproc" # Windows/MinGW
 XSL_BEFORE=$(XSLT_PATH)/nxdl2xsd.xsl
 XSLSORT_BEFORE=$(XSLT_PATH)/sort_xsd.xsl
 XSLSCH_BEFORE=$(XSLT_PATH)/nxdl2sch.xsl
@@ -101,8 +101,6 @@ BASE.xsd : ../BASE.xsd $(APPLICATION_CLASS_TARGETS)
 	for i in $(APPLICATION_CLASS_TARGETS); do\
 	    echo "  <xs:include schemaLocation=\"$$i\"/>" >> schema.tmp; \
 	done
-	# for now just monopd
-	echo "  <xs:include schemaLocation=\"NXmonopd.xsd\"/>" > schema.tmp; \
 	rm -f BASE.xsd
 	sed -e "/SCHEMA_INCLUDE_SUB_START/ r schema.tmp" < ../BASE.xsd > BASE.xsd
 	rm -f schema.tmp
@@ -119,7 +117,7 @@ all.sch : all.nxdl.xml Makefile $(XSLSCH_BEFORE) $< $(XSLSCH_AFTER)
 all.nxdl.xml : Makefile $(ALL_NXDL)
 	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " > all.nxdl.xml
 	echo "<definitions>" >> all.nxdl.xml
-	for i in $(NXDL_BASE_CLASSES) ../applications/NXmonopd.nxdl.xml; do \
+	for i in $(ALL_NXDL); do \
 	    sed -e '/^<?xml/d' < $$i >> all.nxdl.xml; \
 	done
 	echo "</definitions>" >> all.nxdl.xml
