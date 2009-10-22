@@ -47,7 +47,7 @@ NXDL_SUFFIX = nxdl.xml
 
 # xsltproc
 XSLTPROC=xsltproc # Linux
-XSLTPROC="/c/Program Files/Oxygen XML Editor 10/xsltproc" # Windows/MinGW
+#XSLTPROC="/c/Program Files/Oxygen XML Editor 10/xsltproc" # Windows/MinGW
 XSL_BEFORE=$(XSLT_PATH)/nxdl2xsd.xsl
 XSLSORT_BEFORE=$(XSLT_PATH)/sort_xsd.xsl
 XSLSCH_BEFORE=$(XSLT_PATH)/nxdl2sch.xsl
