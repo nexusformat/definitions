@@ -1,9 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- 
+########### SVN repository information ###################
+# $LastChangedDate$
+# $LastChangedBy$
+# $LastChangedRevision$
+# $HeadURL$
+########### SVN repository information ###################
+-->
 <sch:schema 
     xmlns:sch="http://purl.oclc.org/dsdl/schematron" 
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     queryBinding="xslt2">
+
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- This file is automatically included in the final all.sch -->
+    <!-- by the nxdl2sch.xsl transform                            -->
+    <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+    <xsl:comment>Processing $Id$</xsl:comment>
+    
     <sch:ns uri="http://definition.nexusformat.org/schema/3.1" prefix="nx"/>
+    <sch:ns uri="http://www.w3.org/1999/XSL/Transform" prefix="xsl"/>
+    <sch:ns uri="http://www.w3.org/2001/XMLSchema-instance" prefix="xsi" />
+
     <xsl:key name="targets" match="//*[not(name()='NAPIlink')]" use="@target" />
     
     <!-- ++++++++++++++++++++++++++++++++++++++ -->

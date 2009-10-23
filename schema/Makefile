@@ -111,7 +111,7 @@ all_unsorted.xsd : all.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl
 all.xsd : all_unsorted.xsd Makefile $(XSLT_PATH)/sort_xsd.xsl
 	$(XSLTPROC) -o $@ $(XSLSORT_BEFORE) $< $(XSLSORT_AFTER)
 
-all.sch : all.nxdl.xml Makefile $(XSLSCH_BEFORE) $< $(XSLSCH_AFTER)
+all.sch : all.nxdl.xml Makefile $(XSLT_PATH)/nxdl2sch.xsl $(XSLT_PATH)/nexus_base.sch
 	$(XSLTPROC) -o $@ $(XSLSCH_BEFORE) $< $(XSLSCH_AFTER)
 
 all.nxdl.xml : Makefile $(ALL_NXDL)
