@@ -41,8 +41,6 @@
 
 NXDL_SUFFIX = nxdl.xml
 
-DOCBOOK2PDF=docbook2pdf
-
 ### start of choose your xslt processor 
 # xsltproc has arguments os         "xsl file"
 # others such as msxsl, nxslt have  "file xsl"
@@ -67,7 +65,6 @@ XSL_TYPE=BEFORE
 XSL_$(XSL_TYPE)=$(XSLT_PATH)/nxdl2xsd.xsl
 XSLSORT_$(XSL_TYPE)=$(XSLT_PATH)/sort_xsd.xsl
 XSLSCH_$(XSL_TYPE)=$(XSLT_PATH)/nxdl2sch.xsl
-XSLDOCBOOK_$(XSL_TYPE)=$(XSLT_PATH)/nxdl2docbook.xsl
 
 # relative locations for the NXDL instance files
 BASE_CLASS_PATH          = ../base_classes
@@ -126,10 +123,6 @@ all.nxdl.xml : Makefile $(ALL_NXDL)
 	    sed -e '/^<?xml/d' < $$i >> all.nxdl.xml; \
 	done
 	echo "</definitions>" >> all.nxdl.xml
-
-all.docbook : all.nxdl.xml Makefile $(XSLDOCBOOK_BEFORE) $(XSLDOCBOOK_AFTER)
-	$(XSLTPROC) -o $@ $(XSLDOCBOOK_BEFORE) $< $(XSLDOCBOOK_AFTER)
-	$(DOCBOOK2PDF) $<
 
 # NXDL files come from three source directories 
 #   but end up in one schema directory.  This means 
