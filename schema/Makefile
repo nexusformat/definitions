@@ -41,28 +41,33 @@
 
 NXDL_SUFFIX = nxdl.xml
 
+DOCBOOK2PDF=docbook2pdf
+
+### start of choose your xslt processor 
 # xsltproc has arguments os         "xsl file"
 # others such as msxsl, nxslt have  "file xsl"
-# so either XSL_BEFORE or XSL_AFTER need to be set
+# so XSL_TYPE needs to be set to BEFORE or AFTER as appropriate
 
 # xsltproc
-XSLTPROC=xsltproc # Linux
-#XSLTPROC="/c/Program Files/Oxygen XML Editor 10/xsltproc" # Windows/MinGW
-XSL_BEFORE=$(XSLT_PATH)/nxdl2xsd.xsl
-XSLSORT_BEFORE=$(XSLT_PATH)/sort_xsd.xsl
-XSLSCH_BEFORE=$(XSLT_PATH)/nxdl2sch.xsl
+XSLTPROC=xsltproc # xsltproc, Linux
+#XSLTPROC="/c/Program Files/Oxygen XML Editor 10/xsltproc" # xsltproc, Windows/MinGW
+XSL_TYPE=BEFORE
 
 # msxsl
 #XSLTPROC="/c/Program Files/Oxygen XML Editor 10/msxsl"
-#XSL_AFTER=$(XSLT_PATH)/nxdl2xsd.xsl
-#XSLSORT_AFTER=$(XSLT_PATH)/sort_xsd.xsl
-#XSLSCH_AFTER=$(XSLT_PATH)/nxdl2sch.xsl
+#XSL_TYPE=AFTER
 
 # nxslt
 #XSLTPROC="/c/Program Files/Oxygen XML Editor 10/nxslt"
-#XSL_AFTER=$(XSLT_PATH)/nxdl2xsd.xsl
-#XSLSORT_AFTER=$(XSLT_PATH)/sort_xsd.xsl
-#XSLSCH_AFTER=$(XSLT_PATH)/nxdl2sch.xsl
+#XSL_TYPE=AFTER
+
+### end of choose your xslt processor 
+
+# set up approariate _BEFORE or _AFTER variables
+XSL_$(XSL_TYPE)=$(XSLT_PATH)/nxdl2xsd.xsl
+XSLSORT_$(XSL_TYPE)=$(XSLT_PATH)/sort_xsd.xsl
+XSLSCH_$(XSL_TYPE)=$(XSLT_PATH)/nxdl2sch.xsl
+XSLDOCBOOK_$(XSL_TYPE)=$(XSLT_PATH)/nxdl2docbook.xsl
 
 # relative locations for the NXDL instance files
 BASE_CLASS_PATH          = ../base_classes
@@ -92,7 +97,7 @@ XSLT_PATH = ../xslt
 
 # === Rules ===
 
-all: all.xsd all.sch
+all: all.xsd all.sch all.docbook
 
 xsd : $(ALL_CLASS_TARGETS)
 
@@ -105,13 +110,13 @@ BASE.xsd : ../BASE.xsd $(APPLICATION_CLASS_TARGETS)
 	sed -e "/SCHEMA_INCLUDE_SUB_START/ r schema.tmp" < ../BASE.xsd > BASE.xsd
 	rm -f schema.tmp
 
-all_unsorted.xsd : all.nxdl.xml Makefile $(XSLT_PATH)/nxdl2xsd.xsl
+all_unsorted.xsd : all.nxdl.xml Makefile $(XSL_BEFORE) $(XSL_AFTER)
 	$(XSLTPROC) -o $@ $(XSL_BEFORE) $< $(XSL_AFTER)
 
-all.xsd : all_unsorted.xsd Makefile $(XSLT_PATH)/sort_xsd.xsl
+all.xsd : all_unsorted.xsd Makefile $(XSLSORT_BEFORE) $(XSLSORT_AFTER)
 	$(XSLTPROC) -o $@ $(XSLSORT_BEFORE) $< $(XSLSORT_AFTER)
 
-all.sch : all.nxdl.xml Makefile $(XSLT_PATH)/nxdl2sch.xsl $(XSLT_PATH)/nexus_base.sch
+all.sch : all.nxdl.xml Makefile $(XSLSCH_BEFORE) $(XSLSCH_AFTER)
 	$(XSLTPROC) -o $@ $(XSLSCH_BEFORE) $< $(XSLSCH_AFTER)
 
 all.nxdl.xml : Makefile $(ALL_NXDL)
@@ -121,6 +126,10 @@ all.nxdl.xml : Makefile $(ALL_NXDL)
 	    sed -e '/^<?xml/d' < $$i >> all.nxdl.xml; \
 	done
 	echo "</definitions>" >> all.nxdl.xml
+
+all.docbook : all.nxdl.xml Makefile $(XSLDOCBOOK_BEFORE) $(XSLDOCBOOK_AFTER)
+	$(XSLTPROC) -o $@ $(XSLDOCBOOK_BEFORE) $< $(XSLDOCBOOK_AFTER)
+	$(DOCBOOK2PDF) $<
 
 # NXDL files come from three source directories 
 #   but end up in one schema directory.  This means 

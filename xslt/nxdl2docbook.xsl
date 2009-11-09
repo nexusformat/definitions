@@ -88,7 +88,7 @@ Usage:
 #
 # For further information, see http://www.nexusformat.org
 </xsl:comment>
-        <xsl:apply-templates select="nx:definition"/>
+        <xsl:apply-templates select="//nx:definition"/>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
