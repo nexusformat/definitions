@@ -105,6 +105,11 @@ Usage:
             <xsl:attribute name="version">5.0</xsl:attribute><!-- required, matches NeXusManual.xml -->
             <!-- ...................................................... -->
             <xsl:element name="title"><xsl:value-of select="@name"/></xsl:element>
+            <!--  mark this class in the index -->
+            <xsl:element name="indexterm">
+                <xsl:element name="primary">classes</xsl:element>
+                <xsl:element name="secondary"><xsl:value-of select="@name"/></xsl:element>
+            </xsl:element>
             <!-- ...................................................... -->
             <xsl:call-template name="headerList"/>
             <!-- ...................................................... -->
