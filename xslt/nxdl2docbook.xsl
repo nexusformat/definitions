@@ -108,7 +108,14 @@ Usage:
             <!--  mark this class in the index -->
             <xsl:element name="indexterm">
                 <xsl:element name="primary">classes</xsl:element>
-                <xsl:element name="secondary"><xsl:value-of select="@name"/></xsl:element>
+                <xsl:element name="secondary">
+                    <xsl:choose>
+                        <xsl:when test="/nx:definition/@category='base'">base classes</xsl:when>
+                        <xsl:when test="/nx:definition/@category='application'">application definitions</xsl:when>
+                        <xsl:when test="/nx:definition/@category='contributed'">contributed definitions</xsl:when>
+                    </xsl:choose>
+                </xsl:element>
+                <xsl:element name="tertiary"><xsl:value-of select="@name"/></xsl:element>
             </xsl:element>
             <!-- ...................................................... -->
             <xsl:call-template name="headerList"/>
@@ -382,6 +389,25 @@ Usage:
     
     <xsl:template name="headerList">
         <xsl:element name="variablelist">
+            <xsl:element name="varlistentry"><!-- show the category: base, application, or contributed -->
+                <xsl:element name="term">category</xsl:element>
+                <xsl:element name="listitem">
+                    <xsl:element name="para">
+                        <xsl:element name="literal"><xsl:value-of select="/nx:definition/@category"/></xsl:element>
+                        <xsl:choose>
+                            <xsl:when test="/nx:definition/@category='base'">
+                                (base class)
+                            </xsl:when>
+                            <xsl:when test="/nx:definition/@category='application'">
+                                (application definition)
+                            </xsl:when>
+                            <xsl:when test="/nx:definition/@category='contributed'">
+                                (contributed definition)
+                            </xsl:when>
+                        </xsl:choose>
+                    </xsl:element>
+                </xsl:element>
+            </xsl:element><!-- varlistentry -->
             <xsl:element name="varlistentry"><!-- show the SVN Id of the NXDL instance -->
                 <xsl:element name="term">SVN Id</xsl:element>
                 <xsl:element name="listitem">
