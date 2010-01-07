@@ -137,7 +137,7 @@ ContributedClassSections.xml : $(CONTRIBUTED_CLASS_TARGETS) Makefile
 	@echo "(Re)Created $@"
 
 
-# dblatex.sf.net can be used to build a PDF version of the NeXus Manual
+# dblatex.sf.net is used to build a PDF version of the NeXus Manual
 dblatex NeXusManual.pdf ::
 	@#dblatex -P table.in.float=0 -ttex NeXusManual.xml
 	dblatex -V -P table.in.float=0 -b pdftex -tpdf NeXusManual.xml

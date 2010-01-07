@@ -319,13 +319,12 @@ Usage:
     <xsl:template match="nx:group" mode="group-include">
         <!-- show a class included by this class  -->
         <!-- http://www.nexusformat.org/NXclassname -->
-        <xsl:element name="para">
-            <xsl:element name="link">
-                <xsl:attribute name="xlink:href"
-                    >http://www.nexusformat.org/<xsl:value-of select="@type"/>
-                </xsl:attribute>
-                <xsl:value-of select="@type"/>
-            </xsl:element>
+        <xsl:if test="position()>1">, </xsl:if>        <!-- comma-separated list -->
+        <xsl:element name="link">
+            <xsl:attribute name="xlink:href"
+                >http://www.nexusformat.org/<xsl:value-of select="@type"/>
+            </xsl:attribute>
+            <xsl:value-of select="@type"/>
         </xsl:element>
     </xsl:template>
     
@@ -448,13 +447,15 @@ Usage:
                 <xsl:choose>
                     <xsl:when test="count(nx:group)">
                         <xsl:element name="listitem">
-                            <xsl:apply-templates 
-                                mode="group-include"
-                                select="  //nx:group[generate-id(.) = generate-id(key('group-include', @type)[1])]  " >
-                                <!-- advice: http://sources.redhat.com/ml/xsl-list/2000-07/msg00458.html -->
-                                <!-- Muenchian method to sort+unique on group/@type -->
-                                <xsl:sort select="@type"/>
-                            </xsl:apply-templates>
+                            <xsl:element name="para">
+                                <xsl:apply-templates 
+                                    mode="group-include"
+                                    select="  //nx:group[generate-id(.) = generate-id(key('group-include', @type)[1])]  " >
+                                    <!-- advice: http://sources.redhat.com/ml/xsl-list/2000-07/msg00458.html -->
+                                    <!-- Muenchian method to sort+unique on group/@type -->
+                                    <xsl:sort select="@type"/>
+                                </xsl:apply-templates>
+                            </xsl:element>
                         </xsl:element>
                     </xsl:when>
                     <xsl:otherwise>
@@ -502,7 +503,7 @@ Usage:
                 -->
                 <xsl:element name="colspec"><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
                 <xsl:element name="colspec"><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
-                <xsl:element name="colspec"><xsl:attribute name="colwidth">10*</xsl:attribute></xsl:element>
+                <xsl:element name="colspec"><xsl:attribute name="colwidth">20*</xsl:attribute></xsl:element>
                 <xsl:element name="colspec"><xsl:attribute name="colwidth">30*</xsl:attribute></xsl:element>
                 <xsl:element name="thead">
                     <xsl:element name="row">
