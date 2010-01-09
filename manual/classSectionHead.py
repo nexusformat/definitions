@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """
    Generate the DocBook header for the manual section identified in sys.argv[1]
-   Section classes are supplie in sys.argv[2:]
+   Section classes are supplied in sys.argv[2:]
 """
 
 ########### SVN repository information ###################
