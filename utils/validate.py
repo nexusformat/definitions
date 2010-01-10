@@ -98,8 +98,9 @@ if __name__ == "__main__":
   temp_xsl = "schema.xslt"
 
   xml_file = "reducednexus.xml"
-  #nxconvert(None, in_file, xml_file, VERBOSE)
-  xml_file = in_file
+
+  # you need to use the nxconvert from nexus-trunk
+  nxconvert(None, in_file, xml_file, VERBOSE)
 
   schematron2xslt(schematron, temp_xsl, VERBOSE)
   process(xml_file, temp_xsl, out_file, VERBOSE)
