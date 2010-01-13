@@ -408,15 +408,6 @@ Usage:
                     </xsl:element>
                 </xsl:element>
             </xsl:element><!-- varlistentry -->
-            <xsl:element name="varlistentry"><!-- show the SVN Id of the NXDL instance -->
-                <xsl:element name="term">SVN Id</xsl:element>
-                <xsl:element name="listitem">
-                    <xsl:element name="para">
-                        <!-- strip the $ signs so SVN does not change the SVN Id in the target DocBook XML file -->
-                        <xsl:value-of select="substring-before(substring-after(@svnid,'$'),'$')"/>
-                    </xsl:element>
-                </xsl:element>
-            </xsl:element><!-- varlistentry -->
             <xsl:element name="varlistentry"><!-- show where to find the source -->
                 <xsl:element name="term">NXDL source:</xsl:element>
                 <xsl:element name="listitem">
@@ -430,6 +421,23 @@ Usage:
                             ><xsl:attribute  name="xlink:href"
                                 >http://svn.nexusformat.org/definitions/trunk/___NXDL_INSTANCE_FILE_LOCATION___</xsl:attribute
                             ><xsl:value-of select="@name"/></xsl:element>
+                    </xsl:element>
+                </xsl:element>
+            </xsl:element><!-- varlistentry -->
+            <xsl:element name="varlistentry"><!-- show the version of the NXDL instance -->
+                <xsl:element name="term">version</xsl:element>
+                <xsl:element name="listitem">
+                    <xsl:element name="para">
+                        <xsl:value-of select="@version"/>
+                    </xsl:element>
+                </xsl:element>
+            </xsl:element><!-- varlistentry -->
+            <xsl:element name="varlistentry"><!-- show the SVN Id of the NXDL instance -->
+                <xsl:element name="term">SVN Id</xsl:element>
+                <xsl:element name="listitem">
+                    <xsl:element name="para">
+                        <!-- strip the $ signs so SVN does not change the SVN Id in the target DocBook XML file -->
+                        <xsl:value-of select="substring-before(substring-after(@svnid,'$'),'$')"/>
                     </xsl:element>
                 </xsl:element>
             </xsl:element><!-- varlistentry -->
