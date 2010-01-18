@@ -412,15 +412,36 @@ Usage:
                 <xsl:element name="term">NXDL source:</xsl:element>
                 <xsl:element name="listitem">
                     <xsl:element name="para">
-                        <!-- 
-                            ***************************************************************
-                            Need an external program to get the correct URL to the NXDL source.
-                            *************************************************************** 
-                        -->
+                        <!-- !!! line breaks are VERY important here, don't bust them !!! -->
                         <xsl:element name="link"
-                            ><xsl:attribute  name="xlink:href"
-                                >http://svn.nexusformat.org/definitions/trunk/___NXDL_INSTANCE_FILE_LOCATION___</xsl:attribute
+                            ><xsl:attribute name="xlink:href"
+                                ><xsl:call-template name="makeURL" >
+                                    <xsl:with-param name="name">
+                                        <xsl:value-of select="@name"/>
+                                    </xsl:with-param>
+                                    <xsl:with-param name="category">
+                                        <xsl:value-of select="/nx:definition/@category"/>
+                                    </xsl:with-param>
+                                </xsl:call-template></xsl:attribute
                             ><xsl:value-of select="@name"/></xsl:element>
+                        (<xsl:element name="link"
+                            ><xsl:attribute name="xlink:href"
+                                ><xsl:call-template name="makeURL" 
+                                    ><xsl:with-param name="name"
+                                        ><xsl:value-of select="@name"/>
+                                    </xsl:with-param
+                                    ><xsl:with-param name="category"
+                                        ><xsl:value-of select="/nx:definition/@category"
+                                        /></xsl:with-param
+                                    ></xsl:call-template></xsl:attribute
+                            ><xsl:call-template name="makeURL" >
+                                <xsl:with-param name="name">
+                                    <xsl:value-of select="@name"/>
+                                </xsl:with-param>
+                                <xsl:with-param name="category">
+                                    <xsl:value-of select="/nx:definition/@category"/>
+                                </xsl:with-param>
+                            </xsl:call-template></xsl:element>)
                     </xsl:element>
                 </xsl:element>
             </xsl:element><!-- varlistentry -->
@@ -438,14 +459,6 @@ Usage:
                     <xsl:element name="para">
                         <!-- strip the $ signs so SVN does not change the SVN Id in the target DocBook XML file -->
                         <xsl:value-of select="substring-before(substring-after(@svnid,'$'),'$')"/>
-                    </xsl:element>
-                </xsl:element>
-            </xsl:element><!-- varlistentry -->
-            <xsl:element name="varlistentry"><!-- show where to find the source -->
-                <xsl:element name="term">URL:</xsl:element>
-                <xsl:element name="listitem">
-                    <xsl:element name="para">
-                        http://svn.nexusformat.org/definitions/trunk/___NXDL_INSTANCE_FILE_LOCATION___
                     </xsl:element>
                 </xsl:element>
             </xsl:element><!-- varlistentry -->
@@ -598,7 +611,16 @@ Usage:
     </xsl:template>
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
+    
+    <!-- !!! line breaks are VERY important here, don't bust them !!! -->
+    <xsl:template name="makeURL">
+        <xsl:param name="name"/>
+        <xsl:param name="category"
+        />http://svn.nexusformat.org/definitions/trunk/<xsl:choose>
+            <xsl:when test="$category='base'">base_classes</xsl:when
+            ><xsl:when test="$category='application'">applications</xsl:when
+            ><xsl:when test="$category='contributed'">contributed_definitions</xsl:when
+            ></xsl:choose>/<xsl:value-of select="$name"/>.nxdl.xml</xsl:template>
 
     <!-- override these templates in each NXDL's specific XSLT file -->
     <xsl:template name="nxdl-category-comment"/> <!--  *** override for each NXDL category ***  -->

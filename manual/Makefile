@@ -94,7 +94,6 @@ docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.pdf
 # This uses VPATH to locate the source directory for the target
 %.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT)
 	xsltproc -o $@ $(XSLT) $<
-	python ./addnxdlcode.py $< $@
 
 test ::
 	@echo $(CLEANING_LIST)
