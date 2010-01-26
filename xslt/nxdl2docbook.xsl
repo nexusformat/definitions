@@ -257,7 +257,18 @@ Usage:
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xsl:template match="nx:doc">
-        <xsl:value-of select="."/>
+        <!--<xsl:value-of select="."/>-->
+        <!-- xmlns:db="http://docbook.org/ns/docbook" -->
+        <xsl:apply-templates />
+    </xsl:template>
+    
+    <!-- default rule: copy any node beneath <nx:doc> -->
+    <!-- thanks to: http://stackoverflow.com/questions/1525285/xslt-mixed-content-node -->
+    <xsl:template match="nx:doc//*">
+        <xsl:copy>
+            <xsl:copy-of select="@*" />
+            <xsl:apply-templates />
+        </xsl:copy>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -516,7 +527,7 @@ Usage:
                 <xsl:element name="term">documentation</xsl:element>
                 <xsl:element name="listitem">
                     <xsl:element name="para">
-                        <xsl:comment>empty list</xsl:comment>
+                        <xsl:comment>+++</xsl:comment>
                         <xsl:apply-templates select="nx:doc"/>
                     </xsl:element>
                 </xsl:element>
