@@ -2,7 +2,7 @@
 
 # NeXus - Neutron & X-ray Common Data Format
 # 
-# Copyright (C) 2008 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2010 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -59,31 +59,33 @@ ALL_NXDL = $(NXDL_BASE_CLASSES) $(NXDL_APPLICATIONS) $(NXDL_CONTRIBUTED)
 
 # list of all classes without path and without the trailing .$(NXDL_SUFFIX) suffix
 ALL_CLASS_NAMES = $(notdir $(ALL_NXDL) )
-ALL_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xml, $(ALL_CLASS_NAMES) )
+ALL_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), classes/%.xml, $(ALL_CLASS_NAMES) )
 
 BASE_CLASS_NAMES          = $(notdir $(NXDL_BASE_CLASSES) )
 APPLICATION_CLASS_NAMES   = $(notdir $(NXDL_APPLICATIONS) )
 CONTRIBUTED_CLASS_NAMES   = $(notdir $(NXDL_CONTRIBUTED) )
-BASE_CLASS_TARGETS        = $(patsubst %.$(NXDL_SUFFIX), %.xml, $(BASE_CLASS_NAMES) )
-APPLICATION_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xml, $(APPLICATION_CLASS_NAMES) )
-CONTRIBUTED_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), %.xml, $(CONTRIBUTED_CLASS_NAMES) )
+BASE_CLASS_TARGETS        = $(patsubst %.$(NXDL_SUFFIX), classes/%.xml, $(BASE_CLASS_NAMES) )
+APPLICATION_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), classes/%.xml, $(APPLICATION_CLASS_NAMES) )
+CONTRIBUTED_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), classes/%.xml, $(CONTRIBUTED_CLASS_NAMES) )
 
 # XSLT definitions
 XSLT_PATH = ../xslt
 XSLT = $(XSLT_PATH)/nxdl2docbook.xsl
 
-DYNAMIC_DOCBOOK_SECTIONS  = BaseClassSections.xml 
-DYNAMIC_DOCBOOK_SECTIONS += ApplicationClassSections.xml 
-DYNAMIC_DOCBOOK_SECTIONS += ContributedClassSections.xml
+DYNAMIC_DOCBOOK_SECTIONS  = classes/BaseClassSections.xml 
+DYNAMIC_DOCBOOK_SECTIONS += classes/ApplicationClassSections.xml 
+DYNAMIC_DOCBOOK_SECTIONS += classes/ContributedClassSections.xml
 
-CLEANING_LIST = $(ALL_CLASS_TARGETS) 
-CLEANING_LIST += $(DYNAMIC_DOCBOOK_SECTIONS)
-CLEANING_LIST += $(patsubst %.xml, %.pdf, $(ALL_CLASS_TARGETS))
-CLEANING_LIST += $(patsubst %.xml, %.html, $(ALL_CLASS_TARGETS))
+CLEANING_LIST =
+#CLEANING_LIST += $(DYNAMIC_DOCBOOK_SECTIONS)
+#CLEANING_LIST += $(ALL_CLASS_TARGETS) 
+#CLEANING_LIST += $(patsubst %.xml, %.pdf, $(ALL_CLASS_TARGETS))
+#CLEANING_LIST += $(patsubst %.xml, %.html, $(ALL_CLASS_TARGETS))
 #CLEANING_LIST += $(patsubst %.xml, %.ps, $(ALL_CLASS_TARGETS))
 CLEANING_LIST += NeXusManual.pdf
 CLEANING_LIST += NeXusManual.html
 CLEANING_LIST += NeXusManual.ps
+CLEANING_LIST += classes/
 
 # === Rules ===
 
@@ -92,22 +94,22 @@ all: docbook
 docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.pdf
 
 # This uses VPATH to locate the source directory for the target
-%.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT)
+classes/%.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT)
 	xsltproc -o $@ $(XSLT) $<
 
 test ::
 	@echo $(CLEANING_LIST)
 
 
-BaseClassSections.xml : $(BASE_CLASS_TARGETS) Makefile classSectionHead.py
+classes/BaseClassSections.xml : $(BASE_CLASS_TARGETS) Makefile classSectionHead.py
 	python ./classSectionHead.py 'Base' $(BASE_CLASS_TARGETS) > $@
 	@echo "(Re)Created $@"
 
-ApplicationClassSections.xml : $(APPLICATION_CLASS_TARGETS) Makefile classSectionHead.py
+classes/ApplicationClassSections.xml : $(APPLICATION_CLASS_TARGETS) Makefile classSectionHead.py
 	python ./classSectionHead.py 'Application' $(APPLICATION_CLASS_TARGETS) > $@
 	@echo "(Re)Created $@"
 
-ContributedClassSections.xml : $(CONTRIBUTED_CLASS_TARGETS) Makefile classSectionHead.py
+classes/ContributedClassSections.xml : $(CONTRIBUTED_CLASS_TARGETS) Makefile classSectionHead.py
 	python ./classSectionHead.py 'Contributed' $(CONTRIBUTED_CLASS_TARGETS) > $@
 	@echo "(Re)Created $@"
 
@@ -123,6 +125,6 @@ NeXusManual.ps ::NeXusManual.pdf
 	pdftops $<
 
 clean ::
-	/bin/rm -f $(CLEANING_LIST)
+	/bin/rm -rf $(CLEANING_LIST)
 
 rebuild :: clean all
