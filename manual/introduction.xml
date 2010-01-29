@@ -1,0 +1,1119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
+<!-- # $Id$ -->
+<chapter xml:id="NeXusIntroductionSection" xmlns="http://docbook.org/ns/docbook" version="5.0"
+    xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>NeXus Introduction</title>
+    <para>In recent years, a number of scientists and computer programmers working in neutron
+        and synchrotron facilities around the world came to the conclusion that a common data
+        format would fulfil a valuable function in the scattering community. As instrumentation
+        becomes more complex and data visualization become more challenging, individual
+        scientists, or even institutions, have found it difficult to keep up with new
+        developments. A common data format makes it easier, both to exchange experimental
+        results and to exchange ideas about how to analyze them. It promotes greater cooperation
+        in software development and stimulate the design of more sophisticated visualization
+        tools. For additional background information see 
+        <xref linkend="BriefHistoryChapter"/>.
+        <!-- link method: 
+            http://www.sagehill.net/docbookxsl/Db5Tools.html
+            "Internal link with literal text"
+            also suggested reading: http://www.w3.org/TR/xlink/ 
+        -->
+    </para>
+    <para>
+        This section is designed to give a brief introduction to NeXus, the data format that
+        has been developed in response to these needs. It explains what a modern data format
+        such as NeXus is and how to write simple programs to read and write NeXus files. 
+    </para>
+    <sidebar>
+        <para>
+            The programmers who produce intermediate files for 
+            storing analyzed data should agree on simple interchange rules .
+        </para>
+    </sidebar>
+    <section xml:id="WhatIsNeXusSection">
+        <title>What is NeXus?</title>
+        <para>The NeXus <indexterm significance="preferred">
+                <primary>NeXus</primary>
+            </indexterm> data format has four components: <variablelist>
+                <varlistentry>
+                    <term>A set of subroutines</term>
+                    <listitem>
+                        <para>to make it easy to read and write NeXus files.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>A set of design principles</term>
+                    <listitem>
+                        <para>to help people understand what is in them.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>A set of instrument definitions</term>
+                    <listitem>
+                        <para>to allow the development of more portable analysis
+                            software.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>A set of low-level file formats</term>
+                    <listitem>
+                        <para>to actually store NeXus files on physical media.</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist></para>
+        <section>
+            <title>A Set of Subroutines</title>
+            <para>In the past, a data format was defined by a document describing the precise
+                location of every item in the data file, either as row and column numbers in an
+                ASCII file, or as record and byte numbers in a binary file. In modern data
+                formats, such as NeXus, the user does not need to know where the data are
+                stored, just what they are called. It is the job of the subroutine library to
+                retrieve the data.</para>
+            <para>For example, in NeXus, a program to read in the wavelength of an experiment
+                would contain lines similar to the following: <example>
+                    <title>Simple example of reading data</title>
+                    <indexterm>
+                        <primary>example</primary>
+                        <secondary>simple</secondary>
+                    </indexterm>
+                    <programlisting language="c" linenumbering="numbered"
+                        ><xi:include href="examples/ex-simple.c" parse="text"
+                        /></programlisting>
+                </example> In this example, the program requests the value of the data that has
+                the label <code>wavelength</code>, storing the result in the variable lambda.
+                    <code>fileID</code> is a file identifier that is provided by NeXus when the
+                file is opened. </para>
+            <para>We shall provide a more complete example when we have discussed the contents
+                of the NeXus files.</para>
+        </section>
+        <section>
+            <title>A Set of Design Principles</title>
+            <para>NeXus data files <indexterm>
+                    <primary>NeXus</primary>
+                    <secondary>Design Principles</secondary>
+                </indexterm> contain two types of entity: data items and data groups. <variablelist>
+                    <varlistentry>
+                        <term>Data Items</term>
+                        <listitem>
+                            <para>These can be scalar values or multidimensional arrays of a
+                                variety of sizes (1-byte, 2-byte, 4-byte, 8-byte) and types
+                                (characters, integers, floats). Extra information required to
+                                describe a particular data item, such as the data units,
+                                <indexterm><primary>units</primary></indexterm>
+                                can be stored as a data attribute.
+                                <indexterm><primary>attributes</primary><secondary>data</secondary></indexterm>
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term>Data Groups</term>
+                        <listitem>
+                            <para>These are like folders that can contain a number of data items
+                                and/or other groups.</para>
+                        </listitem>
+                    </varlistentry>
+                </variablelist></para>
+            <para>In fact, a NeXus file can be viewed as a computer file system. Just as files
+                are stored in folders (or subdirectories) to make them easy to locate, so NeXus
+                data items are stored in groups. The group hierarchy is designed to make it easy
+                to navigate a NeXus file.</para>
+            <section>
+                <title>Example of a NeXus File</title>
+                <para>The following diagram shows an example of a NeXus file represented as a
+                    tree structure. <figure>
+                        <title>Example of a NeXus file</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="img/Hierarchy.gif" width="400pt"
+                                    scalefit="1"/>
+                            </imageobject>
+                        </mediaobject>
+                    </figure> Note that each data item is identified by a name, e.g., counts,
+                    but each group is identified both by a name and, in parentheses, a class
+                    identifier, e.g., monitor (NXmonitor). The class names, which all begin with
+                    NX, define the sort of data items that the group should contain, in this
+                    case, counts from a beamline monitor. The hierarchical design, with data
+                    items nested in groups, makes it easy to identify information if you are
+                    browsing through a file. </para>
+            </section>
+            <section>
+                <title>Important Classes</title>
+                <para>Here are some of the important classes found in nearly all NeXus files. A
+                    complete list can be found in the <link
+                        xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#DesignSection"
+                        >NeXus Design section</link>
+                    <variablelist>
+                        <varlistentry>
+                            <term>NXentry</term>
+                            <listitem>
+                                <para>The top level of any NeXus file contains one or more
+                                    groups with the class <code>NXentry</code>. <indexterm>
+                                        <primary>classes</primary>
+                                        <secondary>base classes</secondary>
+                                        <tertiary>NXentry</tertiary>
+                                    </indexterm> These contain all the data that is required to
+                                    describe an experimental run or scan. Each
+                                        <code>NXentry</code> typically contains a number of
+                                    groups describing sample information (class
+                                        <code>NXsample</code>), instrument details (class
+                                        <code>NXinstrument</code>), and monitor counts (class
+                                        <code>NXmonitor</code>). </para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term>NXdata</term>
+                            <listitem>
+                                <para>Each <code>NXentry</code> group contains one or more
+                                    groups with class <code>NXdata</code>. <indexterm>
+                                        <primary>classes</primary>
+                                        <secondary>base classes</secondary>
+                                        <tertiary>NXdata</tertiary>
+                                    </indexterm> These groups contain the experimental results
+                                    in a self-contained way, i.e., it should be possible to
+                                    generate a sensible plot of the data from the information
+                                    contained in each <code>NXdata</code> group. That means it
+                                    should contain the axis labels and titles as well as the
+                                    data.</para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term>NXsample</term>
+                            <listitem>
+                                <para>A <code>NXentry</code> group will often contain a group
+                                    with class <code>NXsample</code>. <indexterm>
+                                        <primary>classes</primary>
+                                        <secondary>base classes</secondary>
+                                        <tertiary>NXsample</tertiary>
+                                    </indexterm> This group contains information pertaining to
+                                    the sample, such as its chemical composition, mass, and
+                                    environment variables (temperature, pressure, magnetic
+                                    field, etc.).</para>
+                            </listitem>
+                        </varlistentry>
+                        <varlistentry>
+                            <term>NXinstrument</term>
+                            <listitem>
+                                <para>There might also be a group with class
+                                        <code>NXinstrument</code>. <indexterm>
+                                        <primary>classes</primary>
+                                        <secondary>base classes</secondary>
+                                        <tertiary>NXinstrument</tertiary>
+                                    </indexterm> This is designed to encapsulate all the
+                                    instrumental information that might be relevant to a
+                                    measurement, such as flight paths, collimations, chopper
+                                    frequencies, etc.</para>
+                            </listitem>
+                        </varlistentry>
+                    </variablelist><figure>
+                        <title>NXinstrument excerpt</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="img/NXinstrument.gif" width="300pt"
+                                    scalefit="1"/>
+                            </imageobject>
+                        </mediaobject>
+                    </figure> Since an instrument can comprise several beamline components each
+                    defined by several parameters, they are each specified by a separate group.
+                    This hides the complexity from generic file browsers, but makes the
+                    information available in an intuitively obvious way if it is required.
+                </para>
+            </section>
+            <section>
+                <title>Simple Example</title>
+                <para>NeXus data files do not need to be complicated. In fact, the following
+                    diagram shows an extremely simple NeXus file that could be used to transfer
+                    data between programs. <figure>
+                        <title>Simple Example</title>
+                        <mediaobject>
+                            <imageobject>
+                                <imagedata fileref="img/Simple.gif" width="400pt" scalefit="1"/>
+                            </imageobject>
+                        </mediaobject>
+                    </figure> This illustrates the fact that the structure of NeXus files is
+                    extremely flexible. It can accommodate very complex instrumental
+                    information, if required, but it can also be used to store very simple data
+                    sets. </para>
+            </section>
+        </section>
+        <section>
+            <title>A Set of Instrument Definitions</title>
+            <para>If the design principles are followed, it will be easy for anyone browsing a
+                NeXus file to understand what it contains, without any prior information.
+                However, if you are writing visualization or analysis software, you will need to
+                know precisely what information is contained in advance. For that reason, NeXus
+                provides a way of defining the format for particular instrument types, <indexterm>
+                    <primary>instrument definitions</primary>
+                </indexterm> e.g., time-of-flight small angle neutron scattering. This requires
+                some agreement by the relevant communities, but would allow the development of
+                much more portable software.</para>
+            <para>These instrument definitions are being formalized as XML files, using a
+                specially devised syntax that specifies the names of data items, and whether
+                they are optional or required. The following is an example of such a file for
+                the simple NeXus file shown above. <example>
+                    <title><citetitle>verysimple.xml</citetitle>: A very simple NeXus
+                        file</title>
+                    <indexterm>
+                        <primary>example</primary>
+                        <secondary>very simple</secondary>
+                    </indexterm>
+                    <programlisting language="xml" linenumbering="numbered"
+                        ><xi:include href="examples/verysimple.xml" parse="text"
+                        /></programlisting>
+                </example> If you want to define the format of a particular type of NeXus file
+                for your own use, e.g. as the standard output from a program, you are encouraged
+                to "publish" the format using this XML format. </para>
+        </section>
+        <section>
+            <title>A Set of Low-Level File Formats</title>
+            <para>To actually store NeXus files on physical media, different low-level file
+                formats <indexterm>
+                    <primary>NeXus</primary>
+                    <secondary>low-level file formats</secondary>
+                </indexterm> are available, namely HDF4, HDF5, and XML. The NeXus library may be
+                configured to support all of them, or any nonempty subset. Applications that
+                create NeXus files need to decide (or let the user decide) in which low-level
+                format data shall be stored. Generic data analysis applications should be able
+                to read any low-level format.</para>
+        </section>
+    </section>
+    <section xml:id="ApplicationProgramInterfaceSection">
+        <title>The NeXus Application Programming Interface (API)</title>
+        <para>The NeXus API consists of routines to read and write NeXus data files.</para>
+        <section>
+            <title>How do I write a NeXus file?</title>
+            <para>The NeXus Application Program Interface (API) <indexterm>
+                    <primary>NeXus</primary>
+                    <secondary>NAPI</secondary>
+                </indexterm>
+                <indexterm>
+                    <primary>NAPI</primary>
+                    <secondary>NeXus, NAPI</secondary>
+                </indexterm> provides a set of subroutines that make it easy to read and write
+                NeXus files. These subroutines are available in C, Fortran 77, Fortran 90, Java,
+                and IDL. Access from other languages, such as Python, is anticipated in the near
+                future. It is also possible to read NeXus files in a number of data analysis
+                tools, such as LAMP, ISAW, and Open GENIE.</para>
+            <para>The API uses a very simple "state" model to navigate through a NeXus file.
+                When you open a file, the API provides a file "handle", which then stores the
+                current location, i.e. which group and/or data item is currently open. Read and
+                write operations then act on the currently open entity. In the following, we
+                walk through some parts of a typical NeXus program written in C. See the <link
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="#ApplicationProgramInterfaceChapter">NeXus API chapter</link>
+                for a more complete version. </para>
+            <para>First, it is necessary to open the file, specifying whether we want read or
+                write access. <example>
+                    <title>Open a file</title>
+                    <indexterm>
+                        <primary>example</primary>
+                        <secondary>NAPI</secondary>
+                    </indexterm>
+                    <programlisting language="c" linenumbering="numbered"
+                        ><xi:include href="examples/ex-c-open-1.c" parse="text"
+                        /></programlisting>
+                </example> The file is opened with "create" access (implying write access), and
+                the API returns a file identifier of type NXhandle. Next, we create an
+                    <code>NXentry</code> group to contain the scan using NXmakegroup and then
+                open it for access using NXopengroup. <example>
+                    <title>Create an entry</title>
+                    <programlisting language="c" linenumbering="numbered"
+                        ><xi:include href="examples/ex-c-open-2.c" parse="text"
+                        /></programlisting>
+                </example> The plottable data is contained within an NXdata group, which must
+                also be created and opened. <example>
+                    <title>Create data group</title>
+                    <programlisting language="c" linenumbering="numbered"
+                        ><xi:include href="examples/ex-c-open-3.c" parse="text"
+                        /></programlisting>
+                </example> 
+                To create a data item, call <code>NXmakedata()</code>, specifying the
+                data name, type (NX_FLOAT32), rank (in this case, 1), and length of the array
+                (n_t). Then, it can be opened for writing. 
+                <example>
+                    <title>Create data array</title>
+                    <programlisting language="c" linenumbering="numbered"
+                        ><xi:include href="examples/ex-c-open-4.c" parse="text"
+                        /></programlisting>
+                </example> 
+                Then write the data using <code>NXputdata()</code>. 
+                <example>
+                    <title>Write the data</title>
+                    <programlisting language="c" linenumbering="numbered"
+                        >  NXputdata (fileID, t);</programlisting>
+                </example> With data item is still open, we can also add some data attributes,
+                <indexterm><primary>attributes</primary><secondary>data</secondary></indexterm>
+                such as the data units,
+                <indexterm><primary>units</primary></indexterm>
+                which are specified as a character string (type NX_CHAR)
+                that is 12 bytes long. <example>
+                    <title>Add an attribute</title>
+                    <programlisting language="c" linenumbering="numbered"
+                        >NXputattr (fileID, "units", "microseconds", 12, NX_CHAR);</programlisting>
+                </example> Then we close the data item before opening another. In fact, the API
+                will do this automatically if you attempt to open another data item, but it is
+                better style to close it yourself. <example>
+                    <title>Close the data array</title>
+                    <programlisting language="c" linenumbering="numbered"
+                        >NXclosedata (fileID);</programlisting>
+                </example> The remaining data items in this group are added in a similar
+                fashion. Note that the indentation whenever a new data item or group are opened
+                is just intended to make the structure of the NeXus file more transparent. <example>
+                    <title>The rest of the data group</title>
+                    <programlisting linenumbering="numbered" language="c"
+                        ><xi:include href="examples/ex-c-open-8.c" parse="text"
+                        /></programlisting>
+                </example> Finally, close the groups (NXdata and <code>NXentry</code>) before
+                closing the file itself. <example>
+                    <title>Cleanup</title>
+                    <programlisting language="c" linenumbering="numbered"
+                        ><xi:include href="examples/ex-c-open-9.c" parse="text"
+                        /></programlisting>
+                </example></para>
+        </section>
+        <section>
+            <title>How do I read a NeXus file?</title>
+            <para>Reading a NeXus file is almost identical to writing one. Obviously, it is not
+                necessary to call <code>NXmakedata</code> since the item already exists, but it
+                is necessary to call one of the query routines to find out the rank and length
+                of the data before allocating an array to store it.</para>
+            <para>Here is part of a program to read the time-of-flight array from the file
+                created by the example above. <example>
+                    <title>File read example</title>
+                    <programlisting linenumbering="numbered" language="c"
+                        ><xi:include href="examples/ex-c-read.c" parse="text"
+                        /></programlisting>
+                </example></para>
+            <para>NeXus files can also be viewed by a command-line browser,
+                    <code>NXbrowse</code>, which is included with the <link
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="#ApplicationProgramInterfaceSection">NeXus API</link>. The
+                following is an example session of using <code>NXbrowse</code> to view a data
+                file from the LRMECS spectrometer at IPNS. The following commands are used (see
+                the <code>NXbrowse</code> web page):
+                <table role="small">
+                    <title>NXbrowse Command Description</title>
+                    <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="3*"/>
+                        <thead>
+                            <row>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>Command</entry>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>Description</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>dir</entry>
+                                <entry>List the contents of the current group</entry>
+                            </row>
+                            <row>
+                                <entry>open Histogram1</entry>
+                                <entry>Open the NeXus group "Histogram1"</entry>
+                            </row>
+                            <row>
+                                <entry>read title</entry>
+                                <entry>Print the contents of the NeXus data labelled
+                                    "title"</entry>
+                            </row>
+                            <row>
+                                <entry>close</entry>
+                                <entry>Close the current group</entry>
+                            </row>
+                            <row>
+                                <entry>quit</entry>
+                                <entry>Quit the browser</entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table><example>
+                    <title>Using NXbrowse</title>
+                    <programlisting linenumbering="numbered"
+                        ><xi:include href="examples/ex-unix-using-nxbrowse.txt" parse="text"
+                        /></programlisting>
+                </example></para>
+            <para>The source code provides an example of how to write a NeXus reader. The test
+                programs included in the <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                    xlink:href="#ApplicationProgramInterfaceSection">NeXus API</link> may also
+                be useful to study. </para>
+        </section>
+    </section>
+    <section xml:id="MailingListsSection">
+        <title>NeXus Mailing Lists</title>
+        <para>There are several mailing lists associated with NeXus.</para>
+        <variablelist>
+            <varlistentry>
+                <term>NeXus Mailing List</term>
+                <listitem>
+                    <para>
+                        We invite anyone who is associated with neutron and/or X-ray 
+                        synchrotron scattering and who wishes to be involved in the 
+                        development and testing of the NeXus format to subscribe to 
+                        this list. It is for free discussion of all aspects of the 
+                        design and operation of the NeXus format.
+                    </para>
+                    <simplelist>
+                        <member>List Address: <literal>nexus@nexusformat.org nexus@nexusformat.org</literal></member>
+                        <member>Subscriptions: <literal>http://lists.nexusformat.org/mailman/listinfo/nexus</literal></member>
+                        <member>Archive: <literal>http://lists.nexusformat.org/pipermail/nexus</literal></member>
+                    </simplelist>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>NeXus Committee Mailing List</term>
+                <listitem>
+                    <para>
+                        This list contains discussions of the 
+                        <link
+                            xlink:href="#NIACChapter"
+                            >NeXus International Advisory Committee (NIAC)</link>,
+                        <indexterm><primary>NIAC</primary></indexterm>
+                        which oversees the development of the NeXus data format. 
+                        Its members represent many of the major neutron and synchrotron 
+                        scattering sources in the world. Membership and posting to this list 
+                        are confined to the committee members, but the archives are public.
+                    </para>
+                    <simplelist>
+                        <member>List Address: <literal>nexus-committee@nexusformat.org</literal></member>
+                        <member>Subscriptions: <literal>http://lists.nexusformat.org/mailman/listinfo/nexus-committee</literal></member>
+                        <member>Archive: <literal>http://lists.nexusformat.org/pipermail/nexus-committee</literal></member>
+                    </simplelist>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>NeXus Developers Mailing List</term>
+                <listitem>
+                    <para>
+                        This mailing list is for discussions concerning the technical 
+                        development of the NeXus Application Program Interface. 
+                    </para>
+                    <simplelist>
+                        <member>List Address: <literal>nexus-developers@nexusformat.org</literal></member>
+                        <member>Subscriptions: <literal>http://lists.nexusformat.org/mailman/listinfo/nexus-developers</literal></member>
+                        <member>Archive: <literal>http://lists.nexusformat.org/pipermail/nexus-developers</literal></member>
+                    </simplelist>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>NeXus Code Subversion Mailing List</term>
+                <listitem>
+                    <para>
+                        Members of this list will receive an email whenever a commit 
+                        is made to the <link
+                            xlink:href="#SubversionSection"
+                            >NeXus code repository</link>.
+                        <!-- SubversionSection -->
+                        This list cannot be posted to - all questions should instead 
+                        be sent to the NeXus Developers Mailing List.
+                    </para>
+                    <simplelist>
+                        <member>List Address: <literal>nexus-code-svn@nexusformat.org</literal></member>
+                        <member>Subscriptions: <literal>http://lists.nexusformat.org/mailman/listinfo/nexus-code-svn</literal></member>
+                        <member>Archive: <literal>http://lists.nexusformat.org/pipermail/nexus-code-svn</literal></member>
+                    </simplelist>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>NeXus Definitions Subversion Mailing List</term>
+                <listitem>
+                    <para>
+                        Members of this list will receive an email whenever a commit 
+                        is made to the <link
+                            xlink:href="#SubversionSection"
+                            >NeXus definitions repository</link>.
+                        This list cannot be posted to - all questions should instead 
+                        be sent to the NeXus Developers Mailing List.
+                    </para>
+                    <simplelist>
+                        <member>List Address: <literal>nexus-definitions-svn@nexusformat.org</literal></member>
+                        <member>Subscriptions: <literal>http://lists.nexusformat.org/mailman/listinfo/nexus-definitions-svn</literal></member>
+                        <member>Archive: <literal>http://lists.nexusformat.org/pipermail/nexus-definitions-svn</literal></member>
+                    </simplelist>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>NeXus Code Tickets Mailing List</term>
+                <listitem>
+                    <para>
+                        Members of this list will receive an email whenever a 
+                        ticket (bug/issue/task) associated with
+                        NeXus library development is modified on the 
+                        <link 
+                            xlink:href="http://trac.nexusformat.org/code/report/1"
+                            >Nexus code trac server</link><footnote
+                                ><para><link 
+                                    xlink:href="http://trac.nexusformat.org/code/report/1"
+                                    ><literal
+                                        >http://trac.nexusformat.org/code/report/1</literal
+                                    ></link></para></footnote>
+                        
+                        This list cannot be posted to - see the section on <link
+                            xlink:href="#IssueReportingSection"
+                            >Issue Reporting</link>.
+                    </para>
+                    <simplelist>
+                        <member>List Address: <literal>nexus-code-tickets@nexusformat.org</literal></member>
+                        <member>Subscriptions: <literal>http://lists.nexusformat.org/mailman/listinfo/nexus-code-tickets</literal></member>
+                        <member>Archive: <literal>http://lists.nexusformat.org/pipermail/nexus-code-tickets</literal></member>
+                    </simplelist>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>NeXus Definitions Tickets Mailing List</term>
+                <listitem>
+                    <para>
+                        Members of this list will receive an email whenever a 
+                        ticket (bug/issue/task) associated with
+                        NeXus definitions development is modified on the 
+                        <link 
+                            xlink:href="http://trac.nexusformat.org/definitions/report/1"
+                            >Nexus definitions trac server</link><footnote
+                                ><para><link 
+                                    xlink:href="http://trac.nexusformat.org/definitions/report/1"
+                                    ><literal
+                                        >http://trac.nexusformat.org/definitions/report/1</literal
+                                    ></link></para></footnote>
+
+                        This list cannot be posted to - see the section on <link
+                            xlink:href="#IssueReportingSection"
+                            >Issue Reporting</link>.
+                    </para>
+                    <simplelist>
+                        <member>List Address: <literal>nexus-definitions-tickets@nexusformat.org</literal></member>
+                        <member>Subscriptions: <literal>http://lists.nexusformat.org/mailman/listinfo/nexus-definitions-tickets</literal></member>
+                        <member>Archive: <literal>http://lists.nexusformat.org/pipermail/nexus-definitions-tickets</literal></member>
+                    </simplelist>
+                </listitem>
+            </varlistentry>
+        </variablelist>
+    </section>
+    <section xml:id="SubversionSection">
+        <title>NeXus Subversion Repositories</title>
+        <indexterm><primary>subversion</primary></indexterm>
+        <para>
+            NeXus definitions (both base classes and instruments) and 
+            the NeXus library source code are held in a 
+            <link 
+                xlink:href="http://subversion.tigris.org"
+                >subversion repository</link>.
+            The repository is world readable and though you can browse the 
+            <link 
+                xlink:href="http://svn.nexusformat.org/code"
+                >NeXus library and applications</link>
+            or 
+            <link 
+                xlink:href="http://svn.nexusformat.org/definitions"
+                >NeXus definitions</link>
+            repositories directly, a better looking interface is provided 
+            by the 
+            <link 
+                xlink:href="http://www.viewvc.org"
+                >ViewVC</link>
+            or 
+            <link 
+                xlink:href="http://trac.edgewall.org"
+                >TRAC</link>
+            browsers.
+        </para>
+        <simplelist>
+            <member>
+                Browse NeXus library/applications repository using
+                <link 
+                    xlink:href="http://svn.nexusformat.org/viewvc/NeXusCode"
+                    >ViewVC</link>
+                or 
+                <link 
+                    xlink:href="http://trac.nexusformat.org/code/browser"
+                    >TRAC</link>
+            </member>
+            <member>
+                Browse NeXus definitions repository using 
+                <link 
+                    xlink:href="http://svn.nexusformat.org/viewvc/NeXusDefinitions"
+                    >ViewVC</link>                    or 
+                <link 
+                    xlink:href="http://trac.nexusformat.org/definitions/browser"
+                    >TRAC</link>
+            </member>
+        </simplelist>
+        <para>
+            The repository can alse be interrogated for recent updates via a 
+            <link 
+                xlink:href="http://svn.nexusformat.org/viewvc/NeXusCode/trunk/?view=queryform"
+                >query form</link>
+            <programlisting>http://svn.nexusformat.org/viewvc/NeXusCode/trunk/?view=queryform</programlisting>
+            For example, show me all changes in the last month for the
+            <link 
+                xlink:href="http://svn.nexusformat.org/viewvc/NeXusCode/trunk/?view=query&amp;date=month&amp;limit_changes=100"
+                >Library</link> repository
+            <programlisting>http://svn.nexusformat.org/viewvc/NeXusCode/trunk/?view=query&amp;date=month&amp;limit_changes=100</programlisting>
+            or 
+            <link 
+                xlink:href="http://trac.nexusformat.org/definitions/timeline?daysback=30"
+                >Definition</link> repository
+            <programlisting>http://trac.nexusformat.org/definitions/timeline?daysback=30</programlisting>
+        </para>
+        <para>
+            If you wish to receive an email when a change is made to the repository you 
+            should join the appropriate <link 
+                xlink:href="#MailingListsSection"
+                >Mailing Lists</link>. 
+            <sidebar>
+                <title>RSS feed</title>
+                <para>
+                    Alternatively, you can use an RSS feed to keep an eye on changes - 
+                    TRAC supports this on pages with an orange <emphasis>XML RSS Feed</emphasis>
+                    icon at their foot such as:
+                </para>
+                <mediaobject>
+                    <imageobject>
+                        <imagedata fileref="img/rssfeed.jpg" width="24" scalefit="1"/>
+                    </imageobject>
+                </mediaobject>
+            </sidebar>
+        </para>
+        <para>
+            There are pages that show the subversion repository activity in a timeline 
+            format or a tabular (revision log) format.
+            <simplelist>
+                <member>
+                    code library/applications repository timeline
+                    <link xlink:href="http://trac.nexusformat.org/code/timeline"
+                        ><literal>http://trac.nexusformat.org/code/timeline</literal></link>
+                </member>
+                <member>
+                    definitions repository timeline
+                    <link xlink:href="http://trac.nexusformat.org/definitions/timeline"
+                        ><literal>http://trac.nexusformat.org/definitions/timeline</literal></link>
+                </member>
+                <member>
+                    code library/applications repository revision log
+                    <link xlink:href="http://trac.nexusformat.org/code/log"
+                        ><literal>http://trac.nexusformat.org/code/log</literal></link>
+                </member>
+                <member>
+                    definitions library/applications repository revision log
+                    <link xlink:href="http://trac.nexusformat.org/definitions/log"
+                        ><literal>http://trac.nexusformat.org/definitions/log</literal></link>
+                </member>
+            </simplelist>
+        </para>
+        <section>
+            <title>Login</title>
+            <para>
+                To update files in these repositories you will need to use 
+                a program such as 
+                <link xlink:href="http://tortoisesvn.tigris.org/"
+                    ><literal
+                        >TortoiseSVN/</literal
+                    ></link><footnote><para><link xlink:href="http://tortoisesvn.tigris.org/"
+                        ><literal
+                            >http://tortoisesvn.tigris.org/</literal
+                        ></link></para></footnote>
+                and also provide your NeXus Wiki username and password. 
+                Note that for subversion write access:
+                <itemizedlist>
+                    <listitem>
+                        <para>
+                           If your Wiki username contains a space, write it with a 
+                           space (i.e. do not replace the space with an _ as is
+                           done in WIKI URLs)
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                           You cannot use a <emphasis>temporary password</emphasis>
+                           (i.e. one that was 
+                           emailed to you in response to a request). You must first 
+                           log into MediaWiki with the temporary password and then 
+                           go to account 
+                           <link 
+                               xlink:href="http://www.nexusformat.org/Special:Preferences"
+                               >NeXus wiki Preferences</link>
+                           and change the password.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                          Your Wiki account must have an email address associated 
+                          with it and this address must have been validated. 
+                          To provide and/or validate your email address, 
+                          log in and go to your account 
+                          <link 
+                              xlink:href="http://www.nexusformat.org/Special:Preferences"
+                              >NeXus wiki Preferences</link>.
+                          section.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                          If you have login problems and have not changed your 
+                          WIKI password since 20th October 2006, please go to the 
+                          <link 
+                              xlink:href="http://www.nexusformat.org/Special:UserLogin"
+                              >NeXus wiki login</link>
+                          page and request to be emailed a 
+                          new password. To synchronise TRAC/Subversion/MediaWiki 
+                          required some changes to the authentication system which 
+                          will have invalidated passwords set prior to that date.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+            </para>
+            <para>
+                Here are the URLs to access the subversion repositories as a developer:
+                <glosslist>
+                    <glossentry>
+                        <glossterm>library/applications code</glossterm>
+                        <glossdef><programlisting>https://svn.nexusformat.org/code/trunk</programlisting></glossdef>
+                    </glossentry>
+                    <glossentry>
+                        <glossterm>definitions</glossterm>
+                        <glossdef><programlisting>https://svn.nexusformat.org/definitions/trunk</programlisting></glossdef>
+                    </glossentry>
+                    <glossentry>
+                        <glossterm>checkout the code trunk</glossterm>
+                        <glossdef><programlisting>svn co --username "My WIKI Username" https://svn.nexusformat.org/code/trunk nexus_code</programlisting></glossdef>
+                    </glossentry>
+                </glosslist>
+                Please report any problems via the 
+                <link xlink:href="#IssueReportingSection">Issue Reporting</link> 
+                system.
+            </para>
+        </section>
+        <section>
+            <title>Committing Changes</title>
+            <para>
+                As well as needing a valid account, you will not be able to 
+                check-in changes unless you indicate (in the log message 
+                attached to the commit) which current issues on the 
+                <link xlink:href="#IssueReportingSection">Issue Reporting</link> 
+                system the changes either fix or refer to.
+                This is done by enclosing special phrases in the commit 
+                message of the form:
+                <programlisting linenumbering="numbered"
+                    ><xi:include 
+                        href="examples/ex-svn-commit-message-syntax.txt" 
+                        parse="text"
+                    /></programlisting>
+                where <literal>command</literal> is one of the commands detailed 
+                below and <literal>#1</literal> means <emphasis>issue number 
+                    1</emphasis> on the system, etc.
+                You can have more then one command in a message. The following 
+                commands are supported and there is more then one spelling for 
+                each command (to make this as user-friendly as possible):
+                <variablelist>
+                    <varlistentry>
+                        <term><literal>closes, fixes</literal></term>
+                        <listitem>
+                            <para>
+                                The specified issue numbers are closed with the 
+                                contents of this commit message being added to it.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                    <varlistentry>
+                        <term><literal>references, refs, addresses, re</literal></term>
+                        <listitem>
+                            <para>
+                                The specified issue numbers are left in their 
+                                current status, but the contents of this commit
+                                message are added to their notes.
+                            </para>
+                        </listitem>
+                    </varlistentry>
+                </variablelist>
+            </para>
+            <para>
+                For example the commit message
+                <programlisting>Changed blah and foo to do this or that. Fixes #10 and #12, and refs #12.</programlisting>
+                This will close issues #10 and #12, and add a note to #12 on the 
+                <link xlink:href="#IssueReportingSection">Issue Reporting</link>  
+                system. For a list of current issues see:
+                <simplelist>
+                    <member>
+                        Active tickets for the NeXus code library:
+                        <link 
+                            xlink:href="http://trac.nexusformat.org/code/report/1"
+                            ><literal>http://trac.nexusformat.org/code/report/1</literal></link>
+                    </member>
+                    <member>
+                        Active tickets for NeXus definitions:
+                        <link 
+                            xlink:href="http://trac.nexusformat.org/definitions/report/1"
+                            ><literal>http://trac.nexusformat.org/definitions/report/1</literal></link>
+                    </member>
+                </simplelist>
+            </para>
+        </section>
+        <section>
+            <title>URLs described in this section</title>
+            <para>
+                Many Uniform Resource Locators (URLs) have been used in this section.
+                This is a table describing them.
+            </para>
+            <glosslist>
+                <glossentry>
+                    <glossterm>Subversion revision management software</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://subversion.tigris.org/"><literal>http://subversion.tigris.org/</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>ViewVC versions control repository viewing software</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://www.viewvc.org/"><literal>http://www.viewvc.org/</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>TRAC issue management software</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://trac.edgewall.org"><literal>http://trac.edgewall.org</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>TortoiseSVN, Windows subversion client</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://tortoisesvn.tigris.org/"><literal>http://tortoisesvn.tigris.org/</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>NeXus library and applications subversion repository</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://svn.nexusformat.org/code/"><literal>http://svn.nexusformat.org/code/</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>NeXus definitions subversion repository</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://svn.nexusformat.org/definitions/"><literal>http://svn.nexusformat.org/definitions/</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>ViewVC view of NeXus code library/applications repository</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://svn.nexusformat.org/viewvc/NeXusCode"><literal>http://svn.nexusformat.org/viewvc/NeXusCode</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>ViewVC view of NeXus definitions repository</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://svn.nexusformat.org/viewvc/NeXusDefinitions"><literal>http://svn.nexusformat.org/viewvc/NeXusDefinitions</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>TRAC view of NeXus code library/applications repository</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://trac.nexusformat.org/code/browser"><literal>http://trac.nexusformat.org/code/browser</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>NeXus code library revision log</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://trac.nexusformat.org/code/log"><literal>http://trac.nexusformat.org/code/log</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>Active tickets for the NeXus library</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://trac.nexusformat.org/code/report/1"><literal>http://trac.nexusformat.org/code/report/1</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>NeXus code library timeline</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://trac.nexusformat.org/code/timeline"><literal>http://trac.nexusformat.org/code/timeline</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>TRAC view of NeXus definitions repository</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://trac.nexusformat.org/definitions/browser"><literal>http://trac.nexusformat.org/definitions/browser</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>NeXus definitions revision log</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://trac.nexusformat.org/definitions/log"><literal>http://trac.nexusformat.org/definitions/log</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>Active tickets for NeXus definitions</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://trac.nexusformat.org/definitions/report/1"><literal>http://trac.nexusformat.org/definitions/report/1</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>NeXus definitions library timeline</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="http://trac.nexusformat.org/definitions/timeline"><literal>http://trac.nexusformat.org/definitions/timeline</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>NeXus code library/applications respository (password required)</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="https://svn.nexusformat.org/code/trunk"><literal>https://svn.nexusformat.org/code/trunk</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>NeXus definitions respository (password required)</glossterm>
+                    <glossdef>
+                        <para>
+                            <link xlink:href="https://svn.nexusformat.org/definitions/trunk"><literal>https://svn.nexusformat.org/definitions/trunk</literal></link>
+                        </para>
+                    </glossdef>
+                </glossentry>
+            </glosslist>                
+        </section>
+    </section>
+    <section xml:id="IssueReportingSection">
+        <title>NeXus Issue Reporting</title>
+        <indexterm><primary>issue reporting</primary><see>TRAC</see></indexterm>
+        <indexterm><primary>TRAC</primary></indexterm>
+        <para>
+            NeXus is using <link xlink:href="http://trac.edgewall.org"
+                >TRAC</link><footnote><para><link
+                    xlink:href="http://trac.edgewall.org"
+                    ><literal>http://trac.edgewall.org</literal></link
+                    ></para></footnote> for problem/issue reporting. 
+            You can browse issues without logging on, but to report issues 
+            you will need to login using your NeXus WIKI username and password 
+            (the 
+            <link xlink:href="#SubversionSection">subversion login notes</link>
+            mentioned for write access to the 
+            <link xlink:href="#SubversionSection">Subversion Server</link>
+            apply to TRAC login, too).
+        </para>
+            <para>
+                Whenever an update is made to a ticket, a message is also 
+                posted to the appropriate 
+                <link xlink:href="#MailingListsSection">ticket mailing list</link>.
+            </para>
+            <simplesect>
+                <title>NeXus Library and Applications</title>
+                <simplelist>
+                    <member>
+                        Report a new issue:
+                        <link xlink:href="http://trac.nexusformat.org/code"
+                            ><literal>http://trac.nexusformat.org/code</literal></link>
+                    </member>
+                    <member>
+                        View current issues
+                        <link xlink:href="http://trac.nexusformat.org/code/report/1"
+                            ><literal>http://trac.nexusformat.org/code/report/1</literal></link>
+                    </member>
+                    <member>
+                        Archive of ticket update emails
+                        <link xlink:href="http://lists.nexusformat.org/pipermail/nexus-code-tickets/"
+                            ><literal>http://lists.nexusformat.org/pipermail/nexus-code-tickets/</literal></link>
+                    </member>
+                    <member>
+                        Library timeline (recent ticket and code changes)
+                        <link xlink:href="http://trac.nexusformat.org/code/timeline"
+                            ><literal>http://trac.nexusformat.org/code/timeline</literal></link>
+                    </member>
+                    <member>
+                        Library roadmap
+                        <link xlink:href="http://trac.nexusformat.org/code/roadmap"
+                            ><literal>http://trac.nexusformat.org/code/roadmap</literal></link>
+                    </member>
+                </simplelist>
+            </simplesect>
+            <simplesect>
+                <title>NeXus Instrument/Base Class Definitions</title>
+                <simplelist>
+                    <member>
+                        Report a new issue
+                        <link xlink:href="http://trac.nexusformat.org/definitions"
+                            ><literal>http://trac.nexusformat.org/definitions</literal></link>
+                    </member>
+                    <member>
+                        View current issues
+                        <link xlink:href="http://trac.nexusformat.org/definitions/report/1"
+                            ><literal>http://trac.nexusformat.org/definitions/report/1</literal></link>
+                    </member>
+                    <member>
+                        Archive of ticket update emails
+                        <link xlink:href="http://lists.nexusformat.org/pipermail/nexus-definitions-tickets/"
+                            ><literal>http://lists.nexusformat.org/pipermail/nexus-definitions-tickets/</literal></link>
+                    </member>
+                    <member>
+                        Definitions timeline (recent ticket and definition changes)
+                        <link xlink:href="http://trac.nexusformat.org/definitions/timeline"
+                            ><literal>http://trac.nexusformat.org/definitions/timeline</literal></link>
+                    </member>
+                    <member>
+                        Definitions roadmap
+                        <link xlink:href="http://trac.nexusformat.org/definitions/roadmap"
+                            ><literal>http://trac.nexusformat.org/definitions/roadmap</literal></link>
+                    </member>
+                </simplelist>
+            </simplesect>
+    </section>
+    <section xml:id="WhereToGoFromHereSection">
+        <title>Where to go from here?</title>
+        <para>The other sections of this document give much more detailed descriptions of the
+            NeXus data format. <variablelist>
+                <varlistentry>
+                    <term><link xmlns:xlink="http://www.w3.org/1999/xlink"
+                            xlink:href="#DesignSection">NeXus Design</link></term>
+                    <listitem>
+                        <para>This describes NeXus' hierarchical design, and gives more
+                            information on how to construct valid groups.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>
+                        <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                            xlink:href="#ApplicationProgramInterfaceSection">NeXus
+                        API</link></term>
+                    <listitem>
+                        <para>This describes the NeXus programming interface, with lists of all
+                            the subroutines and supported languages</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>
+                        <link xmlns:xlink="http://www.w3.org/1999/xlink"
+                            xlink:href="#MailingListsSection">NeXus Mailing Lists</link></term>
+                    <listitem>
+                        <para>NeXus mailing lists</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist></para>
+    </section>
+</chapter>

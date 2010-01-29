@@ -1,0 +1,11 @@
+    NXmakedata (fileID, "polar_angle", NX_FLOAT32, 1, &n_p);
+       NXopendata (fileID, "polar_angle");
+         NXputdata (fileID, polar_angle);
+         NXputattr (fileID, "units", "degrees", 7, NX_CHAR);
+       NXclosedata (fileID);
+       dims[0] = n_t;
+       dims[1] = n_p;
+       NXmakedata (fileID, "counts", NX_INT32, 2, dims);
+       NXopendata (fileID, "counts");
+         NXputdata (fileID, counts);
+       NXclosedata (fileID);
