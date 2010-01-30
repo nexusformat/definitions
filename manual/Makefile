@@ -75,17 +75,16 @@ XSLT = $(XSLT_PATH)/nxdl2docbook.xsl
 DYNAMIC_DOCBOOK_SECTIONS  = classes/BaseClassSections.xml 
 DYNAMIC_DOCBOOK_SECTIONS += classes/ApplicationClassSections.xml 
 DYNAMIC_DOCBOOK_SECTIONS += classes/ContributedClassSections.xml
+DYNAMIC_DOCBOOK_SECTIONS += types.xml
+DYNAMIC_DOCBOOK_SECTIONS += units.xml
 
 CLEANING_LIST =
-#CLEANING_LIST += $(DYNAMIC_DOCBOOK_SECTIONS)
-#CLEANING_LIST += $(ALL_CLASS_TARGETS) 
-#CLEANING_LIST += $(patsubst %.xml, %.pdf, $(ALL_CLASS_TARGETS))
-#CLEANING_LIST += $(patsubst %.xml, %.html, $(ALL_CLASS_TARGETS))
-#CLEANING_LIST += $(patsubst %.xml, %.ps, $(ALL_CLASS_TARGETS))
 CLEANING_LIST += NeXusManual.pdf
 CLEANING_LIST += NeXusManual.html
 CLEANING_LIST += NeXusManual.ps
 CLEANING_LIST += classes/
+CLEANING_LIST += types.xml
+CLEANING_LIST += units.xml
 
 # === Rules ===
 
@@ -103,15 +102,24 @@ test ::
 
 classes/BaseClassSections.xml : $(BASE_CLASS_TARGETS) Makefile classSectionHead.py
 	python ./classSectionHead.py 'Base' $(BASE_CLASS_TARGETS) > $@
-	@echo "(Re)Created $@"
+	@echo "(Re)created $@"
 
 classes/ApplicationClassSections.xml : $(APPLICATION_CLASS_TARGETS) Makefile classSectionHead.py
 	python ./classSectionHead.py 'Application' $(APPLICATION_CLASS_TARGETS) > $@
-	@echo "(Re)Created $@"
+	@echo "(Re)created $@"
 
 classes/ContributedClassSections.xml : $(CONTRIBUTED_CLASS_TARGETS) Makefile classSectionHead.py
 	python ./classSectionHead.py 'Contributed' $(CONTRIBUTED_CLASS_TARGETS) > $@
-	@echo "(Re)Created $@"
+	@echo "(Re)created $@"
+
+
+types.xml : ../nxdlTypes.xsd Makefile $(XSLT_PATH)/nxdl_types2docbook.xsl
+	xsltproc $(XSLT_PATH)/nxdl_types2docbook.xsl ../nxdlTypes.xsd > $@
+	@echo "(Re)created $@"
+
+units.xml : ../nxdlTypes.xsd Makefile $(XSLT_PATH)/nxdl_units2docbook.xsl
+	xsltproc $(XSLT_PATH)/nxdl_units2docbook.xsl ../nxdlTypes.xsd > $@
+	@echo "(Re)created $@"
 
 
 # dblatex.sf.net is used to build a PDF version of the NeXus Manual
@@ -121,7 +129,7 @@ dblatex NeXusManual.pdf ::
 	@#pdftops $< temporaryNeXusManual.ps
 	@#ps2pdf temporaryNeXusManual.ps $<
 
-NeXusManual.ps ::NeXusManual.pdf
+NeXusManual.ps :: NeXusManual.pdf
 	pdftops $<
 
 clean ::
