@@ -49,6 +49,47 @@
 		</xs:annotation>
 	</xs:include>
 	
+	<!-- used for allowed names of elements and attributes - need to be restricted to valid program variable names -->
+	<xs:simpleType name="validItemName">
+		<xs:annotation>  
+			   <xs:documentation>  
+				  Used for allowed names of elements and attributes.  
+				  Need to be restricted to valid program variable names.  
+				  Note:  This means no "-" or "." characters can be allowed and
+				  you cannot start with a number
+				</xs:documentation>  
+		</xs:annotation>  
+		<xs:restriction base="xs:token">
+			<xs:pattern value="[A-Za-z_][A-Za-z0-9_]*" />
+			<xs:maxLength value="63" />   <!-- HDF4 had a 64 character limit on names (possible including NULL) and NeXus enforces this via the NX_MAXNAMELEN variable -->
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="validNXClassName">
+		<xs:annotation>  
+			   <xs:documentation>  
+				  Used for allowed names of NX class types (e.g. NXdetector) 
+				  not the instance (e.g. bank1) which is covered by validItemName.  
+				</xs:documentation>  
+		</xs:annotation>  
+		<xs:restriction base="nx:validItemName">
+					<xs:pattern value="NX.+"/>
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="validTargetName">
+		<xs:annotation>
+			<xs:documentation>
+				This is a valid link target - it is an absolute path
+				made up of valid names with / character separating
+			</xs:documentation>  
+		</xs:annotation>  
+		<xs:restriction base="xs:token">
+			<xs:pattern value="/[A-Za-z_][A-Za-z0-9_/]*" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	
 	<!-- define the document root element -->
@@ -58,7 +99,7 @@
 
 	<xs:complexType name="definitionType">
 		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded" />
-		<xs:attribute name="name" use="required" />
+		<xs:attribute name="name" use="required" type="nx:validItemName" />
 		<xs:attribute name="version" use="required" />
 		<xs:attribute name="type" use="required" type="nx:definitionTypeAttr" />
 		<xs:attribute name="extends" use="optional" />
@@ -90,7 +131,7 @@
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="name" use="required" />
+		<xs:attribute name="name" use="required" type="nx:validItemName" />
 		<xs:attribute name="type" type="nx:primitiveType" default="NX_CHAR"/>
 	</xs:complexType>
 
@@ -122,7 +163,7 @@
 		<xs:sequence>
 			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1" />
 		</xs:sequence>
-		<xs:attribute name="name" use="required" />
+		<xs:attribute name="name" use="required" type="nx:validItemName" />
 	</xs:complexType>
 
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -148,16 +189,10 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded"/>
-		<xs:attribute name="type" use="required">
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:pattern value="NX.+"/>
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>
+		<xs:attribute name="type" use="required" type="nx:validNXClassName"/>
 		<xs:attribute name="minOccurs" use="optional" default="0" type="xs:nonNegativeInteger"/>
 		<xs:attribute name="maxOccurs" use="optional"  default="unbounded"/>
-		<xs:attribute name="name" use="optional" />
+		<xs:attribute name="name" use="optional" type="nx:validItemName"/>
 	</xs:complexType>
 
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -324,7 +359,7 @@ another variable.
 				<xs:documentation>A link to another item.</xs:documentation>
 			</xs:annotation>
 			<xs:extension base="nx:basicComponent">
-				<xs:attribute name="target" use="required">
+				<xs:attribute name="target" use="required" type="nx:validTargetName">
 					<xs:annotation>
 						<xs:documentation>path to element we link to</xs:documentation>
 					</xs:annotation>					
