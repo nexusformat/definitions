@@ -17,7 +17,7 @@
     <!-- by the nxdl2sch.xsl transform                            -->
     <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
-    <!--xsl:comment>Processing $Id$</xsl:comment-->
+    <xsl:comment>Processing $Id$</xsl:comment>
     
     <sch:ns uri="http://definition.nexusformat.org/schema/3.1" prefix="nx"/>
     <sch:ns uri="http://www.w3.org/1999/XSL/Transform" prefix="xsl"/>
