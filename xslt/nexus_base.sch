@@ -35,8 +35,8 @@
     <sch:let name="NAPItype_regexp" 
         value="concat('NX_CHAR|',$NAPItype_INT,'|',$NAPItype_FLOAT)"/>
     
-    <sch:let name="ValidItemName_regexp" value="'[A-Za-z_][A-Za-z0-9_]*'" />
-    <sch:let name="ValidNXClassName_regexp" value="'NX[A-Za-z0-9_]*'" />
+    <sch:let name="ValidItemName_regexp" value="'^[A-Za-z_][A-Za-z0-9_]*$'" />
+    <sch:let name="ValidNXClassName_regexp" value="'^NX[A-Za-z0-9_]*$'" />
 
     <!-- ++++++++++++++++++++++++++++++++++++++ -->
     <!-- abstract rules -->
@@ -44,15 +44,16 @@
     
     <sch:pattern fpi="check for name attributes">
         <sch:rule abstract="true" id="rule_check_NXclass">
-            <!-- ensure NXclass groups have a @name -->
+            <!-- ensure group type (NeXus class) is valid  -->
+            <sch:assert 
+                test="matches(name(),$ValidNXClassName_regexp)"
+                diagnostics="diag_NXclass_needs_valid_name"
+            />
+            <!-- ensure NXclass groups have a valid @name -->
             <sch:assert 
                 diagnostics="diag_NXclass_needs_name_attr"
-                test="@name"
+                test="matches(@name,$ValidItemName_regexp)"
             />
-            <sch:assert 
-				test="matches(@name,$ValidNXClassName_regexp)"
-				diagnostics="diag_NXclass_needs_valid_name"
-			/>
         </sch:rule>
     </sch:pattern>
     
@@ -96,10 +97,10 @@
     <sch:diagnostics>
         <sch:diagnostic id="diag_NXclass_needs_name_attr"
             ><sch:value-of select="name()"
-            />: An NX... group must have a name="" attribute</sch:diagnostic>
+            />: <sch:value-of select="@name"/> is invalid for name="" attribute</sch:diagnostic>
         <sch:diagnostic id="diag_NXclass_needs_valid_name"
             ><sch:value-of select="name()"
-            />: An NX... group must have a valid name="" attribute</sch:diagnostic>
+            />: An NX... group must have a valid name</sch:diagnostic>
         <sch:diagnostic id="diag_NAPIlink_needs_target_attr"
             ><sch:value-of select="name(../@name)"
             />[<sch:value-of select="name(..)"/>]: 
