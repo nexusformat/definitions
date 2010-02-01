@@ -17,7 +17,7 @@
     <!-- by the nxdl2sch.xsl transform                            -->
     <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
-    <xsl:comment>Processing $Id$</xsl:comment>
+    <!--xsl:comment>Processing $Id$</xsl:comment-->
     
     <sch:ns uri="http://definition.nexusformat.org/schema/3.1" prefix="nx"/>
     <sch:ns uri="http://www.w3.org/1999/XSL/Transform" prefix="xsl"/>
@@ -35,6 +35,9 @@
     <sch:let name="NAPItype_regexp" 
         value="concat('NX_CHAR|',$NAPItype_INT,'|',$NAPItype_FLOAT)"/>
     
+    <sch:let name="ValidItemName_regexp" value="'[A-Za-z_][A-Za-z0-9_]*'" />
+    <sch:let name="ValidNXClassName_regexp" value="'NX[A-Za-z0-9_]*'" />
+
     <!-- ++++++++++++++++++++++++++++++++++++++ -->
     <!-- abstract rules -->
     <!-- ++++++++++++++++++++++++++++++++++++++ -->
@@ -46,6 +49,10 @@
                 diagnostics="diag_NXclass_needs_name_attr"
                 test="@name"
             />
+            <sch:assert 
+				test="matches(@name,$ValidNXClassName_regexp)"
+				diagnostics="diag_NXclass_needs_valid_name"
+			/>
         </sch:rule>
     </sch:pattern>
     
@@ -73,6 +80,9 @@
         </sch:rule>
         <sch:rule abstract="true" id="rule_check_field">
             <sch:extends rule="rule_check_NAPItype_attribute"/>
+            <sch:assert test="matches(name(),$ValidItemName_regexp)">
+                Field name <sch:value-of select="name()"/> contains invalid characters.
+            </sch:assert>
         </sch:rule>
         <sch:rule abstract="true" id="rule_check_group">
             <sch:extends rule="rule_check_NXclass"/>
@@ -87,6 +97,9 @@
         <sch:diagnostic id="diag_NXclass_needs_name_attr"
             ><sch:value-of select="name()"
             />: An NX... group must have a name="" attribute</sch:diagnostic>
+        <sch:diagnostic id="diag_NXclass_needs_valid_name"
+            ><sch:value-of select="name()"
+            />: An NX... group must have a valid name="" attribute</sch:diagnostic>
         <sch:diagnostic id="diag_NAPIlink_needs_target_attr"
             ><sch:value-of select="name(../@name)"
             />[<sch:value-of select="name(..)"/>]: 
@@ -121,7 +134,7 @@
     
     <sch:pattern>
         <sch:rule context="/nx:NXroot//*[count(child::*) = 0 and not(name() = 'NAPIlink')]">
-            <sch:extends rule="rule_check_NAPItype_attribute"/>
+            <sch:extends rule="rule_check_field"/>
         </sch:rule>
     </sch:pattern>
         
