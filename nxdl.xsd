@@ -56,12 +56,15 @@
 				  Used for allowed names of elements and attributes.  
 				  Need to be restricted to valid program variable names.  
 				  Note:  This means no "-" or "." characters can be allowed and
-				  you cannot start with a number
+				  you cannot start with a number.
+				  HDF4 had a 64 character limit on names 
+				  (possibly including NULL) and NeXus enforces this 
+				  via the NX_MAXNAMELEN variable.
 				</xs:documentation>  
 		</xs:annotation>  
 		<xs:restriction base="xs:token">
 			<xs:pattern value="[A-Za-z_][A-Za-z0-9_]*" />
-			<xs:maxLength value="63" />   <!-- HDF4 had a 64 character limit on names (possible including NULL) and NeXus enforces this via the NX_MAXNAMELEN variable -->
+			<xs:maxLength value="63" />   <!-- enforce via NX_MAXNAMELEN -->
 		</xs:restriction>
 	</xs:simpleType>
 	
@@ -82,11 +85,32 @@
 			<xs:documentation>
 				This is a valid link target - currently it must be an absolute path
 				made up of valid names with / character separating, but we may
-				want to consider allowing ".." at some point
+				want to consider allowing ".." at some point.
+				Must also consider use of name attribute in resolving link targets.
+				/NXentry/NXinstrument/NXcrystal:analyzer/ef
+				/NXentry/NXinstrument/NXcrystal:monochromator/ei
+				/NX_other
 			</xs:documentation>  
 		</xs:annotation>  
 		<xs:restriction base="xs:token">
-			<xs:pattern value="(/[A-Za-z_][A-Za-z0-9_:]*)+" />
+			<xs:annotation>
+				<xs:documentation>
+					The HDF5 documentation (http://www.hdfgroup.org/HDF5/doc/UG/UG_frame09Groups.html)
+					says "Note that relative path names in HDF5 do not employ the ../ notation, 
+					the UNIX notation indicating a parent directory, to indicate a parent group."
+					Thus, if we only consider the case of 
+					<code xmlns="http://docbook.org/ns/docbook">
+						class[:name]
+					(/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+
+					</code>
+					Note that HDF5 also permits relative path names, such as:
+					<code xmlns="http://docbook.org/ns/docbook">
+						GroupA/GroupB/Dataset1
+					</code>
+					but this is not permitted in the pattern below.
+				</xs:documentation>
+			</xs:annotation>
+			<xs:pattern value="(/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+" />
 		</xs:restriction>
 	</xs:simpleType>
 
