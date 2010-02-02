@@ -148,9 +148,10 @@ Usage:
     <xsl:template match="nx:group" mode="checkHierarchy">
         <xsl:if test="count(nx:field)+count(nx:group)">
             <xsl:element name="section">
-                <xsl:element name="title">
-                    Special case table: <xsl:apply-templates select="." mode="showParentChild"/>
-                </xsl:element>
+                <xsl:element name="title"
+                    >Special case table: <xsl:apply-templates 
+                        select="." mode="showParentChild"
+                    /></xsl:element>
                 <xsl:element name="para">
                     <xsl:call-template name="makeTable"/>
                 </xsl:element>
@@ -225,15 +226,22 @@ Usage:
                         <xsl:apply-templates select="nx:dimensions" mode="showDimensionsEntry"/>
                     </xsl:element>
                 </xsl:if>
-                <xsl:if test="count(./nx:group)+count(./nx:field)">
-                    <xsl:element name="para">
-                        Look for special case table
-                        <xsl:element name="emphasis">
-                            <xsl:attribute name="role">bold</xsl:attribute>
-                            <xsl:apply-templates select="." mode="showParentChild"/>
-                        </xsl:element>
-                        below.
+                <xsl:if test="count(nx:link)">
+                    <xsl:element name="variablelist">
+                        <xsl:element name="para">List of links:</xsl:element>
+                        <xsl:for-each select="nx:link">
+                            <xsl:apply-templates select="." mode="showLinkAttribute"/>
+                        </xsl:for-each>
                     </xsl:element>
+                </xsl:if>
+                <xsl:if test="count(./nx:group)+count(./nx:field)">
+                    <xsl:element name="para"
+                        >Look for special case table
+                        <xsl:element name="emphasis"
+                            ><xsl:attribute name="role">bold</xsl:attribute
+                            ><xsl:apply-templates select="." mode="showParentChild"
+                            /></xsl:element>
+                        below.</xsl:element>
                 </xsl:if>
                 <!-- perhaps forward reference to hierarchy at this point -->
             </xsl:element>
@@ -350,9 +358,9 @@ Usage:
     
     <xsl:template match="*" mode="showParentChild">
         <xsl:apply-templates select="." mode="showNameType"/>
-        <xsl:if test="name()!='definition'">
-            (within <xsl:apply-templates select=".." mode="showNameType"/>)
-        </xsl:if>
+        <xsl:if test="name()!='definition'"
+            >(within <xsl:apply-templates select=".." 
+                mode="showNameType"/>)</xsl:if>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -386,6 +394,25 @@ Usage:
                 </xsl:for-each>
             </xsl:element>
         </xsl:if>
+    </xsl:template>
+    
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    
+    <xsl:template match="*" mode="showLinkAttribute">
+        <xsl:element name="varlistentry">
+            <xsl:element name="term">
+                <xsl:element name="code">
+                    <xsl:value-of select="@name"/>
+                </xsl:element>
+            </xsl:element>
+            <xsl:element name="listitem">
+                <xsl:element name="para">
+                    <xsl:element name="code">
+                        <xsl:value-of select="@target"/>
+                    </xsl:element>
+                </xsl:element>
+            </xsl:element>
+        </xsl:element>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -543,11 +570,10 @@ Usage:
             <xsl:attribute name="orient">port</xsl:attribute> <!-- portrait -->
             <xsl:attribute name="role">small</xsl:attribute> <!-- smaller font -->
             <!-- describe what is defined -->
-            <xsl:element name="title">
-                Tabular representation of 
-                <!--<xsl:value-of select="@name"/>:-->
-                <xsl:apply-templates select="." mode="showParentChild"/>
-            </xsl:element>
+            <xsl:element name="title"
+                >Tabular representation of <xsl:apply-templates 
+                    select="." mode="showParentChild"
+                /></xsl:element>
             <xsl:element name="tgroup">
                 <xsl:attribute name="cols">4</xsl:attribute>
                 <!-- all columns *should* have adjustable width
