@@ -1,2 +1,2 @@
-   NXmakegroup (fileID, "Data", "NXdata");
-   NXopengroup (fileID, "Data", "NXdata");
+   NXmakegroup (fileID, "data", "NXdata");
+   NXopengroup (fileID, "data", "NXdata");

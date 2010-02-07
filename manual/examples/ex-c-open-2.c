@@ -1,2 +1,2 @@
-   NXmakegroup (fileID, "Entry", "NXentry");
-   NXopengroup (fileID, "Entry", "NXentry");
+   NXmakegroup (fileID, "entry", "NXentry");
+   NXopengroup (fileID, "entry", "NXentry");
