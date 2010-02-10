@@ -45,7 +45,7 @@ BASE_CLASS_PATH          = ../base_classes
 APPLICATIONS_CLASS_PATH  = ../applications
 CONTRIBUTED_CLASS_PATH   = ../contributed_definitions
 
-VPATH = $(BASE_CLASS_PATH) $(APPLICATIONS_CLASS_PATH) $(CONTRIBUTED_CLASS_PATH)5
+VPATH = $(BASE_CLASS_PATH) $(APPLICATIONS_CLASS_PATH) $(CONTRIBUTED_CLASS_PATH)
 
 # make lists of all the NXDL instances 
 # (useful to make separate lists for category)
@@ -81,6 +81,8 @@ DYNAMIC_DOCBOOK_SECTIONS += units.xml
 CLEANING_LIST =
 CLEANING_LIST += NeXusManual.pdf
 CLEANING_LIST += NeXusManual.html
+CLEANING_LIST += NeXusManual_one_chunk.html
+CLEANING_LIST += html/
 CLEANING_LIST += NeXusManual.ps
 CLEANING_LIST += classes/
 CLEANING_LIST += types.xml
@@ -88,9 +90,9 @@ CLEANING_LIST += units.xml
 
 # === Rules ===
 
-all: docbook
+all: NeXusManual.pdf NeXusManual.html NeXusManual_one_chunk.html html/index.html
 
-docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.pdf
+docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.xml
 
 # This uses VPATH to locate the source directory for the target
 classes/%.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT)
@@ -122,12 +124,41 @@ units.xml : ../nxdlTypes.xsd Makefile $(XSLT_PATH)/nxdl_units2docbook.xsl
 	@echo "(Re)created $@"
 
 
-# dblatex.sf.net is used to build a PDF version of the NeXus Manual
-dblatex NeXusManual.pdf ::
+NeXusManual.pdf : docbook
+	# dblatex.sf.net is used to build a PDF version of the NeXus Manual
 	@#dblatex -P table.in.float=0 -ttex NeXusManual.xml
 	dblatex -V -P table.in.float=0 -b pdftex -tpdf NeXusManual.xml
 	@#pdftops $< temporaryNeXusManual.ps
 	@#ps2pdf temporaryNeXusManual.ps $<
+
+
+###############################################################################
+
+# installation root directory for docbook xslt stylesheets
+DBXSL=/usr/share/sgml/docbook/xsl-stylesheets-1.75.2
+#DBXSL=/usr/share/sgml/docbook/xsl-stylesheets-1.69.1-5.1
+
+NeXusManual.html : docbook
+	xsltproc --xinclude --output $@ \
+	  --stringparam use.extensions 0 \
+	  $(DBXSL)/html/docbook.xsl \
+	  NeXusManual.xml
+
+NeXusManual_one_chunk.html : docbook
+	xsltproc --xinclude \
+	  --stringparam use.extensions 0 \
+	  $(DBXSL)/html/onechunk.xsl \
+	  NeXusManual.xml
+	mv index.html $@
+
+html/index.html : docbook
+	[ -d html ] || mkdir html
+	( cd html; xsltproc --xinclude \
+	  --stringparam use.extensions 0 \
+	  $(DBXSL)/html/chunk.xsl \
+	  ../NeXusManual.xml; )
+
+###############################################################################
 
 NeXusManual.ps :: NeXusManual.pdf
 	pdftops $<
