@@ -21,7 +21,7 @@
 # For further information, see http://www.nexusformat.org
 
 ########### SVN repository information ###################
-# $Date: 2008$
+# $Date$
 # $Author$
 # $Revision$
 # $HeadURL$
