@@ -90,7 +90,8 @@ CLEANING_LIST += units.xml
 
 # === Rules ===
 
-all: NeXusManual.pdf NeXusManual.html NeXusManual_one_chunk.html html/index.html
+#all: NeXusManual.pdf NeXusManual.html NeXusManual_one_chunk.html html/index.html
+all: NeXusManual.pdf NeXusManual.html html/index.html
 
 docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.xml
 
@@ -135,8 +136,9 @@ NeXusManual.pdf : docbook
 ###############################################################################
 
 # installation root directory for docbook xslt stylesheets
-DBXSL=/usr/share/sgml/docbook/xsl-stylesheets-1.75.2
-#DBXSL=/usr/share/sgml/docbook/xsl-stylesheets-1.69.1-5.1
+#    http://sourceforge.net/projects/docbook/
+DBXSL:=$(abspath ..)/xslt/docbook-xsl-1.75.2
+
 
 NeXusManual.html : docbook
 	xsltproc --xinclude --output $@ \
