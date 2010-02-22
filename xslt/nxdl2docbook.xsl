@@ -553,10 +553,20 @@ Usage:
             <xsl:element name="varlistentry"><!-- doc element of this class -->
                 <xsl:element name="term">documentation</xsl:element>
                 <xsl:element name="listitem">
-                    <xsl:element name="para">
-                        <xsl:comment>+++</xsl:comment>
-                        <xsl:apply-templates select="nx:doc"/>
-                    </xsl:element>
+                    <xsl:comment>count(nx:doc/child::*): <xsl:value-of select="count(nx:doc/child::*)"/></xsl:comment>
+                    <xsl:choose>
+                        <xsl:when test="count(nx:doc/child::*)=0">
+                            <xsl:comment>branch-A</xsl:comment>
+                            <xsl:element name="para">
+                                <xsl:comment>+++</xsl:comment>
+                                <xsl:apply-templates select="nx:doc"/>
+                            </xsl:element>
+                        </xsl:when>
+                        <xsl:when test="count(nx:doc/child::*)>0">
+                            <xsl:comment>branch-B</xsl:comment>
+                            <xsl:apply-templates select="nx:doc"/>
+                        </xsl:when>
+                    </xsl:choose>
                 </xsl:element>
             </xsl:element><!-- varlistentry -->
         </xsl:element><!-- variablelist -->
