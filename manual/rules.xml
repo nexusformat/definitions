@@ -63,7 +63,7 @@
         <para>
           Optionally a processed data <code>NXentry</code> can hold a <code>NXinstrument</code> group with 
            further groups holding relevant information about the instrument. The 
-           preferred name is again instrument. Whereas for a raw data file, NeXus 
+           preferred name is again <code>instrument</code>. Whereas for a raw data file, NeXus 
            strives to capture as much data as possible, a <code>NXinstrument</code> group for 
            processed data may contain a much reduced subset. 
         </para>         
@@ -77,7 +77,7 @@
     <section>
         <title>Names</title>
         <para>
-          For all data fields names from the NeXus base class dictionaries are to 
+          For all data fields, names from the NeXus base class dictionaries are to 
           be used. If a data field name or even a complete component is missing, 
           please suggest the addition to the NIAC. The addition will usually be 
           accepted provided it is no duplication of an existing field and 
@@ -99,33 +99,39 @@
       <title>Associating Data with Axis</title>
       <para>
          In order to allow automatic plotting programs to locate the relevant signal 
-         data and the axis of a possibly multi diemsnional dataset, a set of rules 
+         data and the axis of a possibly multi-dimensional dataset, a set of rules 
          has to be adhered too. The first one is that the data and its 
          associated axis data sets have to be in the same NeXus group. The second one is 
          that the actual main data field (usually the detector counts) has to be annotated 
          with the attribute <code>signal=1</code>. The axis belonging to this dataset have to be 
          annotated with the attribute <code>axis=n</code>, 
-        where <code>n</code> is the number of the dimension this 
-         axis corresponds too. 
+        where <code>n</code> is the number of the dimension to which this 
+         axis corresponds. 
       </para>
       <para>
        An example is in order. Consider a detector bank with detectors at different 
-       two theta and with a time-of-flight axis. This then is stored as:
-        <simplelist>
-           <member>
+       two theta and with a time-of-flight axis. This data is stored as:
+        <itemizedlist>
+          <listitem>
+            <para>
              A data field of dimensions <code>ndet,ntof</code>. With <code>ndet</code> being the number of 
              detectors and <code>ntof</code> the number of time channels. This dataset is annotated 
-             with the attribute <code>signal=1</code>
-           </member>
-           <member>
+             with the attribute <code>signal=1</code>              
+            </para>
+          </listitem>
+          <listitem>
+            <para>
              A data field polar_angle with <code>ndet</code> elements and the 
-             attribute <code>axis=1</code>
-           </member>
-           <member>
+             attribute <code>axis=1</code>              
+            </para>
+          </listitem>
+          <listitem>
+            <para>
              A data field time_binning with <code>ntof</code> elements and the
              attribute <code>axis=2</code>
-           </member>
-        </simplelist>
+            </para>
+          </listitem>
+       </itemizedlist>
       </para>
       <para>
         In some case it is desirable to have muliple axis on the same dimension. 
@@ -170,50 +176,64 @@
          any variable can be scanned. NeXus solves this difficulty with a set of 
          rules. In this section, <code>NP</code> is used as a symbol for the number of scan 
          points.
-         <simplelist>
-            <member>
+        <itemizedlist>
+          <listitem>
+            <para>
               The scan dimension <code>NP</code> is always the first dimension of any 
               multi-dimensional dataset. The reason for this is that HDF allows the first 
               dimension of a dataset to be unlimited. Which means, that data can be 
               appended to the dataset during the scan. 
-            </member>
-            <member>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
               All data is stored as arrays of dimensions <code>NP</code>, original dimensions 
               of the data at the appropriate position in the <code>NXentry</code> hierarchy.
-            </member>
-            <member>
+            </para>
+          </listitem>
+          <listitem>
+            <para>
               The <code>NXdata</code> group has to contain links to all variables varied during 
                the scan and the detector data. Thus the <code>NXdata</code> group  mimics the usual 
                tabular representation of a scan.
-            </member>
-         </simplelist>
+            </para>
+          </listitem>
+         </itemizedlist>
       </para>
       <para>
          Examples may be in order here. Let us start with a simple case, the sample is 
          rotated arounds its rotation axis and data is collected in a single tube 
          detector. Then we have:
-         <simplelist>
-           <member>
-             A dataset at <code>NXentry/NXinstrument/NXdetector/data</code> 
-             of length <code>NP</code> containing 
-             the count data.
-           </member>
-           <member>
-             A dataset at <code>NXentry/NXsample/rotation_angle</code> 
-             of length <code>NP</code> containing 
-             the positions of <code>rotation_angle</code> at the various steps of the scan.  
-           </member>
-           <member>
-             <code>NXdata</code> contains links to 
-             <code>NXentry/NXinstrument/NXdetector/data</code> and 
-             <code>NXentry/NXsample/rotation_angle</code>. The datasets in 
-             <code>NXdata</code> must have the 
-             appropriate attributes as described in the axis location section.
-           </member>
-           <member>
+        <itemizedlist>
+          <listitem>
+            <para>
+              A dataset at <code>NXentry/NXinstrument/NXdetector/data</code> 
+              of length <code>NP</code> containing 
+              the count data.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              A dataset at <code>NXentry/NXsample/rotation_angle</code> 
+              of length <code>NP</code> containing 
+              the positions of <code>rotation_angle</code> at the various steps of the scan.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <code>NXdata</code> contains links to 
+              <code>NXentry/NXinstrument/NXdetector/data</code> and 
+              <code>NXentry/NXsample/rotation_angle</code>. The datasets in 
+              <code>NXdata</code> must have the 
+              appropriate attributes as described in the axis location section.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
              All other data fields have their normal dimensions.
-           </member>
-         </simplelist>
+            </para>
+          </listitem>
+        </itemizedlist>
         The next example is the same scan but with an area detector with <code>xsize</code> 
         times <code>ysize</code> pixels. The only thing which changes is that
         <code>NXentry/NXinsrument/NXdetector/data</code> will have the dimensions 
@@ -223,63 +243,83 @@
           The next example involves a complex movement along an axis in reciprocal 
           space which requires mutiple motors of a four circle diffractometer to be 
           varied during the scan. We then have:
-         <simplelist>
-           <member>
-             A dataset at <code>NXentry/NXinstrument/NXdetector/data</code> of length 
-             <code>NP</code> containing 
-             the count data.
-           </member>
-           <member>
-             A dataset at <code>NXentry/NXinstrument/NXdetector/polar_angle</code> of length 
-             <code>NP</code> containing 
-             the positions of the detectors polar_angle at the various steps 
-             of the scan.  
-           </member>
-           <member>
-             A dataset at <code>NXentry/NXsample/rotation_angle</code> of length 
-             <code>NP</code> containing 
-             the positions of <code>rotation_angle</code> at the various steps of the scan.  
-           </member>
-           <member>
-             A dataset at <code>NXentry/NXsample/chi</code> of length <code>NP</code> containing 
-             the positions of chi at the various steps of the scan.  
-           </member>
-           <member>
-             A dataset at <code>NXentry/NXsample/phi</code> of length <code>NP</code> containing 
-             the positions of phi at the various steps of the scan.  
-           </member>
-           <member>
-             A dataset at <code>NXentry/NXsample/h</code> of length <code>NP</code> containing 
-             the positions of the reciprocal coordinate <code>h</code> at the 
-             various steps of the scan.  
-           </member>
-           <member>
-             A dataset at <code>NXentry/NXsample/k</code> of length <code>NP</code> containing 
-             the positions of the reciprocal coordinate <code>k</code> at the 
-             various steps of the scan.  
-           </member>
-           <member>
-             A dataset at <code>NXentry/NXsample/l</code> of length <code>NP</code> containing 
-             the positions of the reciprocal coordinate <code>l</code> at the 
-             various steps of the scan.  
-           </member>
-           <member>
-             <code>NXdata</code>  contains links to 
-             <code>NXentry/NXinstrument/NXdetector/data</code>, 
-             <code>NXentry/NXinstrument/NXdetector/polar_angle</code>, 
-             <code>NXentry/NXsample/rotation_angle</code>, 
-             <code>NXentry/NXsample/chi</code>, 
-             <code>NXentry/NXsample/phi</code>, 
-             <code>NXentry/NXsample/h</code>, 
-             <code>NXentry/NXsample/k</code> and 
-             <code>NXentry/NXsample/l </code>
-             The datasets in <code>NXdata</code> must have the 
-             appropriate attributes as described in the axis location section.
-           </member>
-           <member>
-             All other data fields have their normal dimensions.
-           </member>
-         </simplelist>
+        <itemizedlist>
+          <listitem>
+            <para>
+              A dataset at <code>NXentry/NXinstrument/NXdetector/data</code> of length 
+              <code>NP</code> containing 
+              the count data.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              A dataset at <code>NXentry/NXinstrument/NXdetector/polar_angle</code> of length 
+              <code>NP</code> containing 
+              the positions of the detectors polar_angle at the various steps 
+              of the scan.  
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              A dataset at <code>NXentry/NXsample/rotation_angle</code> of length 
+              <code>NP</code> containing 
+              the positions of <code>rotation_angle</code> at the various steps of the scan.  
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              A dataset at <code>NXentry/NXsample/chi</code> of length <code>NP</code> containing 
+              the positions of chi at the various steps of the scan.  
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              A dataset at <code>NXentry/NXsample/phi</code> of length <code>NP</code> containing 
+              the positions of phi at the various steps of the scan.  
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              A dataset at <code>NXentry/NXsample/h</code> of length <code>NP</code> containing 
+              the positions of the reciprocal coordinate <code>h</code> at the 
+              various steps of the scan.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              A dataset at <code>NXentry/NXsample/k</code> of length <code>NP</code> containing 
+              the positions of the reciprocal coordinate <code>k</code> at the 
+              various steps of the scan.  
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              A dataset at <code>NXentry/NXsample/l</code> of length <code>NP</code> containing 
+              the positions of the reciprocal coordinate <code>l</code> at the 
+              various steps of the scan.  
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              <code>NXdata</code>  contains links to 
+              <code>NXentry/NXinstrument/NXdetector/data</code>, 
+              <code>NXentry/NXinstrument/NXdetector/polar_angle</code>, 
+              <code>NXentry/NXsample/rotation_angle</code>, 
+              <code>NXentry/NXsample/chi</code>, 
+              <code>NXentry/NXsample/phi</code>, 
+              <code>NXentry/NXsample/h</code>, 
+              <code>NXentry/NXsample/k</code> and 
+              <code>NXentry/NXsample/l </code>
+              The datasets in <code>NXdata</code> must have the 
+              appropriate attributes as described in the axis location section.
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              All other data fields have their normal dimensions.
+            </para>
+          </listitem>
+        </itemizedlist>
       </para>
       </section>
     <section>
