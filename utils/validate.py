@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+########### SVN repository information ###################
+# $LastChangedDate$
+# $LastChangedBy$
+# $LastChangedRevision$
+# $HeadURL$
+########### SVN repository information ###################
 NXCONVERT = "nxconvert"
 
 def getSourceDir():
