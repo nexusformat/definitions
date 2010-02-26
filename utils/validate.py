@@ -89,7 +89,7 @@ if __name__ == "__main__":
   VERBOSE = 1
 
   if len(sys.argv) < 2 :
-    raise RuntimeError("Must give arg 1 (schemtron file)")
+    raise RuntimeError("Must give arg 1 (schematron file)")
   schematron = sys.argv[1]
 
   if len(sys.argv) < 3 :
