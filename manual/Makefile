@@ -88,6 +88,8 @@ CLEANING_LIST += classes/
 CLEANING_LIST += types.xml
 CLEANING_LIST += units.xml
 
+CLASS_HEAD_PYTHON = ../utils/classSectionHead.py
+
 # === Rules ===
 
 #all: NeXusManual.pdf NeXusManual.html NeXusManual_one_chunk.html html/index.html
@@ -103,16 +105,16 @@ test ::
 	@echo $(CLEANING_LIST)
 
 
-classes/BaseClassSections.xml : $(BASE_CLASS_TARGETS) Makefile classSectionHead.py
-	python ./classSectionHead.py 'Base' $(BASE_CLASS_TARGETS) > $@
+classes/BaseClassSections.xml : $(BASE_CLASS_TARGETS) Makefile $(CLASS_HEAD_PYTHON)
+	python $(CLASS_HEAD_PYTHON) 'Base' $(BASE_CLASS_TARGETS) > $@
 	@echo "(Re)created $@"
 
-classes/ApplicationClassSections.xml : $(APPLICATION_CLASS_TARGETS) Makefile classSectionHead.py
-	python ./classSectionHead.py 'Application' $(APPLICATION_CLASS_TARGETS) > $@
+classes/ApplicationClassSections.xml : $(APPLICATION_CLASS_TARGETS) Makefile $(CLASS_HEAD_PYTHON)
+	python $(CLASS_HEAD_PYTHON) 'Application' $(APPLICATION_CLASS_TARGETS) > $@
 	@echo "(Re)created $@"
 
-classes/ContributedClassSections.xml : $(CONTRIBUTED_CLASS_TARGETS) Makefile classSectionHead.py
-	python ./classSectionHead.py 'Contributed' $(CONTRIBUTED_CLASS_TARGETS) > $@
+classes/ContributedClassSections.xml : $(CONTRIBUTED_CLASS_TARGETS) Makefile $(CLASS_HEAD_PYTHON)
+	python $(CLASS_HEAD_PYTHON) 'Contributed' $(CONTRIBUTED_CLASS_TARGETS) > $@
 	@echo "(Re)created $@"
 
 
