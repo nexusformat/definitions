@@ -10,12 +10,81 @@
   >
     <title>Physical File format</title>
     <para>
-      <!-- TODO: write this section -->
-      <simplelist>
-        <member>Describe implementation of the NeXus standard in HDF4, HDF5, and XML formats.</member>
-        <member>For example, note how groups are named in HDF and XML.</member>
-        <member>Compare and contrast the two formats (no root element in HDF).</member>
-        <member>Perhaps advise when to use one or the other.</member>
-      </simplelist>
+      This section describes how NeXus structures are mapped to features of the underlying 
+      physical file format. This is a guide for people who wish to create NeXus files without 
+      using the NeXus-API.
     </para>
+    <section>
+    <title>Special Attributes</title>
+    <para>
+      NeXus makes use of some special attributes for its internal purposes. These attributes are 
+      stored as normal group or data set attributes in the respective file format. These are:
+      <variablelist>
+      <varlistentry><term>target</term>
+      <listitem><para>
+         This attribute is automatically created when items get linked. The target attribute contains a text string with 
+         the path to the source of the item linked. 
+      </para></listitem>
+      </varlistentry>
+     <varlistentry><term>napimount</term>
+      <listitem><para>
+      The napimount attribute is used to implement external linking in NeXus. The string is a URL to the file and group in the 
+      external file to link too. The system is meant to be extended. But as off now the only format supported is: 
+      nxfile://path-to-file#path-infile. This is a NeXus file in the file system at path-to-file and the group path-infile in that 
+      NeXus file.  
+     </para></listitem>
+      </varlistentry>
+     <varlistentry><term>NAPIlink</term>
+      <listitem><para>
+        NeXus supports linking items in another group under another name. This is only supported natively in HDF-5. 
+        For HDF-4 and XML a crutch is needed. This crutch is a special class name or attribute NAPIlink combined with the 
+        target attribute. For groups NAPILink is the group class, for data items a special attribute with the name NAPIlink.  
+     </para></listitem>
+      </varlistentry>
+       </variablelist>
+    </para>
+    </section>
+    <section>
+    <title>Mapping NeXus into HDF</title>
+    <para>
+      NeXus groups map directly into HDF groups, NeXus data sets directly into HDF SDS (scientific data sets) and 
+      attributes directly to HDF group or SDS attributes. The only special is the NeXus class name. HDF-4 supports a group class 
+       which is set with the Vsetclass call and read with VGetclass. 
+       HDF-5 has no group class. Thus the NeXus class is stored as a group attribute with the name NX_class. 
+    </para>
+    </section>
+    <section>
+    <title>Mapping NeXus into XML</title>
+    <para>
+      This is some more work. At the root of NeXus XML file is a XML element with the name NXroot. Further XML attributes to 
+      NXroot define the NeXus file level attributes.
+    </para>
+    <para>
+      NeXus groups are encoded into XML as elements with the name of the NeXus class and an XML attribute name which defines the 
+      NeXus name of the group. Further group attributes become XML attributes. An example:
+      <screen>
+      &lt;NXentry name="entry"&gt;
+      &lt;/NXentry&gt;
+      </screen>
+    </para>
+    <para>
+      NeXus data sets are encoded as XML elements with the name of the data. An attribute NAPItype defines the type and 
+      dimensions of the data. The actual data is stored as CData in the element. Another example:
+      <screen>
+      &lt;mode NAPItype="NX_CHAR[7]"&gt;
+        monitor
+      &lt;/mode&gt;
+      </screen>
+      Data are printed in appropriate formats and in C storage order. 
+      The codes understood for NAPITYPE are all the NeXus data type names. The dimensions are given in square brackets as a comma 
+      separated list. No dimensions need to be given if the data is just a single value. Data attributes are represented as XML attributes. 
+      If the attribute is not a text string, then the attribute is given in the form: type:value, for example: 
+      <code>signal="NX_INT32:1"</code>.  
+    </para>
+    <para>
+    NeXus links are stored in XML as XML elements with the name NAPIlink and a XML attribute target which stores the path to the linked 
+    entity in the file.  If the item is linked under a different name, then this name is  specified as a XML attribute name to 
+    the element NAPIlink. 
+    </para>
+    </section>
 </section>
