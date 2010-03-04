@@ -337,7 +337,9 @@
                 <title>Simple Example</title>
                 <para>NeXus data files do not need to be complicated. In fact, the following
                     diagram shows an extremely simple NeXus file that could be used to transfer
-                    data between programs. <figure>
+                    data between programs. (Later in this section, we show how to write and 
+                    read this simple example.)
+                    <figure xml:id="fig.simple-example">
                         <title>Simple Example</title>
                         <mediaobject>
                             <imageobject>
@@ -447,8 +449,7 @@
             <!-- TODO: ref development downloads site, should release to public site -->
             from the NeXus development site.<footnote><para><link
                 xlink:href="http://download.nexusformat.org"
-                ><code>http://download.nexusformat.org</code>:
-                <code>http://download.nexusformat.org</code
+                ><code>http://download.nexusformat.org</code
                 ></link></para></footnote>
         </para>
         <para>
@@ -460,8 +461,7 @@
                 ><code>NeXusIntern.pdf</code></link><footnote><para><link
                     xmlns:xlink="http://www.w3.org/1999/xlink" 
                     xlink:href="http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf"
-                    ><code>NeXusIntern.pdf</code>:
-                    <code
+                    ><code
                         >http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf</code
                     ></link></para></footnote>
             in the NeXus code repository.
@@ -489,93 +489,106 @@
                 When you open a file, the API provides a file <emphasis>handle</emphasis>, 
                 which then stores the
                 current location, i.e. which group and/or field is currently open. Read and
-                write operations then act on the currently open entity. In the following, we
-                walk through some parts of a typical NeXus program written in C.
+                write operations then act on the currently open entity. 
+                Following the simple example of <xref linkend="fig.simple-example"/>,
+                we walk through some parts of a typical NeXus program written in C.
             </para>
-            <para>First, it is necessary to open the file, specifying whether we want read or
-                write access. <example>
-                    <title>Open a file</title>
-                    <indexterm>
-                        <primary>example</primary>
-                        <secondary>NAPI</secondary>
-                    </indexterm>
+            <example xml:id="ex.simple.write">
+                <title>Writing a simple NeXus file.</title>
+                <programlistingco>
+                    <areaspec>
+                        <area xml:id="ex.write.open" coords="6"/>
+                        <area xml:id="ex.write.entry.group" coords="7"/>
+                        <area xml:id="ex.write.data.group" coords="9"/>
+                        <area xml:id="ex.write.tth.array" coords="12"/>
+                        <area xml:id="ex.write.tth.array.write" coords="14"/>
+                        <area xml:id="ex.write.tth.array.attr" coords="15"/>
+                        <area xml:id="ex.write.tth.array.close" coords="16"/>
+                        <area xml:id="ex.write.remainder" coords="17"/>
+                        <area xml:id="ex.write.close" coords="20"/>
+                    </areaspec>
                     <programlisting language="c" linenumbering="numbered"
-                        ><xi:include href="examples/ex-c-open-1.c" parse="text"
-                        /></programlisting>
-                </example> The file is opened with <emphasis>create</emphasis> access (implying write access), and
-                the API returns a file identifier of type <code>NXhandle</code>. Next, we create an
-                <code>NXentry</code> group to contain the scan using 
-                <code>NXmakegroup()</code> and then
-                open it for access using <code>NXopengroup()</code>. <example>
-                    <title>Create an entry</title>
-                    <programlisting language="c" linenumbering="numbered"
-                        ><xi:include href="examples/ex-c-open-2.c" parse="text"
-                        /></programlisting>
-                </example> 
-                The plottable data
-                <indexterm>
-                    <primary>NeXus basic motivation</primary>
-                    <secondary>default plot</secondary>
-                </indexterm>
-                is contained within an <code>NXdata</code> group, which must
-                also be created and opened. <example>
-                    <title>Create data group</title>
-                    <programlisting language="c" linenumbering="numbered"
-                        ><xi:include href="examples/ex-c-open-3.c" parse="text"
-                        /></programlisting>
-                </example> 
-                To create a field, call <code>NXmakedata()</code>, specifying the
-                data name, type (<code>NX_FLOAT32</code>), rank
-                <indexterm><primary>rank</primary></indexterm>
-                (in this case, 
-                <code>1</code>), and length of the array
-                (<code>n_t</code>). Then, it can be opened for writing. 
-                <example>
-                    <title>Create data array</title>
-                    <programlisting language="c" linenumbering="numbered"
-                        ><xi:include href="examples/ex-c-open-4.c" parse="text"
-                        /></programlisting>
-                </example> 
-                Then write the data using <code>NXputdata()</code>. 
-                <example>
-                    <title>Write the data</title>
-                    <programlisting language="c" linenumbering="numbered"
-                        >  NXputdata (fileID, t);</programlisting>
-                </example> 
-                With the field is still open, we can also add some data attributes,
-                <indexterm><primary>attributes</primary><secondary>data</secondary></indexterm>
-                such as the data units,
-                <indexterm><primary>units</primary></indexterm>
-                which are specified as a character string (type <code>NX_CHAR</code>)
-                that is 12 bytes long. <example>
-                    <title>Add an attribute</title>
-                    <programlisting language="c" linenumbering="numbered"
-                        >NXputattr (fileID, "units", "microseconds", 12, NX_CHAR);</programlisting>
-                </example> Then we close the field before opening another. In fact, the API
-                will do this automatically if you attempt to open another field, but it is
-                better style to close it yourself. 
-                <example>
-                    <title>Close the data array</title>
-                    <programlisting language="c" linenumbering="numbered"
-                        >NXclosedata (fileID);</programlisting>
-                </example> 
-                The remaining fields in this group are added in a similar
-                fashion. Note that the indentation whenever a new field or group are opened
-                is just intended to make the structure of the NeXus file more transparent. 
-                <example>
-                    <title>The rest of the data group</title>
-                    <programlisting linenumbering="numbered" language="c"
-                        ><xi:include href="examples/ex-c-open-8.c" parse="text"
-                        /></programlisting>
-                </example> 
-                Finally, close the groups (<code>NXdata</code> and <code>NXentry</code>) before
-                closing the file itself. 
-                <example>
-                    <title>Cleanup</title>
-                    <programlisting language="c" linenumbering="numbered"
-                        ><xi:include href="examples/ex-c-open-9.c" parse="text"
-                        /></programlisting>
-                </example></para>
+                ><xi:include href="examples/ex-c-write.c" parse="text"
+                /></programlisting>
+                </programlistingco>
+            </example>
+            <calloutlist>
+                <callout arearefs="ex.write.open">
+                    <para>
+                        Open the file <code>NXfile.nxs</code> with 
+                        <emphasis>create</emphasis> 
+                        access (implying write access).
+                        NAPI returns a file identifier of type <code>NXhandle</code>.
+                    </para>
+                </callout>
+                <callout arearefs="ex.write.entry.group">
+                    <para>
+                        Next, we create an
+                        <code>NXentry</code> group to contain the scan using 
+                        <code>NXmakegroup()</code> and then
+                        open it for access using <code>NXopengroup()</code>.
+                    </para>
+                </callout>
+                <callout arearefs="ex.write.data.group">
+                    <para>
+                        The plottable data
+                        <indexterm>
+                            <primary>NeXus basic motivation</primary>
+                            <secondary>default plot</secondary>
+                        </indexterm>
+                        is contained within an <code>NXdata</code> group, which must
+                        also be created and opened.
+                    </para>
+                </callout>
+                <callout arearefs="ex.write.tth.array">
+                    <para>
+                        To create a field, call <code>NXmakedata()</code>, specifying the
+                        data name, type (<code>NX_FLOAT32</code>), rank
+                        <indexterm><primary>rank</primary></indexterm>
+                        (in this case, 
+                        <code>1</code>), and length of the array
+                        (<code>n</code>). Then, it can be opened for writing.
+                    </para>
+                </callout>
+                <callout arearefs="ex.write.tth.array.write">
+                    <para>
+                        Write the data using <code>NXputdata()</code>. 
+                    </para>
+                </callout>
+                <callout arearefs="ex.write.tth.array.attr">
+                    <para>
+                        With the field still open, we can also add some data attributes,
+                        <indexterm><primary>attributes</primary><secondary>data</secondary></indexterm>
+                        such as the data units,
+                        <indexterm><primary>units</primary></indexterm>
+                        which are specified as a character string (type <code>NX_CHAR</code>)
+                        that is 7 bytes long.
+                    </para>
+                </callout>
+                <callout arearefs="ex.write.tth.array.close">
+                    <para>
+                        Then we close the field before opening another. 
+                        In fact, the API will do this automatically if you 
+                        attempt to open another field, but it is
+                        better style to close it yourself. 
+                    </para>
+                </callout>
+                <callout arearefs="ex.write.remainder">
+                    <para>
+                        The remaining fields in this group are added in a similar
+                        fashion. Note that the indentation whenever a new field or 
+                        group are opened is just intended to make the structure of
+                        the NeXus file more transparent.
+                    </para>
+                </callout>
+                <callout arearefs="ex.write.close">
+                    <para>
+                        Finally, close the groups (<code>NXdata</code> and 
+                        <code>NXentry</code>) before
+                        closing the file itself. 
+                    </para>
+                </callout>
+            </calloutlist>
         </section>
 
         <section xml:id="Section_how_do_I_read">
@@ -593,9 +606,9 @@
                 and length
                 of the data before allocating an array to store it.
             </para>
-            <para>Here is part of a program to read the time-of-flight array from the file
-                created by the example above. 
-                <example>
+            <para>Here is part of a program to read the two-theta array from the file
+                created by <xref linkend="ex.simple.read"/> above. 
+                <example xml:id="ex.simple.read">
                     <title>File read example</title>
                     <programlisting linenumbering="numbered" language="c"
                         ><xi:include href="examples/ex-c-read.c" parse="text"
@@ -611,56 +624,62 @@
                     <secondary><code>nxbrowse</code></secondary>
                 </indexterm>
                 to view a data
-                file from the LRMECS spectrometer at IPNS. The following commands are used (see
+                file from the LRMECS spectrometer at IPNS. The following commands 
+                are used in <xref linkend="ex.NXbrowse.lrmecs"/> in this session (see
                 the <code>nxbrowse</code> web page):
-                <table role="small">
-                    <title>NXbrowse Command Description</title>
-                    <tgroup cols="2" align="left" colsep="1" rowsep="1">
-                        <colspec colwidth="1*"/>
-                        <colspec colwidth="3*"/>
-                        <thead>
-                            <row>
-                                <entry><?dblatex bgcolor="[gray]{0.8}"?>Command</entry>
-                                <entry><?dblatex bgcolor="[gray]{0.8}"?>Description</entry>
-                            </row>
-                        </thead>
-                        <tbody>
-                            <row>
-                                <entry>dir</entry>
-                                <entry>List the contents of the current group</entry>
-                            </row>
-                            <row>
-                                <entry>open Histogram1</entry>
-                                <entry>Open the NeXus group "Histogram1"</entry>
-                            </row>
-                            <row>
-                                <entry>read title</entry>
-                                <entry>Print the contents of the NeXus data labelled
-                                    "title"</entry>
-                            </row>
-                            <row>
-                                <entry>close</entry>
-                                <entry>Close the current group</entry>
-                            </row>
-                            <row>
-                                <entry>quit</entry>
-                                <entry>Quit the browser</entry>
-                            </row>
-                        </tbody>
-                    </tgroup>
-                </table>
-                <example>
+                <calloutlist>
+                    <callout arearefs="ex.NXbrowse.unix">
+                        <para>
+                            Start <code>NXbrowse</code> from the UNIX command 
+                            line and open file <code>lrcs3701.nxs</code> from 
+                            IPNS/LRMECS.
+                        </para>
+                    </callout>
+                    <callout arearefs="ex.NXbrowse.dir">
+                        <para>
+                            List the contents of the current group.
+                        </para>
+                    </callout>
+                    <callout arearefs="ex.NXbrowse.open">
+                        <para>
+                            Open the NeXus group <code>Histogram1</code>.
+                        </para>
+                    </callout>
+                    <callout arearefs="ex.NXbrowse.read">
+                        <para>
+                            Print the contents of the NeXus data labelled <code>title</code>.
+                        </para>
+                    </callout>
+                    <callout arearefs="ex.NXbrowse.close">
+                        <para>Close the current group.</para>
+                    </callout>
+                    <callout arearefs="ex.NXbrowse.quit">
+                        <para>Quits <code>NXbrowse</code>.</para>
+                    </callout>
+                </calloutlist>
+                <example xml:id="ex.NXbrowse.lrmecs">
                     <!-- TODO: build example from LRMECS data.
                         Obtained lrcs3701.nxs from http://trac.mcs.anl.gov/projects/nexpy/browser/data/
                         and intend to use it to build a good example.
                     -->
                     <title>Using NXbrowse</title>
-                    <programlisting linenumbering="numbered"
-                        ><xi:include href="examples/ex-unix-using-nxbrowse.txt" parse="text"
-                        /></programlisting>
+                    <programlistingco>
+                        <areaspec>
+                            <area xml:id="ex.NXbrowse.unix" coords="1"/>
+                            <area xml:id="ex.NXbrowse.dir" coords="8"/>
+                            <area xml:id="ex.NXbrowse.open" coords="11"/>
+                            <area xml:id="ex.NXbrowse.read" coords="23"/>
+                            <area xml:id="ex.NXbrowse.close" coords="41"/>
+                            <area xml:id="ex.NXbrowse.quit" coords="43"/>
+                        </areaspec>
+                        <programlisting linenumbering="numbered"
+                ><xi:include href="examples/ex-unix-using-nxbrowse.txt" parse="text"
+                /></programlisting>
+                    </programlistingco>
                 </example>
             </para>
-            <para>The source code provides an example of how to write a NeXus reader. 
+            <para>The source code of <code>NXbrowse</code> provides an 
+                example of how to write a NeXus reader. 
                 The test programs included in the 
                 <link xlink:href="#ApplicationProgramInterfaceSection">NeXus 
                     API</link> may also

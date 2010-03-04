@@ -1,10 +1,10 @@
  NXopen ('NXfile.nxs', NXACC_READ, &fileID);
-   NXopengroup (fileID, "entry", "NXentry");
+   NXopengroup (fileID, "Scan", "NXentry");
      NXopengroup (fileID, "data", "NXdata");
-       NXopendata (fileID, "time_of_flight");
+       NXopendata (fileID, "two_theta");
          NXgetinfo (fileID, &rank, dims, &datatype);
-         NXmalloc ((void **) &tof, rank, dims, datatype);
-         NXgetdata (fileID, tof);
+         NXmalloc ((void **) &tth, rank, dims, datatype);
+         NXgetdata (fileID, tth);
        NXclosedata (fileID);
      NXclosegroup (fileID);
    NXclosegroup (fileID);
