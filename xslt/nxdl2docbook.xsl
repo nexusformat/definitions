@@ -147,15 +147,9 @@ Usage:
     
     <xsl:template match="nx:group" mode="checkHierarchy">
         <xsl:if test="count(nx:field)+count(nx:group)">
-            <xsl:element name="section">
-                <xsl:element name="title"
-                    >Special case table: <xsl:apply-templates 
-                        select="." mode="showParentChild"
-                    /></xsl:element>
                 <xsl:element name="para">
                     <xsl:call-template name="makeTable"/>
                 </xsl:element>
-            </xsl:element>
         </xsl:if>
         <xsl:if test="count(nx:group)">
             <xsl:apply-templates select="nx:group" mode="checkHierarchy"/>
@@ -236,12 +230,11 @@ Usage:
                 </xsl:if>
                 <xsl:if test="count(./nx:group)+count(./nx:field)">
                     <xsl:element name="para"
-                        >Look for special case table
-                        <xsl:element name="emphasis"
+                        >See table: <xsl:element name="emphasis"
                             ><xsl:attribute name="role">bold</xsl:attribute
                             ><xsl:apply-templates select="." mode="showParentChild"
-                            /></xsl:element>
-                        below.</xsl:element>
+                            /></xsl:element
+                        ></xsl:element>
                 </xsl:if>
                 <!-- perhaps forward reference to hierarchy at this point -->
             </xsl:element>
@@ -357,20 +350,21 @@ Usage:
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xsl:template match="*" mode="showParentChild">
-        <xsl:apply-templates select="." mode="showNameType"/>
         <xsl:if test="name()!='definition'"
-            >(within <xsl:apply-templates select=".." 
-                mode="showNameType"/>)</xsl:if>
+            ><xsl:value-of select="/nx:definition/@name"
+            />: <xsl:apply-templates select=".." 
+                mode="showNameType"/>/</xsl:if>
+        <xsl:apply-templates select="." mode="showNameType"/>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xsl:template match="*" mode="showNameType">
-        <xsl:value-of select="@name"/>
+        <xsl:if test="name()!='definition'"><xsl:value-of select="@name"/></xsl:if>
         <xsl:if test="count(@type)">
             <xsl:choose>
-                <xsl:when test="name()='definition'">[<xsl:value-of select="name()"/>]</xsl:when>
-                <xsl:otherwise>[<xsl:value-of select="@type"/>]</xsl:otherwise>
+                <xsl:when test="name()='definition'"><xsl:value-of select="@name"/></xsl:when>
+                <xsl:otherwise>:<xsl:value-of select="@type"/></xsl:otherwise>
             </xsl:choose>
         </xsl:if>
     </xsl:template>
@@ -581,7 +575,7 @@ Usage:
             <xsl:attribute name="role">small</xsl:attribute> <!-- smaller font -->
             <!-- describe what is defined -->
             <xsl:element name="title"
-                >Tabular representation of <xsl:apply-templates 
+                ><xsl:apply-templates 
                     select="." mode="showParentChild"
                 /></xsl:element>
             <xsl:element name="tgroup">

@@ -90,6 +90,13 @@ CLEANING_LIST += units.xml
 
 CLASS_HEAD_PYTHON = ../utils/classSectionHead.py
 
+# for details, see: http://dblatex.sourceforge.net/doc/sec-custom.html
+DBLATEX_OPTS =  -P table.in.float=0
+DBLATEX_OPTS += -P doc.lot.show="figure"
+#DBLATEX_OPTS += -P toc.section.depth=2
+#DBLATEX_OPTS += -P draft.watermark=1
+DBLATEX_OPTS += -b pdftex -tpdf
+
 # === Rules ===
 
 #all: NeXusManual.pdf NeXusManual.html NeXusManual_one_chunk.html html/index.html
@@ -129,10 +136,7 @@ units.xml : ../nxdlTypes.xsd Makefile $(XSLT_PATH)/nxdl_units2docbook.xsl
 
 NeXusManual.pdf : docbook
 	# dblatex.sf.net is used to build a PDF version of the NeXus Manual
-	@#dblatex -P table.in.float=0 -ttex NeXusManual.xml
-	dblatex -V -P table.in.float=0 -b pdftex -tpdf NeXusManual.xml
-	@#pdftops $< temporaryNeXusManual.ps
-	@#ps2pdf temporaryNeXusManual.ps $<
+	dblatex -V $(DBLATEX_OPTS) NeXusManual.xml
 
 
 ###############################################################################
