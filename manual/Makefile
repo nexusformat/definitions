@@ -77,6 +77,7 @@ DYNAMIC_DOCBOOK_SECTIONS += classes/ApplicationClassSections.xml
 DYNAMIC_DOCBOOK_SECTIONS += classes/ContributedClassSections.xml
 DYNAMIC_DOCBOOK_SECTIONS += types.xml
 DYNAMIC_DOCBOOK_SECTIONS += units.xml
+DYNAMIC_DOCBOOK_SECTIONS += subtitle.xml
 
 CLEANING_LIST =
 CLEANING_LIST += NeXusManual.pdf
@@ -110,6 +111,10 @@ classes/%.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT)
 
 test ::
 	@echo $(CLEANING_LIST)
+
+
+subtitle.xml ::
+	../utils/setsubtitle.csh > $@
 
 
 classes/BaseClassSections.xml : $(BASE_CLASS_TARGETS) Makefile $(CLASS_HEAD_PYTHON)
