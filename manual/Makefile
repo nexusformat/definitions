@@ -114,7 +114,7 @@ test ::
 
 
 subtitle.xml ::
-	../utils/setsubtitle.csh > $@
+	/bin/sh ../utils/setsubtitle.sh > $@
 
 
 classes/BaseClassSections.xml : $(BASE_CLASS_TARGETS) Makefile $(CLASS_HEAD_PYTHON)

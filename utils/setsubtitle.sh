@@ -1,4 +1,4 @@
-#!/usr/bin/tcsh
+#!/bin/sh
 
 ########### SVN repository information ###################
 # $Date: 2008$
@@ -10,7 +10,7 @@
 
 # purpose: sets date/time/svnid as subtitle of manual
 
-set svnid = `svnversion ..`
+export svnid=`svnversion ..`
 
 echo '<?xml version="1.0" encoding="UTF-8"?>'
 echo '<?oxygen '
