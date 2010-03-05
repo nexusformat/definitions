@@ -145,16 +145,18 @@ NeXusManual.pdf : docbook
 #    http://sourceforge.net/projects/docbook/
 DBXSL:=$(abspath ..)/xslt/docbook-xsl-1.75.2
 
-
+# for xslt options, see: http://docbook.sourceforge.net/release/xsl/current/doc/html/
 NeXusManual.html : docbook
 	xsltproc --xinclude --output $@ \
 	  --stringparam use.extensions 0 \
+	  --stringparam callout.graphics.path "img/callouts/" \
 	  $(DBXSL)/html/docbook.xsl \
 	  NeXusManual.xml
 
 NeXusManual_one_chunk.html : docbook
 	xsltproc --xinclude \
 	  --stringparam use.extensions 0 \
+	  --stringparam callout.graphics.path "img/callouts/" \
 	  $(DBXSL)/html/onechunk.xsl \
 	  NeXusManual.xml
 	mv index.html $@
@@ -163,6 +165,7 @@ html/index.html : docbook
 	[ -d html ] || mkdir html
 	( cd html; xsltproc --xinclude \
 	  --stringparam use.extensions 0 \
+	  --stringparam callout.graphics.path "../img/callouts/" \
 	  $(DBXSL)/html/chunk.xsl \
 	  ../NeXusManual.xml; )
 
