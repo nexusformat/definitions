@@ -19,6 +19,6 @@ echo '    type="xml"?>'
 echo '<subtitle '
 echo '    xmlns="http://docbook.org/ns/docbook" '
 echo '    version="5.0">'
-echo '    <\!-- manual was last rebuilt on this date/time -->'
+echo '    <!-- manual was last rebuilt on this date/time -->'
 echo '    Id:' ${svnid}, `date`
 echo '</subtitle>'
