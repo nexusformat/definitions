@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
+<!-- # $Id$ -->
+<section 
+    version="5.0"
+    xml:id="chap.NAPI" xmlns="http://docbook.org/ns/docbook" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude">
+    <title>NAPI: NeXus Application Programming Interface</title>
+    
+    <indexterm significance="preferred">
+        <primary>NAPI</primary>
+    </indexterm>
+    <indexterm significance="preferred">
+        <primary>NeXus Application Programming Interface</primary>
+        <see>NAPI</see>
+    </indexterm>
+    <para>
+        The Application Program Interface (API) has been developed to 
+        facilitate the reading and writing of NeXus files. Those writing 
+        applications to produce NeXus files are encouraged to use the API 
+        in order to ensure compliance with the NeXus standard. The API 
+        supports the reading and writing of HDF4, HDF5, and, since version 
+        3.0.0, XML files.
+    </para>
+    <para>
+        The core routines have been written in C but wrappers are 
+        available for a number of other languages including Fortran 77, 
+        Fortran 90, Java, and IDL (with Python and others under development).
+        The API makes the reading and writing of NeXus files transparent; 
+        the user doesn't even need to know the underlying format when 
+        reading a file since the API calls are the same. 
+    </para>
+
+    <section xml:id="sect.NAPI.purpose">
+        <title>Purpose of API</title>
+        <para>
+            The NeXus Application Program Interface is a suite of subroutines, 
+            written in C but with wrappers in Fortran 77 and 90. 
+            The subroutines call HDF routines to read and write the NeXus 
+            files with the correct structure. An API serves a number of useful purposes:
+            <orderedlist>
+                <listitem>
+                    <para>
+                        It simplifies the reading and writing of NeXus files.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        It ensures a certain degree of compliance with the 
+                        NeXus standard.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        It allows the development of sophisticated input/output 
+                        features such as automatic unit conversion. This has 
+                        not been implemented yet.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        It hides the implementation details of the format. 
+                        In particular, the API can read and write HDF4, HDF5, 
+                        and XML files using the same routines.
+                    </para>
+                </listitem>
+            </orderedlist>
+            For these reasons, we request that all NeXus files are written 
+            using the supplied API. We cannot be sure that anything written 
+            using the underlying HDF API will be recognized by NeXus-aware 
+            utilities. 
+        </para>
+    </section>
+    
+    <section xml:id="sect.NAPI.core">
+        <title>Core API</title>
+        <para>
+            The core API provides the basic routines for reading, writing 
+            and navigating NeXus files. It is designed to be modal; there 
+            is a hidden state that determines which groups and data sets 
+            are open at any given moment, and subsequent operations are 
+            implicitly performed on these entities. This cuts down the 
+            number of parameters to pass around in API calls, at the 
+            cost of forcing a certain pre-approved mode d'emploi. This 
+            mode d'emploi will be familiar to most: it is very similar 
+            to navigating a directory hierarchy; in our case, NeXus 
+            groups are the directories, which contain data sets 
+            and/or other directories.
+        </para>
+        <para>
+            The core API comprises the following functional groups:
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        General initialization and shutdown: 
+                        opening and closing the file, 
+                        creating or opening an existing group or dataset, 
+                        and closing them.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Reading and writing data and attributes to previously 
+                        opened datasets.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Routines to obtain meta-data and to iterate over component 
+                        datasets and attributes.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Handling of linking and group hierarchy.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Routines to handle memory allocation.
+                    </para>
+                </listitem>
+            </itemizedlist>
+        </para>
+        
+        <section xml:id="sect.NAPI.core.c">
+            <title>C and C++ Interface</title>
+            <para>Doxygen documentation is provided for 
+                C<footnote><para>C interface documentation: <link 
+                    xlink:href="http://download.nexusformat.org/doxygen/html-c/"
+                    ><literal
+                        >http://download.nexusformat.org/doxygen/html-c/</literal
+                    ></link></para></footnote>
+                and C++<footnote><para>C++ interface documentation: <link 
+                    xlink:href="http://download.nexusformat.org/doxygen/html-cpp/"
+                    ><literal
+                        >http://download.nexusformat.org/doxygen/html-cpp/</literal
+                    ></link></para></footnote>
+                routines.
+            </para>
+        </section>
+        
+        <section xml:id="sect.NAPI.core.f77">
+            <title>Fortran 77 Interface</title>
+            <para>
+                Wrapper routines to interface the Fortran and C code have been developed. The routines have the same names and argument lists as the corresponding C routines, although we have added extra routines for the input/output of character data and attributes. Care must be taken to ensure enough space is allocated for the input/output operations being performed.
+            </para><para>
+                It is necessary to reverse the order of indices in multidimensional arrays, compared to an equivalent C program, so that data are stored in the same order in the NeXus file.
+            </para><para>
+                Any program using the F77 API needs to include the following line near the top in order to define the required constants (NXHANDLESIZE, NXLINKSIZE, etc.):
+                <example>
+                    <title>line required for use with F77 API</title>
+                    <programlisting  language="xml" linenumbering="numbered"
+                                    ><code>include 'NAPIF.INC'</code></programlisting>
+                </example>
+            </para>
+        </section>
+        
+        <section xml:id="sect.NAPI.core.f90">
+            <title>Fortran 90 Interface</title>
+            <para></para>
+        </section>
+        
+        <section xml:id="sect.NAPI.core.java">
+            <title>Java Interface</title>
+            <para></para>
+        </section>
+        
+        <section xml:id="sect.NAPI.core.python">
+            <title>Python Interface</title>
+            <para></para>
+        </section>
+        
+        <section xml:id="sect.NAPI.core.idl">
+            <title>IDL Interface</title>
+            <para></para>
+        </section>
+    </section>
+    
+    <section xml:id="sect.NAPI.utility">
+        <title>Utility API</title>
+        <para></para>
+        
+        <section xml:id="sect.NAPI.utility.routines">
+            <title>List of Routines</title>
+            <para></para>
+        </section>
+
+    </section>
+    
+    <section xml:id="sect.NAPI.examples">
+        <title>Example NeXus program</title>
+        <para></para>
+        
+        <section xml:id="sect.NAPI.examples.c">
+            <title>C Version</title>
+            <para></para>
+        </section>
+        
+        <section xml:id="sect.NAPI.examples.f77">
+            <title>Fortran 77 Version</title>
+            <para></para>
+        </section>
+        
+        <section xml:id="sect.NAPI.examples.f90">
+            <title>Fortran 90 Version</title>
+            <para></para>
+        </section>
+    </section>
+    
+    <section xml:id="sect.NAPI.building">
+        <title>Building Programs</title>
+        <para></para>
+    </section>
+    
+    
+    <section xml:id="sect.NAPI.reporting">
+        <title>Reporting Bugs in the NeXus API</title>
+        <para></para>
+    </section>
+    
+</section>
