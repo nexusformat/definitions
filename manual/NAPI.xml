@@ -145,79 +145,590 @@
             <title>Fortran 77 Interface</title>
             <para>
                 Wrapper routines to interface the Fortran and C code have been developed. The routines have the same names and argument lists as the corresponding C routines, although we have added extra routines for the input/output of character data and attributes. Care must be taken to ensure enough space is allocated for the input/output operations being performed.
-            </para><para>
+            </para>
+            <para>
                 It is necessary to reverse the order of indices in multidimensional arrays, compared to an equivalent C program, so that data are stored in the same order in the NeXus file.
-            </para><para>
+            </para>
+            <para>
                 Any program using the F77 API needs to include the following line near the top in order to define the required constants (NXHANDLESIZE, NXLINKSIZE, etc.):
                 <example>
                     <title>line required for use with F77 API</title>
-                    <programlisting  language="xml" linenumbering="numbered"
+                    <programlisting  language="c" linenumbering="numbered"
                                     ><code>include 'NAPIF.INC'</code></programlisting>
                 </example>
+                Use the <xref linkend="table.c.f77"/> to convert from the C data types listed
+                with each routine to the F77 data types:
+                <table role="small" xml:id="table.c.f77">
+                    <title>
+                        Conversion of data types from C to F77
+                        <indexterm>
+                            <primary>data types</primary>
+                            <secondary>conversion</secondary>
+                            <tertiary>C to F77</tertiary>
+                        </indexterm>
+                    </title>
+                    <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="1*"/>
+                        <thead>
+                            <row>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>C</entry>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>FORTRAN 77</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>
+                                    <code>int a</code>, 
+                                    <code>int* a</code>
+                                </entry>
+                                <entry><code>INTEGER A</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>char* a</code>
+                                </entry>
+                                <entry><code>CHARACTER*(*) A</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NXhandle a</code>, 
+                                    <code>NXhandle* a</code>
+                                </entry>
+                                <entry><code>INTEGER A(NXHANDLESIZE)</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NXstatus</code>
+                                </entry>
+                                <entry><code>INTEGER</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>int[] a</code>
+                                </entry>
+                                <entry><code>INTEGER A(*)</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>void* a</code>
+                                </entry>
+                                <entry>
+                                    <code>REAL A(*)</code> 
+                                    or <code>DOUBLE A(*)</code>  
+                                    or <code>INTEGER A(*)</code>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NXlink a</code>, 
+                                    <code>NXlink* a</code>
+                                </entry>
+                                <entry><code>INTEGER A(NXLINKSIZE)</code></entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+            <para>
+                Also see the doxygen documentation.<footnote
+                    ><para><link 
+                    xlink:href="http://download.nexusformat.org/doxygen/html-f77/"
+                    ><literal
+                        >http://download.nexusformat.org/doxygen/html-f77/</literal
+                    ></link></para></footnote>
             </para>
         </section>
         
         <section xml:id="sect.NAPI.core.f90">
             <title>Fortran 90 Interface</title>
-            <para></para>
+            <para>
+                The Fortran 90 interface is a wrapper to the C interface with nearly identical routine definitions. As with the Fortran 77 interface, it is necessary to reverse the order of indices in multidimensional arrays, compared to an equivalent C program, so that data are stored in the same order in the NeXus file.
+            </para>
+            <para>
+                Any program using the F90 API needs to put the following line at the top (after the PROGRAM statement) :
+                <example>
+                    <title>line required for use with F90 API</title>
+                    <programlisting  language="c" linenumbering="numbered"
+                        ><code>use NXmodule</code></programlisting>
+                </example>
+            </para>
+            <para>
+                Use the <xref linkend="table.c.f90"/> to convert from the C data types 
+                listed with each routine to the Fortran 90 data types.
+                <table role="small" xml:id="table.c.f90">
+                    <title>
+                        Conversion of data types from C to F90
+                        <indexterm>
+                            <primary>data types</primary>
+                            <secondary>conversion</secondary>
+                            <tertiary>C to F90</tertiary>
+                        </indexterm>
+                    </title>
+                    <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="1*"/>
+                        <thead>
+                            <row>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>C</entry>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>FORTRAN 90</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>
+                                    <code>int</code>, 
+                                    <code>int</code>
+                                </entry>
+                                <entry><code>integer</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>char*</code>
+                                </entry>
+                                <entry><code>character(len=*)</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NXhandle</code>, 
+                                    <code>NXhandle*</code>
+                                </entry>
+                                <entry><code>type(NXhandle)</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NXstatus</code>
+                                </entry>
+                                <entry><code>integer</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>int[]</code>
+                                </entry>
+                                <entry><code>integer(:)</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>void*</code>
+                                </entry>
+                                <entry>
+                                    <code>real(:)</code> 
+                                    or <code>integer(:)</code>  
+                                    or <code>character(len=*)</code>
+                                </entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NXlink a</code>, 
+                                    <code>NXlink* a</code>
+                                </entry>
+                                <entry><code>type(NXlink)</code></entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+                The parameters in <xref linkend="table.NXmodule.f90"/>,
+                defined in <code>NXmodule</code>, may be used in defining variables.
+                <table role="small" xml:id="table.NXmodule.f90">
+                    <title>
+                        F90 parameters from <code>NXmodule</code>
+                        used in defining variables
+                        <indexterm>
+                            <primary>data types</primary>
+                            <secondary>parameters</secondary>
+                            <tertiary>F90</tertiary>
+                        </indexterm>
+                    </title>
+                    <tgroup cols="3" align="left" colsep="1" rowsep="1">
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="1*"/>
+                        <colspec colwidth="1*"/>
+                        <thead>
+                            <row>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>Name</entry>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>Description</entry>
+                                <entry><?dblatex bgcolor="[gray]{0.8}"?>Value</entry>
+                            </row>
+                        </thead>
+                        <tbody>
+                            <row>
+                                <entry>
+                                    <code>NX_MAXRANK</code>
+                                </entry>
+                                <entry>Maximum number of dimensions</entry>
+                                <entry>32</entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NX_MAXNAMELEN</code>
+                                </entry>
+                                <entry>Maximum length of NeXus name</entry>
+                                <entry>64</entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NXi1</code>
+                                </entry>
+                                <entry>Kind parameter for a 1-byte integer</entry>
+                                <entry><code>selected_int_kind(2)</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NXi2</code>
+                                </entry>
+                                <entry>Kind parameter for a 2-byte integer</entry>
+                                <entry><code>selected_int_kind(4)</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NXi4</code>
+                                </entry>
+                                <entry>Kind parameter for a 4-byte integer</entry>
+                                <entry><code>selected_int_kind(8)</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NXr4</code>
+                                </entry>
+                                <entry>Kind parameter for a 4-byte real</entry>
+                                <entry><code>kind(1.0)</code></entry>
+                            </row>
+                            <row>
+                                <entry>
+                                    <code>NXr8</code>
+                                </entry>
+                                <entry>Kind parameter for an 8-byte real</entry>
+                                <entry><code>kind(1.0D0)</code></entry>
+                            </row>
+                        </tbody>
+                    </tgroup>
+                </table>
+            </para>
+            <para>
+                Also see the doxygen documentation.<footnote
+                    ><para><link 
+                        xlink:href="http://download.nexusformat.org/doxygen/html-f90/"
+                        ><literal
+                            >http://download.nexusformat.org/doxygen/html-f90/</literal
+                        ></link></para></footnote>
+            </para>
         </section>
         
-        <section xml:id="sect.NAPI.core.java">
+        <xi:include href="napi-java.xml"/>
+        <!--<section xml:id="sect.NAPI.core.java">
             <title>Java Interface</title>
-            <para></para>
-        </section>
+            <para>
+                NeXus for Java provides access to NeXus data files for programs 
+                written in Java. This API was implemented by Java code calling the 
+                original C language NeXus API through the Java Native Methods Interface.
+                <!-\- TODO -\->
+                [[Java API|Description of NeXus-Java interface]]
+            </para>
+        </section>-->
         
         <section xml:id="sect.NAPI.core.python">
             <title>Python Interface</title>
-            <para></para>
+            <para>
+                <!-- TODO -->
+                Documentation available in pydoc and doxygen 
+                (http://download.nexusformat.org/doxygen/html-python/)
+            </para>
         </section>
         
         <section xml:id="sect.NAPI.core.idl">
             <title>IDL Interface</title>
-            <para></para>
+            <para>
+                IDL is an interactive data evaluation environment developed by Research Systems - it is an interpreted language
+                for data manipulation and visualization. The NeXus IDL bindings allow access to the NeXus API from within
+                IDL - they are installed when NeXus is compiled from source after being configured with the following options
+                <example>
+                    <title>configure NeXus source to build IDL bindings</title>
+                    <programlisting  language="c" linenumbering="numbered"><code
+                        >./configure --with-idlroot=/path/to/idl/installation --with-idldlm=/path/to/install/dlm/files/to</code
+                        ></programlisting>
+                </example>
+                <!-- TODO -->
+                For further details see the IDL binding README (http://svn.nexusformat.org/code/trunk/bindings
+                /idl/README.html)
+            </para>
         </section>
     </section>
     
     <section xml:id="sect.NAPI.utility">
         <title>Utility API</title>
-        <para></para>
+        <para>
+            The NeXus F90 Utility API provides a number of routines that combine the operations of various core API routines in order to simplify the reading and writing of NeXus files. At present, they are only available as a Fortran 90 module but a C version is in preparation.
+        </para>
+        <para>
+            The utility API comprises the following functional groups:
+            <itemizedlist>
+                <listitem>
+                    <para>
+                        Routines to read or write data.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Routines to find if groups, data, or attributes exist, and to find data with specific signal or axis attributes i.e. to identify valid data or axes.
+                    </para>
+                </listitem>
+                <listitem>
+                    <para>
+                        Routines to open other groups to which NXdata items are linked, and to return again.
+                    </para>
+                </listitem>
+            </itemizedlist>
+            Any program using the F90 Utility API needs to put the following line near the top of the program (N.B. do not put USE statements for both NXmodule and NXUmodule; the former is included in the latter) :
+            <example>
+                <title>line required for use with F90 API</title>
+                <programlisting  language="c" linenumbering="numbered"
+                    ><code>use NXUmodule</code></programlisting>
+            </example>
+        </para>
         
         <section xml:id="sect.NAPI.utility.routines">
-            <title>List of Routines</title>
-            <para></para>
+            <title>List of F90 Utility Routines</title>
+            <table role="small" xml:id="table.NAPI.f90.utility.routines">
+                <title>
+                    List of F90 Utility Routines
+                </title>
+                <tgroup cols="2" align="left" colsep="1" rowsep="1">
+                    <colspec colwidth="1*" colname="name"/>
+                    <colspec colwidth="2*" colname="description"/>
+                    <spanspec spanname="fullrow" namest="name" nameend="description" align="center"/>
+                    <tbody>
+                        <row>
+                            <entry spanname="fullrow">
+                                <?dblatex bgcolor="[gray]{0.8}"?>
+                                <emphasis role="bold">
+                                    Reading and Writing
+                                </emphasis>
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUwriteglobals</code>
+                            </entry>
+                            <entry>
+                                Writes all the valid global attributes of a file.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUwritegroup</code>
+                            </entry>
+                            <entry>
+                                Opens a group (creating it if necessary).
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUwritedata</code>
+                            </entry>
+                            <entry>
+                                Opens a data item (creating it if necessary) and writes data and its units.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUreaddata</code>
+                            </entry>
+                            <entry>
+                                Opens and reads a data item and its units.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUwritehistogram</code>
+                            </entry>
+                            <entry>
+                                Opens one dimensional data item (creating it if necessary) and writes histogram centers and their units.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUreadhistogram</code>
+                            </entry>
+                            <entry>
+                                Opens and reads a one dimensional data item and converts it to histogram bin boundaries.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUsetcompress</code>
+                            </entry>
+                            <entry>
+                                Defines the compression algorithm and minimum dataset size for subsequent write operations.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry spanname="fullrow">
+                                <?dblatex bgcolor="[gray]{0.8}"?>
+                                <emphasis role="bold">
+                                    Finding Groups, Data, and Attributes
+                                </emphasis> 
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUfindclass</code>
+                            </entry>
+                            <entry>
+                                Returns the name of a group of the specified class if it is contained within the currently open group.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUfinddata</code>
+                            </entry>
+                            <entry>
+                                Checks whether a data item of the specified name is contained within the currently open group.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUfindattr</code>
+                            </entry>
+                            <entry>
+                                Checks whether the currently open data item has the specified attribute.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUfindsignal</code>
+                            </entry>
+                            <entry>
+                                Searches the currently open group for a data item with the specified SIGNAL attribute.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUfindaxis</code>
+                            </entry>
+                            <entry>
+                                Searches the currently open group for a data item with the specified AXIS attribute. 
+                            </entry>
+                        </row>
+                        <row>
+                            <entry spanname="fullrow">
+                                <?dblatex bgcolor="[gray]{0.8}"?>
+                                <emphasis role="bold">
+                                    Finding Linked Groups
+                                </emphasis> 
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUfindlink</code>
+                            </entry>
+                            <entry>
+                                Finds another link to the specified NeXus data item and opens the group it is in.
+                            </entry>
+                        </row>
+                        <row>
+                            <entry>
+                                <code>NXUresumelink</code>
+                            </entry>
+                            <entry>
+                                Reopens the original group from which NXUfindlink was used. 
+                            </entry>
+                        </row>
+                    </tbody>
+                </tgroup>
+            </table>
+            <para>
+                Currently, the F90 utility API will only write character strings, 4-byte integers and reals, and 8-byte reals. It can read other integer sizes into four-byte integers, but does not differentiate between signed and unsigned integers. Here are two example programs which make heavy use of the Utility API.
+            </para>
+            <para>
+                <!-- TODO -->
+                NXbrowse.f90 [http://www.nexusformat.org/NXbrowse.f90] provides a simple terminal browser of any NeXus file. When compiled and linked with the NeXus API, it can be run interactively. Type HELP to obtain a list of available commands. (Please note that this version of the browser has now been superceded by a version written in C. Only the C version is now included in the Makefile distributed with the API.)
+            </para>
+            <para>
+                <!-- TODO -->
+                NXlrcs.f90 [http://www.nexusformat.org/NXlrcs.f90] is a program for converting IPNS data from the LRMECS chopper spectrometer into NeXus format. It cannot be run without linking to the IPNS run-file modules (not provided), but gives an example of how to write such programs. 
+            </para>
         </section>
 
     </section>
     
     <section xml:id="sect.NAPI.examples">
         <title>Example NeXus program</title>
-        <para></para>
-        
-        <section xml:id="sect.NAPI.examples.c">
-            <title>C Version</title>
-            <para></para>
-        </section>
-        
-        <section xml:id="sect.NAPI.examples.f77">
-            <title>Fortran 77 Version</title>
-            <para></para>
-        </section>
-        
-        <section xml:id="sect.NAPI.examples.f90">
-            <title>Fortran 90 Version</title>
-            <para></para>
-        </section>
+        <para>
+            The following code reads a two-dimensional set <code>counts</code>
+            with dimension scales of <code>t</code> and <code>phi</code> using 
+            local routines, and then writes a NeXus file containing a single 
+            <code>NXentry</code> group and a single <code>NXdata</code> group. 
+            This is the simplest data file that conforms to the NeXus standard. 
+            The same code is provided in C, F77, and F90 versions.
+        </para>
+        <example>
+            <title>NAPI C Example: write simple NeXus file</title>
+            <programlisting language="c" linenumbering="numbered"
+                    ><xi:include href="examples/napi-example.c" parse="text"
+                    /></programlisting>
+        </example> 
+        <example>
+            <title>NAPI F77 Example: write simple NeXus file</title>
+            <programlisting linenumbering="numbered"
+                    ><xi:include href="examples/napi-example.f77" parse="text"
+                    /></programlisting>
+        </example> 
+        <example>
+            <title>NAPI F90 Example: write simple NeXus file</title>
+            <programlisting linenumbering="numbered"
+                    ><xi:include href="examples/napi-example.f90" parse="text"
+                    /></programlisting>
+        </example>
     </section>
     
     <section xml:id="sect.NAPI.building">
         <title>Building Programs</title>
-        <para></para>
+        <para>
+            The install kit provides a utility call <code>nxbuild</code>
+            that can be used to build simple programs:
+            <example>
+                <title>use <code>nxbuild</code> to build simple programs</title>
+                <programlisting linenumbering="numbered"><code
+                    >nxbuild -o test test.c</code></programlisting>
+            </example>
+        </para>
+        <para>
+            This script links in the various libraries for you and reading its 
+            contents would provide the necessary information for creating a 
+            separate Makefile. You can also use <code>nxbuild</code> with the 
+            example files in the NeXus distribution kit which are installed into 
+            <code>/usr/local/nexus/examples</code> ---
+            Note that the executable name is important in this case as the test 
+            program uses it internally to determine the <code>NXACC_CREATE*</code> 
+            argument to pass to <code>NXopen</code>.
+            <example>
+                <title>building and running a simple NeXus program</title>
+                <programlisting linenumbering="numbered"><code
+                    >nxbuild -o napi_test-hdf5 napi_test.c  #  builds HDF5 specific test
+./napi_test-hdf5</code
+                    ></programlisting>
+            </example>
+        </para>
+        <para>
+            NeXus is also set up for pkg-config so the build can be done as
+            <example>
+                <title>use of <code>pkg-config</code> to build simple programs</title>
+                <programlisting linenumbering="numbered"><code
+                    >gcc `pkg-config --cflags` `pkg-config --libs` -o test test.c</code
+                    ></programlisting>
+            </example>
+        </para>
     </section>
     
     
     <section xml:id="sect.NAPI.reporting">
         <title>Reporting Bugs in the NeXus API</title>
-        <para></para>
+        <para>If you encounter any bugs in the installation or running of the NeXus API, 
+            please report them online using our Issue Reporting<footnote><para><link 
+                xlink:href="http://www.nexusformat.org/IssueReporting"
+                ><literal
+                    >http://www.nexusformat.org/IssueReporting</literal
+                ></link></para></footnote> system. </para>
     </section>
     
 </section>
