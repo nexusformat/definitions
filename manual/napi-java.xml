@@ -20,12 +20,476 @@
         language NeXus API through the Java Native Methods Interface.
     </para>
     
-    <section xml:id="sect.NAPI.java.intro">
+    <section xml:id="sect.NAPI.java.general">
         <title>Introduction</title>
         <!-- http://www.nexusformat.org/Japinotes -->
         <para>
-            Contents of http://www.nexusformat.org/Japinotes go here
+            The NeXus for Java API general instructions include installation notes, 
+            instructions for running NeXus for Java programs and a brief 
+            introduction to the API.
         </para>
+        
+        <section xml:id="sect.NAPI.java.general.intro">
+            <title>Introduction</title>
+            <para>
+                NeXus is a proposal for a common file format for neutron and 
+                X-ray scattering. NeXus uses HDF as its physical file format. 
+                Version 1.0 of this Java API has now (October 2000) become 
+                available, in response to the strong expression of interest 
+                at the preceding NOBUGS conference.. 
+                As recoding the HDF library in Java was no option, the Java API 
+                for NeXus (<code>jnexus</code>) was implemented through the 
+                Java Native Methods Interface (JNI). This has the consequence 
+                that the Java API for NeXus cannot be used in applets as the 
+                security restrictions for applets prohibit downloading of 
+                shared libraries and local file access. Applets can use a 
+                NeXus Data Server in order to access NeXus files in readonly mode.
+            </para>
+        </section>
+        
+        <section xml:id="sect.NAPI.java.general.acknow">
+            <title>Acknowledgement</title>
+            <para>
+                This implementation uses classes and native methods from NCSA's 
+                Java HDF Interface project. Basically all conversions from native 
+                types to Java types is done through code from the NCSA HDF group. 
+                Without this code the implementation of this API would have taken 
+                much longer. See NCSA's copyright for more information.
+            </para>
+        </section>
+
+        <section xml:id="sect.NAPI.java.general.install">
+            <title>Installation</title>
+            <para/>
+            
+            <section xml:id="sect.NAPI.java.general.install.Requirements">
+                <title>Requirements</title>
+                <para>
+                    <warning><para>Documentation is old and may need revision.</para></warning>
+                    For the binary distribution only a JDK1.1 compatible Java runtime is required. 
+                    Suitable runtime environments for Solaris, Linux and Windows32 can be downloaded 
+                    from Sun's Java homepage. This website also holds pointers to Java runtime 
+                    systems for other platforms. Jnexus has not been tested with Java 2 but should 
+                    work with it.
+                </para>
+                <para>
+                    In order to compile the Java API for NeXus the following components are required:
+                    <itemizedlist>
+                        <listitem>
+                            <para>
+                                A Java Development Kit 1.1 or better. For downloads, see above.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                A C compiler for your platform.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                The HDF libraries version 4.1r3 or better. Can be downloaded from NCSA's HDF homepage.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                A complete copy of the latest NAPI sources (including <code>jnexus</code> sources). 
+                            </para>
+                        </listitem>
+                    </itemizedlist>
+                </para>
+            </section>
+            
+            <section xml:id="sect.NAPI.java.general.install.win32">
+                <title>Installation under Windows32 (Windows NT, Windows 95, 98, ME)</title>
+                <para>
+                    <orderedlist>
+                        <listitem>
+                            <para>
+                                Copy the HDF DLL's (<code>*413m.dll</code>) and the file 
+                                <code>jnexus.dll</code> to a directory in your path. 
+                                For instance <code>C:\Windows\system32</code>.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                Copy the <code>jnexus.jar</code> to the place where 
+                                you usually keep library jar files. 
+                            </para>
+                        </listitem>
+                    </orderedlist>
+                </para>
+            </section>
+            
+            <section xml:id="sect.NAPI.java.general.install.unix">
+                <title>Installation under Unix</title>
+                <para>
+                    Two files are needed: 
+                    the <code>jnexus.so</code> shared library and the <code>jnexus.jar</code> 
+                    file holding the required Java class. Copy them wherever you like 
+                    and see below for instructions how to run programs using <code>jnexus</code>.
+                </para>
+            </section>
+        </section>
+        
+        <section xml:id="sect.NAPI.java.general.Running">
+            <title>Running Programs with the NeXus API for Java</title>
+            <para>
+                In order to successfully run a program with 
+                <code>jnexus</code>, the Java runtime systems needs 
+                to locate two items:
+                <orderedlist>
+                    <listitem><para>The shared library implementing the native methods.</para></listitem>
+                    <listitem><para>The <code>nexus.jar</code> file in order to find the Java classes.</para></listitem>
+                </orderedlist>
+            </para>
+            
+            <section xml:id="sect.NAPI.java.general.Running.shared">
+                <title>Locating the shared library</title>
+                <para>
+                    Of course the method for locating a shared library differ 
+                    between systems. Under Windows32 systems the best method 
+                    is to copy the <code>jnexus.dll</code> and the HDF-libarary 
+                    DLL files into a directory in your path. The HDF DLL files 
+                    have to go there anyway.
+                </para>
+                <para>
+                    On a UNIX system, the problem can be solved in three different ways:
+                    <orderedlist>
+                        <listitem>
+                            <para>
+                                Make your system administrator copy the <code>jnexus.so</code> 
+                                file into the systems default shared library directory 
+                                (usually <code>/usr/sbin</code>).
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                Put the <code>jnexus.so</code> file wherever you see fit and 
+                                set the <code>LD_LIBRARY_PATH</code> environment variable to 
+                                point to the directory of your choice.
+                            </para>
+                        </listitem>
+                        <listitem>
+                            <para>
+                                Specify the full pathname of the jnexus shared library on 
+                                the java command line with the 
+                                <code>-Dneutron.nexus.JNEXUSLIB=full-path-2-shared-library</code> 
+                                option. 
+                            </para>
+                        </listitem>
+                    </orderedlist>
+                </para>
+            </section>
+            
+            <section xml:id="sect.NAPI.java.general.Running.jnexus">
+                <title>Locating <code>jnexus.jar</code></title>
+                <para>
+                    This is easier, just add the the full pathname to 
+                    <code>jnexus.jar</code> to the classpath when starting java.
+                    Here are examples for a UNIX shell and the Windows shell.
+                    <example>
+                        <title>UNIX example shell script to start <code>jnexus.jar</code></title>
+                        <programlisting language="c" linenumbering="numbered"
+                        ><xi:include href="examples/napi-java-jnexus.sh" parse="text"
+                        /></programlisting>
+                    </example>
+                    <example>
+                        <title>Windows 32 example batch file to start <code>jnexus.jar</code></title>
+                        <programlisting language="c" linenumbering="numbered"
+                        ><xi:include href="examples/napi-java-jnexus.bat" parse="text"
+                        /></programlisting>
+                    </example>
+                </para>
+            </section>
+        </section>
+            
+        <section xml:id="sect.NAPI.java.general.Programming">
+            <title>Programming with the NeXus API for Java</title>
+            <para>
+                <note>
+                    <para>This is for experienced NeXus API Programmers!</para>
+                </note>
+                The NeXus C-API is good enough but for Java a few adaptions of 
+                the API have been made in order to match the API better to the 
+                idioms used by Java programmers. In order to understand the 
+                Java-API, it is useful to study the NeXus C-API because many 
+                methods work in the same way as their C equivalents. 
+                A full API documentation is available in Java documentation format. 
+                For full reference look especially at:
+                <itemizedlist>
+                    <listitem>
+                        <para>
+                            The interface <code>NeXusFileInterface</code> first. 
+                            It gives an uncluttered view of the API.
+                        </para>
+                    </listitem>
+                    <listitem>
+                        <para>
+                            The implementation <code>NexusFile</code> which gives more details about constructors and 
+                            constants. However this documentation is interspersed with information about 
+                            native methods which should not be called by an application programmer as they 
+                            are not part of the standard and might change in future.
+                        </para>
+                    </listitem>
+                </itemizedlist>
+                Some more general explanation will be given below.
+            </para>
+        
+           <section xml:id="sect.NAPI.java.Programming.general">
+               <title>General Things</title>
+               <para>
+                   See the following code example for opening a file, 
+                   opening a vGroup and closing the file again in order 
+                   to get a feeling for the API.
+                   <example>
+                       <title>fragment for opening and closing</title>
+                       <programlisting language="java" linenumbering="numbered"
+                        ><xi:include href="examples/napi-java-prog1.java" parse="text"
+                        /></programlisting>
+                   </example>
+                   Some notes on this little example:
+                   <itemizedlist>
+                       <listitem>
+                           <para>
+                               Each NeXus file is represented by a <code>NexusFile</code> object which 
+                               is created through the constructor.
+                           </para>
+                       </listitem>
+                       <listitem>
+                           <para>
+                               The <code>NexusFile</code> object takes care of all file handles for you. 
+                               So there is no need to pass in a handle anymore to each 
+                               method as in the C language API.
+                           </para>
+                       </listitem>
+                       <listitem>
+                           <para>
+                               All error handling is done through the Java exception 
+                               handling mechanism. This saves all the code checking 
+                               return values in the C language API. Most API functions 
+                               return void.
+                           </para>
+                       </listitem>
+                       <listitem>
+                           <para>
+                               Closing files is tricky. The Java garbage collector is 
+                               supposed to call the finalize method for each object it 
+                               decides to delete. In order to enable this mechanism, 
+                               the <code>NXclose()</code> function was replaced by 
+                               the <code>finalize()</code> method. In practice it seems 
+                               not to be guaranteed that the garbage collector calls the 
+                               <code>finalize()</code> method. It is safer to call 
+                               <code>finalize()</code> yourself in order to properly 
+                               close a file. Multiple calls to the <code>finalize()</code> 
+                               method for the same object are safe and do no harm.
+                           </para>
+                       </listitem>
+                   </itemizedlist>
+               </para>
+           </section>
+        </section>
+        
+        <section xml:id="sect.NAPI.java.general.datarw">
+            <title>Data Writing and Reading</title>
+            <para>
+                Again a code sample which shows how this looks like:
+                <example>
+                    <title>fragment for writing and reading</title>
+                    <programlisting language="java" linenumbering="numbered"
+                        ><xi:include href="examples/napi-java-datarw1.java" parse="text"
+                        /></programlisting>
+                </example>
+                The dataset is created as usual with <code>makedata()</code> and opened 
+                with <code>putdata()</code>. The trick is in <code>putdata()</code>.
+                Java is meant to be type safe. One would think then that a 
+                <code>putdata()</code> method would be required for each Java data type. 
+                In order to avoid this, the data to <code>write()</code> is passed into 
+                <code>putdata()</code> as type <code>Object</code>. 
+                Then the API proceeds to analyze this object through the 
+                Java introspection API and convert the data to a byte stream for writing 
+                through the native method call. This is an elegant solution with one drawback:
+                An array is needed at all times. Even if only a single data value is 
+                written (or read) an array of length one and an appropriate type 
+                is the required argument.
+            </para>
+            <para>
+                Another issue are strings. Strings are first class objects in Java.
+                HDF (and NeXus) sees them as dumb arrays of bytes. Thus strings have to be 
+                converted to and from bytes when reading string data. See a writing example:
+                <example>
+                    <title>String writing</title>
+                    <programlisting language="java" linenumbering="numbered"
+                        ><xi:include href="examples/napi-java-datarw2.java" parse="text"
+                        /></programlisting>
+                </example>
+                And reading:
+                <example>
+                    <title>String reading</title>
+                    <programlisting language="java" linenumbering="numbered"
+                        ><xi:include href="examples/napi-java-datarw2.java" parse="text"
+                        /></programlisting>
+                </example>
+                The aforementioned holds for all strings written as SDS content or as an 
+                attribute. SDS or vGroup names do not need this treatment.
+            </para>
+        </section>
+        
+        <section xml:id="sect.NAPI.java.general.datarw.inquiry">
+            <title>Inquiry Routines</title>
+            <para>
+                Let us compare the C-API and Java-API signatures of the 
+                <code>getinfo()</code> routine (C) or method (Java):
+                <example>
+                    <title>C API signature of <code>getinfo()</code></title>
+                    <programlisting language="c" linenumbering="numbered"
+                        ><xi:include href="examples/frag-c-api-sig-getinfo.c" parse="text"
+                        /></programlisting>
+                </example>
+                <example>
+                    <title>Java API signature of <code>getinfo()</code></title>
+                    <programlisting language="java" linenumbering="numbered"
+                        ><xi:include href="examples/frag-c-api-sig-getinfo.java" parse="text"
+                        /></programlisting>
+                </example>
+                The problem is that Java passes arguments only by value, which means they cannot 
+                be modified by the method. Only array arguments can be modified. 
+                Thus <code>args</code> in the <code>getinfo()</code> method holds the 
+                rank and datatype information passed in separate items in the C-API version. 
+                For resolving which one is which, consult a debugger or the API-reference.
+            </para>
+            <para>
+                The attribute and vGroup search routines have been simplified 
+                using Hashtables. The <code>Hashtable</code> returned by <code>groupdir()</code> 
+                holds the name of the item as a key and the classname or the string SDS as the 
+                stored object for the key. Thus the code for a vGroup search looks like this:
+                <example>
+                    <title>vGroup search</title>
+                    <programlisting language="java" linenumbering="numbered"
+                        ><xi:include href="examples/napi-java-inquiry1.java" parse="text"
+                        /></programlisting>
+                </example>
+            </para>
+            <para>
+                For an attribute search both at global or SDS level the returned Hashtable 
+                will hold the name as the key and a little class holding the type and size 
+                information as value. Thus an attribute search looks like this in the Java-API:
+                <example>
+                    <title>attribute search</title>
+                    <programlisting language="java" linenumbering="numbered"
+                        ><xi:include href="examples/napi-java-inquiry2.java" parse="text"
+                        /></programlisting>
+                </example>
+            </para>
+            <para>
+                For more information about the usage of the API routines see the reference
+                or the NeXus C-API reference pages. Another good source of information is 
+                the source code of the test program which exercises each API routine.
+            </para>
+        </section>
+        
+        <section xml:id="sect.NAPI.java.general.knownproblems">
+            <title>Known Problems</title>
+            <para>
+                These are a couple of known problems which you might run into:
+                <glosslist>
+                    <glossentry>
+                        <glossterm>Memory</glossterm>
+                        <glossdef>
+                            <para>
+                                As the Java API for NeXus has to convert between native 
+                                and Java number types a copy of the data must be made 
+                                in the process. This means that if you want to read or 
+                                write 20MB of data your memory requirement will be 40MB! 
+                                This can be reduced by using 
+                                <code>getslab()</code>/<code>putslab()</code> for data transfers.
+                            </para>
+                        </glossdef>
+                    </glossentry>
+                    <glossentry>
+                        <glossterm><code>Java.lang.OutOfMemoryException</code></glossterm>
+                        <glossdef>
+                            <para>
+                                By default the Java runtime has a ceiling of 16MB of memory use. 
+                                This ceiling can be increased through the <code>-mxXXm</code> 
+                                option to the Java runtime. An example: 
+                                <code>java -mx32m ...</code> starts the Java runtime 
+                                with a memory ceiling of 32MB. 
+                            </para>
+                        </glossdef>
+                    </glossentry>
+                    <glossentry>
+                        <glossterm>DigitalUnix4.0D and LZW compression</glossterm>
+                        <glossdef>
+                            <para>
+                                An error occurs in the HDF library when trying to
+                                compress a dataset with <code>COMP_CODE_LZW</code>. 
+                                This works just fine on other platforms and also 
+                                when using the NeXus C language API. The reason 
+                                for this is still an area for research. 
+                            </para>
+                        </glossdef>
+                    </glossentry>
+                    <glossentry>
+                        <glossterm>Maximum 8192 files open</glossterm>
+                        <glossdef>
+                            <para>
+                                The NeXus API for Java has a fixed buffer for file 
+                                handles which allows only 8192 NeXus files to be 
+                                open at the same time. If you ever hit this limit, 
+                                increase the <code>MAXHANDLE</code> define in 
+                                <code>native/handle.h</code> and recompile everything. 
+                            </para>
+                        </glossdef>
+                    </glossentry>
+                </glosslist>
+            </para>
+        </section>
+        
+        <section xml:id="sect.NAPI.java.general.compiling">
+            <title>Compiling the Java API for NeXus</title>
+            <para>
+                You will need
+                a complete copy of the latest NAPI sources (including <code>jnexus</code> sources). 
+                See other requirements under <xref linkend="sect.NAPI.java.general.install"/> above.
+            </para>
+            <warning>
+                <para>
+                    These instructions appear to be rather old and may need modification 
+                    for contemporary compilers and operating systems.
+                </para>
+            </warning>
+            <para>
+                For Windows32, a Microsoft Visual C++ 6.0 project file is supplied in the 
+                <code>jnexus/jnexus</code> directory. Use this project file. You will 
+                need to adapt the directory settings under Tools/Options/Directories 
+                for both include and library directories in order to reflect the 
+                placement of the HDF libraries and the <code>jnexus</code> source code in your 
+                directory hierarchy. Hitting <code>F7</code> after that should build the shared library. 
+                <note>
+                    <para>
+                        Only a release build is possible with the HDF library binaries. 
+                        If a debug build is needed you have to recompile the HDF libraries yourself. 
+                        For a recompilation of the Java classes use the <code>compilejava</code> 
+                        batch file in the <code>jnexus</code> main directory.
+                    </para>
+                </note>
+                
+                For DigitalUnix4.0D and Redhat Linux 6.2, Makefiles are provided
+                (<code>Makefile</code> and <code>Make.tux</code> repectively). 
+                For these systems everything can be build with 
+                <code>make du40</code> or <code>make -f make.tux</code> respectively. 
+                If the Makefiles do not work edit the directory paths in the configuration 
+                section to match your installation. If you wish to compile on another 
+                unix system, create a copy of one of the above mentioned Makefiles and 
+                edit the configuration section in your copy to match your installation 
+                of java and the HDF libraries. If you succeed in building the NeXus API 
+                for Java on a new system, please put back modified sources into the CVS 
+                repository and make your Makefile and the compiled shared library 
+                available to the NAPI team in order to provide a new binary distribution.
+                
+            </para>
+        </section>
+        
     </section>
     
     <section xml:id="sect.NAPI.java.online">
@@ -33,11 +497,6 @@
         <para>
             The following documentation is browsable online:
             <orderedlist>
-                <listitem>
-                    <para>
-                        The NeXus for Java API general instructions including installation notes, instructions for running NeXus for Java programs and a brief introduction to the API.
-                    </para>
-                </listitem>
                 <listitem>
                     <para>
                         The Doxygen API documentation<footnote><para><link 
@@ -59,7 +518,8 @@
                 </listitem>
                 <listitem>
                     <para>
-                        Finally, the source code for the test driver for the API which also serves as a documented usage example.
+                        Finally, the source code for the test driver for the API 
+                        which also serves as a documented usage example.
                     </para>
                 </listitem>
             </orderedlist>
@@ -69,17 +529,33 @@
     <section xml:id="sect.NAPI.java.ack">
         <title>Acknowledgement</title>
         <para>
-            All the code for number type conversion has been taken from the Java HDF Interface library provided by NCSA. JHI also served as an inspiration for many aspects of this API. See NCSA's copyright statement for more details. Downloads
+            All the code for number type conversion has been taken from the 
+            Java HDF Interface library provided by NCSA. JHI also served as 
+            an inspiration for many aspects of this API. See NCSA's copyright 
+            statement for more details. 
+            
+            Downloads
         </para>
         <para>
-            All binary distributions carry the full documentation, the Java source files and the shared libraries necessary to run the NeXus for Java API on the platforms supported. By downloading anything from the NeXus WWW site, you agree to the following disclaimer:         
+            All binary distributions carry the full documentation, the 
+            Java source files and the shared libraries necessary to run 
+            the NeXus for Java API on the platforms supported. 
+            By downloading anything from the NeXus WWW site, 
+            you agree to the following disclaimer in 
+            <xref linkend="sect.NAPI.java.disclaimer" />.         
         </para>
     </section>
     
     <section xml:id="sect.NAPI.java.disclaimer">
         <title>Disclaimer</title>
         <para>
-            THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND THE CONTRIBUTORS "AS IS" WITH NO WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED. In no event shall the Author or the Contributors be liable for any damages suffered by the users arising out of the use of this software, even if advised of the possibility of such damage.         
+            THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND THE 
+            CONTRIBUTORS "AS IS" WITH NO WARRANTY OF ANY KIND, 
+            EITHER EXPRESSED OR IMPLIED. 
+            In no event shall the Author or the Contributors 
+            be liable for any damages suffered by the users 
+            arising out of the use of this software, even if 
+            advised of the possibility of such damage.         
         </para>
     </section>
     
@@ -167,7 +643,9 @@
                 <glossterm>Source Code</glossterm>
                 <glossdef>
                     <para>
-                        The source code for the NeXus for Java API is included in the general NeXus API developer package downloadable from the NeXus API page.
+                        The source code for the NeXus for Java API is included 
+                        in the general NeXus API developer package downloadable 
+                        from the NeXus API page.
                     </para>
                 </glossdef>
             </glossentry>
