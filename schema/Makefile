@@ -94,7 +94,7 @@ XSLT_PATH = ../xslt
 
 # === Rules ===
 
-all: all.xsd all.sch all.docbook
+all: all.xsd all.sch # all.docbook
 
 xsd : $(ALL_CLASS_TARGETS)
 
