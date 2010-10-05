@@ -79,12 +79,18 @@ DYNAMIC_DOCBOOK_SECTIONS += types.xml
 DYNAMIC_DOCBOOK_SECTIONS += units.xml
 DYNAMIC_DOCBOOK_SECTIONS += subtitle.xml
 
+BUILT_NEXUSMANUAL  = NeXusManual.pdf
+BUILT_NEXUSMANUAL += NeXusManual.html
+BUILT_NEXUSMANUAL += NeXusManual_one_chunk.html
+BUILT_NEXUSMANUAL += NeXusManual.ps
+
+BUILT_NEXUSREFDOC  = NeXusRefDoc.pdf
+BUILT_NEXUSREFDOC += NeXusRefDoc.ps
+
 CLEANING_LIST =
-CLEANING_LIST += NeXusManual.pdf
-CLEANING_LIST += NeXusManual.html
-CLEANING_LIST += NeXusManual_one_chunk.html
+CLEANING_LIST += $(BUILT_NEXUSMANUAL)
+CLEANING_LIST += $(BUILT_NEXUSREFDOC)
 CLEANING_LIST += html/
-CLEANING_LIST += NeXusManual.ps
 CLEANING_LIST += classes/
 CLEANING_LIST += types.xml
 CLEANING_LIST += units.xml
@@ -97,12 +103,14 @@ DBLATEX_OPTS += -P doc.lot.show="figure"
 #DBLATEX_OPTS += -P toc.section.depth=2
 #DBLATEX_OPTS += -P draft.watermark=1
 DBLATEX_OPTS += -b pdftex -tpdf
-DBLATEX_OPTS += -Pset.book.num=all
+#  http://dblatex.sourceforge.net/doc/manual/sec-pub-output.html#sec-book-set
+#DBLATEX_OPTS += -Pset.book.num=all
+#DBLATEX_OPTS += -Puse.id.as.filename=1
 
 # === Rules ===
 
 #all: NeXusManual.pdf NeXusManual.html NeXusManual_one_chunk.html html/index.html
-all: NeXusManual.pdf NeXusManual.html html/index.html
+all: $(BUILT_NEXUSMANUAL) $(BUILT_NEXUSREFDOC) html/index.html 
 
 docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.xml
 
@@ -142,8 +150,15 @@ units.xml : ../nxdlTypes.xsd Makefile $(XSLT_PATH)/nxdl_units2docbook.xsl
 
 NeXusManual.pdf : docbook
 	# dblatex.sf.net is used to build a PDF version of the NeXus Manual
-	dblatex -V $(DBLATEX_OPTS) NeXusManual.xml
+	# build two separate PDF documents
+	dblatex -V -Pset.book.num=1 $(DBLATEX_OPTS) NeXusManual.xml -o $@
 
+NeXusRefDoc.pdf : docbook
+	# dblatex.sf.net is used to build a PDF version of the NeXus Manual
+	# build two separate PDF documents
+	dblatex -V -Pset.book.num=2 $(DBLATEX_OPTS) NeXusManual.xml -o $@
+
+pdf :: NeXusManual.pdf NeXusRefDoc.pdf
 
 ###############################################################################
 
@@ -178,6 +193,9 @@ html/index.html : docbook
 ###############################################################################
 
 NeXusManual.ps :: NeXusManual.pdf
+	pdftops $<
+
+NeXusRefDoc.ps :: NeXusRefDoc.pdf
 	pdftops $<
 
 clean ::
