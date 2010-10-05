@@ -94,7 +94,7 @@ XSLT_PATH = ../xslt
 
 # === Rules ===
 
-all: all.xsd all.sch # all.docbook
+all: all.xsd all_base.sch all.sch # all.docbook
 
 xsd : $(ALL_CLASS_TARGETS)
 
@@ -113,8 +113,19 @@ all_unsorted.xsd : all.nxdl.xml Makefile $(XSL_BEFORE) $(XSL_AFTER)
 all.xsd : all_unsorted.xsd Makefile $(XSLSORT_BEFORE) $(XSLSORT_AFTER)
 	$(XSLTPROC) -o $@ $(XSLSORT_BEFORE) $< $(XSLSORT_AFTER)
 
+all_base.sch : all_base.nxdl.xml Makefile $(XSLSCH_BEFORE) $(XSLSCH_AFTER)
+	$(XSLTPROC) -o $@ $(XSLSCH_BEFORE) $< $(XSLSCH_AFTER)
+
 all.sch : all.nxdl.xml Makefile $(XSLSCH_BEFORE) $(XSLSCH_AFTER)
 	$(XSLTPROC) -o $@ $(XSLSCH_BEFORE) $< $(XSLSCH_AFTER)
+
+all_base.nxdl.xml : Makefile $(NXDL_BASE_CLASSES)
+	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " > all_base.nxdl.xml
+	echo "<definitions>" >> all_base.nxdl.xml
+	for i in $(NXDL_BASE_CLASSES); do \
+	    sed -e '/^<?xml/d' < $$i >> all_base.nxdl.xml; \
+	done
+	echo "</definitions>" >> all_base.nxdl.xml
 
 all.nxdl.xml : Makefile $(ALL_NXDL)
 	echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " > all.nxdl.xml
@@ -136,7 +147,8 @@ all.nxdl.xml : Makefile $(ALL_NXDL)
 
 clean ::
 	rm -f $(ALL_CLASS_TARGETS)
-	rm -f all.xsd all_unsorted.xsd all.nxdl.xml all.sch
+	rm -f all.xsd all_unsorted.xsd all_base.nxdl.xml all.nxdl.xml \
+		all_base.sch all.sch
 
 rebuild :: clean all
 
