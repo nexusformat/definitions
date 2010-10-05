@@ -9,6 +9,16 @@
     xmlns:xi="http://www.w3.org/2001/XInclude"
   >
     <title>NeXus: the basics for the truly impatient</title>
+  <!-- ROADMAP for the impatient -->
+
+<!-- 
+  ROADMAP for the impatient
+  How to read a NeXus file?
+  How to understand a NeXus file?
+  How to write a NeXus file
+  what else do I need to know?
+-->
+
   <para>
     Sometimes, people are just too impatient to wade through a big manual.
     This chapter is your salvation.
@@ -41,7 +51,7 @@
     section: Basic organization within the NeXus hierarchy
     ======================================================
   -->
-  <section xml:id="BasicOrg">
+  <section xml:id="impatient.organization">
     <title>Basic organization within the NeXus hierarchy</title>
     <indexterm>
       <primary>hierarchy</primary>
@@ -64,47 +74,39 @@
       <code>entry</code> is an example of a name.
     </para>
     <para>
-      NeXus <emphasis>group</emphasis> names and <emphasis>field</emphasis> 
+      NeXus <emphasis>group</emphasis> names 
+      <!-- TODO and what about types? -->
+      and <emphasis>field</emphasis> 
       names
       <indexterm>
         <primary>rules</primary>
         <secondary>NeXus</secondary>
         <tertiary>naming</tertiary>
       </indexterm> 
-      must conform to the regular expression syntax of
-      <xref linkend="RegExpName"/>.
-      <example xml:id="RegExpName">
-        <title>Regular expression pattern for NXDL group and field names</title>
-        <programlisting language="c"
-          >[A-Za-z_][\w_]*</programlisting>
-      </example>
-      Note that this name pattern starts with a letter (upper or lower case)
-      or "_", then letters, 
-      numbers, and "_" and is limited to a limit of 63 characters
-      imposed by the HDF5 rules for names.
+      must conform to certain simple rules.  
+      Names such as <code>entry1</code> or <code>sample_temperature</code> are valid.
+      The regular expression is: <code>[A-Za-z_][\w_]*</code>
       <indexterm>
         <primary>rules</primary>
         <secondary>HDF5</secondary>
       </indexterm>
     </para>
     <para>
-      The naming rule is different for classes:
+      All NeXus class types adopted by the NIAC <emphasis>must</emphasis> 
+      begin with <code>NX</code>.  
       <indexterm>
         <primary>rules</primary>
         <secondary>naming</secondary>
       </indexterm>
-      class names are part of the
-      NeXus standard and always start with the prefix <code>NX</code>. 
-      At first glance, this scheme
-      seems odd. After all, a data analysis program becomes much easier to write if
-      all the names would be known in advance. However, there is a good reason for
-      the class/name scheme and this is the fact that multiple elements of the same
-      type may occur. A reflectometer has many slits of type <code>NXaperture</code>. Lots of
-      instruments have multiple detector banks of type <code>NXdetector</code>. A data analysis
-      program has to figure that out and resolve which is the data to be evaluated.
+      Classes not adopted by the NIAC <emphasis>must not</emphasis>
+      start with <code>NX</code>.
     </para>
     <para>
-      The NeXus suggestion is to pick the name from the class unless there is some reason to choose otherwise.
+      Classes can have a <code>name</code> in addition to the <code>type</code>.
+      For example, a class of type <code>NXentry</code> might be given the 
+      name <code>entry</code>.      
+      The NeXus suggestion is to derive the name from the class type
+      unless there is some reason to choose otherwise.
       For example, <code>NXentry</code> would have a name of <code>entry</code>.
       HDF imposes a rule that says no two entities at the same level of an HDF file
       can have the same name.  The NeXus suggestion for a default name is 
@@ -199,19 +201,14 @@
     section: NeXus coordinates
     ==========================
   -->
-  <section xml:id="NeXus.coordinates.polplane">
+  <section xml:id="impatient.NeXus.coordinates.polplane">
     <title>NeXus coordinates</title>
     <para>
-      NeXus supports two coordinate systems.
-      If you need to
-      be very exact, use the <emphasis>McStas</emphasis>
-      <indexterm><primary>McStas</primary></indexterm> coordinate system. 
-      <emphasis>McStas</emphasis> is mostly of interest
-      to simulators of neutron instruments wishing to store the results of simulations in NeXus files. 
-      <emphasis>McStas</emphasis> provides no value to X-ray users.
-      Most
-      people will use the simple coordinate system as shown in <xref linkend="NeXus-simple-coords-figure"/>.
-      <figure xml:id="NeXus-simple-coords-figure">
+      NeXus supports two coordinate systems.  
+      See <xref linkend="SimplePlotting"/> for more details.
+      Most people will use the simple coordinate system as shown in 
+      <xref linkend="impatient.NeXus-simple-coords-figure"/>.
+      <figure xml:id="impatient.NeXus-simple-coords-figure">
         <title>NeXus simple coordinate system</title>
         <mediaobject>
           <imageobject>
@@ -220,19 +217,6 @@
         </mediaobject>
       </figure>
     </para>
-    <para>
-      This appears complicated but becomes very simple if the instrument does not
-      move out of the scattering plane: Then the NeXus polar angle becomes what
-      is commonly known as <emphasis>two theta</emphasis>. 
-      There is another gotcha: NeXus stores the
-      polar angle downstream: for example if you have a monochromator pointing at
-      a sample, the polar angle of the monochromator is stored at the sample. The
-      NIAC decided upon this after lengthy discussions because it is the only way how
-      to cope with instruments which have multiple backends, like multiple analyzers.
-      The zero point for distances is the sample. Distances are in relation to this zero
-      point. Negative distances point towards the source, positive distances behind
-      the sample.
-    </para>
   </section>
   
   <!-- 
@@ -240,13 +224,15 @@
     section: Note about NXDL Classes
     ================================
   -->
-  <section xml:id="NxdlClassNotes">
+  <section xml:id="impatient.NxdlClassNotes">
     <title>Note about NXDL Classes</title>
     <para>NeXus base class and application definitions are written in NeXus Definition
       Language, NXDL. NXDL is in fact an application of XML to the problem of
       writing application definitions. The nice thing about NXDL is that it can be
       converted to an XML schema which then can be used to validate NeXus file
       against the definition.</para>
+    <para>For information about creating a new definition in NXDL,
+      see <xref linkend="CreatingNxdlSpec"/> for more details.</para>
     <variablelist>
       <varlistentry>
         <term>base classes</term>
@@ -284,501 +270,21 @@
   </section>
   
   <!-- 
-    ======================================
-    section: Creating a NXDL Specification
-    ======================================
-  -->
-  <section xml:id="CreatingNxdlSpec">
-    <title>Creating a NXDL Specification</title>
-    <para>
-      One easy way to describe how to store data in the NeXus class 
-      structure and to create a NXDL specification is to work through 
-      an example.  Along the way, we will describe some key decisions
-      that influence our particular choices of metadata 
-      <indexterm><primary>metadata</primary></indexterm>
-      selection and
-      data organization.  So, on with the example ...
-    </para>
-    <para>Consider yourself to be in a position at the HYpothetical NEw Source (HYNES).
-      You are tasked to write an application definition for raw data from the WOnderful
-      New Instrument (WONI). This being a tutorial, WONI is actually a simple
-      powder diffractometer but for reasons that only justify creating a new 
-      NXDL in this example.  WONI cannot
-      use any of the existing NXDL application definitions
-      so we will make a new one. 
-      Refer to the WONI schematic in <xref linkend="FigWoniSchematic"/>.
-    </para>
-    <figure xml:id="FigWoniSchematic">
-      <title>The (fictional) WONI example powder diffractometer at HYNES</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="img/woni-schematic.png" width="400pt" scalefit="1"/>
-        </imageobject>
-      </mediaobject>
-    </figure>
-    <para>
-      So there is a monochromator which generates a monochromatic beam which
-      hits the sample which diffracts the beam.  The diffracted beam is collected
-      in a large banana-shaped position sensitive detector. Typical data looks like
-      <xref linkend="FigWoniPowderData"/>.
-      There is a generous background to the data plus quite a number of diffraction peaks.
-    </para>
-    <figure xml:id="FigWoniPowderData">
-      <title>Example Powder Diffraction Plot from (fictional) WONI at HYNES</title>
-      <mediaobject>
-        <imageobject>
-          <imagedata fileref="img/woni-powderimage.png" width="400pt" scalefit="1"/>
-        </imageobject>
-      </mediaobject>
-    </figure>
-    
-    <section>
-      <title>Application Definition Steps</title>
-      <para>
-        With all this introductory stuff out of the way, let us look at the process required
-        to define an application definition:
-        <orderedlist>
-          <listitem>
-            <para>
-              <emphasis>Think!</emphasis> hard about what has to go into the data file.
-            </para>
-          </listitem>
-          <listitem>
-            <para>
-              <emphasis>Map</emphasis> the required fields into the NeXus hierarchy
-              <indexterm>
-                <primary>hierarchy</primary>
-              </indexterm>
-            </para>
-          </listitem>
-          <listitem>
-            <para>
-              <emphasis>Describe</emphasis> this map in a NXDL file
-            </para>
-          </listitem>
-          <listitem>
-            <para>
-              <emphasis>Standardize</emphasis> your definition through communication with the NIAC
-            </para>
-          </listitem>
-        </orderedlist>
-      </para>
-    </section>
-    
-    <section>
-      <title>Step 1: <emphasis>Think!</emphasis> hard about data</title>
-      <para>
-        This is actually the hard bit. There are two things to consider:
-        <orderedlist>
-          <listitem><para>What has to go into the data file?</para></listitem>
-          <listitem><para>What is the normal plot for this type of data?</para></listitem>
-        </orderedlist>
-      </para>
-      <para>
-        For the first part, one of the NeXus guiding principles gives us - Guidance!
-        <quote>A NeXus file must contain all the data necessary for standard data
-        analysis.</quote>
-      </para>
-      <para>
-        Not more and not less for an application definition.
-        Of course the definition of <emphasis>standard</emphasis> data for analysis
-        or a <emphasis>standard</emphasis> plot 
-        depends on the science and the type of data being described. Consult
-        senior scientists in the field about this is if you are unsure. 
-        Perhaps you must
-        call an international meeting with domain experts to haggle that out. When
-        considering this, people tend to put in everything which might come up. This
-        is not the way to go. 
-      </para>
-      <para>
-        A key test question is: Is this data item necessary for common data analysis? 
-        Only these necessary data items belong in an application definition.
-      </para>
-      <para>
-        The purpose of an application definition is that an author of upstream software
-        who consumes the file can expect certain data items to be there at well defined
-        places. On the other hand if there is a development in your field which analyzes
-        data in a novel way and requires more data to do it, then it is better to err
-        towards the side of more data.
-      </para>
-      <para>
-        Now for the case of WONI, the standard data analysis is either Rietveld refinement
-        or profile analysis. For both purposes, the kind of radiation used to probe the 
-        sample (for WONI, neutrons), the wavelength of the radiation,
-        the monitor (which tells us how long we counted) used to normalize the data, 
-        the counts and the two
-        theta angle of each detector element are all required. Usually, it is desirable to
-        know what is being analyzed, so some metadata 
-        <indexterm><primary>metadata</primary></indexterm>
-        would be nice: a title, the sample
-        name and the sample temperature. The data typically being plotted is two
-        theta against counts, as shown in <xref linkend="FigWoniPowderData"/> above. 
-        Summarizing, the basic information required from WONI is given in 
-        <xref linkend="TableWoniBasicInfo"/>.
-      </para>
-      <table xml:id="TableWoniBasicInfo">
-        <title>basic information required from WONI</title>
-        <tgroup cols="1"  align="left">
-          <colspec colwidth="1*"/>
-          <tbody>
-            <row>
-              <entry><code>title</code> of measurement</entry>
-            </row>
-            <row>
-              <entry>sample <code>name</code></entry>
-            </row>
-            <row>
-              <entry>sample <code>temperature</code></entry>
-            </row>
-            <row>
-              <entry><code>monitor</code></entry>
-            </row>
-            <row>
-              <entry>type of radiation <code>probe</code></entry>
-            </row>
-            <row>
-              <entry><code>wavelength</code> of radiation incident on sample</entry>
-            </row>
-            <row>
-              <entry><code>two theta</code> of detector elements</entry>
-            </row>
-            <row>
-              <entry><code>counts</code> for each detector element</entry>
-            </row>
-          </tbody>
-        </tgroup>
-      </table>
-      <para>
-        If you start to worry that this is too little information, hold on, the section
-        on Using an Application Definition (<xref linkend="NxdlTutorialUsingNxdl"/>) 
-        will reveal the secret how to go from an
-        application definition to a practical file.
-      </para>
-    </section>
-    
-    <section>
-      <title>Step 2: <emphasis>Map</emphasis> Data into the NeXus Hierarchy</title>
-      <indexterm>
-        <primary>hierarchy</primary>
-      </indexterm>
-      <para>
-        This step is actually easier then the first one. We need to map the data items
-        which were collected in Step 1 into the NeXus hierarchy. A NeXus file hierarchy
-        starts with an <code>NXentry</code> group. At this stage it is advisable to pull up the base
-        class definition for <code>NXentry</code> and study it. The first thing you might notice
-        is that <code>NXentry</code> contains a field named <code>title</code>. Reading 
-        the documentation, you
-        quickly realize that this is a good place to store our title. So the first mapping
-        has been found.
-        <programlisting language="c" linenumbering="numbered">title = /NXentry/title</programlisting>
-      </para>
-      <note>
-        <para>
-          In this example, the mapping descriptions just contain the path strings 
-          into the NeXus file hierarchy
-          with the class names of the groups to use.  As it turns out, this is
-          the syntax used in NXDL link specifications.  How convenient!
-        </para>
-      </note>
-      <para>
-        Another thing to notice in the <code>NXentry</code> base class is the existence of a group
-        of class <code>NXsample</code>. This looks like a great place to store information about the
-        sample. Studying the <code>NXsample</code> base class confirms this view and there are two
-        new mappings:
-        <programlisting language="c" linenumbering="numbered"
-          >sample name = /NXentry/NXsample/name
-sample temperature = /NXentry/NXsample/temperature</programlisting>
-      </para>
-      <para>
-        Scanning the <code>NXentry</code> base class further reveals there can be a
-        <code>NXmonitor</code> group at this level. Looking up the base class for 
-        <code>NXmonitor</code> reveals
-        that this is the place to store our monitor information.
-        <programlisting language="c" linenumbering="numbered"
-          >monitor = /NXentry/NXmonitor/data</programlisting>
-      </para>
-      <para>
-        For the other data items, there seem to be no solutions in <code>NXentry</code>. But
-        each of these data items describe the instrument in more detail. NeXus stores
-        instrument descriptions in the <code>/NXentry/NXinstrument</code> branch of the hierarchy.
-        Thus, we continue by looking at the definition of the <code>NXinstrument</code> base class.
-        In there we find further groups for all possible instrument components. Looking
-        at the schematic of WONI (<xref linkend="FigWoniSchematic"/>),
-        we realize that there is a source, a monochromator
-        and a detector. Suitable groups can be found for these components 
-        in <code>NXinstrument</code> and
-        further inspection of the appropriate base classes reveals the following further
-        mappings:
-        <programlisting language="c" linenumbering="numbered"
-          >probe = /NXentry/NXinstrument/NXsource/probe
-wavelength = /NXentry/NXinstrument/NXcrystal/wavelength
-two theta of detector elements =
-/NXentry/NXinstrument/NXdetector/polar angle
-counts for each detector element = /NXentry/NXinstrument/NXdetector/data</programlisting>
-      </para>
-      <para>
-        Thus we mapped all our data items into the NeXus hierarchy! What still
-        needs to be done is to decide upon the content of the <code>NXdata</code> 
-        group in <code>NXentry</code>.
-        This group describes the data necessary to make a quick plot of the
-        data. For WONI this is <code>counts</code> versus <code>two theta</code>. 
-        Thus we add this mapping:
-        <programlisting language="c" linenumbering="numbered"
-          >two theta of detector elements = /NXentry/NXdata/polar angle
-counts for each detector element = /NXentry/NXdata/data</programlisting>
-      </para>
-      <para>The full mapping of WONI data into NeXus is documented in <xref linkend="TableWoniFullMapping"/>.</para>
-      <table xml:id="TableWoniFullMapping">
-        <title>Full mapping of WONI data into NeXus</title>
-        <tgroup cols="2"  align="left">
-          <colspec colwidth="15*"/>
-          <colspec colwidth="25*"/>
-          <thead>
-            <row>
-              <entry><?dblatex bgcolor="[gray]{0.8}"?>WONI data</entry>
-              <entry><?dblatex bgcolor="[gray]{0.8}"?>NeXus path</entry>
-            </row>
-          </thead>
-          <tbody>
-            <row>
-              <entry><code>title</code> of measurement</entry>
-              <entry><code>/NXentry/title</code></entry>
-            </row>
-            <row>
-              <entry>sample <code>name</code></entry>
-              <entry><code>/NXentry/NXsample/name</code></entry>
-            </row>
-            <row>
-              <entry>sample <code>temperature</code></entry>
-              <entry><code>/NXentry/NXsample/temperature</code></entry>
-            </row>
-            <row>
-              <entry><code>monitor</code></entry>
-              <entry><code>/NXentry/NXmonitor/data</code></entry>
-            </row>
-            <row>
-              <entry>type of radiation <code>probe</code></entry>
-              <entry><code>/NXentry/MXinstrument/NXsource/probe</code></entry>
-            </row>
-            <row>
-              <entry><code>wavelength</code> of radiation incident on sample</entry>
-              <entry><code>/NXentry/MXinstrument/NXcrystal/wavelength</code></entry>
-            </row>
-            <row>
-              <entry><code>two theta</code> of detector elements</entry>
-              <entry><code>/NXentry/NXinstrument/NXdetector/polar_angle</code></entry>
-            </row>
-            <row>
-              <entry><code>counts</code> for each detector element</entry>
-              <entry><code>/NXentry/NXinstrument/NXdetector/data</code></entry>
-            </row>
-            <row>
-              <entry><code>two theta</code> of detector elements</entry>
-              <entry><code>/NXentry/NXdata/polar_angle</code></entry>
-            </row>
-            <row>
-              <entry><code>counts</code> for each detector element</entry>
-              <entry><code>/NXentry/NXdata/data</code></entry>
-            </row>
-          </tbody>
-        </tgroup>
-      </table>
-      <para>
-        Looking at this one might get concerned that the two theta and counts data
-        is stored in two places and thus duplicated. Stop worrying, this problem is
-        solved at the NeXus API level. Typically <code>NXdata</code> will only hold links to the
-        corresponding data items in <code>/NXentry/NXinstrument/NXdetector</code>.
-      </para>
-      <para>
-        In this step problems might occur. The first is that the base class definitions
-        contain a bewildering number of parameters. This is on purpose: the base
-        classes serve as dictionaries which define names for everything which possibly
-        can occur. You do not have to give all that information. The key question is, as already
-        said, What is required for typical data analysis for this type of application? You
-        might also be unsure how to correctly store a particular data item. In such a
-        case, contact the NIAC for help. Another problem which can occur is that you
-        require to store information for which there is no name in one of the existing
-        base classes or you have a new instrument component for which there is no base
-        class alltogether. In such a case, please feel free to contact the NIAC with a
-        suggestion for an extension of the base classes in question.
-      </para>
-    </section>
-    
-    <section>
-      <title>Step 3: <emphasis>Describe</emphasis> this map in a NXDL file</title>
-      <para>
-        This is even easier. Some XML editing is necessary. Fire up your XML editor
-        of choice and open a file. If your XML editor supports XML schema while editing XML, it is worth
-        to load <code>nxdl.xsd</code>. Now your XML editor can help you to create a proper NXDL
-        file. As always, the start is an empty template file. This looks like 
-        <xref linkend="ExNxdlTemplate"/>.
-        This is just the basic XML for a NXDL definition. It is advisable to change
-        some of the documentation strings.
-        <example xml:id="ExNxdlTemplate">
-          <title>NXDL template file</title>
-          <programlisting linenumbering="numbered" language="xml"
-              ><xi:include href="examples/NX__template__.nxdl.xml" parse="text"
-              /></programlisting>
-        </example>
-      </para>
-      <para>
-        For example, copy and rename the file to <code>NXwoni.nxdl.xml</code>.
-        Then, locate the XML root element <code>definition</code> and change the
-        <code>name attribute</code> (the XML shorthand for this attribute is
-        <code>/definition/@name</code>) to <code>NXwoni</code>.
-        Change the <code>doc</code> as well.
-        Also consider keeping track of <code>/definition/@version</code>
-        as suits your development of this NXDL file.
-      </para>
-      <para>
-        The next thing which needs to be done is adding groups into the definition.
-        A group is defined by some XML like this:
-        <programlisting language="xml" linenumbering="numbered"
-          >&lt;group type="NXdata">
-
-&lt;/group></programlisting>
-        The type is the actual NeXus base class this group belongs to. Optionally a
-        <code>name</code> attribute may be given (default is <code>data</code>).
-      </para>
-      <para>
-        Next, one needs to include data items too. The XML for such a data item
-        looks like this:
-        <programlisting language="xml" linenumbering="numbered"
-          >&lt;field name="polar_angle" type="NX_FLOAT units="NX_ANGLE">
-  &lt;doc>Link to polar angle in /NXentry/NXinstrument/NXdetector&lt;/doc>
-  &lt;dimensions size="1">
-    &lt;dim index="1" value="ndet"/>
-  &lt;/dimensions>
-&lt;/field></programlisting>
-      </para>
-      <para>
-        The meaning of the <code>name</code> attribute is intuitive, the 
-        <code>type</code> can be looked up in the
-        relevant base class definition. A <code>field</code> definition can optionally contain a 
-        <code>doc</code>
-        element which contains a description of the data item. The <code>dimensions</code> entry
-        specifies the dimensions of the data set. The <code>size</code> attribute in the dimensions
-        tag sets the rank 
-        <indexterm><primary>rank</primary></indexterm>
-        of the data, in this example: <code>size="1"</code>. In the dimensions group there
-        must be <emphasis>rank</emphasis> <code>dim</code> fields. Each <code>dim</code> tag holds two attributes: 
-        <code>index</code> determines
-        to which dimension this tag belongs, the <code>1</code> means the first dimension. 
-        The <code>value</code>
-        attribute then describes the size of the dimension. These can be plain integers,
-        variables, such as in the example <code>ndet</code> or even expressions like <code>tof+1</code>.
-      </para>
-      <para>
-        Thus a NXDL file can be constructed. The full NXDL file for the WONI
-        example is given in <xref linkend="ListingNxdlWoni"/>.  
-        Clever readers may have noticed the strong similarity between 
-        our working example <code>NXwoni</code>
-        and <code>NXmonopd</code> since they are essentially identical.  Give yourselves
-        a cookie if you spotted this.
-      </para>
-    </section>
-    
-    <section>
-      <title>Step 4: <emphasis>Standardize</emphasis> with the NIAC</title>
-      <para>
-        Basically you are done. Your first application definition for NeXus is constructed.
-        In order to make your work a standard for that particular application
-        type, some more steps are required:
-        <itemizedlist>
-          <listitem><para>Send your application definition to the NIAC for review</para></listitem>
-          <listitem><para>Correct your definition per the comments of the NIAC</para></listitem>
-          <listitem><para>Cure and use the definition for a year</para></listitem>
-          <listitem><para>After a final review, it becomes the standard</para></listitem>
-        </itemizedlist>
-        The NIAC must review an application definition before it is accepted as a
-        standard. The one year curation period is in place in order to gain practical
-        experience with the definition and to sort out bugs from Step 1. In this period,
-        data shall be written and analyzed using the new application definition.
-      </para>
-    </section>
-    
-    <section xml:id="ListingNxdlWoni">
-      <title>Full listing of the WONI Application Definition</title>
-      <para>
-        <programlisting linenumbering="numbered" language="xml"
-              ><xi:include href="../applications/NXmonopd.nxdl.xml" parse="text"
-              /></programlisting>
-      </para>
-    </section>
-    
-    
-    <section xml:id="NxdlTutorialUsingNxdl">
-      <title>Using an Application Definition</title>
-      <para>
-        The application definition is like an interface for your data file. In practice files
-        will contain far more information. For this, the extendable capability of NeXus
-        comes in handy. More data can be added, and upstream software relying on
-        the interface defined by the application definition can still retrieve the necessary
-        information without any changes to their code.
-      </para>
-      <para>
-        NeXus application definitions only standardize classes. You are free to decide
-        upon names of groups, subject to them matching regular expression for NeXus 
-        name attributes (<xref linkend="RegExpName"/>).  Note the length limit of 63 characters
-        imposed by HDF5.
-        Please use sensible, descriptive names and separate
-        multi worded names with underscores.
-      </para>
-      <para>
-        Something most people wish to add is more metadata,
-        <indexterm><primary>metadata</primary></indexterm>
-        for example in order
-        to index files into a database of some sort. Go ahead, do so, if applicable, scan
-        the NeXus base classes for standardized names. For metadata, consider to use
-        the <code>NXarchive</code> definition. In this context, it is worth to mention that a practical
-        NeXus file might adhere to more then one application definition. For example,
-        WONI data files may adhere to both the <code>NXmonopd</code> and <code>NXarchive</code> definitions. The
-        first for data analysis, the second for indexing into the database.
-      </para>
-      <para>
-        Often, instrument scientists want to store the complete state of their instrument
-        in data files in order to be able to find out what went wrong if the data is
-        unsatisfactory. Go ahead, do so, please use names from the NeXus base classes.
-      </para>
-      <para>
-        Site policy might require you to store the names of all your bosses up to the
-        current head of state in data files. Go ahead, add as many <code>NXuser</code> classes as
-        required to store that information.  Knock yourselves silly over this.
-      </para>
-      <para>
-        Your Scientific Accounting Department (SAD) may ask of you the preposterous;
-        to store billing information
-        into data files. Go ahead, do so if your judgment allows.  Just do not expect the NIAC to
-        provide base classes for this and do not use the prefix NX for your classes.
-      </para>
-      <para>
-        In most cases, NeXus files will just have one <code>NXentry</code> class group. But it
-        may be required to store multiple related data sets of the results of data analysis
-        into the same data file. In this case create more entries. Each entry should be
-        interpretable standalone, i.e. contain all the information of a complete <code>NXentry</code>
-        class. Please keep in mind that groups or data items which stay constant across
-        entries can always be linked in.
-      </para>
-    </section>
-
-  </section>
-  
-  <!-- 
     =======================
     section: Processed Data
     =======================
   -->
-  <section xml:id="ProcessedDataSection">
+  <section xml:id="impatient.ProcessedDataSection">
     <title>Processed Data</title>
     <para>
       Data reduction and analysis programs are encouraged to store their results in
-      NeXus data files. As far as the necessary, the normal NeXus hierarchy
+      NeXus data files. As far as possible or practical, the normal NeXus hierarchy
       <indexterm>
         <primary>hierarchy</primary>
         <secondary>NeXus</secondary>
       </indexterm>
-      is to
-      be implemented. In addition, processed data files must contain a <code>NXprocess</code>
+      is to be implemented. 
+      In addition, processed data files must contain a <code>NXprocess</code>
       group. This group, that documents and preserves data provenance, 
       contains the name of the data processing program and the
       parameters used to run this program in order to achieve the results stored in
