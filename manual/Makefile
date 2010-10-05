@@ -97,6 +97,7 @@ DBLATEX_OPTS += -P doc.lot.show="figure"
 #DBLATEX_OPTS += -P toc.section.depth=2
 #DBLATEX_OPTS += -P draft.watermark=1
 DBLATEX_OPTS += -b pdftex -tpdf
+DBLATEX_OPTS += -Pset.book.num=all
 
 # === Rules ===
 
