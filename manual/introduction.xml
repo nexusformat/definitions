@@ -9,7 +9,7 @@
 	xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>NeXus Introduction</title>
     <para>
-        In recent years, a number of scientists and computer programmers working in neutron
+        In recent years, a community of scientists and computer programmers working in neutron
         and synchrotron facilities around the world came to the conclusion that a common data
         format
         <indexterm>
@@ -64,22 +64,7 @@
                 <primary>NeXus</primary>
             </indexterm> 
             data format has four components: 
-            <!-- 
-                from other documentation:
-                <orderedlist>
-                <listitem><para>Physical File format and API for accessing Files</para></listitem>
-                <listitem><para>Rules for storing data in Files</para></listitem>
-                <listitem><para>Base class and application definitions</para></listitem>
-                <listitem><para>NeXus Utilities</para></listitem>
-                </orderedlist>
-            -->
             <variablelist>
-                <varlistentry>
-                    <term>A set of subroutines</term>
-                    <listitem>
-                        <para>(utilities) to make it easy to read and write NeXus files.</para>
-                    </listitem>
-                </varlistentry>
                 <varlistentry>
                     <term>A set of design principles</term>
                     <listitem>
@@ -90,24 +75,33 @@
                     <term>A set of data storage objects</term>
                     <listitem>
                         <para>
-						(base classes and application definitions)
-						to allow the development of more portable analysis
+                            (base classes and application definitions)
+                            to allow the development of more portable analysis
                             software.</para>
                     </listitem>
                 </varlistentry>
                 <varlistentry>
-                    <term>A set of low-level file formats</term>
+                    <term>A set of subroutines</term>
                     <listitem>
-                        <para>to actually store NeXus files on physical media.</para>
+                        <para>(utilities) to make it easy to read and write NeXus files.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Scientific Community</term>
+                    <listitem>
+                        <para>to provide the scientific data.</para>
                     </listitem>
                 </varlistentry>
             </variablelist>
-
+            
+            In addition, NeXus relies on a set of low-level file formats 
+            to actually store NeXus files on physical media.
+            
             Each of these components is described in this manual.
-            <!-- each xref will generate an invalid XML error since the link IDs are not in this file -->
             <xref linkend="PhysicalFileFormatSection"/>
             describes the physical file format of NeXus data files.
-            
+        </para>
+        <para>            
             The NeXus Application-Programmer Interface (NAPI),
             <indexterm>
                 <primary>NAPI</primary>
@@ -115,15 +109,16 @@
             provides the set of subroutines for reading and writing NeXus data files,
             is described briefly in
             <xref linkend="ApplicationProgramInterfaceSection"/>.
-            (Further details are provided
-            in <xref linkend="chap.NAPI"/>.)
+            (Further details are provided in the NAPI section of Volume II of this
+            documentation, <xref linkend="chap.NAPI"/>.)
 
             The principles guiding the design and implementation of the NeXus standard
             are described in <xref linkend="chap.design"/> .
 
-            <xref linkend="ClassDefinitionsChapter"/> 
-            describes the definitions of base classes and applications
-            which comprise the data storage objects used in NeXus data files.
+            Base classes and applications,
+            which comprise the data storage objects used in NeXus data files,
+            are detailed in a section of Volume II of this documentation,
+            <xref linkend="ClassDefinitionsChapter"/>.
             
             <xref linkend="Low-LevelFormatSection"/>
             describes the implementation of NeXus in each of the low-level formats
@@ -138,41 +133,14 @@
             NeXus data files is provided in <xref linkend="NeXusUtilitiesChapter"/>.
         </para>
         <section>
-            <title>A Set of Subroutines</title>
-            <para>
-                In the past, a data format was defined by a document describing the precise
-                location of every item in the data file, either as row and column numbers in an
-                ASCII file, or as record and byte numbers in a binary file. In modern data
-                formats, such as NeXus, the user does not need to be concerned where the data are
-                stored, just what they are called. It is the job of the subroutine library to
-                retrieve the data.  This subroutine library is commonly called an 
-                application-programmer interface or API.
-            </para>
-            <para>For example, in NeXus, a program to read in the wavelength of an experiment
-                would contain lines similar to the following: <example>
-                    <title>Simple example of reading data</title>
-                    <indexterm>
-                        <primary>example</primary>
-                        <secondary>simple</secondary>
-                    </indexterm>
-                    <programlisting language="c" linenumbering="numbered"
-                        ><xi:include href="examples/ex-simple.c" parse="text"
-                        /></programlisting>
-                </example> In this example, the program requests the value of the data that has
-                the label <code>wavelength</code>, storing the result in the variable lambda.
-                    <code>fileID</code> is a file identifier that is provided by NeXus when the
-                file is opened. </para>
-            <para>We shall provide a more complete example when we have discussed the contents
-                of the NeXus files.</para>
-        </section>
-        <section>
             <title>A Set of Design Principles</title>
             <para>NeXus data files 
                 <indexterm>
                     <primary>NeXus</primary>
                     <secondary>Design Principles</secondary>
                 </indexterm> 
-                contain three types of entity: data groups, data fields, and attributes. 
+                contain four types of entity: data groups, data fields, attributes, and links. 
+                See <xref linkend="sect.data.groups"/> for more details.
                 <variablelist>
                     <varlistentry>
                         <term>Data Groups</term>
@@ -222,6 +190,19 @@
                             </para>
                         </listitem>
                     </varlistentry>
+                    <varlistentry>
+                        <term>Links</term>
+                        <listitem>
+                            <para>
+                                Links are used to reference the plottable data
+                                from <code>NXdata</code>
+                                when the data is provided in other groups
+                                such as <code>NXmonitor</code> or
+                                <code>NXdetector</code>.
+                                <indexterm><primary>links</primary></indexterm>
+                            </para>
+                        </listitem>
+                    </varlistentry>
                 </variablelist>
             </para>
             <para>
@@ -253,8 +234,10 @@
                         </mediaobject>
                     </figure> 
                     Note that each field is identified by a name, such as <code>counts</code>,
-                    but each group is identified both by a name and, in parentheses, a class
-                    identifier, e.g., <code>monitor:NXmonitor</code>). The class names, which all begin with
+                    but each group is identified both by a name and, after a colon as a 
+                    delimiter, the class
+                    type, e.g., <code>monitor:NXmonitor</code>). 
+                    The class types, which all begin with
                     <code>NX</code>, define the sort of fields that the group should contain, in this
                     case, counts from a beamline monitor. The hierarchical design, with data
                     items nested in groups, makes it easy to identify information if you are
@@ -265,7 +248,10 @@
                 <title>Important Classes</title>
                 <para>Here are some of the important classes found in nearly all NeXus files. A
                     complete list can be found in the <link xlink:href="#chap.design"
-                        >NeXus Design section</link>
+                        >NeXus Design section</link>.
+                    <note><para>Note that <code>NXentry</code> and <code>NXdata</code>
+                    are the only two classes necessary to store the minimum
+                    amount of information in a valid NeXus data file.</para></note>
                     <variablelist>
                         <varlistentry>
                             <term>NXentry</term>
@@ -349,8 +335,12 @@
             </section>
             <section>
                 <title>Simple Example</title>
-                <para>NeXus data files do not need to be complicated. In fact, the following
-                    diagram shows an extremely simple NeXus file that could be used to transfer
+                <para>NeXus data files do not need to be complicated. 
+                    In fact, the following
+                    diagram shows an extremely simple NeXus file
+                    (in fact, the simple example shows the minimum information necessary
+                    for a NeXus data file)                    
+                    that could be used to transfer
                     data between programs. (Later in this section, we show how to write and 
                     read this simple example.)
                     <figure xml:id="fig.simple-example">
@@ -368,11 +358,16 @@
         </section>
         <section>
             <title>A Set of Data Storage Objects</title>
-            <para>If the design principles are followed, it will be easy for anyone browsing a
-                NeXus file to understand what it contains, without any prior information.
-                However, if you are writing visualization or analysis software, you will need to
-                know precisely what information is contained in advance. For that reason, NeXus
-                provides a way of defining the format for particular instrument types, 
+            <para>If the design principles are followed, 
+                it will be easy for anyone browsing a
+                NeXus file to understand what it contains, 
+                without any prior information.
+                However, if you are writing specialized 
+                visualization or analysis software, you will need to
+                know precisely what specific information is contained 
+                in advance. For that reason, NeXus
+                provides a way of defining the format for 
+                particular instrument types, 
                 <indexterm>
                     <primary>instrument definitions</primary>
                 </indexterm> 
@@ -382,13 +377,13 @@
             </para>
             <para>
                 These instrument definitions are formalized as XML files, using NXDL,
-                (see <xref linkend="chap.NXDL"/>)
+                (as described in the NXDL section of Volume II, see <xref linkend="chap.NXDL"/>)
                 to specify the names of data fields, and other NeXus data objects. 
                 The following is an example of such a file for
                 the simple NeXus file shown above. 
                 <example xml:id="ex.verysimple.xml">
-                    <title><citetitle>verysimple.xml</citetitle>: A very simple NeXus
-                        file</title>
+                    <title><citetitle>verysimple.nxdl.xml</citetitle>: A very simple NeXus
+                        Definition Language (NXDL) file</title>
                     <indexterm>
                         <primary>example</primary>
                         <secondary>very simple</secondary>
@@ -400,6 +395,39 @@
                 If you want to define the format of a particular type of NeXus file
                 for your own use, e.g. as the standard output from a program, you are encouraged
                 to "publish" the format using this XML format. </para>
+        </section>
+        <section>
+            <title>A Set of Subroutines</title>
+            <para>
+                NeXus data files are high-level so the user only needs to 
+                know how the data are referenced in the file but does not 
+                need to be concerned where the data are stored in the file.  Thus, the data
+                are most easily accessed using a subroutine library tuned to the
+                specifics of the data format.</para>
+            <para>
+                In the past, a data format was defined by a document 
+                describing the precise location of every item in the data file, 
+                either as row and column numbers in an ASCII file, or as record 
+                and byte numbers in a binary file. It is the job of the subroutine 
+                library to retrieve the data.  This subroutine library is commonly 
+                called an application-programmer interface or API.
+            </para>
+            <para>For example, in NeXus, a program to read in the wavelength of an experiment
+                would contain lines similar to the following: <example>
+                    <title>Simple example of reading data using the NeXus API</title>
+                    <indexterm>
+                        <primary>example</primary>
+                        <secondary>simple</secondary>
+                    </indexterm>
+                    <programlisting language="c" linenumbering="numbered"
+                        ><xi:include href="examples/ex-simple.c" parse="text"
+                        /></programlisting>
+                </example> In this example, the program requests the value of the data that has
+                the label <code>wavelength</code>, storing the result in the variable lambda.
+                <code>fileID</code> is a file identifier that is provided by NeXus when the
+                file is opened. </para>
+            <para>We shall provide a more complete example when we have discussed the contents
+                of the NeXus files.</para>
         </section>
         <section xml:id="Low-LevelFormatSection">
             <title>A Set of Low-Level File Formats</title>
@@ -417,6 +445,10 @@
                 <xref linkend="PhysicalFileFormatSection"/>.
             </para>
         </section>
+        <section>
+            <title>Scientific Community</title>
+            <para><!-- TODO --></para> <!--also refer to later section-->
+        </section>
     </section>
     
     <!-- 
@@ -424,7 +456,7 @@
         section: Generic features of NeXus files
         ========================================
     -->
-    <xi:include href="GenericFeatures.xml"/>
+    <!--<xi:include href="GenericFeatures.xml"/>-->
     
     <!-- 
         ================================================
@@ -445,7 +477,7 @@
         </para>
         <para>
             Further documentation of the NeXus Application Programming Interface
-            (NAPI) for bindings to specific prograqmming language can be obtained
+            (NAPI) for bindings to specific programming language can be obtained
             from the NeXus development site.<footnote><para><link
                 xlink:href="http://download.nexusformat.org"
                 ><code>http://download.nexusformat.org</code
@@ -480,9 +512,12 @@
                 </indexterm> 
                 provides a set of subroutines that make it easy to read and write
                 NeXus files. These subroutines are available in C, Fortran 77, Fortran 90, Java,
+                Python, C++,
                 and IDL. Access from other languages, such as Python, is anticipated in the near
-                future. It is also possible to read NeXus files in a number of data analysis
-                tools, such as LAMP, ISAW, and Open GENIE.</para>
+                future. It is also possible to read NeXus HDF files in a number of data analysis
+                tools, such as LAMP, ISAW, IgorPro, and Open GENIE.  NeXus XML files can be read 
+                by any program or library that supports XML.
+            </para>
             <para>The API uses a very simple <emphasis>state</emphasis>
                 model to navigate through a NeXus file.
                 When you open a file, the API provides a file <emphasis>handle</emphasis>, 
