@@ -8,9 +8,21 @@
     xmlns:xlink="http://www.w3.org/1999/xlink" 
     xmlns:xi="http://www.w3.org/2001/XInclude"
   >
-    <title>NeXus: the basics </title>
+
+  <!-- TODO needs revision (remove the impatient legacy) -->
+
+  <title>NeXus: the basics </title>
+
   <para>
-    <xref linkend="BasicOrg"/> describes the basic organization within the NeXus hierarchy.
+    The basic organization within the NeXus hierarchy is described in
+    <xref linkend="BasicOrg"/>.<footnote><para>This section was 
+      derived, almost verbatim, from the excellent first tutorial,
+      <link
+        xlink:href="https://svn.nexusformat.org/definitions/trunk/tutorial/NXDLTutorial.pdf"
+        ><code>NXDLTutorial.pdf</code></link>
+      on how to write a definition file in NXDL (in the NeXus 
+      <emphasis>definitions</emphasis> repository).
+    </para></footnote>
     <indexterm>
       <primary>hierarchy</primary>
       <secondary>NeXus</secondary>
@@ -20,18 +32,6 @@
     <xref linkend="CreatingNxdlSpec"/> works through an example to construct a NXDL file 
     for a fictional scientific instrument that closely resembles a neutron powder diffractometer.
     <xref linkend="ProcessedDataSection"/> gives advice about storing the results from data processing.
-  </para>
-  <para>
-    This section was derived, almost verbatim, from the excellent first tutorial,
-    <link
-      xlink:href="https://svn.nexusformat.org/definitions/trunk/tutorial/NXDLTutorial.pdf"
-      ><code>NXDLTutorial.pdf</code></link><footnote><para><link
-        xlink:href="https://svn.nexusformat.org/definitions/trunk/tutorial/NXDLTutorial.pdf"
-        ><code
-          >https://svn.nexusformat.org/definitions/trunk/tutorial/NXDLTutorial.pdf</code
-        ></link></para></footnote>
-    on how to write a definition file in NXDL (in the NeXus 
-    <emphasis>definitions</emphasis> repository).
   </para>
   
   <!-- 
@@ -47,8 +47,9 @@
     </indexterm>
     <!-- This section originated as part of Mark K's 2009 tutorial on NXDL -->
     <para>Let us start with a recapitulation of some of the NeXus features relevant to data files for analysis. 
-      NeXus experts can skip this section. The
-      first are some of the NeXus guiding principles.</para>
+      NeXus experts can skip this section. 
+      <!-- TODO Is a recap necessary at this point? -->
+      The first are some of the NeXus guiding principles.</para>
     <simplelist>
       <member>A NeXus file has to contain all the data necessary for standard data analysis.</member>
       <member>A NeXus file is extendable.</member>
@@ -193,7 +194,8 @@
             <secondary>default plot</secondary>
           </indexterm>
           is one of the basic motivations (see
-          <xref linkend="SimplePlotting"/>) for the NeXus standard.</para></listitem>
+          <xref linkend="SimplePlotting"/>) 
+          for the NeXus standard.</para></listitem>
       </itemizedlist>
     </para>
   </section>
@@ -514,11 +516,8 @@ sample temperature = /NXentry/NXsample/temperature</programlisting>
         further inspection of the appropriate base classes reveals the following further
         mappings:
         <programlisting language="c" linenumbering="numbered"
-          >probe = /NXentry/NXinstrument/NXsource/probe
-wavelength = /NXentry/NXinstrument/NXcrystal/wavelength
-two theta of detector elements =
-/NXentry/NXinstrument/NXdetector/polar angle
-counts for each detector element = /NXentry/NXinstrument/NXdetector/data</programlisting>
+          ><xi:include href="examples/woni-mapping-basic.txt" parse="text"
+          /></programlisting>
       </para>
       <para>
         Thus we mapped all our data items into the NeXus hierarchy! What still
@@ -528,10 +527,11 @@ counts for each detector element = /NXentry/NXinstrument/NXdetector/data</progra
         data. For WONI this is <code>counts</code> versus <code>two theta</code>. 
         Thus we add this mapping:
         <programlisting language="c" linenumbering="numbered"
-          >two theta of detector elements = /NXentry/NXdata/polar angle
-counts for each detector element = /NXentry/NXdata/data</programlisting>
+          ><xi:include href="examples/woni-mapping-nxdata.txt" parse="text"
+          /></programlisting>
       </para>
-      <para>The full mapping of WONI data into NeXus is documented in <xref linkend="TableWoniFullMapping"/>.</para>
+      <para>The full mapping of WONI data into NeXus is documented in 
+        <xref linkend="TableWoniFullMapping"/>.</para>
       <table xml:id="TableWoniFullMapping">
         <title>Full mapping of WONI data into NeXus</title>
         <tgroup cols="2"  align="left">
@@ -590,7 +590,8 @@ counts for each detector element = /NXentry/NXdata/data</programlisting>
       <para>
         Looking at this one might get concerned that the two theta and counts data
         is stored in two places and thus duplicated. Stop worrying, this problem is
-        solved at the NeXus API level. Typically <code>NXdata</code> will only hold links to the
+        solved at the NeXus API level. 
+        Typically <code>NXdata</code> will only hold links to the
         corresponding data items in <code>/NXentry/NXinstrument/NXdetector</code>.
       </para>
       <para>
@@ -638,9 +639,8 @@ counts for each detector element = /NXentry/NXdata/data</programlisting>
         The next thing which needs to be done is adding groups into the definition.
         A group is defined by some XML like this:
         <programlisting language="xml" linenumbering="numbered"
-          >&lt;group type="NXdata">
-
-&lt;/group></programlisting>
+          ><xi:include href="examples/woni-nxdl-group.nxdl" parse="text"
+              /></programlisting>
         The type is the actual NeXus base class this group belongs to. Optionally a
         <code>name</code> attribute may be given (default is <code>data</code>).
       </para>
@@ -648,12 +648,8 @@ counts for each detector element = /NXentry/NXdata/data</programlisting>
         Next, one needs to include data items too. The XML for such a data item
         looks like this:
         <programlisting language="xml" linenumbering="numbered"
-          >&lt;field name="polar_angle" type="NX_FLOAT units="NX_ANGLE">
-  &lt;doc>Link to polar angle in /NXentry/NXinstrument/NXdetector&lt;/doc>
-  &lt;dimensions size="1">
-    &lt;dim index="1" value="ndet"/>
-  &lt;/dimensions>
-&lt;/field></programlisting>
+          ><xi:include href="examples/woni-nxdl-data.nxdl" parse="text"
+              /></programlisting>
       </para>
       <para>
         The meaning of the <code>name</code> attribute is intuitive, the 
@@ -781,8 +777,8 @@ counts for each detector element = /NXentry/NXdata/data</programlisting>
         <primary>hierarchy</primary>
         <secondary>NeXus</secondary>
       </indexterm>
-      is to
-      be implemented. In addition, processed data files must contain a <code>NXprocess</code>
+      is to be implemented. In addition, processed data files 
+      must contain a <code>NXprocess</code>
       group. This group, that documents and preserves data provenance, 
       contains the name of the data processing program and the
       parameters used to run this program in order to achieve the results stored in
