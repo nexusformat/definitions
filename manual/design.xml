@@ -173,9 +173,27 @@
                     <tertiary>global</tertiary>
                 </indexterm>
                 that identify
-                the NeXus version, file creation time, etc.. Attributes are identified by their
-                names, which must be unique in each field.</para>
+                the NeXus version, file creation time, etc. 
+                Attributes are identified by their
+                names, which must be unique in each field.
+                More information about attributes is given in
+                <xref linkend="sect.nexus.attributes"/>.
+                
+            </para>
         </section>
+        
+        <!-- 
+            ========================
+            section: Links
+            ========================
+        -->
+        <section xml:id="sect.data.links">
+            <title>Links</title>
+            <para>
+                <indexterm><primary>link</primary></indexterm>
+            </para>
+        </section>
+
     </section>
     
     <!-- 
@@ -302,39 +320,19 @@
                     <primary>link</primary>
                 </indexterm> 
                 each data dimension to its respective dimension scale. 
-                One method uses the <code>axis</code> attribute to identify
+                The preferred method uses the <code>axes</code> attribute
+                to specify the names of each dimension's scale.
+                The original method uses the <code>axis</code> attribute to identify
                 with an integer the axis whose value is the number of the dimension.
-                The second method is preferred, which uses the <code>axes</code> 
-                attribute to specify the names of each dimension's scale.
+                After describing each of these methods, the two methods will be compared.
             </para>
             <section>
-                <title>Linking by dimension number using the <code>axis</code> attribute</title>
-                <para>
-                    The first method is to define an attribute of each dimension
-                    scale called <emphasis>axis</emphasis>. 
-                    <indexterm><primary>axis</primary></indexterm>
-                    It is an integer whose value is the number of
-                    the dimension, in order of fastest varying dimension. i.e. if the
-                    array being stored is data, with elements <code>data[j][i]</code> in C and
-                    <code>data(i,j)</code> in Fortran, where <code>i</code> is the 
-                    time-of-flight index and <code>j</code> is
-                    the polar angle index, the <code>NXdata</code> group would contain:
-                    <indexterm><primary>NXdata</primary></indexterm>
-                    <example>
-                        <title>Old way of denoting axes</title>
-                        <programlisting  language="xml" linenumbering="numbered"
-                                    ><xi:include href="examples/axes-old.xml.txt" 
-                                        parse="text"/></programlisting>
-                    </example> The <code>axis</code> attribute must be defined for each dimension scale.
-                    The <code>primary</code> attribute is unique to this method of linking.
-                </para>
-            </section>
-            <section>
                 <title>Linking by name using the <code>axes</code> attribute</title>
-                <para>The second method is to define an attribute of the data itself
+                <para>The preferred method is to define an attribute of the data itself
                     called <emphasis>axes</emphasis>. 
                     <indexterm><primary>axes</primary></indexterm>
-                    It contains the names of each dimension's scale as a
+                    The <code>axes</code> attribute contains the names of 
+                    each dimension's scale as a
                     comma- or colon-delimited list in the order they appear in C.
                     Optionally, the list can be enclosed in brackets, but should not
                     contain any spaces, e.g. 
@@ -347,26 +345,70 @@
                 </para>
             </section>
             <section>
+                <title>Linking by dimension number using the 
+                    <code>axis</code> attribute</title>
+                <para>
+                    The original method is to define an attribute of each dimension
+                    scale called <emphasis>axis</emphasis>. 
+                    <indexterm><primary>axis</primary></indexterm>
+                    It is an integer whose value is the number of
+                    the dimension, in order of fastest varying dimension. 
+                    That is, if the array being stored is data with elements
+                    <code>data[j][i]</code> in C and
+                    <code>data(i,j)</code> in Fortran, where <code>i</code> is the 
+                    time-of-flight index and <code>j</code> is
+                    the polar angle index, the <code>NXdata</code> group would contain:
+                    <indexterm><primary>NXdata</primary></indexterm>
+                    <example>
+                        <title>Original way of denoting axes</title>
+                        <programlisting  language="xml" linenumbering="numbered"
+                                    ><xi:include href="examples/axes-old.xml.txt" 
+                                        parse="text"/></programlisting>
+                    </example> The <code>axis</code> attribute must 
+                    be defined for each dimension scale.
+                    The <code>primary</code> attribute is unique to this method of linking.
+                </para>
+            </section>
+            <section>
                 <title>Discussion of the two linking methods</title>
                 <para>
-                    The second method is required when the dimension scale is used in
+                    The preferred method is required when the dimension scale is used in
                     more than one <code>NXdata</code> group
                     <indexterm><primary>NXdata</primary></indexterm>
                     in a different context, 
                     e.g. it is used
                     as the x-axis in one group and the y-axis in another. </para>
-                <para>The first method was historically the first to be used, but the second is now
-                    recommended for future applications. However, both will be supported in NeXus
-                    utilities that identify dimension scales, such as <code>NXUfindaxis()</code>. 
+                <para>The original method has the advantage of defining alternative axes
+                    for automatic plotting.  This is shown in the example above for 
+                    the <code>some_other_angle</code> field where <code>axis="1"</code>
+                    denotes another possible primary axis for plotting.  The default
+                    axis for plotting carries the <code>primary="1"</code> attribute.
                 </para>
                 <para>
-                    There are limited circumstances in which more than one dimension scale for the
-                    same data dimension can be included in the same <code>NXdata</code> group.
+                    However, when linking between <code>NXdata</code> groups,
+                    <indexterm><primary>HDF</primary></indexterm>
+                    HDF sets the link as it is created and this cannot be changed later.
+                    The <code>axes</code> attribute, that allows axes to be re-used
+                    more generally, was introduced in NeXus to work around the HDF behavior.
+                </para>
+                <para>
+                    Both methods of linking data axes will be supported in NeXus
+                    utilities that identify dimension scales, such 
+                    as <code>NXUfindaxis()</code>. 
+                </para>
+                <para>
+                    There are limited circumstances in which more 
+                    than one dimension scale for the
+                    same data dimension can be included in the same 
+                    <code>NXdata</code> group.
                     <indexterm><primary>NXdata</primary></indexterm>
-                    The most common is when they are the three components of an 
+                    The most common is when the dimension scales are 
+                    the three components of an 
                     <emphasis>(hkl)</emphasis> scan. In order to
-                    handle this case, we have defined another attribute of type integer called
-                    <code>primary</code> whose value determines the order in which the scale is expected to be
+                    handle this case, we have defined another attribute 
+                    of type integer called
+                    <code>primary</code> whose value determines the order 
+                    in which the scale is expected to be
                     chosen for plotting, i.e.
                     <indexterm>
                         <primary>NeXus basic motivation</primary>
@@ -411,7 +453,7 @@
                     The API will provide a mechanism
                     for identifying the parent group so that the relevant metadata can be accessed. </para>
                 <para>Here is a simple example to illustrate the concept: <example>
-                    <title>Abbreviated NeXus file</title>
+                    <title>Abbreviated NeXus data file</title>
                     <programlisting  language="xml" linenumbering="numbered"
                     ><xi:include href="examples/abbreviated-nexus-file.xml.txt" parse="text"
                     /></programlisting>
@@ -455,7 +497,7 @@
                     of the original group containing it. All linked entities will share this <code>link</code>
                     attribute and thus can use it to locate the original source group. We are
                     effectively using the <code>link</code> attribute to simulate <emphasis>symbolic links</emphasis>. So in the
-                    above example both the original <code>time_of_flight</code> and the linked one will share a
+                    above example, both the original <code>time_of_flight</code> and the linked one will share a
                     link attribute containing the text <code>/entry/instrument/detector</code> because
                     <code>/entry/instrument/detector/time_of_flight</code>
                     is the original instance.</para>
@@ -467,7 +509,7 @@
             section: NeXus Attributes
             ================================
         -->
-        <section>
+        <section xml:id="sect.nexus.attributes">
             <title>NeXus Attributes</title>
             <para>
                 Metadata (additional information that describes the primary data) 
@@ -680,7 +722,7 @@
         <para>
             A standard NeXus file is composed from a selection of NeXus base classes.
             The particular selection may be guided by a NeXus application definition 
-            (see <xref linkend="chap.NXDL"/> for more details)
+            (see the NXDL section in Volume II, <xref linkend="chap.NXDL"/>, for more details)
             but it is not necessary to use an NXDL file to write a NeXus data file.
             The base classes have a hierarchy for their use
             (shown in <xref linkend="list.hierarchy.base"/>)
@@ -935,6 +977,7 @@
         </itemizedlist>
         <para>
             In NeXus, we never came down to defining 
+            <!-- TODO Is the previous line OK? -->
             rotation directions. The triple polar_angle, 
             azimuthal_angle and distance define a polar 
             coordinate system. Polar_angle is ALWAYS two-theta, 
@@ -1245,12 +1288,13 @@
             should be appropriate for the value. 
             Values for the NeXus units must be specified in
             a format compatible with <link 
-                xlink:href="http://www.unidata.ucar.edu/software/udunits/"
-                >Unidata
-                UDunits</link>.<footnote>
+                xlink:href="http://www.unidata.ucar.edu/software/udunits/udunits-2-units.html"
+                >Unidata UDunits</link>.<footnote>
                 <para>Unidata UDunits: <link
-                        xlink:href="http://www.unidata.ucar.edu/software/udunits/"
-                            ><literal>http://www.unidata.ucar.edu/software/udunits/</literal></link>
+                    xlink:href="http://www.unidata.ucar.edu/software/udunits/udunits-2-units.html"
+                    ><literal
+                        >http://www.unidata.ucar.edu/software/udunits/udunits-2-units.html</literal
+                    ></link>
                 </para>
                 </footnote>  
             <indexterm>
@@ -1258,21 +1302,20 @@
             </indexterm>
             The UDunits specification also includes instructions 
             for derived units.
-            <!-- 
-                What about backwards compatibility with older NeXus data files?
-                Since we do not check or validate the units, seems that we're covered.
-                A comment here might suffice.
-            --> utility (in particular, see the now-deprecated <link
-                xlink:href="http://www.unidata.ucar.edu/software/udunits/udunits-1/udunits.txt"
-                    ><code>udunits.txt</code></link>).<footnote>
-                <para>(deprecated): 
-                    <link 
-                        xlink:href="http://www.unidata.ucar.edu/software/udunits/"
-                            ><literal>http://www.unidata.ucar.edu/software/udunits/udunits-1/udunits.txt</literal></link>
-                </para>
-            </footnote>
             At present, the contents of NeXus <literal>units</literal> attributes
-            are not validated.
+            are not validated in data files.
+            <!-- thus backwards compatible -->
+        </para>
+        <para>
+            Given the plethora of possible applications of NeXus, it is difficult to 
+            define units<indexterm><primary>units</primary></indexterm>
+            to use. Therefore, the general rule is that you are free to 
+            store data in any unit you find fit. However, any data field must have a 
+            units attribute which describes the units used in the format used by the 
+            udunits unit conversion program. Wherever possible, SI units are 
+            preferred. Application definitions may specify units to be used for fields 
+            using an 
+            <code>enumeration</code>.<indexterm><primary>enumeration</primary></indexterm>
         </para>
     </section>
     
@@ -1309,7 +1352,7 @@
         <title>NeXus array dimensions</title>
         <caution>
             <para>
-                Need a better writeup than this!
+                TODO Need a better writeup than this!
                 Also need to confirm if this is correct!
             </para>
         </caution>
@@ -1331,22 +1374,58 @@
     -->
     <section xml:id="NeXus.data.types">
         <title>NeXus Data Types</title>
+        <table>
+            <title>Matching regular expressions for NeXus data types</title>
         <!-- 
-            TODO: build the list of NeXus data types from <code>xslt/nexus_base.sch</code>
+            Built this table from <code>../xslt/nexus_base.sch</code>
 
-<sch:let name="NAPItype_INT" value="'NX_INT(8|16|32|64)'"/>
-<sch:let name="NAPItype_FLOAT" value="'NX_FLOAT(32|64)'"/>
-<sch:let name="ARRAY_regexp" value="'(\[0-9\])?'"/>  <!-/- this is not complete -/->
-        <sch:let name="NAPItype_regexp" 
-            value="concat('NX_CHAR|',$NAPItype_INT,'|',$NAPItype_FLOAT)"/>
-        
-        <sch:let name="ValidItemName_regexp" value="'^[A-Za-z_][A-Za-z0-9_]*$'" />
-        <sch:let name="ValidNXClassName_regexp" value="'^NX[A-Za-z0-9_]*$'" />
-        
+            <sch:let name="NAPItype_INT" value="'NX_INT(8|16|32|64)'"/>
+            <sch:let name="NAPItype_FLOAT" value="'NX_FLOAT(32|64)'"/>
+            <sch:let name="ARRAY_regexp" value="'(\[0-9\])?'"/>  <!-/- this is not complete -/->
+            <sch:let name="NAPItype_regexp"  value="concat('NX_CHAR|',$NAPItype_INT,'|',$NAPItype_FLOAT)"/>
+            <sch:let name="ValidItemName_regexp" value="'^[A-Za-z_][A-Za-z0-9_]*$'" />
+            <sch:let name="ValidNXClassName_regexp" value="'^NX[A-Za-z0-9_]*$'" />
         -->
+            <tgroup cols="2">
+                <colspec colwidth="1*"/>
+                <colspec colwidth="1*"/>
+                <thead>
+                    <row>
+                        <entry>description</entry>
+                        <entry>matching regular expression</entry>
+                    </row>
+                </thead>
+                
+                <tbody>
+                    <row>
+                        <entry>integer</entry>
+                        <entry><code>NX_INT(8|16|32|64)</code></entry>
+                    </row>
+                    <row>
+                        <entry>floating-point</entry>
+                        <entry><code>NX_FLOAT(32|64)</code></entry>
+                    </row>
+                    <row>
+                        <entry>array</entry>
+                        <entry><code>(\[0-9\])?</code></entry>
+                    </row>
+                    <row>
+                        <entry>valid item name</entry>
+                        <entry><code>^[A-Za-z_][A-Za-z0-9_]*$</code></entry>
+                    </row>
+                    <row>
+                        <entry>valid class name</entry>
+                        <entry><code>^NX[A-Za-z0-9_]*$</code></entry>
+                    </row>
+                </tbody>
+                
+            </tgroup>
+        </table>
         <para>
             NeXus supports numeric data as either integer or floating-point
             numbers.  A number follows that indicates the number of bits in the word.
+            The table above shows the regular expressions that
+            matches the data type specifier.
             <glosslist>
                 <glossentry>
                     <glossterm>integers</glossterm>
@@ -1370,16 +1449,46 @@
                         </para>
                     </glossdef>
                 </glossentry>
+                <glossentry>
+                    <glossterm>date / time stamps</glossterm>
+                    <glossdef>
+                        <para>
+                            <code>NX_DATE_TIME</code>
+                            or 
+                            <code>ISO8601</code>: 
+                            Dates and times are specified using 
+                            ISO-8601 standard definitions.
+                            <indexterm><primary>date and time</primary></indexterm>
+                            Refer to <xref linkend="NeXus.dates.times"/>.
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>strings</glossterm>
+                    <glossdef>
+                        <para>
+                            TODO Comment about strings
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>binary data</glossterm>
+                    <glossdef>
+                        <para>
+                            TODO Comment about binary data
+                        </para>
+                    </glossdef>
+                </glossentry>
+                <glossentry>
+                    <glossterm>images</glossterm>
+                    <glossdef>
+                        <para>
+                            TODO Comment about images
+                        </para>
+                    </glossdef>
+                </glossentry>
             </glosslist>
         </para>
-        <para>
-            Dates and times are specified using ISO-8601 standard definitions.
-            <indexterm><primary>date and time</primary></indexterm>
-            Refer to <xref linkend="NeXus.dates.times"/>.
-        </para>
-        <para>Care to comment about strings?</para>
-        <para>Care to comment about binary data?</para>
-        <para>Care to comment about images?</para>
     </section>
     
     <!-- 
