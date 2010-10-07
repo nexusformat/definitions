@@ -52,7 +52,7 @@
             
             <!-- include nexus_base.sch -->
             <xsl:comment> BEGIN include of nexus_base.sch </xsl:comment>
-            <xsl:apply-templates select="document('nexus_base.sch')/sch:schema/*" />
+            <xsl:apply-templates select="document('xslt/nexus_base.sch')/sch:schema/*" />
             <xsl:comment> END include of nexus_base.sch </xsl:comment>
             
             <xsl:apply-templates select="*"/>
