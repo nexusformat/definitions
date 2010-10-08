@@ -85,9 +85,11 @@
 				This is a valid link target - currently it must be an absolute path
 				made up of valid names with / character separating, but we may
 				want to consider allowing ".." at some point.
+				If the name attribute is helpful, then use it in the path 
+				with the syntax of "name:type" as in this example:
 				Must also consider use of name attribute in resolving link targets.
-				/NXentry/NXinstrument/NXcrystal:analyzer/ef
-				/NXentry/NXinstrument/NXcrystal:monochromator/ei
+				/NXentry/NXinstrument/analyzer:NXcrystal/ef
+				/NXentry/NXinstrument/monochromator:NXcrystal/ei
 				/NX_other
 			</xs:documentation>  
 		</xs:annotation>  
@@ -100,7 +102,7 @@
 					the UNIX notation indicating a parent directory, to indicate a parent group."
 					Thus, if we only consider the case of 
 					<code xmlns="http://docbook.org/ns/docbook">
-						class[:name]
+						[name:]type
 					(/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+
 					</code>
 					Note that HDF5 also permits relative path names, such as:
@@ -113,7 +115,6 @@
 			<xs:pattern value="(/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+" />
 		</xs:restriction>
 	</xs:simpleType>
-
 	
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	
@@ -515,6 +516,7 @@ another variable.
 				<xs:attribute name="minOccurs" use="optional" default="0">
 					<xs:simpleType>
 						<xs:restriction base="xs:nonNegativeInteger">
+							<!-- 2010-10-08,PRJ: Are these enumerations needed? -->
 							<xs:enumeration value="0"/>
 							<xs:enumeration value="1"/>
 						</xs:restriction>
@@ -522,21 +524,26 @@ another variable.
 				</xs:attribute>
 				<xs:attribute name="maxOccurs" use="optional"  default="1">
 					<xs:simpleType>
-						<xs:restriction base="xs:nonNegativeInteger">
-							<xs:enumeration value="1"/>
-							<!-- 
-								The "unbounded" is not valid for nonNegativeInteger
-								But that is what we really mean.
-								TODO enable the use of "unbounded" as well.
-							-->
-							<xs:enumeration value="999999999999999999999999"/>
-						</xs:restriction>
+						<xs:restriction base="nx:nonNegativeUnbounded"/>
 					</xs:simpleType>
 				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	
+
+	<xs:simpleType name="nonNegativeUnbounded">
+		<xs:union>
+			<xs:simpleType>
+				<xs:restriction base="xs:nonNegativeInteger"/>
+			</xs:simpleType>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="unbounded" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:union>
+	</xs:simpleType>
+
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	
 	<xs:complexType name="docType" mixed="true">
