@@ -360,13 +360,22 @@ Usage:
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xsl:template match="*" mode="showNameType">
-        <xsl:if test="name()!='definition'"><xsl:value-of select="@name"/></xsl:if>
-        <xsl:if test="count(@type)">
-            <xsl:choose>
-                <xsl:when test="name()='definition'"><xsl:value-of select="@name"/></xsl:when>
-                <xsl:otherwise>:<xsl:value-of select="@type"/></xsl:otherwise>
-            </xsl:choose>
-        </xsl:if>
+        <xsl:choose>
+            <xsl:when test="name()='definition'"><xsl:value-of select="@name"/></xsl:when>
+            <xsl:when test="name()='group'"><xsl:if test="count(@name)"
+                ><xsl:value-of select="@name"/>:</xsl:if
+                ><xsl:value-of select="@type"/></xsl:when>
+            <xsl:when test="name()='field'"><xsl:value-of select="@name"/></xsl:when>
+            <xsl:otherwise>
+                <!-- should only get to this template for the above tests -->
+                <pre>
+                    DEBUG: Unexpected use of showNameType template:
+                    DEBUG: name() *<xsl:value-of select="name()"/>*
+                    DEBUG: @name *<xsl:value-of select="@name"/>*
+                    DEBUG: @type *<xsl:value-of select="@type"/>*
+                </pre>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
