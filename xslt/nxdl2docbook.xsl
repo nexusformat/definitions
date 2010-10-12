@@ -382,8 +382,8 @@ Usage:
     
     <xsl:template match="*" mode="showDimensionsEntry">
         <xsl:choose>
-            <xsl:when test="count(@size)">size="<xsl:value-of select="@size"/>"</xsl:when>
-            <xsl:when test="count(nx:dim)">apparent size="<xsl:value-of select="count(nx:dim)"/>"</xsl:when>
+            <xsl:when test="count(@rank)">rank="<xsl:value-of select="@rank"/>"</xsl:when>
+            <xsl:when test="count(nx:dim)">apparent rank="<xsl:value-of select="count(nx:dim)"/>"</xsl:when>
         </xsl:choose>
         <xsl:if test="count(nx:dim)">
             <xsl:element name="itemizedlist">
