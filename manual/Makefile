@@ -77,6 +77,7 @@ DYNAMIC_DOCBOOK_SECTIONS += classes/ApplicationClassSections.xml
 DYNAMIC_DOCBOOK_SECTIONS += classes/ContributedClassSections.xml
 DYNAMIC_DOCBOOK_SECTIONS += types.xml
 DYNAMIC_DOCBOOK_SECTIONS += units.xml
+DYNAMIC_DOCBOOK_SECTIONS += nxdl_desc.xml
 DYNAMIC_DOCBOOK_SECTIONS += subtitle.xml
 
 BUILT_NEXUSMANUAL  = NeXusManual.pdf
@@ -94,6 +95,7 @@ CLEANING_LIST += html/
 CLEANING_LIST += classes/
 CLEANING_LIST += types.xml
 CLEANING_LIST += units.xml
+CLEANING_LIST += nxdl_desc.xml
 
 CLASS_HEAD_PYTHON = ../utils/classSectionHead.py
 
@@ -145,6 +147,10 @@ types.xml : ../nxdlTypes.xsd Makefile $(XSLT_PATH)/nxdl_types2docbook.xsl
 
 units.xml : ../nxdlTypes.xsd Makefile $(XSLT_PATH)/nxdl_units2docbook.xsl
 	xsltproc $(XSLT_PATH)/nxdl_units2docbook.xsl ../nxdlTypes.xsd > $@
+	@echo "(Re)created $@"
+
+nxdl_desc.xml : ../nxdl.xsd Makefile $(XSLT_PATH)/nxdl_desc2docbook.xsl
+	xsltproc $(XSLT_PATH)/nxdl_desc2docbook.xsl ../nxdl.xsd > $@
 	@echo "(Re)created $@"
 
 

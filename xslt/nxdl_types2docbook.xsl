@@ -11,11 +11,11 @@
 
 Purpose:
 	This stylesheet is used to extract the specifications of 
-	valid units categories from the NeXus Definition Language
+	valid types categories from the NeXus Definition Language
 	specifications into DocBook content for use in NXDL.xml.
 
 Usage:
-    xsltproc ../xslt/nxdl_units2docbook.xsl ../nxdlTypes.xsd > units.xml
+    xsltproc ../xslt/nxdl_units2docbook.xsl ../nxdlTypes.xsd > types.xml
 -->
 
 <xslt:stylesheet
