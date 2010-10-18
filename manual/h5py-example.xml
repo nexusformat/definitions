@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
+<!-- # $Id$ -->
+<section 
+  xml:id="sect.h5py.example" 
+  xmlns="http://docbook.org/ns/docbook" 
+  version="5.0"
+  xmlns:xlink="http://www.w3.org/1999/xlink" 
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title>A complete example of writing and reading a NeXus data file using <code>h5py</code></title>
+
+  <para> One way to gain a quick familiarity with NeXus is to start working with some data. In this
+    example, we have a simple two-column set of data, collected as part of a series of alignment
+    scans for the APS USAXS instrument. We will show how to write this data using the Python
+    language and the <code>h5py</code> package<footnote><para><link
+      xlink:href="http://code.google.com/p/h5py"
+      ><code>http://code.google.com/p/h5py</code
+      ></link></para></footnote> (using <code>h5py</code> calls directly rather than
+    using the NeXus NAPI). The actual data to be written was extracted (elsewhere) from a 
+    <code>spec</code><footnote><para><link
+      xlink:href="http://certif.com/spec.html"
+      ><code>http://certif.com/spec.html</code
+      ></link></para></footnote> data
+    file and placed as a text block in the Python source code. </para>
+
+  <para>The data shown in <xref linkend="sect.h5py.example.data"/> will be written to the file using
+    only the required NeXus objects: <code>NXentry</code> and <code>NXdata</code>, using the
+    structure shown in <link xlink:href="#ex.verysimple.xml">the Introduction to Volume I</link>. A
+    small amount of metadata will be contributed as an additional example. </para>
+
+  <table role="small" xml:id="sect.h5py.example.data">
+    <title> Input data </title>
+    <tgroup cols="2" align="left" colsep="1" rowsep="1">
+      <colspec colwidth="1*"/>
+      <colspec colwidth="3*"/>
+      <thead>
+        <row>
+          <entry><?dblatex bgcolor="[gray]{0.8}"?>plot</entry>
+          <entry><?dblatex bgcolor="[gray]{0.8}"?>data</entry>
+        </row>
+      </thead>
+      <tbody>
+        <row>
+          <entry>
+            <example>
+              <title>listing of two-column data</title>
+              <programlisting linenumbering="numbered"
+                ><xi:include href="examples/h5py/input.dat" parse="text"
+                /></programlisting>
+            </example>
+          </entry>
+          <entry>
+            <figure>
+              <title>plot of two-column data</title>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="examples/h5py/s00008.png" width="400pt" scalefit="1"/>
+                </imageobject>
+              </mediaobject>
+            </figure>
+          </entry>
+        </row>
+      </tbody>
+    </tgroup>
+  </table>
+
+  <section>
+    <title>Writing the HDF5 file</title>
+    <para> In the main code section of <link xlink:href="#sect.h5py.example.writer"
+          ><code>TestWriter.py</code></link>, a current time stamp is prepared in the format of
+        <emphasis>ISO 8601</emphasis>. Then the data (<code>mr</code> is similar to "two_theta" and
+        <code>I00</code> is similar to "counts") is collated into Python lists. Note that the string
+      representations are converted to <code>float()</code> since the <code>h5py</code> package will
+      automatically handle all the data type instructions. </para>
+    <para> Next, the data is read from the file. The code assumes two points per line, separated by
+        <emphasis>white space</emphasis>. </para>
+    <para> The new HDF5 file is opened (and created if not already existing) for writing with the
+      command <code>f = h5py.File(fileName, "w")</code>. The common NeXus attributes are set next.
+      Then, with calls to <code>create_dataset()</code>, <code>h5py</code> creates the
+        <code>NXentry</code> and <code>NXdata</code> groups. Since we are not using the NAPI, our
+      code must create and set the <code>NX_class</code> attribute on each group. <note>
+        <para> We want to create the desired structure of
+            <code>/entry:NXentry/mr_scan:NXdata/</code>. First we call <code>nxentry =
+            f.create_group("entry")</code> to create the <code>NXentry</code> group called
+            <code>entry</code> at the root level. Then, we call <code>nxdata =
+            nxentry.create_group("mr_scan")</code> to create the <code>NXentry</code> group called
+            <code>entry</code> as a child of the <code>NXentry</code> group. </para>
+      </note>
+    </para>
+    <para> Next, we call the <code>h5py</code>'s <code>create_dataset()</code> method to create
+      containers for each of our columns of data. We define the engineering units as a standard
+      NeXus attribute. Since a default plot of our data would be <code>I00</code> vs.
+        <code>mr</code>, we add NeXus attributes to indicate either <code>primary</code> or
+        <code>signal</code>. </para>
+    <para> Next, we add additional metadata items (<emphasis>dataset</emphasis>s) that are allowed
+      in NeXus <code>NXentry</code> groups. All of these items are <emphasis>strings</emphasis> and
+      the <code>h5py</code> package will take care of writing them into the HDF5 file. </para>
+    <para> Finally, we <emphasis>must</emphasis> remember to call <code>f.close()</code> or we might
+      corrupt the file when the program quits. </para>
+
+    <example xml:id="sect.h5py.example.writer">
+      <title><citetitle>TestWriter.py</citetitle>: Write a NeXus HDF5 file using Python with
+        h5py</title>
+      <programlisting language="python" linenumbering="numbered"
+        ><xi:include href="examples/h5py/TestWriter.py" parse="text"
+        /></programlisting>
+    </example>
+  </section>
+
+
+  <section>
+    <title>Reading the HDF5 file</title>
+
+    <para> The file reader, <link xlink:href="#sect.h5py.example.reader"
+        ><code>BasicReader.py</code></link>, 
+      is very simple.
+      It opens the HDF5 we wrote above, 
+      prints the HDF5 attributes from the file, 
+      reads the two datasets, 
+      and then prints them out as columns. 
+      As simple as that.
+      Of course, real code might add some error-handling and 
+      extracting other useful stuff from the file.      
+    </para>
+
+    <example xml:id="sect.h5py.example.reader">
+      <title><citetitle>BasicReader.py</citetitle>: Read a NeXus HDF5 file using Python with
+        h5py</title>
+      <programlisting language="python" linenumbering="numbered"
+        ><xi:include href="examples/h5py/BasicReader.py" parse="text"
+        /></programlisting>
+    </example>
+    <para>Output from <code>BasicReader.py</code> is shown in <xref
+        linkend="sect.h5py.example.output"/>. </para>
+
+    <example xml:id="sect.h5py.example.output">
+      <title>Output from <code>BasicReader.py</code></title>
+      <programlisting linenumbering="numbered"
+        ><xi:include href="examples/h5py/output.txt" parse="text"
+        /></programlisting>
+    </example>
+  </section>
+
+
+</section>
