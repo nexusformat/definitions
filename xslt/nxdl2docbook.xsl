@@ -338,6 +338,8 @@ Usage:
     <xsl:template match="nx:group" mode="group-include">
         <!-- show a class included by this class  -->
         <!-- http://www.nexusformat.org/NXclassname -->
+        <!-- TODO TRAC #131: Stop pointing at the wiki unless it will be updated! -->
+        <!-- TODO TRAC #131: need to know if base, application, or contributed before can link properly! -->
         <xsl:if test="position()>1">, </xsl:if>        <!-- comma-separated list -->
         <xsl:element name="link">
             <xsl:attribute name="xlink:href"
@@ -662,6 +664,8 @@ Usage:
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
+    <!-- http://svn.nexusformat.org/definitions/trunk -->
+    <!-- http://trac.nexusformat.org/definitions/browser -->
     <!-- !!! line breaks are VERY important here, don't bust them !!! -->
     <xsl:template name="makeURL">
         <xsl:param name="name"/>
