@@ -23,7 +23,7 @@ if __name__ == '__main__':
     f = h5py.File(fileName, "w")
     f.attrs['file_name'] = fileName
     f.attrs['file_time'] = timestamp
-    f.attrs['creator'] = "Pete R. Jemian <jemian@anl.gov> using h5py"
+    f.attrs['creator'] = "$Id$"
     f.attrs['HDF5_Version'] = h5py.version.hdf5_version
     f.attrs['NeXus_version'] = "4.3.0"
     f.attrs['h5py_version'] = h5py.version.version
