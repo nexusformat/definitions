@@ -191,6 +191,7 @@ NeXusManual_one_chunk.html : docbook
 html/index.html : docbook
 	[ -d html ] || mkdir html
 	( cd html; xsltproc --xinclude \
+	  --stringparam use.id.as.filename 1 \
 	  --stringparam use.extensions 0 \
 	  --stringparam callout.graphics.path "../img/callouts/" \
 	  $(DBXSL)/html/chunk.xsl \
