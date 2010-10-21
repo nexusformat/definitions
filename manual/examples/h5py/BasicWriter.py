@@ -37,13 +37,11 @@ if __name__ == '__main__':
     nxdata.attrs["NX_class"] = "NXdata"   # identify NeXus base class
 
     mr = nxdata.create_dataset("mr", data=data['mr'])
-    mr.attrs['NAPItype'] = "NX_%s[%d]" % (str(mr.dtype).upper(), len(data['mr']))
     mr.attrs['units'] = "degrees"
     # tell NeXus this is first independent axis for plotting
     mr.attrs['primary'] = "1"    
 
     i00 = nxdata.create_dataset("I00", data=data['I00'])
-    i00.attrs['NAPItype'] = "NX_%s[%d]" % (str(i00.dtype).upper(), len(data['I00']))
     i00.attrs['units'] = "counts"
     # tell NeXus this is primary data for plotting
     i00.attrs['signal'] = "1"

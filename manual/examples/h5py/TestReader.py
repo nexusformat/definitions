@@ -27,7 +27,8 @@ def print_child(item, label):
             key = "%s/%s" % (base, k)
             print_child(item[k], key)
     if (repr(type(item)) == DATASET_TYPE_MATCH):
-        print label, item.value
+        #print label, item.value
+	print label
         print "shape:", item.shape
         print "size:", len(item.shape)
         print "NumPy dtype:", item.dtype
