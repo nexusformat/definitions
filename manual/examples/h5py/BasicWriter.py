@@ -8,7 +8,7 @@ fileName = "prj_test.nexus.hdf5"
 timestamp = "2010-10-18T17:17:04-0500"
 
 # prepare the data
-f = open('input.dat', 'r')
+f = open('input.dat',  'r')
 TWO_COLUMNS = f.read()
 f.close()
 
