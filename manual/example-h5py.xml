@@ -7,76 +7,106 @@
   xmlns:xlink="http://www.w3.org/1999/xlink" 
   xmlns:xi="http://www.w3.org/2001/XInclude">
   <title>A complete example of writing and reading a NeXus data file using <code>h5py</code></title>
-
+  
   <para> One way to gain a quick familiarity with NeXus is to start working with some data. In this
     example, we have a simple two-column set of data, collected as part of a series of alignment
     scans for the APS USAXS instrument. We will show how to write this data using the Python
-    language and the <code>h5py</code> package<footnote><para><link
-      xlink:href="http://code.google.com/p/h5py"
-      ><code>http://code.google.com/p/h5py</code
-      ></link></para></footnote>
-      <indexterm>
-        <primary>h5py</primary>
-      </indexterm>
-      (using <code>h5py</code> calls directly rather than
-    using the NeXus NAPI). The actual data to be written was extracted (elsewhere) from a 
-    <code>spec</code><footnote><para><link
-      xlink:href="http://certif.com/spec.html"
-      ><code>http://certif.com/spec.html</code
-      ></link></para></footnote> data
-    file and placed as a text block in the Python source code. </para>
-
-  <para>The data shown in <xref linkend="Example-H5py-Data"/> will be written to the file using
-    the only two required NeXus objects <code>NXentry</code> and <code>NXdata</code>, using the
-    structure shown in the <link xlink:href="#ex.verysimple.xml">Introduction to Volume I</link>.</para>
-
+    language and the <code>h5py</code> package<footnote>
+      <para><link xlink:href="http://code.google.com/p/h5py"
+        ><code>http://code.google.com/p/h5py</code></link></para>
+    </footnote>
+    <indexterm>
+      <primary>h5py</primary>
+    </indexterm> (using <code>h5py</code> calls directly rather than using the NeXus NAPI). The
+    actual data to be written was extracted (elsewhere) from a <code>spec</code><footnote>
+      <para><link xlink:href="http://certif.com/spec.html"
+        ><code>http://certif.com/spec.html</code></link></para>
+    </footnote> data file and read as a text block from a file by the Python source code. </para>
+  
+  <para>The data shown in <xref linkend="Example-H5py-Data"/> will be written to the NeXus HDF5 file
+    using the only two required NeXus objects <code>NXentry</code> and <code>NXdata</code>.  The
+    data model is identical to the one in the <link xlink:href="#fig.simple-example">Introduction to
+      Volume I</link>) except that the names will be different, as shown below:
+    <table role="small" xml:id="table.Example-H5py-DataModel">
+      <title>
+        NeXus Data Model
+      </title>
+      <tgroup cols="2" align="center" colsep="1" rowsep="1">
+        <thead>
+          <row>
+            <entry><?dblatex bgcolor="[gray]{0.8}"?>from Introduction</entry>
+            <entry><?dblatex bgcolor="[gray]{0.8}"?>our h5py example</entry>
+          </row>
+        </thead>
+        <tbody>
+          <row>
+            <entry>
+              <mediaobject>
+                <imageobject>
+                  <imagedata fileref="img/Simple.png" width="250pt" scalefit="1"/>
+                </imageobject>
+              </mediaobject>
+            </entry>
+            <entry>
+              <programlisting linenumbering="numbered"
+                ><xi:include href="examples/h5py/data-model.txt" parse="text"
+                /></programlisting>
+            </entry>
+          </row>
+        </tbody>
+      </tgroup>
+    </table>
+  </para>
+  
   <figure xml:id="Example-H5py-Plot">
-     <title>plot of our <emphasis>mr_scan</emphasis></title>
-     <mediaobject>
-       <imageobject>
-   	 <imagedata fileref="examples/h5py/s00008.png" width="300pt" scalefit="1"/>
-       </imageobject>
-     </mediaobject>
-   </figure>
+    <title>plot of our <emphasis>mr_scan</emphasis></title>
+    <mediaobject>
+      <imageobject>
+        <imagedata fileref="examples/h5py/s00008.png" width="300pt" scalefit="1"/>
+      </imageobject>
+    </mediaobject>
+  </figure>
   <example xml:id="Example-H5py-Data">
-     <title>two-column data for our <emphasis>mr_scan</emphasis></title>
-     <programlisting linenumbering="numbered"
+    <title>two-column data for our <emphasis>mr_scan</emphasis></title>
+    <programlisting linenumbering="numbered"
        ><xi:include href="examples/h5py/input.dat" parse="text"
        /></programlisting>
-   </example>
-
+  </example>
+  
   <section xml:id="Example-H5py-Writing">
     <title>Writing the HDF5 file</title>
     <para> In the main code section of <link xlink:href="#Example-H5py-BasicWriter"
-          ><code>BasicWriter.py</code></link>, a current time stamp is written in the format of
-        <emphasis>ISO 8601</emphasis>. Then the data (<code>mr</code> is similar to "two_theta" and
-        <code>I00</code> is similar to "counts") is collated into Python lists. Note that we
-	convert string representations of the data to 
-	<code>float()</code> since the <code>h5py</code> package will
-      automatically handle all the data type instructions. </para>
+      ><code>BasicWriter.py</code></link>, a current time stamp is written in the format of
+      <emphasis>ISO 8601</emphasis>. Then the data (<code>mr</code> is similar to "two_theta" and
+      <code>I00</code> is similar to "counts") is collated into Python lists. Note that we convert
+      string representations of the data to <code>float()</code> and <code>int()</code> since the
+      <code>h5py</code> package will automatically handle all the data type instructions. </para>
     <para> Next, the data is read from the file. The code assumes two points per line, separated by
-        <emphasis>white space</emphasis>. </para>
+      <emphasis>white space</emphasis>. </para>
     <para> The new HDF5 file is opened (and created if not already existing) for writing with the
       command <code>f = h5py.File(fileName, "w")</code>. The common NeXus attributes are set next.
       Then, with calls to <code>create_dataset()</code>, <code>h5py</code> creates the
-        <code>NXentry</code> and <code>NXdata</code> groups. Since we are not using the NAPI, our
+      <code>NXentry</code> and <code>NXdata</code> groups. Since we are not using the NAPI, our
       code must create and set the <code>NX_class</code> attribute on each group. <note>
         <para> We want to create the desired structure of
-            <code>/entry:NXentry/mr_scan:NXdata/</code>. First we call <code>nxentry =
+          <code>/entry:NXentry/mr_scan:NXdata/</code>. First we call <code>nxentry =
             f.create_group("entry")</code> to create the <code>NXentry</code> group called
-            <code>entry</code> at the root level. Then, we call <code>nxdata =
+          <code>entry</code> at the root level. Then, we call <code>nxdata =
             nxentry.create_group("mr_scan")</code> to create the <code>NXentry</code> group called
-            <code>entry</code> as a child of the <code>NXentry</code> group. </para>
+          <code>entry</code> as a child of the <code>NXentry</code> group. </para>
       </note>
     </para>
-    <para> Next, we call the <code>h5py</code>'s <code>create_dataset()</code> method to create
-      containers for each of our columns of data. We define the engineering units as a standard
-      NeXus attribute. Since a default plot of our data would be <code>I00</code> vs.
-        <code>mr</code>, we add NeXus attributes to indicate either <code>primary</code> or
-        <code>signal</code>.</para>
+    <para> Next, we call <code>create_dataset()</code> method from <code>h5py</code> to create
+      containers for each of our columns of data. The HDF5 data type will be set by
+      <code>h5py</code>.We define the engineering units as a standard NeXus attribute. Since a
+      default plot of our data would be <code>I00</code> vs. <code>mr</code>, we add NeXus
+      attributes to indicate either <code>primary</code> or <code>signal</code>. We also add a
+      <code>NAPItype</code> attribute but this may not be necessary. (For datasets with string
+      values, we would use a different command to construct the <code>NAPItype</code>
+      attribute.)</para>
     <para> Finally, we <emphasis>must</emphasis> remember to call <code>f.close()</code> or we might
       corrupt the file when the program quits. </para>
-
+    
     <example xml:id="Example-H5py-BasicWriter">
       <title><citetitle>BasicWriter.py</citetitle>: Write a NeXus HDF5 file using Python with
         h5py</title>
@@ -85,13 +115,13 @@
         /></programlisting>
     </example>
   </section>
-
-
+  
+  
   <section xml:id="Example-H5py-Reading">
     <title>Reading the HDF5 file</title>
-
+    
     <para> The file reader, <link xlink:href="#Example-H5py-Reader"
-        ><code>BasicReader.py</code></link>, 
+      ><code>BasicReader.py</code></link>, 
       is very simple since the bulk of the work is done by <code>h5py</code>.
       Our code opens the HDF5 we wrote above, 
       prints the HDF5 attributes from the file, 
@@ -101,15 +131,13 @@
       Of course, real code might add some error-handling and 
       extracting other useful stuff from the file. 
     </para> 
-      <note>
-      <para>
-        See that we identified each of the two datasets using HDF5 absolute path
-	references (just using the group and dataset names).  Also, while coding this example,
-	we were reminded that HDF5 is sensitive to upper or lowercase.  That is,
-	<code>I00</code> is not the same is <code>i00</code>.
-      </para>
-      </note>
-
+    <note>
+      <para> See that we identified each of the two datasets using HDF5 absolute path references
+        (just using the group and dataset names). Also, while coding this example, we were reminded
+        that HDF5 is sensitive to upper or lowercase. That is, <code>I00</code> is not the same is
+        <code>i00</code>. </para>
+    </note>
+    
     <example xml:id="Example-H5py-Reader">
       <title><citetitle>BasicReader.py</citetitle>: Read a NeXus HDF5 file using Python with
         h5py</title>
@@ -119,7 +147,7 @@
     </example>
     <para>Output from <code>BasicReader.py</code> is shown in <xref
       linkend="Example-H5py-Output"/>. </para>
-
+    
     <example xml:id="Example-H5py-Output">
       <title>Output from <code>BasicReader.py</code></title>
       <programlisting linenumbering="numbered"
@@ -127,6 +155,5 @@
         /></programlisting>
     </example>
   </section>
-
 
 </section>
