@@ -179,6 +179,7 @@ NeXusManual.html : docbook
 	  --stringparam callout.graphics.path "img/callouts/" \
 	  $(DBXSL)/html/docbook.xsl \
 	  NeXusManual.xml
+	sed -i -e 's/\o240/ /g' $@
 
 NeXusManual_one_chunk.html : docbook
 	xsltproc --xinclude \
@@ -187,6 +188,7 @@ NeXusManual_one_chunk.html : docbook
 	  $(DBXSL)/html/onechunk.xsl \
 	  NeXusManual.xml
 	mv index.html $@
+	sed -i -e 's/\o240/ /g' $@
 
 html/index.html : docbook
 	[ -d html ] || mkdir html
@@ -195,7 +197,8 @@ html/index.html : docbook
 	  --stringparam use.extensions 0 \
 	  --stringparam callout.graphics.path "../img/callouts/" \
 	  $(DBXSL)/html/chunk.xsl \
-	  ../NeXusManual.xml; )
+	  ../NeXusManual.xml; \
+	for i in *.html; do sed -i -e 's/\o240/ /g' $$i; done; )
 
 ###############################################################################
 
