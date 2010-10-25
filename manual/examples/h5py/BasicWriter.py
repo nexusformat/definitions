@@ -37,12 +37,11 @@ nxdata.attrs["NX_class"] = "NXdata"   # identify NeXus base class
 
 mr = nxdata.create_dataset("mr", data=data['mr'])
 mr.attrs['units'] = "degrees"
-mr.attrs['primary'] = "1"    # tell NeXus this is X axis for plotting
 
 i00 = nxdata.create_dataset("I00", data=data['I00'])
 i00.attrs['units'] = "counts"
-i00.attrs['signal'] = "1"    # tell NeXus this is Y axis for plotting
+i00.attrs['signal'] = "1"    # Y axis for default plot
+i00.attrs['axes'] = "mr"     # default plot with this as X axis
 
-# be CERTAIN to close the file
-f.close()
+f.close()	# be CERTAIN to close the file
 print "wrote file:", fileName
