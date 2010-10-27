@@ -101,7 +101,11 @@ Usage:
             <xsl:element name="para">
                 The text and figures of this section have been auto-generated from the 
                 documentation and structures found in the
-                XML Schema file (nxdl.xsd) that defines the rules for NXDL files.
+                XML Schema file (<code>nxdl.xsd</code>) that defines the rules for NXDL files.
+                It could also use some proofreading about the <code>type</code> attributes using
+                NAPI type or the list of NXDL data types from
+                <code>nxdlTypes.xsd</code>
+                and shown in the table later in this section
             </xsl:element>
                 
             <xsl:apply-templates select="xsd:schema"/>
