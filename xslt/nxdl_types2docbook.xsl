@@ -72,6 +72,11 @@ Usage:
                                    <xslt:element name="literal">
                                        <xslt:value-of select="@name"/>
                                    </xslt:element>
+                                   <indexterm>
+                                       <primary>NXDL</primary>
+                                       <secondary>data types</secondary>
+                                       <tertiary><xslt:value-of select="@name"/></tertiary>
+                                   </indexterm>
                                </xslt:element>
                                <xslt:element name="entry">
                                    <xslt:value-of select="xsd:annotation/xsd:documentation"/>

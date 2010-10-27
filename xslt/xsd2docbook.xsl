@@ -100,7 +100,12 @@ Usage:
             <xsl:element name="title">Structures of the NXDL language</xsl:element>
             <xsl:element name="para">
                 The text and figures of this section have been auto-generated from the 
-                documentation and structures found in the
+                documentation and structures
+                <indexterm>
+                    <primary>NXDL</primary>
+                    <secondary>structures</secondary>
+                </indexterm>
+                found in the
                 XML Schema file (<code>nxdl.xsd</code>) that defines the rules for NXDL files.
             </xsl:element>
                 
@@ -138,11 +143,15 @@ Usage:
                 /></code> structure</xsl:element>
             <!-- first, the element documentation -->
             <xsl:apply-templates select="xsd:annotation/xsd:documentation" mode="typeDocs">
-                <!-- TODO Don't forget the index entries -->
                 <xsl:with-param name="short"
                     ><xsl:value-of select="$short"
                     /></xsl:with-param>
             </xsl:apply-templates>
+            <indexterm>
+                <primary>NXDL</primary>
+                <secondary>structures</secondary>
+                <tertiary><xsl:value-of select="$short" /></tertiary>
+            </indexterm>
             <!-- now the attributes' documentation -->
             <xsl:choose>
                 <xsl:when test="$short='field'">
