@@ -78,6 +78,7 @@ DYNAMIC_DOCBOOK_SECTIONS += classes/ContributedClassSections.xml
 DYNAMIC_DOCBOOK_SECTIONS += types.xml
 DYNAMIC_DOCBOOK_SECTIONS += units.xml
 DYNAMIC_DOCBOOK_SECTIONS += nxdl_desc.xml
+DYNAMIC_DOCBOOK_SECTIONS += nxdl_xsd.xml
 DYNAMIC_DOCBOOK_SECTIONS += subtitle.xml
 
 BUILT_NEXUSMANUAL  = NeXusManual.pdf
@@ -151,6 +152,10 @@ units.xml : ../nxdlTypes.xsd Makefile $(XSLT_PATH)/nxdl_units2docbook.xsl
 
 nxdl_desc.xml : ../nxdl.xsd Makefile $(XSLT_PATH)/nxdl_desc2docbook.xsl
 	xsltproc $(XSLT_PATH)/nxdl_desc2docbook.xsl ../nxdl.xsd > $@
+	@echo "(Re)created $@"
+
+nxdl_xsd.xml : ../nxdl.xsd Makefile $(XSLT_PATH)/xsd2docbook.xsl
+	xsltproc $(XSLT_PATH)/xsd2docbook.xsl ../nxdl.xsd > $@
 	@echo "(Re)created $@"
 
 
