@@ -102,10 +102,6 @@ Usage:
                 The text and figures of this section have been auto-generated from the 
                 documentation and structures found in the
                 XML Schema file (<code>nxdl.xsd</code>) that defines the rules for NXDL files.
-                It could also use some proofreading about the <code>type</code> attributes using
-                NAPI type or the list of NXDL data types from
-                <code>nxdlTypes.xsd</code>
-                and shown in the table later in this section
             </xsl:element>
                 
             <xsl:apply-templates select="xsd:schema"/>
@@ -124,6 +120,7 @@ Usage:
         
         <xsl:for-each select="xsd:complexType">
             <xsl:if test="contains(./@name,'Type')">
+                <!-- TODO Don't forget the index entries -->
                 <xsl:call-template name="doSection">
                     <xsl:with-param name="short"
                         ><xsl:value-of select="substring-before(./@name,'Type')"
@@ -141,6 +138,7 @@ Usage:
                 /></code> structure</xsl:element>
             <!-- first, the element documentation -->
             <xsl:apply-templates select="xsd:annotation/xsd:documentation" mode="typeDocs">
+                <!-- TODO Don't forget the index entries -->
                 <xsl:with-param name="short"
                     ><xsl:value-of select="$short"
                     /></xsl:with-param>
@@ -155,7 +153,8 @@ Usage:
                 <xsl:otherwise>
                   <xsl:if test="count(xsd:attribute)">
                       <xsl:element name="variablelist">
-                         <xsl:apply-templates select="xsd:attribute" mode="attributeDocs">
+                          <xsl:apply-templates select="xsd:attribute" mode="attributeDocs">
+                              <!-- TODO Don't forget the index entries -->
                              <xsl:with-param name="short"
                                  ><xsl:value-of select="$short"
                                  /></xsl:with-param>
@@ -175,6 +174,7 @@ Usage:
             /></xsl:element>
         <!-- show the structure diagram -->
         <xsl:choose>
+            <!-- TODO Don't forget the index entries -->
             <xsl:when test="$short='dims'"/><!-- do nothing -->
             <xsl:when test="$short='enumItem'"/><!-- do nothing -->
             <xsl:otherwise>
@@ -204,6 +204,7 @@ Usage:
     
     <xsl:template match="xsd:documentation" mode="attributeDocs">
         <xsl:param name="short"/>
+        <!-- TODO Don't forget the index entries -->
         <varlistentry>
             <term>@<xsl:value-of 
                 select="parent::xsd:annotation/parent::xsd:attribute/@name"
