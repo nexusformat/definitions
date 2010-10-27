@@ -40,8 +40,13 @@ mr.attrs['units'] = "degrees"
 
 i00 = nxdata.create_dataset("I00", data=data['I00'])
 i00.attrs['units'] = "counts"
-i00.attrs['signal'] = "1"    # Y axis for default plot
-i00.attrs['axes'] = "mr"     # default plot with this as X axis
+
+# NeXus wants to provide a default plot
+# this is the preferred method to describe the axes
+i00.attrs['signal'] = "1"    # indicates the Y axis
+i00.attrs['axes'] = "mr"     # name "mr" as X axis
+mr.attrs['long_name'] = "USAXS mr (degrees)"
+i00.attrs['long_name'] = "USAXS I00 (counts)"
 
 f.close()	# be CERTAIN to close the file
 print "wrote file:", fileName
