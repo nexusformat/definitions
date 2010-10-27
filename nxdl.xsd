@@ -55,8 +55,12 @@
 	<xs:element name="definition" type="nx:definitionType">
 		<xs:annotation>
 			<xs:documentation xmlns="http://docbook.org/ns/docbook">
-				The root element of <emph>all</emph> NXDL definitions is
-				<code>definition</code>.
+				A <code>definition</code> element
+				is the <code>group</code> at the
+				root of every NXDL specification.
+				It may <emphasis>only</emphasis> appear
+				at the root of an NXDL file and must only appear once
+				for the NXDL to be <emphasis>well-formed</emphasis>.
 			</xs:documentation>
 		</xs:annotation>
 	</xs:element>
@@ -137,21 +141,77 @@
 					as children of the <code>definition</code> element.
 				</xs:documentation>
 			</xs:annotation>
-		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded" />
-		<xs:attribute name="name" use="required" type="nx:validItemName" />
-		<xs:attribute name="version" use="required">
+		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
 			<xs:annotation>
 				<xs:documentation xmlns="http://docbook.org/ns/docbook">
-					(<emph role="bold">required</emph>) Version of <emph>this</emph> NXDL definition.  
-					Each NXDL specification
-					may have a different version to facilitate software maintenance.
+					... no documentation yet ...
+				</xs:documentation>
+			</xs:annotation>
+		</xs:group>
+		<xs:attribute name="name" use="required" type="nx:validItemName">
+			<xs:annotation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					(<emphasis role="bold">required</emphasis>) 
+					The <code>name</code> of this NXDL file (without the file extensions).
+					The name must be unique amongst all the NeXus base class, application,
+					and contributed definitions.  For the class to be adopted by the NIAC,
+					the first two letters must be "NX" (in uppercase).  Any other use
+					must <emphasis>not</emphasis> begin with "NX" in any combination
+					of upper or lower case.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="type" use="required" type="nx:definitionTypeAttr" />
-		<xs:attribute name="extends" use="optional" />
-		<xs:attribute name="restricts" use="optional" />
-		<xs:attribute name="svnid" use="optional"/>
+		<xs:attribute name="version" use="required">
+			<xs:annotation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					(<emphasis role="bold">required</emphasis>) 
+					Version of <emphasis>this</emphasis> NXDL definition.  
+					Each NXDL specification
+					may have a different version to facilitate software maintenance.
+					This value is modified by the person who edits this file when
+					this NXDL specification has changed significantly (in a way that
+					downstream software should be aware).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="type" use="required" type="nx:definitionTypeAttr">
+			<xs:annotation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					(<emphasis role="bold">required</emphasis>) 
+					Must be <code>type="group"</code>
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="extends" use="optional">
+			<xs:annotation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					The <code>extends</code> attribute allows this definition
+					to <emphasis>subclass</emphasis> from another NXDL,
+					otherwise <code>extends="NXobject"</code> should be used.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="restricts" use="optional">
+			<xs:annotation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					The <code>restricts</code> attribute is a flag to the data validation.
+					When <code>restricts="1"</code>, any non-standard component found
+					(and checked for validity aginst this NXDL specification)
+					in a NeXus data file will be flagged as an error.  If the
+					<code>restricts</code> attribute is not present, any such situations
+					will produce a warning.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="svnid" use="optional">
+			<xs:annotation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					The identifier string from the subversion revision control system.
+					This reports the time stamp and the revision number of this file.
+					(Updated automatically, unlike the <code>version</code> attribute.)
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 		<xs:attribute name="category" use="required">
 			<xs:annotation>
 				<xs:documentation xmlns="http://docbook.org/ns/docbook">
@@ -173,44 +233,6 @@
 		</xs:attribute>
 	</xs:complexType>
 	
-	<xs:complexType name="attributeType">
-		<xs:annotation>
-			<xs:documentation>
-				Any new group or field may expect or require some common attributes.
-			</xs:documentation>
-		</xs:annotation>
-		<xs:sequence>
-			<xs:element name="doc" type="nx:docType" minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>
-						Description of this specification.
-					</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-			<xs:element name="enumeration" type="nx:enumerationType"
-				minOccurs="0">
-				<xs:annotation>
-					<xs:documentation>An enumeration specifies the values to be used.</xs:documentation>
-				</xs:annotation>
-			</xs:element>
-		</xs:sequence>
-		<xs:attribute name="name" use="required" type="nx:validItemName">
-			<xs:annotation>
-				<xs:documentation>
-					Unique identifier string (within the enclosing group) for this entity.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="type" type="nx:primitiveType" default="NX_CHAR">
-			<xs:annotation>
-				<xs:documentation>
-					For group specifications, the class name.
-					For field specifications, the NAPI type.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-	</xs:complexType>
-
 	<xs:simpleType name="definitionTypeAttr">
 		<xs:annotation>
 			<xs:documentation xmlns="http://docbook.org/ns/docbook">
@@ -222,6 +244,78 @@
 			<xs:enumeration value="definition" />
 		</xs:restriction>
 	</xs:simpleType>
+	
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	
+	<xs:complexType name="groupType">
+		<xs:annotation>
+			<xs:documentation>
+				A group element refers to the definition of 
+				an existing NX object or a locally-defined component.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
+			<xs:annotation>
+				<xs:documentation>
+					A group may contain other groups.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:group>
+		<xs:attribute name="type" use="required" type="nx:validNXClassName">
+			<xs:annotation>
+				<xs:documentation>
+					The <code>type</code> attribute <emphasis>must</emphasis> 
+					contain the name of a 
+					NeXus base class, application definition, or contributed definition.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="name" use="optional" type="nx:validItemName">
+			<xs:annotation>
+				<xs:documentation>
+					A particular scientific application may expect
+					a name of a group element, it is helpful but not
+					required to specify the <code>name</code>
+					attribute in the NXDL file.
+					It is suggested to always specify a <code>name</code>
+					to avoid ambiguity.  It is also suggested to 
+					derive the <code>name</code> from the 
+					type, using an additional number suffix as necessary.
+					For example, consider a data file with only one 
+					<code>NXentry</code>.  The suggested default 
+					<code>name</code> would
+					be <code>entry</code>.  For a data file with two or more
+					<code>NXentry</code> groups, the suggested names would be
+					<code>entry1</code>, <code>entry2</code>, ...
+					Alternatively, a scientific application such as small-angle 
+					scattering might require
+					a different naming procedure; two different <code>NXaperture</code> groups
+					might be given the names <code>beam-defining slit</code>
+					and <code>scatter slit</code>.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="minOccurs" use="optional" default="0" type="xs:nonNegativeInteger">
+			<xs:annotation>
+				<xs:documentation>
+					Minimum number of times this group is allowed to be present within its
+					parent group.  Note each group must have a <code>name</code> attribute
+					that is unique among all <code>group</code> and <code>field</code>
+					declarations within a common parent group.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="maxOccurs" use="optional"  default="unbounded">
+			<xs:annotation>
+				<xs:documentation>
+					Maximum number of times this group is allowed to be present within its
+					parent group.  Note each group must have a <code>name</code> attribute
+					that is unique among all <code>group</code> and <code>field</code>
+					declarations within a common parent group.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
 
 	<xs:group name="groupGroup">
 		<xs:annotation>
@@ -297,247 +391,6 @@
 	</xs:simpleType>
 
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
-	<xs:complexType name="groupType">
-		<xs:annotation>
-			<xs:documentation>
-				A group element refers to the definition of 
-				an existing NX object or a locally-defined component.
-			</xs:documentation>
-		</xs:annotation>
-		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
-			<xs:annotation>
-				<xs:documentation>
-					A group may contain other groups.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:group>
-		<xs:attribute name="type" use="required" type="nx:validNXClassName">
-			<xs:annotation>
-				<xs:documentation>
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="name" use="optional" type="nx:validItemName">
-			<xs:annotation>
-				<xs:documentation>
-					A particular scientific application may expect
-					a name of a group element, it is helpful but not
-					required to specify the <code>name</code>
-					attribute in the NXDL file.
-					It is suggested to always specify a <code>name</code>
-					to avoid ambiguity.  It is also suggested to 
-					derive the <code>name</code> from the 
-					type, using an additional number suffix as necessary.
-					For example, consider a data file with only one 
-					<code>NXentry</code>.  The suggested default 
-					<code>name</code> would
-					be <code>entry</code>.  For a data file with two or more
-					<code>NXentry</code> groups, the suggested names would be
-					<code>entry1</code>, <code>entry2</code>, ...
-					Alternatively, a scientific application such as small-angle 
-					scattering might require
-					a different naming procedure; two different <code>NXaperture</code> groups
-					might be given the names <code>beam-defining slit</code>
-					and <code>scatter slit</code>.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="minOccurs" use="optional" default="0" type="xs:nonNegativeInteger">
-			<xs:annotation>
-				<xs:documentation>
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-		<xs:attribute name="maxOccurs" use="optional"  default="unbounded">
-			<xs:annotation>
-				<xs:documentation>
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-	</xs:complexType>
-
-	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
-	<xs:complexType name="dimsType">
-		<!-- ===================================================================== -->
-		<!-- ====================== BEGIN MAJOR COMMENT ========================== -->
-		<!-- ===================================================================== -->
-		<!--
-Peter Peterson writes:
-			Here is a model:
-			<field name="data">
-			    <dimensions size="3"/>
-			    ...
-			</field><field name="time-of-flight">
-				<dimensions size="1">
-					<dim index="1" ref="data" refindex="3" incr="1"/>
-				</dimensions>
-				...
-			</field>
-			
-			In old terms this would make data[i,j,k] and time-of-flight[k+1]. 
-			We need to get to the stage where people do not
-			need to read a manual to understand an existing NXDL.
-
-+++++++++++++++++++++++++++++++++++++
-then Freddie Akeroyd writes:
-I think we have three cases to consider here:
-(1) specifying an explicit value for a dimension
-(2) specifying a dimension to be the same size as that of an array
-already defined elsewhere (optionally +- a value)
-(3) specifying a dimension to be the same as a data value defined
-elsewhere (e.g. num_scan_points, optionally +- a value)
-
-For (1) how about
-
-<dim index="1" value="3" />
-
-For (2) how about
-
-<field name="data">
-<dimensions size="3">
-<dim index="1" label="num_time_channels"/>
-< !- - dimensions with no constraints or labels do not need to be mentioned - -  >
-</dimensions>
-</field>
-<field name="time_of_flight">
-<dimensions size="1">
-<dim index="1" ref="num_time_channels" incr="1"/>
-</dimensions>
-...
-</field>
-
-For (3) how about
-
-<field name="num_scan_points" type="NX_INT"
-label="nscanpt" />
-<field name="data">
-<dimensions size="3">
-<dim index="1" label="num_time_channels"/>
-<dim index="3" ref="nscanpt"/>		    
-</dimensions>
-</field>
-
-Notes on dim tag:
-
-use 1 for first element in a sequence, +- to indicate sequence direction
-(or we could use an attribute instead)
-			
-<dim index="1">   ! refers to first index (fastest varying)
-<dim index="-1">  ! refers to last index (slowest varying)
-
-<dim label="i">   ! we should constrain labels to be unique within the
-file and thus could be referred to 
-from any location. This would mean that "i"
-could not be used everywhere as a label, 
-but forcing the use of better names like
-"num_time_channels" makes things clearer. In the 
-first instance by making label an xs:ID and
-ref an xs:IDREF we can enforce "something" in
-label="something" to always be unique and "some_ref" in ref="some_ref"
-to always point to a 
-valid "label" (We may later want to use xs:key
-/ xs:keyref to do this if we needed a second
-set of unique labels for another purpose)
-						
-+++++++++++++++++++++++++++++++++++++
-then Mark Koennecke writes:
-I think the dimensions encoding is tightly integrated with the algorithm we
-use to validate them later on. I thought about something like:
-
-<dimensions size="3">
-<dim level="0" value="25"/>
-<dim level="1" value="np"/>
-<dim level="2" path="/entry/blablabla/somefield" dim="0"/>
-</dimensions>
-The first case is trivial: validate against a number
-
-The general idea is that the dimensions validator would initialise np 
-the first place it comes up against it and
-checks against the value ever after. We must allow expressions like np+1 
-here.
-
-The third syntax is to explicitly address a specific dimension of 
-another variable.
-
-		-->
-		
-		<!-- ===================================================================== -->
-		<!-- ======================= END MAJOR COMMENT =========================== -->
-		<!-- ===================================================================== -->
-		<xs:annotation>
-			<xs:documentation>dimensions of a data element in a NeXus file</xs:documentation>
-		</xs:annotation>
-		<xs:sequence>
-			<xs:element name="dim" minOccurs="0" maxOccurs="unbounded">
-				<xs:complexType>
-					<xs:attribute name="index" type="nx:NX_CHAR">
-						<xs:annotation>
-							<xs:documentation>Number indicating which axis (subscript) is 
-								being described, ranging from 1 up to <code>rank</code> (rank of the 
-								data structure).  For example, given an array 
-								<code>A[i,j,k]</code>, 
-								<code>index="1"</code> would refer to the <code>i</code> axis (subscript).</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="value" type="nx:NX_CHAR">
-						<xs:annotation>
-							<xs:documentation>Length (number of values) of this axis.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="ref" type="nx:NX_CHAR">
-						<xs:annotation>
-							<xs:documentation>The dimension specification is the same as 
-								that in the <code>ref</code> field, specified either by a relative path, 
-								such as <code>polar_angle</code> or <code>../Qvec</code> or absolute path, such as
-								<code>/entry/path/to/follow/to/ref/field</code>.
-							</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="refindex" type="nx:NX_CHAR">
-						<xs:annotation>
-							<xs:documentation>The dimension specification is the same as 
-								the <code>refindex</code> axis within the <code>ref</code> field.
-								Requires <code>ref</code> attribute to be present.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-					<xs:attribute name="incr" type="nx:NX_CHAR">
-						<xs:annotation>
-							<xs:documentation>The dimension specification is related to
-								the <code>refindex</code> axis within the <code>ref</code> field by an 
-								offset of <code>incr</code>.  Requires <code>ref</code> and <code>refindex</code>
-								attributes to be present.</xs:documentation>
-						</xs:annotation>
-					</xs:attribute>
-				</xs:complexType>
-			</xs:element>
-		</xs:sequence>
-		<xs:attribute name="rank" type="nx:NX_CHAR">
-			<xs:annotation>
-				<xs:documentation>Rank (number of dimensions) of the data structure.  
-					For example: <code>a[5]</code> has <code>rank="1"</code> while 
-					<code>b[8,5,6,4]</code> has <code>rank="4"</code>.  
-					See <code>http://en.wikipedia.org/wiki/Rank_(computer_programming)</code> 
-					for more details.</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
-	</xs:complexType>
-	
-	<xs:complexType name="linkType">
-		<xs:annotation>
-			<xs:documentation>A link to another item.</xs:documentation>
-		</xs:annotation>
-		<xs:complexContent>
-			<xs:extension base="nx:basicComponent">
-				<xs:attribute name="target" use="required" type="nx:validTargetName">
-					<xs:annotation>
-						<xs:documentation>absolute path to element target</xs:documentation>
-					</xs:annotation>					
-				</xs:attribute>
-			</xs:extension>
-		</xs:complexContent>
-	</xs:complexType>
 		
 	<xs:complexType name="fieldType">
 		<xs:annotation>
@@ -682,6 +535,45 @@ another variable.
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	
+	<xs:complexType name="attributeType">
+		<xs:annotation>
+			<xs:documentation>
+				Any new group or field may expect or require some common attributes.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="doc" type="nx:docType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>
+						Description of this specification.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="enumeration" type="nx:enumerationType"
+				minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>An enumeration specifies the values to be used.</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" use="required" type="nx:validItemName">
+			<xs:annotation>
+				<xs:documentation>
+					Unique identifier string (within the enclosing group) for this entity.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="type" type="nx:primitiveType" default="NX_CHAR">
+			<xs:annotation>
+				<xs:documentation>
+					For <code>group</code> specifications, the class name.
+					For <code>field</code> or <code>attribute</code> specifications, 
+					the NAPI type.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
 
 	<xs:simpleType name="nonNegativeUnbounded">
 		<xs:annotation>
@@ -704,10 +596,26 @@ another variable.
 
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	
+	<xs:complexType name="linkType">
+		<xs:annotation>
+			<xs:documentation>A link to another item.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="nx:basicComponent">
+				<xs:attribute name="target" use="required" type="nx:validTargetName">
+					<xs:annotation>
+						<xs:documentation>absolute path to element target</xs:documentation>
+					</xs:annotation>					
+				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
 	<xs:complexType name="docType" mixed="true">
 		<xs:annotation>
 			<xs:documentation xmlns="http://docbook.org/ns/docbook">
 				This is the definition of optional documentation for any specification.
+				Refer to examples in the NeXus base class NXDL files such as <code>NXdata</code>.
 				Be sure to use the DocBook namespace if the documentation will use any DocBook formatting elements:
 				<code>xmlns="http://docbook.org/ns/docbook"</code>
 			</xs:documentation>
@@ -721,6 +629,8 @@ another variable.
 		<xs:annotation>
 			<xs:documentation>
 				An enumeration restricts the values allowed for a specification.
+				Each value is specified using an <code>enumItem</code>, such as:
+				<code>enumItem="Ta"</code>
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -731,6 +641,7 @@ another variable.
 	<xs:complexType name="enumItemType">
 		<xs:annotation>
 			<xs:documentation xmlns="http://docbook.org/ns/docbook">
+				Defines the value of one selection for an <code>enumeration</code> list.
 				Each enumerated item must have a value (it cannot have an empty text node).
 			</xs:documentation>
 		</xs:annotation>
@@ -748,7 +659,179 @@ another variable.
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="value" use="required"/>
+		<xs:attribute name="value" use="required">
+			<xs:annotation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					The value of <code>value</code> of an <code>enumItem</code>
+					is defined as an attribute rather than a name.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
+	
+	<xs:complexType name="dimsType">
+		<!-- ===================================================================== -->
+		<!-- ====================== BEGIN MAJOR COMMENT ========================== -->
+		<!-- ===================================================================== -->
+		<!--
+			Peter Peterson writes:
+			Here is a model:
+			<field name="data">
+			<dimensions size="3"/>
+			...
+			</field><field name="time-of-flight">
+			<dimensions size="1">
+			<dim index="1" ref="data" refindex="3" incr="1"/>
+			</dimensions>
+			...
+			</field>
+			
+			In old terms this would make data[i,j,k] and time-of-flight[k+1]. 
+			We need to get to the stage where people do not
+			need to read a manual to understand an existing NXDL.
+			
+			+++++++++++++++++++++++++++++++++++++
+			then Freddie Akeroyd writes:
+			I think we have three cases to consider here:
+			(1) specifying an explicit value for a dimension
+			(2) specifying a dimension to be the same size as that of an array
+			already defined elsewhere (optionally +- a value)
+			(3) specifying a dimension to be the same as a data value defined
+			elsewhere (e.g. num_scan_points, optionally +- a value)
+			
+			For (1) how about
+			
+			<dim index="1" value="3" />
+			
+			For (2) how about
+			
+			<field name="data">
+			<dimensions size="3">
+			<dim index="1" label="num_time_channels"/>
+			< !- - dimensions with no constraints or labels do not need to be mentioned - -  >
+			</dimensions>
+			</field>
+			<field name="time_of_flight">
+			<dimensions size="1">
+			<dim index="1" ref="num_time_channels" incr="1"/>
+			</dimensions>
+			...
+			</field>
+			
+			For (3) how about
+			
+			<field name="num_scan_points" type="NX_INT"
+			label="nscanpt" />
+			<field name="data">
+			<dimensions size="3">
+			<dim index="1" label="num_time_channels"/>
+			<dim index="3" ref="nscanpt"/>		    
+			</dimensions>
+			</field>
+			
+			Notes on dim tag:
+			
+			use 1 for first element in a sequence, +- to indicate sequence direction
+			(or we could use an attribute instead)
+			
+			<dim index="1">   ! refers to first index (fastest varying)
+			<dim index="-1">  ! refers to last index (slowest varying)
+			
+			<dim label="i">   ! we should constrain labels to be unique within the
+			file and thus could be referred to 
+			from any location. This would mean that "i"
+			could not be used everywhere as a label, 
+			but forcing the use of better names like
+			"num_time_channels" makes things clearer. In the 
+			first instance by making label an xs:ID and
+			ref an xs:IDREF we can enforce "something" in
+			label="something" to always be unique and "some_ref" in ref="some_ref"
+			to always point to a 
+			valid "label" (We may later want to use xs:key
+			/ xs:keyref to do this if we needed a second
+			set of unique labels for another purpose)
+			
+			+++++++++++++++++++++++++++++++++++++
+			then Mark Koennecke writes:
+			I think the dimensions encoding is tightly integrated with the algorithm we
+			use to validate them later on. I thought about something like:
+			
+			<dimensions size="3">
+			<dim level="0" value="25"/>
+			<dim level="1" value="np"/>
+			<dim level="2" path="/entry/blablabla/somefield" dim="0"/>
+			</dimensions>
+			The first case is trivial: validate against a number
+			
+			The general idea is that the dimensions validator would initialise np 
+			the first place it comes up against it and
+			checks against the value ever after. We must allow expressions like np+1 
+			here.
+			
+			The third syntax is to explicitly address a specific dimension of 
+			another variable.
+			
+		-->
+		
+		<!-- ===================================================================== -->
+		<!-- ======================= END MAJOR COMMENT =========================== -->
+		<!-- ===================================================================== -->
+		<xs:annotation>
+			<xs:documentation>dimensions of a data element in a NeXus file</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="dim" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="index" type="nx:NX_CHAR">
+						<xs:annotation>
+							<xs:documentation>Number indicating which axis (subscript) is 
+								being described, ranging from 1 up to <code>rank</code> (rank of the 
+								data structure).  For example, given an array 
+								<code>A[i,j,k]</code>, 
+								<code>index="1"</code> would refer to the <code>i</code> axis (subscript).</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="value" type="nx:NX_CHAR">
+						<xs:annotation>
+							<xs:documentation>Length (number of values) of this axis.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="ref" type="nx:NX_CHAR">
+						<xs:annotation>
+							<xs:documentation>The dimension specification is the same as 
+								that in the <code>ref</code> field, specified either by a relative path, 
+								such as <code>polar_angle</code> or <code>../Qvec</code> or absolute path, such as
+								<code>/entry/path/to/follow/to/ref/field</code>.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="refindex" type="nx:NX_CHAR">
+						<xs:annotation>
+							<xs:documentation>The dimension specification is the same as 
+								the <code>refindex</code> axis within the <code>ref</code> field.
+								Requires <code>ref</code> attribute to be present.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+					<xs:attribute name="incr" type="nx:NX_CHAR">
+						<xs:annotation>
+							<xs:documentation>The dimension specification is related to
+								the <code>refindex</code> axis within the <code>ref</code> field by an 
+								offset of <code>incr</code>.  Requires <code>ref</code> and <code>refindex</code>
+								attributes to be present.</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="rank" type="nx:NX_CHAR">
+			<xs:annotation>
+				<xs:documentation>Rank (number of dimensions) of the data structure.  
+					For example: <code>a[5]</code> has <code>rank="1"</code> while 
+					<code>b[8,5,6,4]</code> has <code>rank="4"</code>.  
+					See <code>http://en.wikipedia.org/wiki/Rank_(computer_programming)</code> 
+					for more details.</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
 	</xs:complexType>
 	
 </xs:schema>
