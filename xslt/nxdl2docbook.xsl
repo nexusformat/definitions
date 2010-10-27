@@ -180,9 +180,9 @@ Usage:
                 <xsl:choose>
                     <xsl:when test="name()='group'">
                         <xsl:element name="link">
-                            <xsl:attribute name="xlink:href"
+                            <!--<xsl:attribute name="xlink:href"
                                     >http://www.nexusformat.org/<xsl:value-of select="@type"
-                                /></xsl:attribute>
+                                /></xsl:attribute>-->
                             <xsl:value-of select="@type"/>
                         </xsl:element>
                     </xsl:when>
@@ -342,9 +342,9 @@ Usage:
         <!-- TODO TRAC #131: need to know if base, application, or contributed before can link properly! -->
         <xsl:if test="position()>1">, </xsl:if>        <!-- comma-separated list -->
         <xsl:element name="link">
-            <xsl:attribute name="xlink:href"
+            <!--<xsl:attribute name="xlink:href"
                 >http://www.nexusformat.org/<xsl:value-of select="@type"/>
-            </xsl:attribute>
+            </xsl:attribute>-->
             <xsl:value-of select="@type"/>
         </xsl:element>
     </xsl:template>
@@ -512,7 +512,7 @@ Usage:
                     <xsl:element name="para">
                         <xsl:element name="link"
                             ><xsl:attribute name="xlink:href"
-                                >http://www.nexusformat.org/NXDL</xsl:attribute
+                                >http://download.nexusformat.org/doc/html/NXDL.html</xsl:attribute
                             >NXDL</xsl:element>
                     </xsl:element>
                 </xsl:element>
