@@ -65,6 +65,8 @@ Usage:
 ######	 an NXDL file by an XSLT transformation.    ######
 ######	 Do NOT edit this DocBook XML file.         ######
 ##########################################################
+##### $Id$
+##########################################################
 </xsl:comment>
 
  <xsl:comment><!-- NeXus license comes next -->
@@ -95,7 +97,7 @@ Usage:
     
     <xsl:template match="nx:definition">
         <xsl:element name="section"><!-- root element -->
-            <xsl:attribute name="xml:id"><xsl:value-of select="@name"/>Section</xsl:attribute>
+            <xsl:attribute name="xml:id"><xsl:value-of select="@name"/></xsl:attribute>
             <xsl:attribute name="xmlns">http://docbook.org/ns/docbook</xsl:attribute>
             <!-- 
                 These namespaces will be added to the document (by xsltproc) if they are used.
