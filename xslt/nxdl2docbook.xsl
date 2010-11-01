@@ -182,9 +182,9 @@ Usage:
                 <xsl:choose>
                     <xsl:when test="name()='group'">
                         <xsl:element name="link">
-                            <!--<xsl:attribute name="xlink:href"
-                                    >http://www.nexusformat.org/<xsl:value-of select="@type"
-                                /></xsl:attribute>-->
+                            <!-- Use Python code to build this link:
+                                Need to determine which category this group is in.
+                            -->
                             <xsl:value-of select="@type"/>
                         </xsl:element>
                     </xsl:when>
