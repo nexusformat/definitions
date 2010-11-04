@@ -3,24 +3,30 @@
 	NXimage_exchange
 		An image_exchange common exchange format
 		written in the NeXus Definition Language
+		as a NeXus "application definition"
 		based on a proposal from Chris Jacobsen.
 -->
-<definition name="NXimage_exchange" extends="NXobject" type="group" category="contributed"
-  xmlns="http://definition.nexusformat.org/nxdl/3.1"
+<definition   xmlns="http://definition.nexusformat.org/nxdl/3.1"
+  name="NXimage_exchange" 
+  extends="NXobject" 
+  type="group" 
+  category="contributed"
+  version="1.0b"
+  svnid="$Id$"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd" version="1.0b"
-  svnid="$Id$">
-  <doc>
-    Minimal format for exchange of images. Start with something simple and immediately
-      achievable: the exchange of multidimensional arrays between data analysis programs, rather
-      than storage of all relevant information from all relevant beamlines.
-  </doc>
+  xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+     Minimal format for exchange of images. Start with something simple and immediately
+       achievable: the exchange of multidimensional arrays between data analysis programs, rather
+       than storage of all relevant information from all relevant beamlines.
+    </doc>
+    
+    <!-- default type is NX_CHAR (any string representation) -->
 
-  <group type="NXentry" name="entry">
     <group type="NXdata">
-	  <doc>NeXus uses the NXData group to identify the default information to 
-	    plot.  NXentry and NXdata are the only two required groups in a NeXus 
-		data file.</doc>
+  	  <doc>NeXus uses the NXData group to identify the default information to 
+  	    plot.  NXentry and NXdata are the only two required groups in a NeXus 
+  		data file.</doc>
       <field name="image" type="NX_NUMBER">
         <doc>
           NeXus link to the actual image to show by default. Something such as
@@ -29,76 +35,55 @@
       </field>
     </group>
 
-    <group type="NXnote" name="image_exchange">
-      <doc> 
-        All the information of the <emphasis xmlns="http://docbook.org/ns/docbook">image_exchange</emphasis> format is contained in the
-        <code xmlns="http://docbook.org/ns/docbook">image_exchange:NXnote</code> group. We recognize this is different than 
-        the standard NeXus categorization.  The plan here is to remain compatible with
-        the rules of NeXus data files but to also make access to read and write
-        the information as simple as possible.
+    <field name="image" type="NX_NUMBER">
+      <doc>
+         1D array that holds the image specified by
+        <code xmlns="http://docbook.org/ns/docbook">dimensions[]</code> (for the example of 640x480 images over 120 photon energies,
+        <code xmlns="http://docbook.org/ns/docbook">image[]</code> will be a 1D array with 640x480x120=36,864,000 values). The
+          ordering scheme is to go from the “fast” on down to the slower index. That is, a 2D
+          array on an X-Y grid is stored as <code xmlns="http://docbook.org/ns/docbook">[ix=0,iy=0], [ix=1,iy=0], …, [ix=(nx-1),iy=0],
+            [ix=0,iy=1]</code> and so on. Note that because HDF5 records the type of the data
+          (float, 16 bit integer, etc.), the reading program should be able to handle reading any
+          of these data types. 
       </doc>
-      <attribute name="version" type="NX_CHAR">
-        <doc>Version string of this file format.</doc>
-        <!--  Is this optional? Should be.  -->
+      <attribute name="rank" type="NX_INT">
+        <doc>
+            (Also known as <code xmlns="http://docbook.org/ns/docbook">n_dimensions</code>) Integer that identifies the rank of "image".
+          For <code xmlns="http://docbook.org/ns/docbook">rank="1"</code>, "image" might be a spectrum.
+          For <code xmlns="http://docbook.org/ns/docbook">rank="2"</code>, "image" might be a 2-D image.
+          For <code xmlns="http://docbook.org/ns/docbook">rank="3"</code>, "image" might be a sequence of images or a volume.
+          For <code xmlns="http://docbook.org/ns/docbook">rank="4"</code>, "image" might be a hyperdimensional structure such as
+            a sequence of volumes over time or energy or a 3D array of complex numbers.
+            It is conceivable for "rank" to be greater than 4.
+          
+            By reading "rank", you know how many elements to allocate for the integer
+            array dimensions. Note that like with all HDF5 variables, the writing program can decided
+            whether this is an 8 bit integer, or a 32 bit little-endian integer, or so on; and the
+            reading program can find out how the variable was written to the file and then upon
+            reading convert it to whatever integer type the reading program wants to use. 32 bit
+            integers are suggested but not required.
+          
+        </doc>
       </attribute>
-
-      <field name="dimensions" type="NX_INT">
+      <attribute name="dimensions" type="NX_INT">
         <doc> Integer array that holds the dimensions of each of the indices. That is, a set of
           640x480 pixel images over 120 different energies or wavelengths will have
           dimensions[]=[640,480,120]. </doc>
-        <attribute name="rank" type="NX_INT">
-          <doc>
-              (Also known as <code xmlns="http://docbook.org/ns/docbook">n_dimensions</code>) Integer that identifies the rank of "image".
-            For <code xmlns="http://docbook.org/ns/docbook">rank="1"</code>, "image" might be a spectrum.
-            For <code xmlns="http://docbook.org/ns/docbook">rank="2"</code>, "image" might be a 2-D image.
-            For <code xmlns="http://docbook.org/ns/docbook">rank="3"</code>, "image" might be a sequence of images or a volume.
-            For <code xmlns="http://docbook.org/ns/docbook">rank="4"</code>, "image" might be a hyperdimensional structure such as
-              a sequence of volumes over time or energy or a 3D array of complex numbers.
-              It is conceivable for "rank" to be greater than 4.
-            
-              By reading "rank", you know how many elements to allocate for the integer
-              array dimensions. Note that like with all HDF5 variables, the writing program can decided
-              whether this is an 8 bit integer, or a 32 bit little-endian integer, or so on; and the
-              reading program can find out how the variable was written to the file and then upon
-              reading convert it to whatever integer type the reading program wants to use. 32 bit
-              integers are suggested but not required.
-            
-          </doc>
-        </attribute>
-      </field>
-
-      <field name="image" type="NX_NUMBER">
+      </attribute>
+      <attribute name="complex_index" type="NX_INT">
         <doc>
-           1D array that holds the image specified by
-          <code xmlns="http://docbook.org/ns/docbook">dimensions[]</code> (for the example of 640x480 images over 120 photon energies,
-          <code xmlns="http://docbook.org/ns/docbook">image[]</code> will be a 1D array with 640x480x120=36,864,000 values). The
-            ordering scheme is to go from the “fast” on down to the slower index. That is, a 2D
-            array on an X-Y grid is stored as <code xmlns="http://docbook.org/ns/docbook">[ix=0,iy=0], [ix=1,iy=0], …, [ix=(nx-1),iy=0],
-              [ix=0,iy=1]</code> and so on. Note that because HDF5 records the type of the data
-            (float, 16 bit integer, etc.), the reading program should be able to handle reading any
-            of these data types. 
-        </doc>
-      </field>
-
-      <!-- +++++++++++++++ optional items +++++++++++++++++++++++++++ -->
-
-      <field name="complex_index" type="NX_INT" minOccurs="0" maxOccurs="1">
-        <doc>
-		  tells what dimension holds {real,imaginary} pairs for complex numbers (dimensioning is
+          tells what dimension holds {real,imaginary} pairs for complex numbers (dimensioning is
           assumed to start at 0). If absent, or if &lt;0 or >(rank-1), it is assumed that
           the array is pure real. For a 640x480 complex array, one might have <code xmlns="http://docbook.org/ns/docbook">rank=3,
-          complex_index=0</code>, and <code xmlns="http://docbook.org/ns/docbook">dimensions[]=[2,640,480]</code>.
+            complex_index=0</code>, and <code xmlns="http://docbook.org/ns/docbook">dimensions[]=[2,640,480]</code>.
         </doc>
-      </field>
-
-      <!-- default type is NX_CHAR (any string representation) -->
-
-      <field name="image_type" minOccurs="0" maxOccurs="1">
+      </attribute>
+      <attribute name="image_type">
         <doc>short name for the type of data collected (must be selected from the enumerated
           list)</doc>
         <enumeration>
           <item value="transmission">
-            <doc>transmission (units unspecified)</doc>
+            <doc>transmission (units are dimensionless)</doc>
           </item>
           <item value="optical_density">
             <doc> (absorbance with 1 meaning the transmittance was reduced by e-1)</doc>
@@ -112,86 +97,95 @@
             <doc>In coherent diffraction imaging, the reconstructed image voxel values might be
               listed as complex values of transmission or of refractive_index.</doc>
           </item>
+          <item value="other">
+            <doc>This image_type should be used sparingly, for images that do not fit into the above categories.</doc>
+          </item>
         </enumeration>
-      </field>
+      </attribute>
+    </field>
 
-      <field name="position_names" minOccurs="0" maxOccurs="1">
+    <!-- +++++++++++++++ optional items +++++++++++++++++++++++++++ -->
+
+    <field name="positions" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+      <doc>
+        Arrays containing the center position of each array point along each
+        dimension.
+        The number of arrays will be equal to the rank of the image.
+        
+        Consider the example of a set of 800x600 pixel images acquired over 150 energy
+	      loss channels in electron energy loss spectrum imaging. 
+	      We have <code xmlns="http://docbook.org/ns/docbook">rank=3,
+        dimensions=[800,600,150], position_names[]={X,Y,Energy loss},
+        position_units[]={microns,microns,ev}, and positions[]={800 X positions in microns, 600
+        Y positions in microns, and 150 energy values in eV}</code>. That is, we assume for data
+        exchange purposes that all arrays are remapped onto regular grids (no variation of X
+        positions from row to row). The allowed values for position_names[] are ev (energy in
+        electron volts), microns (positions in micrometers), radians (angles), and seconds
+        (time). Note that for complex arrays the values of position_names[complex_index],
+        position_units[complex_index], and positions[]={…, 2 values for real and imagingary, …}
+        are ignored.
+      </doc>
+      <attribute name="names">
         <doc>
-          String containing the names of each positioner in the "positions" field.
-          A newline character (0x10, ^D, \n) is used as a delimiter.
+          Names of each positioner in the "positions" field. 
+          The number of names will be equal to the rank of the image.
+          Use a semicolon as a delimiter.  
+          Example: <code xmlns="http://docbook.org/ns/docbook">names="X;Y;Energy loss"</code>
         </doc>
-      </field>
-      <field name="position_units" minOccurs="0" maxOccurs="1">
+      </attribute>
+      <attribute name="units">
         <doc>
-          String containing the engineering units of each positioner in the "positions" field.
-          A newline character (0x10, ^D, \n) is used as a delimiter.
+          Engineering units of each positioner in the "positions" field.
+          The number of units provided will be equal to the rank of the image.
+          Use a semicolon as a delimiter.
+          Example: <code xmlns="http://docbook.org/ns/docbook">units="mm;mm;eV"</code>
         </doc>
-      </field>
+      </attribute>
+    </field>
 
-      <field name="positions" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
-        <doc>
-          Arrays containing the center position of each array point along each
-            dimension.
-          
-          Consider the example of a 
-		    set of 800x600 pixel images acquired over 150 energy
-		    loss channels in electron energy loss spectrum imaging. We have <code xmlns="http://docbook.org/ns/docbook">rank=3,
-            dimensions=[800,600,150], position_names[]={X,Y,Energy loss},
-            position_units[]={microns,microns,ev}, and positions[]={800 X positions in microns, 600
-            Y positions in microns, and 150 energy values in eV}</code>. That is, we assume for data
-            exchange purposes that all arrays are remapped onto regular grids (no variation of X
-            positions from row to row). The allowed values for position_names[] are ev (energy in
-            electron volts), microns (positions in micrometers), radians (angles), and seconds
-            (time). Note that for complex arrays the values of position_names[complex_index],
-            position_units[complex_index], and positions[]={…, 2 values for real and imagingary, …}
-            are ignored.
-        </doc>
-      </field>
+    <field name="specimen_names" minOccurs="0" maxOccurs="1">
+      <doc>
+        String(s) describing the specimen(s).
+        The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).
+      </doc>
+    </field>
 
-      <field name="specimen_names" minOccurs="0" maxOccurs="1">
-        <doc>
-          Strings describing the specimen(s).
-            A newline character (0x10, ^D, \n) is used as a delimiter. 
-        </doc>
-      </field>
+    <field name="instrument_names" minOccurs="0" maxOccurs="1">
+      <doc>String(s) describing the instrument used to acquire the data.
+        The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).
+      </doc>
+    </field>
 
-      <field name="instrument_names" minOccurs="0" maxOccurs="1">
-        <doc>Strings describing the instrument used to acquire the data.
-          A newline character (0x10, ^D, \n) is used as a delimiter. 
-        </doc>
-      </field>
+    <field name="experimenter_names" minOccurs="0" maxOccurs="1">
+      <doc>String(s) describing the people involved in preparing and acquiring the experimental data.
+        The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).
+      </doc>
+    </field>
 
-      <field name="experimenter_names" minOccurs="0" maxOccurs="1">
-        <doc>Strings describing the people involved in preparing and acquiring the experimental data.
-            A newline character (0x10, ^D, \n) is used as a delimiter.  
-        </doc>
-      </field>
+    <field name="original_filenames" minOccurs="0" maxOccurs="1">
+      <doc>String(s) holding the names of the original data files into which the data was recorded.
+        The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).</doc>
+    </field>
 
-      <field name="original_filenames" minOccurs="0" maxOccurs="1">
-        <doc>Strings holding the names of the original data files into which the data was recorded.
-          A newline character (0x10, ^D, \n) is used as a delimiter. </doc>
-      </field>
+    <field name="timestamp" minOccurs="0" maxOccurs="1" type="NX_DATE_TIME">
+      <doc>
+        String to document the time at which the original data was recorded (ISO8601 format).
+        The standard allows for time zone information and fractional times such as this entry:
+	      <literal xmlns="http://docbook.org/ns/docbook">1996-07-31 21:15:22.012345+0600</literal>.
+      </doc>
+    </field>
 
-      <field name="collection_timestamp" minOccurs="0" maxOccurs="1" type="NX_DATE_TIME">
-        <doc>
-          String to document the time at which the original data was recorded (ISO8601 format).
-          The standard allows for time zone information and fractional times such as this entry:
-		  <literal xmlns="http://docbook.org/ns/docbook">1996-07-31 21:15:22.012345+0600</literal>.
-        </doc>
-      </field>
+  <field name="comments" minOccurs="0" maxOccurs="1">
+    <!-- NXnote is used for this -->
+      <doc>Strings recording any other notes regarding the specimen or experiment.
+        The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).</doc>
+    </field>
 
-      <field name="comments" minOccurs="0" maxOccurs="1">
-        <doc>Strings recording any other notes regarding the specimen or experiment.
-          A newline character (0x10, ^D, \n) is used as a delimiter. </doc>
-      </field>
-
-      <field name="processing_information" minOccurs="0" maxOccurs="1">
-        <doc>Strings recording information on how the data was processed (what program was used,
-          what parameter settings were employed, and so on).
-          A newline character (0x10, ^D, \n) is used as a delimiter. </doc>
-      </field>
-    </group>
-
-  </group>
+    <field name="processing_information" minOccurs="0" maxOccurs="1">
+      <!-- NXnote is used for this -->
+      <doc>String(s) recording information on how the data was processed (what program was used,
+        what parameter settings were employed, and so on).
+        The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).</doc>
+    </field>
 
 </definition>
