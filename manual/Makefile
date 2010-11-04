@@ -123,7 +123,6 @@ docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.xml
 # This uses VPATH to locate the source directory for the target
 classes/%.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT) $(FIX_CATEGORY_PYTHON)
 	xsltproc -o $@ $(XSLT) $<
-	python $(FIX_CATEGORY_PYTHON) $@
 
 test ::
 	@echo $(CLEANING_LIST)

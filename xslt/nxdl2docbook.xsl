@@ -72,7 +72,7 @@ Usage:
  <xsl:comment><!-- NeXus license comes next -->
 # NeXus - Neutron, X-ray, and Muon Science Common Data Format
 # 
-# Copyright (C) 2008 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-10 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -182,9 +182,9 @@ Usage:
                 <xsl:choose>
                     <xsl:when test="name()='group'">
                         <xsl:element name="link">
-                            <!-- Use Python code to build this link:
-                                Need to determine which category this group is in.
-                            -->
+                            <xsl:attribute name="xlink:href"
+                                >#<xsl:value-of select="@type"/>
+                            </xsl:attribute>
                             <xsl:value-of select="@type"/>
                         </xsl:element>
                     </xsl:when>
@@ -339,14 +339,11 @@ Usage:
     
     <xsl:template match="nx:group" mode="group-include">
         <!-- show a class included by this class  -->
-        <!-- http://www.nexusformat.org/NXclassname -->
-        <!-- TODO TRAC #131: Stop pointing at the wiki unless it will be updated! -->
-        <!-- TODO TRAC #131: need to know if base, application, or contributed before can link properly! -->
         <xsl:if test="position()>1">, </xsl:if>        <!-- comma-separated list -->
         <xsl:element name="link">
-            <!--<xsl:attribute name="xlink:href"
-                >http://www.nexusformat.org/<xsl:value-of select="@type"/>
-            </xsl:attribute>-->
+            <xsl:attribute name="xlink:href"
+                >#<xsl:value-of select="@type"/>
+            </xsl:attribute>
             <xsl:value-of select="@type"/>
         </xsl:element>
     </xsl:template>
