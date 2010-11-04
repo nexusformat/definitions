@@ -36,6 +36,7 @@ findPattern = "\<link\>(NX[_\w]+)\</link\>"
 replaceItem = "\1"
 formatString = '<link xlink:href="%s" xmlns:xlink="http://www.w3.org/1999/xlink">%s</link>'
 formatUrl = 'http://download.nexusformat.org/doc/html/ClassDefinitions-%s.html#%s'
+formatUrl = '#%s'
 
 map = {'base_classes' : 'Base', 'applications' : 'Application', 'contributed_definitions' : 'Contributed'}
 
@@ -58,7 +59,8 @@ while m != None:
         buf = nbuf
         corrections += 1
     else:
-        url = formatUrl % (map[category], className)
+        #url = formatUrl % (map[category], className)
+        url = formatUrl % className
         replaceString = formatString % (url, className)
         pattern = "<link>%s</link>" % className
         nbuf = re.sub(pattern, replaceString, buf)
