@@ -99,7 +99,6 @@ CLEANING_LIST += units.xml
 CLEANING_LIST += nxdl_desc.xml
 
 CLASS_HEAD_PYTHON = ../utils/classSectionHead.py
-FIX_CATEGORY_PYTHON = ../utils/fixCategory.py
 
 # for details, see: http://dblatex.sourceforge.net/doc/sec-custom.html
 DBLATEX_OPTS =  -P table.in.float=0
@@ -121,7 +120,7 @@ all: $(BUILT_NEXUSMANUAL) $(BUILT_NEXUSREFDOC) html/index.html
 docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.xml
 
 # This uses VPATH to locate the source directory for the target
-classes/%.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT) $(FIX_CATEGORY_PYTHON)
+classes/%.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT)
 	xsltproc -o $@ $(XSLT) $<
 
 test ::
