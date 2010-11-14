@@ -15,11 +15,14 @@
   svnid="$Id$"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
-    <doc>
-     Minimal format for exchange of images. Start with something simple and immediately
+
+   <doc>
+     Minimal format for exchange of images.
+     Intended to be used as NXsubentry, as a child of a NXentry group.     
+     "Start with something simple and immediately
        achievable: the exchange of multidimensional arrays between data analysis programs, rather
-       than storage of all relevant information from all relevant beamlines.
-    </doc>
+       than storage of all relevant information from all relevant beamlines."
+   </doc>
     
     <!-- default type is NX_CHAR (any string representation) -->
 
@@ -27,7 +30,7 @@
   	  <doc>NeXus uses the NXData group to identify the default information to 
   	    plot.  NXentry and NXdata are the only two required groups in a NeXus 
   		data file.</doc>
-      <field name="image" type="NX_NUMBER">
+      <field name="data" type="NX_NUMBER">
         <doc>
           NeXus link to the actual image to show by default. Something such as
             <code xmlns="http://docbook.org/ns/docbook">/NXentry/image</code>
@@ -62,7 +65,6 @@
             reading program can find out how the variable was written to the file and then upon
             reading convert it to whatever integer type the reading program wants to use. 32 bit
             integers are suggested but not required.
-          
         </doc>
       </attribute>
       <attribute name="dimensions" type="NX_INT">
@@ -106,7 +108,21 @@
 
     <!-- +++++++++++++++ optional items +++++++++++++++++++++++++++ -->
 
-    <field name="positions" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
+  <group type="NXpositioner">
+    <doc>
+      Use one NXpositioner group for each positioner of the image.
+      The number of NXpositioner fields will be equal to the rank of the image.
+      The <code xmlns="http://docbook.org/ns/docbook">name</code> 
+      attribute will be the short mnemonic name for this axis.  
+      There is a field in NXpositioner for a description.  Use the 
+      <code xmlns="http://docbook.org/ns/docbook">value</code> to
+      store the array.  In the <code xmlns="http://docbook.org/ns/docbook">image</code>,
+      the <code xmlns="http://docbook.org/ns/docbook">axes</code> attribute
+      assigns the positioners to the axes of the image.
+      Other fields in NXpositioner are optional.
+    </doc>
+  </group>  
+  <!--<field name="positions" type="NX_NUMBER" minOccurs="0" maxOccurs="1">
       <doc>
         Arrays containing the center position of each array point along each
         dimension.
@@ -141,28 +157,48 @@
           Example: <code xmlns="http://docbook.org/ns/docbook">units="mm;mm;eV"</code>
         </doc>
       </attribute>
-    </field>
+    </field>-->
 
-    <field name="specimen_names" minOccurs="0" maxOccurs="1">
+  <group type="NXsample">
+    <doc>
+      Description of each sample.  One NXsample for each.
+    </doc>
+  </group>  
+  <!--<field name="specimen_names" minOccurs="0" maxOccurs="1">
       <doc>
         String(s) describing the specimen(s).
         The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).
       </doc>
-    </field>
-
-    <field name="instrument_names" minOccurs="0" maxOccurs="1">
+      </field>-->
+  
+  <group type="NXinstrument">
+    <doc>
+      Description of each instrument.  One NXinstrument for each.
+    </doc>
+  </group>
+    <!--<field name="instrument_names" minOccurs="0" maxOccurs="1">
       <doc>String(s) describing the instrument used to acquire the data.
         The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).
       </doc>
-    </field>
-
-    <field name="experimenter_names" minOccurs="0" maxOccurs="1">
+      </field>-->
+  
+  <group type="NXuser">
+    <doc>
+      Description of each experimenter.  One NXuser for each person or group (use judgment).
+    </doc>
+  </group>
+    <!--<field name="experimenter_names" minOccurs="0" maxOccurs="1">
       <doc>String(s) describing the people involved in preparing and acquiring the experimental data.
         The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).
       </doc>
-    </field>
-
-    <field name="original_filenames" minOccurs="0" maxOccurs="1">
+      </field>-->
+  
+  <group type="NXnote" name="original_data">
+    <doc>
+      Document the file name(s) and time at which the original data was recorded.
+    </doc>
+  </group>
+    <!--<field name="original_filenames" minOccurs="0" maxOccurs="1">
       <doc>String(s) holding the names of the original data files into which the data was recorded.
         The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).</doc>
     </field>
@@ -173,19 +209,29 @@
         The standard allows for time zone information and fractional times such as this entry:
 	      <literal xmlns="http://docbook.org/ns/docbook">1996-07-31 21:15:22.012345+0600</literal>.
       </doc>
-    </field>
-
-  <field name="comments" minOccurs="0" maxOccurs="1">
-    <!-- NXnote is used for this -->
+    </field>-->
+  
+  <group type="NXnote">
+    <doc>
+      Record of any other item regarding the specimen or experiment.
+    </doc>
+  </group>
+  <!--<field name="comments" minOccurs="0" maxOccurs="1">
+    <!-\- NXnote is used for this -\->
       <doc>Strings recording any other notes regarding the specimen or experiment.
         The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).</doc>
-    </field>
-
-    <field name="processing_information" minOccurs="0" maxOccurs="1">
-      <!-- NXnote is used for this -->
+  </field>-->
+  
+  <group type="NXprocess">
+    <doc>
+      Description of a data processing step.  One NXprocess for each data processing step.
+    </doc>
+  </group>
+    <!--<field name="processing_information" minOccurs="0" maxOccurs="1">
+      <!-\- NXnote is used for this -\->
       <doc>String(s) recording information on how the data was processed (what program was used,
         what parameter settings were employed, and so on).
         The line delimiter is the NeXus standard: CR+LF (0x0d0a, ^D^A, \r\n).</doc>
-    </field>
+    </field>-->
 
 </definition>
