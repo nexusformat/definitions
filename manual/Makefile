@@ -83,7 +83,6 @@ DYNAMIC_DOCBOOK_SECTIONS += subtitle.xml
 
 BUILT_NEXUSMANUAL  = NeXusManual.pdf
 BUILT_NEXUSMANUAL += NeXusManual.html
-BUILT_NEXUSMANUAL += NeXusManual_one_chunk.html
 #BUILT_NEXUSMANUAL += NeXusManual.ps
 
 BUILT_NEXUSREFDOC  = NeXusRefDoc.pdf
@@ -180,15 +179,18 @@ pdf :: NeXusManual.pdf NeXusRefDoc.pdf
 DBXSL:=$(abspath ..)/xslt/docbook-xsl-1.75.2
 
 # for xslt options, see: http://docbook.sourceforge.net/release/xsl/current/doc/html/
-NeXusManual.html : docbook
-	xsltproc --xinclude --output $@ \
-	  --stringparam use.extensions 0 \
-	  --stringparam callout.graphics.path "img/callouts/" \
-	  $(DBXSL)/html/docbook.xsl \
-	  NeXusManual.xml
-	sed -i -e 's/\o240/ /g' $@
+# for single html page we have choice of docbook.xsl and onechunk.xsl
+# onechunk.xsl looks better at the moment
 
-NeXusManual_one_chunk.html : docbook
+#NeXusManual.html : docbook
+#	xsltproc --xinclude --output $@ \
+#	  --stringparam use.extensions 0 \
+#	  --stringparam callout.graphics.path "img/callouts/" \
+#	  $(DBXSL)/html/docbook.xsl \
+#	  NeXusManual.xml
+#	sed -i -e 's/\o240/ /g' $@
+
+NeXusManual.html : docbook
 	xsltproc --xinclude \
 	  --stringparam use.extensions 0 \
 	  --stringparam callout.graphics.path "img/callouts/" \
