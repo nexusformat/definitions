@@ -50,37 +50,80 @@
         <doc>Position of crystal</doc>
     </group>
     <field name="usage" type="NX_CHAR">
+        <doc>How this crystal is used.  Choices are in the list.</doc>
         <enumeration>
-            <item value="Bragg"/>
-            <item value="Laue"/>
+            <item value="Bragg"><doc>reflection geometry</doc></item>
+            <item value="Laue">
+                <doc>
+                    transmission geometry, 
+                    requires "thickness" field to be defined
+                </doc>
+            </item>
         </enumeration>
     </field>
     <field name="type">
         <doc>
-           Type or material of monochromating substance.  
+            Type or material of monochromating substance.  
+            Chemical formula can be specified separately.
             Use the "reflection" field to indicate the (hkl) orientation.
             Use the "d_spacing" field to record the lattice plane spacing.
-            Choose only one from the enumerated list (and spell exactly as shown).
-            Contact the NIAC if you wish to add to this list.
+            This field was changed (2010-11-17) from an enumeration to
+            a string since common usage showed a wider variety of use
+            than a simple list.  These are the items in the list at 
+            the time of the change:
+            <itemizedlist xmlns="http://docbook.org/ns/docbook">
+                <listitem><para>PG</para></listitem>
+                <listitem><para>Ge</para></listitem>
+                <listitem><para>Si</para></listitem>
+                <listitem><para>Cu</para></listitem>
+                <listitem><para>Fe3Si</para></listitem>
+                <listitem><para>CoFe</para></listitem>
+                <listitem><para>Cu2MnAl</para></listitem>
+                <listitem><para>Multilayer</para></listitem>
+                <listitem><para>Diamond</para></listitem>
+            </itemizedlist>
+            Note that "PG" is Highly Oriented Pyrolytic Graphite.  Also, 
+            "Cu2MnAl" had the comment "Heusler".
         </doc>
-        <!-- TODO review suggestions in NXfilter to apply here -->
-        <enumeration>
-            <item value="PG"><doc>Highly Oriented Pyrolytic Graphite</doc></item>
-            <item value="Ge"/>
-            <item value="Si"/>
-            <item value="Cu"/>
-            <item value="Fe3Si"/>
-            <item value="CoFe"/>
-            <item value="Cu2MnAl"><doc>Heusler</doc></item>
-            <item value="Multilayer"/>
-            <item value="Diamond"/>
-        </enumeration>
+    </field>
+    <field name="chemical_formula">
+        <!-- copied from NXsample -->
+        <doc>
+            The chemical formula specified using CIF conventions.
+            Abbreviated version of CIF standard: 
+            <itemizedlist xmlns="http://docbook.org/ns/docbook">
+                <listitem><para>Only recognized element symbols may be used.</para></listitem>
+                <listitem><para>Each element symbol is followed by a 'count' number. A count of '1' may be omitted.</para></listitem>
+                <listitem><para>A space or parenthesis must separate each cluster of (element symbol + count).</para></listitem>
+                <listitem><para>Where a group of elements is enclosed in parentheses, the multiplier for the 
+                    group must follow the closing parentheses. That is, all element and group 
+                    multipliers are assumed to be printed as subscripted numbers.</para></listitem>
+                <listitem><para>Unless the elements are ordered in a manner that corresponds to their chemical 
+                    structure, the order of the elements within any group or moiety depends on 
+                    whether or not carbon is present.</para></listitem>
+                <listitem>
+                    <para>
+                        If carbon is present, the order should be: 
+                        C, then H, then the other elements in alphabetical order of their symbol. 
+                        If carbon is not present, the elements are listed purely in alphabetic 
+                        order of their symbol. 
+                    </para>
+                </listitem>
+                <listitem><para>This is the 'Hill' system used by Chemical Abstracts.</para></listitem>
+            </itemizedlist>
+        </doc>
     </field>
     <field name="order_no" type="NX_INT">
-      <doc>A number which describes if this is the first, second,.. nth crystal in a multi crystal monochromator</doc>
+      <doc>
+          A number which describes if this is the first, second,.. 
+          nth crystal in a multi crystal monochromator
+      </doc>
     </field>
     <field name="cut_angle" type="NX_FLOAT" units="NX_ANGLE">
         <doc>Cut angle of reflecting Bragg plane and plane of crystal surface</doc>
+    </field>
+    <field name="space_group">
+        <doc>Space group of crystal structure</doc>
     </field>
     <field name="unit_cell" type="NX_FLOAT" units="NX_LENGTH">
         <doc>Unit cell parameters (lengths and angles)</doc>
@@ -89,6 +132,25 @@
             <dim index="2" value="6"/>
         </dimensions>
     </field>
+    <!-- NXfilter defines each unit cell parameter separately.  Let's be consistent. -->
+	<field name="unit_cell_a" type="NX_FLOAT" units="NX_LENGTH"><!-- as used in NXfilter -->
+		<doc>Unit cell lattice parameter: length of side a</doc>
+	</field>
+	<field name="unit_cell_b" type="NX_FLOAT" units="NX_LENGTH"><!-- as used in NXfilter -->
+		<doc>Unit cell lattice parameter: length of side b</doc>
+	</field>
+	<field name="unit_cell_c" type="NX_FLOAT" units="NX_LENGTH"><!-- as used in NXfilter -->
+		<doc>Unit cell lattice parameter: length of side c</doc>
+	</field>
+	<field name="unit_cell_alpha" type="NX_FLOAT" units="NX_ANGLE"><!-- as used in NXfilter -->
+		<doc>Unit cell lattice parameter: angle alpha</doc>
+	</field>
+	<field name="unit_cell_beta" type="NX_FLOAT" units="NX_ANGLE"><!-- as used in NXfilter -->
+		<doc>Unit cell lattice parameter: angle beta</doc>
+	</field>
+	<field name="unit_cell_gamma" type="NX_FLOAT" units="NX_ANGLE"><!-- as used in NXfilter -->
+		<doc>Unit cell lattice parameter: angle gamma</doc>
+	</field>
     <field name="unit_cell_volume" type="NX_FLOAT" units="NX_VOLUME">
         <doc>Volume of the unit cell</doc>
     </field>
@@ -112,6 +174,12 @@
     <field name="reflection" type="NX_INT" units="NX_UNITLESS">
         <doc>Miller indices (hkl) values of nominal reflection</doc>
         <dimensions><dim value="3"/></dimensions>
+    </field>
+    <field name="thickness" type="NX_FLOAT" units="NX_LENGTH">
+        <doc>Thickness of the crystal.  (Required for Laue orientations - see "usage" field)</doc>
+    </field>
+    <field name="density" type="NX_NUMBER" units="NX_MASS_DENSITY">
+        <doc>mass density of the crystal</doc>
     </field>
     <field name="segment_width" type="NX_FLOAT" units="NX_LENGTH">
         <doc>Horizontal width of individual segment</doc>
@@ -143,6 +211,12 @@
     <field name="curvature_vertical" type="NX_FLOAT" units="NX_ANGLE">
         <doc>Vertical curvature of focusing crystal</doc>
     </field>
+    <field name="is_cylindrical" type="NX_BOOLEAN">
+        <doc>Is this crystal bent cylindrically?</doc>
+    </field>
+    <field name="cylindrical_orientation_angle" type="NX_NUMBER" units="NX_ANGLE">
+        <doc>If cylindrical: cylinder orientation angle</doc>
+    </field>
     <field name="polar_angle" type="NX_FLOAT" units="NX_ANGLE">
         <doc>Polar (scattering) angle at which crystal assembly is positioned.  
             Note: some instrument geometries call this term 2theta.</doc>
@@ -159,6 +233,9 @@
     <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
         <doc>average/nominal crystal temperature</doc>
     </field>
+    <field name="temperature_coefficient" type="NX_FLOAT" units="NX_ANY">
+        <doc>how lattice parameter changes with temperature</doc>
+    </field>
     <group type="NXlog" name="temperature_log">
         <doc>log file of crystal temperature</doc>
     </group>
@@ -168,29 +245,30 @@
     <group type="NXdata" name="transmission">
         <doc>crystal transmission versus wavelength</doc>
     </group>
-        <group type="NXshape" name="shape">
+    <group type="NXshape" name="shape">
       <doc>A NXshape group describing the shape of the crystal arrangement</doc>
-        </group>
+    </group>
     <!-- TODO need more parameters here, such as ...
         list from Rainer Gehrke, DESY (some items may already be present)
 
 Parameters for crystals 
-Field indicating whether it is Bragg or Laue
-The crystal structure (enumeration, e.g. Zincblende ..)
-Lattice constant
-Miller indices of reflection (h,k,l)
-First (or only) element
-Second element (if any)
-Temperature factor (optional)
-Asymmetric angle (if applicable)
-Mosaic angular spread (if applicable)
-Thickness (mandatory for Laue, else optional)
++    Field indicating whether it is Bragg or Laue               see usage
++    The crystal structure (enumeration, e.g. Zincblende ..)    see space_group
++    Lattice constant                                           see unit_cell
++    Miller indices of reflection (h,k,l)                       see reflection
++    First (or only) element                                    see order_no
++    Second element (if any)                                    see order_no
++    Temperature factor (optional)                              see temperature_coefficient
++    Asymmetric angle (if applicable)                           see cut_angle
++    Mosaic angular spread (if applicable)                      see mosaic_horizontal and mosaic_vertical
++    Thickness (mandatory for Laue, else optional)              see thickness
 
 
 Figure for crystals and mirrors (to describe curved surfaces)
-Field indicating whether concave or convex
-Field indicating whether cylindrical or not
-If cylindrical: cylinder orientation angle
++ Field indicating whether concave or convex                    see curvature_horizontal and curvature_vertical
++ Field indicating whether cylindrical or not                   see is_cylindrical
++ If cylindrical: cylinder orientation angle                    see cylindrical_orientation_angle
+
 
 Now come the different surface figures with the necessary parameters:
 1. Flat
