@@ -20,19 +20,29 @@
       +++ Under development and subject to unannounced changes +++
 
       Minimal format for exchange of images and spectra.
-      Intended to be used as NXsubentry, as a child of a NXentry group.     
-      "Start with something simple and immediately
-      achievable: the exchange of multidimensional arrays between data analysis programs, rather
-      than storage of all relevant information from all relevant beamlines."
+      Intended to be used as NXsubentry, as a child of a NXentry group.
+      
+      "Our goal is to provide a group within a HDF5 file that can be used 
+      for simple exchange of images, spectra, and so on with an absolute 
+      minimum of required definition. All exchanged items should be in 
+      a HDF5 group /exchange or, if multiple datasets are to be shared, 
+      /exchange1, /exchange2, and so on.  At a minimum, programs can 
+      simply look for this group and ignore all others.  This means 
+      that any beamline or instrument can store its own metadata without 
+      interfering with the ability for wide exchange."
+      
+      What differentiates this from an NXdata group is the addition of 
+      other fields and groups to provide optional metadata within this 
+      /exchange group.  As typical for HDF5 files, these can also be 
+      hard-linked to other positions in the HDF5 tree.
     </doc>
 
     <attribute name="version">
       <doc>
-        Version of this data standard applying to a specific data file.
-        The version (currently "0.2b") of the particular revision of the standard is found in the
-        /definition@version attribute of the NXDL definition for NXdata_exchange:
-        http://trac.nexusformat.org/definitions/browser/trunk/contributed_definitions/NXdata_exchange.nxdl.xml
-        <!-- would we prefer to use the SVN Id (without dollar signs) instead? -->
+        (recommended but optional) Current version is "0.2b".  
+        <!-- keep this string in sync with version attribute above -->
+        This version string applies to the current
+        definition of this NXexchange NeXus application definition.
       </doc>
     </attribute>
     
@@ -71,10 +81,18 @@
           photoelectrons, diffraction_intensity, refractive_index, 
           coherent_diffraction_imaging.
           Keep in mind these notes about some of the types:
-          transmission (units are dimensionless), 
-          optical_density (absorbance with 1 meaning the transmittance was reduced by e-1),
-          coherent_diffraction_imaging (In coherent diffraction imaging, the reconstructed image voxel values might be
-              listed as complex values of transmission or of refractive_index.)
+          transmission
+            (units are dimensionless), 
+          optical_density 
+            (absorbance with 1 meaning the transmittance was reduced by e-1),
+          refractive_index 
+            (in coherent diffraction imaging, the reconstructed image voxel 
+            values might be listed as complex values of transmission or 
+            of refractive_index)
+          coherent_diffraction_imaging 
+            (In coherent diffraction imaging, the reconstructed 
+            image voxel values might be listed as complex values 
+            of transmission or of refractive_index.)
         </doc>
       </attribute>
       <attribute name="axes">
@@ -94,7 +112,30 @@
       </attribute>
     </field>
 
-    <!-- +++++++++++++++ optional items +++++++++++++++++++++++++++ -->
+  <!-- +++++++++++++++ optional items +++++++++++++++++++++++++++ -->
+  
+  <field name="dark_data" type="NX_NUMBER">
+    <doc>
+      (optional) data set with no beam.  
+      Must be same dimensions as images stored in "data".
+      <!-- how to describe these variable dimensions in NeXus? -->
+    </doc>
+  </field>
+  
+  <field name="white_data" type="NX_NUMBER">
+    <doc>
+      (optional) data set with illumination.  
+      Must be same dimensions as images stored in "data".
+      <!-- how to describe these variable dimensions in NeXus? -->
+    </doc>
+  </field>
+
+  <field name="collection_time" type="NX_DATE_TIME">
+    <doc>
+      Date and time of data was collected (ISO 8601 format).  
+      If there are more than one time to be reported, use an NXnote group.
+    </doc>
+  </field>
 
   <group type="NXsample">
     <doc>
