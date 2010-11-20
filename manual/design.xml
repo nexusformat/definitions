@@ -454,9 +454,8 @@
                     <indexterm><primary>axes</primary></indexterm>
                     The <code>axes</code> attribute contains the names of 
                     each dimension's scale as a
-                    comma or colon separated list in the order they appear in C.
-                    Optionally, the list can be enclosed in brackets, but should not
-                    contain any spaces, e.g. 
+                    colon (or comma) separated list in the order they appear in C.
+                    For example: 
                     <example>
                         <title>Preferred way of denoting axes</title>
                         <programlisting  language="xml" linenumbering="numbered"
@@ -590,12 +589,13 @@
                     respective groups. One corollary of this is that there should be one
                     <code>NXdetector</code> group for each <code>NXdata</code> group, e.g. one for each
                     detector bank in a multi-bank instrument.</para>
-                <para>The syntax of the "link" attribute requires a bit of explanation. Under HDF4,
-                    you can only create, what would be called under UNIX, "hard links". Hard links
-                    have the characteristics that: <itemizedlist>
+                    <para>
+                        The syntax of the <code>target</code> attribute requires a bit of explanation. 
+                        Under HDF4, you can only create what would be called "hard links" under UNIX. 
+                        HDF4 hard links have the characteristics that: <itemizedlist>
                         <listitem>
                             <para>The name of the entity must be the same in both the original and
-                                linked groups </para>
+                                linked groups (relaxed in HDF5) </para>
                         </listitem>
                         <listitem>
                             <para>The attributes of both the origial entity and the linked one are
@@ -613,15 +613,26 @@
                 <para>To overcome this and allow us to link from <code>NXdata</code>
                     <indexterm><primary>NXdata</primary></indexterm>
                     to, say,
-                    <code>NXsample</code> and to know that the original data belongs to
-                    <code>NXsample</code> we write the <code>link</code> attribute that contains the path
+                    <code>NXsample</code> and to identify the original data with
+                    <!-- replace "link" attribute with "target" here -->
+                    <code>NXsample</code>, we write the <code>target</code> attribute that contains the path
                     of the original group containing it. All linked entities will share this <code>link</code>
                     attribute and thus can use it to locate the original source group. We are
-                    effectively using the <code>link</code> attribute to simulate <emphasis>symbolic links</emphasis>. So in the
-                    above example, both the original <code>time_of_flight</code> and the linked one will share a
-                    link attribute containing the text <code>/entry/instrument/detector</code> because
+                    effectively using the <code>target</code> attribute to simulate <emphasis>symbolic links</emphasis>. So in the
+                    above example, both the original <code>time_of_flight</code> and the linked one will share the same
+                    <code>target</code> attribute containing the text <code>/entry/instrument/detector</code>.  
+                    The <code>target</code> attribute identifes that 
                     <code>/entry/instrument/detector/time_of_flight</code>
-                    is the original instance.</para>
+                    is the original instance.<footnote><para
+                        >This is a <emphasis>distinction without a difference</emphasis>.  
+                        A hard link represents the data in either location and the API code
+                        does not need to make difference between them.  
+                        Where the <code>target</code> attribute
+                        is important is when copying data from HDF files.  In these cases,
+                        by recognizing the value of the <code>target</code> attribute,
+                        it is possible to avoid extracting the same information more than once.
+                    </para></footnote>
+                </para>
             </section>
         </section>
         
@@ -748,14 +759,16 @@
                             <entry>
                                 <indexterm><primary>axes</primary></indexterm>
                                 Defines the names of the dimension scales for this data set
-                                as a comma-delimited array, optionally surrounded by brackets
-                                (see a longer discussion in the section on <code>NXdata</code> structure)
-                                i.e. if the array being stored is <code>data</code>, with
-                                elements <code>data[j][i]</code> in C and <code>data(i,j)</code>
-                                in Fortran, with dimension scales <code>time_of_flight[i]</code>
-                                and <code>polar_angle[j]</code>, <code>data</code> would have an
-                                attribute called <code>axes</code> with the following value :
-                                    <code>[polar_angle,time_of_flight]</code></entry>
+                                as a colon-delimited list.
+                                
+                                For example, suppose <code>data</code> is an array with
+                                elements <code>data[j][i]</code> (C) or <code>data(i,j)</code>
+                                (Fortran), with dimension scales <code>time_of_flight[i]</code>
+                                and <code>polar_angle[j]</code>, 
+                                then <code>data</code> would have an
+                                attribute <code>axes="polar_angle:time_of_flight"</code>
+                                in addition to an attribute <code>signal="1"</code>.
+                            </entry>
                         </row>
                         <row>
                             <entry>axis</entry>

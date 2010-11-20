@@ -130,6 +130,24 @@
 		</xs:restriction>
 	</xs:simpleType>
 	
+	<xs:simpleType name="validAxesList">
+		<xs:annotation>  
+			<xs:documentation>  
+				<!-- TODO  Wait!, NXDL files have different rules for "target" than data files. -->
+				<!-- see TRAC ticket #116 -->
+				Defines the values allowed for the "axes" attribute.
+				The "axes" attribute is a colon (or comma) delimited
+				list of "validItemName" (the valid name of an element 
+				or attribute).
+				TODO Is there a restriction on length?
+			</xs:documentation>  
+		</xs:annotation>  
+		<xs:restriction base="xs:token">
+			<xs:pattern value="[A-Za-z_][\w_]*([ :][A-Za-z_][\w_]*)*" />
+			<!--<xs:maxLength value="63" />   <!-\- enforce via NX_MAXNAMELEN -\->-->
+		</xs:restriction>
+	</xs:simpleType>
+	
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 	<xs:complexType name="definitionType">
@@ -498,18 +516,19 @@
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="axes" type="nx:NX_CHAR">
+					<!-- was type="nx:validAxesList" -->
 					<xs:annotation>
 						<xs:documentation>
 							Presence of the <code>axes</code> attribute means this field is an ordinate.
 							
-							This attribute contains a 
-							<!-- NOT white-space --> 
-							comma or colon  <!-- TODO see design.xml: Section NeXus Data -->
-							separated list
-							of paths to the names of independent axes when plotting this field.
+							This attribute contains a colon (or comma) delimited list
+							<!-- TODO see design.xml: Section NeXus Data -->
+							of the names of independent axes when plotting this field.
+							Each name in this list must exist as a field in the same group.
+							<!-- perhaps even discourage use of square brackets in axes attribute? -->
+							(Optionally, the list can be enclosed by square brackets but this is not common.)
 						</xs:documentation>
 					</xs:annotation>
-					<!-- TODO perhaps a restriction can be used here? -->
 				</xs:attribute>
 				<xs:attribute name="axis" type="nx:NX_POSINT">
 					<xs:annotation>
