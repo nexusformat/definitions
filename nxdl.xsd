@@ -59,7 +59,8 @@
 				is the <code>group</code> at the
 				root of every NXDL specification.
 				It may <emphasis>only</emphasis> appear
-				at the root of an NXDL file and must only appear once
+				at the root of an NXDL file and must only appear 
+				<emphasis role="bold">once</emphasis>
 				for the NXDL to be <emphasis>well-formed</emphasis>.
 			</xs:documentation>
 		</xs:annotation>
@@ -68,16 +69,19 @@
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	
 	<xs:simpleType name="validItemName">
-		<xs:annotation>  
-			   <xs:documentation>  
-				  Used for allowed names of elements and attributes.  
-				  Need to be restricted to valid program variable names.  
-				  Note:  This means no "-" or "." characters can be allowed and
-				  you cannot start with a number.
-				  HDF4 had a 64 character limit on names 
-				  (possibly including NULL) and NeXus enforces this 
-				  via the <code>NX_MAXNAMELEN</code> variable.
-				</xs:documentation>  
+		<xs:annotation>
+			<xs:documentation xmlns="http://docbook.org/ns/docbook">
+				Used for allowed names of elements and attributes.  
+				Need to be restricted to valid program variable names.  
+				Note:  This means no "-" or "." characters can be allowed and
+				you cannot start with a number.
+				HDF4 had a 64 character limit on names 
+				(possibly including NULL) and NeXus enforces this 
+				via the <code>NX_MAXNAMELEN</code> variable with 
+				a <emphasis role="bold">63</emphasis> character limit.
+				(This data type is used internally in the NXDL schema 
+				to define a data type.)
+			</xs:documentation>  
 		</xs:annotation>  
 		<xs:restriction base="xs:token">
 			<xs:pattern value="[A-Za-z_][\w_]*" />
@@ -86,10 +90,12 @@
 	</xs:simpleType>
 	
 	<xs:simpleType name="validNXClassName">
-		<xs:annotation>  
-		   <xs:documentation>  
+		<xs:annotation>
+			<xs:documentation xmlns="http://docbook.org/ns/docbook">
 			  Used for allowed names of NX class types (e.g. NXdetector) 
 			  not the instance (e.g. bank1) which is covered by validItemName.  
+			  (This data type is used internally in the NXDL schema 
+			  to define a data type.)
 			</xs:documentation>  
 		</xs:annotation>  
 		<xs:restriction base="nx:validItemName">
@@ -105,17 +111,20 @@
 				want to consider allowing "<code>..</code>" (parent of directory) at some point.
 				If the <code>name</code> attribute is helpful, then use it in the path 
 				with the syntax of "<code>name:type</code>" as in these examples:
-				<code>/NXentry/NXinstrument/analyzer:NXcrystal/ef
-				/NXentry/NXinstrument/monochromator:NXcrystal/ei
-				/NX_other</code>
-				Must also consider use of name attribute in resolving link targets.
+				<programlisting language="c"
+><code>/NXentry/NXinstrument/analyzer:NXcrystal/ef
+/NXentry/NXinstrument/monochromator:NXcrystal/ei
+/NX_other</code></programlisting>
+				Must also consider use of <code>name</code> attribute in resolving <code>link</code> targets.
+				(This data type is used internally in the NXDL schema 
+				to define a data type.)
 			</xs:documentation>  
 		</xs:annotation>  
 		<xs:restriction base="xs:token">
 			<xs:annotation>
 				<xs:documentation xmlns="http://docbook.org/ns/docbook">
 					The HDF5 documentation 
-					(<code>http://www.hdfgroup.org/HDF5/doc/UG/UG_frame09Groups.html</code>)
+					(<uri>http://www.hdfgroup.org/HDF5/doc/UG/UG_frame09Groups.html</uri>)
 					says "<quote>Note that relative path names in HDF5 do not employ the ../ notation, 
 					the UNIX notation indicating a parent directory, to indicate a parent group.</quote>"
 					Thus, if we only consider the case of 
@@ -130,47 +139,33 @@
 		</xs:restriction>
 	</xs:simpleType>
 	
-	<xs:simpleType name="validAxesList">
-		<xs:annotation>  
-			<xs:documentation>  
-				<!-- TODO  Wait!, NXDL files have different rules for "target" than data files. -->
-				<!-- see TRAC ticket #116 -->
-				Defines the values allowed for the "axes" attribute.
-				The "axes" attribute is a colon (or comma) delimited
-				list of "validItemName" (the valid name of an element 
-				or attribute).
-				TODO Is there a restriction on length?
-			</xs:documentation>  
-		</xs:annotation>  
-		<xs:restriction base="xs:token">
-			<xs:pattern value="[A-Za-z_][\w_]*([ :][A-Za-z_][\w_]*)*" />
-			<!--<xs:maxLength value="63" />   <!-\- enforce via NX_MAXNAMELEN -\->-->
-		</xs:restriction>
-	</xs:simpleType>
-	
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
 	<xs:complexType name="definitionType">
-			<xs:annotation>
-				<xs:documentation xmlns="http://docbook.org/ns/docbook">
-					A <code>definition</code> is the root element of every NXDL definition.
-					The <code>definitionType</code> defines the documentation, 
-					attributes, fields, and groups that will be used
-					as children of the <code>definition</code> element.
-					Contains:
-					<itemizedlist>
-						<listitem><para><code>attribute</code></para></listitem>
-						<listitem><para><code>doc</code></para></listitem>
-						<listitem><para><code>field</code></para></listitem>
-						<listitem><para><code>group</code></para></listitem>
-						<listitem><para><code>link</code></para></listitem>
-					</itemizedlist>
-				</xs:documentation>
-			</xs:annotation>
+		<xs:annotation>
+			<xs:documentation xmlns="http://docbook.org/ns/docbook">
+				A <code>definition</code> is the root element of every NXDL definition.
+				The <code>definitionType</code> defines the documentation, 
+				attributes, fields, and groups that will be used
+				as children of the <code>definition</code> element.
+				Could contain these elements:
+				<itemizedlist>
+					<listitem><para><code>attribute</code></para></listitem>
+					<listitem><para><code>doc</code></para></listitem>
+					<listitem><para><code>field</code></para></listitem>
+					<listitem><para><code>group</code></para></listitem>
+					<listitem><para><code>link</code></para></listitem>
+				</itemizedlist>
+				Note that a <code>definition</code> element also includes the definitions of the 
+				<code>basicComponent</code> data type.
+				(The <code>definitionType</code> data type is used internally in the NXDL schema 
+				to define elements and attributes to be used by users in NXDL specifications.)
+			</xs:documentation>
+		</xs:annotation>
 		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
 			<xs:annotation>
 				<xs:documentation xmlns="http://docbook.org/ns/docbook">
-					... no documentation yet ...
+					A <code>definition</code> may contain <code>group</code>s.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:group>
@@ -249,7 +244,7 @@
 					<!-- TODO eventually, will contributed defs need to indicate their intended usage? -->
 				</xs:documentation>
 			</xs:annotation>
-			<xs:simpleType>
+			<xs:simpleType><!-- TODO not covered by nxdl_desc2docbook.xsl yet -->
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="base"/>
 					<xs:enumeration value="application"/>
@@ -279,6 +274,8 @@
 		<xs:annotation>
 			<xs:documentation xmlns="http://docbook.org/ns/docbook">
 				Prescribes the allowed values for <code>definition</code> <code>type</code> attribute.
+				(This data type is used internally in the NXDL schema 
+				to define a data type.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string">
@@ -291,10 +288,10 @@
 	
 	<xs:complexType name="groupType">
 		<xs:annotation>
-			<xs:documentation>
+			<xs:documentation xmlns="http://docbook.org/ns/docbook">
 				A group element refers to the definition of 
 				an existing NX object or a locally-defined component.
-				Contains:
+				Could contain these elements:
 				<itemizedlist>
 					<listitem><para><code>attribute</code></para></listitem>
 					<listitem><para><code>doc</code></para></listitem>
@@ -302,18 +299,22 @@
 					<listitem><para><code>group</code></para></listitem>
 					<listitem><para><code>link</code></para></listitem>
 				</itemizedlist>
+				Note that a <code>group</code> element also includes the definitions of the 
+				<code>basicComponent</code> data type.
+				(The <code>groupType</code> data type is used internally in the NXDL schema 
+				to define elements and attributes to be used by users in NXDL specifications.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
 			<xs:annotation>
-				<xs:documentation>
-					A group may contain other groups.
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					A <code>group</code> may contain other <code>group</code>s.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:group>
 		<xs:attribute name="type" use="required" type="nx:validNXClassName">
 			<xs:annotation>
-				<xs:documentation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
 					The <code>type</code> attribute <emphasis>must</emphasis> 
 					contain the name of a 
 					NeXus base class, application definition, or contributed definition.
@@ -322,9 +323,9 @@
 		</xs:attribute>
 		<xs:attribute name="name" use="optional" type="nx:validItemName">
 			<xs:annotation>
-				<xs:documentation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
 					A particular scientific application may expect
-					a name of a group element, it is helpful but not
+					a name of a <code>group</code> element. It is helpful but not
 					required to specify the <code>name</code>
 					attribute in the NXDL file.
 					It is suggested to always specify a <code>name</code>
@@ -347,9 +348,9 @@
 		</xs:attribute>
 		<xs:attribute name="minOccurs" use="optional" default="0" type="xs:nonNegativeInteger">
 			<xs:annotation>
-				<xs:documentation>
-					Minimum number of times this group is allowed to be present within its
-					parent group.  Note each group must have a <code>name</code> attribute
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					Minimum number of times this <code>group</code> is allowed to be present within its
+					parent group.  Note each <code>group</code> must have a <code>name</code> attribute
 					that is unique among all <code>group</code> and <code>field</code>
 					declarations within a common parent group.
 				</xs:documentation>
@@ -357,11 +358,11 @@
 		</xs:attribute>
 		<xs:attribute name="maxOccurs" use="optional"  default="unbounded">
 			<xs:annotation>
-				<xs:documentation>
-					Maximum number of times this group is allowed to be present within its
-					parent group.  Note each group must have a <code>name</code> attribute
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					Maximum number of times this <code>group</code> is allowed to be present within its
+					parent <code>group</code>.  Note each <code>group</code> must have a <code>name</code> attribute
 					that is unique among all <code>group</code> and <code>field</code>
-					declarations within a common parent group.
+					declarations within a common parent <code>group</code>.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -375,16 +376,53 @@
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="doc" type="nx:docType" minOccurs="0"
-				maxOccurs="1" />
-			<xs:element name="attribute" type="nx:attributeType"
-				minOccurs="0" maxOccurs="unbounded" />
-			<xs:element name="group" type="nx:groupType" minOccurs="0"
-				maxOccurs="unbounded" />
-			<xs:element name="field" type="nx:fieldType" minOccurs="0"
-				maxOccurs="unbounded" />
-			<xs:element name="link" type="nx:linkType" minOccurs="0"
-				maxOccurs="unbounded" />
+			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						Describe the purpose of this <code>group</code>. 
+						This documentation will go into the manual.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="attribute" type="nx:attributeType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						Use an <code>attribute</code> if additional information 
+						needs to be associated with a <code>group</code>.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="group" type="nx:groupType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						A <code>group</code> may contain <code>group</code>s.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="field" type="nx:fieldType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						A <code>group</code> may contain <code>field</code>s (datasets).
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="link" type="nx:linkType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						Use a <code>link</code> to suggest that this information is actually stored
+						somewhere else in the hierarchy.  
+						Use the <code>name</code> attribute to define the name of the element to be used in this <code>group</code>.
+						Use the <code>target</code> attribute to identify the suggested source of the link.  
+						The value of <code>target</code> is written using
+						the NeXus class names since this is a suggestion and does not actually use
+						the names from a particular data file.  <!-- TODO awkward wording -->
+						For example: 
+						<programlisting language="xml"
+							><code>&lt;link name="data" target="/NXentry/NXinstrument/NXdetector/data" /&gt;</code
+							></programlisting>
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 	</xs:group>
 
@@ -396,21 +434,32 @@
 					A <code>basicComponent</code> defines the allowed name 
 					format and attributes common to all <code>field</code> 
 					and <code>group</code> specifications.
+					(This data type is used internally in the NXDL schema 
+					to define elements and attributes to be used by users in NXDL specifications.)
 				</xs:documentation>
 			</xs:annotation>
 		<xs:sequence>
-			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1" />
+			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						Describe this <code>basicComponent</code> and its use.
+						This documentation will go into the manual.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" use="required" type="nx:validItemName">
 			<xs:annotation>
-				<xs:documentation>
-					Identifier string (must be unique within the enclosing group) for this entity.
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					Identifier string for this entity.
+					It is required that <code>name</code> must be unique 
+					within the enclosing <code>group</code>.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="deprecated" use="optional">
 			<xs:annotation>
-				<xs:documentation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
 					If present,
 					the <code>deprecated</code> attribute contains
 					an advisory message to appear as part of a warning 
@@ -429,60 +478,68 @@
 
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
-	<xs:simpleType name="basicType">
+	<!--<xs:simpleType name="basicType">
 		<xs:annotation>
-			<xs:documentation>
+			<xs:documentation xmlns="http://docbook.org/ns/docbook">
 				This is the basic definition of a new type.
 				Components must derive from an existing type 
 				and optionally provide documentation.
+				<emphasis role="bold">
+					NOTE:  Presently, <code>basicType</code> is not used in 
+					the NXDL definition and may be removed in future versions of NXDL.
+				</emphasis>
 			</xs:documentation>
 		</xs:annotation>
 		<xs:restriction base="xs:string"></xs:restriction>
-	</xs:simpleType>
+	</xs:simpleType>-->
 
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 		
 	<xs:complexType name="fieldType">
 		<xs:annotation>
-			<xs:documentation>
-				A field declares a new element in the component being defined. 
-				A field is synonymous with the HDF4 SDS (Scientific Data Set) and 
-				the HDF5 <emphasis>dataset</emphasis> terms.  Contains:
+			<xs:documentation xmlns="http://docbook.org/ns/docbook">
+				A <code>field</code> declares a new element in the component being defined. 
+				A <code>field</code> is synonymous with the HDF4 SDS (Scientific Data Set) and 
+				the HDF5 <emphasis>dataset</emphasis> terms.  
+				Could contain these elements:
 				<itemizedlist>
 					<listitem><para><code>attribute</code></para></listitem>
 					<listitem><para><code>dimensions</code></para></listitem>
 					<listitem><para><code>doc</code></para></listitem>
 					<listitem><para><code>enumeration</code></para></listitem>
 				</itemizedlist>
+				Note that a <code>field</code> element also includes the definitions of the 
+				<code>basicComponent</code> data type.
+				(The <code>fieldType</code> data type is used internally in the NXDL schema 
+				to define elements and attributes to be used by users in NXDL specifications.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="nx:basicComponent">
 				<xs:sequence>
-					<xs:element name="dimensions" type="nx:dimsType"
-						minOccurs="0" maxOccurs="1">
+					<xs:element name="dimensions" type="nx:dimsType" minOccurs="0" maxOccurs="1">
 						<xs:annotation>
-							<xs:documentation>dimensions of a data element 
+							<xs:documentation xmlns="http://docbook.org/ns/docbook">dimensions of a data element 
 							in a NeXus file</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="attribute" type="nx:attributeType"
-						minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="attribute" type="nx:attributeType" minOccurs="0" maxOccurs="unbounded">
 						<xs:annotation>
-							<xs:documentation>attributes of field</xs:documentation>
+							<xs:documentation xmlns="http://docbook.org/ns/docbook">
+								attributes to be used with this field
+							</xs:documentation>
 						</xs:annotation>
 					</xs:element>
-					<xs:element name="enumeration" type="nx:enumerationType"
-						minOccurs="0">
+					<xs:element name="enumeration" type="nx:enumerationType" minOccurs="0">
 						<xs:annotation>
-							<xs:documentation>A field can specify which 
+							<xs:documentation xmlns="http://docbook.org/ns/docbook">A field can specify which 
 							values are to be used</xs:documentation>
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
 				<xs:attribute name="units" type="nx:anyUnitsAttr">
 					<xs:annotation>
-						<xs:documentation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
 							String describing the engineering units.
 							The string should be appropriate for the value
 							and should conform to the NeXus rules for units.
@@ -492,7 +549,7 @@
 				</xs:attribute>
 				<xs:attribute name="long_name" type="nx:NX_CHAR">
 					<xs:annotation>
-						<xs:documentation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
 							Descriptive name for this field (may include whitespace and engineering units).
 							Often, the long_name (when defined) will be used as the axis label on a plot.
 						</xs:documentation>
@@ -500,7 +557,7 @@
 				</xs:attribute>
 				<xs:attribute name="signal" type="nx:NX_POSINT">
 					<xs:annotation>
-						<xs:documentation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
 							Presence of the <code>signal</code> attribute means this field is an ordinate.
 							
 							Integer marking this field as plottable data (ordinates).
@@ -516,9 +573,8 @@
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="axes" type="nx:NX_CHAR">
-					<!-- was type="nx:validAxesList" -->
 					<xs:annotation>
-						<xs:documentation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
 							Presence of the <code>axes</code> attribute means this field is an ordinate.
 							
 							This attribute contains a colon (or comma) delimited list
@@ -527,38 +583,41 @@
 							Each name in this list must exist as a field in the same group.
 							<!-- perhaps even discourage use of square brackets in axes attribute? -->
 							(Optionally, the list can be enclosed by square brackets but this is not common.)
+							The regular expression for this rule is:
+							<programlisting language="c"><code>[A-Za-z_][\w_]*([ :][A-Za-z_][\w_]*)*</code></programlisting>
+							
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
 				<xs:attribute name="axis" type="nx:NX_POSINT">
 					<xs:annotation>
 						<xs:documentation xmlns="http://docbook.org/ns/docbook">
-							<para>NOTE: Use of this attribute is discouraged.  It is for legacy support.
-							You should use the axes attribute instead.</para>
+							NOTE: Use of this attribute is discouraged.  It is for legacy support.
+							You should use the axes attribute instead.
 							
-							<para>Presence of the <code>axis</code> attribute means this field is an abcissa.</para>
+							Presence of the <code>axis</code> attribute means this field is an abcissa.
 							
-							<para>The attribute value is an integer indicating this
+							The attribute value is an integer indicating this
 							field as an axis that is part of the data set.
 							The data set is a field with the attribute 
 							<code>signal="1"</code> in the same group.
 							The value can range from 1 up to the number of 
-							independent axes (abcissae) in the data set.  </para>
+							independent axes (abcissae) in the data set.  
 							
-							<para>A value of <code>axis="1</code>" indicates that this field 
+							A value of <code>axis="1</code>" indicates that this field 
 							contains the data for the first independent axis.  
-							For example, the X axis in an XY data set.</para>
+							For example, the X axis in an XY data set.
 							
-							<para>A value of <code>axis="2"</code> indicates that this field 
+							A value of <code>axis="2"</code> indicates that this field 
 							contains the data for the second independent axis.
-							For example, the Y axis in a 2-D data set.</para>
+							For example, the Y axis in a 2-D data set.
 							
-							<para>A value of <code>axis="3"</code> indicates that this field 
+							A value of <code>axis="3"</code> indicates that this field 
 							contains the data for the third independent axis.
-							For example, the Z axis in a 3-D data set.</para>
+							For example, the Z axis in a 3-D data set.
 							
-							<para>A field with an <code>axis</code> attribute should 
-								not have a <code>signal</code> attribute.</para>
+							A field with an <code>axis</code> attribute should 
+								not have a <code>signal</code> attribute.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -575,7 +634,7 @@
 				</xs:attribute>
 				<xs:attribute name="type" type="nx:NAPI" default="NX_CHAR">
 					<xs:annotation>
-						<xs:documentation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
 							Defines the type of the element as allowed by the NAPI (NeXus Application Programmer Interface).
 							See elsewhere for the complete list of allowed NAPI types.
 						</xs:documentation>
@@ -583,7 +642,7 @@
 				</xs:attribute>
 				<xs:attribute name="minOccurs" use="optional" default="0" type="nx:nonNegativeUnbounded">
 					<xs:annotation>
-						<xs:documentation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
 							Defines the minimum number of times this element may be used.  Its 
 							value is confined to zero or greater.  Must be less than or equal to
 							the value for the "maxOccurs" attribute.
@@ -593,7 +652,7 @@
 				</xs:attribute>
 				<xs:attribute name="maxOccurs" use="optional"  default="1" type="nx:nonNegativeUnbounded">
 					<xs:annotation>
-						<xs:documentation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
 							Defines the maximum number of times this element may be used.  Its 
 							value is confined to zero or greater.  Must be greater than or equal to
 							the value for the "minOccurs" attribute.
@@ -603,7 +662,7 @@
 				</xs:attribute>
 				<xs:attribute name="stride" use="optional"  default="1" type="nx:NX_INT">
 					<xs:annotation>
-						<xs:documentation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
 							The <code>stride</code> and <code>offset</code> attributes
 							are used together to index the array of data items in a 
 							multi-dimensional array.  They may be used as an alternative
@@ -621,12 +680,13 @@
 							positive to move forward or negative to step backward.
 							A value of zero will not step (and is of no particular use).
 							
-							See http://davis.lbl.gov/Manuals/HDF5-1.4.3/Tutor/phypereg.html
+							See <uri>http://davis.lbl.gov/Manuals/HDF5-1.4.3/Tutor/phypereg.html</uri>
 							or <emphasis>4. Dataspace Selection Operations</emphasis> in
-							http://www.hdfgroup.org/HDF5/doc1.6/Dataspaces.html.
+							<uri>http://www.hdfgroup.org/HDF5/doc1.6/Dataspaces.html</uri>.
+							
 
 							The <code>stride</code> attribute contains a 
-							( TODO: state the common delimiter )
+							( TODO: state the common delimiter for "stride" )
 							separated list of integers.  The number of items in the list
 							is equal to the rank of the data being stored.  The value of each
 							item is the spacing of the data items in that subscript of the array.
@@ -635,7 +695,7 @@
 				</xs:attribute>
 				<xs:attribute name="offset" use="optional"  default="1" type="nx:nonNegativeUnbounded">
 					<xs:annotation>
-						<xs:documentation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
 							The <code>stride</code> and <code>offset</code> attributes
 							are used together to index the array of data items in a 
 							multi-dimensional array.  They may be used as an alternative
@@ -646,9 +706,9 @@
 							determines the starting coordinates of the data array
 							for each dimension.
 							
-							See http://davis.lbl.gov/Manuals/HDF5-1.4.3/Tutor/phypereg.html
+							See <uri>http://davis.lbl.gov/Manuals/HDF5-1.4.3/Tutor/phypereg.html</uri>
 							or <emphasis>4. Dataspace Selection Operations</emphasis> in
-							http://www.hdfgroup.org/HDF5/doc1.6/Dataspaces.html.
+							<uri>http://www.hdfgroup.org/HDF5/doc1.6/Dataspaces.html</uri>.
 							
 							The <code>offset</code> attribute contains a 
 							( TODO: state the common delimiter )
@@ -661,7 +721,7 @@
 				</xs:attribute>
 				<xs:attribute name="interpretation" use="optional"  type="nx:NX_CHAR">
 					<xs:annotation>
-						<xs:documentation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
 							add interpretation attribute to datasets, as discussed at 2010NIAC
 							<!-- TODO interpretation attribute needs a better docstring -->
 						</xs:documentation>
@@ -673,40 +733,45 @@
 	
 	<xs:complexType name="attributeType">
 		<xs:annotation>
-			<xs:documentation>
+			<xs:documentation xmlns="http://docbook.org/ns/docbook">
 				Any new group or field may expect or require some common attributes.
-				Contains:
+				Could contain these elements:
 				<itemizedlist>
 					<listitem><para><code>doc</code></para></listitem>
 					<listitem><para><code>enumeration</code></para></listitem>
 				</itemizedlist>
+				(This data type is used internally in the NXDL schema 
+				to define elements and attributes to be used by users in NXDL specifications.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="doc" type="nx:docType" minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>
-						Description of this specification.
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						Description of this <code>attribute</code>.
+						This documentation will go into the manual.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 			<xs:element name="enumeration" type="nx:enumerationType"
 				minOccurs="0">
 				<xs:annotation>
-					<xs:documentation>An enumeration specifies the values to be used.</xs:documentation>
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						An enumeration specifies the values to be used.
+					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" use="required" type="nx:validItemName">
 			<xs:annotation>
-				<xs:documentation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
 					Unique identifier string (within the enclosing group) for this entity.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="type" type="nx:primitiveType" default="NX_CHAR">
 			<xs:annotation>
-				<xs:documentation>
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
 					For <code>group</code> specifications, the class name.
 					For <code>field</code> or <code>attribute</code> specifications, 
 					the NXDL data type.
@@ -720,6 +785,8 @@
 			<xs:documentation xmlns="http://docbook.org/ns/docbook">
 				A <code>nonNegativeUnbounded</code> allows values including 
 				all positive integers, zero, and the string <code>unbounded</code>.
+				(This data type is used internally in the NXDL schema 
+				to define a data type.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:union>
@@ -738,23 +805,27 @@
 	
 	<xs:complexType name="linkType">
 		<xs:annotation>
-			<xs:documentation>A link to another item.  Use a link to avoid
-			needless repetition of information.</xs:documentation>
+			<xs:documentation xmlns="http://docbook.org/ns/docbook">
+				A link to another item.  Use a link to avoid
+				needless repetition of information.
+				(This data type is used internally in the NXDL schema 
+				to define elements and attributes to be used by users in NXDL specifications.)
+			</xs:documentation>
 		</xs:annotation>
 		<xs:complexContent>
 			<xs:extension base="nx:basicComponent">
 				<xs:attribute name="target" use="required" type="nx:validTargetName">
 					<xs:annotation>
-						<xs:documentation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
 							A link to another item, represented as an
 							absolute path to an existing field such as
 							<code>/NXentry/NXinstrument/NXdetector/polar_angle</code>.
-							Contains:
+							Could contain these elements:
 							<itemizedlist>
 								<listitem><para><code>doc</code></para></listitem>
 							</itemizedlist>
 							Matching regular expression:
-							<code>(/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+</code>
+							<programlisting language="c"><code>(/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+</code></programlisting>
 						</xs:documentation>
 					</xs:annotation>					
 				</xs:attribute>
@@ -781,64 +852,75 @@
 				Refer to examples in the NeXus base class NXDL files such as <code>NXdata</code>.
 				Be sure to use the DocBook namespace if the documentation will use any DocBook formatting elements:
 				<code>xmlns="http://docbook.org/ns/docbook"</code>
-				Contains:
+				Could contain these elements:
 				<itemizedlist>
 					<listitem><para><emphasis>any</emphasis></para></listitem>
 				</itemizedlist>
+				(This data type is used internally in the NXDL schema 
+				to define elements and attributes to be used by users in NXDL specifications.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax"/>
+			<xs:any minOccurs="0" maxOccurs="unbounded" processContents="lax">
+				<!-- TODO Can we make the default namespace be DocBook's? -->
+			</xs:any>
 		</xs:sequence>
 	</xs:complexType>
 	
 	<xs:complexType name="enumerationType">
 		<xs:annotation>
-			<xs:documentation>
-				An enumeration restricts the values allowed for a specification.
-				Each value is specified using an <code>enumItem</code>, such as:
-				<code>enumItem="Ta"</code>.
-				Contains:
+			<xs:documentation xmlns="http://docbook.org/ns/docbook">
+				An <code>enumeration</code> restricts the values allowed for a specification.
+				Each value is specified using an <code>item</code> element, such as:
+				<code>&lt;item value="Synchrotron X-ray Source" /&gt;</code>.
+				Could contain these elements:
 				<itemizedlist>
 					<listitem><para><code>doc</code></para></listitem>
-					<listitem><para><code>enumItem</code></para></listitem>
+					<listitem><para><code>item</code></para></listitem>
 				</itemizedlist>
+				(This data type is used internally in the NXDL schema 
+				to define elements and attributes to be used by users in NXDL specifications.)
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
-			<xs:element name="item" type="nx:enumItemType" minOccurs="1" maxOccurs="unbounded"/>
-		</xs:sequence>
-	</xs:complexType>
-	
-	<xs:complexType name="enumItemType">
-		<xs:annotation>
-			<xs:documentation xmlns="http://docbook.org/ns/docbook">
-				Defines the value of one selection for an <code>enumeration</code> list.
-				Each enumerated item must have a value (it cannot have an empty text node).
-			</xs:documentation>
-		</xs:annotation>
-		<xs:sequence>
-			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1">
+			<xs:element name="item" minOccurs="1" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation xmlns="http://docbook.org/ns/docbook">
-						Individual items can be documented 
-						but enumeration documentation might not
-						printed in the manual.
-						Still OK to use DocBook elements.
-						Be sure to use the DocBook namespace for any DocBook elements:
-						<code>xmlns="http://docbook.org/ns/docbook"</code>
+						One of the prescribed values.  Use the <code>value</code> attribute.
 					</xs:documentation>
-				</xs:annotation>
+				</xs:annotation>				
+				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation xmlns="http://docbook.org/ns/docbook">
+							Defines the value of one selection for an <code>enumeration</code> list.
+							Each enumerated item must have a value (it cannot have an empty text node).
+						</xs:documentation>
+					</xs:annotation>
+					<xs:sequence>
+						<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xmlns="http://docbook.org/ns/docbook">
+									Individual <code>item</code>s can be documented 
+									but <code>enumeration</code> documentation might not get
+									printed in the manual.
+									Still OK to use DocBook markup.
+									Be sure to use the DocBook namespace for any DocBook elements:
+									<code>xmlns="http://docbook.org/ns/docbook"</code>
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="value" use="required">
+						<xs:annotation>
+							<xs:documentation xmlns="http://docbook.org/ns/docbook">
+								The value of <code>value</code> of an <code>enumItem</code>
+								is defined as an attribute rather than a name.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
 			</xs:element>
 		</xs:sequence>
-		<xs:attribute name="value" use="required">
-			<xs:annotation>
-				<xs:documentation xmlns="http://docbook.org/ns/docbook">
-					The value of <code>value</code> of an <code>enumItem</code>
-					is defined as an attribute rather than a name.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 	</xs:complexType>
 	
 	<xs:complexType name="dimsType">
@@ -949,28 +1031,42 @@
 		<!-- ======================= END MAJOR COMMENT =========================== -->
 		<!-- ===================================================================== -->
 		<xs:annotation>
-			<xs:documentation>dimensions of a data element in a NeXus file</xs:documentation>
+			<xs:documentation xmlns="http://docbook.org/ns/docbook">
+				dimensions of a data element in a NeXus file
+				(This data type is used internally in the NXDL schema 
+				to define elements and attributes to be used by users in NXDL specifications.)
+			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
 			<xs:element name="dim" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						TODO
+					</xs:documentation>
+				</xs:annotation>
 				<xs:complexType>
 					<xs:attribute name="index" type="nx:NX_CHAR">
 						<xs:annotation>
-							<xs:documentation>Number indicating which axis (subscript) is 
+							<xs:documentation xmlns="http://docbook.org/ns/docbook">
+								Number indicating which axis (subscript) is 
 								being described, ranging from 1 up to <code>rank</code> (rank of the 
 								data structure).  For example, given an array 
 								<code>A[i,j,k]</code>, 
-								<code>index="1"</code> would refer to the <code>i</code> axis (subscript).</xs:documentation>
+								<code>index="1"</code> would refer to the <code>i</code> axis (subscript).
+							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
 					<xs:attribute name="value" type="nx:NX_CHAR">
 						<xs:annotation>
-							<xs:documentation>Length (number of values) of this axis.</xs:documentation>
+							<xs:documentation xmlns="http://docbook.org/ns/docbook">
+								Length (number of values) of this axis.
+							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
 					<xs:attribute name="ref" type="nx:NX_CHAR">
 						<xs:annotation>
-							<xs:documentation>The dimension specification is the same as 
+							<xs:documentation xmlns="http://docbook.org/ns/docbook">
+								The dimension specification is the same as 
 								that in the <code>ref</code> field, specified either by a relative path, 
 								such as <code>polar_angle</code> or <code>../Qvec</code> or absolute path, such as
 								<code>/entry/path/to/follow/to/ref/field</code>.
@@ -979,17 +1075,21 @@
 					</xs:attribute>
 					<xs:attribute name="refindex" type="nx:NX_CHAR">
 						<xs:annotation>
-							<xs:documentation>The dimension specification is the same as 
+							<xs:documentation xmlns="http://docbook.org/ns/docbook">
+								The dimension specification is the same as 
 								the <code>refindex</code> axis within the <code>ref</code> field.
-								Requires <code>ref</code> attribute to be present.</xs:documentation>
+								Requires <code>ref</code> attribute to be present.
+							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
 					<xs:attribute name="incr" type="nx:NX_CHAR">
 						<xs:annotation>
-							<xs:documentation>The dimension specification is related to
+							<xs:documentation xmlns="http://docbook.org/ns/docbook">
+								The dimension specification is related to
 								the <code>refindex</code> axis within the <code>ref</code> field by an 
 								offset of <code>incr</code>.  Requires <code>ref</code> and <code>refindex</code>
-								attributes to be present.</xs:documentation>
+								attributes to be present.
+							</xs:documentation>
 						</xs:annotation>
 					</xs:attribute>
 				</xs:complexType>
@@ -997,11 +1097,13 @@
 		</xs:sequence>
 		<xs:attribute name="rank" type="nx:NX_CHAR">
 			<xs:annotation>
-				<xs:documentation>Rank (number of dimensions) of the data structure.  
+				<xs:documentation xmlns="http://docbook.org/ns/docbook">
+					Rank (number of dimensions) of the data structure.  
 					For example: <code>a[5]</code> has <code>rank="1"</code> while 
 					<code>b[8,5,6,4]</code> has <code>rank="4"</code>.  
-					See <code>http://en.wikipedia.org/wiki/Rank_(computer_programming)</code> 
-					for more details.</xs:documentation>
+					See <uri>http://en.wikipedia.org/wiki/Rank_(computer_programming)</uri> 
+					for more details.
+				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 	</xs:complexType>
