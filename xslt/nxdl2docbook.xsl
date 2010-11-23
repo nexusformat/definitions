@@ -589,7 +589,14 @@ Usage:
                         </xsl:when>
                         <xsl:when test="count(nx:doc/child::*)>0">
                             <xsl:comment>branch-B</xsl:comment>
-                            <xsl:apply-templates select="nx:doc"/>
+                            <xsl:choose>
+                                <xsl:when test="count(nx:doc/db:para)">
+                                    <xsl:apply-templates select="nx:doc"/>
+                                </xsl:when>
+                                <xsl:otherwise>
+                                    <para><xsl:apply-templates select="nx:doc"/></para>
+                                </xsl:otherwise>
+                            </xsl:choose>
                         </xsl:when>
                     </xsl:choose>
                 </xsl:element>

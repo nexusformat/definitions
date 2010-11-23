@@ -123,9 +123,9 @@ Usage:
             </section>
             
             <section>
-                <title>NXDL element: <code>dims</code> </title>
+                <title>NXDL element: <code>dimensions</code> </title>
                 <para>
-                    The components of the <code>dims</code> element are described here.
+                    The components of the <code>dimensions</code> element are described here.
                     <indexterm>
                         <primary>NXDL</primary>
                         <secondary>element</secondary>
@@ -137,7 +137,7 @@ Usage:
                 </para>
                 <variablelist>
                    <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='dimsType']" />
-                       <xslt:apply-templates 
+                   <xslt:apply-templates 
 select="/xsd:schema//xsd:complexType[@name='dimsType']/xsd:sequence/xsd:element[@name='dim']/xsd:complexType//xsd:attribute" />
                 </variablelist>
             </section>
@@ -165,6 +165,14 @@ select="/xsd:schema//xsd:complexType[@name='dimsType']/xsd:sequence/xsd:element[
                              use an element that is not directly specified by the NXDL language. 
                              The <emphasis>any</emphasis> element here says that one can use any element
                              at all in a <code>doc</code> element and NXDL will not process it but pass it through.
+                             
+                             When DocBook markup is used,
+                             be sure to use the provided DocBook namespace prefix 
+                             (<code>db:</code>) for any DocBook elements,
+                             such as this example:
+                             <programlisting language="xml"><code
+			>&lt;doc&gt;&lt;db:para&gt;this is documentation with DocBook markup&lt;/db:para&gt;&lt;/doc&gt;</code
+										></programlisting>
                          </para>
                     </listitem>
                   </varlistentry>
@@ -205,9 +213,9 @@ select="/xsd:schema//xsd:complexType[@name='dimsType']/xsd:sequence/xsd:element[
                 <variablelist>
                     <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='fieldType']" />
                     <xslt:apply-templates 
-                        select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:extension//xsd:attribute" />
-                    <xslt:apply-templates 
 select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:extension/xsd:sequence//xsd:element" />
+                    <xslt:apply-templates 
+                        select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:extension//xsd:attribute" />
                 </variablelist>
             </section>
             
@@ -225,8 +233,8 @@ select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:e
                     </xslt:call-template>
                 </para>
                 <variablelist>
-                     <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='groupType']" />
                      <xslt:apply-templates select="/xsd:schema//xsd:group" />
+                     <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='groupType']" />
                 </variablelist>
             </section>
             
