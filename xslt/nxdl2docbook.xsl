@@ -24,6 +24,7 @@ Usage:
 	xmlns:nx="http://definition.nexusformat.org/nxdl/3.1"
 	xmlns:xi="http://www.w3.org/2001/XInclude"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
+	xmlns:db="http://docbook.org/ns/docbook"
     >
 
     <!-- 
@@ -208,9 +209,24 @@ Usage:
                 +++++++++++++++++++++ -->
             <xsl:element name="entry">
                 <xsl:if test="count(nx:doc)">
-                    <xsl:element name="para">
-                        <xsl:apply-templates select="nx:doc"/>
-                    </xsl:element>
+                    <xsl:choose>
+                        <xsl:when test="count(nx:doc/db:para)">
+                            <!-- 
+                                look ahead and avoid writing para within para 
+                                This allows users to enclose documentation with 
+                                    para xmlns="http://docbook.org/ns/docbook"
+                                Even better if we could do this automatically and hide the
+                                DocBook namespace call.  NXDL authors will get this 
+                                wrong as often as they get it right.
+                            -->
+                           <xsl:apply-templates select="nx:doc"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:element name="para">
+                                <xsl:apply-templates select="nx:doc"/>
+                            </xsl:element>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:if>
                 <xsl:if test="count(@minOccurs)+count(@maxOccurs)">
                     <xsl:element name="para">
@@ -245,7 +261,9 @@ Usage:
                 +++++++++++++++++++++ -->
             <xsl:for-each select="nx:group|nx:field">
                 <xsl:comment
-                    >subitem: <xsl:value-of select="name()"/>, <xsl:value-of select="@name"/>, <xsl:value-of select="@type"/>
+                    >subitem: <xsl:value-of select="name()"
+                    />, <xsl:value-of select="@name"
+                    />, <xsl:value-of select="@type"/>
                 </xsl:comment>
             </xsl:for-each>
         </xsl:element><!-- row -->
@@ -389,12 +407,15 @@ Usage:
         <xsl:if test="count(nx:dim)">
             <xsl:element name="itemizedlist">
                 <xsl:for-each select="nx:dim">
-                    <xsl:element name="listitem"> <xsl:element name="para"> dim: 
-                        <xsl:for-each select="@*">
-                            <xsl:value-of select="name()"/>="<xsl:value-of select="."/>"
-                        </xsl:for-each>
-                        <xsl:if test="count(.)"> value="<xsl:value-of select="."/>"</xsl:if>
-                    </xsl:element></xsl:element>
+                    <xsl:element name="listitem">
+                        <xsl:element name="para"> dim: 
+                            <xsl:for-each select="@*">
+                                <xsl:element name="code">
+                                    <xsl:value-of select="name()"/>="<xsl:value-of select="."/>"
+                                </xsl:element>
+                            </xsl:for-each>
+                        </xsl:element>
+                    </xsl:element>
                 </xsl:for-each>
             </xsl:element>
         </xsl:if>

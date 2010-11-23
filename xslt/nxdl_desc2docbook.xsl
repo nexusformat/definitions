@@ -313,13 +313,13 @@ Usage:
     
     <xslt:template match="xsd:complexType|xsd:simpleType|xsd:group|xsd:element|xsd:attribute">
         <xslt:if test="count(@name)">
-            <section>
+            <section><!-- TODO too many subsections -->
                 <title>
                     <xslt:if test="name()='xs:attribute'">@</xslt:if
                     ><code><xslt:value-of select="@name"/></code>
                     <xslt:choose>
-                        <xslt:when test="name()='xs:complexType'">data type</xslt:when>
-                        <xslt:when test="name()='xs:simpleType'">data type</xslt:when>
+                        <xslt:when test="name()='xs:complexType'"> data type</xslt:when>
+                        <xslt:when test="name()='xs:simpleType'"> data type</xslt:when>
                     </xslt:choose>
                 </title>
                 <para>

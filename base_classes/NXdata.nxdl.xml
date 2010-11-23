@@ -55,20 +55,31 @@
 			can be defined with different names.  
 			The <code>signal</code> and <code>axes</code> attribute of the 
 			<code>data</code> item define which items 
-			are plottable data and which are dimension scales.
+			are plottable data and which are <emphasis>dimension scales</emphasis>.
+			<indexterm>
+				<primary>NeXus basic motivation</primary>
+				<secondary>default plot</secondary>
+			</indexterm>
 			<itemizedlist>
 				<listitem>
 					<para>Each <code>NXdata</code> group will consist of only one data set
 						containing plottable data and their standard deviations.</para>
 				</listitem>
 				<listitem>
+					<para>This data set may be of arbitrary rank up to a maximum
+						of <literal>NX_MAXRANK=32</literal>. </para>
+				</listitem>
+				<listitem>
 					<para>
-						The data set will be identified by the attribute:
+						The plottable data will be identified by the attribute:
 						<code>signal="1"</code>
 					</para>
 				</listitem>
 				<listitem>
-					<para>This data set may be of arbitrary rank. </para>
+					<para>
+						The plottable data will identify the <emphasis>dimension 
+							scale</emphasis>(s) in the <code>axes</code> attribute.
+					</para>
 				</listitem>
 			</itemizedlist> 
 			If available, the standard deviations of the data are to be
@@ -79,7 +90,7 @@
 						of the same length. </para>
 				</listitem>
 				<listitem>
-					<para>These one-dimensional arrays are the <emphasis>dimension scales</emphasis> of the
+					<para>These one-dimensional arrays are the <emphasis>dimension scale</emphasis>s of the
 						data,  <emphasis>i.e</emphasis>. the values of the independent variables at which the data
 						is measured, such as scattering angle or energy transfer. </para>
 				</listitem>
@@ -88,30 +99,49 @@
 			<indexterm>
 				<primary>link</primary>
 			</indexterm> 
-			each data dimension to its respective dimension scale. 
-			One method uses the <code>axis</code> attribute to identify
-			with an integer the axis whose value is the number of the dimension.
-			The second method is preferred, which uses the <code>axes</code> 
+			each data dimension to its respective dimension scale.
+			
+			The preferred (and recommended) method uses the <code>axes</code> 
 			<indexterm>
 				<primary>axes</primary>
 			</indexterm> 
-			attribute to specify the names of each dimension's scale.
+			attribute to specify the names of each <emphasis>dimension scale</emphasis>.
+			
+			The older method uses the <code>axis</code> attribute on each
+			<emphasis>dimension scale</emphasis>
+			to identify
+			with an integer the axis whose value is the number of the dimension.
 			
 			<code>NXdata</code> is used to implement one of the basic motivations in NeXus,
 			to provide a default plot for the data of this <code>NXentry</code>.  The actual data
 			might be stored in another group and (hard) linked to the <code>NXdata</code> group.
 		</para>
+		
 	</doc>
 	<field name="variable" type="NX_NUMBER">
-	 	<doc>
-	 		Dimension scale defining an axis of the data.
-	 		Client is responsible for defining the dimensions of the data.  <!-- Is this sufficient? -->
+		<doc>
+			<para xmlns="http://docbook.org/ns/docbook">
+		 		Dimension scale defining an axis of the data.
+		 		Client is responsible for defining the dimensions of the data.
+			</para>
 	 	</doc>
-		<!--<dimensions rank="1"><!-\-[:]-\->
-			<dim index="1" value="i"/><!-\- How can this be right?  TODO -\->
-		</dimensions>-->
+		<dimensions rank="1">
+			<doc>
+				<para xmlns="http://docbook.org/ns/docbook">
+					A dimension scale must have a rank of 1 and has length "n".
+				</para>
+			</doc>
+			<dim index="1" value="n"/>
+		</dimensions>
 		<attribute name="long_name"><doc>Axis label</doc></attribute>
-		<attribute name="distribution" type="NX_BOOLEAN"><doc>0|false: single value, 1|true: multiple values</doc></attribute>
+		<attribute name="distribution" type="NX_BOOLEAN">
+			<doc>
+				<para xmlns="http://docbook.org/ns/docbook">
+					<code>0|false</code>: single value, 
+					<code>1|true</code>: multiple values
+				</para>
+			</doc>
+		</attribute>
         <attribute name="first_good" type="NX_INT"><doc>Index of first good value</doc></attribute>
 		<attribute name="last_good" type="NX_INT"><doc>Index of last good value</doc></attribute>
 		<attribute name="axis" type="NX_POSINT">
@@ -119,6 +149,7 @@
 				<para xmlns="http://docbook.org/ns/docbook">
 					Index (positive integer) identifying this specific set of numbers.
 					N.B. The <code>axis</code> attribute is the old way of designating a link.  
+					Do not use the <code>axes</code> attribute with the <code>axis</code> attribute.
 					The <code>axes</code> attribute is now preferred.
 				</para>
 			</doc>
@@ -126,23 +157,46 @@
 	</field>
 	<field name="variable_errors" type="NX_NUMBER">
 		<doc>
-			Errors (uncertainties) associated with axis "variable"
-			Client is responsible for defining the dimensions of the data.  <!-- Is this sufficient? -->
+			<para xmlns="http://docbook.org/ns/docbook">
+				Errors (uncertainties) associated with axis <code>variable</code>
+				Client is responsible for defining the dimensions of the data.
+			</para>
 		</doc>
-		<!--<dimensions rank="1"><!-\-[:]-\->
-			<dim index="1" value="i"/><!-\- How can this be right?  TODO -\->
-			</dimensions>-->
+		<dimensions rank="1">
+			<doc>
+				<para xmlns="http://docbook.org/ns/docbook">
+					A dimension scale must have a rank of 1 and has length "n", same as <code>variable</code>.
+				</para>
+			</doc>
+			<dim index="1" value="n"/>
+		</dimensions>
 	</field>
 	<field name="data" type="NX_NUMBER">
 		<doc>
-			Data values
-			Client is responsible for defining the dimensions of the data.  <!-- Is this sufficient? -->
+			<para xmlns="http://docbook.org/ns/docbook">
+				Data values
+				Client is responsible for defining the dimensions of the data.
+			</para>
 		</doc>
-		<!--<dimensions rank="1"><!-\-[:]-\->
-			<dim index="1" value="i"/><!-\- How can this be right?  TODO -\->
-			</dimensions>-->
+		<dimensions rank="dataRank">
+			<doc>
+				<para xmlns="http://docbook.org/ns/docbook">
+					The rank (<code>dataRank</code>) of the <code>data</code> must satisfy
+					<literal>1 &lt;= dataRank &lt;= NX_MAXRANK=32</literal>.  
+					At least one <code>dim</code> must have length "n".
+				</para>
+			</doc>
+			<dim value="n"/>
+		</dimensions>
 		<attribute name="signal" type="NX_INT">
-			<doc>plottable (independent) axis, indicate index number</doc>
+			<doc>
+				<para xmlns="http://docbook.org/ns/docbook">
+					Plottable (independent) axis, indicate index number.
+					Only one field in a <code>NXdata</code> group may have the 
+					<code>signal="1"</code> attribute.
+					Do not use the <code>signal</code> attribute with the <code>axis</code> attribute.
+				</para>
+			</doc>
 		</attribute>
 		<attribute name="axes">
 			<doc>
@@ -152,6 +206,7 @@
 					as a colon-delimited array.
 					N.B. The <code>axes</code> attribute is the preferred 
 					method of designating a link.  
+					Do not use the <code>axes</code> attribute with the <code>axis</code> attribute.
 				</para>
 			</doc>
 		</attribute>
@@ -165,30 +220,47 @@
 				</para>
 			</doc>
 		</attribute>
-		<attribute name="long_name"><doc>data label</doc></attribute>
+		<attribute name="long_name">
+			<doc>data label</doc>
+		</attribute>
 	</field>
 	<field name="errors" type="NX_NUMBER">
 		<doc>
-			Standard deviations of data values - 
-			the data array is identified by the attribute signal="1". 
-			This array must have the same dimensions as the data.
-			Client is responsible for defining the dimensions of the data.  <!-- Is this sufficient? -->
+			<para xmlns="http://docbook.org/ns/docbook">
+				Standard deviations of data values - 
+				the data array is identified by the attribute <code>signal="1"</code>. 
+				The <code>errors</code> array must have the same dimensions as <code>data</code>.
+				Client is responsible for defining the dimensions of the data.
+			</para>
 		</doc>
-		<!--<dimensions rank="1"><!-\-[:]-\->
-			<dim index="1" value="i"/><!-\- How can this be right?  TODO -\->
-			</dimensions>-->
+		<dimensions rank="dataRank">
+			<doc>
+				<para xmlns="http://docbook.org/ns/docbook">
+					The <code>errors</code> must have a the same rank (<code>dataRank</code>) 
+					as the <code>data</code>.  
+					At least one <code>dim</code> must have length "n".
+				</para>
+			</doc>
+			<dim value="n"/>
+		</dimensions>
 	</field>
 	<field name="scaling_factor" type="NX_FLOAT">
 		<doc>
-			The elements in data are usually float values really. For
-			efficiency reasons these are usually stored as integers
-			after scaling with a scale factor. This value is the scale
-			factor. It is required to get the actual physical value,
-			when necessary.
+			<para xmlns="http://docbook.org/ns/docbook">
+				The elements in data are usually float values really. For
+				efficiency reasons these are usually stored as integers
+				after scaling with a scale factor. This value is the scale
+				factor. It is required to get the actual physical value,
+				when necessary.
+			</para>
 		</doc>
 	</field>
 	<field name="offset" type="NX_FLOAT">
-		<doc>An optional offset to apply to the values in data. </doc>
+		<doc>
+			<para xmlns="http://docbook.org/ns/docbook">
+				An optional offset to apply to the values in data.
+			</para>
+		</doc>
 	</field>
 	<field name="x" type="NX_FLOAT" units="NX_ANY">
 		<doc>
