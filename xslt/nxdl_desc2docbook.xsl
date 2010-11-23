@@ -40,7 +40,7 @@ Usage:
         
         <xslt:comment>###########################################################</xslt:comment>
         <xslt:comment>######    This XML file was auto-generated from      ######</xslt:comment>
-        <xslt:comment>######    an NXDL file by an XSLT transformation.    ######</xslt:comment>
+        <xslt:comment>######    nxdl.xsd file by an XSLT transformation.   ######</xslt:comment>
         <xslt:comment>######    Do NOT edit this DocBook XML file.         ######</xslt:comment>
         <xslt:comment>###########################################################</xslt:comment>
         
@@ -97,9 +97,9 @@ Usage:
                         <xslt:with-param name="short">attribute</xslt:with-param>
                     </xslt:call-template>
                 </para>
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='attributeType']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
+                <variablelist>
+                     <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='attributeType']" />
+                </variablelist>
             </section>
 
             <section>
@@ -115,14 +115,11 @@ Usage:
                         <xslt:with-param name="short">definition</xslt:with-param>
                     </xslt:call-template>
                 </para>
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates select="/xsd:schema//xsd:element[@name='definition']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='definitionType']" />
-                <!-- TODO need to document a 'restriction' -->
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates select="/xsd:schema//xsd:simpleType[@name='definitionTypeAttr']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
+                <variablelist>
+                    <xslt:apply-templates select="/xsd:schema//xsd:element[@name='definition']" />
+                    <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='definitionType']" />
+                    <xslt:apply-templates select="/xsd:schema//xsd:simpleType[@name='definitionTypeAttr']" />
+                </variablelist>
             </section>
             
             <section>
@@ -138,16 +135,11 @@ Usage:
                         <xslt:with-param name="short">dims</xslt:with-param>
                     </xslt:call-template>
                 </para>
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='dimsType']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <section>
-                    <title>attributes of <code>dims</code></title>
-                    <xslt:comment/><!-- tricks XSLT to start a new line -->
-                    <xslt:apply-templates 
-                        select="/xsd:schema//xsd:complexType[@name='dimsType']/xsd:sequence/xsd:element[@name='dim']/xsd:complexType//xsd:attribute" />
-                    <xslt:comment/><!-- tricks XSLT to start a new line -->
-                </section>
+                <variablelist>
+                   <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='dimsType']" />
+                       <xslt:apply-templates 
+select="/xsd:schema//xsd:complexType[@name='dimsType']/xsd:sequence/xsd:element[@name='dim']/xsd:complexType//xsd:attribute" />
+                </variablelist>
             </section>
             
             <section>
@@ -163,18 +155,20 @@ Usage:
                         <xslt:with-param name="short">doc</xslt:with-param>
                     </xslt:call-template>
                 </para>
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
+                <variablelist>
                 <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='docType']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <section>
-                    <title>element: <emphasis>any</emphasis></title>
-                    <para>
-                        In documentation with DocBook markup tags, it may be useful to
-                        use an element that is not directly specified by the NXDL language. 
-                        The <emphasis>any</emphasis> element here says that one can use any element
-                        at all in a <code>doc</code> element and NXDL will not process it but pass it through.
-                    </para>
-                </section>
+                <varlistentry>
+                    <term>element: <emphasis>any</emphasis></term>
+                    <listitem>
+                         <para>
+                             In documentation with DocBook markup tags, it may be useful to
+                             use an element that is not directly specified by the NXDL language. 
+                             The <emphasis>any</emphasis> element here says that one can use any element
+                             at all in a <code>doc</code> element and NXDL will not process it but pass it through.
+                         </para>
+                    </listitem>
+                  </varlistentry>
+                </variablelist>
             </section>
             
             <section>
@@ -190,9 +184,9 @@ Usage:
                         <xslt:with-param name="short">enumeration</xslt:with-param>
                     </xslt:call-template>
                 </para>
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='enumerationType']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
+                <variablelist>
+                    <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='enumerationType']" />
+                </variablelist>
             </section>
             
             <section>
@@ -208,15 +202,13 @@ Usage:
                         <xslt:with-param name="short">field</xslt:with-param>
                     </xslt:call-template>
                 </para>
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='fieldType']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates 
-                    select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:extension//xsd:attribute" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates 
-                    select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:extension/xsd:sequence//xsd:element" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
+                <variablelist>
+                    <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='fieldType']" />
+                    <xslt:apply-templates 
+                        select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:extension//xsd:attribute" />
+                    <xslt:apply-templates 
+select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:extension/xsd:sequence//xsd:element" />
+                </variablelist>
             </section>
             
             <section>
@@ -232,11 +224,10 @@ Usage:
                         <xslt:with-param name="short">group</xslt:with-param>
                     </xslt:call-template>
                 </para>
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='groupType']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates select="/xsd:schema//xsd:group" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
+                <variablelist>
+                     <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='groupType']" />
+                     <xslt:apply-templates select="/xsd:schema//xsd:group" />
+                </variablelist>
             </section>
             
             <section>
@@ -252,9 +243,9 @@ Usage:
                         <xslt:with-param name="short">link</xslt:with-param>
                     </xslt:call-template>
                 </para>
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='linkType']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
+                <variablelist>
+                     <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='linkType']" />
+                </variablelist>
             </section>
             
             <section>
@@ -266,97 +257,92 @@ Usage:
                     or to simplify a complicated entry.  While the data types are not intended for
                     use in NXDL specifications, they define structures that may be used in NXDL specifications. 
                 </para>
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
+                <variablelist>
                 <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='basicComponent']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
                 <xslt:apply-templates select="/xsd:schema//xsd:simpleType[@name='validItemName']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
                 <xslt:apply-templates select="/xsd:schema//xsd:simpleType[@name='validNXClassName']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
                 <xslt:apply-templates select="/xsd:schema//xsd:simpleType[@name='validTargetName']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
                 <xslt:apply-templates select="/xsd:schema//xsd:simpleType[@name='nonNegativeUnbounded']" />
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <section>
-                    <title>The <code>xs:string</code> data type</title>
-                    <para>
-                        The <code>xs:string</code> data type can contain characters, 
-                        line feeds, carriage returns, and tab characters.
-                        See <uri>http://www.w3schools.com/Schema/schema_dtypes_string.asp</uri> 
-                        for more details.
-                    </para>
-                </section>
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-                <section>
-                    <title>The <code>xs:token</code> data type</title>
-                    <para>
-                        The <code>xs:string</code> data type is derived from the 
-                        <code>xs:string</code> data type.
-                    </para>
-                    <para>
-                        The <code>xs:token</code> data type also contains characters, 
-                        but the XML processor will remove line feeds, carriage returns, tabs, 
-                        leading and trailing spaces, and multiple spaces.
-                        See <uri>http://www.w3schools.com/Schema/schema_dtypes_string.asp</uri> 
-                        for more details.
-                    </para>
-                </section>
-                <xslt:comment/><!-- tricks XSLT to start a new line -->
-
+                <varlistentry>
+                    <term>The <code>xs:string</code> data type</term>
+                        <listitem>
+                               <para>
+                                   The <code>xs:string</code> data type can contain characters, 
+                                   line feeds, carriage returns, and tab characters.
+                                   See <uri>http://www.w3schools.com/Schema/schema_dtypes_string.asp</uri> 
+                                   for more details.
+                               </para>
+                        </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>The <code>xs:token</code> data type</term>
+                    <listitem>
+                          <para>
+                              The <code>xs:string</code> data type is derived from the 
+                              <code>xs:string</code> data type.
+                          </para>
+                          <para>
+                              The <code>xs:token</code> data type also contains characters, 
+                              but the XML processor will remove line feeds, carriage returns, tabs, 
+                              leading and trailing spaces, and multiple spaces.
+                              See <uri>http://www.w3schools.com/Schema/schema_dtypes_string.asp</uri> 
+                              for more details.
+                          </para>
+                    </listitem>
+                </varlistentry>
+              </variablelist>
             </section>
         </xslt:element>
-
     </xslt:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xslt:template match="xsd:complexType|xsd:simpleType|xsd:group|xsd:element|xsd:attribute">
         <xslt:if test="count(@name)">
-            <section><!-- TODO too many subsections -->
-                <title>
-                    <xslt:if test="name()='xs:attribute'">@</xslt:if
-                    ><code><xslt:value-of select="@name"/></code>
-                    <xslt:choose>
-                        <xslt:when test="name()='xs:complexType'"> data type</xslt:when>
-                        <xslt:when test="name()='xs:simpleType'"> data type</xslt:when>
-                    </xslt:choose>
-                </title>
-                <para>
-                    <xslt:apply-templates select="xsd:annotation/xsd:documentation"/>
-                </para>
-                <xslt:apply-templates select="xsd:sequence//xsd:element"/>
-                <xslt:apply-templates select="xsd:simpleType"/>
-                <xslt:apply-templates select="xsd:complexType"/>
-                <xslt:apply-templates select="xsd:restriction"/>
-                <xslt:apply-templates select="xsd:attribute"/>
-            </section>
+            <varlistentry>
+                 <term>
+                     <xslt:if test="name()='xs:attribute'">@</xslt:if
+                        ><code><xslt:value-of select="@name"/></code>
+                     <xslt:choose>
+                       <xslt:when test="name()='xs:complexType'"> data type</xslt:when>
+                       <xslt:when test="name()='xs:simpleType'"> data type</xslt:when>
+                     </xslt:choose>:
+                 </term>
+                <listitem>
+                     <para>
+                         <xslt:apply-templates select="xsd:annotation/xsd:documentation"/>
+                         <xslt:apply-templates select="xsd:restriction"/>
+                     </para>
+                </listitem>
+            </varlistentry>
+            <xslt:apply-templates select="xsd:sequence//xsd:element"/>
+            <xslt:apply-templates select="xsd:simpleType"/>
+            <xslt:apply-templates select="xsd:complexType"/>
+            <xslt:apply-templates select="xsd:attribute"/>
         </xslt:if>
     </xslt:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xslt:template match="xsd:restriction">
-        <para>
-            The value may be any
-            <xslt:choose>
-                <xslt:when test="count(xsd:pattern)">
-                    <code><xslt:value-of select="@base"/></code>
-                    that <emphasis>also</emphasis> matches the regular expression:
-                    <programlisting language="c"><code><xslt:value-of select="xsd:pattern/@value"/></code></programlisting>
-                </xslt:when>
-                <xslt:when test="count(xsd:pattern)">
-                    <code><xslt:value-of select="@base"/></code>
-                    from this list:
-    				<itemizedlist>
-    				    <xslt:apply-templates select="xsd:enumeration"/>
-    				</itemizedlist>
-                </xslt:when>
-                <xslt:otherwise>
-                    <code><xslt:value-of select="@base"/></code>.
-                </xslt:otherwise>
-            </xslt:choose>
-        </para>
+        The value may be any
+        <xslt:choose>
+            <xslt:when test="count(xsd:pattern)">
+                <code><xslt:value-of select="@base"/></code>
+                that <emphasis>also</emphasis> matches the regular expression:
+                <programlisting language="c"><code><xslt:value-of select="xsd:pattern/@value"/></code></programlisting>
+            </xslt:when>
+            <xslt:when test="count(xsd:pattern)">
+                <code><xslt:value-of select="@base"/></code>
+                from this list:
+    			<itemizedlist>
+    			    <xslt:apply-templates select="xsd:enumeration"/>
+    			</itemizedlist>
+            </xslt:when>
+            <xslt:otherwise>
+                <code><xslt:value-of select="@base"/></code>.
+            </xslt:otherwise>
+        </xslt:choose>
     </xslt:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -371,9 +357,9 @@ Usage:
         <xslt:param name="short"/>
         <xslt:if test="count($short)">
             <xslt:element name="figure">
-              <xslt:attribute name="xml:id">
-                  fig.nxdl.<xslt:value-of select="$short"/>
-              </xslt:attribute>
+              <xslt:attribute name="xml:id"
+                  >fig.nxdl.<xslt:value-of select="$short"
+                  /></xslt:attribute>
               <title>
                   Graphical representation of the NXDL 
                   <code><xslt:value-of select="$short"/></code> 
