@@ -81,13 +81,34 @@ Usage:
                 The documentation in this section has been obtained directly 
                 from the <code>nxdl.xsd</code> NXDL Schema.
                 First, the basic elements are defined in alphabetical order.  
-                Then, the common data types are defined.
+                Attributes to an element are indicated immediately following the element
+                and are preceded with an "@" symbol, such as
+                <emphasis role="bold">@attribute</emphasis>.
+                Then, the common data types used within the NXDL specification are defined.
+                Pay particular attention to the rules for <code>validItemName</code>
+                and  <code>validNXClassName</code>.
             </para>
+            
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+            <!--
+                2010-11-29,PRJ:
+                This contains a lot of special case code to lay out the NXDL chapter.
+                It could be cleaner but that would also involve some cooperation on 
+                anyone who edits nxdl.xsd which is sure to break.  The special case ensures
+                the parts come out in the chosen order.  BUT, it is possible that new
+                items in nxdl.xsd will not automatically go in the manual.
+                Can this be streamlined with some common methods?
+                Also, there is probably too much documentation in nxdl.xsd.  Obscures the function.
+            -->
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
             
             <section>
                 <title>NXDL element: <code>attribute</code> </title>
                 <para>
-                    The components of the <code>attribute</code> element are described here.
+                    An <code>attribute</code> element can <emphasis>only</emphasis> be a child of a 
+                    <literal>field</literal> or <literal>group</literal> element.
+                    It is used to define <emphasis>attribute</emphasis>s to be used and their data types
+                    and possibly an enumeration of allowed values.
                     <indexterm>
                         <primary>NXDL</primary>
                         <secondary>element</secondary>
@@ -101,11 +122,16 @@ Usage:
                      <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='attributeType']" />
                 </variablelist>
             </section>
+            
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
             <section>
                 <title>NXDL element: <code>definition</code> </title>
                 <para>
-                    The components of the <code>definition</code> element are described here.
+                    A <code>definition</code> element can <emphasis>only</emphasis> be used
+                    at the root level of an NXDL specification.
+                    Note:  Due to the large number of attributes of the <code>definition</code> element,
+                    they have been omitted from the figure below.
                     <indexterm>
                         <primary>NXDL</primary>
                         <secondary>element</secondary>
@@ -122,30 +148,36 @@ Usage:
                 </variablelist>
             </section>
             
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+            
             <section>
                 <title>NXDL element: <code>dimensions</code> </title>
                 <para>
-                    The components of the <code>dimensions</code> element are described here.
+                    The <code>dimensions</code> element describes the <emphasis>shape</emphasis> of an array.
+                    It is used <emphasis>only</emphasis> as a child of a <literal>field</literal> element.
                     <indexterm>
                         <primary>NXDL</primary>
                         <secondary>element</secondary>
-                        <tertiary>dims</tertiary>
+                        <tertiary>dimensions</tertiary>
                     </indexterm>
                     <xslt:call-template name="elementDiagram">
-                        <xslt:with-param name="short">dims</xslt:with-param>
+                        <xslt:with-param name="short">dimensions</xslt:with-param>
                     </xslt:call-template>
                 </para>
                 <variablelist>
-                   <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='dimsType']" />
+                    <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='dimensionsType']" />
                    <xslt:apply-templates 
-select="/xsd:schema//xsd:complexType[@name='dimsType']/xsd:sequence/xsd:element[@name='dim']/xsd:complexType//xsd:attribute" />
+select="/xsd:schema//xsd:complexType[@name='dimensionsType']/xsd:sequence/xsd:element[@name='dim']/xsd:complexType//xsd:attribute" />
                 </variablelist>
             </section>
+            
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
             
             <section>
                 <title>NXDL element: <code>doc</code> </title>
                 <para>
-                    The components of the <code>doc</code>element are described here.
+                    A <code>doc</code> element can be a child of most NXDL elements.  In most cases, the
+                    content of the <code>doc</code> element will also become part of the NeXus manual.
                     <indexterm>
                         <primary>NXDL</primary>
                         <secondary>element</secondary>
@@ -179,10 +211,16 @@ select="/xsd:schema//xsd:complexType[@name='dimsType']/xsd:sequence/xsd:element[
                 </variablelist>
             </section>
             
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+            
             <section>
                 <title>NXDL element: <code>enumeration</code></title>
                 <para>
-                    The components of the <code>enumeration</code> element are described here.
+                    An <code>enumeration</code> element can <emphasis>only</emphasis> be a child of a 
+                    <literal>field</literal> or <literal>attribute</literal> element.
+                    It is used to restrict the available choices to a predefined list,
+                    such as to control varieties in spelling of a controversial word (such as
+                    <emphasis>metre</emphasis> vs. <emphasis>meter</emphasis>).
                     <indexterm>
                         <primary>NXDL</primary>
                         <secondary>element</secondary>
@@ -197,10 +235,16 @@ select="/xsd:schema//xsd:complexType[@name='dimsType']/xsd:sequence/xsd:element[
                 </variablelist>
             </section>
             
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+            
             <section>
                 <title>NXDL element: <code>field</code></title>
                 <para>
-                    The components of the <code>field</code> element are described here.
+                    The <code>field</code> element provides the value of a named item.  Many different attributes
+                    are available to further define the <code>field</code>.  Some of the attributes are not
+                    allowed to be used together (such as <code>axes</code> and <code>axis</code>); see the documentation
+                    of each for details.
+                    It is used <emphasis>only</emphasis> as a child of a <literal>group</literal> element.
                     <indexterm>
                         <primary>NXDL</primary>
                         <secondary>element</secondary>
@@ -209,20 +253,27 @@ select="/xsd:schema//xsd:complexType[@name='dimsType']/xsd:sequence/xsd:element[
                     <xslt:call-template name="elementDiagram">
                         <xslt:with-param name="short">field</xslt:with-param>
                     </xslt:call-template>
+                    Note:  Due to the large number of attributes of the <code>field</code> element,
+                    they have been omitted from the figure below.
                 </para>
                 <variablelist>
+                    <xslt:apply-templates 
+select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:extension//xsd:attribute" />
                     <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='fieldType']" />
                     <xslt:apply-templates 
 select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:extension/xsd:sequence//xsd:element" />
-                    <xslt:apply-templates 
-                        select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:extension//xsd:attribute" />
                 </variablelist>
             </section>
+            
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
             
             <section>
                 <title>NXDL element: <code>group</code></title>
                 <para>
-                    The components of the <code>group</code> element are described here.
+                    A <code>group</code> element can <emphasis>only</emphasis> be a child of a 
+                    <literal>definition</literal> or <literal>group</literal> element.
+                    It describes a common level of organization in a NeXus data file, similar
+                    to a subdirectory in a file directory tree.
                     <indexterm>
                         <primary>NXDL</primary>
                         <secondary>element</secondary>
@@ -233,15 +284,20 @@ select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:e
                     </xslt:call-template>
                 </para>
                 <variablelist>
-                     <xslt:apply-templates select="/xsd:schema//xsd:group" />
                      <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='groupType']" />
+                     <xslt:apply-templates select="/xsd:schema//xsd:group" />
                 </variablelist>
             </section>
+            
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
             
             <section>
                 <title>NXDL element: <code>link</code></title>
                 <para>
-                    The components of a <code>link</code> element are described here.
+                    A <code>link</code> element can <emphasis>only</emphasis> be a child of a 
+                    <literal>field</literal> or <literal>group</literal> element.
+                    It describes the path to the original source of the parent
+                    <literal>field</literal> or <literal>group</literal>.
                     <indexterm>
                         <primary>NXDL</primary>
                         <secondary>element</secondary>
@@ -253,8 +309,37 @@ select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:e
                 </para>
                 <variablelist>
                      <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='linkType']" />
+                    <xslt:apply-templates 
+select="/xsd:schema//xsd:complexType[@name='linkType']/xsd:complexContent/xsd:extension//xsd:attribute" />
                 </variablelist>
             </section>
+            
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+            
+            <section>
+                <title>NXDL element: <code>symbols</code></title>
+                <para>
+                    A <code>symbols</code> element can <emphasis>only</emphasis> be a child of a 
+                    <literal>definition</literal> element.
+                    It defines the array index symbols to be used when defining arrays as
+                    <code>field</code> elements with common dimensions and lengths.
+                    <indexterm>
+                        <primary>NXDL</primary>
+                        <secondary>element</secondary>
+                        <tertiary>symbols</tertiary>
+                    </indexterm>
+                    <xslt:call-template name="elementDiagram">
+                        <xslt:with-param name="short">symbols</xslt:with-param>
+                    </xslt:call-template>
+                </para>
+                <variablelist>
+                    <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='symbolsType']" />
+                    <xslt:apply-templates 
+    select="/xsd:schema//xsd:complexType[@name='symbolsType']//xsd:attribute" />
+                </variablelist>
+            </section>
+            
+            <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
             
             <section>
                 <title>Common internal data types that define the NXDL language</title>
@@ -302,11 +387,13 @@ select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:e
             </section>
         </xslt:element>
     </xslt:template>
-    
-    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+            
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+    <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xslt:template match="xsd:complexType|xsd:simpleType|xsd:group|xsd:element|xsd:attribute">
         <xslt:if test="count(@name)">
+            <xslt:apply-templates select="xsd:attribute"/>
             <varlistentry>
                  <term>
                      <xslt:if test="name()='xs:attribute'">@</xslt:if
@@ -320,13 +407,17 @@ select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:e
                      <para>
                          <xslt:apply-templates select="xsd:annotation/xsd:documentation"/>
                          <xslt:apply-templates select="xsd:restriction"/>
+                         <xslt:if test="count(xsd:simpleType/xsd:restriction//xsd:enumeration)">
+                             <xslt:apply-templates select="xsd:simpleType/xsd:restriction"/>
+                         </xslt:if>
                      </para>
                 </listitem>
             </varlistentry>
+            
             <xslt:apply-templates select="xsd:sequence//xsd:element"/>
             <xslt:apply-templates select="xsd:simpleType"/>
             <xslt:apply-templates select="xsd:complexType"/>
-            <xslt:apply-templates select="xsd:attribute"/>
+            <xslt:apply-templates select="xsd:complexType//xsd:attribute"/>
         </xslt:if>
     </xslt:template>
     
@@ -343,6 +434,12 @@ select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:e
             <xslt:when test="count(xsd:pattern)">
                 <code><xslt:value-of select="@base"/></code>
                 from this list:
+    			<itemizedlist>
+    			    <xslt:apply-templates select="xsd:enumeration"/>
+    			</itemizedlist>
+            </xslt:when>
+            <xslt:when test="count(xsd:enumeration)">
+                one from this list only: 
     			<itemizedlist>
     			    <xslt:apply-templates select="xsd:enumeration"/>
     			</itemizedlist>
@@ -375,12 +472,20 @@ select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:e
               </title>
               <mediaobject>
                   <imageobject>
+                      <xslt:comment> Images of NXDL structure are generated from nxdl.xsd source
+                        using the oXygen XML Editor.  Open the nxdl.xsd file and choose the
+                        "Design" tab.  Identify the structure to be documented and expand
+                        as needed to show the detail.  Right click and select "Save as Image ..."
+                        Set the name: "nxdl_<xslt:value-of select="$short"
+                              />.jpg" and move the file into the correct location using
+                          your operating system's commands.  Commit the revision to version control. </xslt:comment>
                       <xslt:element name="imagedata">
                           <xslt:attribute name="fileref"
                               >img/nxdl/nxdl_<xslt:value-of select="$short"
                               />.jpg</xslt:attribute>
-                          <xslt:attribute name="width">200pt</xslt:attribute>
-                          <xslt:attribute name="scalefit">1</xslt:attribute>
+                          <!--<xslt:attribute name="width">200pt</xslt:attribute>-->
+                          <!--<xslt:attribute name="scalefit">0</xslt:attribute>-->
+                          <xslt:attribute name="scale">50</xslt:attribute>
                       </xslt:element>
                   </imageobject>
               </mediaobject>

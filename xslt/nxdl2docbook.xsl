@@ -575,20 +575,40 @@ Usage:
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:element><!-- varlistentry -->
-            <xsl:element name="varlistentry"><!-- doc element of this class -->
-                <xsl:element name="term">documentation</xsl:element>
-                <xsl:element name="listitem">
+            <db:varlistentry>
+                <db:term>symbol list</db:term>
+                <db:listitem>
+                    <xsl:choose>
+                        <xsl:when test="count(/nx:definition/nx:symbols)">
+                            <xsl:if test="count(/nx:definition/nx:symbols/nx:doc)">
+                                <db:para><xsl:apply-templates select="/nx:definition/nx:symbols/nx:doc"/></db:para>
+                            </xsl:if>
+                            <xsl:if test="count(/nx:definition/nx:symbols//nx:symbol)">
+                                <db:variablelist>
+                                    <xsl:for-each select="/nx:definition/nx:symbols//nx:symbol">
+                                        <db:varlistentry>
+                                            <db:term><db:code><xsl:value-of select="@name"/></db:code></db:term>
+                                            <db:listitem><db:para><xsl:apply-templates select="nx:doc"/></db:para></db:listitem>
+                                        </db:varlistentry>
+                                    </xsl:for-each>
+                                </db:variablelist>
+                            </xsl:if>
+                        </xsl:when>
+                        <xsl:otherwise><db:para>No symbol table.</db:para></xsl:otherwise>
+                    </xsl:choose>
+                </db:listitem>
+            </db:varlistentry>
+            <db:varlistentry><!-- doc element of this class -->
+                <db:term>documentation</db:term>
+                <db:listitem>
                     <xsl:comment>count(nx:doc/child::*): <xsl:value-of select="count(nx:doc/child::*)"/></xsl:comment>
                     <xsl:choose>
                         <xsl:when test="count(nx:doc/child::*)=0">
-                            <xsl:comment>branch-A</xsl:comment>
-                            <xsl:element name="para">
-                                <xsl:comment>+++</xsl:comment>
-                                <xsl:apply-templates select="nx:doc"/>
-                            </xsl:element>
+                            <xsl:comment> +++ branch-A +++ </xsl:comment>
+                            <para><xsl:apply-templates select="nx:doc"/></para>
                         </xsl:when>
                         <xsl:when test="count(nx:doc/child::*)>0">
-                            <xsl:comment>branch-B</xsl:comment>
+                            <xsl:comment> +++ branch-B +++ </xsl:comment>
                             <xsl:choose>
                                 <xsl:when test="count(nx:doc/db:para)">
                                     <xsl:apply-templates select="nx:doc"/>
@@ -599,8 +619,8 @@ Usage:
                             </xsl:choose>
                         </xsl:when>
                     </xsl:choose>
-                </xsl:element>
-            </xsl:element><!-- varlistentry -->
+                </db:listitem>
+            </db:varlistentry>
         </xsl:element><!-- variablelist -->
     </xsl:template>
     

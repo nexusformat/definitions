@@ -78,7 +78,9 @@
 				HDF4 had a 64 character limit on names 
 				(possibly including NULL) and NeXus enforces this 
 				via the <code>NX_MAXNAMELEN</code> variable with 
-				a <emphasis role="bold">63</emphasis> character limit.
+				a <emphasis role="bold">64</emphasis> character limit (which
+				may be 63 on a practical basis if one considers a NULL
+				terminating byte).
 				(This data type is used internally in the NXDL schema 
 				to define a data type.)
 			</xs:documentation>  
@@ -162,13 +164,26 @@
 				to define elements and attributes to be used by users in NXDL specifications.)
 			</xs:documentation>
 		</xs:annotation>
-		<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
-			<xs:annotation>
-				<xs:documentation xmlns="http://docbook.org/ns/docbook">
-					A <code>definition</code> may contain <code>group</code>s.
-				</xs:documentation>
-			</xs:annotation>
-		</xs:group>
+		<xs:sequence>
+			<xs:element name="symbols" type="nx:symbolsType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						Use the <code>symbols</code> element to create a list of 
+						<code>symbol</code>s to define each of the mnemonics that
+						represent the length of each dimension in a vector or array.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:group ref="nx:groupGroup" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						In addition to an optional <code>symbols</code> list,
+						a <code>definition</code> may contain any of the items
+						allowed in a <code>group</code>.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:group>
+		</xs:sequence>
 		<xs:attribute name="name" use="required" type="nx:validItemName">
 			<xs:annotation>
 				<xs:documentation xmlns="http://docbook.org/ns/docbook">
@@ -244,7 +259,7 @@
 					<!-- TODO eventually, will contributed defs need to indicate their intended usage? -->
 				</xs:documentation>
 			</xs:annotation>
-			<xs:simpleType><!-- TODO not covered by nxdl_desc2docbook.xsl yet -->
+			<xs:simpleType>
 				<xs:restriction base="xs:string">
 					<xs:enumeration value="base"/>
 					<xs:enumeration value="application"/>
@@ -501,7 +516,7 @@
 					not define (or even re-use) this component.
 					For example:
 					<programlisting language="c"><code
-	>deprecated="Should the 'deprecated' attribute be a 'field' in a future version?"</code
+	>deprecated="Should the 'deprecated' attribute become a 'field' in a future version?"</code
 						></programlisting>
 					Note: because <code>deprecated</code> is an attribute, 
 					the XML rules do not permit it to have any element content
@@ -540,7 +555,7 @@
 		<xs:complexContent>
 			<xs:extension base="nx:basicComponent">
 				<xs:sequence>
-					<xs:element name="dimensions" type="nx:dimsType" minOccurs="0" maxOccurs="1">
+					<xs:element name="dimensions" type="nx:dimensionsType" minOccurs="0" maxOccurs="1">
 						<xs:annotation>
 							<xs:documentation xmlns="http://docbook.org/ns/docbook">dimensions of a data element 
 							in a NeXus file</xs:documentation>
@@ -890,6 +905,60 @@
 		</xs:sequence>
 	</xs:complexType>
 	
+	<xs:complexType name="symbolsType" mixed="true">
+		<xs:annotation>
+			<xs:documentation xmlns="http://docbook.org/ns/docbook">
+				Each <code>symbol</code> has a <code>name</code> and optional documentation.
+				Please provide documentation that indicates what each symbol represents.
+				For example:
+				<programlisting language="xml" linenumbering="numbered"
+><code>&lt;symbols>
+    &lt;symbol name="nsurf">&lt;doc>number of reflecting surfaces&lt;/doc>&lt;/symbol>
+    &lt;symbol name="nwl">&lt;doc>number of wavelengths&lt;/doc>&lt;/symbol>
+&lt;/symbols></code></programlisting>
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xmlns="http://docbook.org/ns/docbook">
+						Describe the purpose of this list of <code>symbols</code>. 
+						This documentation will go into the manual.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="symbol" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						When multiple <code>field</code>s share the same dimensions, such as the dimension scales
+						associated with plottable data in an <code>NXdata</code> group, the length of each
+						dimension written in a NeXus data file should be something that can be tested by the 
+						data file validation process.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="doc" type="nx:docType" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xmlns="http://docbook.org/ns/docbook">
+									Describe the purpose of this <code>symbol</code>. 
+									This documentation will go into the manual.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+					<xs:attribute name="name" type="nx:validItemName">
+						<xs:annotation>
+							<xs:documentation>
+								Mnemonic variable name for this array index symbol.
+							</xs:documentation>
+						</xs:annotation>
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+	
 	<xs:complexType name="enumerationType">
 		<xs:annotation>
 			<xs:documentation xmlns="http://docbook.org/ns/docbook">
@@ -903,6 +972,15 @@
 				</itemizedlist>
 				(This data type is used internally in the NXDL schema 
 				to define elements and attributes to be used by users in NXDL specifications.)
+				<programlisting language="c"
+><code>&lt;field name="mode">
+	&lt;doc>source operating mode&lt;/doc>
+	&lt;enumeration>
+		&lt;item value="Single Bunch">&lt;doc>for storage rings&lt;/doc>&lt;/item>
+		&lt;item value="Multi Bunch">&lt;doc>for storage rings&lt;/doc>&lt;/item>
+		&lt;!-- other sources could add to this --&gt;
+	&lt;/enumeration>
+	&lt;/field></code></programlisting>
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -950,113 +1028,10 @@
 		</xs:sequence>
 	</xs:complexType>
 	
-	<xs:complexType name="dimsType">
-		<!-- ===================================================================== -->
-		<!-- ====================== BEGIN MAJOR COMMENT ========================== -->
-		<!-- ===================================================================== -->
-		<!--
-			Peter Peterson writes:
-			Here is a model:
-			<field name="data">
-			<dimensions size="3"/>
-			...
-			</field><field name="time-of-flight">
-			<dimensions size="1">
-			<dim index="1" ref="data" refindex="3" incr="1"/>
-			</dimensions>
-			...
-			</field>
-			
-			In old terms this would make data[i,j,k] and time-of-flight[k+1]. 
-			We need to get to the stage where people do not
-			need to read a manual to understand an existing NXDL.
-			
-			+++++++++++++++++++++++++++++++++++++
-			then Freddie Akeroyd writes:
-			I think we have three cases to consider here:
-			(1) specifying an explicit value for a dimension
-			(2) specifying a dimension to be the same size as that of an array
-			already defined elsewhere (optionally +- a value)
-			(3) specifying a dimension to be the same as a data value defined
-			elsewhere (e.g. num_scan_points, optionally +- a value)
-			
-			For (1) how about
-			
-			<dim index="1" value="3" />
-			
-			For (2) how about
-			
-			<field name="data">
-			<dimensions size="3">
-			<dim index="1" label="num_time_channels"/>
-			< !- - dimensions with no constraints or labels do not need to be mentioned - -  >
-			</dimensions>
-			</field>
-			<field name="time_of_flight">
-			<dimensions size="1">
-			<dim index="1" ref="num_time_channels" incr="1"/>
-			</dimensions>
-			...
-			</field>
-			
-			For (3) how about
-			
-			<field name="num_scan_points" type="NX_INT"
-			label="nscanpt" />
-			<field name="data">
-			<dimensions size="3">
-			<dim index="1" label="num_time_channels"/>
-			<dim index="3" ref="nscanpt"/>		    
-			</dimensions>
-			</field>
-			
-			Notes on dim tag:
-			
-			use 1 for first element in a sequence, +- to indicate sequence direction
-			(or we could use an attribute instead)
-			
-			<dim index="1">   ! refers to first index (fastest varying)
-			<dim index="-1">  ! refers to last index (slowest varying)
-			
-			<dim label="i">   ! we should constrain labels to be unique within the
-			file and thus could be referred to 
-			from any location. This would mean that "i"
-			could not be used everywhere as a label, 
-			but forcing the use of better names like
-			"num_time_channels" makes things clearer. In the 
-			first instance by making label an xs:ID and
-			ref an xs:IDREF we can enforce "something" in
-			label="something" to always be unique and "some_ref" in ref="some_ref"
-			to always point to a 
-			valid "label" (We may later want to use xs:key
-			/ xs:keyref to do this if we needed a second
-			set of unique labels for another purpose)
-			
-			+++++++++++++++++++++++++++++++++++++
-			then Mark Koennecke writes:
-			I think the dimensions encoding is tightly integrated with the algorithm we
-			use to validate them later on. I thought about something like:
-			
-			<dimensions size="3">
-			<dim level="0" value="25"/>
-			<dim level="1" value="np"/>
-			<dim level="2" path="/entry/blablabla/somefield" dim="0"/>
-			</dimensions>
-			The first case is trivial: validate against a number
-			
-			The general idea is that the dimensions validator would initialise np 
-			the first place it comes up against it and
-			checks against the value ever after. We must allow expressions like np+1 
-			here.
-			
-			The third syntax is to explicitly address a specific dimension of 
-			another variable.
-			
+	<xs:complexType name="dimensionsType">
+		<!-- 
+			see TRAC ticket #32: http://trac.nexusformat.org/definitions/ticket/32 
 		-->
-		
-		<!-- ===================================================================== -->
-		<!-- ======================= END MAJOR COMMENT =========================== -->
-		<!-- ===================================================================== -->
 		<xs:annotation>
 			<xs:documentation xmlns="http://docbook.org/ns/docbook">
 				dimensions of a data element in a NeXus file
