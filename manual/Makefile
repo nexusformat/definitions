@@ -189,10 +189,10 @@ NeXusManual.html : docbook
 	xsltproc --xinclude \
 	  --stringparam use.extensions 0 \
 	  --stringparam callout.graphics.path "img/callouts/" \
+	  --stringparam chunker.output.encoding UTF-8 \
 	  $(DBXSL)/html/onechunk.xsl \
 	  NeXusManual.xml
 	mv index.html $@
-	sed -i -e 's/\o240/ /g' $@
 
 html/index.html : docbook
 	[ -d html ] || mkdir html
@@ -200,9 +200,9 @@ html/index.html : docbook
 	  --stringparam use.id.as.filename 1 \
 	  --stringparam use.extensions 0 \
 	  --stringparam callout.graphics.path "../img/callouts/" \
+	  --stringparam chunker.output.encoding UTF-8 \
 	  $(DBXSL)/html/chunk.xsl \
-	  ../NeXusManual.xml; \
-	for i in *.html; do sed -i -e 's/\o240/ /g' $$i; done; )
+	  ../NeXusManual.xml; )
 
 ###############################################################################
 
