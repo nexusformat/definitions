@@ -32,8 +32,8 @@ Usage:
         <!-- Needs this on 2nd line of XML file: 
             <?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
         -->
-        <xslt:processing-instruction 
-            name="oxygen">RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"</xslt:processing-instruction>
+        <xslt:processing-instruction name="oxygen"
+            >RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"</xslt:processing-instruction>
         <xslt:comment/><!-- tricks XSLT to start a new line -->
         <xslt:comment/><!-- tricks XSLT to start a new line -->
         <xslt:comment/><!-- tricks XSLT to start a new line -->
@@ -166,8 +166,6 @@ Usage:
                 </para>
                 <variablelist>
                     <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='dimensionsType']" />
-                   <xslt:apply-templates 
-select="/xsd:schema//xsd:complexType[@name='dimensionsType']/xsd:sequence/xsd:element[@name='dim']/xsd:complexType//xsd:attribute" />
                 </variablelist>
             </section>
             
@@ -334,8 +332,6 @@ select="/xsd:schema//xsd:complexType[@name='linkType']/xsd:complexContent/xsd:ex
                 </para>
                 <variablelist>
                     <xslt:apply-templates select="/xsd:schema//xsd:complexType[@name='symbolsType']" />
-                    <xslt:apply-templates 
-    select="/xsd:schema//xsd:complexType[@name='symbolsType']//xsd:attribute" />
                 </variablelist>
             </section>
             
@@ -429,7 +425,9 @@ select="/xsd:schema//xsd:complexType[@name='linkType']/xsd:complexContent/xsd:ex
             <xslt:when test="count(xsd:pattern)">
                 <code><xslt:value-of select="@base"/></code>
                 that <emphasis>also</emphasis> matches the regular expression:
-                <programlisting language="c"><code><xslt:value-of select="xsd:pattern/@value"/></code></programlisting>
+                <programlisting language="c"
+                    ><code><xslt:value-of select="xsd:pattern/@value"
+                    /></code></programlisting>
             </xslt:when>
             <xslt:when test="count(xsd:pattern)">
                 <code><xslt:value-of select="@base"/></code>
