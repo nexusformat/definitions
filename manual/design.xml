@@ -1494,21 +1494,66 @@
     -->
     <section xml:id="Design-NeXusDimensions">
         <title>NeXus array dimensions</title>
-        <caution>
-            <para>
-                TODO Need a better writeup than this!
-                Also need to confirm if this is correct!
-            </para>
-        </caution>
-        <para>Here are a couple of examples to get this section started: 
+        <!-- TODO This is the new writeup! -->
+        <para> 
+            NeXus arrays are stored in order of the fastest varying dimension.
+            For example, consider a diffractometer at a time-of-flight neutron source.
+            The time-of-flight (call it <literal>time_of_flight</literal>) 
+            might be along an axis with subscript <literal>i</literal> and a
+            scattering angle (call it <literal>polar_angle</literal>) 
+            might be along an axis with subscript <literal>j</literal>.  
+            In our example,
+            assume that time-of-flight is the fastest varying axis.  
+            Then our data (call it <literal>data</literal>)  
+            would be stored in NeXus as:
+            <itemizedlist>
+                <listitem><para><code>data[j][i]</code> : C storage order</para></listitem>
+                <listitem><para><code>data(i,j)</code> : FORTRAN storage order</para></listitem>
+                <!--<listitem><para><code>data[j][i]</code> : Python storage order</para></listitem>-->
+            </itemizedlist>
+        </para>
+        <para>
+            Using NXDL to describe the structure of <literal>data</literal> 
+            as it is stored, the relevant parts would look like:
             <example>
-                <title>Example of array dimensions.</title>
+                <title>Example description of 2-D array dimensions in NXDL.</title>
+                <programlisting  language="xml" linenumbering="numbered"
+                    ><xi:include href="examples/array-dimensions1.xml.txt" parse="text"
+                    /></programlisting>
+            </example> 
+            where <literal>nTOF</literal> and <literal>nAngle</literal> represent, 
+            symbolically, the length (number of values) of each axis.
+            It is useful to declare these symbolic lengths near the top of the 
+            NXDL file with a fragment such as:
+            <example>
+                <title>Example declaration of dimension length symbols in NXDL.</title>
+                <programlisting  language="xml" linenumbering="numbered"
+                    ><xi:include href="examples/array-dimensions3.xml.txt" parse="text"
+                    /></programlisting>
+            </example> 
+        </para>
+        <para>
+            It is sometimes useful to coordinate dimension lengths between related arrays.  
+            Continuing the previous example, the <literal>time_of_flight</literal>
+            and <literal>polar_angle</literal> would be described:
+            <example>
+                <title>Example description of coordinating array dimensions in NXDL.</title>
+                <programlisting  language="xml" linenumbering="numbered"
+                    ><xi:include href="examples/array-dimensions2.xml.txt" parse="text"
+                    /></programlisting>
+            </example> 
+        </para>
+        <para>Rather than use a system of symbols to coordinate the lengths
+            of the various dimensions, NXDL also provides a way for one field to identify
+            the dimension(s) from another field.  Here is an example: 
+            <example><!-- TODO check this example (especially "[k+1]" part for correctness! -->
+                <title>Example of referencing array dimensions in NXDL.</title>
                 <programlisting  language="xml" linenumbering="numbered"
                     ><xi:include href="examples/array-dimensions.xml.txt" parse="text"
                     /></programlisting>
             </example> 
-            In some programming language, this would make data[i,j,k] and
-            time-of-flight[k+1]. </para>
+            In some programming language, this would make <code>data[i,j,k]</code> and
+            <code>time_of_flight[k+1]</code> (third dimension in <code>data</code>). </para>
     </section>
     
     <!-- 
