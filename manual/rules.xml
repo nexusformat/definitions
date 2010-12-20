@@ -7,11 +7,7 @@
     xmlns:xlink="http://www.w3.org/1999/xlink" 
     xmlns:xi="http://www.w3.org/2001/XInclude"
   >
-    <title>Rules for Storing Data in NeXus Files</title>
-    <para>
-    </para>
-  <section xml:id="Rules-StructuringFiles" >
-      <title>Rules for Structuring Files</title>
+    <title>Rules for Structuring Information in NeXus Files</title>
     <para>
       <indexterm>
         <primary>rules</primary>
@@ -21,11 +17,10 @@
        Many files contain only one 
        <code>NXentry</code>
        group, then the name is <code>entry</code>.
-       If an instrument performs 
-       multiple experiments simultaneously, then the data from the separate 
-       component experiments must be placed in separate <code>NXentry</code>
-        groups in the file. 
-       Also, <code>NXentry</code> class 
+       The NXentry level of hierarchy is there to support the storage of multiple related experiments in one file. 
+       Or to allow the NeXus file to serve as a container for storing a whole scientific workflow from data acquisition to
+       publication ready data. 
+        Also, <code>NXentry</code> class 
        groups can contain raw data or processed data. 
         For files with more than one <code>NXentry</code> group, since HDF requires
         that no two items at the same level in an HDF file may have the same name,
@@ -37,9 +32,47 @@
         <secondary>naming</secondary>
       </indexterm>
       </para>
+      
+      <para>
+        In order to illustrate what is written in the text, example hierarchies like the one in 
+        figure <link xlink:href="#table.RawData">Raw Data</link> are provided. Some words on the 
+        notation:
+        <itemizedlist>
+        <listitem><para>Hierarchy is represented by indentation. Objects on the same indentation level 
+                     are in the same group
+        </para></listitem>
+        <listitem><para>
+          The combination name:NXclass denotes a NeXus group with name name and class NXclass 
+        </para></listitem>
+        <listitem><para>
+          A simple name denotes a data field. If dimensions are necessary they are given in square brackets, 
+          attributes are noted as name=value pairs separated by comma, Number is parantheses like (1) serve as 
+          reference points for links.  
+        </para></listitem>
+        </itemizedlist>
+      </para>
+      
     <section xml:id="Rules-NXentry-raw-data">
-      <title>Content of a raw data <code>NXentry</code> group</title>
+      <title>Content of a Raw Data <code>NXentry</code> Group</title>
+    <figure xml:id="table.RawData">
+     <title>NeXus Raw Data Hierarchy</title>
+     <programlisting>
+     entry:NXentry
+           instrument:NXinstrument
+                      source:NXsource
+                      ....
+                      detector:NXdetector
+                               data, signal = 1 (1)
+           sample:NXsample
+           control:NXmonitor
+           data:NXdata
+                link to (1)
+     </programlisting>
+    </figure>     
+
         <para>
+          An example raw data hierarchy is 
+          shown in figure <link xlink:href="#table.RawData">Raw Data</link>. 
           An <code>NXentry</code> describing raw data contains at least a <code>NXsample</code>, 
           one <code>NXmonitor</code>, 
           one <code>NXdata</code> and a <code>NXinstrument</code> group. 
@@ -67,11 +100,30 @@
            Otherwise, the name 
            of the detector bank represented is a good selection.
         </para>
-        </section>
+    </section>
+        
     <section xml:id="Rules-NXentry-processed-data">
       <title>Content of a processed data <code>NXentry</code> group</title>
+      
+     <figure xml:id="table.ProcessedData">
+     <title>NeXus Processed Data Hierarchy</title>
+     <programlisting>
+     entry:NXentry
+           redution:NXprocess
+                program_name
+                version
+                input:NXparameter
+                  filename
+                  ...
+           sample:NXsample
+           data:NXdata
+                data
+     </programlisting>
+    </figure>     
+      
         <para>
-           Processed data in this context means the results of a data reduction or 
+           Processed data, see figure  <link xlink:href="#table.ProcessedData">Processed Data</link>,  
+           in this context means the results of a data reduction or 
            data analysis program. NeXus stores such data in a simplified 
           <code>NXentry</code> structure. A processed data <code>NXentry</code>
           has at minimum a <code>NXsample</code>, 
@@ -94,148 +146,65 @@
            strives to capture as much data as possible, a <code>NXinstrument</code> group for 
            processed data may contain a much-reduced subset. 
         </para>         
-        </section>
     </section>
-  <section xml:id="Rules-StoringData">
-    <title>Rules for Storing Data Items</title>
-    <para>
-      These rules apply for storing individual data items in a NeXus file.
-      <indexterm>
-        <primary>rules</primary>
-        <secondary>NeXus</secondary>
-      </indexterm>
-    </para>
-    <section xml:id="Rules-StoringData-Names">
-        <title>Names</title>
-        <para>
-          For all data fields, only names from the NeXus base class dictionaries are to 
-          be used.<footnote><para>The NeXus base classes provide a comprehensive dictionary
-          of terms than can be used for each class.</para></footnote>
-          If a data field name or even a complete component is missing, 
-          please suggest the addition to the NIAC. The addition will usually be 
-          accepted provided it is not a duplication of an existing field and 
-          adequately documented. 
-        </para>
-      </section>
-    <section xml:id="Rules-StoringData-Associating">
-      <title>Associating Data with Axis</title>
-      <para>
-        In order to allow automatic plotting programs
-        <indexterm>
-          <primary>NeXus basic motivation</primary>
-          <secondary>default plot</secondary>
-        </indexterm>
-         to locate the relevant signal 
-         data and the axis of a possibly multi-dimensional dataset, the
-         data must conform with a set of rules.
-        <indexterm>
-          <primary>rules</primary>
-          <secondary>NeXus</secondary>
-        </indexterm> 
-        <itemizedlist>
-          <listitem><para>The first rule is that the data and its 
-         associated axis data sets have to be in the same NeXus group.</para></listitem>
-          <listitem><para>The second rule is 
-         that the actual main data field (usually the detector counts) has to be annotated 
-         with the attribute <code>signal="1"</code>. The axis belonging to this dataset have to be 
-         annotated with the attribute <code>axis=n</code>, 
-        where <code>n</code> is the number of the dimension to which this 
-         axis corresponds. </para></listitem>
-        </itemizedlist>
-      </para>
-      <para>
-       An example is in order. Consider a detector bank with detectors at different 
-       two theta and with a time-of-flight axis. This data is stored as:
-        <itemizedlist>
-          <listitem>
-            <para>
-             A data field of dimensions <code>ndet,ntof</code>. With <code>ndet</code> being the number of 
-             detectors and <code>ntof</code> the number of time channels. This dataset is annotated 
-             with the attribute <code>signal=1</code>              
-            </para>
-          </listitem>
-          <listitem>
-            <para>
-             A data field polar_angle with <code>ndet</code> elements and the 
-             attribute <code>axis=1</code>              
-            </para>
-          </listitem>
-          <listitem>
-            <para>
-             A data field time_binning with <code>ntof</code> elements and the
-             attribute <code>axis=2</code>
-            </para>
-          </listitem>
-       </itemizedlist>
-      </para>
-      <para>
-        In some case it is desirable to have muliple axis on the same dimension. 
-        In the example above, the time_binning axis may also be 
-        expressed as <emphasis>d</emphasis> or
-        energy difference. All these axes will then have the attribute <code>axis=2</code>. 
-        However, the primary plotting axis must be distingusihed with the 
-        attribute <code>primary=1</code>.   
-      </para>
-      </section>
-    <section xml:id="Rules-StoringDetectors">
-      <title>Storing Detectors</title>
-      <para>
-         There are very different types of detectors out there. Storing their data 
-         can be a challenge. As a general guide line: if the detector has some 
-         well defined form, this should be reflected in the data file. A linear 
-         detector becomes a linear array, a rectangular detector becomes an 
-         array of size <code>xsize</code> times <code>ysize</code>. 
-        Some detectors are so irregular that this 
-         does not work. Then the detector data is stored as a linear array, with the
-         index being detector number till <code>ndet</code>. Such detectors must be accompanied
-        by further arrays of length <code>ndet</code> which give 
-        <code>azimuthal_angle, polar_angle and distance</code> for each detector. 
-      </para>
-      <para>
-         If data from a time of flight (TOF) instrument must be described, then the 
-         TOF dimension becomes the last dimension, for example an area detector of 
-        <code>xsize</code> <emphasis>vs.</emphasis> <code>ysize</code> 
-        is stored with TOF as an array with dimensions 
-        <code>xsize, ysize, 
-         ntof</code>.  
-      </para>
-      </section>
-    <section xml:id="Rules-StoringData-Monitors">
-      <title>Monitors are Special</title>
-        <para>Monitors
-            <indexterm>
-                <primary>monitor</primary>
-            </indexterm>, detectors that measure the properties 
-            of the experimental probe rather than the 
-            sample, have a special place in NeXus files. Monitors are crucial to normalize data.
-            To emphasize their role, monitors are not stored in the 
-            <code>NXinstrument</code> hierarchy but on <code>NXentry</code> level 
-            in their own groups as there might be multiple monitors. Of special 
-            importance is the monitor in a group called <code>control</code>. 
-            This is the main monitor against which the data has to be normalized. 
-            This group also contains the counting control information, 
-            i.e. counting mode, times, etc.
-        </para>
-        <para>
-          Monitor data may be multidimensional. Good examples are scan monitors 
-          where a monitor value per scan point is expected or 
-          time-of-flight monitors.
-        </para>
-    </section>
+   
+   <section xml:id="Rules-Subentry">
+   <title>NXsubentry or Multi-Method Data</title>
+   <para>
+      Especially at synchrotron facilities, there are experiments which perform several different methods  
+      on the sample at the same time. For example, combine a powder diffraction experiment with XAS. 
+      This may happen in the same scan, so the data needs to be grouped together. A suitable NXentry 
+      would need to adhere to two different application definitions. This leads to name clashes which cannot be 
+      easily resolved. In order to solve this issue the following scheme was invented:
+      <itemizedlist>
+      <listitem><para>The full combined beamline is stored in an appropriate hierarchy in an NXentry.
+      </para></listitem>
+      <listitem><para>
+        The NXentry group contains further NXsubentry groups, one for each method. The NXsubentry group is constructed 
+        like a NXentry group. It contains links to all those data items required to fulfill the application definition 
+        for the particular method it represents.  
+      </para></listitem>
+      </itemizedlist>
+      See figure  <link xlink:href="#table.NXsubentry">NXsubentry</link> for an example hierarchy.
+   </para>
+   
+      <figure xml:id="table.NXsubentry">
+     <title>NeXus Multi Method Hierarchy</title>
+     <programlisting>
+entry:NXentry
+    user:NXuser
+    sample:NXsamle
+    instrument:NXinstument
+               SASdet:NXdetector (1)
+               fancyname:NXdetector (2)
+               fancyname2:NXdetector (3)
+               ...
+  SAS:NXsubentry
+        definition = "NXSas"
+        instrument:NXinstrument
+                   detector:NXdetector link to SASdet (1)
+        data:NXdata
+  Fluo:NXsubentry
+         definition = "NXFluo"
+         instrument:NXinstrument
+                    detector:NXDetctor link to (2)
+                    detector2:NXdetector link to (3)
+         data:NXdata
+     </programlisting>
+    </figure>     
+   
+   
    </section>
+   
   <section xml:id="Rules-SpecialCases">
     <title>Rules for Special Cases</title>
-    <para>Always, there are exceptions to rules
-      <indexterm>
-        <primary>rules</primary>
-        <secondary>NeXus</secondary>
-      </indexterm> 
-      to consider special cases.</para>
+      
     <section xml:id="Rules-SpecialCases-Scans">
       <title>Scans</title>
       <para>
          Scans are difficult to capture because they are very variable. Basically 
-         any variable can be scanned. NeXus solves this difficulty with a set of 
+         any variable can be scanned. Such behaviour cannot be captured in application definitions. 
+         Therefore NeXus solves this difficulty with a set of 
          rules. In this section, <code>NP</code> is used as a symbol for the number of scan 
          points.
         <itemizedlist>
@@ -267,8 +236,9 @@
       </para>
       <para>
          Examples may be in order here. Let us start with a simple case, the sample is 
-         rotated arounds its rotation axis and data is collected in a single tube 
-         detector. Then we have:
+         rotated around its rotation axis and data is collected in a single tube 
+         detector. Sell also the figure <link xlink:href="#table.SimpleScan">Simple Scan </link> for an overview.
+         Then we have:
         <itemizedlist>
           <listitem>
             <para>
@@ -299,11 +269,56 @@
             </para>
           </listitem>
         </itemizedlist>
+        </para>
+     <figure xml:id="table.SimpleScan">
+     <title>NeXus Simple Scan Example</title>
+     <programlisting>
+     entry:NXentry
+           instrument:NXinstrument
+                      detector:NXdetector
+                               data[NP], signal = 1 (1)
+                               polar_angle
+                               name
+           sample:NXsample
+                  name
+                  rotation_angle[NP], axis=1, (2)
+           control:NXmonitor
+                  data[NP]
+           data:NXdata
+                link to (1)
+                link to (2)
+     </programlisting>
+    </figure>     
+        
+        <para>
         The next example is the same scan but with an area detector with <code>xsize</code> 
         times <code>ysize</code> pixels. The only thing which changes is that
         <code>NXentry/NXinsrument/NXdetector/data</code> will have the dimensions 
-        <code>NP, xsize, ysize</code>.
-      </para>
+        <code>NP, xsize, ysize</code>. See figure <link xlink:href="#table.SimpleScanArea">Simple Scan with Area Detector
+         </link> for an overview. 
+     </para>
+     
+     <figure xml:id="table.SimpleScanArea">
+     <title>NeXus Simple Scan Example with Area Detector</title>
+     <programlisting>
+     entry:NXentry
+           instrument:NXinstrument
+                      detector:NXdetector
+                               data[NP,xsize,ysize], signal = 1 (1)
+                               polar_angle
+                               name
+           sample:NXsample
+                  name
+                  rotation_angle[NP], axis=1, (2)
+           control:NXmonitor
+                  data[NP]
+           data:NXdata
+                link to (1)
+                link to (2)
+     </programlisting>
+    </figure>     
+        
+       
       <para>
           The next example involves a complex movement along an axis in reciprocal 
           space which requires mutiple motors of a four circle diffractometer to be 
@@ -386,7 +401,39 @@
           </listitem>
         </itemizedlist>
       </para>
-      </section>
+      <figure xml:id="table.ComplexScan">
+     <title>NeXus Complex Scan in Q</title>
+     <programlisting>
+     entry:NXentry
+           instrument:NXinstrument
+                      detector:NXdetector
+                               data[NP], signal = 1 (1)
+                               polar_angle[NP], axis =1 (5)
+                               name
+           sample:NXsample
+                  name
+                  rotation_angle[NP], axis=1, (2)
+                  chi[NP], axis=1, (3)
+                  phi[NP], axis=1, (4)
+                  h[NP], axis=1, primary=1 (6)
+                  k[NP], axis=1 (7)
+                  l[NP], axis=1 (8)
+           control:NXmonitor
+                  data[NP]
+           data:NXdata
+                link to (1)
+                link to (2)
+                link to (3)
+                link to (4)
+                link to (5)
+                link to (6)
+                link to (7)
+                link to (8)
+     </programlisting>
+    </figure>     
+       </section>
+       
+       
     <section xml:id="Rules-SpecialCases-Rastering">
       <title>Rastering</title>
       <para>
@@ -405,14 +452,48 @@
         size <code>xsize, ysize</code> then is stored with
         dimensions <code>xraster, yraster, xsize, ysize</code>. 
       <warning>
-        <para>Problems will occur 
-        if the experiment is aborted on the fly or the
-        dimensions are changed before the rasterization is complete.
-        It is suggested to use unlimited dimensions or to fill  
-        the incomplete data to avoid data loss.
+        <para>
+          Be warned: if you use the 2D rasterisation method with xraster, yraster you may end up with 
+          invalid data if the scan is aborted prematurely. This cannot happen if the first method is used. 
         </para>
       </warning>
       </para>
       </section>
     </section>
-</section>
+    <section>
+    <title>NXcollection</title>
+      <figure xml:id="table.NXcollection">
+     <title>NNcollection Example</title>
+     <programlisting>
+     entry:NXentry
+           positioners:NXcollection
+                   mxx:NXpositioner
+                   mzz:NXpositioner
+                   sgu
+                   ttv
+                   hugo
+                   ....
+           scalars:NXcollection
+                   title
+                   lieselotte
+                   ...
+           detectors:NXcollection
+                   Pilatus:NXdata
+                   MXX-45:NXdata
+                   ....           
+      </programlisting>
+    </figure>     
+    <para>
+      On demand from the community, NeXus intrduced a more informal method of storing 
+      information in a NeXus file.This is the NXcollection class which can appear anywhere 
+      underneath NXentry. NXcollection is a container for holding other data. The foreseen use 
+      is to serve as a quick point of access to data for an instrument scientist or another expert.
+      An example usage case is documented in  figure <link xlink:href="#table.SimpleScanArea">NXcollection example
+         </link>. 
+      It is understood that NXcollection will never be part of a NeXus application definition for now. 
+      This may change in a later stage when a common usage pattern for NXcollection emerges.  
+      Data in NXcollection has to be augmented by a NXsubentry or NXentry adhering to an application definition. 
+    </para>
+     
+    </section>
+ </section>   

@@ -9,10 +9,16 @@
 	xmlns:xi="http://www.w3.org/2001/XInclude">
     <title>NeXus Design</title>
     <para>
+      This chapter actually defines the rules to use for writing valid NeXus files. An explanation of NeXus objects 
+      is followed by the definition of NeXus coordinate systems, the rules for structuring files and the rules for 
+      storing single items of data.  
+    </para>
+    <para>
         The structure of NeXus files is extremely flexible, allowing the storage both of
         simple data sets, such as a single data array and its axes, and also of highly complex
-        data, such as the simulation results of an entire multi-component instrument. This
-        flexibility is achieved through a hierarchical 
+        data, such as the simulation results or an entire multi-component instrument. This flexibility 
+        is a necessity as NeXus strives to capture data from a wild variety of applications in x-ray, muSR and 
+        neutron scattering. The flexibility is achieved through a hierarchical 
         <indexterm>
             <primary>hierarchy</primary>
         </indexterm>
@@ -33,7 +39,7 @@
         making NeXus files easy to navigate, even without any
         documentation. NeXus files are self-describing, and should be easy to understand, at
         least by those familiar with the experimental technique.
-    </para>
+    </para><!--
     <para>
         The logical design is distinct from the underlying format used to store the NeXus file
         on disk, which are written using the 
@@ -46,111 +52,46 @@
         in Volume II, in the <link xlink:href="#NAPI">NAPI chapter</link>.
     </para>
     
-    <!-- 
+    --><!-- 
         ======================
         section: NeXus Objects
         ======================
     -->
     <section xml:id="Design-Objects">
-        <title>NeXus Objects</title>
-        <para>NeXus data files contain two types of elementary object: 
-            <emphasis>groups</emphasis> and <emphasis>fields</emphasis>. 
-            <indexterm significance="preferred">
-                <primary>data objects</primary>
-            </indexterm>
-            Group objects can contain groups and fields.  Fields contain the values 
-            of the item being specified.  Both 
-            <emphasis>groups</emphasis> and <emphasis>fields</emphasis>
-            may have <emphasis>attributes</emphasis> to provide further 
-            classifications.  See the table below titled
-            "<link xlink:href="#table.design.nexus_objects"
-                >Names of NeXus Objects</link>"
-            for a comparison of the names in use for each of the 
-            underlying physical file storage methods used by NeXus.
-            The names of NeXus <emphasis>group</emphasis>s and 
-            <emphasis>field</emphasis>s 
-            <indexterm>
-              <primary>rules</primary>
-              <secondary>NeXus</secondary>
-              <tertiary>naming</tertiary>
-            </indexterm> 
-            must only contain a restricted set of characters.
-            This set may be described by this regular expression syntax 
-            <link xlink:href="#RegExpName">regular expression syntax</link>:
-            <example xml:id="RegExpName">
-              <title>Regular expression pattern for NXDL group and field names</title>
-              <programlisting language="c"
-                >[A-Za-z_][\w_]*</programlisting>
-            </example>
-            Note that this name pattern starts with a letter (upper or lower case)
-            or "<code>_</code>" (underscore), then letters, 
-            numbers, and "<code>_</code>" and is limited to no more than 63 characters
-            (imposed by the HDF5 rules for names).
-            <indexterm>
-              <primary>rules</primary>
-              <secondary>HDF5</secondary>
-            </indexterm>
-            In addition, metadata 
-            <indexterm><primary>metadata</primary></indexterm>
-            required to describe a group or field, such as 
-            its physical units,
-            <indexterm><primary>units</primary></indexterm>
-            can be attached to the data as data attributes.
-            <indexterm><primary>attributes</primary><secondary>data</secondary></indexterm>
-        </para>
-        <table role="small" xml:id="table.design.nexus_objects">
-            <title>
-                Names of NeXus Objects
-            </title>
-            <tgroup cols="6" align="left" colsep="1" rowsep="1">
-                <thead>
-                    <row>
-                        <entry><?dblatex bgcolor="[gray]{0.8}"?>NeXus</entry>
-                        <entry><?dblatex bgcolor="[gray]{0.8}"?>description</entry>
-                        <entry><?dblatex bgcolor="[gray]{0.8}"?>contains</entry>
-                        <entry><?dblatex bgcolor="[gray]{0.8}"?>HDF4</entry>
-                        <entry><?dblatex bgcolor="[gray]{0.8}"?>HDF5</entry>
-                        <entry><?dblatex bgcolor="[gray]{0.8}"?>XML</entry>
-                    </row>
-                </thead>
-                <tbody>
-                    <row>
-                        <entry><emphasis role="bold">group</emphasis></entry>
-                        <entry>directory or folder</entry>
-                        <entry>groups, fields, attributes</entry>
-                        <entry>VGroup</entry>
-                        <entry>group</entry>
-                        <entry>element</entry>
-                    </row>
-                    <row>
-                        <entry><emphasis role="bold">field</emphasis></entry>
-                        <entry>value (or array of values)</entry>
-                        <entry>values, attributes, link</entry>
-                        <entry>scientific data set (SDS)</entry>
-                        <entry>dataset</entry>
-                        <entry>element</entry>
-                    </row>
-                    <row>
-                        <entry><emphasis role="bold">attribute</emphasis></entry>
-                        <entry>metadata</entry>
-                        <entry>values</entry>
-                        <entry>attribute</entry>
-                        <entry>attribute</entry>
-                        <entry>attribute</entry>
-                    </row>
-                    <row>
-                        <entry><emphasis role="bold">link</emphasis></entry>
-                        <entry>pointer to a <code>field</code></entry>
-                        <entry>link text</entry>
-                        <entry>link</entry>
-                        <entry>link</entry>
-                        <entry>attribute</entry>
-                    </row>
-                </tbody>
-            </tgroup>
-        </table>
-        
-        <!-- 
+        <title>NeXus Objects and Terms</title>
+        <para>
+        Before discussing the design of NeXus in greater detail it is necessary to define the objects and terms 
+        used by NeXus. These are:
+        <variablelist>
+           <varlistentry>
+           <term>Groups</term>
+             <listitem><para>Group data fields and other groups together. Groups represent levels in the NeXus hierarchy</para></listitem>
+           </varlistentry>
+           <varlistentry>
+           <term>Data fields</term>
+             <listitem><para>Multidimensional arrays and scalars representing the actual data to be stored</para></listitem>
+           </varlistentry>
+           <varlistentry>
+           <term>Attributes</term>
+             <listitem><para>Additional metadata which can be assigned to groups or data fields</para></listitem>
+           </varlistentry>
+           <varlistentry>
+           <term>Links</term>
+             <listitem><para>Elements which point to data stored in another place in the file hierarchy</para></listitem>
+           </varlistentry>
+           <varlistentry>
+           <term>NeXus Classes</term>
+             <listitem><para>Dictionaries of names possible in the various types of NeXus groups</para></listitem>
+           </varlistentry>
+           <varlistentry>
+           <term>Application Definitions</term>
+             <listitem><para>Describe the content of a NeXus file for a particular usage case</para></listitem>
+           </varlistentry>
+        </variablelist>
+       In the following sections these elements of NeXus files will be defined in more detail. 
+       </para>        
+       
+         <!-- 
             ====================
             section: Data Groups
             ====================
@@ -177,6 +118,8 @@
                     <primary>rules</primary>
                     <secondary>HDF</secondary>
                 </indexterm>
+                For the class names used with NeXus data groups the prefix NX is reserved. Thus all NeXus class 
+                names start with NX.
             </para>
         </section>
         
@@ -230,8 +173,12 @@
                     <secondary>default plot</secondary>
                 </indexterm>
                 and their
-                axes, etc. Finally, NeXus files themselves have global attributes 
-                <indexterm>
+                axes, etc. A description of possible attributes can be found in table
+                <link xlink:href="#table.ExampleAttributes">data attributes</link>.
+                Finally, NeXus files themselves have global attributes which are listed 
+                in the  
+                <link xlink:href="#table.GlobalAttributes">global attributes table</link>.
+                 <indexterm>
                     <primary>data objects</primary>
                     <secondary>attributes</secondary>
                     <tertiary>global</tertiary>
@@ -240,426 +187,10 @@
                 the NeXus version, file creation time, etc. 
                 Attributes are identified by their
                 names, which must be unique in each field.
-                More information about attributes is given in
-                the section titled 
-                <link xlink:href="#Design-AttributesDetails"
-                    >NeXus Attributes</link> (
-                <xref linkend="Design-AttributesDetails"/>).
-                
-            </para>
-        </section>
-        
-        <!-- 
-            ========================
-            section: Links
-            ========================
-        -->
-        <section xml:id="Design-Links">
-            <title>Links</title>
-            <para>
-                Links<indexterm><primary>link</primary></indexterm>
-                 are pointers to existing data somewhere else. 
-                The concept is very much like 
-                symbolic links in a unix filesystem.
-                The NeXus definition sometimes requires to 
-                have access to the same data in different groups 
-                in the same file. For example: detector data is stored in the 
-                <code>NXinstrument/NXdetector</code> group 
-                but may be needed in <code>NXdata</code> for automatic plotting. 
-                Rather then replicating the data, NeXus uses 
-                links in such situations. 
-           </para>
-        </section>
-
-    </section>
-    
-    <!-- 
-        ================================
-        section: NeXus Classes
-        ================================
-    -->
-    <section xml:id="Design-NeXusClasses">
-        <title>NeXus Classes</title>
-        <para>Data groups often describe objects in the experiment (monitors, detectors,
-            monochromators, etc.), so that the contents (both data fields and/or other data
-            groups) comprise the properties of that object. NeXus has defined a set of standard
-            objects, or base classes, out of which a NeXus file can be constructed. Each data group
-            is therefore identified by a name and a class. The group class, defines the type of object
-            and the properties that it can contain, whereas the group name defines a unique instance
-            of that class. These classes are
-            defined in XML using the NeXus Definition Language (NXDL) 
-            <indexterm>
-                <primary>NXDL</primary>
-            </indexterm> format. All NeXus class types adopted by the NIAC <emphasis>must</emphasis> 
-            begin with <code>NX</code>.  
-            <indexterm>
-              <primary>rules</primary>
-              <secondary>naming</secondary>
-            </indexterm>
-            Classes not adopted by the NIAC <emphasis>must not</emphasis>
-            start with <code>NX</code>.
-        </para>
-        <para>
-            Not all classes define physical objects. Some refer to logical groupings of
-            experimental information, such as plottable data, 
-            <indexterm>
-                <primary>NeXus basic motivation</primary>
-                <secondary>default plot</secondary>
-            </indexterm>
-            sample environment logs, beam
-            profiles, etc.
-            There can be multiple instances of each class. On
-            the other hand, a typical NeXus file will only contain a small subset of the
-            possible classes.
-        </para>
-        
-        <!-- 
-            ===================
-            section: NeXus Data
-            ===================
-        -->
-        <section xml:id="Design-Data">
-            <title>NeXus Data</title>
-            <para>One NeXus design aim <indexterm>
-                    <primary>NeXus</primary>
-                    <secondary>design aims</secondary>
-                </indexterm> was to make it possible to separate the measured data in a NeXus
-                file from all the metadata
-                <indexterm><primary>metadata</primary></indexterm>
-                that describe how that measurement was performed. In
-                principle, it should be possible for a plotting utility to identify the
-                plottable data automatically
-                <indexterm>
-                    <primary>NeXus basic motivation</primary>
-                    <secondary>default plot</secondary>
-                </indexterm>
-                (or to provide a list of choices if there is more
-                than one set of data). In order to distinguish the actual measurements from this
-                metadata, it is stored separately in groups with the class <code>NXdata</code>.
-                <indexterm><primary>NXdata</primary></indexterm>
-                These groups encapsulate all the information required to produce a meaningful
-                plot, including any error arrays and axis scales, i.e. the physical values
-                corresponding to the data dimensions.
-            </para>
-            <para>
-                The <code>NXdata</code> groups have to be flexible enough to cope with data of
-                arbitrary rank 
-                <indexterm><primary>rank</primary></indexterm>
-                and provide a mechanism for associating axis scales with the
-                appropriate dimension of data. We use data attributes to accomplish this. Here
-                are the main rules
-                <indexterm>
-                    <primary>rules</primary>
-                </indexterm>
-                that must be followed in constructing an <code>NXdata</code>
-                group. 
-                <indexterm><primary>NXdata</primary></indexterm>
-                <itemizedlist>
-                    <listitem>
-                        <para>Each <code>NXdata</code> group will consist of only one data set
-                            containing plottable data
-                            <indexterm>
-                                <primary>NeXus basic motivation</primary>
-                                <secondary>default plot</secondary>
-                            </indexterm>
-                            and their standard deviations.</para>
-                    </listitem>
-                    <listitem>
-                        <para>
-                            The data set will be identified by the attribute:
-                            <code>signal="1"</code>
-                        </para>
-                    </listitem>
-                    <listitem>
-                        <para>This data set may be of arbitrary 
-                            rank.<indexterm><primary>rank</primary></indexterm></para>
-                    </listitem>
-                </itemizedlist> If available, the standard deviations of the data are to be
-                stored in a data set of the same rank and dimensions, with the name <code>errors</code>. 
-                <itemizedlist>
-                    <listitem>
-                        <para>For each data dimension, there should be a one-dimensional array
-                            of the same length. </para>
-                    </listitem>
-                    <listitem>
-                        <para>These one-dimensional arrays are the 
-                            <emphasis>dimension scales</emphasis> of the
-                            data,  <emphasis>i.e</emphasis>. the values 
-                            of the independent variables at which the data
-                            is measured, such as scattering angle 
-                            or energy transfer. </para>
-                    </listitem>
-                </itemizedlist>
-            </para>
-            </section>
-            
-            <!-- 
-                ===================
-                section: NeXus Linking
-                ===================
-            -->
-            <section xml:id="Design-Linking">
-                <title>NeXus Links</title>
-            <para>
-                As stated above,
-                links<indexterm><primary>link</primary></indexterm>
-                are pointers to existing data somewhere else.  
-                The following diagram shows how a link from 
-                <code>/NXdata/two_theta</code> points to the actual data
-                in <code>/NXinstrument/NXdetector/two_theta</code>.
-                <note>
-                    <para>Remember: <code>NXdata</code> is used to designate
-                        the default plottable data in this <code>NXentry</code>.
-                    </para>
-                </note>
-                <figure xml:id="fig.data-linking">
-                    <title>Linking in a NeXus file.  (See <link xlink:href="#example.data-linking"
-                        >example code</link> below)</title>
-                    <mediaobject>
-                        <imageobject>
-                            <imagedata fileref="img/data-linking.png" width="400pt"
-                                scalefit="1"/>
-                        </imageobject>
-                    </mediaobject>
-                </figure> 
-                A link is used so the data does not have to appear
-                more than once in the <code>NXentry</code>.
-                An example of the link used to describe the data in the 
-                <link xlink:href="#fig.data-linking"
-                    >above figure</link> might be:
-                <example xml:id="example.data-linking">
-                    <title>Example of links in figure above.</title>
-                    <!-- TODO this example needs to be checked and CORRECTED -->
-                    <programlisting  language="xml" linenumbering="numbered"
-                            ><xi:include href="examples/data-linking.xml.txt" parse="text"
-                            /></programlisting>
-                </example>
-            </para>
-            <para>
-                There are two methods of linking 
-                <indexterm>
-                    <primary>link</primary>
-                </indexterm> 
-                each data dimension to its respective dimension scale. 
-                The preferred method uses the <code>axes</code> attribute
-                to specify the names of each dimension's scale.
-                The original method uses the <code>axis</code> attribute to identify
-                with an integer the axis whose value is the number of the dimension.
-                After describing each of these methods, the two methods will be compared.
-            </para>
-                <section xml:id="Design-Linking-ByName">
-                <title>Linking by name using the <code>axes</code> attribute</title>
-                <para>The preferred method is to define an attribute of the data itself
-                    called <emphasis>axes</emphasis>. 
-                    <indexterm><primary>axes</primary></indexterm>
-                    The <code>axes</code> attribute contains the names of 
-                    each dimension's scale as a
-                    colon (or comma) separated list in the order they appear in C.
-                    For example: 
-                    <example>
-                        <title>Preferred way of denoting axes</title>
-                        <programlisting  language="xml" linenumbering="numbered"
-                            ><xi:include href="examples/axes-preferred.xml.txt" parse="text"
-                            /></programlisting>
-                    </example>
-                </para>
-            </section>
-                <section xml:id="Design-LinkingByDimNumber">
-                <title>Linking by dimension number using the 
-                    <code>axis</code> attribute</title>
-                <para>
-                    The original method is to define an attribute of each dimension
-                    scale called <emphasis>axis</emphasis>. 
-                    <indexterm><primary>axis</primary></indexterm>
-                    It is an integer whose value is the number of
-                    the dimension, in order of fastest varying dimension. 
-                    That is, if the array being stored is data with elements
-                    <code>data[j][i]</code> in C and
-                    <code>data(i,j)</code> in Fortran, where <code>i</code> is the 
-                    time-of-flight index and <code>j</code> is
-                    the polar angle index, the <code>NXdata</code> group would contain:
-                    <indexterm><primary>NXdata</primary></indexterm>
-                    <example>
-                        <title>Original way of denoting axes</title>
-                        <programlisting  language="xml" linenumbering="numbered"
-                                    ><xi:include href="examples/axes-old.xml.txt" 
-                                        parse="text"/></programlisting>
-                    </example> The <code>axis</code> attribute must 
-                    be defined for each dimension scale.
-                    The <code>primary</code> attribute is unique to this method of linking.
-                </para>
-            </section>
-                <section xml:id="Design-Linking-Discussion">
-                <title>Discussion of the two linking methods</title>
-                <para>
-                    The preferred method is required when the dimension scale is used in
-                    more than one <code>NXdata</code> group
-                    <indexterm><primary>NXdata</primary></indexterm>
-                    in a different context, 
-                    e.g. it is used
-                    as the x-axis in one group and the y-axis in another. </para>
-                <para>The original method has the advantage of defining alternative axes
-                    for automatic plotting.  This is shown in the example above for 
-                    the <code>some_other_angle</code> field where <code>axis="1"</code>
-                    denotes another possible primary axis for plotting.  The default
-                    axis for plotting carries the <code>primary="1"</code> attribute.
-                </para>
-                <para>
-                    However, when linking between <code>NXdata</code> groups,
-                    <indexterm><primary>HDF</primary></indexterm>
-                    HDF sets the link as it is created and this cannot be changed later.
-                    The <code>axes</code> attribute, that allows axes to be re-used
-                    more generally, was introduced in NeXus to work around the HDF behavior.
-                </para>
-                <para>
-                    Both methods of linking data axes will be supported in NeXus
-                    utilities that identify dimension scales, such 
-                    as <code>NXUfindaxis()</code>. 
-                </para>
-                <para>
-                    There are limited circumstances in which more 
-                    than one dimension scale for the
-                    same data dimension can be included in the same 
-                    <code>NXdata</code> group.
-                    <indexterm><primary>NXdata</primary></indexterm>
-                    The most common is when the dimension scales are 
-                    the three components of an 
-                    <emphasis>(hkl)</emphasis> scan. In order to
-                    handle this case, we have defined another attribute 
-                    of type integer called
-                    <code>primary</code> whose value determines the order 
-                    in which the scale is expected to be
-                    chosen for plotting, i.e.
-                    <indexterm>
-                        <primary>NeXus basic motivation</primary>
-                        <secondary>default plot</secondary>
-                    </indexterm>
-                </para>
-                <para>
-                    <simplelist>
-                        <member>1st choice: <code>primary="1"</code></member>
-                        <member>2nd choice: <code>primary="2"</code></member>
-                        <member>etc.</member>
-                    </simplelist>
-                </para>
-                <para>
-                    If there is more than one scale with the same value of the <code>axis</code> attribute, one
-                    of them must have set <code>primary="1"</code>. Defining the <code>primary</code>
-                    attribute for the other scales is optional.
-                </para>
-                <note>
-                  <para>
-                      The <code>primary</code> attribute can only be 
-                      used with the first method of
-                      defining dimension scales discussed above. In addition to 
-                      the <code>signal</code> data, this
-                      group could contain a data set of the same rank
-                      <indexterm><primary>rank</primary></indexterm>
-                      and dimensions called <code>errors</code>
-                      containing the standard deviations of the data.
-                  </para>
-                </note>
-                <para>It is often (usually) necessary to associate the data and/or axis scales with
-                    other metadata 
-                    <indexterm><primary>metadata</primary></indexterm>
-                    stored in other groups, e.g. the <code>NXsample</code> group or components of
-                    the <code>NXinstrument</code> group. For example, it may be necessary to perform corrections
-                    for the detector efficiency using information stored in the associated
-                    <code>NXdetector</code> group. In this case, it is recommended that the
-                    relevant arrays are initially stored in those groups, and then linked <indexterm>
-                        <primary>link</primary>
-                    </indexterm> to the <code>NXdata</code> group.
-                    <indexterm><primary>NXdata</primary></indexterm>
-                    The API will provide a mechanism
-                    for identifying the parent group so that the relevant metadata can be accessed. </para>
-                <para>Here is a simple example to illustrate the concept: <example>
-                    <title>Abbreviated NeXus data file</title>
-                    <programlisting  language="xml" linenumbering="numbered"
-                    ><xi:include href="examples/abbreviated-nexus-file.xml.txt" parse="text"
-                    /></programlisting>
-                </example></para>
-                <para>The general principle is that physical quantites are stored in the groups that
-                    they refer to (e.g. counts in <code>NXdetector</code>, temperature in <code>NXsample</code>)
-                    and these quantities are then linked into <code>NXdata</code> for interpretation.
-                    <indexterm><primary>NXdata</primary></indexterm>
-                    In this
-                    example, there are two axis scales, <code>magnetic_field</code> and <code>time_of_flight</code>, which
-                    are stored in <code>NXsample</code> and <code>NXdetector</code> groups respectively. A
-                    program is able to use the information in the <code>link</code> attribute to locate the
-                    respective groups. One corollary of this is that there should be one
-                    <code>NXdetector</code> group for each <code>NXdata</code> group, e.g. one for each
-                    detector bank in a multi-bank instrument.</para>
-                    <para>
-                        The syntax of the <code>target</code> attribute requires a bit of explanation. 
-                        Under HDF4, you can only create what would be called "hard links" under UNIX. 
-                        HDF4 hard links have the characteristics that: <itemizedlist>
-                        <listitem>
-                            <para>The name of the entity must be the same in both the original and
-                                linked groups (relaxed in HDF5) </para>
-                        </listitem>
-                        <listitem>
-                            <para>The attributes of both the origial entity and the linked one are
-                                the same </para>
-                        </listitem>
-                        <listitem>
-                            <para>You cannot distinguish the original entity from the linked
-                                one</para>
-                        </listitem>
-                        <listitem>
-                            <para>You cannot follow a link - it is like an inode in a filesystem and
-                                just points at the data </para>
-                        </listitem>
-                    </itemizedlist></para>
-                <para>To overcome this and allow us to link from <code>NXdata</code>
-                    <indexterm><primary>NXdata</primary></indexterm>
-                    to, say,
-                    <code>NXsample</code> and to identify the original data with
-                    <!-- replace "link" attribute with "target" here -->
-                    <code>NXsample</code>, we write the <code>target</code> attribute that contains the path
-                    of the original group containing it. All linked entities will share this <code>link</code>
-                    attribute and thus can use it to locate the original source group. We are
-                    effectively using the <code>target</code> attribute to simulate <emphasis>symbolic links</emphasis>. So in the
-                    above example, both the original <code>time_of_flight</code> and the linked one will share the same
-                    <code>target</code> attribute containing the text <code>/entry/instrument/detector</code>.  
-                    The <code>target</code> attribute identifes that 
-                    <code>/entry/instrument/detector/time_of_flight</code>
-                    is the original instance.<footnote><para
-                        >This is a <emphasis>distinction without a difference</emphasis>.  
-                        A hard link represents the data in either location and the API code
-                        does not need to make difference between them.  
-                        Where the <code>target</code> attribute
-                        is important is when copying data from HDF files.  In these cases,
-                        by recognizing the value of the <code>target</code> attribute,
-                        it is possible to avoid extracting the same information more than once.
-                    </para></footnote>
-                </para>
-            </section>
-        </section>
-        
-        <!-- 
-            ================================
-            section: NeXus Attributes
-            ================================
-        -->
-        <section xml:id="Design-AttributesDetails">
-            <title>NeXus Attributes</title>
-            <para>
-                Metadata (additional information that describes the primary data) 
-                <indexterm significance="preferred"><primary>metadata</primary></indexterm>
-                is provided
-                in NeXus data files through additional groups, fields, and attributes.  Attributes
-                are used to describe specific groups or fields, such as <code>name="entry"</code>
-                or <code>axis="1"</code>.  Global attributes, as shown in the table below titled
-                <link xlink:href="#table.GlobalAttributes">Global Attributes</link>, 
-                apply to the entire NeXus file.  In HDF files,
-                these are global, while in XML files, these are attributes of the XML file's root 
-                element: <code>NXroot</code>.  
-                Examples of other attributes are given in the table below titled
-                <link xlink:href="#table.ExampleAttributes">Examples of data attributes</link>.
             </para>
             <table role="small" xml:id="table.GlobalAttributes">
                 <title>
-                    Global Attributes
+                    NeXus File Global Attributes
                     <indexterm><primary>attributes</primary><secondary>global</secondary></indexterm>
                 </title>
                 <tgroup cols="3" align="left" colsep="1" rowsep="1">
@@ -709,7 +240,7 @@
             </table>
             <table role="small" xml:id="table.ExampleAttributes">
                 <title>
-                    Examples of data attributes.
+                    NeXus Data Attributes.
                     <indexterm>
                         <primary>attributes</primary>
                         <secondary>data</secondary>
@@ -818,20 +349,193 @@
                         </row>
                         <row>
                             <entry>offset</entry>
+                            <entry>NX_INT</entry>
+                            <entry>Rank values off offsets to use for each dimension if the data is not in C storage order</entry>
+                        </row>
+                        <row>
+                            <entry>stride</entry>
+                            <entry>NX_INT</entry>
+                            <entry>Rank values of steps to use when incrmenting the dimension </entry>
+                        </row>
+                        <row>
+                            <entry>transformation_type</entry>
+                            <entry>NX_CHAR</entry>
+                            <entry>translation or totation</entry>
+                        </row>  
+                        <row>  
+                           <entry>vector</entry>
                             <entry>NX_FLOAT</entry>
-                            <entry>An optional offset to apply to the values in data.</entry>
+                            <entry>3 values describing the axis of rotation or the direction of translation</entry>
+                        </row>
+                        <row>
+                            <entry>interpretation</entry>
+                            <entry>NX_CHAR</entry>
+                            <entry>Can have values of image or scalar or spectra in order for software to determine how to 
+                            display the data</entry>
                         </row>
                     </tbody>
                 </tgroup>
             </table>
+         </section>
+        
+        <!-- 
+            ========================
+            section: Links
+            ========================
+        -->
+        <section xml:id="Design-Links">
+            <title>Links</title>
+            <para>
+                Links<indexterm><primary>link</primary></indexterm>
+                 are pointers to existing data somewhere else. 
+                The concept is very much like 
+                symbolic links in a unix filesystem.
+                The NeXus definition sometimes requires to 
+                have access to the same data in different groups 
+                in the same file. For example: detector data is stored in the 
+                <code>NXinstrument/NXdetector</code> group 
+                but may be needed in <code>NXdata</code> for automatic plotting. 
+                Rather then replicating the data, NeXus uses 
+                links in such situations. See the <link xlink:href="#fig.data-linking">figure</link> for 
+                a more descriptive representation of the concept of linking. 
+           </para>
+                <figure xml:id="fig.data-linking">
+                    <title>Linking in a NeXus file.  (See <link xlink:href="#example.data-linking"
+                        >example code</link> below)</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="img/data-linking.png" width="400pt"
+                                scalefit="1"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure> 
         </section>
-    </section>
+    <!-- 
+        ================================
+        section: NeXus Classes
+        ================================
+    -->
+    <section xml:id="Design-NeXusClasses">
+        <title>NeXus Base Classes</title>
+        <para>Data groups often describe objects in the experiment (monitors, detectors,
+            monochromators, etc.), so that the contents (both data fields and/or other data
+            groups) comprise the properties of that object. NeXus has defined a set of standard
+            objects, or base classes, out of which a NeXus file can be constructed. This is each data group
+            is identified by a name and a class. The group class, defines the type of object
+            and the properties that it can contain, whereas the group name defines a unique instance
+            of that class. These classes are
+            defined in XML using the NeXus Definition Language (NXDL) 
+            <indexterm>
+                <primary>NXDL</primary>
+            </indexterm> format. All NeXus class types adopted by the NIAC <emphasis>must</emphasis> 
+            begin with <code>NX</code>.  
+            <indexterm>
+              <primary>rules</primary>
+              <secondary>naming</secondary>
+            </indexterm>
+            Classes not adopted by the NIAC <emphasis>must not</emphasis>
+            start with <code>NX</code>.
+        </para>
+        <para>
+            Not all classes define physical objects. Some refer to logical groupings of
+            experimental information, such as plottable data, 
+            <indexterm>
+                <primary>NeXus basic motivation</primary>
+                <secondary>default plot</secondary>
+            </indexterm>
+            sample environment logs, beam
+            profiles, etc.
+            There can be multiple instances of each class. On
+            the other hand, a typical NeXus file will only contain a small subset of the
+            possible classes.
+        </para>
+        <para>
+          NeXus base classes are not proper classes in the same sense as used in object oriented programming 
+          languages. In fact the use of the term classes is actually misleading but has established itself during the 
+          development of NeXus. NeXus base classes are rather dictionaries of field names and their meanings
+          which are permitted in a particular NeXus group implementing the NeXus class. This sounds complicated but 
+          becomes easy if you consider that most NeXus groups describe instrument components. Then for example, a 
+          NXmonochromator base class describes all the possible field names which NeXus allows to be used to describe a 
+          monochromator.  
+        </para>
+        
+        <para>
+          Most NeXus base classes represent instrument components. Some are used as containers to structure information in a 
+          file (NXentry, NXcollection, NXinstrument, NXprocess, NXparameter). 
+          But there are some base classes which have special uses which need to be mentioned here:
+          <variablelist>
+          <varlistentry>
+            <term>NXlog</term>
+            <listitem><para>
+             NXlog is used to store time stamped data like the log of a temperature controller. Basically you give a start time, 
+             and arrays with a difference in seconds to the start time and the values read.
+            </para></listitem>
+          </varlistentry>
+          <varlistentry>
+          <term>NXnote</term>
+          <listitem><para>
+            This is group which allows to store general notes, images, video or whatever. A mime type is stored together 
+            with  a binary blob of data. Please use this only for auxiliary information, for example an image of your sample, 
+            or a photo of your boss. 
+          </para></listitem>
+          </varlistentry>
+          <varlistentry>
+          <term>NXgeometry</term>
+          <listitem><para>
+            NXgeometry and its subgroups NXtranslation, NXorientation, NXshape are  used to store absolute positions in the 
+            laboratory coordinate system or to define shapes. 
+          </para></listitem>
+          </varlistentry>
+          </variablelist>
+          These groups can appear anywhere in the NeXus hierarchy, where needed. Preferably close to the component they 
+          annotate or in a NXcollection. All of the base classes are documented in the reference manual. 
+        </para>
+    </section>    
+    <!-- 
+        ================================
+        section: NeXus Application Definitions
+        ================================
+    -->
+    <section xml:id="Design-NeXusApplications">
+        <title>NeXus Application Definitions</title>
+        <para>
+           The objects described so far provide us with the means to store data from a wide variety of instruments,
+           simulations or processed data as resulting from data analysis. But NeXus strives to express strict standards for 
+           certain applications of NeXus too. The tool which NeXus uses for the expression of such strict standards is the NeXus 
+           Application Definition. A NeXus Application Definition describes which groups and data items have to be present in 
+           a file in order to properly describe an application of NeXus. For example for describing  a powder diffraction 
+           experiment. Typically an application definition will contain only a small subset of the many groups and fields 
+           defined in NeXus. NeXus application definitions are also expressed in the NeXus Definition Language (NXDL). A tool exists 
+           which allows to validate a NeXus file against a given application definition. 
+       </para>
+       <para>
+         Another way to look at a NeXus application definition is as a contract between a file writer and a file consumer (reader).
+         A contract which reads: if you write your files following a particular NeXus application definition, I can process these files 
+         with my software.  
+       </para>
+       <para>
+         Yet another way to look at a NeXus application definition is to understand it as an interface definition 
+         between data files and the software which uses this file. Much like an interface in the Java or other modern 
+         object oriented programming languages. 
+       </para>
+       <para>
+          In contrast to NeXus base classes, NeXus supports inheritance in application definitions.   
+       </para>
+       <para>
+          Please note that a NeXus Application Definition will only define the bare minimum of data necessary to perform 
+          common analysis with data. Practical files will nearly always contain more data. One of the beauties of NeXus is 
+          that it is alwasy possible to add more data to a file without breaking its compliance with its application definition. 
+       </para>
+      </section>
+    </section>    
+    
+            
     
     <!-- 
         ========================================
         section: Hierarchy of NeXus Base Classes
         ========================================
-    -->
+    --><!--
     <section xml:id="Design-HierarchyBaseClasses">
         <title>Hierarchy of NeXus Base Classes</title>
         <para>
@@ -897,10 +601,10 @@
         </para>
         <figure xml:id="list.hierarchy.base">
             <title>Hierarchy of NeXus Base Classes</title>
-            <!-- 
+             
                 content constructed manually from 
                 http://www.nexusformat.org/Design#NeXus_Classes 
-            -->
+            
             <indexterm>
                 <primary>hierarchy</primary>
                 <secondary>base classes</secondary>
@@ -1068,73 +772,86 @@
         </figure>
     </section>
     
+    -->
     <!-- 
         ================================
         section: NeXus Coordinate System
         ================================
     -->
     <section xml:id="Design-CoordinateSystem">
-        <title>NeXus Coordinate System
+        <title>NeXus Coordinate Systems
             <indexterm><primary>geometry</primary></indexterm>
         </title>
-        <para> Nexus provides two coordinate systems: 
-            <indexterm><primary>coordinates</primary></indexterm>
-            a <link xlink:href="#Design-Coordinate-Spherical">
-                <citetitle>polar coordinate based system</citetitle>
-            </link> for scattering coordinates
-            and 
-            a <link xlink:href="#NXgeometrySection"
-            ><literal>NXgeometry</literal> based system</link> 
-            for physical coordinates of beamline components. 
-            The coordinate origin is discussed in <xref linkend="Design-CoordinateOrigin"/>.
-            The usage of these two systems can be illustrated by
-            considering a <superscript>3</superscript>He gas tube detector
-            on a neutron scattering instrument: </para>
-        <itemizedlist mark="opencircle">
-            <listitem>
-                <para> The <link xlink:href="#Design-Coordinate-Spherical">
-                        <citetitle>polar system</citetitle>
-                </link> would describe the scattering, rather than actual, 
-                    geometry. <indexterm><primary>geometry</primary></indexterm>
-                    For
-                    example, the <emphasis>distance</emphasis> coordinate would refer to the
-                    distance from the sample to an effective measurement point within the gas
-                    tube, which would depend on neutron energy; lower energy neutrons would tend
-                    to penetrate a smaller distance within the tube, and so have a shorter
-                    secondary flight path. </para>
-            </listitem>
-            <listitem>
-                <para> The <link xlink:href="#Design-Coordinate-NXgeometry"
-                    ><literal>NXgeometry</literal> 
-                    system</link>
-                    represents true spatial location and would describe 
-                    a cylinder at a certain
-                    distance from the sample that never changes from one 
-                    run to another </para>
-            </listitem>
-        </itemizedlist>
         <para>
-            In NeXus, we have not defined
-            rotation directions. The triple polar_angle, 
-            azimuthal_angle and distance define a polar 
-            coordinate system. Polar_angle is ALWAYS two-theta, 
-            even if the detector does not happen to live in
-            the scattering plane. The azimuthal_angle defines 
-            by how much the plane in which the 0 point of 
-            the drawing and the blue point live is tilted 
-            towards the scattering plane.
+          Coordinate systems in NeXus underwent quite some development. Initially, just  motor 
+          positions of relevant motors were stored without further standardization. This soon proved to be 
+          to little and the <emphasis>NeXus polar coordinate </emphasis> system was developed. This system still 
+          is very close to angles meaningful to an instrument scientist but allows to define general positions of 
+          components easily. Then users from the simulation community approached the NeXus team and asked for a means 
+          to store absolute coordinates. This was implemented through the use of the <emphasis>NXgeometry</emphasis> class on top of the 
+          <emphasis>McStas</emphasis> system. We soon learned that all the things we do can be expressed through the McStas coordinate 
+          system. So it became the reference coordinate system for NeXus. NXgeometry was expanded to allow the description of shapes 
+          when the demand came up. Later members of the CIF team convinced the NeXus team of the beauty of transformation matrices and 
+          NeXus was enhanced to store the necessary information to fully map CIF concepts. Not much had to be changed though as we 
+          choose to document the existing angles in CIF terms. The CIF system allows to store arbitrary operations and nevertheless calculate 
+          absolute coordinates in the laboratory coordinate system. It also allows to convert from local, for example detector 
+          coordinate systems, to absolute coordinates in the laboratory system.     
         </para>
-        <simplelist>
-            <member><literal>polar_angle</literal>: rotation y' about the Y axis, but 
-              the rotation axis is with the next upstream component</member>
-            <member><literal>azimuthal_angle</literal>: rotation z' about the Z axis</member>
-            <member><literal>rotation_angle</literal>: rotation y' about the Y axis</member>
-        </simplelist>
-        <note>
+        
+          <section xml:id="Design-Coordinate-NXgeometry">
+            <title>
+                McStas and <literal>NXgeometry</literal> System
+                <indexterm><primary>geometry</primary></indexterm>
+            </title>
+            <para> 
+                NeXus uses the               
+                <link xlink:href="http://mcstas.risoe.dk">
+                    <citetitle>McStas coordinate system</citetitle> </link>
+                    <indexterm>
+                        <primary>McStas</primary>
+                    </indexterm>
+                as its laboratory coordinate system. 
+                The instrument is given a global, absolute coordinate system where the
+                    <emphasis>z</emphasis> axis points in the direction of the incident beam,
+                the <emphasis>x</emphasis> axis is perpendicular to the beam in the horizontal
+                plane pointing left as seen from the source, and the <emphasis>y</emphasis> axis
+                points upwards. See  below for a drawing of the McStas coordinate system.  The origin of this 
+                coordinate system is the sample position or, if this is ambiguous, the center of the sample holder
+                with all angles and translations set to zero.  The McStas coordinate system is 
+                illustarted in figure <link xlink:href="#fig.mcstasccord">McStas Coordinate System</link>.
+                 <figure xml:id="fig.mcstas-coord">
+                    <title>The McStas Coordinate System</title>
+                    <mediaobject>
+                        <imageobject>
+                            <imagedata fileref="img/mcstascoord.png" width="400pt"
+                                scalefit="1"/>
+                        </imageobject>
+                    </mediaobject>
+                </figure> 
+         </para>
+         <note>
             <para>The NeXus definition of <literal>+z</literal> is opposite to that
                 in the International Tables for Crystallography, 
                 volume G, and consequently, <literal>+x</literal> is also reversed.</para>
         </note>
+        <para>
+          The NeXus NXgeometry class directly uses the McStas coordinate system. NXgeometry classes can appear in any 
+          component in order to specify its position. The suggested name to use is geometry. In NXgeometry the NXtranslation/values 
+          field defines the absolute position of the component in the McStas coordinate system. The NXorientation/value field describes 
+          the orientation of the component as a vector of in the McStas coordinate system. 
+        </para>
+        <!-- 
+          Comment by MK: I think NXgeometry sucks. It is decided upon, so we have to document it as is. But I do think that 
+          it introduces to many levels of hierarchy. I would rather like to have:
+          - an absolute_position[n,3] field at component level. This makes the absolute position easy to see and the n opens up 
+            easily for those components which consist of many subcomponents like a many pixel detector. 
+          - an absolute_orientation[n?,3] field to define the orientation at component level. May be we need an n here too for multi 
+            pixel components.
+          - I would love to pull down the NXshape group to component level too. 
+          Perhaps we can allow that and mark NXgeometry deprecated?  
+         -->
+       </section>
+       
         <section xml:id="Design-Coordinate-Spherical">
             <title>
                 Simple (Spherical Polar) Coordinate System
@@ -1146,36 +863,23 @@
                     >distance</emphasis> is assigned to each component and represents the
                 effective beam flight path length between this component and the sample. A sign
                 convention is used where negative numbers represent components pre-sample and positive
-                numbers components post-sample. </para>
-            <para> For angular information, the quantities <emphasis>polar_angle</emphasis> and
-                <emphasis>azimuthal_angle</emphasis>,
-                as shown in <xref linkend="polar-geometry-figure"/>,
-                are used and these quantities
-                correspond exactly to the usual <link xlink:href="#Design-Coordinate-Spherical">
-                    <citetitle>spherical polar coordinate</citetitle>
-                </link> definitions i.e. the <code>polar_angle</code> is the 
-                <emphasis>zenith angle</emphasis> and measured with respect to a
-                <emphasis>z</emphasis> axis
-                and the <code>azimuthal_angle</code> to the <emphasis>x</emphasis> 
-                axis in the <emphasis>xy</emphasis> plane. The
-                direction of these local axes may be different for each component:
-                    <emphasis>z</emphasis> is the incident beam direction for the <emphasis
-                    role="bold">previous</emphasis> component and we then follow <link
-                    xlink:href="http://mcstas.risoe.dk">
-                    <citetitle>McStas</citetitle>
-                    <indexterm>
-                        <primary>McStas</primary>
-                    </indexterm>
-                </link> for <emphasis>x</emphasis> and <emphasis>y</emphasis> i.e. the
-                <emphasis>x</emphasis> axis is perpendicular to the beam in the horizontal
-                plane pointing left as seen from the source, and the <emphasis>y</emphasis> axis
-                points upwards (see diagram below). The <emphasis>z</emphasis> axis thus
-                represents the direction of the beam if it was not redirected by the previous
-                component, and so the polar_angle and azimuthal_angle for a component indicate
-                how much the beam was bent/scattered by the previous component. 
-                The <code>rotation_angle</code> is a rotation about the <emphasis>y</emphasis> axis.
+                numbers components post-sample. At each component there is local spherical coordinate system 
+                with the angles <emphasis>polar_angle</emphasis> and <emphasis>azimuthal_angle</emphasis>. 
+                The size of the sphere is the distance to the previous component. 
             </para>
-            <figure xml:id="polar-geometry-figure">
+            <para>
+               In order to understand this spherical polar coordinate system it is helpful to  look initially at 
+               the common condition that azimuthal_angle is zero. This corresponds to working directly 
+               in the horizontal scattering plane of the instrument. In this case polar_angle maps directly to the setting 
+               commonly known as two theta. Now, there are instruments where components live outside of 
+               the scattering plane. Most notably detectors. In order to describe such components we first apply 
+               the tilt out of the horizontal scattering plane as the azimuthal_angle. Then, in this tilted plane, 
+               we rotate to the component. The beauty of this is that polar_angle is always two theta. Which, in the case 
+               of a component out of the horizontal scattering plane, is not identical to the value read from the motor 
+               responsible for rotating the component. This situation is shown in  <link xlink:href="fig.polar-geometry-figure">
+               Figure Polar Coordinate System</link>.                 
+            </para>    
+           <figure xml:id="fig.polar-geometry-figure">
                 <title>
                     NeXus Simple (Spherical Polar) Coordinate System
                 </title>
@@ -1187,190 +891,139 @@
                     </imageobject>
                 </mediaobject>
             </figure>
-            <para> If we consider an <code>NXdetector</code> element placed directly after an
-                NXsample, the <emphasis>z</emphasis> axis would be in the direction of the beam
-                incident on NXsample. The polar_angle for the <code>NXdetector</code> would be
-                the angle between the scattered beam and this <emphasis>z</emphasis> axis and so
-                correspond to the <emphasis>Bragg angle</emphasis> or 
-                <emphasis>two theta</emphasis> even for out-of-plane scattering. 
-                The azimuthal_angle would
-                be the angle between the positive x-axis and the scattered beam projected onto
-                the <emphasis>xy</emphasis>-plane - scattering to the left as seen from the source would have
-                azimuthal_angle=0 and scattering to the right azimuthal_angle=pi. The distance
-                would correspond to what is often called the 
-                <emphasis>secondary flight path length</emphasis> or <emphasis>L2</emphasis>. 
-            </para>
         </section>
-        <section xml:id="Design-Coordinate-NXgeometry">
-            <title>
-                <literal>NXgeometry</literal>-based system
-                <indexterm><primary>geometry</primary></indexterm>
-            </title>
-            <para> 
-                The <literal>NXgeometry</literal>-based coordinate system,
-                shown in <xref linkend="NXgeometry-figure"/>,
-                is based more fully on the 
-                <link xlink:href="http://mcstas.risoe.dk">
-                    <citetitle>McStas coordinate system</citetitle>.
-                    <indexterm>
-                        <primary>McStas</primary>
-                    </indexterm>
-                </link>
-                The instrument is given a global, absolute coordinate system where the
-                    <emphasis>z</emphasis> axis points in the direction of the incident beam,
-                the <emphasis>x</emphasis> axis is perpendicular to the beam in the horizontal
-                plane pointing left as seen from the source, and the <emphasis>y</emphasis> axis
-                points upwards. Each beamline component also has a local coordinate system,
-                which is defined by the <link xlink:href="#NXgeometrySection"><literal
-                        >NXgeometry</literal></link> object. The local
-                    <emphasis>z</emphasis> direction for a component is taken as the incident
-                beam direction, with <emphasis>x</emphasis> and <emphasis>y</emphasis> defined
-                as before (<emphasis>i.e.</emphasis> the <emphasis>x</emphasis> axis is
-                perpendicular to the beam in the horizontal plane pointing left as seen from the
-                source, and the <emphasis>y</emphasis> axis points upwards). Information about
-                these coordinate systems and the placement of components is described by the
-                    <link xlink:href="#NXgeometrySection">NXgeometry</link> class via its
-                    <code>NXtranslation</code> and <code>NXorientation</code> members. </para>
+
+            
+        <section xml:id="CoordinateTransformations">
+            <title>Coordinate Transformations</title>
+            
             <para>
-                <figure xml:id="NXgeometry-figure">
-                    <title>
-                        <literal>NXgeometry</literal>-based coordinate system
-                        <indexterm><primary>geometry</primary></indexterm>
-                    </title>
-                    <informaltable>
-                        <tgroup cols="2">
-                            <tbody>
-                                <row>
-                                    <entry>
-                                        <mediaobject>
-                                            <imageobject>
-                                              <imagedata
-                                              fileref="img/translation-orientation-geometry.jpg"
-                                              width="200pt" scalefit="1"/>
-                                            </imageobject>
-                                            <caption>
-                                              <para>view from source</para>
-                                            </caption>
-                                        </mediaobject>
-                                    </entry>
-                                    <entry>
-                                        <mediaobject>
-                                            <imageobject>
-                                              <imagedata
-                                              fileref="img/translation-orientation-geometry-2.jpg"
-                                              width="200pt" scalefit="1"/>
-                                            </imageobject>
-                                            <caption>
-                                              <para>view from detector</para>
-                                            </caption>
-                                        </mediaobject>
-                                    </entry>
-                                </row>
-                            </tbody>
-                        </tgroup>
-                    </informaltable>
-                </figure>
+              Another way to look at coordinates is through the use of transformation matrices. 
+              In this world view, the absolute position of a component or a detector pixel with respect to 
+              the laboratory corrdinate system is calculated by applying a series of translations and 
+              rotations. These operations are commonly expressed as transformation matrices and their 
+              combination as matrix multiplication. A very important aspect is that the order of application 
+              of the individual operations <emphasis>does</emphasis> matter. Another important aspect is that 
+              any operation transforms the whole coordinate system and gives rise to a new local coordinate system.
+              The mathematics behind this is 
+              well known and used in such applications such as industrial robot control, space flight and 
+              computer games. The beauty in this comes from the fact that the operations to apply map easily 
+              to instrument settings and constants. It is also easy to analyze the contribution of each individual 
+              operation: this can be studied under the condition that all other operations are at a zero setting.  
             </para>
+
             <para>
-                The sign of the rotations as shown in 
-                <xref linkend="NXgeometry-figure"/>,
-                is technically correct although instrument 
-                scientists might debate whether it is sensible.  
-                (For example, an increasing Bragg angle for a 
-                vertical reflection where the beam is bouncing 
-                upwards seems as if it should be positive but 
-                the proper sense of this <emphasis>x'</emphasis>, or pitch, rotation 
-                must be negative if one wishes to obey the 
-                right-hand rule.)  A review of what is written 
-                in the International Tables for Crystallography 
-                volume G might be in order to resolve this.
+              In order to use coordinate transformations, several morsels of information need to be known:
+              <variablelist>
+                 <varlistentry>
+                   <term>Type</term>
+                    <listitem><para>The type of operation: rotation or translation</para></listitem>
+                 </varlistentry>
+                 <varlistentry>
+                   <term>Direction</term>
+                     <listitem><para>The direction of the translation or the direction of the rotation axis</para></listitem>
+                 </varlistentry>
+                 <varlistentry>
+                  <term>Value</term>
+                    <listitem><para>The angle of rotation or the length of the translation</para></listitem>
+                 </varlistentry>
+                 <varlistentry>
+                    <term>Order</term>
+                      <listitem><para>The order of operations to apply to move a component into its place. </para></listitem>
+                 </varlistentry>
+              </variablelist>
+            </para>            
+
+       <table role="small" xml:id="tb.table-transform">
+            <title>
+                Actions of standard NeXus fields
+            </title>
+            <tgroup cols="3" align="left" colsep="1" rowsep="1">
+                <thead>
+                    <row>
+                        <entry><?dblatex bgcolor="[gray]{0.8}"?>Field Name</entry>
+                        <entry><?dblatex bgcolor="[gray]{0.8}"?>transformation_type</entry>
+                        <entry><?dblatex bgcolor="[gray]{0.8}"?>vector</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row>
+                        <entry><emphasis role="bold">polar_angle</emphasis></entry>
+                        <entry>rotation</entry>
+                        <entry>0 1 0</entry>
+                    </row>
+                    <row>
+                        <entry><emphasis role="bold">azimuthal_angle</emphasis></entry>
+                        <entry>rotation</entry>
+                        <entry>0 0 1</entry>
+                    </row>
+                    <row>
+                        <entry><emphasis role="bold">meridional_angle</emphasis></entry>
+                        <entry>rotation</entry>
+                        <entry>1 0 0</entry>
+                    </row>
+                     <row>
+                        <entry><emphasis role="bold">distance</emphasis></entry>
+                        <entry>translation</entry>
+                        <entry>0 0 1</entry>
+                    </row>
+                    <row>
+                        <entry><emphasis role="bold">height</emphasis></entry>
+                        <entry>translation</entry>
+                        <entry>0 1 0</entry>
+                    </row>
+                    <row>
+                        <entry><emphasis role="bold">x_translation</emphasis></entry>
+                        <entry>translation</entry>
+                        <entry>1 0 0</entry>
+                    </row>
+                     <row>
+                        <entry><emphasis role="bold">chi</emphasis></entry>
+                        <entry>rotation</entry>
+                        <entry>0 0 1</entry>
+                    </row>
+                    <row>
+                        <entry><emphasis role="bold">phi</emphasis></entry>
+                        <entry>rotation</entry>
+                        <entry>0 1 0</entry>
+                    </row>
+               </tbody>
+            </tgroup>
+        </table>
+
+            <para>
+              The type and direction of the NeXus standard operations is documented in <xref linkend="tb.table-transform"/>.
+              NeXus can now also allow non standard operations to be stored in data files. In such cases additional data 
+              attributes are required which describe the operation. These are <emphasis>transformation_type</emphasis> which 
+              can be either translation or rotation. The other is <emphasis>vector</emphasis> which is 3 float values describing 
+              the direction of translation or rotation. The value is of course always the value of the data field in the data file.  
             </para>
             
-            <section xml:id="CoordinateTransformations">
-                <title>Coordinate Transformations</title>
-                <para> When computing a transformation, <code>NXtranslation</code> is applied before
-                    <code>NXorientation</code>. All NeXus axes are right handed and orthogonal.
-                    Orientation information is stored as direction cosines. The direction cosines
-                    will be between the local coordinate directions and the reference directions (to
-                    origin or relative <link xlink:href="#NXgeometrySection">NXgeometry</link>). 
-                    From the <code>value</code> field in <code>NXorientation</code>,
-                    <quote>
-                        Calling the local unit
-                        vectors <emphasis>(x',y',z')</emphasis> and the reference unit vectors 
-                        <emphasis>(x,y,z)</emphasis> the six numbers will
-                        be <emphasis>[x' dot x, x' dot y, x' dot z, y' dot x, y' dot y, y' dot z]</emphasis> where "dot" is
-                        the scalar dot product (cosine of the angle between the unit vectors). The unit
-                        vectors in both the local and reference coordinates are right-handed and
-                        orthonormal.
-                    </quote>
-                    With this restriction we only need to store 6 rather than 9
-                    direction cosines, as the <emphasis>z'</emphasis> axis can
-                    be obtained by the vector cross product of
-                    <emphasis>x'</emphasis> and <emphasis>y'</emphasis>.
-                </para>
-            </section>
-            <section xml:id="Design-CoordinateOrigin">
-                <title>The Coordinate Origin</title>
-                <para> The origin of coordinates is arbitrary, but all components in the file must
-                    either agree on its absolutelocation or use relative positioning. To allow for
-                    this generality, an origin member can be defined in <code>NXentry</code>; its
-                    use will be detailed shortly. </para>
-                <para> We choose as our absolute the origin the scattering center, which is where a
-                    perfectly aligned sample would be. Note that the centre of the sample itself may
-                    not always be at this point if the sample is being scanned across the beam. With
-                    an origin at the <emphasis>scattering centre</emphasis> the spherical polar
-                    coordinate specifications of the detector positions conveniently relates to
-                    scattering angles and lengths for direct geometry instruments. </para>
-                <para> Individual components of the instrument (e.g. jaws) will have their own set
-                    of local axes (x,y,z) which will be fixed to their body in a way defined by
-                    their shape. These local axes will probably not coincidewith the global
-                    instrument axes and so a set of rotation angles will also need to be stored. For
-                    this an <link xlink:href="#NXgeometrySection"><literal
-                            >NXgeometry</literal></link> class is defined, along
-                    with <literal>NXtranslation</literal> and <literal>NXorientation</literal>; 
-                    the hope is to provide a 
-                    method sufficiently general for relating the
-                    location of any object with respect to another object.
-                    The mechanism also allows for specifying one position relative to another
-                    component: a NeXus file link
-                    <indexterm><primary>link</primary></indexterm>
-                    is made in one instance of an <link xlink:href="#NXgeometrySection"
-                        >NXgeometry</link> object to another <link xlink:href="#NXgeometrySection"
-                        >NXgeometry</link> object and a program can then traverse the chain of links
-                    to calculate an absolute position. </para>
-                <para> NeXus does not need to define absolutely where to place the
-                        <emphasis>origin</emphasis>. All components can instead be declared with a
-                    relative position that ultimately follows a chain back to one object of class 
-                    <link xlink:href="#NXgeometrySection"><literal>NXgeometry</literal></link>; this will
-                    be named <emphasis>origin1</emphasis>, be and a <emphasis>field</emphasis> of 
-                    <literal>NXentry</literal>. The real space
-                    location of this origin is chosen for convenience and should be mentioned in the
-                    description attached to <literal>origin1</literal>. If the origin is taken at
-                    the sample, then <literal>sample.geometry.distance</literal> will always be
-                    <emphasis>(0,0,0)</emphasis> relative to <literal>origin1</literal>; 
-                    if the origin is taken
-                    elsewhere this will not be so, but everything will still work. It may be
-                    convenient to define extra origins (similar to <emphasis>arms</emphasis> in
-                        <link xlink:href="http://mcstas.risoe.dk">
-                        <citetitle>McStas</citetitle></link>)
-                    <indexterm><primary>McStas</primary></indexterm>
-                    <indexterm><primary>geometry</primary></indexterm>
-                    at other parts of the instrument. For example, defining one at the
-                    centre of a circular array of detectors would allow their positions to be
-                    conveniently specified in spherical polar coordinates. Another possibility would
-                    be to define the sample relative to <emphasis>origin1</emphasis> and the
-                    detectors to <emphasis>origin2</emphasis>; the detectors could then be rotated
-                    by a rotation of <emphasis>origin2</emphasis> without modifying
-                        <code>NXdetector</code>. 
-                </para>
-                <para> 
-                    As well as specifying the component location, it is also necessary to specify
-                    the beam direction. Unless otherwise given in an <code>NXbeam</code> member of the component,
-                    the incident beam is assumed to be travelling along <emphasis>(0,0,+z)</emphasis> in the coordinate
-                    system of the object (or origin) our position was defined relative to. Thus, for
-                    a component with absolute positioning the beam will always be in the incident
-                    beam direction unless specified by an <code>NXbeam</code> member. </para>
-            </section>
+            <para>
+              How NeXus describes the order of operations to apply has not yet been decided upon. The authors favourite scheme 
+              is to use a special field at each instrument component, named <emphasis>transform</emphasis> which describes the 
+              operations to apply to get the component into its position as a list of colon separated paths to the operations 
+              to apply relative to the current NXentry. For paths in the same group, only the name need to be given. Detectors 
+              may need two such fields: the transfrom field to get the get  the detector as a whole into its position 
+              and a <emphasis>transform_pixel</emphasis> field which describes how the absolute position of a detector pixel 
+              can be calculated.    
+            </para>
+            
+            <para>
+              For the NeXus spherical coordinate system the order is implicit: 
+              <example>
+               <programlisting language="c">
+                 azimuthal_angle:polar_angle:distance
+               </programlisting>
+              </example>
+              This is also a nice example of the application of transformation matrices: you first apply azimuthal_angle as a rotation
+              around z. This rotates the whole coordinate out of the plane. The you apply polar_angle as a rotation around y in the 
+              tilted coordinate system. This also moves the direction of the z vector. Along which you translate the component to place by 
+              distance. 
+            </para>
+       </section>
+    </section>   
+    <!--  
             <section xml:id="Size-Shape">
                 <title>Size and Shape (<code>NXshape</code>)</title>
               <para>
@@ -1409,293 +1062,24 @@
                   <code>size[6]</code> array. </para>
             </section>
         </section>
-    </section>
-    
-    <!-- 
-        ==============================
-        section: NeXus units
-        ==============================
     -->
-    <section xml:id="Design-Units">
-        <title>NeXus units</title>
-        <para> NeXus units <indexterm significance="preferred">
-                <primary>units</primary>
-        </indexterm> are written as a string (<code>NX_CHAR</code>) 
-            and describe the engineering units. The string
-            should be appropriate for the value. 
-            Values for the NeXus units must be specified in
-            a format compatible with <link 
-                xlink:href="http://www.unidata.ucar.edu/software/udunits/udunits-2-units.html"
-                >Unidata UDunits</link>.<footnote>
-                <para>Unidata UDunits: <link
-                    xlink:href="http://www.unidata.ucar.edu/software/udunits/udunits-2-units.html"
-                    ><literal
-                        >http://www.unidata.ucar.edu/software/udunits/udunits-2-units.html</literal
-                    ></link>
-                </para>
-                </footnote>  
-            <indexterm>
-                <primary>UDunits</primary>
-            </indexterm>
-            The UDunits specification also includes instructions 
-            for derived units.
-            At present, the contents of NeXus <literal>units</literal> attributes
-            are not validated in data files.
-            <!-- thus backwards compatible -->
-        </para>
-        <para>
-            Given the plethora of possible applications of NeXus, it is difficult to 
-            define units<indexterm><primary>units</primary></indexterm>
-            to use. Therefore, the general rule is that you are free to 
-            store data in any unit you find fit. However, any data field must have a 
-            units attribute which describes the units used in the format used by the 
-            udunits unit conversion program. Wherever possible, SI units are 
-            preferred. Application definitions may specify units to be used for fields 
-            using an 
-            <code>enumeration</code>.<indexterm><primary>enumeration</primary></indexterm>
-        </para>
-    </section>
     
-    <!-- 
-        ==============================
-        section: NeXus dates and times
-        ==============================
-    -->
-    <section xml:id="Design-Dates-Times">
-        <title>NeXus dates and times</title>
-        <para>
-            NeXus dates and times should be stored using the 
-            <indexterm><primary>date and time</primary></indexterm>
-            <link xlink:href="http://www.w3.org/TR/NOTE-datetime"
-                >ISO 8601</link><footnote><para
-                    >ISO 8601: <link xlink:href="http://www.w3.org/TR/NOTE-datetime"
-                        ><literal
-                            >http://www.w3.org/TR/NOTE-datetime</literal
-                        ></link></para></footnote>
-            format e.g. <literal>1996-07-31T21:15:22+0600</literal>. 
-            The standard also allows for time intervals in fractional seconds
-            with <emphasis>1 or more digits of precision</emphasis>.
-            This will avoid confusion, e.g. between U.S. and European conventions, 
-            and is appropriate for machine sorting. 
-            <note>
-                <para>
-                    Note that the <code>T</code> appears literally in the string, 
-                    to indicate the beginning of the time element, as specified 
-                    in ISO 8601.
-                </para>
-            </note>
-        </para>
-    </section>
     
-    <!-- 
-        ===============================
-        section: NeXus array dimensions
-        ===============================
-    -->
-    <section xml:id="Design-NeXusDimensions">
-        <title>NeXus array dimensions</title>
-        <!-- TODO This is the new writeup! -->
-        <para> 
-            NeXus arrays are stored in order of the fastest varying dimension.
-            For example, consider a diffractometer at a time-of-flight neutron source.
-            The time-of-flight (call it <literal>time_of_flight</literal>) 
-            might be along an axis with subscript <literal>i</literal> and a
-            scattering angle (call it <literal>polar_angle</literal>) 
-            might be along an axis with subscript <literal>j</literal>.  
-            In our example,
-            assume that time-of-flight is the fastest varying axis.  
-            Then our data (call it <literal>data</literal>)  
-            would be stored in NeXus as:
-            <itemizedlist>
-                <listitem><para><code>data[j][i]</code> : C storage order</para></listitem>
-                <listitem><para><code>data(i,j)</code> : FORTRAN storage order</para></listitem>
-                <!--<listitem><para><code>data[j][i]</code> : Python storage order</para></listitem>-->
-            </itemizedlist>
-        </para>
-        <para>
-            Using NXDL to describe the structure of <literal>data</literal> 
-            as it is stored, the relevant parts would look like:
-            <example>
-                <title>Example description of 2-D array dimensions in NXDL.</title>
-                <programlisting  language="xml" linenumbering="numbered"
-                    ><xi:include href="examples/array-dimensions1.xml.txt" parse="text"
-                    /></programlisting>
-            </example> 
-            where <literal>nTOF</literal> and <literal>nAngle</literal> represent, 
-            symbolically, the length (number of values) of each axis.
-            It is useful to declare these symbolic lengths near the top of the 
-            NXDL file with a fragment such as:
-            <example>
-                <title>Example declaration of dimension length symbols in NXDL.</title>
-                <programlisting  language="xml" linenumbering="numbered"
-                    ><xi:include href="examples/array-dimensions3.xml.txt" parse="text"
-                    /></programlisting>
-            </example> 
-        </para>
-        <para>
-            It is sometimes useful to coordinate dimension lengths between related arrays.  
-            Continuing the previous example, the <literal>time_of_flight</literal>
-            and <literal>polar_angle</literal> would be described:
-            <example>
-                <title>Example description of coordinating array dimensions in NXDL.</title>
-                <programlisting  language="xml" linenumbering="numbered"
-                    ><xi:include href="examples/array-dimensions2.xml.txt" parse="text"
-                    /></programlisting>
-            </example> 
-        </para>
-        <para>Rather than use a system of symbols to coordinate the lengths
-            of the various dimensions, NXDL also provides a way for one field to identify
-            the dimension(s) from another field.  Here is an example: 
-            <example><!-- TODO check this example (especially "[k+1]" part for correctness! -->
-                <title>Example of referencing array dimensions in NXDL.</title>
-                <programlisting  language="xml" linenumbering="numbered"
-                    ><xi:include href="examples/array-dimensions.xml.txt" parse="text"
-                    /></programlisting>
-            </example> 
-            In some programming language, this would make <code>data[i,j,k]</code> and
-            <code>time_of_flight[k+1]</code> (third dimension in <code>data</code>). </para>
-    </section>
-    
-    <!-- 
-        =========================
-        section: NeXus Data Types
-        =========================
-    -->
-    <section xml:id="Design-DataTypes">
-        <title>NeXus Data Types</title>
-        <table>
-            <title>Matching regular expressions for NeXus data types</title>
-        <!-- 
-            Built this table from <code>../xslt/nexus_base.sch</code>
-
-            <sch:let name="NAPItype_INT" value="'NX_INT(8|16|32|64)'"/>
-            <sch:let name="NAPItype_FLOAT" value="'NX_FLOAT(32|64)'"/>
-            <sch:let name="ARRAY_regexp" value="'(\[0-9\])?'"/>  <!-/- this is not complete -/->
-            <sch:let name="NAPItype_regexp"  value="concat('NX_CHAR|',$NAPItype_INT,'|',$NAPItype_FLOAT)"/>
-            <sch:let name="ValidItemName_regexp" value="'^[A-Za-z_][A-Za-z0-9_]*$'" />
-            <sch:let name="ValidNXClassName_regexp" value="'^NX[A-Za-z0-9_]*$'" />
-        -->
-            <tgroup cols="2">
-                <colspec colwidth="1*"/>
-                <colspec colwidth="1*"/>
-                <thead>
-                    <row>
-                        <entry>description</entry>
-                        <entry>matching regular expression</entry>
-                    </row>
-                </thead>
-                
-                <tbody>
-                    <row>
-                        <entry>integer</entry>
-                        <entry><code>NX_INT(8|16|32|64)</code></entry>
-                    </row>
-                    <row>
-                        <entry>floating-point</entry>
-                        <entry><code>NX_FLOAT(32|64)</code></entry>
-                    </row>
-                    <row>
-                        <entry>array</entry>
-                        <entry><code>(\[0-9\])?</code></entry>
-                    </row>
-                    <row>
-                        <entry>valid item name</entry>
-                        <entry><code>^[A-Za-z_][A-Za-z0-9_]*$</code></entry>
-                    </row>
-                    <row>
-                        <entry>valid class name</entry>
-                        <entry><code>^NX[A-Za-z0-9_]*$</code></entry>
-                    </row>
-                </tbody>
-                
-            </tgroup>
-        </table>
-        <para>
-            NeXus supports numeric data as either integer or floating-point
-            numbers.  A number follows that indicates the number of bits in the word.
-            The table above shows the regular expressions that
-            matches the data type specifier.
-            <glosslist>
-                <glossentry>
-                    <glossterm>integers</glossterm>
-                    <glossdef>
-                        <para>
-                            <code>NX_INT8</code>,
-                            <code>NX_INT16</code>,
-                            <code>NX_INT32</code>,
-                            or
-                            <code>NX_INT64</code>
-                        </para>
-                    </glossdef>
-                </glossentry>
-                <glossentry>
-                    <glossterm>floating-point numbers</glossterm>
-                    <glossdef>
-                        <para>
-                            <code>NX_FLOAT32</code>
-                            or 
-                            <code>NX_FLOAT64</code>
-                        </para>
-                    </glossdef>
-                </glossentry>
-                <glossentry>
-                    <glossterm>date / time stamps</glossterm>
-                    <glossdef>
-                        <para>
-                            <code>NX_DATE_TIME</code>
-                            or 
-                            <code>ISO8601</code>: 
-                            Dates and times are specified using 
-                            ISO-8601 standard definitions.
-                            <indexterm><primary>date and time</primary></indexterm>
-                            Refer to <xref linkend="Design-Dates-Times"/>.
-                        </para>
-                    </glossdef>
-                </glossentry>
-                <glossentry>
-                    <glossterm>strings</glossterm>
-                    <glossdef>
-                        <para>
-                            All strings are to be encoded in UTF-8. Since most strings in a
-                            NeXus file are restricted to a small set of characters and the first 128 characters are standard across encodings,
-                            the encoding of most of the strings in a NeXus file will be a moot point.
-                            Where encoding in UTF-8 will be important is when recording peoples names in <code>NXuser</code>
-                            and text notes in <code>NXnotes</code>.
-                        </para>
-                        <para>
-                          Because the few places where encoding is important also have unpredictable content, as well as the way in which
-                          current operating systems handle character encoding, it is practically impossible to test the encoding used. Hence,
-                          <code>nxvalidate</code> provides no messages relating to character encoding.
-                        </para>
-                    </glossdef>
-                </glossentry>
-                <glossentry>
-                    <glossterm>binary data</glossterm>
-                    <glossdef>
-                        <para>
-                            Binary data is to be written as <code>UINT8</code>.
-                        </para>
-                    </glossdef>
-                </glossentry>
-                <glossentry>
-                    <glossterm>images</glossterm>
-                    <glossdef>
-                        <para>
-                            Binary image data is to be written using <code>UINT8</code>, the same as binary data, but with an accompanying image mime-type.
-                            If the data is text, the line terminator is [CR][LF].
-                        </para>
-                    </glossdef>
-                </glossentry>
-            </glosslist>
-        </para>
-    </section>
-    
+     
     <!-- 
         ========================================
-        section: Rules for storing data in Files
+        section: Rules for structuring data in files
         ========================================
     -->
     <xi:include href="rules.xml"/>
+    
+     <!-- 
+        ========================================
+        section: Rules for storing individual data items
+        ========================================
+    -->
+    <xi:include href="datarules.xml"/>
+    
     
     <!-- 
         ========================================
