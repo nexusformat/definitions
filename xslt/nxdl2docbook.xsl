@@ -139,7 +139,7 @@ Usage:
                                         <!-- more dblatex markup to set the background color of the column labels -->
                                         <!--<?dblatex bgcolor="[gray]{0.8}"?>-->
                                         <entry><xsl:processing-instruction name="dblatex"
-                                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Name and Attributes</entry>
+                                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Attributes</entry>
                                         <entry><xsl:processing-instruction name="dblatex"
                                             >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Type</entry>
                                         <entry><xsl:processing-instruction name="dblatex"
@@ -191,7 +191,7 @@ Usage:
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
-    <xsl:template match="nx:attribute|nx:field|nx:group" mode="tableRow">
+    <xsl:template match="nx:field|nx:group" mode="tableRow">
         <xsl:element name="row">
             <xsl:if test="count(nx:attribute)">
                 <!-- do not draw a rule below this row of cells -->
@@ -670,7 +670,7 @@ Usage:
                     </row>
                 </thead>
                 <tbody>
-                    <xsl:apply-templates select="nx:attribute|nx:field|nx:group" mode="tableRow"/>
+                    <xsl:apply-templates select="nx:field|nx:group" mode="tableRow"/>
                     <!-- row -->
                 </tbody>
             </tgroup>
