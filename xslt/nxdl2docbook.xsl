@@ -30,7 +30,8 @@ Usage:
     <!-- 
         The CDATA section does not work the same when this XSLT is "xsl:import"ed.
         Modify the Python code to provide the proper syntax.
-     -->
+    -->
+    <!-- TODO  2010-12-21,PRJ:  Is the CDATA comment above archaic?  Remove it?  -->
     <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
 
     <!-- 
@@ -107,30 +108,59 @@ Usage:
             -->
             <xsl:attribute name="version">5.0</xsl:attribute><!-- required, matches NeXusManual.xml -->
             <!-- ...................................................... -->
-            <xsl:element name="title"><xsl:value-of select="@name"/></xsl:element>
+            <title><xsl:value-of select="@name"/></title>
             <!--  mark this class in the index -->
-            <xsl:element name="indexterm">
-                <xsl:element name="primary">classes</xsl:element>
-                <xsl:element name="secondary">
+            <indexterm>
+                <primary>classes</primary>
+                <secondary>
                     <xsl:choose>
                         <xsl:when test="/nx:definition/@category='base'">base classes</xsl:when>
                         <xsl:when test="/nx:definition/@category='application'">application definitions</xsl:when>
                         <xsl:when test="/nx:definition/@category='contributed'">contributed definitions</xsl:when>
                     </xsl:choose>
-                </xsl:element>
-                <xsl:element name="tertiary"><xsl:value-of select="@name"/></xsl:element>
-            </xsl:element>
+                </secondary>
+                <tertiary><xsl:value-of select="@name"/></tertiary>
+            </indexterm>
             <!-- ...................................................... -->
             <xsl:call-template name="headerList"/>
             <!-- ...................................................... -->
             <xsl:choose>
-                <xsl:when test="count(nx:field)+count(nx:group)">
+                <xsl:when test="count(nx:attribute)+count(nx:field)+count(nx:group)">
+                    <xsl:if test="count(nx:attribute)">
+                        <table>
+                            <title>top-level (<code>definition</code>) attributes</title>
+                            <tgroup cols="4">
+                                <colspec colwidth="15*"/>
+                                <colspec colwidth="15*"/>
+                                <colspec colwidth="20*"/>
+                                <colspec colwidth="30*"/>
+                                <thead>
+                                    <row>
+                                        <!-- more dblatex markup to set the background color of the column labels -->
+                                        <!--<?dblatex bgcolor="[gray]{0.8}"?>-->
+                                        <entry><xsl:processing-instruction name="dblatex"
+                                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Name and Attributes</entry>
+                                        <entry><xsl:processing-instruction name="dblatex"
+                                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Type</entry>
+                                        <entry><xsl:processing-instruction name="dblatex"
+                                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Units</entry>
+                                        <entry><xsl:processing-instruction name="dblatex"
+                                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Description (and Occurrences)</entry>
+                                    </row>
+                                </thead>
+                                <tbody>
+                                    <xsl:apply-templates select="nx:attribute" mode="newRow"/>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </xsl:if>
                     <xsl:call-template name="makeTable"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:element name="para">
-                        No fields or groups are defined (nothing to show in a table at this point).
-                    </xsl:element>
+                    <para>
+                        No attributes, fields, or groups are defined 
+                        (nothing to show in a table at this point).
+                    </para>
                 </xsl:otherwise>
             </xsl:choose>
             <!-- ...................................................... -->
@@ -161,25 +191,24 @@ Usage:
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 
-    <xsl:template match="nx:field|nx:group" mode="tableRow">
+    <xsl:template match="nx:attribute|nx:field|nx:group" mode="tableRow">
         <xsl:element name="row">
             <xsl:if test="count(nx:attribute)">
+                <!-- do not draw a rule below this row of cells -->
                 <xsl:attribute name="rowsep">0</xsl:attribute>
             </xsl:if>
             <!-- +++++++++++++++++++++
                 +++ column: Name
                 +++++++++++++++++++++ -->
-            <xsl:element name="entry">
+            <entry>
                 <xsl:if test="count(@name)">
-                    <xsl:element name="literal">
-                        <xsl:value-of select="@name"/>
-                    </xsl:element>
+                    <literal><xsl:value-of select="@name"/></literal>
                 </xsl:if>
-            </xsl:element>
+            </entry>
             <!-- +++++++++++++++++++++
                 +++ column: Type
                 +++++++++++++++++++++ -->
-            <xsl:element name="entry">
+            <entry>
                 <xsl:choose>
                     <xsl:when test="name()='group'">
                         <xsl:element name="link">
@@ -199,15 +228,15 @@ Usage:
                         </xsl:choose>
                     </xsl:otherwise>
                 </xsl:choose>
-            </xsl:element>
+            </entry>
             <!-- +++++++++++++++++++++
                 +++ column: Units
                 +++++++++++++++++++++ -->
-            <xsl:element name="entry"><xsl:value-of select="@units"/></xsl:element>
+            <entry><xsl:value-of select="@units"/></entry>
             <!-- +++++++++++++++++++++
                 +++ column: Description
                 +++++++++++++++++++++ -->
-            <xsl:element name="entry">
+            <entry>
                 <xsl:if test="count(nx:doc)">
                     <xsl:choose>
                         <xsl:when test="count(nx:doc/db:para)">
@@ -222,40 +251,33 @@ Usage:
                            <xsl:apply-templates select="nx:doc"/>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:element name="para">
-                                <xsl:apply-templates select="nx:doc"/>
-                            </xsl:element>
+                            <para><xsl:apply-templates select="nx:doc"/></para>
                         </xsl:otherwise>
                     </xsl:choose>
                 </xsl:if>
                 <xsl:if test="count(@minOccurs)+count(@maxOccurs)">
-                    <xsl:element name="para">
-                        <xsl:call-template name="showOccurencesEntry"/>
-                    </xsl:element>
+                    <para><xsl:call-template name="showOccurencesEntry"/></para>
                 </xsl:if>
                 <xsl:if test="count(nx:dimensions)">
-                    <xsl:element name="para"> Dimensions:
+                    <para> Dimensions:
                         <xsl:apply-templates select="nx:dimensions" mode="showDimensionsEntry"/>
-                    </xsl:element>
+                    </para>
                 </xsl:if>
                 <xsl:if test="count(nx:link)">
-                    <xsl:element name="variablelist">
-                        <xsl:element name="para">List of links:</xsl:element>
+                    <variablelist>
+                        <para>List of links:</para>
                         <xsl:for-each select="nx:link">
                             <xsl:apply-templates select="." mode="showLinkAttribute"/>
                         </xsl:for-each>
-                    </xsl:element>
+                    </variablelist>
                 </xsl:if>
                 <xsl:if test="count(./nx:group)+count(./nx:field)">
-                    <xsl:element name="para"
-                        >See table: <xsl:element name="emphasis"
-                            ><xsl:attribute name="role">bold</xsl:attribute
-                            ><xsl:apply-templates select="." mode="showParentChild"
-                            /></xsl:element
-                        ></xsl:element>
+                    <para>See table: 
+                        <emphasis role="bold"><xsl:apply-templates select="." mode="showParentChild"
+                            /></emphasis></para>
                 </xsl:if>
                 <!-- perhaps forward reference to hierarchy at this point -->
-            </xsl:element>
+            </entry>
             <!-- +++++++++++++++++++++
                 +++ situation: Hierarchy of group elements
                 +++++++++++++++++++++ -->
@@ -299,18 +321,16 @@ Usage:
             <xsl:if test="position()!=last()">
                 <xsl:attribute name="rowsep">0</xsl:attribute>
             </xsl:if>
-            <xsl:element name="entry">
-                <xsl:element name="literal"
-                    >  @<xsl:value-of select="@name"
-                /></xsl:element>
-            </xsl:element>
-            <xsl:element name="entry">
+            <entry>
+                <literal>  @<xsl:value-of select="@name"/></literal>
+            </entry>
+            <entry>
                 <xsl:choose>
                     <xsl:when test="count(@type)=0">NX_CHAR</xsl:when>
                     <xsl:otherwise><xsl:value-of select="@type"/></xsl:otherwise>
-                </xsl:choose></xsl:element>
-            <xsl:element name="entry"/>
-            <xsl:element name="entry"><xsl:apply-templates select="nx:doc"/></xsl:element>
+                </xsl:choose></entry>
+            <entry/>
+            <entry><xsl:apply-templates select="nx:doc"/></entry>
         </xsl:element>
     </xsl:template>
     
@@ -331,7 +351,7 @@ Usage:
             Q: Then why have it?  
             A: So schema-aware editors can describe the item.
         -->
-        <xsl:element name="para">
+        <para>
             <!--<xsl:if test="position()=1">
                 [ 
             </xsl:if>-->
@@ -350,7 +370,7 @@ Usage:
             <!--<xsl:if test="position()=last()">
                 ]
             </xsl:if>-->
-        </xsl:element>
+        </para>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -405,39 +425,35 @@ Usage:
             <xsl:when test="count(nx:dim)">apparent rank="<xsl:value-of select="count(nx:dim)"/>"</xsl:when>
         </xsl:choose>
         <xsl:if test="count(nx:dim)">
-            <xsl:element name="itemizedlist">
+            <itemizedlist>
                 <xsl:for-each select="nx:dim">
-                    <xsl:element name="listitem">
-                        <xsl:element name="para"> dim: 
+                    <listitem>
+                        <para> dim: 
                             <xsl:for-each select="@*">
-                                <xsl:element name="code">
-                                    <xsl:value-of select="name()"/>="<xsl:value-of select="."/>"
-                                </xsl:element>
+                                <code
+                                    ><xsl:value-of select="name()"
+                                    />="<xsl:value-of select="."/>"</code>
                             </xsl:for-each>
-                        </xsl:element>
-                    </xsl:element>
+                        </para>
+                    </listitem>
                 </xsl:for-each>
-            </xsl:element>
+            </itemizedlist>
         </xsl:if>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xsl:template match="*" mode="showLinkAttribute">
-        <xsl:element name="varlistentry">
-            <xsl:element name="term">
-                <xsl:element name="code">
-                    <xsl:value-of select="@name"/>
-                </xsl:element>
-            </xsl:element>
-            <xsl:element name="listitem">
-                <xsl:element name="para">
-                    <xsl:element name="code">
-                        <xsl:value-of select="@target"/>
-                    </xsl:element>
-                </xsl:element>
-            </xsl:element>
-        </xsl:element>
+        <varlistentry>
+            <term>
+                <code><xsl:value-of select="@name"/></code>
+            </term>
+            <listitem>
+                <para>
+                    <code><xsl:value-of select="@target"/></code>
+                </para>
+            </listitem>
+        </varlistentry>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -451,12 +467,12 @@ Usage:
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xsl:template name="headerList">
-        <xsl:element name="variablelist">
-            <xsl:element name="varlistentry"><!-- show the category: base, application, or contributed -->
-                <xsl:element name="term">category</xsl:element>
-                <xsl:element name="listitem">
-                    <xsl:element name="para">
-                        <xsl:element name="literal"><xsl:value-of select="/nx:definition/@category"/></xsl:element>
+        <variablelist>
+            <varlistentry><!-- show the category: base, application, or contributed -->
+                <term>category</term>
+                <listitem>
+                    <para>
+                        <literal><xsl:value-of select="/nx:definition/@category"/></literal>
                         <xsl:choose>
                             <xsl:when test="/nx:definition/@category='base'">
                                 (base class)
@@ -468,13 +484,13 @@ Usage:
                                 (contributed definition)
                             </xsl:when>
                         </xsl:choose>
-                    </xsl:element>
-                </xsl:element>
-            </xsl:element><!-- varlistentry -->
-            <xsl:element name="varlistentry"><!-- show where to find the source -->
-                <xsl:element name="term">NXDL source:</xsl:element>
-                <xsl:element name="listitem">
-                    <xsl:element name="para">
+                    </para>
+                </listitem>
+            </varlistentry>
+            <varlistentry><!-- show where to find the source -->
+                <term>NXDL source:</term>
+                <listitem>
+                    <para>
                         <!-- !!! line breaks are VERY important here, don't bust them !!! -->
                         <xsl:element name="link"
                             ><xsl:attribute name="xlink:href"
@@ -505,59 +521,55 @@ Usage:
                                     <xsl:value-of select="/nx:definition/@category"/>
                                 </xsl:with-param>
                             </xsl:call-template></xsl:element>)
-                    </xsl:element>
-                </xsl:element>
-            </xsl:element><!-- varlistentry -->
-            <xsl:element name="varlistentry"><!-- show the version of the NXDL instance -->
-                <xsl:element name="term">version</xsl:element>
-                <xsl:element name="listitem">
-                    <xsl:element name="para">
-                        <xsl:value-of select="@version"/>
-                    </xsl:element>
-                </xsl:element>
-            </xsl:element><!-- varlistentry -->
-            <xsl:element name="varlistentry"><!-- show the SVN Id of the NXDL instance -->
-                <xsl:element name="term">SVN Id</xsl:element>
-                <xsl:element name="listitem">
-                    <xsl:element name="para">
+                    </para>
+                </listitem>
+            </varlistentry>
+            <varlistentry><!-- show the version of the NXDL instance -->
+                <term>version</term>
+                <listitem>
+                    <para><xsl:value-of select="@version"/></para>
+                </listitem>
+            </varlistentry>
+            <varlistentry><!-- show the SVN Id of the NXDL instance -->
+                <term>SVN Id</term>
+                <listitem>
+                    <para>
                         <!-- strip the $ signs so SVN does not change the SVN Id in the target DocBook XML file -->
                         <xsl:value-of select="substring-before(substring-after(@svnid,'$'),'$')"/>
-                    </xsl:element>
-                </xsl:element>
-            </xsl:element><!-- varlistentry -->
-            <xsl:element name="varlistentry">
+                    </para>
+                </listitem>
+            </varlistentry>
+            <varlistentry>
                 <!-- show how to learn more about NXDL -->
-                <xsl:element name="term">NeXus Definition Language</xsl:element>
-                <xsl:element name="listitem">
-                    <xsl:element name="para">
+                <term>NeXus Definition Language</term>
+                <listitem>
+                    <para>
                         <xsl:element name="link"
                             ><xsl:attribute name="xlink:href"
                                 >http://download.nexusformat.org/doc/html/NXDL.html</xsl:attribute
                             >NXDL</xsl:element>
-                    </xsl:element>
-                </xsl:element>
-            </xsl:element><!-- varlistentry -->
-            <xsl:element name="varlistentry"><!-- show what this class extends -->
-                <xsl:element name="term">extends class:</xsl:element>
-                <xsl:element name="listitem">
+                    </para>
+                </listitem>
+            </varlistentry><!-- varlistentry -->
+            <varlistentry><!-- show what this class extends -->
+                <term>extends class:</term>
+                <listitem>
                     <xsl:choose>
                         <xsl:when test="@extends='../nxdl'">
                             <xsl:element name="para">NeXus base class</xsl:element>
                         </xsl:when>
                         <xsl:otherwise>
-                            <xsl:element name="para">
-                                <xsl:value-of select="@extends"/>
-                            </xsl:element>
+                            <para><xsl:value-of select="@extends"/></para>
                         </xsl:otherwise>
                     </xsl:choose>
-                </xsl:element>
-            </xsl:element><!-- varlistentry -->
-            <xsl:element name="varlistentry"><!-- show other classes included by this class -->
-                <xsl:element name="term">other classes included:</xsl:element>
+                </listitem>
+            </varlistentry>
+            <varlistentry><!-- show other classes included by this class -->
+                <term>other classes included:</term>
                 <xsl:choose>
                     <xsl:when test="count(nx:group)">
-                        <xsl:element name="listitem">
-                            <xsl:element name="para">
+                        <listitem>
+                            <para>
                                 <xsl:apply-templates 
                                     mode="group-include"
                                     select="  //nx:group[generate-id(.) = generate-id(key('group-include', @type)[1])]  " >
@@ -565,19 +577,19 @@ Usage:
                                     <!-- Muenchian method to sort+unique on group/@type -->
                                     <xsl:sort select="@type"/>
                                 </xsl:apply-templates>
-                            </xsl:element>
-                        </xsl:element>
+                            </para>
+                        </listitem>
                     </xsl:when>
                     <xsl:otherwise>
-                        <xsl:element name="listitem">
-                            <xsl:element name="para">no included classes</xsl:element>
-                        </xsl:element>
+                        <listitem>
+                            <para>no included classes</para>
+                        </listitem>
                     </xsl:otherwise>
                 </xsl:choose>
-            </xsl:element><!-- varlistentry -->
-            <db:varlistentry>
-                <db:term>symbol list</db:term>
-                <db:listitem>
+            </varlistentry>
+            <varlistentry>
+                <term>symbol list</term>
+                <listitem>
                     <xsl:choose>
                         <xsl:when test="count(/nx:definition/nx:symbols)">
                             <xsl:if test="count(/nx:definition/nx:symbols/nx:doc)">
@@ -594,21 +606,18 @@ Usage:
                                 </db:variablelist>
                             </xsl:if>
                         </xsl:when>
-                        <xsl:otherwise><db:para>No symbol table.</db:para></xsl:otherwise>
+                        <xsl:otherwise><para>No symbol table.</para></xsl:otherwise>
                     </xsl:choose>
-                </db:listitem>
-            </db:varlistentry>
-            <db:varlistentry><!-- doc element of this class -->
-                <db:term>documentation</db:term>
-                <db:listitem>
-                    <xsl:comment>count(nx:doc/child::*): <xsl:value-of select="count(nx:doc/child::*)"/></xsl:comment>
+                </listitem>
+            </varlistentry>
+            <varlistentry><!-- doc element of this class -->
+                <term>documentation</term>
+                <listitem>
                     <xsl:choose>
                         <xsl:when test="count(nx:doc/child::*)=0">
-                            <xsl:comment> +++ branch-A +++ </xsl:comment>
                             <para><xsl:apply-templates select="nx:doc"/></para>
                         </xsl:when>
                         <xsl:when test="count(nx:doc/child::*)>0">
-                            <xsl:comment> +++ branch-B +++ </xsl:comment>
                             <xsl:choose>
                                 <xsl:when test="count(nx:doc/db:para)">
                                     <xsl:apply-templates select="nx:doc"/>
@@ -619,25 +628,20 @@ Usage:
                             </xsl:choose>
                         </xsl:when>
                     </xsl:choose>
-                </db:listitem>
-            </db:varlistentry>
-        </xsl:element><!-- variablelist -->
+                </listitem>
+            </varlistentry>
+        </variablelist><!-- variablelist -->
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
     <xsl:template name="makeTable">
-        <xsl:element name="table">
-            <!--  This is markup for dblatex: -->
-            <xsl:attribute name="orient">port</xsl:attribute> <!-- portrait -->
-            <xsl:attribute name="role">small</xsl:attribute> <!-- smaller font -->
+        <table orient="port" role="small">
+            <!-- dblatex markup :  portrait, smaller font -->
             <!-- describe what is defined -->
-            <xsl:element name="title"
-                ><xsl:apply-templates 
-                    select="." mode="showParentChild"
-                /></xsl:element>
-            <xsl:element name="tgroup">
-                <xsl:attribute name="cols">4</xsl:attribute>
+            <title><xsl:apply-templates 
+                    select="." mode="showParentChild"/></title>
+            <tgroup cols="4">
                 <!-- all columns *should* have adjustable width
                     So far, the PDF table columns all have fixed width.
                     How to change this? 
@@ -647,34 +651,30 @@ Usage:
 					
 					http://dblatex.sourceforge.net/html/manual/ch03s04.html
                 -->
-                <xsl:element name="colspec"><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
-                <xsl:element name="colspec"><xsl:attribute name="colwidth">15*</xsl:attribute></xsl:element>
-                <xsl:element name="colspec"><xsl:attribute name="colwidth">20*</xsl:attribute></xsl:element>
-                <xsl:element name="colspec"><xsl:attribute name="colwidth">30*</xsl:attribute></xsl:element>
-                <xsl:element name="thead">
-                    <xsl:element name="row">
+                <colspec colwidth="15*"/>
+                <colspec colwidth="15*"/>
+                <colspec colwidth="20*"/>
+                <colspec colwidth="30*"/>
+                <thead>
+                    <row>
                         <!-- more dblatex markup to set the background color of the column labels -->
                         <!--<?dblatex bgcolor="[gray]{0.8}"?>-->
-                        <xsl:element name="entry"><xsl:processing-instruction name="dblatex"
-                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Name and Attributes</xsl:element>
-                        <xsl:element name="entry"><xsl:processing-instruction name="dblatex"
-                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Type</xsl:element>
-                        <xsl:element name="entry"><xsl:processing-instruction name="dblatex"
-                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Units</xsl:element>
-                        <xsl:element name="entry"><xsl:processing-instruction name="dblatex"
-                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Description (and Occurrences)</xsl:element>
-                    </xsl:element>
+                        <entry><xsl:processing-instruction name="dblatex"
+                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Name and Attributes</entry>
+                        <entry><xsl:processing-instruction name="dblatex"
+                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Type</entry>
+                        <entry><xsl:processing-instruction name="dblatex"
+                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Units</entry>
+                        <entry><xsl:processing-instruction name="dblatex"
+                            >bgcolor="[gray]{0.8}"</xsl:processing-instruction>Description (and Occurrences)</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <xsl:apply-templates select="nx:attribute|nx:field|nx:group" mode="tableRow"/>
                     <!-- row -->
-                </xsl:element>
-                <!-- thead -->
-                <xsl:element name="tbody">
-                    <xsl:apply-templates select="nx:field|nx:group" mode="tableRow"/>
-                    <!-- row -->
-                </xsl:element>
-                <!-- tbody -->
-            </xsl:element>
-            <!-- tgroup -->
-        </xsl:element><!-- table -->
+                </tbody>
+            </tgroup>
+        </table>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -691,20 +691,14 @@ Usage:
         <xsl:choose>
             <xsl:when test="count(@minOccurs)"><xsl:value-of select="@minOccurs"/></xsl:when>
             <xsl:otherwise>
-                <xsl:element name="emphasis">
-                    <xsl:attribute name="role">italic</xsl:attribute>
-                    default
-                </xsl:element>
+                <emphasis role="italic">default</emphasis>
             </xsl:otherwise>
         </xsl:choose>
         :
         <xsl:choose>
             <xsl:when test="count(@maxOccurs)"><xsl:value-of select="@maxOccurs"/></xsl:when>
             <xsl:otherwise>
-                <xsl:element name="emphasis">
-                    <xsl:attribute name="role">italic</xsl:attribute>
-                    default
-                </xsl:element>
+                <emphasis role="italic">default</emphasis>
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
