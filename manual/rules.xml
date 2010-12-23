@@ -54,25 +54,22 @@
       
     <section xml:id="Rules-NXentry-raw-data">
       <title>Content of a Raw Data <code>NXentry</code> Group</title>
-    <figure xml:id="table.RawData">
-     <title>NeXus Raw Data Hierarchy</title>
-     <programlisting>
-     entry:NXentry
-           instrument:NXinstrument
-                      source:NXsource
-                      ....
-                      detector:NXdetector
-                               data, signal = 1 (1)
-           sample:NXsample
-           control:NXmonitor
-           data:NXdata
-                link to (1)
-     </programlisting>
-    </figure>     
+      <para>An example raw data hierarchy is 
+          shown in figure <link xlink:href="#table.RawData">Raw Data</link> 
+          (only showing the relevant parts of the data hierarchy).
+          In the example shown, the <code>data</code> field in the <code>NXdata</code> group
+          is linked to the 2-D detector data (a 512x512 array of 32-bit integers)
+          which has the attribute <code>signal=1</code>.
+        Note that <code>[,]</code> represents a 2D array.
+      </para>
+      <figure xml:id="table.RawData">
+        <title>NeXus Raw Data Hierarchy</title>
+        <programlisting linenumbering="numbered"
+          ><xi:include href="examples/hierarchy-raw.txt" parse="text"
+          /></programlisting>
+      </figure>     
 
         <para>
-          An example raw data hierarchy is 
-          shown in figure <link xlink:href="#table.RawData">Raw Data</link>. 
           An <code>NXentry</code> describing raw data contains at least a <code>NXsample</code>, 
           one <code>NXmonitor</code>, 
           one <code>NXdata</code> and a <code>NXinstrument</code> group. 
@@ -104,27 +101,19 @@
         
     <section xml:id="Rules-NXentry-processed-data">
       <title>Content of a processed data <code>NXentry</code> group</title>
+      <para>Processed data, see figure  <link xlink:href="#table.ProcessedData">Processed Data</link>,  
+           in this context means the results of a data reduction or 
+           data analysis program. Note that <code>[]</code> represents a 1D array.</para>
       
      <figure xml:id="table.ProcessedData">
-     <title>NeXus Processed Data Hierarchy</title>
-     <programlisting>
-     entry:NXentry
-           redution:NXprocess
-                program_name
-                version
-                input:NXparameter
-                  filename
-                  ...
-           sample:NXsample
-           data:NXdata
-                data
-     </programlisting>
+       <title>NeXus Processed Data Hierarchy</title>
+       <programlisting linenumbering="numbered"
+          ><xi:include href="examples/hierarchy-processed.txt" parse="text"
+          /></programlisting>
     </figure>     
       
         <para>
-           Processed data, see figure  <link xlink:href="#table.ProcessedData">Processed Data</link>,  
-           in this context means the results of a data reduction or 
-           data analysis program. NeXus stores such data in a simplified 
+           NeXus stores such data in a simplified 
           <code>NXentry</code> structure. A processed data <code>NXentry</code>
           has at minimum a <code>NXsample</code>, 
           a <code>NXdata</code> and a <code>NXprocess</code> group. 
@@ -149,48 +138,31 @@
     </section>
    
    <section xml:id="Rules-Subentry">
-   <title>NXsubentry or Multi-Method Data</title>
-   <para>
-      Especially at synchrotron facilities, there are experiments which perform several different methods  
-      on the sample at the same time. For example, combine a powder diffraction experiment with XAS. 
-      This may happen in the same scan, so the data needs to be grouped together. A suitable NXentry 
-      would need to adhere to two different application definitions. This leads to name clashes which cannot be 
-      easily resolved. In order to solve this issue the following scheme was invented:
-      <itemizedlist>
-      <listitem><para>The full combined beamline is stored in an appropriate hierarchy in an NXentry.
-      </para></listitem>
-      <listitem><para>
-        The NXentry group contains further NXsubentry groups, one for each method. The NXsubentry group is constructed 
-        like a NXentry group. It contains links to all those data items required to fulfill the application definition 
-        for the particular method it represents.  
-      </para></listitem>
-      </itemizedlist>
-      See figure  <link xlink:href="#table.NXsubentry">NXsubentry</link> for an example hierarchy.
-   </para>
+     <title><literal>NXsubentry</literal> or Multi-Method Data</title>
+     <para>
+        Especially at synchrotron facilities, there are experiments which perform several different methods  
+        on the sample at the same time. For example, combine a powder diffraction experiment with XAS. 
+        This may happen in the same scan, so the data needs to be grouped together. A suitable <literal>NXentry</literal> 
+        would need to adhere to two different application definitions. This leads to name clashes which cannot be 
+        easily resolved. In order to solve this issue, the following scheme was implemented in NeXus:
+        <itemizedlist>
+          <listitem><para>The complete beamline (all data) is stored in an 
+            appropriate hierarchy in an <literal>NXentry</literal>.</para></listitem>
+        <listitem><para>
+          The <literal>NXentry</literal> group contains further <literal>NXsubentry</literal> groups, one for each method. The <literal>NXsubentry</literal> group is constructed 
+          like a <literal>NXentry</literal> group. It contains links to all those data items required to fulfill the application definition 
+          for the particular method it represents.  
+        </para></listitem>
+        </itemizedlist>
+       See figure <link xlink:href="#table.NXsubentry">NeXus Multi Method Hierarchy</link> for an example hierarchy.
+        Note that <code>[,]</code> represents a 2D array.
+     </para>
    
       <figure xml:id="table.NXsubentry">
-     <title>NeXus Multi Method Hierarchy</title>
-     <programlisting>
-entry:NXentry
-    user:NXuser
-    sample:NXsamle
-    instrument:NXinstument
-               SASdet:NXdetector (1)
-               fancyname:NXdetector (2)
-               fancyname2:NXdetector (3)
-               ...
-  SAS:NXsubentry
-        definition = "NXSas"
-        instrument:NXinstrument
-                   detector:NXdetector link to SASdet (1)
-        data:NXdata
-  Fluo:NXsubentry
-         definition = "NXFluo"
-         instrument:NXinstrument
-                    detector:NXDetctor link to (2)
-                    detector2:NXdetector link to (3)
-         data:NXdata
-     </programlisting>
+        <title>NeXus Multi Method Hierarchy</title>
+        <programlisting linenumbering="numbered"
+          ><xi:include href="examples/hierarchy-subentry.txt" parse="text"
+          /></programlisting>
     </figure>     
    
    
@@ -202,7 +174,7 @@ entry:NXentry
     <section xml:id="Rules-SpecialCases-Scans">
       <title>Scans</title>
       <para>
-         Scans are difficult to capture because they are very variable. Basically 
+         Scans are difficult to capture because they have great variety. Basically, 
          any variable can be scanned. Such behaviour cannot be captured in application definitions. 
          Therefore NeXus solves this difficulty with a set of 
          rules. In this section, <code>NP</code> is used as a symbol for the number of scan 
@@ -212,7 +184,9 @@ entry:NXentry
             <para>
               The scan dimension <code>NP</code> is always the first dimension of any 
               multi-dimensional dataset. The reason for this is that HDF allows the first 
-              dimension of a dataset to be unlimited. Which means, that data can be 
+              dimension of a dataset to be unlimited.
+              <!-- TODO "1st dimension only is unlimited": Isn't this an HDF4 rule, relaxed in HDF5? -->
+              Which means, that data can be 
               appended to the dataset during the scan. 
             </para>
           </listitem>
@@ -232,94 +206,87 @@ entry:NXentry
                tabular representation of a scan.
             </para>
           </listitem>
+          <listitem>
+            <para>
+              Datasets in an <code>NXdata</code> group must contain the proper attributes
+              to enable the default plotting,  
+              <indexterm>
+                <primary>NeXus basic motivation</primary>
+                <secondary>default plot</secondary>
+              </indexterm>
+              as described in the section titled
+              <link xlink:href="#NXdata-facilitates-TheDefaultPlot"><literal>NXdata</literal> 
+                Facilitates Automatic Plotting</link>.
+            </para>
+          </listitem>
          </itemizedlist>
       </para>
-      <para>
-         Examples may be in order here. Let us start with a simple case, the sample is 
-         rotated around its rotation axis and data is collected in a single tube 
-         detector. Sell also the figure <link xlink:href="#table.SimpleScan">Simple Scan </link> for an overview.
-         Then we have:
-        <itemizedlist>
-          <listitem>
-            <para>
-              A dataset at <code>NXentry/NXinstrument/NXdetector/data</code> 
-              of length <code>NP</code> containing 
-              the count data.
-            </para>
-          </listitem>
-          <listitem>
-            <para>
-              A dataset at <code>NXentry/NXsample/rotation_angle</code> 
-              of length <code>NP</code> containing 
-              the positions of <code>rotation_angle</code> at the various steps of the scan.
-            </para>
-          </listitem>
-          <listitem>
-            <para>
-              <code>NXdata</code> contains links to 
-              <code>NXentry/NXinstrument/NXdetector/data</code> and 
-              <code>NXentry/NXsample/rotation_angle</code>. The datasets in 
-              <code>NXdata</code> must have the 
-              appropriate attributes as described in the axis location section.
-            </para>
-          </listitem>
-          <listitem>
-            <para>
-             All other data fields have their normal dimensions.
-            </para>
-          </listitem>
-        </itemizedlist>
+      <section>
+        <title>Simple scan</title>
+        <para>
+          Examples may be in order here. Let us start with a simple case, the sample is 
+          rotated around its rotation axis and data is collected in a single point 
+          detector. See figure <link xlink:href="#table.SimpleScan">Simple Scan </link> for an overview.
+          Then we have:
+          <itemizedlist>
+            <listitem>
+              <para>
+                A dataset at <code>NXentry/NXinstrument/NXdetector/data</code> 
+                of length <code>NP</code> containing 
+                the count data.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                A dataset at <code>NXentry/NXsample/rotation_angle</code> 
+                of length <code>NP</code> containing 
+                the positions of <code>rotation_angle</code> at the various steps of the scan.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                <code>NXdata</code> contains links to 
+                <code>NXentry/NXinstrument/NXdetector/data</code> and 
+                <code>NXentry/NXsample/rotation_angle</code>.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                All other data fields have their normal dimensions.
+              </para>
+            </listitem>
+          </itemizedlist>
         </para>
-     <figure xml:id="table.SimpleScan">
-     <title>NeXus Simple Scan Example</title>
-     <programlisting>
-     entry:NXentry
-           instrument:NXinstrument
-                      detector:NXdetector
-                               data[NP], signal = 1 (1)
-                               polar_angle
-                               name
-           sample:NXsample
-                  name
-                  rotation_angle[NP], axis=1, (2)
-           control:NXmonitor
-                  data[NP]
-           data:NXdata
-                link to (1)
-                link to (2)
-     </programlisting>
-    </figure>     
+        <figure xml:id="table.SimpleScan">
+          <title>NeXus Simple Scan Example</title>
+          <programlisting linenumbering="numbered"
+            ><xi:include href="examples/simplescan.txt" parse="text"
+            /></programlisting>
+        </figure>
+       </section>
         
+      <section>
+        <title>Simple scan with area detector</title>
         <para>
         The next example is the same scan but with an area detector with <code>xsize</code> 
         times <code>ysize</code> pixels. The only thing which changes is that
-        <code>NXentry/NXinsrument/NXdetector/data</code> will have the dimensions 
-        <code>NP, xsize, ysize</code>. See figure <link xlink:href="#table.SimpleScanArea">Simple Scan with Area Detector
+        <code>/NXentry/NXinstrument/NXdetector/data</code> will have the dimensions 
+      <code>NP, xsize, ysize</code>. See figure <link xlink:href="#fig.SimpleScanArea">Simple Scan with Area Detector
          </link> for an overview. 
      </para>
      
-     <figure xml:id="table.SimpleScanArea">
-     <title>NeXus Simple Scan Example with Area Detector</title>
-     <programlisting>
-     entry:NXentry
-           instrument:NXinstrument
-                      detector:NXdetector
-                               data[NP,xsize,ysize], signal = 1 (1)
-                               polar_angle
-                               name
-           sample:NXsample
-                  name
-                  rotation_angle[NP], axis=1, (2)
-           control:NXmonitor
-                  data[NP]
-           data:NXdata
-                link to (1)
-                link to (2)
-     </programlisting>
-    </figure>     
+     <figure xml:id="fig.SimpleScanArea">
+       <title>NeXus Simple Scan Example with Area Detector</title>
+       <programlisting linenumbering="numbered"
+          ><xi:include href="examples/simplescanarea.txt" parse="text"
+          /></programlisting>
+     </figure>
+        </section>
         
        
-      <para>
+      <section>
+        <title>Complex <emphasis>hkl</emphasis> scan</title>
+        <para>
           The next example involves a complex movement along an axis in reciprocal 
           space which requires mutiple motors of a four circle diffractometer to be 
           varied during the scan. We then have:
@@ -402,36 +369,13 @@ entry:NXentry
         </itemizedlist>
       </para>
       <figure xml:id="table.ComplexScan">
-     <title>NeXus Complex Scan in Q</title>
-     <programlisting>
-     entry:NXentry
-           instrument:NXinstrument
-                      detector:NXdetector
-                               data[NP], signal = 1 (1)
-                               polar_angle[NP], axis =1 (5)
-                               name
-           sample:NXsample
-                  name
-                  rotation_angle[NP], axis=1, (2)
-                  chi[NP], axis=1, (3)
-                  phi[NP], axis=1, (4)
-                  h[NP], axis=1, primary=1 (6)
-                  k[NP], axis=1 (7)
-                  l[NP], axis=1 (8)
-           control:NXmonitor
-                  data[NP]
-           data:NXdata
-                link to (1)
-                link to (2)
-                link to (3)
-                link to (4)
-                link to (5)
-                link to (6)
-                link to (7)
-                link to (8)
-     </programlisting>
-    </figure>     
-       </section>
+        <title>NeXus Complex <emphasis>hkl</emphasis> Scan</title>
+        <programlisting linenumbering="numbered"
+          ><xi:include href="examples/complex-hkl-scan.txt" parse="text"
+        /></programlisting>
+      </figure>     
+      </section>
+      </section>
        
        
     <section xml:id="Rules-SpecialCases-Rastering">
@@ -449,51 +393,43 @@ entry:NXentry
         of dimensions <code>xraster, yraster</code> and the detector data of dimensions 
     		<code>xraster, yraster, (orginal dimensions)</code> 
     		of the detector. For example, an area detector of 
-        size <code>xsize, ysize</code> then is stored with
+        size <code>xsize, ysize</code> then it is stored with
         dimensions <code>xraster, yraster, xsize, ysize</code>. 
       <warning>
         <para>
-          Be warned: if you use the 2D rasterisation method with xraster, yraster you may end up with 
+          Be warned: if you use the 2D rasterisation method with <code>xraster, yraster</code> you may end up with 
           invalid data if the scan is aborted prematurely. This cannot happen if the first method is used. 
         </para>
       </warning>
       </para>
       </section>
-    </section>
-    <section>
+
+  <section>
     <title>NXcollection</title>
-      <figure xml:id="table.NXcollection">
-     <title>NNcollection Example</title>
-     <programlisting>
-     entry:NXentry
-           positioners:NXcollection
-                   mxx:NXpositioner
-                   mzz:NXpositioner
-                   sgu
-                   ttv
-                   hugo
-                   ....
-           scalars:NXcollection
-                   title
-                   lieselotte
-                   ...
-           detectors:NXcollection
-                   Pilatus:NXdata
-                   MXX-45:NXdata
-                   ....           
-      </programlisting>
+    <para>
+      On demand from the community, NeXus introduced a more informal method of storing 
+      information in a NeXus file.  This is the <literal>NXcollection</literal> class which can appear anywhere 
+      underneath <literal>NXentry</literal>. <literal>NXcollection</literal> is a container for holding other data. 
+      The foreseen use is to document collections of similar data which do not otherwise fit easily into the <code>NXinstrument</code> 
+      or <code>NXsample</code> hierarchy, such as the intent to record <emphasis>all</emphasis> motor positions on a synchrotron beamline.
+      Thus, <literal>NXcollection</literal> serves as a quick point of access to data for an instrument scientist or another expert.
+      An example usage case is documented in  figure <link xlink:href="#table.SimpleScanArea">NXcollection example
+         </link>. </para>
+    <figure xml:id="table.NXcollection">
+      <title>NXcollection Example</title>
+      <!-- TODO This use case could show how components in NXinstrument are linked to members of an NXcollection -->
+      <programlisting linenumbering="numbered"
+        ><xi:include href="examples/nxcollection.txt" parse="text"
+        /></programlisting>
     </figure>     
     <para>
-      On demand from the community, NeXus intrduced a more informal method of storing 
-      information in a NeXus file.This is the NXcollection class which can appear anywhere 
-      underneath NXentry. NXcollection is a container for holding other data. The foreseen use 
-      is to serve as a quick point of access to data for an instrument scientist or another expert.
-      An example usage case is documented in  figure <link xlink:href="#table.SimpleScanArea">NXcollection example
-         </link>. 
-      It is understood that NXcollection will never be part of a NeXus application definition for now. 
-      This may change in a later stage when a common usage pattern for NXcollection emerges.  
-      Data in NXcollection has to be augmented by a NXsubentry or NXentry adhering to an application definition. 
+      <!-- 2010-12-23,PRJ:  This point can be relaxed when considering the conversion of SPEC data files into NeXus.
+        It is understood that NXcollection will never be part of a NeXus application definition for now. 
+      This may change in a later stage when a common usage pattern for NXcollection emerges.  -->
+      Data in <literal>NXcollection</literal> has to be augmented by a <literal>NXsubentry</literal> 
+      or <literal>NXentry</literal> adhering to an application definition. 
     </para>
+  </section>
      
     </section>
  </section>   
