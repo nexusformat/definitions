@@ -52,14 +52,6 @@ line breaks are VERY TRICKY here, be careful how you edit!
      <!-- +++    From this point on, the code is the same for,       +++ -->
      <!-- +++    base_classes applications/, and contributed/        +++ -->
      <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
-
-     <!--
-          This template describes an application or contributed definition that 
-          overrides the standard NXentry or NXsubentry.
-     -->
-     <xsl:template match="nx:group[@type='NXentry']|nx:group[@type='NXsubentry']">
-          <xsl:call-template name="startFieldsGroups"/>
-     </xsl:template>
      
 
      <xsl:template match="nx:field">
