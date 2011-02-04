@@ -48,11 +48,21 @@ line breaks are VERY TRICKY here, be careful how you edit!
              <xsl:when test="count(nx:group[@type='NXentry'])=1"><!-- 
                   assume this is a candidate for an application definition
              -->  (overlays NXentry)<xsl:text><!-- tricky line break here -->
-</xsl:text><xsl:call-template name="startFieldsGroups"/></xsl:when>
+</xsl:text><!-- 
+--><xsl:apply-templates select="nx:attribute">
+                       <xsl:with-param name="indent">
+                            <xsl:value-of select="$indent_step"/>
+                       </xsl:with-param>
+                  </xsl:apply-templates><xsl:call-template name="startFieldsGroups"/></xsl:when>
              <xsl:when test="count(nx:group[@type='NXsubentry'])=1"><!-- 
                   assume this is a candidate for an application definition
              -->  (overlays NXsubentry)<xsl:text><!-- tricky line break here -->
-</xsl:text><xsl:call-template name="startFieldsGroups"/></xsl:when>
+</xsl:text><!-- 
+--><xsl:apply-templates select="nx:attribute">
+                       <xsl:with-param name="indent">
+                            <xsl:value-of select="$indent_step"/>
+                       </xsl:with-param>
+                  </xsl:apply-templates><xsl:call-template name="startFieldsGroups"/></xsl:when>
                <xsl:otherwise><!-- optional rule for NXentry or NXsubentry 
              -->  (base class definition, NXentry or NXsubentry not found)<!--
                     --><xsl:text><!-- tricky line break here -->
@@ -66,26 +76,76 @@ line breaks are VERY TRICKY here, be careful how you edit!
      <!-- +++    base_classes applications/, and contributed/        +++ -->
      <!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
      
-
+     
      <xsl:template match="nx:field">
           <xsl:param name="indent"/>
           <xsl:value-of select="$indent"/><xsl:value-of select="@name"/>:<xsl:choose>
-               <xsl:when test="count(@type)"><xsl:value-of select="@type"/></xsl:when>
+               <xsl:when test="count(@type)"><xsl:value-of select="@type"
+               /><xsl:apply-templates select="nx:dimensions"
+                    ><xsl:sort select="@name"/></xsl:apply-templates></xsl:when>
                <xsl:otherwise>NX_CHAR</xsl:otherwise>
           </xsl:choose>
+          <xsl:text><!-- tricky line break here -->
+</xsl:text><!--
+--><xsl:apply-templates select="nx:attribute">
+               <xsl:with-param name="indent">
+                    <xsl:value-of select="$indent"/>
+                    <xsl:value-of select="$indent_step"/>
+               </xsl:with-param>
+          </xsl:apply-templates>
+     </xsl:template>
+     
+     
+     <xsl:template match="nx:dimensions"><!--
+     -->[<xsl:apply-templates select="nx:dim"/>]<!--
+          --></xsl:template>
+     
+     
+     <xsl:template match="nx:dim">
+          <xsl:choose>
+               <xsl:when test="position()=1"><xsl:value-of select="@value"/></xsl:when>
+               <xsl:otherwise>,<xsl:value-of select="@value"/></xsl:otherwise>
+          </xsl:choose>
+     </xsl:template>
+     
+     
+     <xsl:template match="nx:link">
+          <xsl:param name="indent"/>
+          <xsl:value-of select="$indent"/><xsl:value-of select="@name"/><xsl:text
+               > --> </xsl:text><xsl:value-of select="@target"/><xsl:text><!-- tricky line break here -->
+</xsl:text>
+     </xsl:template>
+     
+     
+     <xsl:template match="nx:attribute">
+          <xsl:param name="indent"/>
+          <xsl:value-of select="$indent"/>@<xsl:value-of select="@name"/>
           <xsl:text><!-- tricky line break here -->
 </xsl:text>
      </xsl:template>
      
-
+     
      <xsl:template match="nx:group">
           <xsl:param name="indent"/>
           <xsl:value-of select="$indent"/>
           <xsl:if test="count(@name)"><xsl:value-of select="@name"/>:</xsl:if>
           <xsl:value-of select="@type"/>
           <xsl:text><!-- tricky line break here -->
-</xsl:text>
+</xsl:text><!--
+--><xsl:apply-templates select="nx:attribute">
+               <xsl:with-param name="indent">
+                    <xsl:value-of select="$indent"/>
+                    <xsl:value-of select="$indent_step"/>
+               </xsl:with-param>
+          </xsl:apply-templates>
           <xsl:apply-templates select="nx:field">
+               <xsl:with-param name="indent">
+                    <xsl:value-of select="$indent"/>
+                    <xsl:value-of select="$indent_step"/>
+               </xsl:with-param>
+               <xsl:sort select="@name"/>
+          </xsl:apply-templates>
+          <xsl:apply-templates select="nx:link">
                <xsl:with-param name="indent">
                     <xsl:value-of select="$indent"/>
                     <xsl:value-of select="$indent_step"/>
@@ -101,15 +161,24 @@ line breaks are VERY TRICKY here, be careful how you edit!
           </xsl:apply-templates>
      </xsl:template>
      
-
+     
      <xsl:template name="startFieldsGroups">
+          <xsl:apply-templates select="nx:attribute">
+               <xsl:with-param name="indent">
+                    <xsl:value-of select="$indent_step"/>
+               </xsl:with-param>
+          </xsl:apply-templates>
           <xsl:choose>
                <!-- Two ways to render.  
-                    1=1: fields before groups, sorted alphabetically
+                    1=1: write fields, links, then groups, each sorted alphabetically
                     1!=1: order of appearance in NXDL
                -->
-               <xsl:when test="1=1"><!-- write fields before groups -->
+               <xsl:when test="1=1"><!-- write fields, links, then groups -->
                     <xsl:apply-templates select="nx:field">
+                         <xsl:with-param name="indent"><xsl:value-of select="$indent_step"/></xsl:with-param>
+                         <xsl:sort select="@name"/>
+                    </xsl:apply-templates>
+                    <xsl:apply-templates select="nx:link">
                          <xsl:with-param name="indent"><xsl:value-of select="$indent_step"/></xsl:with-param>
                          <xsl:sort select="@name"/>
                     </xsl:apply-templates>
@@ -119,7 +188,7 @@ line breaks are VERY TRICKY here, be careful how you edit!
                     </xsl:apply-templates>
                </xsl:when>
                <xsl:otherwise><!-- write in order of appearance in NXDL -->
-                    <xsl:apply-templates select="nx:field|nx:group">
+                    <xsl:apply-templates select="nx:field|nx:link|nx:group">
                          <xsl:with-param name="indent"><xsl:value-of select="$indent_step"/></xsl:with-param>
                          <xsl:sort select="@type"/>
                     </xsl:apply-templates>
@@ -127,7 +196,7 @@ line breaks are VERY TRICKY here, be careful how you edit!
           </xsl:choose>
      </xsl:template>
      
-
+     
      <xsl:template name="showClassName">
           <xsl:value-of select="@name"/> (<xsl:choose>
                <xsl:when test="@category='base'">base class</xsl:when>
@@ -136,9 +205,8 @@ line breaks are VERY TRICKY here, be careful how you edit!
           </xsl:choose><xsl:if test="count(@version)">, version <xsl:value-of
                select="@version"/></xsl:if>)<xsl:text><!-- tricky line break here -->
 </xsl:text></xsl:template>
-
+     
 </xsl:stylesheet>
-
 
 <!--
      # NeXus - Neutron and X-ray Common Data Format
@@ -160,12 +228,4 @@ line breaks are VERY TRICKY here, be careful how you edit!
      # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
      #
      # For further information, see http://www.nexusformat.org
-     
-     ########### SVN repository information ###################
-     # $Date$
-     # $Author$
-     # $Revision$
-     # $HeadURL$
-     # $Id$
-     ########### SVN repository information ###################
 -->
