@@ -164,13 +164,6 @@ Usage:
                 </xsl:otherwise>
             </xsl:choose>
             <!-- ...................................................... -->
-            <!-- listing of the NXDL source file -->
-            <!-- 2009-10-16,PRJ: lighten the document, remove NXDL source -->
-            <!--<section>
-                <title><literal><xsl:value-of select="@name"/>.nxdl.xml</literal>: NXDL specification</title>
-                <programlisting language="xml" linenumbering="numbered">___COPY_NXDL_HERE___</programlisting>
-            </section>-->
-            <!-- ...................................................... -->
             <xsl:apply-templates select="nx:group" mode="checkHierarchy"/>
             <!-- ...................................................... -->
         </xsl:element><!-- section -->
@@ -474,21 +467,21 @@ Usage:
                     <para>
                         <literal><xsl:value-of select="/nx:definition/@category"/></literal>
                         <xsl:choose>
-                            <xsl:when test="/nx:definition/@category='base'">
-                                (base class)
-                            </xsl:when>
-                            <xsl:when test="/nx:definition/@category='application'">
-                                (application definition)
-                            </xsl:when>
-                            <xsl:when test="/nx:definition/@category='contributed'">
-                                (contributed definition)
-                            </xsl:when>
+                            <xsl:when test="/nx:definition/@category='base'"
+                                >(base class)</xsl:when>
+                            <xsl:when test="/nx:definition/@category='application'"
+                                >(application definition)</xsl:when>
+                            <xsl:when test="/nx:definition/@category='contributed'"
+                                >(contributed definition)</xsl:when>
                         </xsl:choose>
                     </para>
                 </listitem>
             </varlistentry>
             <varlistentry><!-- show where to find the source -->
-                <term>NXDL source:</term>
+                <term><xsl:element name="link"
+                    ><xsl:attribute name="xlink:href"
+                        >http://download.nexusformat.org/doc/html/NXDL.html</xsl:attribute
+                    >NXDL</xsl:element> source:</term>
                 <listitem>
                     <para>
                         <!-- !!! line breaks are VERY important here, don't bust them !!! -->
@@ -503,6 +496,9 @@ Usage:
                                     </xsl:with-param>
                                 </xsl:call-template></xsl:attribute
                             ><xsl:value-of select="@name"/></xsl:element>
+                    </para>
+                    <para>
+                        <!-- !!! line breaks are VERY important here, don't bust them !!! -->
                         (<xsl:element name="link"
                             ><xsl:attribute name="xlink:href"
                                 ><xsl:call-template name="makeURL" 
@@ -539,18 +535,6 @@ Usage:
                     </para>
                 </listitem>
             </varlistentry>
-            <varlistentry>
-                <!-- show how to learn more about NXDL -->
-                <term>NeXus Definition Language</term>
-                <listitem>
-                    <para>
-                        <xsl:element name="link"
-                            ><xsl:attribute name="xlink:href"
-                                >http://download.nexusformat.org/doc/html/NXDL.html</xsl:attribute
-                            >NXDL</xsl:element>
-                    </para>
-                </listitem>
-            </varlistentry><!-- varlistentry -->
             <varlistentry><!-- show what this class extends -->
                 <term>extends class:</term>
                 <listitem>
@@ -615,14 +599,18 @@ Usage:
                 <listitem>
                     <xsl:choose>
                         <xsl:when test="count(nx:doc/child::*)=0">
+                            <!-- simple documentation: no markup tags -->
                             <para><xsl:apply-templates select="nx:doc"/></para>
                         </xsl:when>
                         <xsl:when test="count(nx:doc/child::*)>0">
+                            <!-- complicated documentation: markup tags -->
                             <xsl:choose>
                                 <xsl:when test="count(nx:doc/db:para)">
+                                    <!-- para tag provided, don't repeat it -->
                                     <xsl:apply-templates select="nx:doc"/>
                                 </xsl:when>
                                 <xsl:otherwise>
+                                    <!-- needs a para tag -->
                                     <para><xsl:apply-templates select="nx:doc"/></para>
                                 </xsl:otherwise>
                             </xsl:choose>
@@ -631,6 +619,18 @@ Usage:
                 </listitem>
             </varlistentry>
         </variablelist><!-- variablelist -->
+        <example><!-- as rendered by nxdlformat.xsl -->
+            <title>Basic structure of <code
+                ><xsl:value-of select="/nx:definition/@name"/></code></title>
+            <para>
+                <programlisting linenumbering="numbered"
+                    ><xsl:element name="xi:include"
+                        ><xsl:attribute name="href"><xsl:value-of 
+                            select="/nx:definition/@name"/>.txt</xsl:attribute
+                        ><xsl:attribute name="parse">text</xsl:attribute
+                    ></xsl:element></programlisting>
+            </para>
+        </example>
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->

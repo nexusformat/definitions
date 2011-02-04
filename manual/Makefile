@@ -60,6 +60,7 @@ ALL_NXDL = $(NXDL_BASE_CLASSES) $(NXDL_APPLICATIONS) $(NXDL_CONTRIBUTED)
 # list of all classes without path and without the trailing .$(NXDL_SUFFIX) suffix
 ALL_CLASS_NAMES = $(notdir $(ALL_NXDL) )
 ALL_CLASS_TARGETS = $(patsubst %.$(NXDL_SUFFIX), classes/%.xml, $(ALL_CLASS_NAMES) )
+ALL_CLASS_SUMMARIES = $(patsubst %.$(NXDL_SUFFIX), classes/%.txt, $(ALL_CLASS_NAMES) )
 
 BASE_CLASS_NAMES          = $(notdir $(NXDL_BASE_CLASSES) )
 APPLICATION_CLASS_NAMES   = $(notdir $(NXDL_APPLICATIONS) )
@@ -115,11 +116,17 @@ DBLATEX_OPTS += -b pdftex -tpdf
 #all: NeXusManual.pdf NeXusManual.html NeXusManual_one_chunk.html html/index.html
 all: $(BUILT_NEXUSMANUAL) $(BUILT_NEXUSREFDOC) html/index.html 
 
-docbook : $(ALL_CLASS_TARGETS) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.xml
+docbook : $(ALL_CLASS_TARGETS) $(ALL_CLASS_SUMMARIES) $(DYNAMIC_DOCBOOK_SECTIONS) NeXusManual.xml
 
+# build the DocBook documentation of each NXDL
 # This uses VPATH to locate the source directory for the target
 classes/%.xml: %.$(NXDL_SUFFIX) Makefile $(XSLT)
 	xsltproc -o $@ $(XSLT) $<
+
+# build the simple view of the structure of each NXDL
+# This uses VPATH to locate the source directory for the target
+classes/%.txt: %.$(NXDL_SUFFIX) Makefile
+	xsltproc -o $@ $<
 
 test ::
 	@echo $(CLEANING_LIST)
