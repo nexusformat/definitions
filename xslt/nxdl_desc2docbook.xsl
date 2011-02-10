@@ -25,6 +25,7 @@ Usage:
 	xmlns:xi="http://www.w3.org/2001/XInclude"
 	xmlns:xlink="http://www.w3.org/1999/xlink"
 	xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	xmlns:db="http://docbook.org/ns/docbook"
     >
     <xslt:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
 
@@ -200,9 +201,8 @@ Usage:
                              be sure to use the provided DocBook namespace prefix 
                              (<code>db:</code>) for any DocBook elements,
                              such as this example:
-                             <programlisting language="xml"><code
-			>&lt;doc&gt;&lt;db:para&gt;this is documentation with DocBook markup&lt;/db:para&gt;&lt;/doc&gt;</code
-										></programlisting>
+                             <programlisting language="xml"
+                                 >&lt;doc&gt;&lt;db:para&gt;this is documentation with DocBook markup&lt;/db:para&gt;&lt;/doc&gt;</programlisting>
                          </para>
                     </listitem>
                   </varlistentry>
@@ -400,13 +400,27 @@ select="/xsd:schema//xsd:complexType[@name='linkType']/xsd:complexContent/xsd:ex
                      </xslt:choose>:
                  </term>
                 <listitem>
-                     <para>
-                         <xslt:apply-templates select="xsd:annotation/xsd:documentation"/>
-                         <xslt:apply-templates select="xsd:restriction"/>
-                         <xslt:if test="count(xsd:simpleType/xsd:restriction//xsd:enumeration)">
-                             <xslt:apply-templates select="xsd:simpleType/xsd:restriction"/>
-                         </xslt:if>
-                     </para>
+                    <xslt:choose>
+                        <xslt:when test="count(xsd:annotation/xsd:documentation/db:para)">
+                            <!-- do not provide enclosing <db:para> -->
+                            <xslt:apply-templates select="xsd:annotation/xsd:documentation"/>
+                            <para>
+                              <xslt:apply-templates select="xsd:restriction"/>
+                              <xslt:if test="count(xsd:simpleType/xsd:restriction//xsd:enumeration)">
+                                  <xslt:apply-templates select="xsd:simpleType/xsd:restriction"/>
+                              </xslt:if>
+                            </para>
+                        </xslt:when>
+                        <xslt:otherwise>
+                            <para>
+                                <xslt:apply-templates select="xsd:annotation/xsd:documentation"/>
+                                 <xslt:apply-templates select="xsd:restriction"/>
+                                 <xslt:if test="count(xsd:simpleType/xsd:restriction//xsd:enumeration)">
+                                     <xslt:apply-templates select="xsd:simpleType/xsd:restriction"/>
+                                 </xslt:if>
+                            </para>
+                        </xslt:otherwise>
+                    </xslt:choose>
                 </listitem>
             </varlistentry>
             
@@ -426,8 +440,8 @@ select="/xsd:schema//xsd:complexType[@name='linkType']/xsd:complexContent/xsd:ex
                 <code><xslt:value-of select="@base"/></code>
                 that <emphasis>also</emphasis> matches the regular expression:
                 <programlisting language="c"
-                    ><code><xslt:value-of select="xsd:pattern/@value"
-                    /></code></programlisting>
+                    ><xslt:value-of select="xsd:pattern/@value"
+                    /></programlisting>
             </xslt:when>
             <xslt:when test="count(xsd:pattern)">
                 <code><xslt:value-of select="@base"/></code>
