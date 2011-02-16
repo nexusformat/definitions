@@ -17,6 +17,14 @@
   xmlns:db="http://docbook.org/ns/docbook"
   xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
   svnid="$Id$">
+  
+  <symbols>
+    <doc>These symbols will be used below to coordinate datasets with the same shape.</doc>
+    <symbol name="axesRank"><doc>number of axes used to collect the data</doc></symbol>
+    <symbol name="frameRank"><doc>rank of each data frame</doc></symbol>
+    <symbol name="darkRank"><doc>rank of dark_data acquisition<!-- FIXME --></doc></symbol>
+    <symbol name="whiteRank"><doc>rank of white_data acquisition<!-- FIXME --></doc></symbol>
+  </symbols>
 
     <doc>
       +++ Under development and subject to unannounced changes +++
@@ -72,6 +80,17 @@
         For multi-dimensional arrays, the ordering scheme is specified by NeXus
         (TODO  good place to re-describe the NeXus array index ordering scheme is here).
       </doc>
+      <dimensions rank="frameRank + axesRank">
+        <doc>
+          Datasets might be simple 1-D or 2-D scans or images or might be a composite
+          of frames, each sample at one or more independent dimensions.  Consider the 
+          example of a 1-D position scan of MCA spectra.  Here, <db:code>frameRank</db:code>
+          would be <db:code>1</db:code> and <db:code>axesRank</db:code> would also be 
+          <db:code>1</db:code>.  Another example might be a 2-D position scan of a 1-D 
+          dectector where <db:code>frameRank = 1</db:code> and 
+          <db:code>axesRank = 2</db:code>.
+        </doc>
+      </dimensions>
       <attribute name="complex_index" type="NX_INT">
         <doc>
           [TODO This needs more work.  HDF5 and also NeXus do not define how complex numbers are stored.]
@@ -110,16 +129,19 @@
       <attribute name="axes">
         <doc>
           Colon-delimited list of the positioner names, 
-          such as:  axes="ttheta:energy", used to describe 
-          each dimension of the "data".
-          Each positioner in the "axes" list will have a 
+          such as:  <db:code>axes="ttheta:energy"</db:code>, used to describe 
+          each dimension of the <db:emphasis>data</db:emphasis>.
+          Each positioner in the <db:code>axes</db:code> list will have a 
           field (HDF5 "dataset") next to the plottable dataset and the length 
           of that vector must correspond to the length of the 
           corresponding axis of the plottable dataset.  For example:
-          data is an array of size int16[500,200,1000] and has 
-          an attribute axes="energy:ttheta:time".  There will be 
-          three additional datasets in exchange defined as
-          energy float64[500], ttheta float64[200], and time float64[1000].
+          data is an array of size <db:code>int16[500,200,1000]</db:code> and has 
+          an attribute <db:code>axes="energy:ttheta:time"</db:code>.  There will be 
+          three additional datasets in this group defined as
+          <db:code>energy float64[500]</db:code>, 
+          <db:code>ttheta float64[200]</db:code>, and 
+          <db:code>time float64[1000]</db:code>.
+          The number of axes in this list defines the symbol <db:code>axesRank</db:code>.
         </doc>
       </attribute>
     </field>
@@ -130,16 +152,32 @@
       <doc>
         (optional) data set with no beam.  
         Must be same dimensions as images stored in "data".
-        <!-- how to describe these variable dimensions in NeXus? -->
       </doc>
+      <dimensions rank="frameRank + darkRank">
+        <doc>
+          See <db:code>data</db:code> above.  It may be desired to collect 
+          <db:emphasis>dark</db:emphasis> data on a different schedule
+          than the primary data.  Each <db:emphasis>dark</db:emphasis> data
+          frame must have the same shape as the frames in <db:code>data</db:code>.
+          <!-- how to further describe these variable dimensions in NeXus? -->
+        </doc>
+      </dimensions>
     </field>
     
     <field name="white_data" type="NX_NUMBER">
       <doc>
         (optional) data set with illumination.  
         Must be same dimensions as images stored in "data".
-        <!-- how to describe these variable dimensions in NeXus? -->
       </doc>
+      <dimensions rank="frameRank + whiteRank">
+        <doc>
+          See <db:code>data</db:code> above.  It may be desired to collect 
+          <db:emphasis>white</db:emphasis> data on a different schedule
+          than the primary data.  Each <db:emphasis>white</db:emphasis> data
+          frame must have the same shape as the frames in <db:code>data</db:code>.
+          <!-- how to further describe these variable dimensions in NeXus? -->
+        </doc>
+      </dimensions>
     </field>
   
     <field name="collection_time" type="NX_DATE_TIME">
