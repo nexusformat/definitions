@@ -31,7 +31,12 @@ def constructNxdlPath(tree, node, ns):
     structuralPath = tree.getpath(node).split('/')[1:]
     cut = len(ns)+2
     result = ""
-    for level in range(len(structuralPath)):
+    #
+    # @note: It is non-standard to prepend the NXDL class name to the path
+    #
+    pathStartIndex = 0   # NXDL class prepended to path
+    pathStartIndex = 1   # normal path
+    for level in range(pathStartIndex, len(structuralPath)):
         path = '/' + '/'.join(structuralPath[0:level+1])
         n = tree.xpath(path)[0]
         cut = len(n.nsmap[None])+2
@@ -68,8 +73,29 @@ def processFile(nxdlFile):
             dict = {'NXDL': nxdlName, 'category': category}
             dict['tag'] = item.tag[cut:]
             dict['name'] = item.get("name", None)
-            dict['type'] = item.get("type", "NX_CHAR")
+            if element == 'link':
+                default = None      # keeps the type of its link source
+            else:
+                default = 'NX_CHAR'
+            dict['type'] = item.get("type", default)
             dict['NXDL_path'] = constructNxdlPath(tree, item, ns['nx'])
+            # now, build a key to help sorting in the XSLT
+            # easier to build the sort key here
+            if element == 'group':
+                if dict['name'] == None:
+                    key = dict['type']
+                else:
+                    key = "%s:%s" % (dict['name'], dict['type'])
+            else:
+                key = dict['name']
+                if element == 'link':
+                   key += "~~" + element
+                   if dict['type'] != None:
+                       key += "~~" + dict['type']
+                   key += "~~link"  # links should sort later
+            if element == 'link':
+                dict['target'] = item.get("target", None)
+            dict['key'] = key
             results.append( dict )
     
     return results
@@ -86,8 +112,7 @@ def xrefTable(tree):
 
 
 if __name__ == '__main__':
-    #NEXUS_ROOT = "/home/oxygen/JEMIAN/Documents/eclipse/NeXus/definitions/trunk"
-    NEXUS_ROOT = ".."
+    NEXUS_ROOT = ".."  # code is in [definitions]/trunk/utils directory
 
     root = lxml.etree.Element("NXDL_cross_reference")
     owd = os.getcwd()
@@ -99,7 +124,6 @@ if __name__ == '__main__':
                 nxdlList = processFile( nxdlFile )
                 print "%s: %d entries" % (nxdlFile, len(nxdlList))
                 for dict in nxdlList:
-                    #node = lxml.etree.SubElement(root, "item")
                     node = lxml.etree.SubElement(root, dict['tag'])
                     for k, v in dict.items():
                         if v != None and k != 'tag':
@@ -108,10 +132,7 @@ if __name__ == '__main__':
     os.chdir(owd)
 
     f = open('nxdlxref.xml', 'w')
+    f.write( '<?xml version="1.0" encoding="UTF-8"?>' + "\n")
+    f.write( '<?xml-stylesheet type="text/xsl" href="nxdlxref.xsl" ?>' + "\n")
     f.write( lxml.etree.tostring(root, pretty_print=True) )
     f.close()
-    
-    #xrefTable(root)
-    #paths = [item.get('NXDL_path') for item in root.xpath("/NXDL_cross_reference//*")]
-    #paths.sort()
-    #print "\n".join(paths)
