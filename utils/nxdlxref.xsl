@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-  Stylesheet to provide a view of the NeXus NXDL cross-reference XML document
+  Provides a view of the NeXus NXDL cross-reference XML document
   
   ########### SVN repository information ###################
   # $Date$
@@ -17,45 +17,53 @@
   <xsl:output method="html"/>
   
   <xsl:template match="/">
+  	<h1>NXDL Cross-reference</h1>
     <xsl:apply-templates select="NXDL_cross_reference" mode="list"/>
   </xsl:template>
   
-  <xsl:template match="NXDL_cross_reference" mode="table">
-    <table border="2">
-      <tr>
-        <th>element</th>
-        <th>item</th>
-        <th>link</th>
-      </tr>
-      <xsl:apply-templates select="*" mode="table"/>
-    </table>
-  </xsl:template>
-  
-  <xsl:template match="group" mode="table">
-    <tr>
-      <td><xsl:value-of select="name()"/></td>
-      <td><xsl:value-of select="@type"/></td>
-      <td><xsl:value-of select="@NXDL_path"/></td>
-    </tr>
-  </xsl:template>
-  
-  <xsl:template match="field|attribute|link" mode="table">
-    <tr>
-      <td><xsl:value-of select="name()"/></td>
-      <td><xsl:value-of select="@name"/></td>
-      <td><xsl:value-of select="@NXDL_path"/></td>
-    </tr>
-  </xsl:template>
-  
   <xsl:template match="NXDL_cross_reference" mode="list">
-    <dl>
-      <xsl:apply-templates select="*" mode="list">
-        <xsl:sort case-order="upper-first" select="@key"/>
-      </xsl:apply-templates>
-    </dl>
+  	<h2>Summary table of NXDL categories</h2>
+  	<table border = "2">
+  		<tr bgcolor="black" >
+  		  <th><font color="white">category</font></th>
+  		  <th><font color="white">classes</font></th>
+  		  <th><font color="white">entries</font></th>
+  		</tr>
+      <xsl:for-each select="NXDL/summary/category">
+        <tr>
+          <td><xsl:value-of select="@name"/></td>
+          <td><xsl:value-of select="@count"/></td>
+          <td><xsl:value-of select="@entries"/></td>
+        </tr>
+      </xsl:for-each>
+  	</table>
+  	
+  	<h2>Table of NXDL classes</h2>
+     	<table border="2">
+     		<tr bgcolor="black">
+     		  <th><font color="white">class</font></th>
+     		  <th><font color="white">category</font></th>
+     		  <th><font color="white">entries</font></th>
+     		</tr>
+     		<xsl:for-each select="NXDL/class">
+     			<xsl:sort select="@name"/>
+     			<tr>
+     				<td><xsl:value-of select="@name"/></td>
+     				<td><xsl:value-of select="@category"/></td>
+     				<td><xsl:value-of select="@entries"/></td>
+     			</tr>
+     		</xsl:for-each>
+     	</table>
+
+    <h2>List of defined names</h2>
+      <dl>
+        <xsl:apply-templates select="declarations/*" mode="list">
+          <xsl:sort select="@key"/>
+        </xsl:apply-templates>
+      </dl>
   </xsl:template>
   
-  <xsl:template match="*" mode="list">
+  <xsl:template match="group|field|attribute|link" mode="list">
     <dt>
       <xsl:choose>
         <xsl:when test="name()='group'">
@@ -73,17 +81,17 @@
     </dt>
     <dd>
       <em><xsl:value-of select="name()"/></em>
+      <xsl:if test="name()='field' or name()='attribute'">
+        <xsl:text> </xsl:text>
+        (<tt><xsl:value-of select="@type"/></tt>)
+      </xsl:if>
       <xsl:text>, </xsl:text>
       <b><xsl:value-of select="@NXDL"/></b>
       <xsl:text>, </xsl:text>
       <tt><xsl:value-of select="@NXDL_path"/></tt>
       <xsl:if test="name()='link'">
         <xsl:text>, </xsl:text>
-        <b>==&gt;</b>:<tt><xsl:value-of select="@target"/></tt>
-      </xsl:if>
-      <xsl:if test="name()!='group' and name()!='link'">
-        <xsl:text>, </xsl:text>
-        <b>type</b>:<tt><xsl:value-of select="@type"/></tt>
+        <b>==&gt;</b> <em><tt><xsl:value-of select="@target"/></tt></em>
       </xsl:if>
     </dd>
   </xsl:template>

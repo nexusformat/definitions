@@ -4,7 +4,7 @@
 Created on Feb 15, 2011
 
 @summary: Read all the NeXus NXDL specifications and find
-          all the group, field, attribute, and link 
+          all the group, field, attribute, and link
           specifications.  Write an XML document
           with enough information to build a cross-reference.
 @author: jemian
@@ -63,11 +63,11 @@ def processFile(nxdlFile):
     ns = {'nx': 'http://definition.nexusformat.org/nxdl/3.1'}
     cut = len( ns['nx'] ) + 2
     nxdlName = nxdlFile[:nxdlFile.find('.nxdl.xml')]
-    
+
     tree = lxml.etree.parse(nxdlFile)
     root = tree.xpath("//nx:definition", namespaces=ns)[0]
     category = root.get('category', 'None')
-    
+
     for element in ('group', 'field', 'attribute', 'link'):
         for item in tree.xpath("//nx:" + element, namespaces=ns):
             dict = {'NXDL': nxdlName, 'category': category}
@@ -89,15 +89,13 @@ def processFile(nxdlFile):
             else:
                 key = dict['name']
                 if element == 'link':
-                   key += "~~" + element
-                   if dict['type'] != None:
-                       key += "~~" + dict['type']
-                   key += "~~link"  # links should sort later
+                    key += "~~" + element  # links should sort later
+                    key += "~~" + nxdlName
             if element == 'link':
                 dict['target'] = item.get("target", None)
             dict['key'] = key
             results.append( dict )
-    
+
     return results
 
 def xrefTable(tree):
@@ -116,20 +114,54 @@ if __name__ == '__main__':
 
     root = lxml.etree.Element("NXDL_cross_reference")
     owd = os.getcwd()
+	
+    categoryDict = {'base_classes': 'base_class', 
+		'applications': 'application', 
+		'contributed_definitions': 'contributed'}
+    NXDLnode = lxml.etree.SubElement(root, 'NXDL')
+    declarations = lxml.etree.SubElement(root, 'declarations')
 
-    for dir in ('base_classes', 'applications', 'contributed_definitions'):
+    dirEntries = {}
+    classes = {}
+    for dir, category in categoryDict.items():
         os.chdir( os.path.join(NEXUS_ROOT, dir) )
+        dirEntries[dir] = 0
+        classes[dir] = []
         for nxdlFile in os.listdir('.'):
             if nxdlFile.endswith('.nxdl.xml'):
                 nxdlList = processFile( nxdlFile )
+                nxdlName = nxdlFile[:nxdlFile.find('.nxdl.xml')]
                 print "%s: %d entries" % (nxdlFile, len(nxdlList))
+                dirEntries[dir] += len(nxdlList)
+                classes[dir].append( nxdlName )
+                node = lxml.etree.SubElement(NXDLnode, 'class')
+                node.set('name', nxdlName)
+                node.set('file', nxdlFile)
+                node.set('category', category)
+                node.set('entries', str(len(nxdlList)))
                 for dict in nxdlList:
-                    node = lxml.etree.SubElement(root, dict['tag'])
+                    node = lxml.etree.SubElement(declarations, dict['tag'])
                     for k, v in dict.items():
                         if v != None and k != 'tag':
                             node.set(k, v)
 
     os.chdir(owd)
+    
+    summary = lxml.etree.SubElement(NXDLnode, 'summary')
+    totalEntries = 0
+    totalClasses = 0
+    for dir, n in dirEntries.items():
+        category = lxml.etree.SubElement(summary, 'category')
+        category.set('name', categoryDict[dir])
+        category.set('entries', str(n))
+        category.set('count', str(len(classes[dir])))
+        totalEntries += n
+        totalClasses += len(classes[dir])
+    print "%d entries total, %d classes total" % (totalEntries, totalClasses)
+    category = lxml.etree.SubElement(summary, 'category')
+    category.set('name', 'total')
+    category.set('entries', str(totalEntries))
+    category.set('count', str(totalClasses))
 
     f = open('nxdlxref.xml', 'w')
     f.write( '<?xml version="1.0" encoding="UTF-8"?>' + "\n")
