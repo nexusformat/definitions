@@ -292,7 +292,13 @@ select="/xsd:schema//xsd:complexType[@name='fieldType']/xsd:complexContent/xsd:e
             <section>
                 <title>NXDL element: <code>link</code></title>
                 <para>
-                    A <code>link</code> element can <emphasis>only</emphasis> be a child of a 
+                    A <code>link</code> element 
+                    <indexterm><primary>link</primary></indexterm>
+                    <indexterm>
+                        <primary>target</primary>
+                        <see>link</see>
+                    </indexterm>
+                    can <emphasis>only</emphasis> be a child of a 
                     <literal>field</literal> or <literal>group</literal> element.
                     It describes the path to the original source of the parent
                     <literal>field</literal> or <literal>group</literal>.
