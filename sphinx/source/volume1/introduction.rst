@@ -286,6 +286,7 @@ A Set of Data Storage Objects
 ---------------------------------------------------------------------
 
 .. _Introduction-DataStorageObjects:
+.. index:: instrument definitions 
 
 If the design principles are followed, 
 it will be easy for anyone browsing a
@@ -296,11 +297,10 @@ visualization or analysis software, you will need to
 know precisely what specific information is contained 
 in advance. For that reason, NeXus
 provides a way of defining the format for 
-particular instrument types, 
+particular instrument types,
 such as time-of-flight small angle neutron scattering. This requires
 some agreement by the relevant communities, but enables the development of
 much more portable software.
-.. index:: instrument definitions
 
 The set of data storage objects is divided into three parts:
 base classes, application definitions, and contributed definitions.
@@ -387,23 +387,23 @@ NAPI: The NeXus Application Programming Interface
 =====================================================================
 
 .. _Introduction-NAPI:
+.. index:: NAPI
 
 The NeXus API consists of routines to read and 
 write NeXus data files and
 was written to shield (and hide) the complexity
 of the HDF API from scientific programmers and 
 users of the NeXus Data Standard.
-.. index:: NAPI
 
 Further documentation of the NeXus Application Programming Interface
 (NAPI) for bindings to specific programming language can be obtained
-from the NeXus development site. [#]_
+from the NeXus development site.[#]_
 
 For a more detailed description of the internal workings of NAPI
 that is maintained (mostly) concurrent with code revisions,
 see the NAPI chapter in Volume II of this documentation and also 
 `NeXusIntern.pdf <http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf>`_
-in the NeXus code repository. [#]_
+in the NeXus code repository.[#]_
 Likely this is only interesting for experienced
 programmers who wish to hack the NAPI.
 
@@ -416,9 +416,9 @@ How do I write a NeXus file?
 
 .. _Introduction-HowToWrite:
 .. index:: file; write
+.. index:: NAPI
 
 The NeXus Application Program Interface (API) 
-.. index:: NAPI
 provides a set of subroutines that make it easy to read and write
 NeXus files. These subroutines are available in C, Fortran 77, Fortran 90, Java,
 Python, C++,
@@ -511,13 +511,13 @@ How do I read a NeXus file?
 .. _Introduction-HowToRead:
 
 .. index:: file; read
+.. index:: NAPI
+.. index:: rank
 
 Reading a NeXus file is almost identical to writing one. Obviously, it is not
 necessary to call ``NXmakedata()`` 
-.. index:: NAPI
 since the item already exists, but it
 is necessary to call one of the query routines to find out the rank
-.. index:: rank
 and length of the data before allocating an array to store it.
 
 Here is part of a program to read the two-theta array from the file
@@ -540,11 +540,11 @@ How do I browse a NeXus file?
 .. _Introduction-HowToBrowse:
 
 .. index:: file; browse
+.. index:: utility; nxbrowse
 
 NeXus files can also be viewed by a command-line browser,
 ``NXbrowse``, which is included with the NeXus API (:ref:`Introduction-NAPI`).
 The following is an example session of using ``nxbrowse``
-.. index:: utility; ``nxbrowse``
 to view a data
 file from the LRMECS spectrometer at IPNS. The following commands 
 are used in :ref:`ex.NXbrowse.lrmecs` in this session (see
@@ -575,7 +575,7 @@ Using ``NXbrowse``
 [line 43] 
 	Quits ``NXbrowse``.
 
-The source code of ``NXbrowse`` [#]_
+The source code[#]_ of ``NXbrowse``
 provides an example of how to write a NeXus reader. 
 The test programs included in the NeXus API (:ref:`Introduction-NAPI`)
 may also be useful to study.
