@@ -31,11 +31,11 @@ programs to read and write NeXus files.
 .. contents::
 
 
+.. _WhatIsNeXus:
+
 =====================================================================
 What is NeXus?
 =====================================================================
-
-.. _WhatIsNeXus:
 
 The NeXus data format has four components: 
 
@@ -81,10 +81,10 @@ available to browse, validate, translate, and visualise
 NeXus data files is provided in :ref:`Utilities`.
 
 
+.. _Introduction-DesignPrinciples:
+
 A Set of Design Principles
 ---------------------------------------------------------------------
-
-.. _Introduction-DesignPrinciples:
 
 .. index:: NeXus; Design Principles
 
@@ -140,10 +140,10 @@ is designed to make it easy to navigate a NeXus file.
 .. index:: hierarchy
 
 
+.. _Introduction-ExampleFile:
+
 Example of a NeXus File
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _Introduction-ExampleFile:
 
 The following diagram shows an example of a NeXus data file 
 represented as a tree structure.
@@ -166,10 +166,10 @@ items nested in groups, makes it easy to identify information if you are
 browsing through a file. 
 
 
+.. _Introduction-ImportantClasses:
+
 Important Classes
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _Introduction-ImportantClasses:
 
 Here are some of the important classes found in nearly all NeXus files. A
 complete list can be found in the NeXus Design section (:ref:`Design`).
@@ -238,10 +238,10 @@ This hides the complexity from generic file browsers, but makes the
 information available in an intuitively obvious way if it is required.
 
 
+.. _Introduction-SimpleExample:
+
 Simple Data File Example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _Introduction-SimpleExample:
 
 NeXus data files do not need to be complicated. 
 In fact, the following diagram shows an extremely simple NeXus file
@@ -261,10 +261,11 @@ extremely flexible. It can accommodate very complex instrumental
 information, if required, but it can also be used to store very simple data
 sets.  In the next example, a NeXus data file is shown as XML:
 
+.. _ex.verysimple.xml:
+
 ``verysimple.xml``: A very simple NeXus Data file (in XML)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. _ex.verysimple.xml:
 .. include:: ../../../manual/examples/verysimple.xml
 	:literal: 
 	:tab-width: 4
@@ -273,19 +274,19 @@ sets.  In the next example, a NeXus data file is shown as XML:
 NeXus files are easy to create.  This example NeXus file was created using
 a short Python program and NeXpy:
 
+.. _ex.verysimple.py:
+
 ``verysimple.py``: Using NeXpy to write a very simple NeXus Data file (in HDF5)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _ex.verysimple.py:
+.. index:: example; very simple
 .. include:: ../../../manual/examples/verysimple.py
 	:literal: 
 	:tab-width: 4
-.. index:: example; very simple
+
+.. _Introduction-DataStorageObjects:
 
 A Set of Data Storage Objects
 ---------------------------------------------------------------------
-
-.. _Introduction-DataStorageObjects:
 .. index:: instrument definitions 
 
 If the design principles are followed, 
@@ -318,10 +319,10 @@ to specify the names of data fields, and other NeXus data objects.
 The following is an example of such a file for
 the simple NeXus file shown above. 
 
+.. _ex.verysimple.nxdl.xml:
+
 ``verysimple.nxdl.xml``: A very simple NeXus Definition Language (NXDL) file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _ex.verysimple.nxdl.xml:
 
 .. include:: ../../../manual/examples/verysimple.nxdl.xml
 	:literal: 
@@ -340,10 +341,10 @@ An example of how to do this is shown in the section titled
 Creating a NXDL Specification (:ref:`NXDL_Tutorial-CreatingNxdlSpec`).
 
 
+.. _Introduction-SetOfSubroutines:
+
 A Set of Subroutines
 ---------------------------------------------------------------------
-
-.. _Introduction-SetOfSubroutines:
 
 NeXus data files are high-level so the user only needs to 
 know how the data are referenced in the file but does not 
@@ -361,15 +362,15 @@ called an application-programmer interface or API.
 For example, in NeXus, a program to read in the wavelength of an experiment
 would contain lines similar to the following:
 
+.. _ex.simple.c:
+
 Simple example of reading data using the NeXus API
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. _ex.simple.c:
-
+.. index:: example; simple
 .. include:: ../../../manual/examples/ex-simple.c
 	:literal: 
 	:tab-width: 4
-.. index:: example; simple
 
 In this example, the program requests the value of the data that has
 the label ``wavelength``, storing the result in the variable lambda.
@@ -382,11 +383,12 @@ discussed the contents of the NeXus files.
 .. .. include:: intro-lowlevel.inc
 .. .. include:: motivations.inc
 
+.. _Introduction-NAPI:
+
 =====================================================================
 NAPI: The NeXus Application Programming Interface
 =====================================================================
 
-.. _Introduction-NAPI:
 .. index:: NAPI
 
 The NeXus API consists of routines to read and 
@@ -411,10 +413,11 @@ programmers who wish to hack the NAPI.
 .. [#] `http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf  <http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf>`_
 
 
+.. _Introduction-HowToWrite:
+
 How do I write a NeXus file?
 ---------------------------------------------------------------------------------
 
-.. _Introduction-HowToWrite:
 .. index:: file; write
 .. index:: NAPI
 
@@ -438,15 +441,15 @@ we walk through some parts of a typical NeXus program written in C.
 
 .. TODO: Where is :ref:`fig.simple-example`?
 
+.. _ex.simple.write:
+
 Writing a simple NeXus file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. _ex.simple.write:
-
+.. index:: example; simple
 .. include:: ../../../manual/examples/ex-c-write.c
 	:literal: 
 	:tab-width: 4
-.. index:: example; simple
 
 [line 6]
 	Open the file ``NXfile.nxs`` with 
@@ -505,10 +508,10 @@ Writing a simple NeXus file
 	``NXentry``) before closing the file itself. 
 
 
+.. _Introduction-HowToRead:
+
 How do I read a NeXus file?
 ---------------------------------------------------------------------------------
-
-.. _Introduction-HowToRead:
 
 .. index:: file; read
 .. index:: NAPI
@@ -523,10 +526,10 @@ and length of the data before allocating an array to store it.
 Here is part of a program to read the two-theta array from the file
 created by :ref:`ex.simple.write` above.
 
+.. _ex.simple.read:
+
 Reading a simple NeXus file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _ex.simple.read:
 
 .. include:: ../../../manual/examples/ex-c-read.c
 	:literal: 
@@ -534,10 +537,10 @@ Reading a simple NeXus file
 .. index:: example; simple
 
 
+.. _Introduction-HowToBrowse:
+
 How do I browse a NeXus file?
 ---------------------------------------------------------------------------------
-
-.. _Introduction-HowToBrowse:
 
 .. index:: file; browse
 .. index:: utility; nxbrowse
@@ -550,10 +553,10 @@ file from the LRMECS spectrometer at IPNS. The following commands
 are used in :ref:`ex.NXbrowse.lrmecs` in this session (see
 the ``nxbrowse`` web page):
 
+.. _ex.NXbrowse.lrmecs:
+
 Using ``NXbrowse``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _ex.NXbrowse.lrmecs:
 
 .. include:: ../../../manual/examples/ex-unix-using-nxbrowse.txt
 	:literal: 
