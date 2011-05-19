@@ -11,8 +11,7 @@ NeXus: a common data format for neutron, x-ray, and muon science
 	:width: 2in
 	:alt: NeXus logo
 
-`A PDF version of this manual is available. 
-<http://jemian.org/nexus-sphinx/latex/nexus.pdf>`_
+This manual is also available in `a PDF version. <nexus.pdf>`_
 
 Contents:
 
@@ -20,11 +19,6 @@ Contents:
    :maxdepth: 2
    
    self
-   volume1/preface
-
-.. toctree::
-   :maxdepth: 2
-   
    volume1/index
    volume2/index
    authors

@@ -2,7 +2,7 @@
 #
 # $Id$
 #
-# NeXus: a common data format for neutron, x-ray, and muon science documentation build configuration file, created by
+# NeXus: User Guide and Reference Documentation build configuration file, created by
 # sphinx-quickstart on Wed May 18 12:57:35 2011.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -44,7 +44,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'NeXus: a common data format for neutron, x-ray, and muon science'
+project = u'NeXus: User Guide and Reference Documentation'
 copyright = u'2011, http://nexusformat.org'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -220,7 +220,7 @@ latex_show_pagerefs = True
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'nexus', u'NeXus: a common data format for neutron, x-ray, and muon science',
+    ('index', 'nexus', u'NeXus: User Guide and Reference Documentation',
      [u'http://nexusformat.org'], 1)
 ]
 
@@ -228,7 +228,7 @@ man_pages = [
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'NeXus: a common data format for neutron, x-ray, and muon science'
+epub_title = u'NeXus: User Guide and Reference Documentation'
 epub_author = u'http://nexusformat.org'
 epub_publisher = u'http://nexusformat.org'
 epub_copyright = u'2011, http://nexusformat.org'
