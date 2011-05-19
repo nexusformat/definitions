@@ -63,62 +63,59 @@ Some words on the notation:
 * Links are shown with a text arrow ``-->`` indicating the source  
   of the link (using HDF5 notation listing the sequence of names).
 
-Line 1 shows that there is one group at the root level of the file named
-``entry``.  This group is of type ``NXentry``
-which means it conforms to the specification of the ``NXentry``
-NeXus base class.  Using the HDF5 nomenclature, we would refer to this
-as the ``/entry`` group.
+[Line 1]
+   shows that there is one group at the root level of the file named
+   ``entry``.  This group is of type ``NXentry``
+   which means it conforms to the specification of the ``NXentry``
+   NeXus base class.  Using the HDF5 nomenclature, we would refer to this
+   as the ``/entry`` group.
 
-Lines 2, 10, and 12:
-The ``/entry`` group contains three subgroups:
-``instrument``, ``sample``, and ``data``.
-These groups are of type ``NXinstrument``, ``NXsample``,
-and ``NXdata``, respectively.
+[Lines 2, 10, and 12]
+   The ``/entry`` group contains three subgroups:
+   ``instrument``, ``sample``, and ``data``.
+   These groups are of type ``NXinstrument``, ``NXsample``,
+   and ``NXdata``, respectively.
 
-Line 4: The data of this example is stored in the
-``/entry/instrument/detector`` group in the dataset called
-``data`` (HDF5 path is ``/entry/instrument/detector/data``).
-The indication of ``data:[]`` says that ``data`` is an
-array of unspecified dimension(s).
+[Line 4]
+   The data of this example is stored in the
+   ``/entry/instrument/detector`` group in the dataset called
+   ``data`` (HDF5 path is ``/entry/instrument/detector/data``).
+   The indication of ``data:[]`` says that ``data`` is an
+   array of unspecified dimension(s).
 
-Lines 5-7:
-There are three attributes of ``/entry/instrument/detector/data``:
-``axes``, ``long_name``, and ``signal``.
+[Lines 5-7]
+   There are three attributes of ``/entry/instrument/detector/data``:
+   ``axes``, ``long_name``, and ``signal``.
 
-Line 8 (reading ``bins:[0, 1, 2, ... 1023]``) shows that
-``bins`` is a 1-D array of length presumably 1024.  A small,
-representative selection of values are shown.
+[Line 8] (reading ``bins:[0, 1, 2, ... 1023]``) 
+   shows that
+   ``bins`` is a 1-D array of length presumably 1024.  A small,
+   representative selection of values are shown.
 
-Line 9: an attribute that shows a descriptive name of
-``/entry/instrument/detector/bins``.  This attribute
-might be used by a NeXus client while plotting the data.
+[Line 9]
+   an attribute that shows a descriptive name of
+   ``/entry/instrument/detector/bins``.  This attribute
+   might be used by a NeXus client while plotting the data.
 
-Line 11 (reading ``name = "zeolite"``) shows
-how a string value is represented.
+[Line 11] (reading ``name = "zeolite"``) 
+   shows how a string value is represented.
 
-Lines 13-14:
-The ``/entry/data`` group has two datasets that are actually
-linked as shown.  (As you will see later, the ``NXdata`` group
-is required and enables NeXus clients to easily determine what to
-offer for display on a default plot.)
+[Lines 13-14]
+   The ``/entry/data`` group has two datasets that are actually
+   linked as shown.  (As you will see later, the ``NXdata`` group
+   is required and enables NeXus clients to easily determine what to
+   offer for display on a default plot.)
 
 
 ==============================================================================
 Class path specification
 ==============================================================================
 
-.. sidebar:: Sidebar Title
-   :subtitle: Optional Sidebar Subtitle
-
-   Subsequent indented lines comprise
-   the body of the sidebar, and are
-   interpreted as body elements.
-
 In some places in this documentation, a path may be shown
 using the class types rather than names.  For example:
 ``/NXentry/NXinstrument/NXcrystal/wavelength``
 identifies a dataset called ``wavelength``
 that is inside a group of type ``NXcrystal`` ...
-This nomemclature is used when the exact name of each group is
+This nomenclature is used when the exact name of each group is
 either unimportant or not specified.  Often, this will be used in
 a NXDL specification to indicate the connections of a link.

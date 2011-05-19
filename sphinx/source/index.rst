@@ -28,6 +28,14 @@ Contents:
 Symbols to mark Sections
 ========================================================================
 
+.. sidebar:: Sidebar Title
+   :subtitle: Optional Sidebar Subtitle
+
+   This is a demo of a sidebar.
+   Subsequent indented lines comprise
+   the body of the sidebar, and are
+   interpreted as body elements.
+
 This is a cheat sheet and will be removed later.
 
 ======   =================================================

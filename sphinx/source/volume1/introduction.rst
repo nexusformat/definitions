@@ -180,7 +180,7 @@ complete list can be found in the NeXus Design section (:ref:`Design`).
 .. index:: classes; base class: NXentry
 
 ``NXentry``
-	**Required:**
+	(**Required:**)
 	The top level of any NeXus file contains one or more
 	groups with the class ``NXentry``.
 	These contain all the data that is required to
@@ -195,7 +195,7 @@ complete list can be found in the NeXus Design section (:ref:`Design`).
 .. index:: NeXus basic motivation; default plot
 
 ``NXdata``
-	**Required:**
+	(**Required:**)
 	Each ``NXentry`` group contains one or more
 	groups with class ``NXdata``. 
 	These groups contain the experimental results
@@ -238,7 +238,7 @@ This hides the complexity from generic file browsers, but makes the
 information available in an intuitively obvious way if it is required.
 
 
-Simple Example
+Simple Data File Example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _Introduction-SimpleExample:
@@ -252,9 +252,9 @@ read this simple example.)
 
 .. figure:: ../../../manual/img/Simple.png
 	:width: 250 pt
-	:alt: Simple Example figure
+	:alt: Simple Data File Example figure
 
-	Simple Example
+	Simple Data File Example
  
 This illustrates the fact that the structure of NeXus files is
 extremely flexible. It can accommodate very complex instrumental
@@ -575,7 +575,7 @@ Using ``NXbrowse``
 [line 43] 
 	Quits ``NXbrowse``.
 
-The source code[#]_ of ``NXbrowse``
+The source code of ``NXbrowse`` [#]_
 provides an example of how to write a NeXus reader. 
 The test programs included in the NeXus API (:ref:`Introduction-NAPI`)
 may also be useful to study.
