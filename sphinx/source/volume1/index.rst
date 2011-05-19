@@ -1,5 +1,7 @@
 .. $Id$
 
+.. :title-reference:`NeXus User Manual`
+
 ##############################################################################
 NeXus Documentation: Volume I: User Manual
 ##############################################################################
@@ -10,7 +12,6 @@ Contents:
    :maxdepth: 2
    :numbered:
    
-   preface
    introduction
 
 .. TODO: get the chapter numbering right

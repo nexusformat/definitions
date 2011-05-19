@@ -399,13 +399,13 @@ users of the NeXus Data Standard.
 
 Further documentation of the NeXus Application Programming Interface
 (NAPI) for bindings to specific programming language can be obtained
-from the NeXus development site.[#]_
+from the NeXus development site. [#]_
 
 For a more detailed description of the internal workings of NAPI
 that is maintained (mostly) concurrent with code revisions,
 see the NAPI chapter in Volume II of this documentation and also 
 `NeXusIntern.pdf <http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf>`_
-in the NeXus code repository.[#]_
+in the NeXus code repository. [#]_
 Likely this is only interesting for experienced
 programmers who wish to hack the NAPI.
 

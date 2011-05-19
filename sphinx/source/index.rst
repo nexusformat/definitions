@@ -18,7 +18,12 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
-   :numbered:
+   
+   self
+   volume1/preface
+
+.. toctree::
+   :maxdepth: 2
    
    volume1/index
    volume2/index
@@ -35,6 +40,15 @@ Symbols to mark Sections
    Subsequent indented lines comprise
    the body of the sidebar, and are
    interpreted as body elements.
+
+Enjoy inline math such as: :math:`E=mc^2`
+using LaTeX markup.  You will need the ``matplotlib``
+package in your Python.
+This was possible with this definition
+in `conf.py`::
+
+   extensions = ['sphinx.ext.pngmath', 'sphinx.ext.ifconfig']
+   extensions.append( 'matplotlib.sphinxext.mathmpl' )
 
 This is a cheat sheet and will be removed later.
 
