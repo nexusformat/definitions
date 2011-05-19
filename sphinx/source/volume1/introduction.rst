@@ -1,0 +1,583 @@
+.. $Id$
+
+***************************************************************************
+NeXus Introduction
+***************************************************************************
+
+.. index:: NeXus basic motivation; unified format
+
+In recent years, a community of scientists and computer programmers working 
+in neutron and synchrotron facilities around the world came to the 
+conclusion that a common data format would fulfill a valuable function in 
+the scattering community. As instrumentation becomes more complex and data 
+visualization become more challenging, individual scientists, or even 
+institutions, have found it difficult to keep up with new developments. A 
+common data format makes it easier, both to exchange experimental results 
+and to exchange ideas about how to analyze them. It promotes greater 
+cooperation in software development and stimulates the design of more 
+sophisticated visualization tools. For additional background information see 
+:ref:`History`. 
+
+This section is designed to give a brief introduction to NeXus, the data 
+format and tools that have been developed in response to these needs. It 
+explains what a modern data format such as NeXus is and how to write simple 
+programs to read and write NeXus files. 
+
+.. note::
+	The programmers who produce intermediate files for 
+	storing analyzed data should agree on simple interchange rules.
+
+.. index:: rules
+.. contents::
+
+
+=====================================================================
+What is NeXus?
+=====================================================================
+
+.. _WhatIsNeXus:
+
+The NeXus data format has four components: 
+
+.. index:: NeXus
+
+#.	A set of *design principles*
+	to help people understand what is in the data files.
+#.	A set of *data storage objects*
+	(base classes and application definitions) to allow 
+	the development of more portable analysis software.
+#.	A set of *subroutines*
+	(utilities) to make it easy to read and write NeXus data files.
+#.	*Scientific Community*
+	to provide the scientific data, advice, and continued involvement
+	with the NeXus standard. NeXus provides a forum for the scientific
+	community to exchange ideas in data storage.
+
+In addition, NeXus relies on a set of low-level file formats to actually 
+store NeXus files on physical media. Each of these components are described 
+in more detail in :ref:`Fileformat`. 
+
+.. index:: NAPI 
+           
+The NeXus Application-Programmer Interface (NAPI), which
+provides the set of subroutines for reading and writing NeXus data files,
+is described briefly in :ref:`Introduction-NAPI`.
+(Further details are provided in the NAPI chapter of Volume II of this
+documentation.)
+
+The principles guiding the design and implementation of the NeXus standard
+are described in :ref:`Design` .
+
+Base classes and applications,
+which comprise the data storage objects used in NeXus data files,
+are detailed in the *Class Definitions* chapter of 
+Volume II of this documentation.
+            
+.. With this information, it should be possible to bypass the NAPI and
+	read & write NeXus data directly in the low-level file format.
+
+Additionally, a brief list describing the set of NeXus Utilities 
+available to browse, validate, translate, and visualise
+NeXus data files is provided in :ref:`Utilities`.
+
+
+A Set of Design Principles
+---------------------------------------------------------------------
+
+.. _Introduction-DesignPrinciples:
+
+.. index:: NeXus; Design Principles
+
+NeXus data files contain four types of entity: 
+data groups, data fields, attributes, and links. 
+See :ref:`Design-Groups` for more details.
+
+1. Data Groups
+	*Data groups* are like folders that can contain 
+	a number of fields and/or other groups.
+
+.. index:: data objects; groups
+
+2. Data Fields
+	*Data fields*
+	can be scalar values or multidimensional arrays of a
+	variety of sizes (1-byte, 2-byte, 4-byte, 8-byte) and types
+	(characters, integers, floats).  In HDF, fields are
+	represented as HDF *Scientific Data Sets*
+	(also known as SDS).
+
+.. index:: data objects; fields
+.. index:: HDF; Scientific Data Sets
+.. see also - data objects, fields
+.. index:: Scientific Data Sets
+.. see also - data objects, fields
+.. index:SDS
+.. see also - data objects, fields
+
+3. Data Attributes
+	Extra information required to
+	describe a particular group or field, 
+	such as the data units,
+	can be stored as a data attribute.
+
+.. index:: units
+.. index:: attributes; data
+.. index:: data objects; attributes
+
+4. Links
+	Links are used to reference the plottable data
+	from ``NXdata`` when the data is provided in 
+	other groups such as ``NXmonitor`` or ``NXdetector``.
+
+.. index:: NeXus basic motivation; default plot
+.. index:: link
+
+In fact, a NeXus file can be viewed as a computer file system. Just as files
+are stored in folders (or subdirectories) to make them easy to locate, so NeXus
+fields are stored in groups. The group hierarchy
+is designed to make it easy to navigate a NeXus file.
+
+.. index:: hierarchy
+
+
+Example of a NeXus File
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _Introduction-ExampleFile:
+
+The following diagram shows an example of a NeXus data file 
+represented as a tree structure.
+
+.. index:: hierarchy; example NeXus data file
+
+.. figure:: ../../../manual/img/Hierarchy.png
+	:width: 300 pt
+	:alt: example NeXus data file hierarchy
+
+	Example of a NeXus data file
+
+Note that each field is identified by a name, such as ``counts``,
+but each group is identified both by a name and, after a colon as a 
+delimiter, the class type, e.g., ``monitor:NXmonitor``). 
+The class types, which all begin with ``NX``, 
+define the sort of fields that the group should contain, in this
+case, counts from a beamline monitor. The hierarchical design, with data
+items nested in groups, makes it easy to identify information if you are
+browsing through a file. 
+
+
+Important Classes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _Introduction-ImportantClasses:
+
+Here are some of the important classes found in nearly all NeXus files. A
+complete list can be found in the NeXus Design section (:ref:`Design`).
+
+.. note:: ``NXentry`` and ``NXdata``
+	are the only two classes **required** in a valid NeXus data file.
+
+.. index:: classes; base class: NXentry
+
+``NXentry``
+	**Required:**
+	The top level of any NeXus file contains one or more
+	groups with the class ``NXentry``.
+	These contain all the data that is required to
+	describe an experimental run or scan. Each
+	``NXentry`` typically contains a number of
+	groups describing sample information (class
+	``NXsample``), instrument details (class
+	``NXinstrument``), and monitor counts (class
+	``NXmonitor``).  
+
+.. index:: classes; base class: NXdata
+.. index:: NeXus basic motivation; default plot
+
+``NXdata``
+	**Required:**
+	Each ``NXentry`` group contains one or more
+	groups with class ``NXdata``. 
+	These groups contain the experimental results
+	in a self-contained way, i.e., it should be possible to
+	generate a sensible plot of the data
+	from the information
+	contained in each ``NXdata`` group. That means it
+	should contain the axis labels and titles as well as the
+	data.
+
+.. index:: classes; base class: NXsample
+
+``NXsample``
+	A ``NXentry`` group will often contain a group
+	with class ``NXsample``. 
+	This group contains information pertaining to
+	the sample, such as its chemical composition, mass, and
+	environment variables (temperature, pressure, magnetic
+	field, etc.).
+
+.. index:: classes; base class: NXinstrument
+
+``NXinstrument``
+	There might also be a group with class
+	``NXinstrument``.
+	This is designed to encapsulate all the
+	instrumental information that might be relevant to a
+	measurement, such as flight paths, collimations, chopper
+	frequencies, etc.
+
+.. figure:: ../../../manual/img/NXinstrument.png
+	:width: 200 pt
+	:alt: example NeXus data file hierarchy
+
+	NXinstrument excerpt
+
+Since an instrument can comprise several beamline components each
+defined by several parameters, they are each specified by a separate group.
+This hides the complexity from generic file browsers, but makes the
+information available in an intuitively obvious way if it is required.
+
+
+Simple Example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _Introduction-SimpleExample:
+
+NeXus data files do not need to be complicated. 
+In fact, the following diagram shows an extremely simple NeXus file
+(in fact, the simple example shows the minimum information necessary
+for a NeXus data file) that could be used to transfer
+data between programs. (Later in this section, we show how to write and 
+read this simple example.)
+
+.. figure:: ../../../manual/img/Simple.png
+	:width: 250 pt
+	:alt: Simple Example figure
+
+	Simple Example
+ 
+This illustrates the fact that the structure of NeXus files is
+extremely flexible. It can accommodate very complex instrumental
+information, if required, but it can also be used to store very simple data
+sets.  In the next example, a NeXus data file is shown as XML:
+
+``verysimple.xml``: A very simple NeXus Data file (in XML)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _ex.verysimple.xml:
+.. include:: ../../../manual/examples/verysimple.xml
+	:literal: 
+	:tab-width: 4
+.. index:: example; very simple
+
+NeXus files are easy to create.  This example NeXus file was created using
+a short Python program and NeXpy:
+
+``verysimple.py``: Using NeXpy to write a very simple NeXus Data file (in HDF5)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _ex.verysimple.py:
+.. include:: ../../../manual/examples/verysimple.py
+	:literal: 
+	:tab-width: 4
+.. index:: example; very simple
+
+A Set of Data Storage Objects
+---------------------------------------------------------------------
+
+.. _Introduction-DataStorageObjects:
+
+If the design principles are followed, 
+it will be easy for anyone browsing a
+NeXus file to understand what it contains, 
+without any prior information.
+However, if you are writing specialized 
+visualization or analysis software, you will need to
+know precisely what specific information is contained 
+in advance. For that reason, NeXus
+provides a way of defining the format for 
+particular instrument types, 
+such as time-of-flight small angle neutron scattering. This requires
+some agreement by the relevant communities, but enables the development of
+much more portable software.
+.. index:: instrument definitions
+
+The set of data storage objects is divided into three parts:
+base classes, application definitions, and contributed definitions.
+The base classes represent a set of components that define 
+the dictionary of all possible terms to be used with that component.
+The application definitions specify the minimum required information to satisfy
+a particular scientific or data analysis software interest.
+The contributed definitions have been submitted by the scientific community
+for incubation before they are adopted by the NIAC or for availability
+to the community.
+
+These instrument definitions are formalized as XML files, using NXDL,
+(as described in the NXDL chapter in Volume II of this documentation)
+to specify the names of data fields, and other NeXus data objects. 
+The following is an example of such a file for
+the simple NeXus file shown above. 
+
+``verysimple.nxdl.xml``: A very simple NeXus Definition Language (NXDL) file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _ex.verysimple.nxdl.xml:
+
+.. include:: ../../../manual/examples/verysimple.nxdl.xml
+	:literal: 
+	:tab-width: 4
+.. index:: example; very simple
+
+.. (See *<link xlink:href="#Impatient">A complete example of writing and 
+	reading a NeXus data file</link>* for an example to write and read data
+	using the structure of :ref:`ex.verysimple.nxdl.xml`.)
+
+This chapter has several examples of writing and reading NeXus data files.
+If you want to define the format of a particular type of NeXus file
+for your own use, e.g. as the standard output from a program, you are encouraged
+to *publish* the format using this XML format. 
+An example of how to do this is shown in the section titled
+Creating a NXDL Specification (:ref:`NXDL_Tutorial-CreatingNxdlSpec`).
+
+
+A Set of Subroutines
+---------------------------------------------------------------------
+
+.. _Introduction-SetOfSubroutines:
+
+NeXus data files are high-level so the user only needs to 
+know how the data are referenced in the file but does not 
+need to be concerned where the data are stored in the file.  Thus, the data
+are most easily accessed using a subroutine library tuned to the
+specifics of the data format.
+
+In the past, a data format was defined by a document 
+describing the precise location of every item in the data file, 
+either as row and column numbers in an ASCII file, or as record 
+and byte numbers in a binary file. It is the job of the subroutine 
+library to retrieve the data.  This subroutine library is commonly 
+called an application-programmer interface or API.
+
+For example, in NeXus, a program to read in the wavelength of an experiment
+would contain lines similar to the following:
+
+Simple example of reading data using the NeXus API
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _ex.simple.c:
+
+.. include:: ../../../manual/examples/ex-simple.c
+	:literal: 
+	:tab-width: 4
+.. index:: example; simple
+
+In this example, the program requests the value of the data that has
+the label ``wavelength``, storing the result in the variable lambda.
+``fileID`` is a file identifier that is provided by NeXus when the
+file is opened. 
+
+We shall provide a more complete example when we have 
+discussed the contents of the NeXus files.
+
+.. .. include:: intro-lowlevel.inc
+.. .. include:: motivations.inc
+
+=====================================================================
+NAPI: The NeXus Application Programming Interface
+=====================================================================
+
+.. _Introduction-NAPI:
+
+The NeXus API consists of routines to read and 
+write NeXus data files and
+was written to shield (and hide) the complexity
+of the HDF API from scientific programmers and 
+users of the NeXus Data Standard.
+.. index:: NAPI
+
+Further documentation of the NeXus Application Programming Interface
+(NAPI) for bindings to specific programming language can be obtained
+from the NeXus development site. [#]_
+
+For a more detailed description of the internal workings of NAPI
+that is maintained (mostly) concurrent with code revisions,
+see the NAPI chapter in Volume II of this documentation and also 
+`NeXusIntern.pdf <http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf>`_
+in the NeXus code repository. [#]_
+Likely this is only interesting for experienced
+programmers who wish to hack the NAPI.
+
+.. [#] `http://download.nexusformat.org  <http://download.nexusformat.org>`_
+.. [#] `http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf  <http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf>`_
+
+
+How do I write a NeXus file?
+---------------------------------------------------------------------------------
+
+.. _Introduction-HowToWrite:
+.. index:: file; write
+
+The NeXus Application Program Interface (API) 
+.. index:: NAPI
+provides a set of subroutines that make it easy to read and write
+NeXus files. These subroutines are available in C, Fortran 77, Fortran 90, Java,
+Python, C++,
+and IDL. Access from other languages, such as Python, is anticipated in the near
+future. It is also possible to read NeXus HDF files in a number of data analysis
+tools, such as LAMP, ISAW, IgorPro, and Open GENIE.  NeXus XML files can be read 
+by any program or library that supports XML.
+
+The API uses a very simple *state*
+model to navigate through a NeXus file.
+When you open a file, the API provides a file *handle*, 
+which then stores the
+current location, i.e. which group and/or field is currently open. Read and
+write operations then act on the currently open entity. 
+Following the simple example of :ref:`fig.simple-example`,
+we walk through some parts of a typical NeXus program written in C.
+
+.. TODO: Where is :ref:`fig.simple-example`?
+
+Writing a simple NeXus file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _ex.simple.write:
+
+.. include:: ../../../manual/examples/ex-c-write.c
+	:literal: 
+	:tab-width: 4
+.. index:: example; simple
+
+[line 6]
+	Open the file ``NXfile.nxs`` with 
+	*create* 
+	access (implying write access).
+	NAPI returns a file identifier of type ``NXhandle``.
+
+[line 7]
+	Next, we create an
+	``NXentry`` group to contain the scan using 
+	``NXmakegroup()`` and then
+	open it for access using ``NXopengroup()``.
+
+[line 9]
+	The plottable data
+	is contained within an ``NXdata`` group, which must
+	also be created and opened.
+
+.. index:: NeXus basic motivation; default plot
+
+[line 12]
+	To create a field, call ``NXmakedata()``, specifying the
+	data name, type (``NX_FLOAT32``), rank
+	(in this case, 
+	``1``), and length of the array
+	(``n``). Then, it can be opened for writing.
+
+.. index:: rank
+
+[line 14]
+	Write the data using ``NXputdata()``. 
+
+[line 15]
+	With the field still open, we can also add some data attributes,
+	such as the data units,
+	which are specified as a character string (type ``NX_CHAR``)
+	that is 7 bytes long.
+
+.. index:: attributes; data
+.. index:: units
+
+[line 16]
+	Then we close the field before opening another. 
+	In fact, the API will do this automatically if you 
+	attempt to open another field, but it is
+	better style to close it yourself. 
+
+[line 17]
+	The remaining fields in this group are added in a similar
+	fashion. Note that the indentation whenever a new field or 
+	group are opened is just intended to make the structure of
+	the NeXus file more transparent.
+
+[line 20]
+	Finally, close the groups (``NXdata`` and 
+	``NXentry``) before closing the file itself. 
+
+
+How do I read a NeXus file?
+---------------------------------------------------------------------------------
+
+.. _Introduction-HowToRead:
+
+.. index:: file; read
+
+Reading a NeXus file is almost identical to writing one. Obviously, it is not
+necessary to call ``NXmakedata()`` 
+.. index:: NAPI
+since the item already exists, but it
+is necessary to call one of the query routines to find out the rank
+.. index:: rank
+and length of the data before allocating an array to store it.
+
+Here is part of a program to read the two-theta array from the file
+created by :ref:`ex.simple.write` above.
+
+Reading a simple NeXus file
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _ex.simple.read:
+
+.. include:: ../../../manual/examples/ex-c-read.c
+	:literal: 
+	:tab-width: 4
+.. index:: example; simple
+
+
+How do I browse a NeXus file?
+---------------------------------------------------------------------------------
+
+.. _Introduction-HowToBrowse:
+
+.. index:: file; browse
+
+NeXus files can also be viewed by a command-line browser,
+``NXbrowse``, which is included with the NeXus API (:ref:`Introduction-NAPI`).
+The following is an example session of using ``nxbrowse``
+.. index:: utility; ``nxbrowse``
+to view a data
+file from the LRMECS spectrometer at IPNS. The following commands 
+are used in :ref:`ex.NXbrowse.lrmecs` in this session (see
+the ``nxbrowse`` web page):
+
+Using ``NXbrowse``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _ex.NXbrowse.lrmecs:
+
+.. include:: ../../../manual/examples/ex-unix-using-nxbrowse.txt
+	:literal: 
+	:tab-width: 4
+.. index:: example; simple
+
+[line 1]
+	Start ``NXbrowse`` from the UNIX command 
+	line and open file ``lrcs3701.nxs`` from 
+	IPNS/LRMECS.
+[line 8] 
+	List the contents of the current group.
+[line 11]
+	Open the NeXus group ``Histogram1``.
+[line 23]
+	Print the contents of the NeXus data labelled ``title``.
+[line 41] 
+	Close the current group.
+[line 43] 
+	Quits ``NXbrowse``.
+
+The source code of ``NXbrowse`` [#]_
+provides an example of how to write a NeXus reader. 
+The test programs included in the NeXus API (:ref:`Introduction-NAPI`)
+may also be useful to study.
+
+.. [#] `https://svn.nexusformat.org/code/trunk/applications/NXbrowse/NXbrowse.c  <https://svn.nexusformat.org/code/trunk/applications/NXbrowse/NXbrowse.c>`_

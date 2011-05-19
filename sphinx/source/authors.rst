@@ -5,6 +5,8 @@ Documentation Authors
 
 .. index:: authors
 
+These people have made substantial contributions to the NeXus manual:
+
 * Ray Osborn, Argonne National Laboratory, ``<rosborn@anl.gov>``
 * Mark Koennecke, Paul Scherrer Institut, ``<Mark.Koennecke@psi.ch>``
 * Przemek Klosowski, U. of Maryland and NIST, ``<przemek.klosowski@nist.gov>``

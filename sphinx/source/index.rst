@@ -18,6 +18,7 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :numbered:
    
    volume1/index
    volume2/index

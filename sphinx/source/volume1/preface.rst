@@ -8,22 +8,19 @@ Preface
 With this edition of the manual, NeXus introduces a complete version
 of the documentation of the NeXus standard.  The content from the wiki
 has been converted, augmented (in some parts significantly), clarified,
-and indexed.  The 
-NeXus Definition Language (NXDL) is introduced now
-to define base classes and 
-application definitions.  
-NXDL replaces the previous method (meta-DTD) 
-to define NeXus classes.
+and indexed.  The NeXus Definition Language (NXDL) is introduced now
+to define base classes and application definitions.  
+NXDL replaces the previous method (meta-DTD) to define NeXus classes.
 NeXus base classes and instrument definitions
 are now assigned to one of three classifications: 
 
-1. *base classes* (that represent the components used 
+#. *base classes* (that represent the components used 
    to build a NeXus data file), 
-2. *application definitions* (used to define a minimum 
+#. *application definitions* (used to define a minimum 
    set of data for a specific purpose such as scientific data processing
    or an instrument definition),
    and
-3. *contributed definitions* (definitions and specifications
+#. *contributed definitions* (definitions and specifications
    that are in an incubation status before ratification by the NIAC).
    Additional examples have been added to respond to
    inquiry from the users of the NeXus standard about implementation
