@@ -42,8 +42,8 @@ intended to show the structure of the file rather than the data content.
 In some cases, where it is useful, some of the data is shown.
 Consider this prototype example:
 
-.. include:: ../../../manual/examples/examples-prototype.txt
-   :literal:
+.. literalinclude:: ../../../manual/examples/examples-prototype.txt
+   :linenos:
    :tab-width: 4
    
 Some words on the notation:

@@ -268,8 +268,8 @@ sets.  In the next example, a NeXus data file is shown as XML:
 ``verysimple.xml``: A very simple NeXus Data file (in XML)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. include:: ../../../manual/examples/verysimple.xml
-	:literal: 
+.. literalinclude:: ../../../manual/examples/verysimple.xml
+	:linenos: 
 	:tab-width: 4
 .. index:: example; very simple
 
@@ -281,8 +281,8 @@ a short Python program and NeXpy:
 ``verysimple.py``: Using NeXpy to write a very simple NeXus Data file (in HDF5)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. index:: example; very simple
-.. include:: ../../../manual/examples/verysimple.py
-	:literal: 
+.. literalinclude:: ../../../manual/examples/verysimple.py
+	:linenos: 
 	:tab-width: 4
 
 .. _Introduction-DataStorageObjects:
@@ -326,8 +326,8 @@ the simple NeXus file shown above.
 ``verysimple.nxdl.xml``: A very simple NeXus Definition Language (NXDL) file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. include:: ../../../manual/examples/verysimple.nxdl.xml
-	:literal: 
+.. literalinclude:: ../../../manual/examples/verysimple.nxdl.xml
+	:linenos: 
 	:tab-width: 4
 .. index:: example; very simple
 
@@ -370,8 +370,8 @@ Simple example of reading data using the NeXus API
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. index:: example; simple
-.. include:: ../../../manual/examples/ex-simple.c
-	:literal: 
+.. literalinclude:: ../../../manual/examples/ex-simple.c
+	:linenos: 
 	:tab-width: 4
 
 In this example, the program requests the value of the data that has
@@ -449,8 +449,8 @@ Writing a simple NeXus file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. index:: example; simple
-.. include:: ../../../manual/examples/ex-c-write.c
-	:literal: 
+.. literalinclude:: ../../../manual/examples/ex-c-write.c
+	:linenos: 
 	:tab-width: 4
 
 [line 6]
@@ -533,8 +533,8 @@ created by :ref:`ex.simple.write` above.
 Reading a simple NeXus file
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. include:: ../../../manual/examples/ex-c-read.c
-	:literal: 
+.. literalinclude:: ../../../manual/examples/ex-c-read.c
+	:linenos: 
 	:tab-width: 4
 .. index:: example; simple
 
@@ -560,8 +560,8 @@ the ``nxbrowse`` web page):
 Using ``NXbrowse``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. include:: ../../../manual/examples/ex-unix-using-nxbrowse.txt
-	:literal: 
+.. literalinclude:: ../../../manual/examples/ex-unix-using-nxbrowse.txt
+	:linenos: 
 	:tab-width: 4
 .. index:: example; simple
 
