@@ -9,16 +9,13 @@
     xmlns:xi="http://www.w3.org/2001/XInclude"
   >
 
-  <title>NeXus Tutorial</title>
-  
+  <title>Constructing NeXus Files and Application Definitions</title>
   <para>
-    In <xref linkend="Design"/>, we discussed the design of 
-    the NeXus format in general terms. In this chapter, we will 
-    take a different approach and follow an example of utilising 
-    the NeXus format for a fictional new instrument.
-    The WONI tutorial (<xref linkend="NXDL_Tutorial-WONI"/>) describes the steps
-    to prepare an NXDL specification for data from the WONI instrument.
+    In <xref linkend="Design"/>, we discussed the design of the NeXus format in general terms. 
+    In this section a more tutorial style introduction in how to construct a NeXus file is 
+    given. As an example a hypothetical instrument named WONI will be used. 
   </para>
+  
   <note><para>
       If you are looking for a tutorial on reading or writing NeXus data files
       using the NeXus API, consult the 
@@ -67,6 +64,115 @@
     </figure>
   </section>
   
+  <section>
+   <title>Constructing a NeXus file for WONI</title>
+   <para>
+     The starting point for a NeXus file for  WONI will be an empty basic NeXus file hierarchy as documented in
+     figure <xref linkend= "FigShell"/>. In order to arrive at a full neXus file the following steps are required:
+         <orderedlist>
+          <listitem>
+            <para>
+              For each instrument component, decide which parameters need to be stored
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Map the component parameters to NeXus groups and parameters and add the components to the 
+              NXinstrument hierarchy
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Decide what needs to go into NXdata
+            </para>
+          </listitem>
+          <listitem>
+            <para>
+              Fill the NXsample and NXmonitor groups
+            </para>
+          </listitem>
+        </orderedlist>
+      </para>
+   <figure xml:id="FigShell">
+   <title>Basic structure of a NeXus file</title>
+        <programlisting linenumbering="numbered">
+        <xi:include href="NXshell.txt" parse="text"/>
+      </programlisting>
+   </figure>
+      
+   <section>
+   <title>Decide which parameters need to be stored</title>
+   <para>
+       Now the various groups of this empty NeXus file shell need to be filled. The next step is to look at a 
+       design drawing of WONI. Identify all the instrument components like collimators, detectors, monochromators etc. 
+       For each component decide which values need to be stored. As NeXus aims to describe the experiment as good as 
+       possible, strive to capture as much information as practical.   
+       </para>
+   </section> 
+   <section>
+   <title>Mapping parameters to NeXus</title>
+     <para>
+       With the list of parameters to store for each component, consult the reference manual section on the NeXus 
+       base classes. You will find that for each of your instruments components there will be a suitable NeXus base class.
+       Add this base class together with a name as a group under NXinstrument in your NeXus file hierarchy. Then consult the 
+       possible parameter names in the NeXus base class and match them with the parameters you wish to store for your 
+       instruments components.  
+     </para>   
+     <para>
+      As an example, consider the monochromator. You may wish to store: the wavelength, the d-value of the reflection used,
+       the type of the monochromator and its angle towards the incoming beam. The reference manual tells you that NXcrystal 
+       is the right base class to use. Suitable fields for your parameters can be found in there to. After adding them to 
+       the basic NeXus file the file looks like in figure <xref linkend="NXshellMono"/> 
+     </para>
+  <figure xml:id="FigShellMono">
+   <title>Basic structure of a NeXus file with a monochromator added</title>
+        <programlisting linenumbering="numbered">
+        <xi:include href="NXshellMono.txt" parse="text"/>
+      </programlisting>
+   </figure>
+   <para>
+      If a parameter or even a whole group is missing in order to describe your experiment, do not despair! Contact the 
+      NIAC and suggest to add the group or parameter. Give a little documentation what it is for. The NIAC will check that your 
+       suggestion is no duplicate and sufficiently documented and will then proceed to enhance the base classes with your suggestion. 
+   </para>
+   <para>
+    A more elaborate example of the mapping process is given in the section <xref linkend="xml:id=NXDL_Tutorial-CreatingNxdlSpec"/>.
+   </para>
+   </section>     
+   <section>
+   <title>Decide on NXdata</title>
+   <para>
+    The NXdata group is supposed to contain the data required to put up a quick plot. For WONI this is a plot of counts versus 
+    two theta (polar_angle in NeXus) as can be seen in <xref linkend="FigWoniPowderData"/>. Now, in NXdata, create links to the appropriate 
+    data items in the NXinstrument hierarchy. In the case of WONI, both parameters live in the detector:NXdetector group.  
+   </para>
+   </section>
+
+   <section>
+   <title>Fill in auxiliary Information</title>
+   <para>
+     Look at the section on NXsample in the NeXus reference  manual. Choose appropriate parameters to store for 
+     your samples. Probably at least the name will be needed.  
+   </para>
+   <para>
+     In order to normalize various experimental runs against each other it is necessary to know about the 
+     counting conditions and especially the monitor counts of the monitor used for normalization. The NeXus convention 
+     is to store such information in a control:NXmonitor group at NXentry level. Consult the reference for NXmonitor for 
+     field names. If additional monitors exist within your experiment, they wiull be stored as additional NXmonitor groups at 
+     entry level. 
+   </para>
+   <para>
+    Consult the documentation for NXentry in order to find out under which names to store information such as 
+    titles, user names, experiment times etc. 
+   </para>
+   
+   <para>
+    A more elaborate example of this process can be found in the following section on creating an application definition.
+   </para>
+   </section>
+
+  </section>
+  
   <!-- 
     ======================================
     section: Creating a NXDL Specification
@@ -74,6 +180,13 @@
   -->
   <section xml:id="NXDL_Tutorial-CreatingNxdlSpec">
     <title>Creating a NXDL Specification</title>
+    <para>
+      An NXDL specification for a NeXus file is required if you desire to standardize  NeXus files from 
+      various sources. Another name for a NXDL description is application definition. 
+      A NXDL specification can be used to verify NeXus files to conform to the standard encapsulated 
+      in the application definition. The process for constructing a NXDL specification is similar to the one described 
+      above for the construction of NeXus files. 
+    </para>
     <para>
       One easy way to describe how to store data in the NeXus class 
       structure and to create a NXDL specification is to work through 
