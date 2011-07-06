@@ -26,20 +26,28 @@
         facilitate the reading and writing of NeXus files. Those writing 
         applications to produce NeXus files are encouraged to use the API 
         in order to ensure compliance with the NeXus standard. The API 
-        supports the reading and writing of HDF4, HDF5, and, since version 
-        3.0.0, XML files.
+        supports the reading and writing of HDF4, HDF5, and XML files.
     </para>
     <para>
         The core routines have been written in C but wrappers are 
-        available for a number of other languages including Fortran 77, 
-        Fortran 90, Java, and IDL (with Python and others under development).
+        available for a number of other languages including C++, Fortran 77, 
+        Fortran 90, Java, Python and IDL.
         The API makes the reading and writing of NeXus files transparent; 
         the user doesn't even need to know the underlying format when 
         reading a file since the API calls are the same. 
     </para>
     <para>
-        More (and up-to-date) information about the NeXus Application Programming Interface
-        is available on-line in PDF form (<link
+        More in-depth and up-to-date information about the NeXus Application Programming Interface
+ 	for the various language backends        is available on-line from
+<link xmlns:xlink="http://www.w3.org/1999/xlink" 
+            xlink:href="http://download.nexusformat.org/"
+            >NAPI doxygen documentation: <code
+                >http://download.nexusformat.org/</code
+            ></link>
+    </para>
+    <para>
+
+	The  (<link
             xmlns:xlink="http://www.w3.org/1999/xlink" 
             xlink:href="http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf"
             ><code>NeXusIntern.pdf</code></link><footnote><para><link
@@ -48,16 +56,8 @@
                 ><code
                     >http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf</code
                 ></link></para></footnote>)
-        and in documentation extracted 
-        from the source code in the NeXus code repository 
-        using doxygen.<footnote><para><link
-            xmlns:xlink="http://www.w3.org/1999/xlink" 
-            xlink:href="http://download.nexusformat.org/doxygen"
-            >NAPI doxygen documentation: <code
-                >http://download.nexusformat.org/doxygen</code
-            ></link></para></footnote>        
-        Likely this is only interesting for experienced
-        programmers who wish to hack the NAPI.
+        document describes the internal workings of the NeXus-API. You are very welcome to read it,
+	but it will not be of much use if all you want is to read and write files using the NAPI.
     </para>
 
     <section xml:id="NAPI-Purpose">
@@ -67,10 +67,9 @@
             <secondary>purpose</secondary>
         </indexterm>
         <para>
-            The NeXus Application Program Interface is a suite of subroutines, 
-            written in C but with wrappers in Fortran 77 and 90. 
-            The subroutines call HDF routines to read and write the NeXus 
-            files with the correct structure. An API serves a number of useful purposes:
+            The NeXus Application Program Interface 
+            call routines in the appropriate backend (HDF4, HDF5 or XML) to read and write files
+            with the correct structure. The API serves a number of purposes:
             <orderedlist>
                 <listitem>
                     <para>
@@ -85,13 +84,6 @@
                 </listitem>
                 <listitem>
                     <para>
-                        It allows the development of sophisticated input/output 
-                        features such as automatic unit conversion. This has 
-                        not been implemented yet.
-                    </para>
-                </listitem>
-                <listitem>
-                    <para>
                         It hides the implementation details of the format. 
                         In particular, the API can read and write HDF4, HDF5, 
                         and XML files using the same routines.
@@ -100,38 +92,9 @@
             </orderedlist>
             <note>
                 <para>
-                  For these reasons, we request that all NeXus files are written 
-                  using the supplied API.<footnote>
-                      <para>
-                          This statement reflects a decision of major importance.
-                          There is always strong debate whether to provide a clear 
-                          description of the implementation and encourage the 
-                          community to build an API in the language of preference
-                          <emphasis>or</emphasis>
-                          provide a robust suite of API bindings in popular languages that
-                          ensure the implementation is correct.
-                          With this statement, it is clear NeXus has chosen to provide 
-                          APIs in several popular languages.  See the installation kits
-                          <link 
-                              xlink:href="http://download.nexusformat.org/kits"
-                              ><literal
-                                  >http://download.nexusformat.org/kits</literal
-                              ></link>
-                          for more details.
-                      </para>
-                  </footnote>
-                  <indexterm>
-                      <primary>NAPI</primary>
-                      <secondary>purpose</secondary>
-                  </indexterm>
-                  We cannot be sure that anything written 
-                  using the underlying HDF API (bypassing the NAPI)
-                  <indexterm>
-                      <primary>NAPI</primary>
-                      <secondary>bypassing</secondary>
-                  </indexterm>
-                  will be recognized by NeXus-aware 
-                  utilities. 
+		While it is possible to write NeXus compilant data files using 
+		a supported on-disk backend directly, we strongly encourage using 
+                the supported NeXus-API.  This ensures the maximum compatibily.
                 </para>
             </note>
         </para>
@@ -145,15 +108,15 @@
         </indexterm>
         <para>
             The core API provides the basic routines for reading, writing 
-            and navigating NeXus files. It is designed to be modal; there 
-            is a hidden state that determines which groups and data sets 
-            are open at any given moment, and subsequent operations are 
-            implicitly performed on these entities. This cuts down the 
-            number of parameters to pass around in API calls, at the 
-            cost of forcing a certain pre-approved mode d'emploi. This 
-            mode d'emploi will be familiar to most: it is very similar 
-            to navigating a directory hierarchy; in our case, NeXus 
-            groups are the directories, which contain data sets 
+            and navigating NeXus files. Operations are performed using a handle
+	    that keeps a record of its current position in the file hierarchy.
+            All are read or write requests are then
+            implicitly performed on the currently 'open' entity. This limits
+            number of parameters that need to be passed to API calls, at the 
+            cost of forcing a certain mode of operation.
+            It is very similar 
+            to navigating a directory hierarchy; NeXus 
+            groups are the directories, which can contain data sets 
             and/or other directories.
         </para>
         <para>
@@ -186,7 +149,7 @@
                 </listitem>
                 <listitem>
                     <para>
-                        Routines to handle memory allocation.
+                        Routines to handle memory allocation. (Not required in all language bindings.)
                     </para>
                 </listitem>
             </itemizedlist>
@@ -220,10 +183,10 @@
                 <secondary>f77</secondary>
             </indexterm>
             <para>
-                Wrapper routines to interface the Fortran and C code have been developed. 
-                The routines have the same names and argument lists as the corresponding 
-                C routines, although we have added extra routines for the input/output 
-                of character data and attributes. Care must be taken to ensure enough 
+                The Fortran routines have the same names and argument lists as the corresponding 
+                C routines, which they call using wrappers.
+		Some extra routines for handling input/output 
+                of character data and attributes have been added. Care must be taken to ensure enough 
                 space is allocated for the input/output operations being performed.
             </para>
             <para>
