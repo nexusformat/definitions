@@ -1,0 +1,48 @@
+.. $Id$
+
+###############################################
+Cheatsheet
+###############################################
+
+This is a cheat sheet and will be removed later.
+
+======   =================================================
+symbol   description
+======   =================================================
+`#`      with overline, for parts
+`*`      with overline, for chapters
+`=`      for sections
+`-`      for subsections
+`^`      for subsubsections
+`"`      for paragraphs
+======   =================================================
+
+
+Symbols to mark Sections
+========================================================================
+
+.. sidebar:: Sidebar Title
+   :subtitle: Optional Sidebar Subtitle
+
+   This is a demo of a sidebar.
+   Subsequent indented lines comprise
+   the body of the sidebar, and are
+   interpreted as body elements.
+
+Enjoy inline math such as: :math:`E=mc^2`
+using LaTeX markup.  You will need the ``matplotlib``
+package in your Python.  There is also separate math.
+
+.. ! this is a candidate for conditional compilation
+   make html      needs two backslashes while
+   make latexpdf  needs one backslash
+
+.. math::
+
+	\tilde I(Q) = {2 \over l_o} \ \int_0^\infty I(\sqrt{(q^2+l^2)}) \ dl
+
+This was possible with this definition
+in `conf.py`::
+
+   extensions = ['sphinx.ext.pngmath', 'sphinx.ext.ifconfig']
+   extensions.append( 'matplotlib.sphinxext.mathmpl' )
