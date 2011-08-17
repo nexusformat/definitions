@@ -23,7 +23,5 @@ of neutron, x-ray, and muon data.
    :maxdepth: 1
    
    preface
-   volume1/index
-   volume2/index
-   authors
    contents
+   authors
