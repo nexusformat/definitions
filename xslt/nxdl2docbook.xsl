@@ -27,11 +27,6 @@ Usage:
 	xmlns:db="http://docbook.org/ns/docbook"
     >
 
-    <!-- 
-        The CDATA section does not work the same when this XSLT is "xsl:import"ed.
-        Modify the Python code to provide the proper syntax.
-    -->
-    <!-- TODO  2010-12-21,PRJ:  Is the CDATA comment above archaic?  Remove it?  -->
     <xsl:output method="xml" indent="yes" version="1.0" encoding="UTF-8"/>
 
     <!-- 
@@ -100,6 +95,7 @@ Usage:
     <xsl:template match="nx:definition">
         <xsl:element name="section"><!-- root element -->
             <xsl:attribute name="xml:id"><xsl:value-of select="@name"/></xsl:attribute>
+            <xsl:attribute name="xreflabel"><xsl:value-of select="@name"/></xsl:attribute>
             <xsl:attribute name="xmlns">http://docbook.org/ns/docbook</xsl:attribute>
             <!-- 
                 These namespaces will be added to the document (by xsltproc) if they are used.
@@ -370,13 +366,21 @@ Usage:
     
     <xsl:template match="nx:group" mode="group-include">
         <!-- show a class included by this class  -->
-        <xsl:if test="position()>1">, </xsl:if>        <!-- comma-separated list -->
+        <xsl:if test="position()>1">, 
+            <xsl:comment/><!-- tricks XSLT to start a new line -->
+        </xsl:if>        <!-- comma-separated list -->
+	    <!-- TODO: refer to a DocBook link instead -->
+        <xsl:element name="xref">
+            <xsl:attribute name="linkend"><xsl:value-of select="@type"/></xsl:attribute>
+        </xsl:element>
+        <!--
         <xsl:element name="link">
             <xsl:attribute name="xlink:href"
                 >#<xsl:value-of select="@type"/>
             </xsl:attribute>
             <xsl:value-of select="@type"/>
         </xsl:element>
+        -->
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
@@ -554,7 +558,7 @@ Usage:
                     <xsl:when test="count(nx:group)">
                         <listitem>
                             <para>
-                                <xsl:apply-templates 
+				<xsl:apply-templates 
                                     mode="group-include"
                                     select="  //nx:group[generate-id(.) = generate-id(key('group-include', @type)[1])]  " >
                                     <!-- advice: http://sources.redhat.com/ml/xsl-list/2000-07/msg00458.html -->
