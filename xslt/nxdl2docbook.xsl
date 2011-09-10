@@ -369,18 +369,9 @@ Usage:
         <xsl:if test="position()>1">, 
             <xsl:comment/><!-- tricks XSLT to start a new line -->
         </xsl:if>        <!-- comma-separated list -->
-	    <!-- TODO: refer to a DocBook link instead -->
         <xsl:element name="xref">
             <xsl:attribute name="linkend"><xsl:value-of select="@type"/></xsl:attribute>
         </xsl:element>
-        <!--
-        <xsl:element name="link">
-            <xsl:attribute name="xlink:href"
-                >#<xsl:value-of select="@type"/>
-            </xsl:attribute>
-            <xsl:value-of select="@type"/>
-        </xsl:element>
-        -->
     </xsl:template>
     
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
