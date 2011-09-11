@@ -617,14 +617,14 @@ Usage:
         <example><!-- as rendered by nxdlformat.xsl -->
             <title>Basic structure of <code
                 ><xsl:value-of select="/nx:definition/@name"/></code></title>
-            <para>
-                <programlisting linenumbering="numbered"
+            <para
+                ><programlisting linenumbering="numbered"
                     ><xsl:element name="xi:include"
                         ><xsl:attribute name="href"><xsl:value-of 
                             select="/nx:definition/@name"/>.txt</xsl:attribute
                         ><xsl:attribute name="parse">text</xsl:attribute
-                    ></xsl:element></programlisting>
-            </para>
+                    ></xsl:element></programlisting
+            ></para>
         </example>
     </xsl:template>
     
