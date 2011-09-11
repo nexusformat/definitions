@@ -660,7 +660,7 @@ How NeXus describes the order of operations to apply has not yet been decided up
 is to use a special field at each instrument component, named *transform* which describes the 
 operations to apply to get the component into its position as a list of colon separated paths to the operations 
 to apply relative to the current `NXentry`. For paths in the same group, only the name need to be given. Detectors 
-may need two such fields: the transfrom field to get the get  the detector as a whole into its position 
+may need two such fields: the transfrom field to get the detector as a whole into its position 
 and a *transform_pixel* field which describes how the absolute position of a detector pixel 
 can be calculated.    
 
@@ -678,3 +678,13 @@ This is also a nice example of the application of transformation matrices:
 
 #. This also moves the direction of the *z* vector. 
    Along which you translate the component to place by distance.
+
+.. section: Rules for structuring data in files
+   <xi:include href="rules.xml"/>
+    
+.. section: Rules for storing individual data items
+   xi:include href="datarules.xml"/>
+    
+    
+.. section: Short mention of the Physical File formats
+   <xi:include href="fileformat.xml"/>
