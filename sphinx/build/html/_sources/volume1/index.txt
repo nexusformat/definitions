@@ -15,3 +15,4 @@ Contents:
    :numbered:
    
    introduction
+   design

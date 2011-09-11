@@ -184,19 +184,9 @@ history (not converted yet)
 fileformat (not converted yet)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. _design:
-
-design (not converted yet)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
 .. _Utilities:
 
 utilities (not converted yet)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _design-groups:
-
-design-groups (not converted yet)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _nxdl_tutorial-creatingnxdlspec:
@@ -204,18 +194,27 @@ design-groups (not converted yet)
 nxdl_tutorial-creatingnxdlspec (not converted yet)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. _fig.simple-example:
+.. _nxdata-structure:
 
-
-fig.simple-example (not converted yet)
+nxdata-structure (not converted yet)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-.. _my-reference-label:
+.. _volume2.NXDL.section:
+
+volume2.NXDL.section (not converted yet)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _example.data-linking:
+
+example.data-linking (not converted yet)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. _cross-reference example:
 
 Section to cross-reference
 --------------------------
 
 This is the text of the section.
 
-It refers to the section itself, see :ref:`my-reference-label`.
+It refers to the section itself, see :ref:`cross-reference example`.
 What about a section on another page, such as :ref:`footnote references`?
