@@ -13,6 +13,7 @@ Contents
    volume1/index
    volume2/index
    cheatsheet
+   markup-spec
 
 
 Indices and tables

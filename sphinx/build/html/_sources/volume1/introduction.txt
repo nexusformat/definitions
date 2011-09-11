@@ -44,15 +44,15 @@ The NeXus data format has four components:
 
 .. index:: NeXus
 
-#.	A set of *design principles*
+#.	:ref:`Introduction-DesignPrinciples`
 	to help people understand what is in the data files.
-#.	A set of *data storage objects*
+#.	:ref:`Introduction-DataStorageObjects`
 	(base classes and application definitions) to allow 
 	the development of more portable analysis software.
-#.	A set of *subroutines*
+#.	:ref:`Introduction-SetOfSubroutines`
 	(utilities) to make it easy to read and write NeXus data files.
-#.	*Scientific Community*
-	to provide the scientific data, advice, and continued involvement
+#.	:ref:`Scientific_Community`
+	provides the scientific data, advice, and continued involvement
 	with the NeXus standard. NeXus provides a forum for the scientific
 	community to exchange ideas in data storage.
 
@@ -69,7 +69,7 @@ is described briefly in :ref:`Introduction-NAPI`.
 documentation.)
 
 The principles guiding the design and implementation of the NeXus standard
-are described in :ref:`Design` .
+are described in :ref:`Design`.
 
 Base classes and applications,
 which comprise the data storage objects used in NeXus data files,
