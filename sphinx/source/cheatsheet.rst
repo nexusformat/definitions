@@ -21,7 +21,7 @@ symbol   description
 ======   =================================================
 
 
-Symbols to mark Sections
+Typesetting Math and Equations
 +++++++++++++++++++++++++++++++++
 
 Enjoy inline math such as: :math:`E=mc^2`
@@ -168,7 +168,7 @@ This is the correct link: :ref:`NeXus User Manual`.
 Missing Links
 ++++++++++++++++++++++
 
-These sections show up as missing links in :ref:`nexus-introduction`.
+These sections show up as missing links.
 
 Can you find the `history`_ link below?
 What about the history_ link below?  

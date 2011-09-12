@@ -6,8 +6,6 @@
 NeXus Design
 ***************************************************************************
 
-.. ! index:: 
-
 This chapter actually defines the rules to use for 
 writing valid NeXus files. An explanation of NeXus objects 
 is followed by the definition of NeXus coordinate systems, 
@@ -700,7 +698,8 @@ This is also a nice example of the application of transformation matrices:
 
     
 .. section: Rules for storing individual data items
-.. .. include:: datarules.inc
+
+.. include:: datarules.inc
     
     
 .. section: Short mention of the Physical File formats
