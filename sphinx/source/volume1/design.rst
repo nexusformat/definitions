@@ -680,11 +680,12 @@ This is also a nice example of the application of transformation matrices:
    Along which you translate the component to place by distance.
 
 .. section: Rules for structuring data in files
-   <xi:include href="rules.xml"/>
+.. .. include:: rules.inc
+
     
 .. section: Rules for storing individual data items
-   xi:include href="datarules.xml"/>
+.. .. include:: datarules.inc
     
     
 .. section: Short mention of the Physical File formats
-   <xi:include href="fileformat.xml"/>
+.. .. include:: fileformat.inc

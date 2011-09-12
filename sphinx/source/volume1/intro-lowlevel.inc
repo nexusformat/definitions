@@ -1,4 +1,4 @@
-.. $Id: intro-lowlevel.inc 845 2011-05-19 14:27:12Z Pete Jemian $
+.. $Id$
   included by introduction.rst
 
 A Set of Low-Level File Formats

@@ -502,8 +502,8 @@ in the NeXus code repository. [#]_
 Likely this is only interesting for experienced
 programmers who wish to hack the NAPI.
 
-.. [#] `http://download.nexusformat.org  <http://download.nexusformat.org>`_
-.. [#] `http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf  <http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf>`_
+.. [#] http://download.nexusformat.org
+.. [#] http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf
 
 
 .. _Introduction-HowToWrite:
@@ -754,4 +754,4 @@ provides an example of how to write a NeXus reader.
 The test programs included in the NeXus API (:ref:`Introduction-NAPI`)
 may also be useful to study.
 
-.. [#] `https://svn.nexusformat.org/code/trunk/applications/NXbrowse/NXbrowse.c  <https://svn.nexusformat.org/code/trunk/applications/NXbrowse/NXbrowse.c>`_
+.. [#] https://svn.nexusformat.org/code/trunk/applications/NXbrowse/NXbrowse.c
