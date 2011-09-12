@@ -8,7 +8,6 @@ Contents
 
 .. toctree::
    :maxdepth: 2
-   :numbered:
    
    preface
    volume1/index

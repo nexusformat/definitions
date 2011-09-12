@@ -122,9 +122,8 @@ Some words on the notation:
    offer for display on a default plot.)
 
 
-==============================================================================
 Class path specification
-==============================================================================
+-------------------------------------------------
 
 In some places in this documentation, a path may be shown
 using the class types rather than names.  For example:

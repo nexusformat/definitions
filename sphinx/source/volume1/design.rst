@@ -49,29 +49,45 @@ Before discussing the design of NeXus in greater detail
 it is necessary to define the objects and terms 
 used by NeXus. These are:
 
-*Groups*
+:ref:`Design-Groups`
     Group data fields and other groups together. 
     Groups represent levels in the NeXus hierarchy
 
-*Data fields*
+:ref:`Design-Fields`
     Multidimensional arrays and scalars 
     representing the actual data to be stored
 
-*Attributes*
+:ref:`Design-Attributes`
     Additional metadata which can be assigned 
     to groups or data fields
 
-*Links*
+:ref:`Design-Links`
     Elements which point to data stored in 
     another place in the file hierarchy
 
-*NeXus Classes*
+:ref:`Design-NeXusClasses`
     Dictionaries of names possible in the 
     various types of NeXus groups
 
-*Application Definitions*
+:ref:`Design-NeXusApplications`
     Describe the content of a NeXus file 
     for a particular usage case
+
+:ref:`Design-CoordinateSystem`
+    Coordinate systems are used to describe the
+    positions and orientations of objects.
+
+Rules
+    Rules for Structuring Information in NeXus Files
+
+Data Rules
+    This section describes the rules which apply 
+    for storing single data fields in data files.
+
+File Formats
+    This section describes how NeXus structures 
+    are mapped to features of the underlying 
+    physical file format.
 
 In the following sections these elements of 
 NeXus files will be defined in more detail. 
@@ -142,7 +158,7 @@ names, which must be unique in each field.
 
 .. _table.ExampleAttributes:
 
-NeXus Data Attributes
+Example NeXus Data Attributes
 ---------------------------------
 
 For the full specification of attributes, 
@@ -254,7 +270,7 @@ a more descriptive representation of the concept of linking.
 
 .. _fig.data-linking:
 
-Linking in a NeXus file.
+Linking in a NeXus file
 -----------------------------------
 
 .. figure:: ../../../manual/img/data-linking.png
@@ -265,7 +281,7 @@ Linking in a NeXus file.
 
 .. _Design-NeXusClasses:
 
-NeXus Base Classes
+NeXus Classes
 ++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. index:: NXDL
@@ -348,7 +364,7 @@ are documented in the reference manual.
 .. _NXdata-facilitates-TheDefaultPlot:
 
 `NXdata` Facilitates Automatic Plotting
-++++++++++++++++++++++++++++++++++++++++++++++++
+----------------------------------------------
 
 .. index:: NeXus basic motivation; default plot
 .. index:: automatic plotting, NeXus basic motivation, default plot

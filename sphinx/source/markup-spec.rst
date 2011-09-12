@@ -8,8 +8,15 @@ Contact: dgoodger@bigfoot.com
 Version: 0.2
 Date: 2001-05-29
 
-.. sidebar:
-   source: http://mail.python.org/pipermail/doc-sig/2001-June/001860.html
+.. sidebar:: Help for reST authors
+   
+   This 
+   `document <http://mail.python.org/pipermail/doc-sig/2001-June/001860.html>`_,
+   while old, presents information useful
+   to authors of reST documents, such as this manual.
+   
+   This will be removed in the released 
+   version of the NeXus documentation.
 
 reStructuredText_ is plain text that uses simple and intuitive constructs
 to indicate the structure of a document. These constructs are equally easy
