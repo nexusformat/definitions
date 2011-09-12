@@ -22,6 +22,6 @@ of neutron, x-ray, and muon data.
 .. toctree::
    :maxdepth: 1
    
-   preface
    contents
-   authors
+   cheatsheet
+   markup-spec

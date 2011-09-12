@@ -10,10 +10,10 @@ Contents
    :maxdepth: 2
    :numbered:
    
+   preface
    volume1/index
    volume2/index
-   cheatsheet
-   markup-spec
+   authors
 
 
 Indices and tables
