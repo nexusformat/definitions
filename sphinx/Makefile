@@ -34,7 +34,15 @@ help:
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
 clean:
+	-rm -rf $(BUILDDIR)/doctrees $(BUILDDIR)/latex
+
+realclean:
 	-rm -rf $(BUILDDIR)/*
+
+complete: html latexpdf
+	-cp -f $(BUILDDIR)/latex/*.pdf $(BUILDDIR)/html
+	@echo
+	@echo "Build finished. The HTML and PDF pages are in $(BUILDDIR)/html."
 
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
@@ -97,8 +105,7 @@ latex:
 	@echo "Run \`make' in that directory to run these through (pdf)latex" \
 	      "(use \`make latexpdf' here to do that automatically)."
 
-latexpdf:
-	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
+latexpdf: latex
 	@echo "Running LaTeX files through pdflatex..."
 	make -C $(BUILDDIR)/latex all-pdf
 	@echo "pdflatex finished; the PDF files are in $(BUILDDIR)/latex."
