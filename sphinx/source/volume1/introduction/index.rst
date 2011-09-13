@@ -35,6 +35,6 @@ programs to read and write NeXus files.
 
 .. toctree::
 
-    intro/whatisnexus
+    whatis/index
 	motivations
 	intro/NAPI

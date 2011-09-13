@@ -14,5 +14,5 @@ Contents:
    :maxdepth: 2
    :numbered:
    
-   introduction
-   design
+   introduction/index
+   design/index
