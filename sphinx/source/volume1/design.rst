@@ -693,14 +693,8 @@ This is also a nice example of the application of transformation matrices:
 #. This also moves the direction of the *z* vector. 
    Along which you translate the component to place by distance.
 
-.. section: Rules for structuring data in files
-.. .. include:: rules.inc
+.. toctree::
 
-    
-.. section: Rules for storing individual data items
-
-.. include:: datarules.inc
-    
-    
-.. section: Short mention of the Physical File formats
-.. .. include:: fileformat.inc
+	rules
+	datarules
+	fileformat
