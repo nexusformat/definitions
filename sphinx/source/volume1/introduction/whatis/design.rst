@@ -12,13 +12,13 @@ NeXus data files contain four types of entity:
 data groups, data fields, attributes, and links. 
 See :ref:`Design-Groups` for more details.
 
-1. Data Groups
+1. :ref:`Design-Groups`
 	*Data groups* are like folders that can contain 
 	a number of fields and/or other groups.
 
 .. index:: data objects; groups
 
-2. Data Fields
+2. :ref:`Design-Fields`
 	*Data fields*
 	can be scalar values or multidimensional arrays of a
 	variety of sizes (1-byte, 2-byte, 4-byte, 8-byte) and types
@@ -34,7 +34,7 @@ See :ref:`Design-Groups` for more details.
 .. index:SDS
 .. see also - data objects, fields
 
-3. Data Attributes
+3. :ref:`Design-Attributes`
 	Extra information required to
 	describe a particular group or field, 
 	such as the data units,
@@ -44,7 +44,7 @@ See :ref:`Design-Groups` for more details.
 .. index:: attributes; data
 .. index:: data objects; attributes
 
-4. Links
+4. :ref:`Design-Links`
 	Links are used to reference the plottable data
 	from ``NXdata`` when the data is provided in 
 	other groups such as ``NXmonitor`` or ``NXdetector``.
@@ -70,7 +70,7 @@ represented as a tree structure.
 
 .. index:: hierarchy; example NeXus data file
 
-.. figure:: ../../../manual/img/Hierarchy.png
+.. figure:: ../../../../../manual/img/Hierarchy.png
 	:width: 300 pt
 	:alt: example NeXus data file hierarchy
 
@@ -146,7 +146,7 @@ complete list can be found in the NeXus Design section (:ref:`NeXus-Design`).
 	measurement, such as flight paths, collimations, chopper
 	frequencies, etc.
 
-.. figure:: ../../../manual/img/NXinstrument.png
+.. figure:: ../../../../../manual/img/NXinstrument.png
 	:width: 200 pt
 	:alt: example NeXus data file hierarchy
 
@@ -172,7 +172,7 @@ read this simple example.)
 
 .. _fig.simple-example:
 
-.. figure:: ../../../manual/img/Simple.png
+.. figure:: ../../../../../manual/img/Simple.png
 	:width: 250 pt
 	:alt: Simple Data File Example figure
 
@@ -238,6 +238,6 @@ a short Python program and NeXpy:
 ``verysimple.py``: Using NeXpy to write a very simple NeXus Data file (in HDF5)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. index:: example; very simple
-.. literalinclude:: ../../../../manual/examples/verysimple.py
+.. literalinclude:: ../../../../../manual/examples/verysimple.py
 	:linenos: 
 	:tab-width: 4

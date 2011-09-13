@@ -1,5 +1,7 @@
 .. $Id$
 
+.. TODO: subdivide this file
+
 ..  _NeXus-Design:
 
 ***************************************************************************
@@ -75,14 +77,14 @@ used by NeXus. These are:
     Coordinate systems are used to describe the
     positions and orientations of objects.
 
-Rules
-    Rules for Structuring Information in NeXus Files
+:ref:`Rules`
+    This section describes *where to place data* within
+	a NeXus data file.
 
-Data Rules
-    This section describes the rules which apply 
-    for storing single data fields in data files.
+:ref:`DataRules`
+    This section describes *how to store data* in a NeXus data file.
 
-File Formats
+:ref:`Fileformat`
     This section describes how NeXus structures 
     are mapped to features of the underlying 
     physical file format.
@@ -271,7 +273,7 @@ a more descriptive representation of the concept of linking.
 Linking in a NeXus file
 -----------------------------------
 
-.. figure:: ../../../manual/img/data-linking.png
+.. figure:: ../../../../manual/img/data-linking.png
 	:width: 400 pt
 
 	Linking in a NeXus file.
@@ -534,7 +536,7 @@ illustrated in figure :ref:`fig.mcstasccord`.
 
 .. _fig.mcstasccord:
 
-.. figure:: ../../../manual/img/mcstascoord.png
+.. figure:: ../../../../manual/img/mcstascoord.png
 	:width: 400 pt
 
 	The McStas Coordinate System
@@ -606,7 +608,7 @@ This situation is shown in figure
 
 .. _fig.polar-geometry-figure:
 
-.. figure:: ../../../manual/img/polplane.png
+.. figure:: ../../../../manual/img/polplane.png
 	:width: 200 pt
 
 	NeXus Simple (Spherical Polar) Coordinate System
@@ -694,6 +696,7 @@ This is also a nice example of the application of transformation matrices:
    Along which you translate the component to place by distance.
 
 .. toctree::
+	:maxdepth: 1
 
 	rules/index
 	datarules

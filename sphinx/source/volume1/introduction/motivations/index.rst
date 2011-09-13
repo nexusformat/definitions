@@ -67,11 +67,8 @@ Basic motivations for the NeXus standard
 The NeXus API was released in late 1997.  
 Basic motivations for this standard were:
 
-* :ref:`SimplePlotting`
-* :ref:`UnifiedFormat`
-* :ref:`DefinedDictionary`
-
 .. toctree::
+	:maxdepth: 1
 
 	plotting
 	unified

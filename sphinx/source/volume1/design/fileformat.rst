@@ -84,10 +84,10 @@ group. Further group attributes become XML attributes. An example of a
 NeXus group element in XML:
 
 .. code-block:: text
-   :linenos:
+	:linenos:
 
-		<NXentry name="entry">
-		</NXentry>
+	<NXentry name="entry">
+	</NXentry>
 
 .. index:: dimension
 
@@ -97,14 +97,14 @@ actual data is stored as ``PCDATA`` [#]_ in the element. An example of two
 NeXus data elements in XML:
 
 .. code-block:: text
-   :linenos:
+	:linenos:
 
-		<mode NAPItype="NX_CHAR[7]">
-			monitor
-		</mode>
-		<counts NAPItype="NX_INT32[4]">
-			21 456  127876 319
-		</counts>
+	<mode NAPItype="NX_CHAR[7]">
+		monitor
+	</mode>
+	<counts NAPItype="NX_INT32[4]">
+		21 456  127876 319
+	</counts>
 
 
 .. [#] ``PCDATA`` is the XML term for 

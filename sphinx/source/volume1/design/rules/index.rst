@@ -30,33 +30,29 @@ figure <link xlink:href="#table.RawData">Raw Data</link> are provided.
 
 Content of a Raw Data ``NXentry`` Group
 ---------------------------------------------
-
-.. index:: 
       
-An example raw data hierarchy is 
-shown in the next figure
-(only showing the relevant parts of the data hierarchy).
-In the example shown, the ``data`` field in the ``NXdata`` group
-is linked to the 2-D detector data (a 512x512 array of 32-bit integers)
-which has the attribute ``signal=1``.
+An example raw data hierarchy is shown in the next figure (only showing 
+the relevant parts of the data hierarchy). In the example shown, the 
+``data`` field in the ``NXdata`` group is linked to the 2-D detector data 
+(a 512x512 array of 32-bit integers) which has the attribute ``signal=1``. 
 Note that ``[,]`` represents a 2D array.
 
-.. code-block::
-    :linenos:
+.. code-block:: text
+	:linenos:
 
-		entry:NXentry
-			instrument:NXinstrument
-				source:NXsource
-				....
-				detector:NXdetector
-					data:NX_INT32[512,512]
-						@signal = 1
-			sample:NXsample
-			control:NXmonitor
-			data:NXdata
-				data --> /entry/instrument/detector/data
+	entry:NXentry
+		instrument:NXinstrument
+			source:NXsource
+			....
+			detector:NXdetector
+				data:NX_INT32[512,512]
+					@signal = 1
+		sample:NXsample
+		control:NXmonitor
+		data:NXdata
+			data --> /entry/instrument/detector/data
      
- An ``NXentry`` describing raw data contains at least a ``NXsample``, one 
+An ``NXentry`` describing raw data contains at least a ``NXsample``, one 
 ``NXmonitor``, one ``NXdata`` and a ``NXinstrument`` group. It is good 
 practice to use the names ``sample`` for the ``NXsample`` group, 
 ``control`` for the ``NXmonitor`` group holding the experiment 

@@ -42,7 +42,7 @@ In some cases, where it is useful, some of the data is shown.
 Consider this prototype example:
 
 .. code-block:: text
-   :linenos:
+	:linenos:
 
 	entry:NXentry
 		instrument:NXinstrument

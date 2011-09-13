@@ -52,8 +52,9 @@ NeXus data files is provided in :ref:`Utilities`.
 
 
 .. toctree::
+    :maxdepth: 2
 
-    whatis/design
-    whatis/objects
-    whatis/subroutines
-    whatis/community
+    design
+    objects
+    subroutines
+    community

@@ -8,16 +8,16 @@ A Unified Format for Reduction and Analysis
 
 .. index:: NeXus basic motivation; unified format
 
-            Another important motivation for NeXus, indeed the *raison
-            d'etre*, was the community need to analyze data from different user
-            facilities. A single data format that is in use at a variety of facilities
-            would provide a major benefit to the scientific community.  This unified format
-            should
-            be capable of describing any type of data from the scientific experiments,
-            at any step of the process from data acquisition to data reduction and analysis.
-            This unified format also needs to allow data to be written to storage
-            as efficiently as possible to enable use with high-speed data acquisition.
-
+Another important motivation for NeXus, indeed the *raison d'etre*, was 
+the community need to analyze data from different user facilities. A 
+single data format that is in use at a variety of facilities would provide 
+a major benefit to the scientific community.  This unified format should 
+be capable of describing any type of data from the scientific experiments, 
+at any step of the process from data acquisition to data reduction and 
+analysis. This unified format also needs to allow data to be written to 
+storage as efficiently as possible to enable use with high-speed data 
+acquisition.
+ 
 .. hit these points: 
 	Portable, 
 	self describing, 
@@ -73,7 +73,7 @@ routines to read and write XML data and to convert between HDF and XML.
 
 .. [#] XML: http://www.w3.org/XML/. 
 	There are many other descriptions of XML, 
-	for example: see also http://en.wikipedia.org/wiki/XML
+	for example:  http://en.wikipedia.org/wiki/XML
 
 	
 .. _CommonExchangeFormat:
@@ -97,7 +97,7 @@ routines.  Note that the red circle only maps to one other format.
 
 .. _fig.data-pre-nexus:
 
-.. figure:: ../../../manual/img/data-pre-nexus.jpg
+.. figure:: ../../../../../manual/img/data-pre-nexus.jpg
 	:width: 200 pt
 	:alt: example NeXus data file hierarchy
 
@@ -109,7 +109,7 @@ format, and thereby reduce the number of data conversion routines from
 
 .. _fig.data-post-nexus:
 
-.. figure:: ../../../manual/img/data-post-nexus.jpg
+.. figure:: ../../../../../manual/img/data-post-nexus.jpg
 	:width: 200 pt
 	:alt: example NeXus data file hierarchy
 
