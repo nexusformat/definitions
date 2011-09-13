@@ -164,6 +164,22 @@ Example NeXus Data Attributes
 For the full specification of attributes, 
 see :ref:`volume2.NXDL.section`.
 
+.. FIXME: problems with columns widths in latexpdf format
+	The "type" column is not wide enough.
+	The list-table idea did not change the problem.
+
+	.. list-table:: Example NeXus Data Attributes
+	   :header-rows: 1
+
+	   * - Name
+	     - Type
+	     - Description
+	   * - units
+	     - NX_CHAR
+	     - Data units, given as character strings, 
+	       must conform to the NeXus units standard. 
+	       See the "NeXus units" section 
+	       for details.
 
 =================== ========== =========================================
 Name                Type       Description
@@ -273,7 +289,7 @@ a more descriptive representation of the concept of linking.
 Linking in a NeXus file
 -----------------------------------
 
-.. figure:: ../../../../manual/img/data-linking.png
+.. figure:: data-linking.png
 	:width: 400 pt
 
 	Linking in a NeXus file.
@@ -536,7 +552,7 @@ illustrated in figure :ref:`fig.mcstasccord`.
 
 .. _fig.mcstasccord:
 
-.. figure:: ../../../../manual/img/mcstascoord.png
+.. figure:: mcstascoord.png
 	:width: 400 pt
 
 	The McStas Coordinate System
@@ -608,7 +624,7 @@ This situation is shown in figure
 
 .. _fig.polar-geometry-figure:
 
-.. figure:: ../../../../manual/img/polplane.png
+.. figure:: polplane.png
 	:width: 200 pt
 
 	NeXus Simple (Spherical Polar) Coordinate System

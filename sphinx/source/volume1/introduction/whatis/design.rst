@@ -70,7 +70,7 @@ represented as a tree structure.
 
 .. index:: hierarchy; example NeXus data file
 
-.. figure:: ../../../../../manual/img/Hierarchy.png
+.. figure:: Hierarchy.png
 	:width: 300 pt
 	:alt: example NeXus data file hierarchy
 
@@ -146,7 +146,7 @@ complete list can be found in the NeXus Design section (:ref:`NeXus-Design`).
 	measurement, such as flight paths, collimations, chopper
 	frequencies, etc.
 
-.. figure:: ../../../../../manual/img/NXinstrument.png
+.. figure:: NXinstrument.png
 	:width: 200 pt
 	:alt: example NeXus data file hierarchy
 
@@ -172,7 +172,7 @@ read this simple example.)
 
 .. _fig.simple-example:
 
-.. figure:: ../../../../../manual/img/Simple.png
+.. figure:: Simple.png
 	:width: 250 pt
 	:alt: Simple Data File Example figure
 

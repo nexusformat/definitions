@@ -254,14 +254,14 @@ The table above shows the regular expressions that
 matches the data type specifier.
 
 integers
-    `NX_INT8`, `NX_INT16`, `NX_INT32`, or `NX_INT64`
+    ``NX_INT8``, ``NX_INT16``, ``NX_INT32``, or ``NX_INT64``
 
 floating-point numbers
-    `NX_FLOAT32` or `NX_FLOAT64`
+    ``NX_FLOAT32`` or ``NX_FLOAT64``
 
 
 date / time stamps
-    `NX_DATE_TIME` or `ISO8601`
+    ``NX_DATE_TIME`` or ``ISO8601``
     
     .. index:: date and time
  	
@@ -283,10 +283,10 @@ strings
     `nxvalidate` provides no messages relating to character encoding.
 
 binary data
-    Binary data is to be written as `UINT8`.
+    Binary data is to be written as ``UINT8``.
 
 images
-    Binary image data is to be written using `UINT8`, 
+    Binary image data is to be written using ``UINT8``, 
     the same as binary data, but with an accompanying image mime-type.
     If the data is text, the line terminator is [CR][LF].
 
@@ -299,18 +299,18 @@ NeXus dates and times
 
 .. index:: date and time
 
+NeXus dates and times should be stored using the 
+ISO 8601 [#ISO8601]_ format, such as::
+
+     1996-07-31T21:15:22+0600
+
 .. sidebar:: Note:
 
      The `T` appears literally in the string, 
      to indicate the beginning of the time element, as specified 
      in ISO 8601.  It is common to use a space in place of the `T`.
      While human-readable, compatibility with the ISO 8601 standard is not 
-     assured with this substitution.
-
-NeXus dates and times should be stored using the 
-ISO 8601 [#ISO8601]_ format, such as::
-
-     1996-07-31T21:15:22+0600
+     assured with this substitution. 
 
 The standard also allows for time intervals in fractional seconds
 with *1 or more digits of precision*.

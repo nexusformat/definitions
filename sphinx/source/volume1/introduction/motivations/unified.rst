@@ -97,7 +97,7 @@ routines.  Note that the red circle only maps to one other format.
 
 .. _fig.data-pre-nexus:
 
-.. figure:: ../../../../../manual/img/data-pre-nexus.jpg
+.. figure:: data-pre-nexus.jpg
 	:width: 200 pt
 	:alt: example NeXus data file hierarchy
 
@@ -109,7 +109,7 @@ format, and thereby reduce the number of data conversion routines from
 
 .. _fig.data-post-nexus:
 
-.. figure:: ../../../../../manual/img/data-post-nexus.jpg
+.. figure:: data-post-nexus.jpg
 	:width: 200 pt
 	:alt: example NeXus data file hierarchy
 

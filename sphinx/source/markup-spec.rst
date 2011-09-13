@@ -688,7 +688,7 @@ No directives have been defined by the core reStructuredText specification.
 The following are only examples of *possible uses* of directives.
 
 Directives can be used as an extension mechanism for reStructuredText. For
-example, hhere's how a graphic could be placed::
+example, here's how a graphic could be placed::
 
     .. graphic:: mylogo.png
 

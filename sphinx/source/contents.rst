@@ -14,9 +14,21 @@ Contents
    volume2/index
    authors
 
-
-Indices and tables
-==================
-
 * :ref:`genindex`
 * :ref:`search`
+
+TODO items
+----------------
+
+* fix column width problems in PDF
+* fix math source formatting between html and pdf
+* tables, examples, and figures: treat them consistently with titles, captions, and cross-references
+* stop the section numbering for very deep subsections (2.1.4.1.2.1.3.1.4.5.1.4.1... is just ridiculous)
+* try to get the contents to look like:
+
+  * Preface
+  * Volume 1
+  * Volume 2
+
+* OR, should we produce two or more separate books?
+
