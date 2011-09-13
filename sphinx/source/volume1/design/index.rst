@@ -695,6 +695,6 @@ This is also a nice example of the application of transformation matrices:
 
 .. toctree::
 
-	rules
+	rules/index
 	datarules
 	fileformat

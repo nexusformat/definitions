@@ -36,5 +36,5 @@ programs to read and write NeXus files.
 .. toctree::
 
     whatis/index
-	motivations
-	intro/NAPI
+	motivations/index
+	NAPI

@@ -73,6 +73,6 @@ Basic motivations for this standard were:
 
 .. toctree::
 
-	motivations/plotting
-	motivations/unified
-	motivations/dictionary
+	plotting
+	unified
+	dictionary
