@@ -16,3 +16,4 @@ Contents:
    
    introduction/index
    design/index
+   faq

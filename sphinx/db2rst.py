@@ -265,6 +265,10 @@ class Convert(object):
     phrase = e_emphasis
     citetitle = e_emphasis
     replaceable = e_emphasis
+
+    def e_literal(self, el):
+        return "``%s``" % self._concat(el).strip()
+    e_code = e_literal
     
     def e_firstterm(self, el):
         self._has_only_text(el)
@@ -510,6 +514,32 @@ class Convert(object):
             s += self._indent(entry.find("listitem"), 4)[1:]
         return s
     
+    def e_qandaset(self, el):
+        #self._supports_only(el, ("qandaentry", "question", "answer"))
+        s = ""
+	index = 0
+        for entry in el.findall("qandaentry"):
+	    index += 1
+            q = "**Q%d**: " % index
+	    a = "**A%d**: " % index
+	    s += "\n\n%s%s" % (q, self._indent( entry.find("question"), 4) )
+            s += "\n\n%s%s" % (a, self._indent( entry.find("answer"), 4) )
+        return s
+    #e_question = _no_special_markup
+    #e_answer = _no_special_markup
+
+    # TODO: make this appear after or before the current paragraph
+    # or resolve manually
+    def e_indexterm(self, el):
+        self._supports_only(el, ("primary", "secondary", "tertiary"))
+        return "\n.. index:: " + self._join_children(el, "; ")
+    
+    def e_primary(self, el):
+        self._has_only_text(el)
+        return self._concat(el).strip()
+    
+    e_secondary = e_primary
+    e_tertiary = e_secondary
     
     # admonition directives
     
