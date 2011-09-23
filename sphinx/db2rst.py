@@ -36,7 +36,7 @@ __contributors__ = ('Kurt McKee <contactme@kurtmckee.org>',
                    )
 
 
-def _main(args):
+def old_main(args):
     if len(args) < 2 or len(args) > 3 or args[1] == '-h' or args[1] == '--help':
         sys.stderr.write(__doc__)
         sys.exit()
@@ -735,7 +735,7 @@ class Convert(object):
         
 
 if __name__ == '__main__':
-    result = _main(sys.argv)
+    result = old_main(sys.argv)
     if result is not None:
         print result
 
