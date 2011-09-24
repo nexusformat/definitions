@@ -462,37 +462,37 @@ class Convert(object):
     # a (inline)mediaobject, which is imageobject + textobject
     
     def e_inlineequation(self, el):
-        self._supports_only(el, ("inlinemediaobject",))
+        self._supports_only(el, (self.parent.ns+"inlinemediaobject",))
         return self._concat(el).strip()
     
     def e_informalequation(self, el):
-        self._supports_only(el, ("mediaobject",))
+        self._supports_only(el, (self.parent.ns+"mediaobject",))
         return self._concat(el)
     
     def e_equation(self, el):
-        self._supports_only(el, ("title", "mediaobject"))
-        title = el.find("title")
+        self._supports_only(el, (self.parent.ns+"title", self.parent.ns+"mediaobject"))
+        title = el.find(self.parent.ns+"title")
         if title is not None:
             s = "\n\n**%s:**" % self._concat(title).strip()
         else:
             s = ""
-        for mo in el.findall("mediaobject"):
+        for mo in el.findall(self.parent.ns+"mediaobject"):
             s += "\n" + self._conv(mo)
         return s
     
     def e_mediaobject(self, el, substitute=False):
-        self._supports_only(el, ("imageobject", "textobject"))
+        self._supports_only(el, (self.parent.ns+"imageobject", self.parent.ns+"textobject"))
         # i guess the most common case is one imageobject and one (or none)
         alt = ""
         for txto in el.findall(self.parent.ns+"textobject"):
-            self._supports_only(txto, ("phrase",))
+            self._supports_only(txto, (self.parent.ns+"phrase",))
             if alt:
                 alt += "; "
-            alt += self._normalize_whitespace(self._concat(txto.find("phrase")))
+            alt += self._normalize_whitespace(self._concat(txto.find(self.parent.ns+"phrase")))
         symbols = []
         img = ""
         for imgo in el.findall(self.parent.ns+"imageobject"):
-            self._supports_only(imgo, ("imagedata",))
+            self._supports_only(imgo, (self.parent.ns+"imagedata",))
             fileref = imgo.find(self.parent.ns+"imagedata").get(self.parent.ns+"fileref")
             s = "\n\n.. image:: %s" % fileref
             if (alt):
@@ -643,7 +643,7 @@ class Convert(object):
     def e_variablelist(self, el):
         #VariableList ::= ((Title,TitleAbbrev?)?, VarListEntry+)
         #VarListEntry ::= (Term+,ListItem)
-        self._supports_only(el, ("title", "varlistentry"))
+        self._supports_only(el, (self.parent.ns+"title", self.parent.ns+"varlistentry"))
         s = ""
         title = el.find(self.parent.ns+"title")
         if title is not None:
@@ -699,7 +699,7 @@ class Convert(object):
     # bibliography
     
     def e_author(self, el):
-        self._supports_only(el, ("firstname", "surname"))
+        self._supports_only(el, (self.parent.ns+"firstname", self.parent.ns+"surname"))
         return el.findtext(self.parent.ns+"firstname") + " " + el.findtext(self.parent.ns+"surname")
     
     e_editor = e_author
@@ -708,8 +708,14 @@ class Convert(object):
         return self._join_children(el, ", ")
     
     def e_biblioentry(self, el):
-        self._supports_only(el, ("abbrev", "authorgroup", "author", "editor", "title",
-                            "publishername", "pubdate", "address"))
+        self._supports_only(el, (self.parent.ns+"abbrev", 
+                                 self.parent.ns+"authorgroup", 
+                                 self.parent.ns+"author", 
+                                 self.parent.ns+"editor", 
+                                 self.parent.ns+"title",
+                                 self.parent.ns+"publishername", 
+                                 self.parent.ns+"pubdate", 
+                                 self.parent.ns+"address"))
         s = "\n"
     
         abbrev = el.find("abbrev")
@@ -734,7 +740,7 @@ class Convert(object):
     
         address = el.find(self.parent.ns+"address")
         if address is not None:
-            self._supports_only(address, ("otheraddr",))
+            self._supports_only(address, (self.parent.ns+"otheraddr",))
             s += "%s " % address.findtext(self.parent.ns+"otheraddr")
     
         publishername = el.find(self.parent.ns+"publishername")
@@ -749,7 +755,7 @@ class Convert(object):
         return s
     
     def e_bibliography(self, el):
-        self._supports_only(el, ("biblioentry",))
+        self._supports_only(el, (self.parent.ns+"biblioentry",))
         return self._make_title("Bibliography", 2) + "\n" + self._join_children(el, "\n")
 
     # table support

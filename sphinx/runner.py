@@ -29,8 +29,16 @@ import sys, os
 import db2rst
 
 DocBook_FILE_LIST = []
-DocBook_FILE_LIST.append( "../manual/faq.xml" )
 DocBook_FILE_LIST.append( "../manual/applying-nexus.xml" )
+DocBook_FILE_LIST.append( "../manual/faq.xml" )
+DocBook_FILE_LIST.append( "../manual/NIAC.xml" )
+DocBook_FILE_LIST.append( "../manual/NXDL.xml" )
+DocBook_FILE_LIST.append( "../manual/preface.xml" )
+DocBook_FILE_LIST.append( "../manual/revhistory.xml" )
+DocBook_FILE_LIST.append( "../manual/rules.xml" )
+DocBook_FILE_LIST.append( "../manual/subversion.xml" )
+DocBook_FILE_LIST.append( "../manual/utilities.xml" )
+DocBook_FILE_LIST.append( "../manual/validation.xml" )
 
 converter = db2rst.Db2Rst()
 converter.removeComments(False)
