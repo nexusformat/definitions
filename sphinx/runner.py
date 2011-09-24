@@ -28,8 +28,8 @@ in the NeXus docs.
 import sys, os
 import db2rst
 
-XML_FILE = "faq.xml"
-XML_FILE = "applying-nexus.xml"
+XML_FILE = "../manual/faq.xml"
+XML_FILE = "../manual/applying-nexus.xml"
 args = []
 args.append( sys.argv[0] )
 args.append( XML_FILE )
@@ -48,8 +48,10 @@ converter.writeUnusedLabels(True)
 converter.id_attrib = "{http://www.w3.org/XML/1998/namespace}id"
 converter.linkend = "{http://www.w3.org/1999/xlink}href"
 result = converter.process( XML_FILE )
+header = '.. $Id$\n\n'      # ID string updated by version control
 if result is not None:
-    rst_file = os.path.splitext(XML_FILE)[0] + '.rst'
+    rst_file = os.path.splitext(os.path.basename(XML_FILE))[0] + '.rst'
     f = open(rst_file, 'w')
+    f.write( header )
     f.write( result )
     f.close()
