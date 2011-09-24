@@ -343,28 +343,51 @@ class Convert(object):
     
     # special "elements"
     
-    def _comment(self, el, name):
+    def _directive(self, el, name):
+        '''
+        Creates an ReST directive::
+        
+          .. name: ``el.text`` provides the content.
+                   Indentation is sized automatically like this.
+        
+        Some directives have two colons:
+        
+           .. note:: This is an advisory note.
+        
+        Some might only have one colon.  
+        If you need two, supply it in the caller.
+        
+        :param XML_node el: node of the lxml document tree
+        :param str name: text to be written after the two dots
+        '''
         prefix = ".. %s: " % name
         indentation = len(prefix)
         return self._indent(el, indentation, prefix)
     
-    def Comment(self, el):
-        # _original_xml
-        return self._comment(el, 'COMMENT')
-    
-    def _generic_handler(self, el, name):
+    def _docbook_source(self, el, name):
         s = "\n\n::\n\n"
         s += " "*4 + self._original_xml( el )
         return s
     
+    def _literal_source(self, el):
+        return "\n::\n" + self._indent(el, 4) + "\n"
+    
+    def Comment(self, el):
+        # _original_xml
+        return self._directive(el, 'COMMENT')
+
+    def ProcessingInstruction(self, el):
+        # TODO: How/where to call this?  Like <indexterm>?
+        return self._docbook_source(el, "ProcessingInstruction")
+    
     def e_figure(self, el):
-        return self._generic_handler(el, 'FIGURE')
+        return self._docbook_source(el, 'FIGURE')
     
     def e_example(self, el):
-        return self._generic_handler(el, 'EXAMPLE')
+        return self._docbook_source(el, 'EXAMPLE')
     
     def e_include(self, el):
-        return self._generic_handler(el, 'INCLUDE')
+        return self._docbook_source(el, 'INCLUDE')
     
     # general inline elements
     
@@ -576,11 +599,9 @@ class Convert(object):
         ## title in elements other than the following will trigger assertion
         #if parent in ("book", "chapter", "section", "variablelist", "appendix"):
         return self._make_title(t, level)
-    
-    def e_screen(self, el):
-        return "\n::\n" + self._indent(el, 4) + "\n"
-    e_literallayout = e_screen
-    e_programlisting = e_screen
+    e_screen = _literal_source
+    e_literallayout = _literal_source
+    e_programlisting = _literal_source
     
     def e_blockquote(self, el):
         return self._indent(el, 4)
@@ -664,15 +685,15 @@ class Convert(object):
     # admonition directives
     
     def e_note(self, el):
-        return self._indent(el, 3, ".. note:: ")
+        return self._directive(el, 'note:')
     def e_caution(self, el):
-        return self._indent(el, 3, ".. caution:: ")
+        return self._directive(el, 'caution:')
     def e_important(self, el):
-        return self._indent(el, 3, ".. important:: ")
+        return self._directive(el, 'important:')
     def e_tip(self, el):
-        return self._indent(el, 3, ".. tip:: ")
+        return self._directive(el, 'tip:')
     def e_warning(self, el):
-        return self._indent(el, 3, ".. warning:: ")
+        return self._directive(el, 'warning:')
     
     
     # bibliography

@@ -28,30 +28,22 @@ in the NeXus docs.
 import sys, os
 import db2rst
 
-XML_FILE = "../manual/faq.xml"
-XML_FILE = "../manual/applying-nexus.xml"
-args = []
-args.append( sys.argv[0] )
-args.append( XML_FILE )
-
-def old():
-    result = db2rst._main(args)
-    if result is not None:
-        rst_file = os.path.splitext(XML_FILE)[0] + '.rst'
-        f = open(rst_file, 'w')
-        f.write( result )
-        f.close()
+DocBook_FILE_LIST = []
+DocBook_FILE_LIST.append( "../manual/faq.xml" )
+DocBook_FILE_LIST.append( "../manual/applying-nexus.xml" )
 
 converter = db2rst.Db2Rst()
 converter.removeComments(False)
 converter.writeUnusedLabels(True)
 converter.id_attrib = "{http://www.w3.org/XML/1998/namespace}id"
 converter.linkend = "{http://www.w3.org/1999/xlink}href"
-result = converter.process( XML_FILE )
-header = '.. $%s$\n\n' % 'Id'      # ID string updated by version control
-if result is not None:
-    rst_file = os.path.splitext(os.path.basename(XML_FILE))[0] + '.rst'
-    f = open(rst_file, 'w')
-    f.write( header )
-    f.write( result )
-    f.close()
+
+for xml_file in DocBook_FILE_LIST:
+    result = converter.process( xml_file )
+    header = '.. $%s$\n\n' % 'Id'      # ID string updated by version control
+    if result is not None:
+        rst_file = os.path.splitext(os.path.basename(xml_file))[0] + '.rst'
+        f = open(rst_file, 'w')
+        f.write( header )
+        f.write( result )
+        f.close()
