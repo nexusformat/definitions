@@ -48,7 +48,7 @@ converter.writeUnusedLabels(True)
 converter.id_attrib = "{http://www.w3.org/XML/1998/namespace}id"
 converter.linkend = "{http://www.w3.org/1999/xlink}href"
 result = converter.process( XML_FILE )
-header = '.. $Id$\n\n'      # ID string updated by version control
+header = '.. $%s$\n\n' % 'Id'      # ID string updated by version control
 if result is not None:
     rst_file = os.path.splitext(os.path.basename(XML_FILE))[0] + '.rst'
     f = open(rst_file, 'w')
