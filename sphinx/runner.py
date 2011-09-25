@@ -30,7 +30,22 @@ import db2rst
 
 DocBook_FILE_LIST = []
 DocBook_FILE_LIST.append( "../manual/applying-nexus.xml" )
+DocBook_FILE_LIST.append( "../manual/authorgroup.xml" )
+#DocBook_FILE_LIST.append( "../manual/ClassDefinitions.xml" )  # problems with <entry /> in <table>
+DocBook_FILE_LIST.append( "../manual/community.xml" )
+DocBook_FILE_LIST.append( "../manual/datarules.xml" )
+DocBook_FILE_LIST.append( "../manual/design.xml" )
 DocBook_FILE_LIST.append( "../manual/faq.xml" )
+DocBook_FILE_LIST.append( "../manual/fileformat.xml" )
+DocBook_FILE_LIST.append( "../manual/h5py-example.xml" )
+DocBook_FILE_LIST.append( "../manual/history.xml" )
+DocBook_FILE_LIST.append( "../manual/installation.xml" )
+DocBook_FILE_LIST.append( "../manual/introduction.xml" )
+DocBook_FILE_LIST.append( "../manual/issues.xml" )
+DocBook_FILE_LIST.append( "../manual/license.xml" )
+DocBook_FILE_LIST.append( "../manual/mailinglist.xml" )
+DocBook_FILE_LIST.append( "../manual/motivations.xml" )
+DocBook_FILE_LIST.append( "../manual/napi-java.xml" )
 DocBook_FILE_LIST.append( "../manual/NIAC.xml" )
 DocBook_FILE_LIST.append( "../manual/NXDL.xml" )
 DocBook_FILE_LIST.append( "../manual/preface.xml" )
@@ -47,6 +62,7 @@ converter.id_attrib = "{http://www.w3.org/XML/1998/namespace}id"
 converter.linkend = "{http://www.w3.org/1999/xlink}href"
 
 for xml_file in DocBook_FILE_LIST:
+    sys.stderr.write("Processing DocBook file `%s'...\n" % xml_file)
     result = converter.process( xml_file )
     header = '.. $%s$\n\n' % 'Id'      # ID string updated by version control
     if result is not None:
@@ -55,3 +71,4 @@ for xml_file in DocBook_FILE_LIST:
         f.write( header )
         f.write( result )
         f.close()
+    sys.stderr.write("-"*60 + "\n")
