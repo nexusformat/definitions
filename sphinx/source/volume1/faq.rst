@@ -163,8 +163,7 @@ provide this functionality automatically.
 How can I specify reasonable axes for my data?
 ---------------------------------------------------------------------------
 
-See question on how to find plottable data 
-(:ref:`how to find the plottable data`).
+See the section: :ref:`NXdata-facilitates-TheDefaultPlot`.
 
 Why aren't ``NXsample`` and ``NXmonitor`` groups stored in the ``NXinstrument`` group?
 ------------------------------------------------------------------------------------------------

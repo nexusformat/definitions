@@ -189,20 +189,20 @@ units               NX_CHAR    Data units, given as character strings,
 			       See the "NeXus units" section 
 			       for details.
 signal              NX_INT     Defines which data set contains the 
-			       signal to be plotted use `signal="1"`
+			       signal to be plotted use ``signal="1"``
 			       for main signal
 axes                NX_CHAR    Defines the names of the dimension 
 			       scales for this data set as a 
 			       colon-delimited list. For example, 
 			       suppose data is an array with elements 
-			       `data[j][i]` (C) 
-			       or `data(i,j)` (Fortran), with 
+			       ``data[j][i]`` (C) 
+			       or ``data(i,j)`` (Fortran), with 
 			       dimension scales `time_of_flight[i]` 
 			       and `polar_angle[j]`, then data would 
 			       have an attribute 
-			       `axes="polar_angle:time_of_flight"`
+			       ``axes="polar_angle:time_of_flight"``
 			       in addition to an attribute 
-			       `signal="1"`.
+			       ``signal="1"``.
 axis                NX_INT     The original way of designating data 
 			       for plotting, now superceded by the 
 			       axes attribute. This defines the rank 
@@ -213,11 +213,11 @@ axis                NX_INT     The original way of designating data
 			       :ref:`NXdata-structure`
 			       structure), 
 			       i.e. if the array being stored is data, 
-			       with elements `data[j][i]` in C and 
-			       `data(i,j)` in Fortran, axis would 
+			       with elements ``data[j][i]`` in C and 
+			       ``data(i,j)`` in Fortran, axis would 
 			       have the following values: 
-			       ith dimension (`axis="1"`), 
-			       jth dimension (`axis="2"`), etc.
+			       ith dimension (``axis="1"``), 
+			       jth dimension (``axis="2"``), etc.
 primary             NX_INT32   Defines the order of preference for 
 			       dimension scales which apply to the 
 			       same rank of signal data. Use 
@@ -399,47 +399,47 @@ automatic data plotting program just opens a
 the plottable data.  Here is the way an 
 automatic plotting program ought to work:
 
-1.  Search for NXentry groups
+1.  Search for ``NXentry`` groups
 
-#.  Open an NXentry
+2.  Open an ``NXentry``
 
-#.  Search for NXdata groups
+3.  Search for ``NXdata`` groups
 
-#.  Open an NXdata group
+4.  Open an ``NXdata`` group
 
-#.  Identify the plottable data.
+5.  Identify the plottable data.
 
-  a.  Search for a dataset with attribute `signal=1`. 
+  a.  Search for a dataset with attribute ``signal=1``. 
       This is your main dataset. 
       (There should be only one dataset that matches.)
 
-  #.  Try to read the axes attribute of the 
+  b.  Try to read the axes attribute of the 
       main dataset, if it exists.
 
      i. The value of axes is a colon- or 
         comma-separated list of the datasets describing 
 	the dimension scales 
-	(such as `axes="polar_angle:time_of_flight"`).
+	(such as ``axes="polar_angle:time_of_flight"``).
 
-     #. Parse axes and open the datasets to describe 
-        your dimension scales 
+     ii. Parse axes and open the datasets to describe 
+         your dimension scales 
 
-  #.  If axes does not exist:
+  c.  If axes does not exist:
 
      i. Search for datasets with attributes 
-        `axis=1`, `axis=2`, etc. 
+        ``axis=1``, ``axis=2``, etc. 
 	These are the datasets describing your axis. 
 	There may be several datasets for any axis, 
 	i.e. there may be multiple datasets with 
-	the attribute `axis=1`. Among them the 
-	dataset with the attribute `primary=1` is 
+	the attribute ``axis=1``. Among them the 
+	dataset with the attribute ``primary=1`` is 
 	the preferred one. All others are 
 	alternative dimension scales.
 
-     #. Open the datasets to describe 
-        your dimension scales. 
+     ii. Open the datasets to describe 
+         your dimension scales. 
 
-#. Having found the default plottable data 
+6. Having found the default plottable data 
    and its dimension scales: make the plot
 
 .. _Design-NeXusApplications:
@@ -464,12 +464,15 @@ in the NeXus Definition Language (NXDL). A tool exists which
 allows to validate a NeXus file against a given 
 application definition.
 
-Another way to look at a NeXus application definition 
-is as a contract between a file writer and a file consumer 
-(reader). A contract which reads: 
-*If you write your files 
-following a particular NeXus application definition, 
-I can process these files with my software*.
+.. sidebar:: NeXus application definition is a contract
+
+   Another way to look at a NeXus application definition
+   is as a contract between a file writer and a file consumer
+   (reader). A contract which reads:
+   
+   *If you write your files
+   following a particular NeXus application definition,
+   I can process these files with my software.*
 
 Yet another way to look at a NeXus application definition 
 is to understand it as an interface definition between data 
