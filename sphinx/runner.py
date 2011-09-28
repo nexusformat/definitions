@@ -31,7 +31,7 @@ import db2rst
 DocBook_FILE_LIST = []
 DocBook_FILE_LIST.append( "../manual/applying-nexus.xml" )
 DocBook_FILE_LIST.append( "../manual/authorgroup.xml" )
-#DocBook_FILE_LIST.append( "../manual/ClassDefinitions.xml" )  # problems with <entry /> in <table>
+DocBook_FILE_LIST.append( "../manual/ClassDefinitions.xml" )  # problems with <entry /> in <table>
 DocBook_FILE_LIST.append( "../manual/community.xml" )
 DocBook_FILE_LIST.append( "../manual/datarules.xml" )
 DocBook_FILE_LIST.append( "../manual/design.xml" )
@@ -60,6 +60,7 @@ converter.removeComments(False)
 converter.writeUnusedLabels(True)
 converter.id_attrib = "{http://www.w3.org/XML/1998/namespace}id"
 converter.linkend = "{http://www.w3.org/1999/xlink}href"
+converter.useStdTableHandler = False
 
 for xml_file in DocBook_FILE_LIST:
     sys.stderr.write("Processing DocBook file `%s'...\n" % xml_file)

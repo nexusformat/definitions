@@ -9,10 +9,10 @@
     Docbook has >400 elements, most of them are not supported (yet).
     ``pydoc db2rst`` shows the list of supported elements.
 
-    In reST, inline markup can not be nested (major deficiency of reST).
+    In ReST, inline markup can not be nested (major deficiency of ReST).
     Since it is not clear what to do with, say,
     <subscript><emphasis>x</emphasis></subscript>
-    the script outputs incorrect (nested) reST (:sub:`*x*`)
+    the script outputs incorrect (nested) ReST (:sub:`*x*`)
     and it is up to user to decide how to change it.
 
     Usage:
@@ -68,6 +68,7 @@ class Db2Rst():
         self.linkend = "linkend"            # can modify if namespace is present (a hack until namespaces are supported here)
         self.output_dir = None              # if converting a set of docbook files
         self.namespacePrefix = None         # as used in the DocBook file
+        self.useStdTableHandler = True      # option to pick an alternate handler for <table>
     
     def process(self, dbfile):
         '''
@@ -191,18 +192,25 @@ class Convert(object):
         output = re.sub(r"\n{3,}", "\n\n", output)
         return output.encode('utf-8')
 
-    def _conv(self, el):
-        "element to string conversion; usually calls e_element_name() to do the job"
+    def _conv(self, el, do_assert = True):
+        '''
+        Element to string conversion.
+        Looks for a defined function e_tag() and calls it,
+        where tag is the element name.
+        The function e_tag() has one argument, 
+        the DocBook element node to process.
+        '''
         # need to strip self.parent.ns from el.tag here
-        bare_tag = str(el.tag)
-        if bare_tag.find(self.parent.ns) == 0:
-            bare_tag = bare_tag[len(self.parent.ns):]
-        if hasattr(self, 'e_' + bare_tag):
-            a = getattr(self, 'e_' + bare_tag)
+        tag = str(el.tag)
+        if tag.find(self.parent.ns) == 0:
+            tag = tag[len(self.parent.ns):]
+        if hasattr(self, 'e_' + tag):
+            a = getattr(self, 'e_' + tag)
             s = a(el)
             # FIXME: What happens if len(s)==0?  Why should this be an error?  
             # Because zip() in the caller needs non-empty.
-            assert s, "Error: %s -> None\n" % self._get_path(el)
+            #if do_assert:
+            #    assert s, "Error: %s -> None\n" % self._get_path(el)
             return s
         elif isinstance(el, ET._Comment):
             if el.text.strip():
@@ -366,8 +374,9 @@ class Convert(object):
         return self._indent(el, indentation, prefix)
     
     def _docbook_source(self, el, name):
-        s = "\n\n::\n\n"
+        s = "\n\n.. rubric:: %s\n\n::\n\n" % name
         s += " "*4 + self._original_xml( el )
+        s += "\n\n"
         return s
     
     def _literal_source(self, el):
@@ -386,17 +395,28 @@ class Convert(object):
     
     def e_example(self, el):
         return self._docbook_source(el, 'EXAMPLE')
+        #s = "\n\n.. code-block:: guess"
+        #return self._directive(el, 'code-block: guess\n    :linenos:\n    ')
+    
+    def e_informalexample(self, el):
+        return self._docbook_source(el, 'INFORMALEXAMPLE')
     
     def e_include(self, el):
         return self._docbook_source(el, 'INCLUDE')
+    
+    def e_calloutlist(self, el):
+        return self._docbook_source(el, 'CALLOUTLIST')
+    
+    def e_include(self, el):
+        return self._docbook_source(el, "INCLUDE")
     
     # general inline elements
     
     def e_emphasis(self, el):
         return "*%s*" % self._concat(el).strip()
-    phrase = e_emphasis
-    citetitle = e_emphasis
-    replaceable = e_emphasis
+    e_phrase = e_emphasis
+    e_citetitle = e_emphasis
+    e_replaceable = e_emphasis
 
     def e_literal(self, el):
         return "``%s``" % self._concat(el).strip()
@@ -452,7 +472,7 @@ class Convert(object):
         if link is None:
             return ":ref:`%s`" % text
         else:
-            if text is None or len(text) == 0:
+            if text is None or len(text) == 0 or text.strip("`") == link:
                 return ":ref:`%s`" % link.lstrip('#')
             else:
                 return ":ref:`%s <%s>`" % (text, link.lstrip('#'))
@@ -611,10 +631,34 @@ class Convert(object):
     e_appendix = _block_separated_with_blank_line
     e_chapter = _block_separated_with_blank_line
     e_preface = _block_separated_with_blank_line
+    e_simplesect = _block_separated_with_blank_line
+    e_revhistory = _block_separated_with_blank_line
     
-    e_entry = _no_special_markup
+    def e_entry(self, el):
+        s = self._concat(el)
+        if s is None:
+            s = ""
+        return s.strip()
     
     # lists
+    
+    def e_glosslist(self, el):
+        self._supports_only(el, (self.parent.ns+"glossentry"))
+        return self._concat(el)
+    
+    def e_glossentry(self, el):
+        self._supports_only(el, (self.parent.ns+"glossterm", 
+                                 self.parent.ns+"glossdef"))
+        s = "\n\n"
+        t = self._concat( el.find(self.parent.ns+"glossterm") ) + "\n" + " "*4
+        s += self._indent(el.find(self.parent.ns+"glossdef"), 4, t)
+        return s
+    
+    def e_glossterm(self, el):
+        return self._concat(el)
+    
+    def e_glossdef(self, el):
+        return self._join_children(el, ", ")
     
     def e_itemizedlist(self, el, bullet="-"):
         # ItemizedList ::= (ListItem+)
@@ -679,16 +723,21 @@ class Convert(object):
                                  self.parent.ns + 'tertiary',
                                  self.parent.ns + 'see',
                                  self.parent.ns + 'seealso',))
-        return "\n.. index:: " + self._join_children(el, "; ")
+        return "\n.. index:: " + self._join_children(el, "; ") + "\n"*2
     
     def e_primary(self, el):
-        self._has_only_text(el)
+        #self._has_only_text(el)
         return self._concat(el).strip()
     
     e_secondary = e_primary
     e_tertiary = e_secondary
     e_see = e_tertiary          # TODO: should be handled differently, perhaps a new index entry
     e_seealso = e_see           # TODO: should be handled differently, perhaps a new index entry
+    
+    def e_footnote(self, el):
+        self._supports_only(el, (self.parent.ns+"para",))
+        s = "{FOOTNOTE: %s}" % self._conv(el.find(self.parent.ns+"para")).strip()
+        return s
     
     # admonition directives
     
@@ -706,8 +755,8 @@ class Convert(object):
     # bibliography
     
     def e_author(self, el):
-        # Hold it!  <author> couold be in <biblioentry> or <authorgroup>.  
-        # This is for <authorgroup>!  Hope the conditionals help it apply to both.
+        # <author> could be in <biblioentry> or <authorgroup>.  
+        # Hope these conditionals help it apply to both.
         self._supports_only(el, (self.parent.ns+"personname", 
                                  self.parent.ns+"address", 
                                  self.parent.ns+"affiliation", 
@@ -716,7 +765,7 @@ class Convert(object):
         s += self._conv(el.find(self.parent.ns+"personname")).strip()
         node = el.find(self.parent.ns+"email")
         if node is not None:
-            s += " <%s>" % self._conv(node).strip()
+            s += " ``<%s>``" % self._conv(node).strip()
         node = el.find(self.parent.ns+"affiliation")
         if node is not None:
             s += ", " + self._conv(node).strip()
@@ -731,25 +780,24 @@ class Convert(object):
         return self._join_children(el, " ").strip()
     
     e_editor = e_author
-    e_email = _no_special_markup        # _has_only_text
+    e_firstname = _no_special_markup        # _has_only_text
+    e_surname = _no_special_markup
+    e_othername = _no_special_markup
+    e_affiliation = _no_special_markup
+    e_orgname = _no_special_markup
+    e_city = _no_special_markup
+    e_state = _no_special_markup
+    e_country = _no_special_markup
+
+    def e_email(self, el):
+        self._has_only_text(el)
+        return self._concat(el).strip()
     
     def e_authorgroup(self, el):
-        # TODO: NeXus wants a different treatment of <authorgroup> than fityk.  
-        # Is this possible?  Not without very hacky code.
+        # TODO: NeXus wants a different treatment of <author> than fityk.  
         # Specifically, no trailing comma but a list
-        # Instead, wontfix but hand-edit the .rst file.
+        # Is this possible?  Yes, with an option switch.  See e_table() for an example.
         return self._join_children(el, ", ")
-
-# TODO: need to ignore these items:
-# Processing DocBook file `../manual/authorgroup.xml'...
-# WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}firstname>
-# WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}surname>
-# WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}affiliation>
-# WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}orgname>
-# WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}city>
-# WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}state>
-# WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}country>
-# WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}othername>
 
     def e_biblioentry(self, el):
         self._supports_only(el, (self.parent.ns+"abbrev", 
@@ -801,6 +849,23 @@ class Convert(object):
     def e_bibliography(self, el):
         self._supports_only(el, (self.parent.ns+"biblioentry",))
         return self._make_title("Bibliography", 2) + "\n" + self._join_children(el, "\n")
+    
+    def e_revision(self, el):
+        self._supports_only(el, (self.parent.ns+"date",
+                                 self.parent.ns+"authorinitials",
+                                 self.parent.ns+"revnumber",
+                                 self.parent.ns+"revdescription",))
+        t = []
+        for k, v in {"date": "*%s*", 
+                     "revnumber": "**%s**", 
+                     "authorinitials": "*%s*"}.items():
+            node = el.find(self.parent.ns+k)
+            if node is not None:
+                self._has_only_text(node)
+                t.append( v % node.text )
+        s = "\n\n"
+        s += self._indent(el.find(self.parent.ns+"revdescription"), 4, ", ".join(t) + "\n    ")
+        return s
 
     # table support
 
@@ -810,9 +875,15 @@ class Convert(object):
     def e_table(self, el):
         # consider refactoring this code!  It fails now on <entry /> DocBook elements at the zip().
         # get each column size
+        if self.parent.useStdTableHandler:
+            return self._std_table(el)
+        else:
+            return self._alt_table(el)
+
+    def _std_table(self, el):
         text = (el.getchildren()[0].text or '') + (el.getchildren()[0].tail or '') + '\n\n'
         cols = int(el.find(self.parent.ns+'tgroup').attrib['cols'])
-        colsizes = map(max, zip(*[map(self._calc_col_width, r) for r in ET.ETXPath( './/%srow' % self.parent.ns )(el)]))
+        colsizes = self._column_widths(el)
         fmt = ' '.join(['%%-%is' % (size,) for size in colsizes]) + '\n'
         divider = fmt % tuple(['=' * size for size in colsizes])
         text += divider
@@ -824,120 +895,61 @@ class Convert(object):
             text += fmt % tuple(map(self._conv, row.findall(self.parent.ns+'entry')))
         text += divider
         return text
+    
+    def _column_widths(self, el):
+        ''' returns a list with the maximum width of each column '''
+        # FIXME: This fails on <entry /> DocBook elements at the zip().
+        # TODO: make this code more obvious and easier to maintain
+        return map(max, zip(*[map(self._calc_col_width, r) for r in ET.ETXPath( './/%srow' % self.parent.ns )(el)]))
 
-# TODO: need to handle/ignore these items:
-#------------------------------------------------------------
-#Processing DocBook file `../manual/community.xml'...
-#WARNING: Don't know how to handle <{http://www.w3.org/2001/XInclude}include>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/datarules.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}informalexample>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glosslist>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossentry>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossterm>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossdef>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/design.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#WARNING: Don't know how to handle <<built-in function ProcessingInstruction>>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}citetitle>
-#WARNING: Don't know how to handle <{http://www.w3.org/2001/XInclude}include>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/faq.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/fileformat.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/h5py-example.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#WARNING: Don't know how to handle <<built-in function ProcessingInstruction>>
-#WARNING: Don't know how to handle <{http://www.w3.org/2001/XInclude}include>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/introduction.xml'...
-#WARNING: Don't know how to handle <{http://www.w3.org/2001/XInclude}include>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}calloutlist>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}callout>
-#WARNING: children of {http://docbook.org/ns/docbook}chapter/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/issues.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}simplesect>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/license.xml'...
-#WARNING: Don't know how to handle <{http://www.w3.org/2001/XInclude}include>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/motivations.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/napi-java.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glosslist>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossentry>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossterm>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossdef>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/NIAC.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/NXDL.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#WARNING: Don't know how to handle <{http://www.w3.org/2001/XInclude}include>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/revhistory.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}revhistory>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}revision>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}date>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}authorinitials>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}revdescription>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}revnumber>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/subversion.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glosslist>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossentry>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossterm>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossdef>
-#WARNING: Don't know how to handle <{http://www.w3.org/2001/XInclude}include>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/utilities.xml'...
-#WARNING: {http://docbook.org/ns/docbook}variablelist/<built-in function Comment> skipped.
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#WARNING: children of {http://docbook.org/ns/docbook}appendix/{http://docbook.org/ns/docbook}section/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}variablelist/{http://docbook.org/ns/docbook}varlistentry/{http://docbook.org/ns/docbook}listitem/{http://docbook.org/ns/docbook}para/{http://docbook.org/ns/docbook}indexterm/{http://docbook.org/ns/docbook}secondary are skipped: <{http://docbook.org/ns/docbook}code>
-#------------------------------------------------------------
-#Processing DocBook file `../manual/validation.xml'...
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glosslist>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossentry>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossterm>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}glossdef>
-#WARNING: Don't know how to handle <{http://docbook.org/ns/docbook}footnote>
-#------------------------------------------------------------
- 
+    def _alt_table(self, el):
+        # This still breaks for tables with embedded lists and other pathologies.
+        s = "\n\n"
+        id = el.get(self.parent.id_attrib, "")
+        if len(id) > 0:
+            s += ".. _%s:\n\n" % id
+        
+        s += ".. rubric:: Table: "
+        title = el.find(self.parent.ns+'title')
+        if title is not None:
+            s += self._concat(title)
+        s += "\n\n"
+        
+        # get number of columns
+        cols = int(el.find(self.parent.ns+'tgroup').attrib['cols'])
+        
+        # calculate the widths of all the columns
+        row_nodes = ET.ETXPath( './/%srow' % self.parent.ns )(el)
+        widths = [ 0  for _ in range(cols)]
+        for r in row_nodes:
+            i = 0
+            for c in r.findall(self.parent.ns+'entry'):
+                widths[i] = max( len( self._conv(c, do_assert = False) ), widths[i])
+                i += 1
+        fmt = ' '.join(['%%-%is' % (size,) for size in widths]) + '\n'
+        divider = fmt % tuple(['=' * size for size in widths])
+        
+        s += divider   # top row of table
+
+        tgroup = el.find(self.parent.ns+'tgroup')
+        thead = tgroup.find(self.parent.ns+'thead')
+        if thead is None:
+            s += fmt % tuple(['..' for _ in range(cols)])
+        else:
+            nodes = thead.find(self.parent.ns+'row').findall(self.parent.ns+'entry')
+            s += fmt % tuple(map(self._conv, nodes))
+
+        s += divider   # label-end row of table
+
+        tbody = tgroup.find(self.parent.ns+'tbody')
+        rows = tbody.findall(self.parent.ns+'row')
+        for row in rows:
+            entries = row.findall(self.parent.ns+'entry')
+            s += fmt % tuple(map(self._conv, entries))
+        
+        s += divider   # bottom row of table
+        return s
+
 
 if __name__ == '__main__':
     result = old_main(sys.argv)
