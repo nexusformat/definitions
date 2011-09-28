@@ -20,11 +20,13 @@
 					adoption status on the
 					<link xlink:href="http://www.nexusformat.org/Facilities">
 						<literal>Facilities Wiki page</literal>
-					</link>. Please have a look at this list. Keep in mind that it is not
+					</link>. 
+					Please have a look at this list. Keep in mind that it is not
 					complete.
 				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>NeXus files are binary? This is crazy! How am I supposed to see my data?</para>
@@ -48,6 +50,7 @@
 				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>What on-disk file format should I choose for my data?</para>
@@ -61,6 +64,7 @@
 					space and speed implications.</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>Why are the NeXus classes so complicated? I'll never store all
@@ -79,6 +83,7 @@
 				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>I don't like NeXus. I seems much faster and simpler to develop
@@ -90,7 +95,9 @@
 					and well supported in all main stream programming languages and a
 					fair share of popular analysis packages. The format is so widely
 					used and backed by a big organisation that it will continue to be
-					supported for the foreseeable future.</para>
+					supported for the foreseeable future.
+				</para>
+					
 				<para> So if you are going to use HDF5 anyway, why not use the NeXus
 					definition to lay out the data in a standardised way? The NeXus
 					community spent years trying to get the standard right and
@@ -99,7 +106,13 @@
 					reasonable way. If you do not comply with NeXus chances are most
 					people will perceive your format as different but not necessarily
 					better than NeXus by any large measure. So it may not be worth the
-					effort. Seriously.</para>
+					effort. Seriously.
+				</para>
+				
+				<indexterm>
+					<primary>NIAC</primary>
+				</indexterm>
+				
 				<para>
 					If you encounter any problems because the classes are not
 					sufficient to describe your configuration, please contact the NIAC
@@ -107,23 +120,21 @@
 					at the relevant class wiki page. Or raise the problem in one of the
 					<link xlink:href="http://download.nexusformat.org/doc/html/MailingLists.html">mailing lists</link>. 
 					The NIAC
-					<indexterm>
-						<primary>NIAC</primary>
-					</indexterm>
 					is always willing to consider new proposals.
 				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>I want to produce an application definition. How do I go about it?</para>
 			</question>
 			<answer>
-				<para>
-					Read the NXDL
 					<indexterm>
 						<primary>NXDL</primary>
 					</indexterm>
+				<para>
+					Read the NXDL
 					Tutorial in
 					<xref linkend="NXDL_Tutorial-CreatingNxdlSpec" />.
 					The procedures for acceptance are defined in the NIAC constitution.
@@ -139,6 +150,7 @@
 				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>
@@ -147,129 +159,51 @@
 				</para>
 			</question>
 			<answer>
+					<indexterm>
+						<primary>NeXus basic motivation</primary>
+						<secondary>default plot</secondary>
+					</indexterm>
 				<para>
 					<code>NXdata</code>
 					contains links to the data stored elsewhere in the
 					<code>NXentry</code>. It identifies the default plottable data. This is one of the
 					basic motivations (see <xref linkend="SimplePlotting" />)
-					<indexterm>
-						<primary>NeXus basic motivation</primary>
-						<secondary>default plot</secondary>
-					</indexterm>
 					for the NeXus standard. The choice of the name
 					<code>NXdata</code>
 					is historic and does not really reflect its function.
 				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>
 					How do I identify the plottable data?
+				</para>
+			</question>
 					<indexterm>
 						<primary>NeXus basic motivation</primary>
 						<secondary>default plot</secondary>
 					</indexterm>
-				</para>
-			</question>
 			<answer>
-				<!-- TODO check this list! And move it to the Design chapter. -->
 				<para>
-					Any program whose aim is to identify plottable data should use the
-					following procedure:
-					<orderedlist>
-						<listitem>
-							<para>
-								Open the first top level NeXus group with class
-								<code>NXentry</code>.
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								Open the first NeXus group with class
-								<code>NXdata</code>.
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								Loop through NeXus fields in this group searching for the item
-								with attribute
-								<code>signal="1"</code>
-								indicating this field has the plottable data.
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								Check to see if this field has an attribute called
-								<code>axes</code>. If so, the attribute value contains a colon (or comma)
-								delimited list (in the C-order of the data array) with the names
-								of the dimension scales 
-								<indexterm><primary>dimension scale</primary></indexterm>
-								associated with the plottable data. And
-								then you can skip the next two steps.
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								If the
-								<code>axes</code>
-								attribute is not defined, search for the one-dimensional NeXus
-								fields with attribute
-								<code>primary="1"</code>.
-							</para>
-						</listitem>
-						<listitem>
-							<para> These are the dimension scales
-								<indexterm><primary>dimension scale</primary></indexterm>
-								to label the axes of each
-								dimension of the data.</para>
-						</listitem>
-						<listitem>
-							<para>
-								Link each dimension scale
-								<indexterm><primary>dimension scale</primary></indexterm>
-								to the respective data dimension by
-								the
-								<code>axis</code>
-								attribute (<code>axis="1"</code>,
-								<code>axis="2"</code>, ... up to the rank
-								<indexterm>
-									<primary>rank</primary>
-								</indexterm>
-								of the data).
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								If necessary, close the
-								<code>NXdata</code>
-								group, open the next one and repeat steps 3 to 6.
-							</para>
-						</listitem>
-						<listitem>
-							<para>
-								If necessary, close the
-								<code>NXentry</code>
-								group, open the next one and repeat steps 2 to 7.
-							</para>
-						</listitem>
-					</orderedlist>
-					Consult the
-					<link xlink:href="#Introduction-NAPI">NeXus API</link>
-					section, which describes the routines available to program these
-					operations. In the course of time, generic NeXus browsers will
-					provide this functionality automatically.
+					See the section: <xref linkend="Find-Plottable-Data" />.
 				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
-				<para>How can I specify reasonable axis for my data?</para>
+				<para>How can I specify reasonable axes for my data?</para>
 			</question>
 			<answer>
-				<para> See question on how to find plottable data.</para>
+				<para>
+					<!--  Is there a better answer for this? -->
+					See the section: <xref linkend="DataRules" />.
+				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>
@@ -299,6 +233,7 @@
 				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>Specifications are boring. Where can I find some good example
@@ -312,18 +247,19 @@
 				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>Can I use a NXDL specification to parse a NeXus data file?
 				</para>
 			</question>
 			<answer>
-				<para>
-					This should be possible as there is nothing in the NeXus
-					specifications to prevent this but it is not implemented in NAPI.
 					<indexterm>
 						<primary>NAPI</primary>
 					</indexterm>
+				<para>
+					This should be possible as there is nothing in the NeXus
+					specifications to prevent this but it is not implemented in NAPI.
 					You would need to implement it for yourself. You would be wise to
 					consult the algorithms in the Java version of
 					<code>NXvalidate</code>
@@ -331,6 +267,7 @@
 				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>
@@ -340,6 +277,10 @@
 				</para>
 			</question>
 			<answer>
+					<indexterm>
+						<primary>dimension</primary>
+						<secondary>data set</secondary>
+					</indexterm>
 				<para>
 					<code>NAPItype</code>
 					is necessary. When implementing the NeXus-XML API we strived to
@@ -348,13 +289,10 @@
 					numbers in C-storage order. And we need the
 					<code>NAPItype</code>
 					to figure out the dimensions of the dataset.
-					<indexterm>
-						<primary>dimension</primary>
-						<secondary>data set</secondary>
-					</indexterm>
 				</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>
@@ -372,6 +310,7 @@
 					strongly encouraged.</para>
 			</answer>
 		</qandaentry>
+		
 		<qandaentry>
 			<question>
 				<para>I'm using links to place data in two places.
@@ -382,11 +321,13 @@
 					<!-- say it clearly -->
 					NeXus uses HDF5 hard links.
 				</para>
+				
+				<indexterm><primary>link</primary></indexterm>
+					
 				<para> 
 					<!-- answer the question -->
 					Both places have pointers to the actual data.
 					That is the way hard links work in HDF5.
-					<indexterm><primary>link</primary></indexterm>
 					There is no need for a preference to either location.
 					NeXus defines a <code>target</code> attribute to label
 					one directory entry as the source of the data (in this, the 
@@ -396,6 +337,7 @@
 					the original in place, duplicate copies of the data are not
 					converted.
 				</para>
+				
 				<para> 
 					<!-- say it again another way -->
 					In HDF, a hard link points to a data object.  
