@@ -387,7 +387,7 @@ class Convert(object):
         return self._directive(el, 'COMMENT')
 
     def ProcessingInstruction(self, el):
-        # TODO: How/where to call this?  Like <indexterm>?
+        # TODO: How/where to call this?
         return self._docbook_source(el, "ProcessingInstruction")
     
     def e_figure(self, el):
@@ -707,32 +707,62 @@ class Convert(object):
         return s
     #e_question = _no_special_markup
     #e_answer = _no_special_markup
+    
+    def childNodeText(self, el, tag):
+        '''looks for a child XML node and returns its text, or None'''
+        result = el.find(self.parent.ns+tag)
+        if result is not None:
+            result = self._concat(result).strip()
+        return result
 
-    # TODO: make this appear after or before the current paragraph
-    # or resolve manually
     def e_indexterm(self, el):
         ''' 
-        It is difficult to promote indexterm entries 
-        to appear before the block in which they may be embedded.
-        Far easier to edit the DocBook source and reposition them
-        so they are not embedded in a text block.
-        Otherwise, it is necessary to hand-edit the ".. index::" entries.
+        In sphinx v1.1, an index role was added.
+        Now assume all <indexentry> elements are to be :index:`tag`.
+        (http://sphinx.pocoo.org/markup/misc.html#role-index)
+        
+        This DocBook code::
+
+            <indexterm>
+                <primary>NeXus International Advisory Committee</primary>
+                <see>NIAC</see>
+            </indexterm>
+            <indexterm significance="preferred"><primary>units</primary></indexterm>
+        
+        should generate this ReST code::
+        
+            :index:`see: NeXus International Advisory Committee; NIAC `
+            :index:`! units`
         '''
+        if len(el.findall(self.parent.ns+"primary")) == 0:
+            raise RuntimeError, "indexterm has no primary element"
         self._supports_only(el, (self.parent.ns + 'primary',
                                  self.parent.ns + 'secondary',
                                  self.parent.ns + 'tertiary',
                                  self.parent.ns + 'see',
                                  self.parent.ns + 'seealso',))
-        return "\n.. index:: " + self._join_children(el, "; ") + "\n"*2
-    
-    def e_primary(self, el):
-        #self._has_only_text(el)
-        return self._concat(el).strip()
-    
-    e_secondary = e_primary
-    e_tertiary = e_secondary
-    e_see = e_tertiary          # TODO: should be handled differently, perhaps a new index entry
-    e_seealso = e_see           # TODO: should be handled differently, perhaps a new index entry
+        pri = self.childNodeText(el, "primary")
+        s = ""
+        for term in ('see', 'seealso', ):
+            text = self.childNodeText(el, term)
+            if text is not None:
+                if len(s) > 0:
+                    s += " "
+                s += ":index:`<%s: %s; %s>`" % (term, pri, text)
+        if len(s) == 0:
+            if el.attrib.get('significance', "").lower() == "preferred":
+                s += "! "
+            s += pri
+            sec = self.childNodeText(el, "secondary")
+            if sec is not None:
+                s += "; " + sec
+            # ReST and Sphinx do not provide for tertiary index specifications.
+            # Do the best we can here.
+            ter = self.childNodeText(el, "tertiary")
+            if ter is not None:
+                s += " - " + ter
+            s = ":index:`%s`" % s
+        return s
     
     def e_footnote(self, el):
         self._supports_only(el, (self.parent.ns+"para",))
