@@ -436,7 +436,8 @@ class Convert(object):
         return u":kbd:`%s`" % (el.text, )
 
     def e_quote(self, el):
-        return u'"%s"' % (el.text, )
+        q = " ".join( el.text.split("\n") )
+        return u'"%s"' % (q, )
     
     # links
     
@@ -466,7 +467,7 @@ class Convert(object):
         # <link linkend="">some text</link>
         # <link xlink:href="#RegExpName"/>
         # <link xlink:href="#RegExpName">regular expression example</link>
-        text = self._concat(el).strip()
+        text = self._concat(el).strip().strip("`")
         # TODO: handle properly
         link = el.get( self.parent.linkend )      # TODO: confirm if needs: self.parent.ns+
         if link is None:
@@ -634,6 +635,12 @@ class Convert(object):
     e_simplesect = _block_separated_with_blank_line
     e_revhistory = _block_separated_with_blank_line
     
+    def e_revhistory(self, el):
+        # TODO: only make a title here if no title has been defined
+        s = self._make_title("Revision History", 1)
+        s += self._block_separated_with_blank_line(el)
+        return s
+    
     def e_entry(self, el):
         s = self._concat(el)
         if s is None:
@@ -701,7 +708,8 @@ class Convert(object):
         #self._supports_only(el, ("qandaentry", "question", "answer"))
         s = ""
         for entry in el.findall(self.parent.ns+"qandaentry"):
-            s += "\n\n#. %s" % self._concat( entry.find(self.parent.ns+"question") ).strip()
+            q = " ".join(self.childNodeText(entry, "question").split("\n"))
+            s += "\n\n#. %s" % q
             # TODO: check this!
             s += "\n\n%s" % self._indent( entry.find(self.parent.ns+"answer"), 4)
         return s
@@ -741,27 +749,28 @@ class Convert(object):
                                  self.parent.ns + 'tertiary',
                                  self.parent.ns + 'see',
                                  self.parent.ns + 'seealso',))
-        pri = self.childNodeText(el, "primary")
+        pri = self.childNodeText(el, "primary").strip("`")
         s = ""
         for term in ('see', 'seealso', ):
             text = self.childNodeText(el, term)
             if text is not None:
                 if len(s) > 0:
                     s += " "
-                s += ":index:`<%s: %s; %s>`" % (term, pri, text)
+                s += ":index:`INDEX_POINT <%s: %s; %s>`" % (term, pri, text)
         if len(s) == 0:
             if el.attrib.get('significance', "").lower() == "preferred":
                 s += "! "
             s += pri
             sec = self.childNodeText(el, "secondary")
             if sec is not None:
-                s += "; " + sec
+                s += "; " + sec.strip("`")
             # ReST and Sphinx do not provide for tertiary index specifications.
             # Do the best we can here.
             ter = self.childNodeText(el, "tertiary")
             if ter is not None:
-                s += " - " + ter
-            s = ":index:`%s`" % s
+                s += " - " + ter.strip("`")
+            # still need to edit the ReST to replace INDEX_POINT with short printable text.
+	    s = ":index:`INDEX_POINT <single: %s>`" % s
         return s
     
     def e_footnote(self, el):
@@ -824,10 +833,10 @@ class Convert(object):
         return self._concat(el).strip()
     
     def e_authorgroup(self, el):
-        # TODO: NeXus wants a different treatment of <author> than fityk.  
-        # Specifically, no trailing comma but a list
-        # Is this possible?  Yes, with an option switch.  See e_table() for an example.
-        return self._join_children(el, ", ")
+        # TODO: only make a title here if no title has been defined
+	s = self._make_title("Authorgroup", 1)
+	s += self._join_children(el, ", ")
+        return s
 
     def e_biblioentry(self, el):
         self._supports_only(el, (self.parent.ns+"abbrev", 
@@ -940,9 +949,9 @@ class Convert(object):
             s += ".. _%s:\n\n" % id
         
         s += ".. rubric:: Table: "
-        title = el.find(self.parent.ns+'title')
+        title = self.childNodeText(el, 'title')
         if title is not None:
-            s += self._concat(title)
+            s += title
         s += "\n\n"
         
         # get number of columns
