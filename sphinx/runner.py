@@ -28,32 +28,43 @@ in the NeXus docs.
 import sys, os
 import db2rst
 
+NEXUS_DIR = "../manual"
+#NEXUS_DIR = "../../NeXus/definitions/trunk/manual"
+NEXUS_DIR = os.path.abspath(NEXUS_DIR)
 DocBook_FILE_LIST = []
-DocBook_FILE_LIST.append( "../manual/applying-nexus.xml" )
-DocBook_FILE_LIST.append( "../manual/authorgroup.xml" )
-DocBook_FILE_LIST.append( "../manual/ClassDefinitions.xml" )  # problems with <entry /> in <table>
-DocBook_FILE_LIST.append( "../manual/community.xml" )
-DocBook_FILE_LIST.append( "../manual/datarules.xml" )
-DocBook_FILE_LIST.append( "../manual/design.xml" )
-DocBook_FILE_LIST.append( "../manual/faq.xml" )
-DocBook_FILE_LIST.append( "../manual/fileformat.xml" )
-DocBook_FILE_LIST.append( "../manual/h5py-example.xml" )
-DocBook_FILE_LIST.append( "../manual/history.xml" )
-DocBook_FILE_LIST.append( "../manual/installation.xml" )
-DocBook_FILE_LIST.append( "../manual/introduction.xml" )
-DocBook_FILE_LIST.append( "../manual/issues.xml" )
-DocBook_FILE_LIST.append( "../manual/license.xml" )
-DocBook_FILE_LIST.append( "../manual/mailinglist.xml" )
-DocBook_FILE_LIST.append( "../manual/motivations.xml" )
-DocBook_FILE_LIST.append( "../manual/napi-java.xml" )
-DocBook_FILE_LIST.append( "../manual/NIAC.xml" )
-DocBook_FILE_LIST.append( "../manual/NXDL.xml" )
-DocBook_FILE_LIST.append( "../manual/preface.xml" )
-DocBook_FILE_LIST.append( "../manual/revhistory.xml" )
-DocBook_FILE_LIST.append( "../manual/rules.xml" )
-DocBook_FILE_LIST.append( "../manual/subversion.xml" )
-DocBook_FILE_LIST.append( "../manual/utilities.xml" )
-DocBook_FILE_LIST.append( "../manual/validation.xml" )
+
+
+def buildList(item):
+    path = os.path.join(NEXUS_DIR, item)
+    DocBook_FILE_LIST.append(path)
+
+
+buildList("applying-nexus.xml")
+buildList("authorgroup.xml")
+buildList("ClassDefinitions.xml")  # problems with <entry /> in <table>
+buildList("community.xml")
+buildList("datarules.xml")
+buildList("design.xml")
+buildList("faq.xml")
+buildList("fileformat.xml")
+buildList("h5py-example.xml")
+buildList("history.xml")
+buildList("installation.xml")
+buildList("introduction.xml")
+buildList("issues.xml")
+buildList("license.xml")
+buildList("mailinglist.xml")
+buildList("motivations.xml")
+buildList("napi-java.xml")
+buildList("NIAC.xml")
+buildList("NXDL.xml")
+buildList("preface.xml")
+buildList("revhistory.xml")
+buildList("rules.xml")
+buildList("subversion.xml")
+buildList("utilities.xml")
+buildList("validation.xml")
+buildList("classes/NXentry.xml")
 
 converter = db2rst.Db2Rst()
 converter.removeComments(False)
