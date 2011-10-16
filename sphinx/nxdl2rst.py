@@ -19,6 +19,7 @@ http://download.nexusformat.org/doc/html/ClassDefinitions-Base.html#NXentry
 
 import sys, os
 import lxml.etree
+import db2rst
 
 
 class Describe:
@@ -43,34 +44,43 @@ class Describe:
         rstFile = os.path.join(outputDir, self.nxdlType , self.nxdlName+ self.fileSuffix)
         path, _ = os.path.split(self.nxdlFile)
         
-        # make the XSLT transformation, see: http://lxml.de/xpathxslt.html#xslt
-        self.xsltFile = "nxdlformat.xsl"                        # could learn from the XML file?
-        xsltFile = os.path.join(path, self.xsltFile)
-        xslt = lxml.etree.XSLT( lxml.etree.parse(xsltFile) )    # prepare the transform
-        text = str( xslt( self.tree ) )                         # make the transform
-        
         root = self.tree.getroot()
         
         rest = self.make_heading(self.nxdlName, 1, self.nxdlName, True)
 
-        rest += ".. index::  ! classes - %s; %s\n\n" % (self.nxdlType, self.nxdlName)
-        rest += self.make_definition('category', self.nxdlType)
+        rest += ".. index::  ! . NXDL %s; %s\n\n" % (self.nxdlType, self.nxdlName)
+        rest += self.make_definition('category:', self.nxdlType)
         #N = ":index:`%s <single: ! %s; %s>`" % (self.nxdlName, self.nxdlType, self.nxdlName)
         URL = "http://svn.nexusformat.org/definitions/trunk/%s/%s.nxdl.xml" % (self.nxdlType, self.nxdlName)
         rest += self.make_definition('NXDL source:', "%s\n\n(%s)" % (self.nxdlName, URL) )
-        rest += self.make_definition('version', root.get('version', 'unknown') )
-        rest += self.make_definition('SVN Id', root.get('svnid', 'none') )
+        rest += self.make_definition('version:', root.get('version', 'unknown') )
+        rest += self.make_definition('SVN Id:', root.get('svnid', 'none') )
         extends = root.get('extends', 'none')
         if extends != "none":
             extends = ":ref:`%s`" % extends
         rest += self.make_definition('extends class:', extends )
         rest += self.make_definition('other classes included:', self.groups_list(root) )
         rest += self.make_definition('symbol list:', self.symbols_list(root) )
-        rest += self.make_definition('documentation:', "? process with db2rst ?" )  # TODO: 
+        rest += self.make_definition('documentation:', self.get_doc(root, "No documentation provided.") )  # TODO: 
 
         rest += "\n"
-        rest += self.make_heading("Basic Structure of " + self.nxdlName, 2)
+        rest += ".. rubric:: Basic Structure of **%s**\n\n" % self.nxdlName
+        # make the XSLT transformation, see: http://lxml.de/xpathxslt.html#xslt
+        self.xsltFile = "nxdlformat.xsl"                        # could learn from the XML file?
+        xsltFile = os.path.join(path, self.xsltFile)
+        xslt = lxml.etree.XSLT( lxml.etree.parse(xsltFile) )    # prepare the transform
+        text = str( xslt( self.tree ) )                         # make the transform
         rest += "::\n\n" + self.indented_lines(4, text)
+
+        rest += "\n"
+        rest += ".. rubric:: Comprehensive Structure of **%s**\n\n" % self.nxdlName
+        rest += '''
+=====================  ========  =========  ===================================
+Name and Attributes    Type      Units      Description (and Occurrences)
+=====================  ========  =========  ===================================
+class                  ..        ..         ..
+=====================  ========  =========  ===================================
+        '''
         
         '''
 Table 3.3. NXaperture
@@ -150,10 +160,10 @@ describe an additional information in a note*
         if len(groups) > 0:
             L = []
             for G in groups:
-                N = G.get('type')
+                N = ":ref:`%s`" % G.get('type')
                 if N not in L:
-                    L.append(":ref:`%s`" % N)
-            groups = ", ".join(sorted(L))
+                    L.append( N )
+            groups = ", ".join(sorted( L ))
         else:
             groups = "none"
         return groups
@@ -168,19 +178,32 @@ describe an additional information in a note*
         node = root.find( '{%s}symbols' % self.ns['nx'] )
         if node is not None:
             symbols = ""
-            DN = node.find( '{%s}doc' % self.ns['nx'] )  # TODO: doc needs db2rst
-            if DN is not None:
-                symbols += DN.text + "\n\n"
+            T = self.get_doc(node, None)
+            if T is not None:
+                symbols += T + "\n\n"
             for SN in lxml.etree.ETXPath( './/{%s}symbol' % self.ns['nx'] )(node):
                 S = "``%s``" % SN.get('name')
-                T = "%s" % SN.find( '{%s}doc' % self.ns['nx'] ).text  # TODO: doc needs db2rst
+                T = "%s" % self.get_doc(SN)
                 symbols += self.make_definition(S, T )
         return symbols
+    
+    def get_doc(self, node, undefined = ""):
+        DN = node.find( '{%s}doc' % self.ns['nx'] )
+        if DN is None:
+            doc = undefined
+        else:
+            # TODO: this could be much, much better
+            obj = db2rst.Convert(DN)
+            obj.parent.ns = "{%s}" % "http://definition.nexusformat.org/nxdl/3.1"
+            doc = str(obj).strip() + "\n"
+            #doc = DN.text
+        return doc
+
 
 
 if __name__ == '__main__':
     NXDL_DIRS = ['../base_classes', '../applications', '../contributed_definitions', ]
-    OUTPUT_DIR = '.'
+    OUTPUT_DIR = os.path.join(*list('./source/volume2/NXDL'.split('/')))
     nxdl_file_list = []
     for dir in NXDL_DIRS:
         fulldir = os.path.abspath(dir)
@@ -196,9 +219,7 @@ if __name__ == '__main__':
                     rstFile, restText = obj.report(OUTPUT_DIR)
                     print rstFile
                     print restText
-                    # FIXME: temporary only
-                    _, n = os.path.split(rstFile)
-                    f = open (n, 'w')
+                    f = open (rstFile, 'w')
                     f.write(restText)
                     f.close()
     print len(nxdl_file_list), ' NXDL files discovered'

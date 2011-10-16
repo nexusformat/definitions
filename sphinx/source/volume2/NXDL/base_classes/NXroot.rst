@@ -1,0 +1,62 @@
+..  _NXroot:
+
+######
+NXroot
+######
+
+.. index::  ! . NXDL base_classes; NXroot
+
+category:
+    base_classes
+
+NXDL source:
+    NXroot
+    
+    (http://svn.nexusformat.org/definitions/trunk/base_classes/NXroot.nxdl.xml)
+
+version:
+    1.0
+
+SVN Id:
+    $Id$
+
+extends class:
+    :ref:`NXobject`
+
+other classes included:
+    :ref:`NXentry`
+
+symbol list:
+    none
+
+documentation:
+    Definition of the root NeXus group.
+    
+
+
+.. rubric:: Basic Structure of **NXroot**
+
+::
+
+    NXroot (base class, version 1.0)
+      @NX_class
+      @file_time
+      @file_name
+      @file_update_time
+      @NeXus_version
+      @HDF_version
+      @HDF5_Version
+      @XML_version
+      @creator
+      NXentry
+    
+
+.. rubric:: Comprehensive Structure of **NXroot**
+
+
+=====================  ========  =========  ===================================
+Name and Attributes    Type      Units      Description (and Occurrences)
+=====================  ========  =========  ===================================
+class                  ..        ..         ..
+=====================  ========  =========  ===================================
+        

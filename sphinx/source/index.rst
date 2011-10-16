@@ -25,49 +25,5 @@ http://nexusformat.org
    contents
    cheatsheet
    markup-spec
-   classes/*
 
-.. section symbols in order of use
-   ## ./index
-     = ./contents: Contents
-	   = ./preface: Preface
-	   - ./preface: Representation of data examples
-	   - ./preface: Class path specification
-	   == ./volume1/index: NeXus: User Manual
-	     ** ./volume1/introduction: NeXus Introduction
-		 == ./volume1/introduction: What is NeXus?
-		 - ./volume1/introduction: A Set of Design Principles
-		 ^ ./volume1/introduction: Example of a NeXus File
-		 - ./volume1/introduction: A Set of Data Storage Objects
-		 ^ ./volume1/introduction: verysimple.nxdl.xml
-		 - ./volume1/introduction: A Set of Subroutines
-		 ^ ./volume1/introduction: Simple Example ... Reading ...
-		 - ./volume1/introduction: NeXus Scientific Community
-		 == ./volume1/introduction: NAPI ...
-		 - ./volume1/introduction: How do I write a NeXus file?
-		 ^ ./volume1/introduction: Writing a simple NeXus file
-		 - ./volume1/introduction: How do I read a NeXus file?
-		 ^ ./volume1/introduction: Reading a simple NeXus file
-		 - ./volume1/introduction: How do I browse a NeXus file?
-		 ^ ./volume1/introduction: Using ``NXbrowse``
-		 ** ./volume1/design: NeXus Design
-		 == ./volume1/design: NeXus Objects and Terms
-		 + ./volume1/design: Data Groups
-		 + ./volume1/design: Data Fields
-		 + ./volume1/design: Data Attributes
-		 - ./volume1/design: Example NeXus Data Attributes
-		 - ./volume1/design: NeXus File Global Attributes
-		 + ./volume1/design: Data Links
-		 - ./volume1/design: Linking in a NeXus file
-		 + ./volume1/design: NeXus Base Classes
-		 - ./volume1/design: `NXdata` Facilitates Automatic Plotting
-		 + ./volume1/design: NeXus Application Definitions
-		 + ./volume1/design: NeXus Coordinate Systems
-		 - ./volume1/design: McStas and `NXgeometry` System
-		 - ./volume1/design: Simple (Spherical Polar) Coordinate System
-		 - ./volume1/design: Coordinate Transformations
-		 . ./volume1/design: Actions of standard NeXus fields
-		 more to come
-	   == ./volume2/index: NeXus: Reference Documentation
-	   = ./authors: Documentation Authors
-     = ./contents: Indices and tables
+This manual built |today|

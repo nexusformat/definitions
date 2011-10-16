@@ -4,7 +4,7 @@
 .. _Introduction-DesignPrinciples:
 
 A Set of Design Principles
----------------------------------------------------------------------
+--------------------------
 
 .. index:: NeXus; Design Principles
 
@@ -46,8 +46,8 @@ See :ref:`Design-Groups` for more details.
 
 4. :ref:`Design-Links`
 	Links are used to reference the plottable data
-	from ``NXdata`` when the data is provided in 
-	other groups such as ``NXmonitor`` or ``NXdetector``.
+	from :ref:`NXdata` when the data is provided in 
+	other groups such as :ref:`NXmonitor` or :ref:`NXdetector`.
 
 .. index:: NeXus basic motivation; default plot
 .. index:: link
@@ -63,7 +63,7 @@ is designed to make it easy to navigate a NeXus file.
 .. _Introduction-ExampleFile:
 
 Example of a NeXus File
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 The following diagram shows an example of a NeXus data file 
 represented as a tree structure.
@@ -89,17 +89,17 @@ browsing through a file.
 .. _Introduction-ImportantClasses:
 
 Important Classes
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
 
 Here are some of the important classes found in nearly all NeXus files. A
 complete list can be found in the NeXus Design section (:ref:`NeXus-Design`).
 
-.. note:: ``NXentry`` and ``NXdata``
+.. note:: :ref:`NXentry` and :ref:`NXdata`
 	are the only two classes **required** in a valid NeXus data file.
 
 .. index:: classes; base class: NXentry
 
-``NXentry``
+:ref:`NXentry`
 	(**Required:**)
 	The top level of any NeXus file contains one or more
 	groups with the class ``NXentry``.
@@ -114,7 +114,7 @@ complete list can be found in the NeXus Design section (:ref:`NeXus-Design`).
 .. index:: classes; base class: NXdata
 .. index:: NeXus basic motivation; default plot
 
-``NXdata``
+:ref:`NXdata`
 	(**Required:**)
 	Each ``NXentry`` group contains one or more
 	groups with class ``NXdata``. 
@@ -128,7 +128,7 @@ complete list can be found in the NeXus Design section (:ref:`NeXus-Design`).
 
 .. index:: classes; base class: NXsample
 
-``NXsample``
+:ref:`NXsample`
 	A ``NXentry`` group will often contain a group
 	with class ``NXsample``. 
 	This group contains information pertaining to
@@ -138,7 +138,7 @@ complete list can be found in the NeXus Design section (:ref:`NeXus-Design`).
 
 .. index:: classes; base class: NXinstrument
 
-``NXinstrument``
+:ref:`NXinstrument`
 	There might also be a group with class
 	``NXinstrument``.
 	This is designed to encapsulate all the
@@ -161,7 +161,7 @@ information available in an intuitively obvious way if it is required.
 .. _Introduction-SimpleExample:
 
 Simple Data File Example
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^
 
 NeXus data files do not need to be complicated. 
 In fact, the following diagram shows an extremely simple NeXus file
@@ -186,7 +186,7 @@ sets.  In the next example, a NeXus data file is shown as XML:
 .. _ex.verysimple.xml:
 
 ``verysimple.xml``: A very simple NeXus Data file (in XML)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. code-block:: xml
 	:linenos: 
@@ -236,7 +236,7 @@ a short Python program and NeXpy:
 .. _ex.verysimple.py:
 
 ``verysimple.py``: Using NeXpy to write a very simple NeXus Data file (in HDF5)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 .. index:: example; very simple
 .. literalinclude:: ../../../../../manual/examples/verysimple.py
 	:linenos: 

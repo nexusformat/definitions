@@ -4,9 +4,9 @@
 
 ..  _NeXus-Design:
 
-***************************************************************************
+************
 NeXus Design
-***************************************************************************
+************
 
 This chapter actually defines the rules to use for 
 writing valid NeXus files. An explanation of NeXus objects 
@@ -41,9 +41,9 @@ least by those familiar with the experimental technique.
 
 .. _Design-Objects:
 
-=====================================================================
+=======================
 NeXus Objects and Terms
-=====================================================================
+=======================
 
 Before discussing the design of NeXus in greater detail 
 it is necessary to define the objects and terms 
@@ -95,7 +95,7 @@ NeXus files will be defined in more detail.
 .. _Design-Groups:
 
 Data Groups
-++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++
 
 .. index:: data objects; groups
 .. index:: hierarchy
@@ -116,7 +116,7 @@ names start with `NX`.
 .. _Design-Fields:
 
 Data Fields
-++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++
 
 .. index:: data objects; fields
 .. index:: data objects; data items
@@ -133,7 +133,7 @@ group in which they are stored.
 .. _Design-Attributes:
 
 Data Attributes
-++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++
 
 .. index:: data objects; attributes
 .. index:: units
@@ -159,7 +159,7 @@ names, which must be unique in each field.
 .. _table.ExampleAttributes:
 
 Example NeXus Data Attributes
----------------------------------
+-----------------------------
 
 For the full specification of attributes, 
 see :ref:`volume2.NXDL.section`.
@@ -246,7 +246,7 @@ interpretation      NX_CHAR    Describes how to display the data.
 .. _table.GlobalAttributes:
 
 NeXus File Global Attributes
------------------------------------
+----------------------------
 
 ================= ========== =========================================
 Name              Type       Description
@@ -266,7 +266,7 @@ creator           NX_CHAR    Facility or program where the file
 .. _Design-Links:
 
 Data Links
-++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++
 
 .. index:: link
 .. index:: target, link
@@ -287,7 +287,7 @@ a more descriptive representation of the concept of linking.
 .. _fig.data-linking:
 
 Linking in a NeXus file
------------------------------------
+-----------------------
 
 .. figure:: data-linking.png
 	:width: 400 pt
@@ -298,7 +298,7 @@ Linking in a NeXus file
 .. _Design-NeXusClasses:
 
 NeXus Classes
-++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++
 
 .. index:: NXDL
 .. index:: rules; naming
@@ -348,53 +348,53 @@ file (`NXentry`, `NXcollection`, `NXinstrument`,
 classes which have special uses which need to be 
 mentioned here:
 
-`NXdata`
+:ref:`NXdata`
     `NXdata` is used to identify the default plottable data. 
     The notion of a default plot of data is a basic 
     motivation of NeXus. 
 
-`NXlog`
+:ref:`NXlog`
     `NXlog` is used to store time stamped data like the 
     log of a temperature controller. Basically you give 
     a start time, and arrays with a difference in seconds 
     to the start time and the values read. 
 
-`NXnote`
+:ref:`NXnote`
     `NXnote` provides a place to store general notes, 
     images, video or whatever. A mime type is stored 
     together with a binary blob of data. Please use this 
     only for auxiliary information, for example an image 
     of your sample, or a photo of your boss. 
 
-`NXgeometry`
-    `NXgeometry` and its subgroups `NXtranslation`, 
-    `NXorientation`, `NXshape` are used to store absolute 
+:ref:`NXgeometry`
+    `NXgeometry` and its subgroups :ref:`NXtranslation`, 
+    :ref:`NXorientation`, and :ref:`NXshape` are used to store absolute 
     positions in the laboratory coordinate system or to 
     define shapes. 
 
 These groups can appear anywhere in the NeXus hierarchy, 
 where needed. Preferably close to the component they 
-annotate or in a `NXcollection`. All of the base classes 
+annotate or in a :ref:`NXcollection`. All of the base classes 
 are documented in the reference manual. 
 
 .. _NXdata-facilitates-TheDefaultPlot:
 
 `NXdata` Facilitates Automatic Plotting
-----------------------------------------------
+---------------------------------------
 
 .. index:: NeXus basic motivation; default plot
 .. index:: automatic plotting, NeXus basic motivation, default plot
 .. index:: dimension scale
 
 The most notable special base class 
-(also known as *group*) in NeXus is `NXdata`.  
+(also known as *group*) in NeXus is :ref:`NXdata`.  
 `NXdata` is the answer to a basic motivation of NeXus 
 to facilitate automatic plotting of data. 
 `NXdata` is designed to contain the main dataset 
 and its associated dimension scales (axes) of a 
 NeXus data file. The usage scenario is that an 
 automatic data plotting program just opens a 
-`NXentry` and then continues to search for any 
+:ref:`NXentry` and then continues to search for any 
 `NXdata` groups. These `NXdata` groups represent 
 the plottable data.  Here is the way an 
 automatic plotting program ought to work:
@@ -445,7 +445,7 @@ automatic plotting program ought to work:
 .. _Design-NeXusApplications:
 
 NeXus Application Definitions
-++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++
 
 The objects described so far provide us with the means to 
 store data from a wide variety of instruments, simulations 
@@ -470,9 +470,9 @@ application definition.
    is as a contract between a file writer and a file consumer
    (reader). A contract which reads:
    
-   *If you write your files
-   following a particular NeXus application definition,
-   I can process these files with my software.*
+      *If you write your files
+      following a particular NeXus application definition,
+      I can process these files with my software.*
 
 Yet another way to look at a NeXus application definition 
 is to understand it as an interface definition between data 
@@ -493,7 +493,7 @@ its compliance with its application definition.
 .. _Design-CoordinateSystem:
 
 NeXus Coordinate Systems
-++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++
 
 .. index:: geometry
 .. index:: McStas
@@ -533,7 +533,7 @@ absolute coordinates in the laboratory system.
 .. _Design-Coordinate-NXgeometry:
 
 McStas and `NXgeometry` System
------------------------------------------------
+------------------------------
 
 .. index:: geometry
 .. index:: McStas
@@ -593,7 +593,7 @@ component as a vector of in the McStas coordinate system.
 .. _Design-Coordinate-Spherical:
 
 Simple (Spherical Polar) Coordinate System
------------------------------------------------
+------------------------------------------
 
 .. index:: geometry
 
@@ -636,7 +636,7 @@ This situation is shown in figure
 .. _CoordinateTransformations:
 
 Coordinate Transformations
------------------------------------------------
+--------------------------
 
 .. index:: coordinates; transformations
 
@@ -670,7 +670,7 @@ Order
 .. _tb.table-transform:
 
 Actions of standard NeXus fields
-..............................................
+................................
 
 ================= ==================== =================
 Field Name        transformation_type  vector

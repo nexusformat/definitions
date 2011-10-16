@@ -68,6 +68,7 @@ class Db2Rst():
         self.linkend = "linkend"            # can modify if namespace is present (a hack until namespaces are supported here)
         self.output_dir = None              # if converting a set of docbook files
         self.namespacePrefix = None         # as used in the DocBook file
+        self.ns = ""
         self.useStdTableHandler = True      # option to pick an alternate handler for <table>
     
     def process(self, dbfile):
