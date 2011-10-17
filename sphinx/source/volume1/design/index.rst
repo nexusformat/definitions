@@ -164,7 +164,7 @@ see :ref:`volume2.NXDL.section`.
 
 +---------------------+----------+-------------------------------------------+
 | Name                | Type     | Description                               |
-+---------------------+----------+-------------------------------------------+
++=====================+==========+===========================================+
 | units               | NX_CHAR  | Data units, given as character strings,   |
 |                     |          | must conform to the NeXus units standard. |
 |                     |          | See the "NeXus units" section             |
@@ -243,7 +243,7 @@ NeXus File Global Attributes
 
 +------------------+----------+--------------------------------------+
 | Name             | Type     | Description                          |
-+------------------+----------+--------------------------------------+
++==================+==========+======================================+
 | file_name        | NX_CHAR  | Original name of NeXus file.         |
 +------------------+----------+--------------------------------------+
 | file_time        | ISO 8601 | Date and time of file creation       |
