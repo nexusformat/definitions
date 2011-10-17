@@ -386,9 +386,7 @@ to facilitate automatic plotting of data.
 and its associated dimension scales (axes) 
 :index:`dimension scale`
 of a NeXus data file. The usage scenario is that an 
-automatic data plotting program 
-:index:`automatic plotting, NeXus basic motivation, default plot`
-just opens a 
+automatic data plotting program just opens a 
 :ref:`NXentry` and then continues to search for any 
 `NXdata` groups. These `NXdata` groups represent 
 the plottable data.  Here is the way an 

@@ -15,7 +15,7 @@ Naming Conventions
 ------------------
 
 Group and field names used within NeXus follow a naming 
-convention which adheres to these rules. :index:`rules; NeXus; naming`
+convention which adheres to these rules. :index:`rules; naming`
 The names of NeXus *group* and *field* objects 
 must contain only a restricted set of characters.
 This set may be described by this regular expression syntax.

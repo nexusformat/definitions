@@ -66,9 +66,8 @@ Example of a NeXus File
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 The following diagram shows an example of a NeXus data file 
-represented as a tree structure.
-
-.. index:: hierarchy; example NeXus data file
+:index:`example;  NeXus data file` represented as a tree 
+structure.  :index:`hierarchy; example NeXus data file`
 
 .. figure:: Hierarchy.png
 	:width: 300 pt
