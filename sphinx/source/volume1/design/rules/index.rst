@@ -2,9 +2,9 @@
 
 .. _Rules:
 
-===========================================================
+================================================
 Rules for Structuring Information in NeXus Files
-===========================================================
+================================================
 
 .. index:: rules; NeXus
 .. index:: rules; naming
@@ -29,35 +29,35 @@ figure <link xlink:href="#table.RawData">Raw Data</link> are provided.
 .. _Rules-NXentry-raw-data:
 
 Content of a Raw Data ``NXentry`` Group
----------------------------------------------
+---------------------------------------
       
 An example raw data hierarchy is shown in the next figure (only showing 
 the relevant parts of the data hierarchy). In the example shown, the 
-``data`` field in the ``NXdata`` group is linked to the 2-D detector data 
+``data`` field in the :ref:`NXdata` group is linked to the 2-D detector data 
 (a 512x512 array of 32-bit integers) which has the attribute ``signal=1``. 
 Note that ``[,]`` represents a 2D array.
 
 .. code-block:: text
-	:linenos:
+   :linenos:
 
-	entry:NXentry
-		instrument:NXinstrument
-			source:NXsource
-			....
-			detector:NXdetector
-				data:NX_INT32[512,512]
-					@signal = 1
-		sample:NXsample
-		control:NXmonitor
-		data:NXdata
-			data --> /entry/instrument/detector/data
+   entry:NXentry
+      instrument:NXinstrument
+         source:NXsource
+         ....
+         detector:NXdetector
+            data:NX_INT32[512,512]
+               @signal = 1
+      sample:NXsample
+      control:NXmonitor
+      data:NXdata
+         data --> /entry/instrument/detector/data
      
-An ``NXentry`` describing raw data contains at least a ``NXsample``, one 
-``NXmonitor``, one ``NXdata`` and a ``NXinstrument`` group. It is good 
-practice to use the names ``sample`` for the ``NXsample`` group, 
-``control`` for the ``NXmonitor`` group holding the experiment 
-controlling monitor and ``instrument`` for the ``NXinstrument`` group. 
-The ``NXinstrument`` group contains further groups describing the 
+An :ref:`NXentry` describing raw data contains at least a :ref:`NXsample`, one 
+:ref:`NXmonitor`, one :ref:`NXdata` and a :ref:`NXinstrument` group. It is good 
+practice to use the names ``sample`` for the :ref:`NXsample` group, 
+``control`` for the :ref:`NXmonitor` group holding the experiment 
+controlling monitor and ``instrument`` for the :ref:`NXinstrument` group. 
+The :ref:`NXinstrument` group contains further groups describing the 
 individual components of the instrument as appropriate.
 
 .. index:: hierarchy

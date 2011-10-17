@@ -1,5 +1,7 @@
 .. $Id$
 
+.. _volume2.NXDL.section:
+
 ##############################
 NeXus: Reference Documentation
 ##############################

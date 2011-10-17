@@ -1,8 +1,8 @@
 .. $Id$
 
-###############################################
+##########
 Cheatsheet
-###############################################
+##########
 
 This is a cheat sheet and will be removed later.
 
@@ -22,7 +22,7 @@ symbol   description
 
 
 Typesetting Math and Equations
-+++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++
 
 Enjoy inline math such as: :math:`E=mc^2`
 using LaTeX markup.  You will need the ``matplotlib``
@@ -54,7 +54,7 @@ in `conf.py`::
    extensions.append( 'matplotlib.sphinxext.mathmpl' )
 
 Other Links
-+++++++++++++++++++++++++++++++++++++++++++++
++++++++++++
 
 Here are some links to more help about reStructuredText formatting.
 
@@ -84,7 +84,7 @@ Curious
 
 
 Demo list-table
-+++++++++++++++++++++++
++++++++++++++++
 
 Does this work?
 
@@ -113,7 +113,7 @@ It was found on this page
    Use it for the tables in the NXDL description.
 
 Numbered Lists
-++++++++++++++++++++++
+++++++++++++++
 
 What about automatically numbering a list?
 
@@ -139,7 +139,7 @@ What about automatically numbering a list?
 
 
 About Linking
-++++++++++++++++++++++
++++++++++++++
 
 What about a link to :ref:`indirect hyperlinks` on another page?
 
@@ -166,7 +166,7 @@ hyperlink definition, such as on the top page of these docs::
 This is the correct link: :ref:`NeXus User Manual`.
 
 Missing Links
-++++++++++++++++++++++
++++++++++++++
 
 These sections show up as missing links.
 
@@ -177,37 +177,31 @@ This works: :ref:`History` (or :ref:`history`).
 .. _History:
 
 history (not converted yet)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _Utilities:
 
 utilities (not converted yet)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _nxdl_tutorial-creatingnxdlspec:
 
 nxdl_tutorial-creatingnxdlspec (not converted yet)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _nxdata-structure:
 
 nxdata-structure (not converted yet)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-.. _volume2.NXDL.section:
-
-volume2.NXDL.section (not converted yet)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _NIAC-link:
 
 NIAC description
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
 
 .. _example.data-linking:
 
 example.data-linking (not converted yet)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. _cross-reference example:
 

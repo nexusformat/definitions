@@ -59,7 +59,7 @@ class Db2Rst():
     into ReST: Restructured Text source code documents
     '''
     
-    def __init__(self):
+    def __init__(self): # TODO: add and handle optional argument of a namespace dictionary
         self.namespaces = {}
         self.remove_comments = False
         self.write_unused_labels = False
@@ -176,9 +176,11 @@ class Convert(object):
     ''' converts DocBook tree into reST '''
     
     def __init__(self, el, parent = None):
+         # TODO: add and handle optional argument of a namespace dictionary
         self.el = el
         self.files = {}
         if parent is None:
+             # TODO: add and handle optional argument of a namespace dictionary
             parent = Db2Rst()       # looks inverted but provides basic constants
         self.parent = parent        # db2rst.Db2Rst object that called the converter
         self._not_handled_tags = set()      # to avoid duplicate error reports
@@ -226,7 +228,7 @@ class Convert(object):
             return self._concat(el)
     
     def _warn(self, s):
-        sys.stderr.write("WARNING: %s\n" % s)
+        sys.stderr.write("WARNING: %s\n" % s)   # TODO: refactor to use logging package
     
     def _supports_only(self, el, tags):
         "print warning if there are unexpected children"

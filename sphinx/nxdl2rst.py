@@ -215,6 +215,7 @@ if __name__ == '__main__':
                     nxdlFile = os.path.join(fulldir, file)
                     nxdl_file_list.append(nxdlFile)
                     obj = Describe()
+                     # TODO: add and handle optional argument of a namespace dictionary
                     obj.parse(nxdlFile)
                     rstFile, restText = obj.report(OUTPUT_DIR)
                     print rstFile
