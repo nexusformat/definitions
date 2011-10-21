@@ -197,17 +197,21 @@ NeXusManual.html : docbook
 	  --stringparam use.extensions 0 \
 	  --stringparam callout.graphics.path "img/callouts/" \
 	  --stringparam chunker.output.encoding UTF-8 \
+	  --stringparam html.stylesheet  nexus_style.css \
 	  $(DBXSL)/html/onechunk.xsl \
 	  NeXusManual.xml
 	mv index.html $@
 
 html/index.html : docbook
 	[ -d html ] || mkdir html
-	( cd html; xsltproc --xinclude \
+	( cd html; \
+	  cp ../nexus_style.css ./;  \
+	  xsltproc --xinclude \
 	  --stringparam use.id.as.filename 1 \
 	  --stringparam use.extensions 0 \
 	  --stringparam callout.graphics.path "../img/callouts/" \
 	  --stringparam chunker.output.encoding UTF-8 \
+	  --stringparam html.stylesheet  nexus_style.css \
 	  $(DBXSL)/html/chunk.xsl \
 	  ../NeXusManual.xml; )
 
