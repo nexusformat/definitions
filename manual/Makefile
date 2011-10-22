@@ -202,6 +202,9 @@ NeXusManual.html : docbook
 	  NeXusManual.xml
 	mv index.html $@
 
+#CHUNKED_HTML_XSL:=$(DBXSL)/html/chunk.xsl
+CHUNKED_HTML_XSL:=../nexus_html_chunk.sty
+
 html/index.html : docbook
 	[ -d html ] || mkdir html
 	( cd html; \
@@ -212,7 +215,7 @@ html/index.html : docbook
 	  --stringparam callout.graphics.path "../img/callouts/" \
 	  --stringparam chunker.output.encoding UTF-8 \
 	  --stringparam html.stylesheet  nexus_style.css \
-	  $(DBXSL)/html/chunk.xsl \
+	  $(CHUNKED_HTML_XSL) \
 	  ../NeXusManual.xml; )
 
 ###############################################################################
