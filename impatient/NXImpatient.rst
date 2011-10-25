@@ -1,0 +1,576 @@
+.. image:: NeXus-logo.png
+  :height: 500px
+  :width:  900px
+
+=======================
+NeXus for the Impatient
+=======================
+
+Why NeXus?
+===========
+
+The NeXus data format is a tool which has been designed to 
+solve the problems of the travelling scientists. A travelling 
+scientist is a person who does experiments at several different 
+neutron, x-ray or muon facilities. Such a person will apply to 
+different facilities with different proposals in order to get 
+his science done by combining the data thus collected at various 
+sources. But the life of a travveling scientist is complicated by 
+some of the following factors:
+
+* He will find several different file formats at each facility. Some 
+  of them may even be proprietary formats which only can be read 
+  by expensive tools.
+* He wastes time writing reading code to get the data into his favourite
+  data analysis software.
+* He may need many different files in different formats 
+  plus local knowledge plus notes in order to analyse data.
+* He has to deal with inefficient data formats.
+* He cannot read his collaborators data.
+
+NeXus is designed to solve these problems by defining a data 
+format with the following properties:
+
+self describing
+   This means that the content of the file can be discovered 
+   without prior knowledge.
+extendable
+   This means that you can always add more data to the file.
+platform independent
+   It must be readable on unix, mac, windows or whatever computers.
+public domain
+   Both the file format specifications and the API to access the file 
+   must be in the public domain. 
+efficient
+   Data from modern high speed detectors should be read quickly.
+complete
+   All data required for typical usage cases should be in one file. 
+   Better even, a full beam line description.
+flexible
+   In order to be applicable to a wild variety of applications.
+
+
+NeXus Concepts
+===============
+
+NeXus uses HDF-5 files as container files. HDF-5 is a popular scientific 
+data format which has been developed by the National Center for Supercomputing 
+Applications (NCSA), University of Illinois Urbana-Champagne and is currently 
+being maintained by the Hdfgroup. There is support for HDF-5 in many scientific 
+packages. Other users of HDF-5 include NASA, Boing, meteorological offices around 
+the world and many more. NeXus thus is able to inherit many desirable properties 
+for free from HDF-5. These are: extendable, self describing, platform independent 
+, public domain and efficient. For historical reasons NeXus supports two further 
+container file formats: HDF-4 and XML. The use of these formats is now deprecated. 
+
+In order to understand NeXus it is important to know about some of the objects 
+which live in a HDF-5 file:
+
+groups
+   Allow to structure information in a file. Groups work pretty much like 
+   directories in a file system.
+datasets
+   These are multidimensional arrays of numbers of pretty much any known number 
+   type.
+attributes
+   Attributes are little morsels of metadata which can be attached to either 
+   groups or datasets.
+links
+   Links are pointers to HDF-5 objects which live in a different place in the 
+   hierarchy. They remove the need to copy data when a given item needs to be 
+   referenced at multiple places in a HDF-5 hierarchy. Links pretty much work
+   like symboloc links in a unix file system.
+
+But HDF-5 does know nothing about the application domain of neutron, muon or 
+x-ray scattering. In order to remedy this, NeXus adds a couple of things on top 
+of HDF-5:
+
+A group hierarchy in the HDF-5 file
+  A group hierarchy in the files helps with a couple of issues. If a full beamline 
+  description is stored, then this can easily be hundreds of parameters. A hierarchy 
+  brings some order into a potential mess. The hierarchy also allows us to store more 
+  then one experiment and/or the result of data analysis in the same file. Thus a 
+  NeXus file may contain a complete scientific workflow from rawdata to publishable 
+  results.
+Rules for storing data in a file
+  NeXus wants you to store physical values, not encoder positions,
+  in C storage order. NeXus also requires you to specifiy the units of datasets 
+  in a special attribute. Other rules allow to locate the axes required to plot 
+  a multi dimensional dataset. All those rules serve to minimize the amount of 
+  variations and surprises when accessing NeXus files.   
+A dictionary of field names
+  It does not help much if you find an item like *stx* in a file. A meaning is asked 
+  for. NeXus provides a dictionary of dataset names applicable to neutron, 
+  x-ray or muon scattering and documents their meanings.
+Application Definitions
+  In order to import data seemlessly into an application program the file producer 
+  and the file consumer have to agree what has to be in the NeXus file for a certain 
+  use case. This is the purpose of an application definition. Application definitions 
+  are used to define strict standards. NeXus files can be verified against application 
+  definitions with a special tool called nxvalidate. 
+Tools
+  In order to make dealing with HDF-5 files easier, NeXus has provided an API for reading 
+  and writing files for many programming languages. Moreover, NeXus has coded some 
+  tools for converting to and from NeXus as well as plotting and viewing utilities.
+
+
+The NeXus File Hierarchy
+-------------------------
+
+NeXus defines two main group hierarchy types:
+
+#. A NeXus Raw Data File Hierarchy
+#. A NeXus Processed Data File Hierarchy
+
+There are additional hierarchy variations for multi method instruments and for a 
+general purpose dump structure. Documentation for these hierarchy types and be 
+found in the NeXus manual.
+
+
+The NeXus Raw Data File Hierarchy
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This hierarchy is applicable to raw data files as written by some facility instrument.::
+
+	entry:NXentry
+		instrument:NXinstrument
+			source:NXsource
+			....
+			detector:NXdetector
+				data:NX_INT32[512,512]
+					@signal = 1
+		sample:NXsample
+		control:NXmonitor
+		data:NXdata
+			data --> /entry/instrument/detector/data
+
+
+A few words on notation in this representation:
+
+indentation
+   Describes hierarchy level
+name:NXname
+   This describes a NeXus group. The second name starting with NX is the NeXus 
+   classname of the group. NeXus uses group classnames in order to identify of what 
+   type the group is. This is necessary because often it is required to have multiple 
+   groups of the same type. An example are detectors. 
+name:numbertype[dim,dim,...]
+   This describes a dataset of the numbertype with dimensions dim, dim, .....
+@name=value
+   This describes an attribute name with value value.
+name -->  path
+   Describes a link from name to another data item living at path.
+
+
+With this out of the way, let us look at the raw data file 
+hierarchy in more detail:
+
+entry:NXentry
+   At the root level of a NeXus file are 1 to many NXentry groups. 
+   This helps us support multiple experiments in the same file. 
+   Within NXentry there are several other groups:
+   
+   sample:NXsample
+      This group contains datasets which describe everything to 
+      know about the sample.
+   instrument:NXinstrument
+      This group contains further groups and fields which describe 
+      the components of the instrument used for this experiment. 
+   monitor:NXmonitor
+      This group contains the counting information: which preset 
+      was used, how long we counted, monitor counts etc. 
+   data:NXdata
+      This is a convenience group. It is supposed to hold the most 
+      important data items of the experiment. A general plotting 
+      program ought to be able to look at this group alone and put
+      up a default plot of the experiment.
+
+ 
+The NeXus Processed Data Hierarchy
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+This is simplified hierarchy style applicable to the results of data 
+reduction or data analysis applications. Such results can consist of 
+large multidimensional arrays. So it can be advisable to use NeXus  
+for storing such data.::
+
+	entry:NXentry
+		reduction:NXprocess
+			program_name = "pyDataProc2010"
+			version = "1.0a"
+			input:NXparameter
+				filename = "sn2013287.nxs"
+		sample:NXsample
+		data:NXdata
+			data
+				@signal = 1
+ 
+
+Here the NXentry contains:
+
+data:NXdata
+   Contains the result of the data reduction directly, together with 
+   the axes required to use the data. 
+sample:NXsample
+   Contains again the sample information.
+reduction:NXprocess
+   This group is used to document what kind of processing happened to 
+   get the results stored in this NXentry. Here NeXus documents the name 
+   and version of the program used to do the reduction. NXprocess contains
+   further groups:
+   
+   input:NXparameter
+     These are NXparameter groups. They contain the input and output 
+     parameters of the data reductions program. NeXus does not provide 
+     standard names here but rather provides containers to store this 
+     information which is important to make results reproducable.
+
+Optionally, a processed data entry can contain an NXinstrument group 
+in order to describe the instrument if this matters at this stage. 
+
+
+Scans in NeXus
+---------------
+
+Scanning means to vary some variable in a certain defined way and collect 
+data at any step. Scans are a versatile experimental technique and are 
+thus very difficult to standardize. NeXus solves this problem through 
+a couple of rules. Before these rules can be discussed, the symbol **NP**
+has to be introduced. NP is simply the number of scan points. 
+
+#. During a scan store each varied variable as array of length NP at its 
+   appropriate place in the NeXus hierarchy.
+#. For area detectors, the first dimensions becomes NP. Example: data from 
+   an area detector is stored as data[NP,xdim,ydim]
+#. In NXdata, create links to all varied parameters and the detector 
+   data. Thus a representation similar to the conventional table 
+   representation of a scan is achieved. 
+
+This is an example of a NeXus raw data file describing a scan where the 
+sample is rotated and data collected in an area detector.::
+
+	entry:NXentry
+		instrument:NXinstrument
+			detector:NXdetector
+				data:[NP,xsize,ysize]
+					@signal = 1
+		sample:NXsample
+			rotation_angle[NP]
+				@axis=1
+		control:NXmonitor
+			data[NP]
+		data:NXdata
+			data --> /entry/instrument/detector/data
+			rotation_angle --> /entry/sample/rotation_angle
+
+
+NeXus Benefits
+================
+
+When trying to establish as a data standard we encounter a couple of 
+challenges. Some of these hinder the NeXus effort:
+
+Science does new things
+   By definition science is about doing new things. Of course new things 
+   cannot be forced into strict standards. Thus any standardization effort 
+   in science has its limits. Having said this, in many experiments not the 
+   technique but the sample is important. Here a standard can help.
+Consensus
+   In order to establish a standard a a lot of people need to agree. 
+Resources
+   A data standard requires scientific programming resources in order to 
+   be implemented in DAQ and DA software systems. Scientific programming 
+   resources are scarce. The result is that we see that new things get done 
+   with NeXus. But we fail to make an impact when working scientific 
+   workflows from DAQ to publication have already been established.
+
+But then there are lot of benefits to be gained from having the NeXus 
+data standard:
+
+Discoverable format
+   By using a discoverable format like NeXus, HDF-5, people have a chance 
+   to figure out what is in their data files.
+NeXus dictionary
+   Using field names from a well documented dictionary gives meaning 
+   to the data in the file.
+Programming
+   Using suitable programming techniques a data processing program 
+   can read any NeXus file which contains the required data easily.
+Storing complete data
+   Storing as much data as possible takes a little effort when writing.
+   But benefits include:
+
+     * The file will include the necessary fields for yet unforseen ways to 
+       analyse the data.
+     * If something is wrong with the data it becomes possible to figure 
+       out what went wrong.
+     * There is a better record of what has been measured. This helps to 
+       protect against scientific fraud.
+Application definitions
+   This is the maximum, the holy grail. With application definitions 
+   implemented both in DAQ and DA software, all data handling problems 
+   go away.
+
+
+Reading NeXus Files
+====================
+
+The simplest way to read and  and plot a NeXus file is through the PyTree API::
+
+    nx.load('powder.h5').plot()
+
+
+In order for this to be possible, PyTree uses the NeXus conventions to locate 
+the plotable data and the axes to use. Not shown is the python bookkeeping 
+code for loading the necessary packages.
+
+
+Using the lower level NeXus python API this becomes::
+
+   nxfile = nxs.open('powder.h5','r')
+   nxfile.openpath('/entry1/data1/two_theta')
+   x = nxfile.getdata()
+   nxfile.openpath('/entry1/data1/counts')
+   y = nxfile.getdata()
+   nxfile.openpath('/entry1/title')
+   txt = nxfile.getdata()
+   nxfile.close()
+
+   plot(x,y)
+   xlabel('two theta')
+   ylabel('counts')
+   title(txt)
+   show()
+
+Of this only the first 8 lines are NeXus, the rest is matplotlib. Again the 
+import statements are not shown. 
+
+
+As any NeXus file is a valid HDF-5 file, the HDF-5 API can be used to read 
+files too. It is just a tiny bit more involved::
+
+ /**
+  * Reading example for reading NeXus files with plain
+  * HDF-5 API calls. This reads out counts and two_theta
+  * out of the file generated by nxh5write.
+  *
+  * WARNING: I left out all error checking in this example.
+  * In production code you have to take care of those errors
+  *
+  * Mark Koennecke, October 2011
+  */
+ #include <hdf5.h>
+ #include <stdlib.h>
+
+ int main(int argc, char *argv[])
+ {
+   float *two_theta = NULL;
+   int *counts = NULL,  rank, i;
+   hid_t fid, dataid, fapl;
+   hsize_t *dim = NULL;
+   hid_t datatype, dataspace, memdataspace;
+
+   /*
+    * Open file, thereby enforcing proper file close
+    * semantics
+    */
+   fapl = H5Pcreate(H5P_FILE_ACCESS);
+   H5Pset_fclose_degree(fapl,H5F_CLOSE_STRONG);
+   fid = H5Fopen("NXfile.h5", H5F_ACC_RDONLY,fapl);  
+   H5Pclose(fapl);
+
+   /*
+    * open and read the counts dataset
+    */
+   dataid = H5Dopen(fid,"/scan/data/counts");
+   dataspace = H5Dget_space(dataid);
+   rank = H5Sget_simple_extent_ndims(dataspace);
+   dim = malloc(rank*sizeof(hsize_t));
+   H5Sget_simple_extent_dims(dataspace, dim, NULL);
+   counts = malloc(dim[0]*sizeof(int));
+   memdataspace = H5Tcopy(H5T_NATIVE_INT32);
+   H5Dread(dataid,memdataspace,H5S_ALL, H5S_ALL,H5P_DEFAULT, counts);
+   H5Dclose(dataid);
+   H5Sclose(dataspace);
+   H5Tclose(memdataspace);
+
+   /*
+    * open and read the two_theta data set
+    */
+   dataid = H5Dopen(fid,"/scan/data/two_theta");
+   dataspace = H5Dget_space(dataid);
+   rank = H5Sget_simple_extent_ndims(dataspace);
+   dim = malloc(rank*sizeof(hsize_t));
+   H5Sget_simple_extent_dims(dataspace, dim, NULL);
+   two_theta = malloc(dim[0]*sizeof(float));
+   memdataspace = H5Tcopy(H5T_NATIVE_FLOAT);
+   H5Dread(dataid,memdataspace,H5S_ALL, H5S_ALL,H5P_DEFAULT, two_theta);
+   H5Dclose(dataid);
+   H5Sclose(dataspace);
+   H5Tclose(memdataspace);
+
+
+
+   H5Fclose(fid);
+
+   for(i = 0; i < dim[0]; i++){
+     printf("%8.2f %10d\n", two_theta[i], counts[i]);
+   }
+
+ }
+
+
+This looks intimidating. This is what the NAPI protects you from. 
+But take heart, in matlab a whole NeXus file is read in in a one liner.
+
+
+Writing NeXus Files
+====================
+
+Skip this section if you you only wish to read NeXus files. Beyond this 
+section there is another which tells you where to find more information.
+Others are invited to read on.
+
+
+What goes into a NeXus File?
+------------------------------
+
+Before starting to describe how to decide what goes into a NeXus file 
+some more details about NeXus groups and base classes need to be 
+explained. As seen in the examples NeXus uses groups with well 
+defined class names starting with NX. NeXus calls these NX classes 
+base classes, which is slightly misleading when you are used to 
+object oriented notations. Anyway for each NeXus base class there 
+exists a dictionary description which details which other groups and 
+which fields are allowed in this base class. This is where you find 
+field names for the data items you wish to describe. The NeXus base 
+classes are documented in the NeXus Reference Manual. A common 
+misconception among NeXus beginners is that you have to specify all 
+fields which exist in a given NeXus base class. This is **not** 
+the case! You only need to choose those fields from the NeXus base 
+class dictionary which make sense for your application. Having said 
+this NeXus encourages you to rather store more information as absolutely 
+necessary when the information is available. 
+
+
+Before the mechanics of writing a NeXus file can be explained it needs 
+to be determined which fields are written into the NeXus file at which 
+position in the hierarchy. The example will be to store data from a new
+instrument. A couple of steps are required.::
+
+	entry:NXentry
+		instrument:NXinstrument
+		sample:NXsample
+		control:NXmonitor
+		data:NXdata
+
+Example 3: NeXus Raw Data File Template
+
+#. The start is a NeXus raw data file template as shown in example 3.
+#. At this level you can decide what needs to be known about the 
+   sample and put it into the NXsample group.
+#. Look at a design drawing of the instrument. For each major 
+   instrument component find a suitable NeXus class and add it 
+   to the NXinstrument group. 
+#. Decide for each instrument component which data fields are 
+   required  and add them to the corresponding group.
+#. Add required counting information to the control class.
+#. Decide which data sets make up the most important data items 
+   in the experiment. Create links to these data items in the data 
+   group.
+#. Investigate if a NeXus application definition exists for 
+   your instrument type. If so, check if all required fields 
+   are stored in the appropriate form.
+
+Before beginning this process it might be worth to look at some 
+of the NeXus application definitions in the NeXus reference manual 
+for examples and inspiration. But be aware that NeXus application 
+definitions only define minimum sets for a certain usage case.
+
+In this process you might encounter the situation that you wish to 
+store more information then foreseen by NeXus. There are two options 
+which have to be considered:
+
+#. The data item to store is special to your facility and of no general 
+   interest. Then make up a name and store it. The beauty of NeXus is 
+   that this is possible without breaking the standard compliance 
+   of the file.
+#. The data item is off general interest and should be added to NeXus. 
+   Then suggest a name and document what this really is what you suggest.
+   Forward this information to the NeXus International Advisory Committee.
+   Usually such suggestion are accepted quickly when they are sensible. 
+
+
+Writing the NeXus File
+------------------------
+
+For writing the NeXus file you have the option to use the NeXus API or to 
+do it with the HDF-5 API. The complexity of NeXus file writing is 
+similar to the reading code. For both approaches more information is 
+available in the NeXus Manual or the NeXus Reference Manual. 
+
+To give you taste of what it is like to write a NeXus file using the 
+NeXus API here is code example. It shows how to create a 
+scan:NXentry/data:NXdata structure and store two arrays, counts and 
+two_theta in there.::
+
+ #include "napi.h"
+
+  int main()
+  {
+     NXhandle fileID;
+     NXopen ("NXfile.nxs", NXACC_CREATE, &fileID);
+       NXmakegroup (fileID, "Scan", "NXentry");
+       NXopengroup (fileID, "Scan", "NXentry");
+	 NXmakegroup (fileID, "data", "NXdata");
+	 NXopengroup (fileID, "data", "NXdata");
+	 /* somehow, we already have arrays tth and counts, each length n*/
+	   NXmakedata (fileID, "two_theta", NX_FLOAT32, 1, &n);
+	   NXopendata (fileID, "two_theta");
+	     NXputdata (fileID, tth);
+	     NXputattr (fileID, "units", "degrees", 7, NX_CHAR);
+	   NXclosedata (fileID);  /* two_theta */
+	   NXmakedata (fileID, "counts", NX_FLOAT32, 1, &n);
+	   NXopendata (fileID, "counts");
+	     NXputdata (fileID, counts);
+	   NXclosedata (fileID);  /* counts */
+	 NXclosegroup (fileID);  /* data */
+       NXclosegroup (fileID);  /* Scan */
+     NXclose (&fileID);
+     return;
+ }
+
+The programming model is mimicking a file system interface: You mkdir directories, 
+groups (NXmakegroup) cd (NXopengroup) into them and create further groups or 
+datasets (NXmakedata), open them (NXopendata), write data to them (NXputdate) and
+close them again (NXclosedata). You cd out of groups with NXclosegroup.
+
+
+More Information
+=================
+
+Did we get you interested?  Here is where you get more information.
+Our main entry point is the  NeXus WWW-site at http://www.nexusformat.org
+Here you can find more information, download the NeXus API, NeXus Manual and 
+NeXus Reference Manual.
+
+If you encounter problems then please help us make NeXus better. Report 
+your problem to the NeXus mailing list at nexus@nexusformat.org Problems 
+we do not know about have absolutely no chance to get resolved.
+
+NeXus is a voluntary effort. Thus, if you have spare time and are willing 
+to lend us a hand, you are more welcome to contact us. 
+
+
+Who is behind NeXus?
+---------------------
+
+NeXus was developed from three independent proposals from Jonathan Tischler, 
+APS, Przemek Klosowski, NIST and Mark Koennecke, ISIS (now PSI) by an 
+international team of scientists during  
+a series of SoftNess wokshops in 1996 - 1998. More work was done during 
+NOBUGS conferences. Since 2001 NeXus is overseen by the NeXus International 
+Advisory Committee (NIAC) which meets once a  year. The NIAC strives to 
+have a representative for each participating facility. The NIAC has a 
+constitution which you can find on our WWW-site. 
+
