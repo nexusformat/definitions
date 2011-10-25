@@ -2,9 +2,9 @@
   :height: 500px
   :width:  900px
 
-=======================
+#######################
 NeXus for the Impatient
-=======================
+#######################
 
 Why NeXus?
 ===========
@@ -159,20 +159,29 @@ name:NX_TYPE[dim,dim,...]
     This describes a dataset with a given numeric type and dimensions.  In this
     example, the detector data is a 512 x 512 array of 32-bit integers.
 @name=value
-    This describes an attribute name and value.  Signal=1 indicates that this
-    is the dependent data to be plotted.
+    This describes an attribute name and value.  The attribute signal=1 indicates 
+    to NeXus that this is the dependent data to be plotted.
 name -->  path
     Describes a link from one location to another.  This allows us to gather
     the most important data together in an NXdata group while leaving
     detailed metadata in the individual component definitions.
 
 
-The following groups are present in most data files:
+The following groups are required to be present in all NeXus data files:
 
 entry:NXentry
     At the root level of a NeXus file are the NXentry groups.
     Each entry represents a separate dataset, and we can
     store multiple datasets in the same file.
+
+data:NXdata
+    This is a convenience group so that a general plotting
+    program can identify *from this group alone* what is
+    the default data to render on a plot.
+    It is supposed to hold the most
+    important data items of the experiment. 
+
+The following additional groups are present in most NeXus data files:
 
 sample:NXsample
     This group contains datasets which describe everything we
@@ -185,19 +194,13 @@ instrument:NXinstrument
 
 monitor:NXmonitor
     This group contains the counting information: which preset
-    was used, how long we counted, monitor counts etc.
-
-data:NXdata
-    This is a convenience group. It is supposed to hold the most
-    important data items of the experiment. A general plotting
-    program ought to be able to look at this group alone and put
-    up a default plot of the experiment.
+    was used, how long we counted, monitor counts, etc.
 
 
 The NeXus Processed Data Hierarchy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-This is simplified hierarchy style applicable to the results of data
+This is a simplified hierarchy style applicable to the results of data
 reduction or data analysis applications. Such results can consist of
 large multidimensional arrays. So it can be advisable to use NeXus
 for storing such data::
@@ -256,19 +259,19 @@ has to be introduced. NP is simply the number of scan points.
 This is an example of a NeXus raw data file describing a scan where the
 sample is rotated and data collected in an area detector::
 
-    entry:NXentry
-        instrument:NXinstrument
-            detector:NXdetector
-                data:[NP,xsize,ysize]
-                    @signal = 1
-        sample:NXsample
-            rotation_angle[NP]
-                @axis=1
-        control:NXmonitor
-            data[NP]
-        data:NXdata
-            data --> /entry/instrument/detector/data
-            rotation_angle --> /entry/sample/rotation_angle
+ entry:NXentry
+     instrument:NXinstrument
+ 	 detector:NXdetector
+ 	     data:[NP,xsize,ysize]
+ 		 @signal = 1
+     sample:NXsample
+ 	 rotation_angle[NP]
+ 	     @axis=1
+     control:NXmonitor
+ 	 data[NP]
+     data:NXdata
+ 	 data --> /entry/instrument/detector/data
+ 	 rotation_angle --> /entry/sample/rotation_angle
 
 
 NeXus Benefits
@@ -447,11 +450,11 @@ to know which fields are written into the NeXus file at which position
 in the hierarchy. The example will be to store data from a new
 instrument. A couple of steps are required::
 
-	entry:NXentry
-		instrument:NXinstrument
-		sample:NXsample
-		control:NXmonitor
-		data:NXdata
+  entry:NXentry
+     instrument:NXinstrument
+     sample:NXsample
+     control:NXmonitor
+     data:NXdata
 
 Example 3: NeXus Raw Data File Template
 
@@ -542,8 +545,8 @@ More Information
 
 Did we get you interested?  Here is where you get more information.
 Our main entry point is the  NeXus WWW-site at http://www.nexusformat.org
-Here you can find more information, download the NeXus API, NeXus Manual and
-NeXus Reference Manual.
+Here you can find more information, download the NeXus API, NeXus User Manual and
+NeXus Reference Documentation.
 
 If you encounter problems then please help us make NeXus better. Report
 your problem to the NeXus mailing list at nexus@nexusformat.org Problems
