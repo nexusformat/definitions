@@ -60,7 +60,6 @@ class Describe:
             extends = ":ref:`%s`" % extends
         rest += self.make_definition('extends class:', extends )
         rest += self.make_definition('other classes included:', self.groups_list(root) )
-        rest += self.make_definition('symbol list:', self.symbols_list(root) )
         rest += self.make_definition('documentation:', self.get_doc(root, "No documentation provided.") )  # TODO: 
 
         rest += "\n"
@@ -69,18 +68,17 @@ class Describe:
         self.xsltFile = "nxdlformat.xsl"                        # could learn from the XML file?
         xsltFile = os.path.join(path, self.xsltFile)
         xslt = lxml.etree.XSLT( lxml.etree.parse(xsltFile) )    # prepare the transform
-        text = str( xslt( self.tree ) )                         # make the transform
-        rest += "::\n\n" + self.indented_lines(4, text)
-
-        rest += "\n"
-        rest += ".. rubric:: Comprehensive Structure of **%s**\n\n" % self.nxdlName
-        rest += '''
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        '''
+        text = ":linenos:\n\n"
+        text += str( xslt( self.tree ) )                         # make the transform
+        rest += ".. code-block:: text\n" + self.indented_lines(4, text)
+        
+        rest += self.symbols_table(root) + "\n\n"
+        
+        rest += "\n.. rubric:: Comprehensive Structure of **%s**\n\n" % self.nxdlName
+        t = Table()
+        t.labels = ('Name and Attributes', 'Type', 'Units', 'Description (and Occurrences)', )
+        t.rows.append( ['class', 'NX_FLOAT', '..', '..', ] )
+        rest += t.reST()
         
         '''
 Table 3.3. NXaperture
@@ -168,40 +166,108 @@ describe an additional information in a note*
             groups = "none"
         return groups
     
-    def symbols_list(self, root):
-        '''Return a string of ReST references to the symbols defined
+    def symbols_table(self, root):
+        '''Return a table of ReST references to the symbols defined
         in this NXDL
         
         :param root: root of XML tree
         '''
+        rest = "\n.. rubric:: Symbols used in definition of **%s**\n\n" % self.nxdlName
         symbols = "none"
         node = root.find( '{%s}symbols' % self.ns['nx'] )
-        if node is not None:
-            symbols = ""
-            T = self.get_doc(node, None)
-            if T is not None:
-                symbols += T + "\n\n"
+        if node is None:
+            rest += 'No symbols are defined in this NXDL file\n'
+        else:
+            table = Table()
+            table.labels = ('Symbol', 'Description', )
+            title = self.get_doc(node, None)
+            if title is not None:
+                rest += title + "\n"
             for SN in lxml.etree.ETXPath( './/{%s}symbol' % self.ns['nx'] )(node):
-                S = "``%s``" % SN.get('name')
-                T = "%s" % self.get_doc(SN)
-                symbols += self.make_definition(S, T )
-        return symbols
-    
+                symbol = "``%s``" % SN.get('name')
+                desc = "%s" % self.get_doc(SN).strip('\n')
+                table.rows.append( [symbol, desc] )
+            rest += table.reST()
+        return rest
+
     def get_doc(self, node, undefined = ""):
         DN = node.find( '{%s}doc' % self.ns['nx'] )
         if DN is None:
             doc = undefined
         else:
             # TODO: this could be much, much better
-            obj = db2rst.Convert(DN)
-            obj.parent.ns = "{%s}" % "http://definition.nexusformat.org/nxdl/3.1"
+            ns = "http://definition.nexusformat.org/nxdl/3.1"
+            obj = db2rst.Convert(DN, namespace=ns)
             doc = str(obj).strip() + "\n"
             #doc = DN.text
         return doc
 
 
+class Table:
+    ''' construct a table in reST '''
+    
+    def __init__(self):
+        self.rows = []
+        self.labels = []
+    
+    def reST(self, indentation = ''):
+        '''return the table in reST format'''
+        if len(self.rows) == 0:
+            return ''
+        
+    
+        width = []    # find the widths of all columns
+        height = []   # find the height of all rows
+        for label in self.labels:
+            parts = label.split("\n")
+            width.append( max( map(len, parts) ) )
+            height.append( len(parts) )
+        for row in self.rows:
+            rowHeight = -1
+            for i in range( len(row) ):
+                parts = row[i].split("\n")
+                w = max( map(len, parts) )
+                width[i] = max(width[i], w)
+                rowHeight = max( rowHeight, len(parts) )
+            height.append( rowHeight )
+        
+        separator = '+'
+        labelSep = '+'
+        for w in width:
+            separator += '-'*(w+2) + '+'
+            labelSep += '='*(w+2) + '+'
+        
+        rest = '%s%s' % (indentation, separator)                                           # top line
+        rest += self._reST_table_line(self.labels, height.pop(0), width, indentation)      # labels
+        rest += '\n%s%s' % (indentation, labelSep)                                         # label separator line
+        for row in self.rows:
+            rest += self._reST_table_line(row, height.pop(0), width, indentation)          # table rows
+            rest += '\n%s%s' % (indentation, separator)                                    # line below each table row
+        return rest
+    
+    def _reST_table_line(self, items, height, width, indentation):
+        '''
+        return a single line of the reST table
+        
+        :param [str] items: table values
+        :param int height: maximum number of rows this line takes (as determined by \n line breaks)
+        :param [int] width: list of column widths
+        :note: len(width) must be equal to len(items)
+        '''
+        if len(width) != len(width):
+            raise RuntimeError, "len(width) != len(items)"
+        line = ''
+        for r in range(height):
+            line += '\n%s|' % indentation
+            for i in range( len(items) ):
+                f = ' %%-%ds ' % width[i]
+                line += f % items[i].split('\n')[r] + '|'
+        return line
+
 
 if __name__ == '__main__':
+    
+    
     NXDL_DIRS = ['../base_classes', '../applications', '../contributed_definitions', ]
     OUTPUT_DIR = os.path.join(*list('./source/volume2/NXDL'.split('/')))
     nxdl_file_list = []

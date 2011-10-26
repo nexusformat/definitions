@@ -175,13 +175,13 @@ class Db2Rst():
 class Convert(object):
     ''' converts DocBook tree into reST '''
     
-    def __init__(self, el, parent = None):
-         # TODO: add and handle optional argument of a namespace dictionary
+    def __init__(self, el, parent = None, namespace = None):
         self.el = el
         self.files = {}
         if parent is None:
-             # TODO: add and handle optional argument of a namespace dictionary
             parent = Db2Rst()       # looks inverted but provides basic constants
+        if namespace is not None:
+            parent.ns = "{%s}" % namespace
         self.parent = parent        # db2rst.Db2Rst object that called the converter
         self._not_handled_tags = set()      # to avoid duplicate error reports
         self._substitutions = set()         # to avoid duplicate substitutions

@@ -34,7 +34,7 @@ help:
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
 clean:
-	-rm -rf $(BUILDDIR)/doctrees $(BUILDDIR)/latex
+	-rm -rf $(BUILDDIR)/doctrees $(BUILDDIR)/latex $(BUILDDIR)/epub
 
 realclean:
 	-rm -rf $(BUILDDIR)/*
