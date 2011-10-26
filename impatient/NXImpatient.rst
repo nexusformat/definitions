@@ -162,7 +162,7 @@ name:NX_TYPE[dim,dim,...]
     This describes a dataset with a given numeric type and dimensions.  In this
     example, the detector data is a 512 x 512 array of 32-bit integers.
 @name=value
-    This describes an attribute name and value.  The attribute signal=1 indicates 
+    This describes an attribute name and value.  The attribute signal=1 indicates
     to NeXus that this is the dependent data to be plotted.
 name -->  path
     Describes a link from one location to another.  This allows us to gather
@@ -182,7 +182,7 @@ data:NXdata
     program can identify *from this group alone* what is
     the default data to render on a plot.
     It is supposed to hold the most
-    important data items of the experiment. 
+    important data items of the experiment.
 
 The following additional groups are present in most NeXus data files:
 
@@ -345,8 +345,23 @@ h5py package::
     pylab.title(file['/entry1/title'][0])
     pylab.show()
 
-Similar HDF support is available in other scientific computing environments,
-including IDL, Igor, Mathematica, Matlab, Origin and R.
+Matlab support in version R2011b is similar::
+
+    >> two_theta = h5read('powder.h5', '/entry1/data1/two_theta');
+    >> counts = h5read('powder.h5', '/entry1/data1/counts');
+    >> title = h5read('powder.h5', 'entry1/title');
+    >> plot(two_theta, counts)
+    >> title(title)
+
+Note that matlab will require explicit casting from integer data to floating
+point data to perform many operations.  For example, to plot a 2D data set
+using log intensity::
+
+    >> data = h5read('lrcs3701.nxs','/Histogram1/data/data');
+    >> h = pcolor(log(double(data+1))); set(h,'EdgeAlpha',0)
+
+Support for HDF is available in other scientific computing environments,
+including IDL, Igor, Mathematica and R.
 
 Reading the file using the HDF-5 C API is a little more involved::
 
