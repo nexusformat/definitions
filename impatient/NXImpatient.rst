@@ -1,3 +1,6 @@
+.. $Id$
+   NeXus definitions trac ticket #200
+
 .. image:: NeXus-logo.png
   :height: 500px
   :width:  900px
