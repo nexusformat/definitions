@@ -13,27 +13,7 @@ Contents
    volume1/index
    volume2/index
    authors
+   TODO
 
 * :ref:`genindex`
 * :ref:`search`
-
-TODO items
-----------
-
-* fix math source formatting between html and pdf
-  * see examples at http://theoretical-physics.net/dev/src/math/integration.html
-* tables, examples, and figures: treat them consistently with titles, captions, and cross-references
-* stop the section numbering for very deep subsections (2.1.4.1.2.1.3.1.4.5.1.4.1... is just ridiculous)
-* Should we produce two or more separate books?
-* Convert NXDL doc strings into ReST
-
-* note there is a figure number extension: https://bitbucket.org/arjones6/sphinx-numfig/wiki/Home
-
-NeXus home page
----------------
-
-We've had a request for examples to improve the NeXus home page.
-Here are some examples that use sphinx in one way or another:
-
-* http://doc.openerp.com/v6.0/
-* https://docs.djangoproject.com/en/1.3/

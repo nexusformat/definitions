@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     Use NXcollection to gather together any set of terms.
     The original suggestion is to use this as a container
@@ -43,18 +40,23 @@ documentation:
 
 .. rubric:: Basic Structure of **NXcollection**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXcollection (contributed definition, version 1.0)
       beamline:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXcollection**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXcollection**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

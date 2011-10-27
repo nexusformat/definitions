@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXgeometry`, :ref:`NXshape`
 
-symbol list:
-    none
-
 documentation:
     Template of a beamline mirror or supermirror.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXmirror**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXmirror (base class, version 1.0)
       bend_angle_x:NX_FLOAT
       bend_angle_y:NX_FLOAT
@@ -64,12 +62,16 @@ documentation:
       shape:NXshape
     
 
+.. rubric:: Symbols used in definition of **NXmirror**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXmirror**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

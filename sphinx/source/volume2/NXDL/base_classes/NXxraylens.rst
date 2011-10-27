@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXnote`
 
-symbol list:
-    none
-
 documentation:
     This is a dictionary of field names to use dor describing a X-ray lens as used at
     synchrotron beam lines. Based on information provided by Gerd Wellenreuther.
@@ -37,8 +34,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXxraylens**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXxraylens (base class, version 1.0)
       aperture:NX_FLOAT
       curvature:NX_FLOAT
@@ -55,12 +53,16 @@ documentation:
       cylinder_orientation:NXnote
     
 
+.. rubric:: Symbols used in definition of **NXxraylens**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXxraylens**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

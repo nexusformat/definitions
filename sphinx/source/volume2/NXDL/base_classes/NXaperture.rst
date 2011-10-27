@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXgeometry`, :ref:`NXnote`
 
-symbol list:
-    none
-
 documentation:
     Template of a beamline aperture.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXaperture**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXaperture (base class, version 1.0)
       description:NX_CHAR
       material:NX_CHAR
@@ -46,12 +44,16 @@ documentation:
       NXnote
     
 
+.. rubric:: Symbols used in definition of **NXaperture**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXaperture**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

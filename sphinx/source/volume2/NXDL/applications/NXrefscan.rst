@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXmonochromator`, :ref:`NXsample`, :ref:`NXsource`
 
-symbol list:
-    none
-
 documentation:
     This is an application definition for a monochromatic scanning reflectometer.
     It does not have the information to calculate the resolution
@@ -38,8 +35,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXrefscan**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXrefscan (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -70,12 +68,16 @@ documentation:
           rotation_angle:NX_FLOAT[NP]
     
 
+.. rubric:: Symbols used in definition of **NXrefscan**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXrefscan**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

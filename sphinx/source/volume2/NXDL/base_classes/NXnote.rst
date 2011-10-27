@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     This class can be used to store additional information in a
     NeXus file e.g. pictures, movies, audio, additional text logs
@@ -37,8 +34,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXnote**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXnote (base class, version 1.0)
       author:NX_CHAR
       data:NX_BINARY
@@ -48,12 +46,16 @@ documentation:
       type:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXnote**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXnote**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

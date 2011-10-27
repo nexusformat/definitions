@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXgeometry`, :ref:`NXlog`, :ref:`NXorientation`
 
-symbol list:
-    none
-
 documentation:
     This class describes a sensor used to monitor an external condition
     - the condition itself is described in NXenvironment
@@ -37,8 +34,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXsensor**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXsensor (base class, version 1.0)
       attached_to:NX_CHAR
       external_field_brief:NX_CHAR
@@ -60,12 +58,16 @@ documentation:
       external_field_full:NXorientation
     
 
+.. rubric:: Symbols used in definition of **NXsensor**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXsensor**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

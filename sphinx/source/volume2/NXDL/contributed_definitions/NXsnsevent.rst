@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXaperture`, :ref:`NXattenuator`, :ref:`NXcollection`, :ref:`NXcrystal`, :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXdisk_chopper`, :ref:`NXentry`, :ref:`NXevent_data`, :ref:`NXgeometry`, :ref:`NXinstrument`, :ref:`NXlog`, :ref:`NXmoderator`, :ref:`NXmonitor`, :ref:`NXnote`, :ref:`NXorientation`, :ref:`NXpolarizer`, :ref:`NXpositioner`, :ref:`NXsample`, :ref:`NXshape`, :ref:`NXsource`, :ref:`NXtranslation`, :ref:`NXuser`
 
-symbol list:
-    none
-
 documentation:
     This is a definition for event data from Spallation Neutron Source (SNS) at ORNL.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXsnsevent**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXsnsevent (contributed definition, version 1.0)
       (overlays NXentry)
       NXentry
@@ -176,12 +174,16 @@ documentation:
           role:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXsnsevent**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXsnsevent**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

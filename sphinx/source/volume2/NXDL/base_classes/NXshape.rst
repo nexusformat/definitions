@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     This is the description of the general shape and size of a
     component, which may be made up of "numobj" separate
@@ -38,20 +35,25 @@ documentation:
 
 .. rubric:: Basic Structure of **NXshape**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXshape (base class, version 1.0)
       direction:NX_CHAR
       shape:NX_CHAR
       size:NX_FLOAT[numobj,nshapepar]
     
 
+.. rubric:: Symbols used in definition of **NXshape**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXshape**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

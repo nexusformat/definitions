@@ -457,7 +457,7 @@ in the NeXus Definition Language (NXDL). A tool exists which
 allows to validate a NeXus file against a given 
 application definition.
 
-.. note:: NeXus application definition is a contract
+   **NeXus application definition is a contract**
 
    Another way to look at a NeXus application definition
    is as a contract between a file writer and a file consumer

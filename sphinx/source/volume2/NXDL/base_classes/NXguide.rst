@@ -26,17 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXgeometry`
 
-symbol list:
-    ``nsurf``
-        number of reflecting surfaces
-        
-    
-    ``nwl``
-        number of wavelengths
-        
-    
-    
-
 documentation:
     NXguide is used by neutron instruments to describe
     a guide consists of several mirrors building a shape through which
@@ -69,8 +58,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXguide**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXguide (base class, version 1.0)
       bend_angle_x:NX_FLOAT
       bend_angle_y:NX_FLOAT
@@ -94,12 +84,21 @@ documentation:
       NXgeometry
     
 
+.. rubric:: Symbols used in definition of **NXguide**
+
++-----------+-------------------------------+
+| Symbol    | Description                   |
++===========+===============================+
+| ``nsurf`` | number of reflecting surfaces |
++-----------+-------------------------------+
+| ``nwl``   | number of wavelengths         |
++-----------+-------------------------------+
+
+
 .. rubric:: Comprehensive Structure of **NXguide**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

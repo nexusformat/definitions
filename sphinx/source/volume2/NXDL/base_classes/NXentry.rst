@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXcharacterization`, :ref:`NXdata`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXnote`, :ref:`NXprocess`, :ref:`NXsample`, :ref:`NXsubentry`, :ref:`NXuser`
 
-symbol list:
-    none
-
 documentation:
     (required) Template of the top-level NeXus group which contains all the data and associated
     information that comprise a single measurement. It is mandatory that there is at least one
@@ -38,8 +35,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXentry**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXentry (base class, version 1.0)
       @IDF_Version
       collection_description:NX_CHAR
@@ -79,12 +77,16 @@ documentation:
       NXuser
     
 
+.. rubric:: Symbols used in definition of **NXentry**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXentry**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

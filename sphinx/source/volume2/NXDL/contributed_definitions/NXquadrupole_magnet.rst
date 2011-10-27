@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXlog`
 
-symbol list:
-    none
-
 documentation:
     definition for a quadrupole magnet.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXquadrupole_magnet**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXquadrupole_magnet (contributed definition, version 1.0)
       (base class definition, NXentry or NXsubentry not found)
       beamline_distance:NX_FLOAT
@@ -49,12 +47,16 @@ documentation:
         value:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXquadrupole_magnet**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXquadrupole_magnet**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

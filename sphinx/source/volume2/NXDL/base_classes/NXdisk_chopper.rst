@@ -26,17 +26,15 @@ extends class:
 other classes included:
     :ref:`NXgeometry`
 
-symbol list:
-    none
-
 documentation:
     No documentation provided.
 
 
 .. rubric:: Basic Structure of **NXdisk_chopper**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXdisk_chopper (base class, version 1.0)
       distance:NX_FLOAT
       pair_separation:NX_FLOAT
@@ -52,12 +50,16 @@ documentation:
       NXgeometry
     
 
+.. rubric:: Symbols used in definition of **NXdisk_chopper**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXdisk_chopper**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

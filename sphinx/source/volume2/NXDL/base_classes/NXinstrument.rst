@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXaperture`, :ref:`NXattenuator`, :ref:`NXbeam_stop`, :ref:`NXbeam`, :ref:`NXbending_magnet`, :ref:`NXcollimator`, :ref:`NXcrystal`, :ref:`NXdetector`, :ref:`NXdisk_chopper`, :ref:`NXfermi_chopper`, :ref:`NXfilter`, :ref:`NXflipper`, :ref:`NXguide`, :ref:`NXinsertion_device`, :ref:`NXmirror`, :ref:`NXmoderator`, :ref:`NXpolarizer`, :ref:`NXsource`, :ref:`NXvelocity_selector`
 
-symbol list:
-    none
-
 documentation:
     Template of instrument descriptions comprising various beamline components.
     Each component will also be a NeXus group defined by its distance from the
@@ -41,8 +38,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXinstrument**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXinstrument (base class, version 1.0)
       name:NX_CHAR
         @short_name
@@ -67,12 +65,16 @@ documentation:
       NXvelocity_selector
     
 
+.. rubric:: Symbols used in definition of **NXinstrument**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXinstrument**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

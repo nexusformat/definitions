@@ -26,20 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXgeometry`, :ref:`NXlog`, :ref:`NXshape`
 
-symbol list:
-    These symbols will be used below to coordinate dimensions with the same lengths.
-    
-    
-    ``n_comp``
-        number of different unit cells to be described
-        
-    
-    ``i``
-        number of wavelengths
-        
-    
-    
-
 documentation:
     Template of a crystal monochromator or analyzer. Permits double bent
     monochromator comprised of multiple segments with anisotropic
@@ -56,8 +42,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXcrystal**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXcrystal (base class, version 1.0)
       azimuthal_angle:NX_FLOAT[i]
       bragg_angle:NX_FLOAT[i]
@@ -104,12 +91,23 @@ documentation:
       shape:NXshape
     
 
+.. rubric:: Symbols used in definition of **NXcrystal**
+
+These symbols will be used below to coordinate dimensions with the same lengths.
+
++------------+------------------------------------------------+
+| Symbol     | Description                                    |
++============+================================================+
+| ``n_comp`` | number of different unit cells to be described |
++------------+------------------------------------------------+
+| ``i``      | number of wavelengths                          |
++------------+------------------------------------------------+
+
+
 .. rubric:: Comprehensive Structure of **NXcrystal**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

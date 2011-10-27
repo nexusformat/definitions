@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXcollection`, :ref:`NXdata`, :ref:`NXentry`, :ref:`NXfermi_chopper`, :ref:`NXinstrument`, :ref:`NXsample`
 
-symbol list:
-    none
-
 documentation:
     NXSPE Inelastic Format.  Application definition for NXSPE file format.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXspe**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXspe (application definition, version 1.0)
       (overlays NXentry)
       NXentry
@@ -67,12 +65,16 @@ documentation:
           temperature:NX_NUMBER
     
 
+.. rubric:: Symbols used in definition of **NXspe**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXspe**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

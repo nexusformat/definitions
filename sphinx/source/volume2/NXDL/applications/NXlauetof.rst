@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXsample`
 
-symbol list:
-    none
-
 documentation:
     This is the application definition for a TOF laue diffractometer
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXlauetof**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXlauetof (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -66,12 +64,16 @@ documentation:
           unit_cell:NX_FLOAT[6]
     
 
+.. rubric:: Symbols used in definition of **NXlauetof**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXlauetof**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

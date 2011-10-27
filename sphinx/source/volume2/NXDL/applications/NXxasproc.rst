@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXentry`, :ref:`NXparameters`, :ref:`NXprocess`, :ref:`NXsample`
 
-symbol list:
-    none
-
 documentation:
     This is an application definition for processed data from XAS. This
     is energy versus I(i)/I(a)
@@ -37,8 +34,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXxasproc**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXxasproc (application definition, version 1.0)
       (overlays NXentry)
       NXentry
@@ -58,12 +56,16 @@ documentation:
           name:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXxasproc**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXxasproc**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

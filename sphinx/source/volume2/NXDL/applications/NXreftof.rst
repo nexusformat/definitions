@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXdisk_chopper`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXsample`
 
-symbol list:
-    none
-
 documentation:
     This is an application definition for raw data from a TOF reflectometer.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXreftof**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXreftof (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -70,12 +68,16 @@ documentation:
           rotation_angle:NX_FLOAT
     
 
+.. rubric:: Symbols used in definition of **NXreftof**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXreftof**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`
 
-symbol list:
-    none
-
 documentation:
     Template of the state of the neutron or X-ray beam at any location. It will be referenced
     by beamline component groups within the NXinstrument group or by the NXsample group. Note
@@ -42,8 +39,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXbeam**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXbeam (base class, version 1.0)
       distance:NX_FLOAT
       energy_transfer:NX_FLOAT[i]
@@ -61,12 +59,16 @@ documentation:
       NXdata
     
 
+.. rubric:: Symbols used in definition of **NXbeam**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXbeam**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

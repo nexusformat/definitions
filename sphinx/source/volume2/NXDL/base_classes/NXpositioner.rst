@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     This group describes a generic positioner
     such as a motor or piezo-electric transducer.  It is used to document the
@@ -43,8 +40,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXpositioner**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXpositioner (base class, version 1.0)
       acceleration_time:NX_NUMBER
       controller_record:NX_CHAR
@@ -59,12 +57,16 @@ documentation:
       velocity:NX_NUMBER
     
 
+.. rubric:: Symbols used in definition of **NXpositioner**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXpositioner**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

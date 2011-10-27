@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXsample`
 
-symbol list:
-    none
-
 documentation:
     This is the application definition for raw data from a
     four circle diffractometer with an eulerian cradle.
@@ -40,8 +37,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXxeuler**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXxeuler (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -60,12 +58,16 @@ documentation:
           rotation_angle:NX_FLOAT[np]
     
 
+.. rubric:: Symbols used in definition of **NXxeuler**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXxeuler**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

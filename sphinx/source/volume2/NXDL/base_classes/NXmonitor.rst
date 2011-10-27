@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXgeometry`, :ref:`NXlog`
 
-symbol list:
-    none
-
 documentation:
     Template of monitor data. It is similar to the NXdata groups containing
     monitor data and its associated dimension scale, e.g. time_of_flight or
@@ -40,8 +37,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXmonitor**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXmonitor (base class, version 1.0)
       count_time:NX_FLOAT
       data:NX_NUMBER[n]
@@ -62,12 +60,16 @@ documentation:
       integral_log:NXlog
     
 
+.. rubric:: Symbols used in definition of **NXmonitor**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXmonitor**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

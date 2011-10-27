@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXtechnical_data`
 
-symbol list:
-    none
-
 documentation:
     (definition implied by usage) Subclass of NXinstrument used by Soleil. This class appears
     in the example data files provided from Soleil. This class should be considered as a base
@@ -38,8 +35,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXsai_controller**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXsai_controller (contributed definition, version 1.0)
       (base class definition, NXentry or NXsubentry not found)
       Frequency:NXtechnical_data
@@ -47,12 +45,16 @@ documentation:
       TriggerNumber:NXtechnical_data
     
 
+.. rubric:: Symbols used in definition of **NXsai_controller**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXsai_controller**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

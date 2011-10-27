@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXsample`
 
-symbol list:
-    none
-
 documentation:
     This is the application definition for raw data from a single crystal diffractometer
     measuring in normal beam mode. It extends NXxbase, so the full definition is the content of
@@ -39,8 +36,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXxnb**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXxnb (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -57,12 +55,16 @@ documentation:
           rotation_angle:NX_FLOAT[np]
     
 
+.. rubric:: Symbols used in definition of **NXxnb**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXxnb**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     Template of user's contact information.  The format allows more
     than one user with the same affiliation and contact information,
@@ -39,8 +36,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXuser**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXuser (base class, version 1.0)
       address:NX_CHAR
       affiliation:NX_CHAR
@@ -52,12 +50,16 @@ documentation:
       telephone_number:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXuser**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXuser**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

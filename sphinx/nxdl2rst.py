@@ -287,6 +287,6 @@ if __name__ == '__main__':
                     print rstFile
                     print restText
                     f = open (rstFile, 'w')
-                    f.write(restText)
+                    f.write(restText + "\n")
                     f.close()
     print len(nxdl_file_list), ' NXDL files discovered'

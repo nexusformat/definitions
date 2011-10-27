@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXaperture`, :ref:`NXbending_magnet`, :ref:`NXcollection`, :ref:`NXelectrostatic_kicker`, :ref:`NXmagnetic_kicker`, :ref:`NXquadrupole_magnet`, :ref:`NXseparator`, :ref:`NXsolenoid_magnet`, :ref:`NXspin_rotator`
 
-symbol list:
-    none
-
 documentation:
     container for elements describing beamline.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXbeamline**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXbeamline (contributed definition, version 1.0)
       (base class definition, NXentry or NXsubentry not found)
       beamline:NX_CHAR
@@ -52,12 +50,16 @@ documentation:
       NXspin_rotator
     
 
+.. rubric:: Symbols used in definition of **NXbeamline**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXbeamline**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

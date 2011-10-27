@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXentry`
 
-symbol list:
-    none
-
 documentation:
     Definition of the root NeXus group.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXroot**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXroot (base class, version 1.0)
       @NX_class
       @file_time
@@ -51,12 +49,16 @@ documentation:
       NXentry
     
 
+.. rubric:: Symbols used in definition of **NXroot**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXroot**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

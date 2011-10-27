@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXgeometry`, :ref:`NXlog`
 
-symbol list:
-    none
-
 documentation:
     This is the description for a general moderator
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXmoderator**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXmoderator (base class, version 1.0)
       coupled:NX_BOOLEAN
       coupling_material:NX_CHAR
@@ -51,12 +49,16 @@ documentation:
       temperature_log:NXlog
     
 
+.. rubric:: Symbols used in definition of **NXmoderator**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXmoderator**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

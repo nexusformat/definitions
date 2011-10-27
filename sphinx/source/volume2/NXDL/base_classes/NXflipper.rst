@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     Template of a beamline spin flipper.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXflipper**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXflipper (base class, version 1.0)
       comp_current:NX_FLOAT
       comp_turns:NX_FLOAT
@@ -49,12 +47,16 @@ documentation:
       type:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXflipper**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXflipper**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

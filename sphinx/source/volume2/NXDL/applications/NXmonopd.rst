@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXcrystal`, :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXsample`, :ref:`NXsource`
 
-symbol list:
-    none
-
 documentation:
     Monochromatic Neutron and X-Ray Powder Diffraction. Instrument definition for a powder
     diffractometer at a monochromatic neutron or X-ray beam. This is both suited for a powder
@@ -39,8 +36,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXmonopd**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXmonopd (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -69,12 +67,16 @@ documentation:
           rotation_angle:NX_FLOAT
     
 
+.. rubric:: Symbols used in definition of **NXmonopd**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXmonopd**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

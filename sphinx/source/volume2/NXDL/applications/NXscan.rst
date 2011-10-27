@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXsample`
 
-symbol list:
-    none
-
 documentation:
     Application definition for a generic scan instrument. This definition is more an
     example then a stringent definition as the content of a given NeXus scan file needs to
@@ -60,8 +57,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXscan**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXscan (application definition, version 1.0b)
       (overlays NXentry)
       NXentry
@@ -81,12 +79,16 @@ documentation:
           rotation_angle:NX_FLOAT[NP]
     
 
+.. rubric:: Symbols used in definition of **NXscan**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXscan**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

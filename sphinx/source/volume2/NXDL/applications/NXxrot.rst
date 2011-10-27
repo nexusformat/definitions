@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXattenuator`, :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXsample`
 
-symbol list:
-    none
-
 documentation:
     This is the application definition for raw data from a rotation camera. It extends NXxbase,
     so the full definition is the content of NXxbase plus the data defined here.
@@ -37,8 +34,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXxrot**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXxrot (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -57,12 +55,16 @@ documentation:
           rotation_angle_step:NX_FLOAT[np]
     
 
+.. rubric:: Symbols used in definition of **NXxrot**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXxrot**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

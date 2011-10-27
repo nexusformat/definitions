@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`
 
-symbol list:
-    none
-
 documentation:
     This is a dictionary of field names to use for describing a capillary as used
     in X-ray beamlines. Based on information provided by Gerd Wellenreuther.
@@ -37,8 +34,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXcapillary**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXcapillary (base class, version 1.0)
       accepting_aperture:NX_FLOAT
       focal_size:NX_FLOAT
@@ -50,12 +48,16 @@ documentation:
       transmission:NXdata
     
 
+.. rubric:: Symbols used in definition of **NXcapillary**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXcapillary**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

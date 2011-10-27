@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXmonochromator`, :ref:`NXsample`, :ref:`NXsource`
 
-symbol list:
-    none
-
 documentation:
     This is an application definition for raw data from an X-ray fluorescence
     experiment
@@ -37,15 +34,16 @@ documentation:
 
 .. rubric:: Basic Structure of **NXfluo**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXfluo (application definition, version 1.0)
       (overlays NXentry)
       entry:NXentry
         definition:NX_CHAR
         start_time:NX_DATE_TIME
         title:NX_CHAR
-        NXdata
+        data:NXdata
           data --> /entry/instrument/fluorecence/data
           energy --> /entry/instrument/fluorecence/energy
         NXinstrument
@@ -66,12 +64,16 @@ documentation:
           name:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXfluo**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXfluo**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXsample`, :ref:`NXsource`, :ref:`NXuser`
 
-symbol list:
-    none
-
 documentation:
     This is a definition for data to be archived by ICAT (see:
     http://www.icatproject.org/),
@@ -43,8 +40,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXarchive**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXarchive (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -91,12 +89,16 @@ documentation:
           role:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXarchive**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXarchive**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

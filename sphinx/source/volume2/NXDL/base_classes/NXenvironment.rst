@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXgeometry`, :ref:`NXnote`, :ref:`NXsensor`
 
-symbol list:
-    none
-
 documentation:
     This class describes an external condition applied to the sample
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXenvironment**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXenvironment (base class, version 1.0)
       description:NX_CHAR
       name:NX_CHAR
@@ -49,12 +47,16 @@ documentation:
       NXsensor
     
 
+.. rubric:: Symbols used in definition of **NXenvironment**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXenvironment**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

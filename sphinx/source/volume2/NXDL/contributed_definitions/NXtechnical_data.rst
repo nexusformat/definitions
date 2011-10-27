@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     (definition implied by usage) Some measure of metadata not already considered by the other
     base classes. This class appears in the example data files provided from Soleil. This class
@@ -40,8 +37,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXtechnical_data**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXtechnical_data (contributed definition, version 1.0)
       (base class definition, NXentry or NXsubentry not found)
       data:NX_NUMBER
@@ -52,12 +50,16 @@ documentation:
         @description
     
 
+.. rubric:: Symbols used in definition of **NXtechnical_data**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXtechnical_data**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

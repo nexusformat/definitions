@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXmonochromator`
 
-symbol list:
-    none
-
 documentation:
     This is a application definition for raw data from a direct geometry TOF spectrometer
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXindirecttof**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXindirecttof (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -51,12 +49,16 @@ documentation:
             polar_angle:NX_FLOAT[ndet]
     
 
+.. rubric:: Symbols used in definition of **NXindirecttof**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXindirecttof**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

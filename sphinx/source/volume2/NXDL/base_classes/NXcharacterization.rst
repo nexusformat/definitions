@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     .. COMMENT: TODO: NXcharacterization needs proper documentation
     
@@ -41,8 +38,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXcharacterization**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXcharacterization (base class, version 1.0)
       @source
       @location
@@ -52,12 +50,16 @@ documentation:
         @URL
     
 
+.. rubric:: Symbols used in definition of **NXcharacterization**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXcharacterization**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

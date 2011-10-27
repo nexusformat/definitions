@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXgeometry`, :ref:`NXlog`
 
-symbol list:
-    none
-
 documentation:
     Template of a beamline collimator.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXcollimator**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXcollimator (base class, version 1.0)
       absorbing_material:NX_CHAR
       blade_spacing:NX_FLOAT
@@ -52,12 +50,16 @@ documentation:
       frequency_log:NXlog
     
 
+.. rubric:: Symbols used in definition of **NXcollimator**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXcollimator**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXaperture`, :ref:`NXattenuator`, :ref:`NXcollection`, :ref:`NXcrystal`, :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXdisk_chopper`, :ref:`NXentry`, :ref:`NXfermi_chopper`, :ref:`NXgeometry`, :ref:`NXinstrument`, :ref:`NXlog`, :ref:`NXmoderator`, :ref:`NXmonitor`, :ref:`NXnote`, :ref:`NXorientation`, :ref:`NXpolarizer`, :ref:`NXpositioner`, :ref:`NXsample`, :ref:`NXshape`, :ref:`NXsource`, :ref:`NXtranslation`, :ref:`NXuser`
 
-symbol list:
-    none
-
 documentation:
     This is a definition for histogram data from Spallation Neutron Source (SNS) at ORNL.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXsnshisto**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXsnshisto (contributed definition, version 1.0)
       (overlays NXentry)
       NXentry
@@ -179,12 +177,16 @@ documentation:
           role:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXsnshisto**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXsnshisto**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

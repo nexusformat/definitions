@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     Time-of-flight events
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXevent_data**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXevent_data (base class, version 1.0)
       events_per_pulse:NX_INT[j]
       pixel_number:NX_INT[i]
@@ -47,12 +45,16 @@ documentation:
       time_of_flight:NX_INT[i]
     
 
+.. rubric:: Symbols used in definition of **NXevent_data**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXevent_data**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

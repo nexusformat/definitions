@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXgeometry`, :ref:`NXnote`
 
-symbol list:
-    none
-
 documentation:
     Template of the neutron or x-ray source, insertion devices and/or moderators.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXsource**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXsource (base class, version 1.0)
       bunch_distance:NX_FLOAT
       bunch_length:NX_FLOAT
@@ -72,12 +70,16 @@ documentation:
       notes:NXnote
     
 
+.. rubric:: Symbols used in definition of **NXsource**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXsource**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

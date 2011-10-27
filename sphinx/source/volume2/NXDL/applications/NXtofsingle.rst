@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXsample`, :ref:`NXuser`
 
-symbol list:
-    none
-
 documentation:
     This is a application definition for raw data from a generic TOF instrument
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXtofsingle**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXtofsingle (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -70,12 +68,16 @@ documentation:
           name:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXtofsingle**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXtofsingle**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

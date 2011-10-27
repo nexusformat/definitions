@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXcrystal`, :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXsample`, :ref:`NXsource`
 
-symbol list:
-    none
-
 documentation:
     This is an application definition for a triple axis spectrometer. It is for the trademark
     scan of the TAS, the Q-E scan. For your alignment scans use the rules in NXscan.
@@ -37,8 +34,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXtas**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXtas (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -85,12 +83,16 @@ documentation:
           unit_cell:NX_FLOAT[6]
     
 
+.. rubric:: Symbols used in definition of **NXtas**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXtas**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

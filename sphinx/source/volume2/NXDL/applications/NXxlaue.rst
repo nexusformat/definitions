@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXsource`
 
-symbol list:
-    none
-
 documentation:
     This is the application definition for raw data from a single crystal laue
     camera. It extends NXxrot.
@@ -37,8 +34,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXxlaue**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXxlaue (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -50,12 +48,16 @@ documentation:
               wavelength:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXxlaue**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXxlaue**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

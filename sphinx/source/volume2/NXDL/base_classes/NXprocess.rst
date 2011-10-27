@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXnote`
 
-symbol list:
-    none
-
 documentation:
     Document an event of data processing, reconstruction, or analysis for this data.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXprocess**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXprocess (base class, version 1.0)
       date:NX_DATE_TIME
       program:NX_CHAR
@@ -45,12 +43,16 @@ documentation:
       NXnote
     
 
+.. rubric:: Symbols used in definition of **NXprocess**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXprocess**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

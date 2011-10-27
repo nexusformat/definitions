@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     This class is used to allow a logical
     grouping of detector elements (e.g. which tube, bank or group of banks) to be
@@ -51,8 +48,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXdetector_group**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXdetector_group (base class, version 1.0)
       group_index:NX_INT[i]
       group_names:NX_CHAR
@@ -60,12 +58,16 @@ documentation:
       group_type:NX_INT[]
     
 
+.. rubric:: Symbols used in definition of **NXdetector_group**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXdetector_group**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

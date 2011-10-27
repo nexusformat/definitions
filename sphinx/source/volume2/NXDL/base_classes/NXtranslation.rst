@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXgeometry`
 
-symbol list:
-    none
-
 documentation:
     This is the description for the general spatial location
     of a component - it is used by the NXgeometry class
@@ -37,19 +34,24 @@ documentation:
 
 .. rubric:: Basic Structure of **NXtranslation**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXtranslation (base class, version 1.0)
       distances:NX_FLOAT[numobj,3]
       geometry:NXgeometry
     
 
+.. rubric:: Symbols used in definition of **NXtranslation**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXtranslation**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXsample`
 
-symbol list:
-    none
-
 documentation:
     This is the application definition for raw data from a kappa geometry (CAD4) single crystal
     diffractometer. It extends NXxbase, so the full definition is the content of NXxbase plus the
@@ -38,8 +35,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXxkappa**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXxkappa (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -59,12 +57,16 @@ documentation:
           rotation_angle:NX_FLOAT[np]
     
 
+.. rubric:: Symbols used in definition of **NXxkappa**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXxkappa**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

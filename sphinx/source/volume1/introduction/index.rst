@@ -18,12 +18,10 @@ common data format makes it easier, both to exchange experimental results
 and to exchange ideas about how to analyze them. It promotes greater 
 cooperation in software development and stimulates the design of more 
 sophisticated visualization tools. For additional background information see 
-:ref:`History`. 
+:ref:`History`.
 
-.. sidebar:: quote
-
-	The programmers who produce intermediate files for 
-	storing analyzed data should agree on simple interchange rules.
+	*The programmers who produce intermediate files for 
+	storing analyzed data should agree on simple interchange rules.*
 
 .. index:: rules
 

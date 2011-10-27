@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXgeometry`
 
-symbol list:
-    none
-
 documentation:
     description for a bending magnet
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXbending_magnet**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXbending_magnet (base class, version 1.0)
       accepted_photon_beam_divergence:NX_FLOAT
       bending_radius:NX_FLOAT
@@ -53,12 +51,16 @@ documentation:
       NXgeometry
     
 
+.. rubric:: Symbols used in definition of **NXbending_magnet**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXbending_magnet**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

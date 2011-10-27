@@ -26,32 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    These symbols will be used below to coordinate datasets with the same shape.
-    
-    
-    ``dataRank``
-        rank of the data field
-        
-    
-    ``n``
-        length of the variable field
-        
-    
-    ``nx``
-        length of the x field
-        
-    
-    ``ny``
-        length of the y field
-        
-    
-    ``nz``
-        length of the z field
-        
-    
-    
-
 documentation:
     (required) NXdata is a template of
     plottable data and their dimension scales.
@@ -117,8 +91,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXdata**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXdata (base class, version 1.0)
       data:NX_NUMBER[n]
         @signal
@@ -140,12 +115,29 @@ documentation:
       z:NX_FLOAT[nz]
     
 
+.. rubric:: Symbols used in definition of **NXdata**
+
+These symbols will be used below to coordinate datasets with the same shape.
+
++--------------+------------------------------+
+| Symbol       | Description                  |
++==============+==============================+
+| ``dataRank`` | rank of the data field       |
++--------------+------------------------------+
+| ``n``        | length of the variable field |
++--------------+------------------------------+
+| ``nx``       | length of the x field        |
++--------------+------------------------------+
+| ``ny``       | length of the y field        |
++--------------+------------------------------+
+| ``nz``       | length of the z field        |
++--------------+------------------------------+
+
+
 .. rubric:: Comprehensive Structure of **NXdata**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXgeometry`
 
-symbol list:
-    none
-
 documentation:
     This is the description for a (typically neutron) velocity selector
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXvelocity_selector**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXvelocity_selector (base class, version 1.0)
       height:NX_FLOAT
       length:NX_FLOAT
@@ -54,12 +52,16 @@ documentation:
       geometry:NXgeometry
     
 
+.. rubric:: Symbols used in definition of **NXvelocity_selector**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXvelocity_selector**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

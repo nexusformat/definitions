@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     Template of a beamline spin polarizer.
     
@@ -38,8 +35,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXpolarizer**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXpolarizer (base class, version 1.0)
       composition:NX_CHAR
       efficiency:NX_FLOAT
@@ -47,12 +45,16 @@ documentation:
       type:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXpolarizer**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXpolarizer**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXgeometry`
 
-symbol list:
-    none
-
 documentation:
     A class for a beamstop. Beamstops and their positions are important for SANS
     and SAXS experiments.
@@ -37,8 +34,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXbeam_stop**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXbeam_stop (base class, version 1.0)
       description:NX_CHAR
       distance_to_detector:NX_FLOAT
@@ -49,12 +47,16 @@ documentation:
       NXgeometry
     
 
+.. rubric:: Symbols used in definition of **NXbeam_stop**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXbeam_stop**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

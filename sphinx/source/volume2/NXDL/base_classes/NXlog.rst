@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     Definition of information that is recorded against time,
     such as information monitored during the run.
@@ -48,8 +45,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXlog**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXlog (base class, version 1.0)
       average_value:NX_FLOAT
       average_value_error:NX_FLOAT
@@ -63,12 +61,16 @@ documentation:
       value:NX_NUMBER
     
 
+.. rubric:: Symbols used in definition of **NXlog**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXlog**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXgeometry`
 
-symbol list:
-    none
-
 documentation:
     Description of a Fermi chopper, possibly with curved slits.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXfermi_chopper**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXfermi_chopper (base class, version 1.0)
       absorbing_material:NX_CHAR
       distance:NX_FLOAT
@@ -55,12 +53,16 @@ documentation:
       NXgeometry
     
 
+.. rubric:: Symbols used in definition of **NXfermi_chopper**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXfermi_chopper**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

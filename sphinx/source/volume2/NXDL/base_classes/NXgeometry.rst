@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXorientation`, :ref:`NXshape`, :ref:`NXtranslation`
 
-symbol list:
-    none
-
 documentation:
     This is the description for a general position of a component.
     It is recommended to name an instance of NXgeometry as "geometry"
@@ -40,8 +37,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXgeometry**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXgeometry (base class, version 1.0)
       component_index:NX_INT
       description:NX_CHAR
@@ -50,12 +48,16 @@ documentation:
       NXtranslation
     
 
+.. rubric:: Symbols used in definition of **NXgeometry**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXgeometry**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

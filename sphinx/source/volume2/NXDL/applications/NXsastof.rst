@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXcollimator`, :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXgeometry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXsample`, :ref:`NXshape`, :ref:`NXsource`
 
-symbol list:
-    none
-
 documentation:
     This is an application definition for small angle scattering using a 2D
     detector in TOF mode. It strives to cover all the SAS techniques in the file again
@@ -37,8 +34,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXsastof**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXsastof (application definition, version 1.0b)
       (overlays NXentry)
       NXentry
@@ -82,12 +80,16 @@ documentation:
           name:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXsastof**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXsastof**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

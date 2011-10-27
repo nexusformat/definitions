@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXlog`
 
-symbol list:
-    none
-
 documentation:
     definition for a spin rotator.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXspin_rotator**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXspin_rotator (contributed definition, version 1.0)
       (base class definition, NXentry or NXsubentry not found)
       beamline_distance:NX_FLOAT
@@ -54,12 +52,16 @@ documentation:
         value:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXspin_rotator**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXspin_rotator**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXgeometry`
 
-symbol list:
-    none
-
 documentation:
     Description of an insertion device, as in a synchrotron.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXinsertion_device**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXinsertion_device (base class, version 1.0)
       bandwidth:NX_FLOAT
       energy:NX_FLOAT
@@ -55,12 +53,16 @@ documentation:
       NXgeometry
     
 
+.. rubric:: Symbols used in definition of **NXinsertion_device**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXinsertion_device**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXparameters`, :ref:`NXprocess`, :ref:`NXsample`, :ref:`NXsource`
 
-symbol list:
-    none
-
 documentation:
     This is an application definition for the final result of a tomography experiment: a 3D construction of some volume of physical properties.
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXtomoproc**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXtomoproc (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -66,12 +64,25 @@ documentation:
           name:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXtomoproc**
+
+These symbols will be used below to coordinate datasets with the same shape.
+
++--------+---------------------------------+
+| Symbol | Description                     |
++========+=================================+
+| ``nx`` | number of voxels in X direction |
++--------+---------------------------------+
+| ``ny`` | number of voxels in Y direction |
++--------+---------------------------------+
+| ``nz`` | number of voxels in Z direction |
++--------+---------------------------------+
+
+
 .. rubric:: Comprehensive Structure of **NXtomoproc**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

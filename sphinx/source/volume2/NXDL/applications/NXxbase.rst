@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXmonochromator`, :ref:`NXsample`, :ref:`NXsource`
 
-symbol list:
-    none
-
 documentation:
     This definition covers the common parts of all monochromatic
     single crystal raw data application definitions
@@ -37,8 +34,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXxbase**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXxbase (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -75,12 +73,16 @@ documentation:
           y_translation:NX_FLOAT
     
 
+.. rubric:: Symbols used in definition of **NXxbase**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXxbase**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

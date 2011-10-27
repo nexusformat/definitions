@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXgeometry`, :ref:`NXlog`, :ref:`NXsensor`
 
-symbol list:
-    none
-
 documentation:
     Template for specifying the state of band pass filters.
     If uncertain whether to use NXfilter (band-pass filter)
@@ -39,8 +36,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXfilter**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXfilter (base class, version 1.0)
       chemical_formula:NX_CHAR
       coating_material:NX_CHAR
@@ -68,12 +66,16 @@ documentation:
       sensor_type:NXsensor
     
 
+.. rubric:: Symbols used in definition of **NXfilter**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXfilter**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

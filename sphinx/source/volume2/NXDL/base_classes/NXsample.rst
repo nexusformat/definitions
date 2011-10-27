@@ -26,36 +26,6 @@ extends class:
 other classes included:
     :ref:`NXbeam`, :ref:`NXdata`, :ref:`NXenvironment`, :ref:`NXgeometry`, :ref:`NXlog`
 
-symbol list:
-    symbolic array lengths to be coordinated between various fields
-    
-    
-    ``n_comp``
-        number of compositions
-        
-    
-    ``n_Temp``
-        number of temperatures
-        
-    
-    ``n_eField``
-        number of values in applied electric field
-        
-    
-    ``n_mField``
-        number of values in applied magnetic field
-        
-    
-    ``n_pField``
-        number of values in applied pressure field
-        
-    
-    ``n_sField``
-        number of values in applied stress field
-        
-    
-    
-
 documentation:
     Template of the state of the sample. This could include scanned variables that
     are associated with one of the data dimensions, e.g. the magnetic field, or
@@ -65,8 +35,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXsample**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXsample (base class, version 1.0)
       changer_position:NX_INT
       chemical_formula:NX_CHAR
@@ -115,12 +86,31 @@ documentation:
       external_ADC:NXlog
     
 
+.. rubric:: Symbols used in definition of **NXsample**
+
+symbolic array lengths to be coordinated between various fields
+
++--------------+--------------------------------------------+
+| Symbol       | Description                                |
++==============+============================================+
+| ``n_comp``   | number of compositions                     |
++--------------+--------------------------------------------+
+| ``n_Temp``   | number of temperatures                     |
++--------------+--------------------------------------------+
+| ``n_eField`` | number of values in applied electric field |
++--------------+--------------------------------------------+
+| ``n_mField`` | number of values in applied magnetic field |
++--------------+--------------------------------------------+
+| ``n_pField`` | number of values in applied pressure field |
++--------------+--------------------------------------------+
+| ``n_sField`` | number of values in applied stress field   |
++--------------+--------------------------------------------+
+
+
 .. rubric:: Comprehensive Structure of **NXsample**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

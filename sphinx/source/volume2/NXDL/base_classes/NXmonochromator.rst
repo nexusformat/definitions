@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXcrystal`, :ref:`NXdata`, :ref:`NXgeometry`, :ref:`NXvelocity_selector`
 
-symbol list:
-    none
-
 documentation:
     This is a base class for everything which
     selects a wavelength or energy, be it a monochromator crystal, a velocity selector,
@@ -44,8 +41,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXmonochromator**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXmonochromator (base class, version 1.0)
       energy:NX_FLOAT
       energy_error:NX_FLOAT
@@ -57,12 +55,16 @@ documentation:
       NXvelocity_selector
     
 
+.. rubric:: Symbols used in definition of **NXmonochromator**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXmonochromator**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

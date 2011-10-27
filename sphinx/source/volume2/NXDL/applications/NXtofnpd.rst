@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXsample`, :ref:`NXuser`
 
-symbol list:
-    none
-
 documentation:
     This is a application definition for raw data from a TOF neutron powder diffractometer
     
@@ -36,8 +33,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXtofnpd**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXtofnpd (application definition, version 1.0b)
       (overlays NXentry)
       entry:NXentry
@@ -69,12 +67,16 @@ documentation:
           name:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXtofnpd**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXtofnpd**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

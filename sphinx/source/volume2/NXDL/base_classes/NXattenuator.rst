@@ -26,9 +26,6 @@ extends class:
 other classes included:
     none
 
-symbol list:
-    none
-
 documentation:
     Template of a beamline attenuator.
     If uncertain whether to use NXfilter (band-pass filter)
@@ -39,8 +36,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXattenuator**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXattenuator (base class, version 1.0)
       absorption_cross_section:NX_FLOAT
       attenuator_transmission:NX_FLOAT
@@ -52,12 +50,16 @@ documentation:
       type:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXattenuator**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXattenuator**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

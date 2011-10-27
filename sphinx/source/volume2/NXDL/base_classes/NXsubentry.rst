@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXcharacterization`, :ref:`NXdata`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXnote`, :ref:`NXprocess`, :ref:`NXsample`, :ref:`NXuser`
 
-symbol list:
-    none
-
 documentation:
     NXsubentry is a base class virtually identical to NXentry
     and is used as the (overlay) location for application definitions.
@@ -58,8 +55,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXsubentry**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXsubentry (base class, version 1.0)
       @IDF_Version
       collection_description:NX_CHAR
@@ -98,12 +96,16 @@ documentation:
       NXuser
     
 
+.. rubric:: Symbols used in definition of **NXsubentry**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXsubentry**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+

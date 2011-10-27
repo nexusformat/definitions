@@ -26,9 +26,6 @@ extends class:
 other classes included:
     :ref:`NXcollimator`, :ref:`NXdata`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXgeometry`, :ref:`NXinstrument`, :ref:`NXmonitor`, :ref:`NXmonochromator`, :ref:`NXsample`, :ref:`NXshape`, :ref:`NXsource`
 
-symbol list:
-    none
-
 documentation:
     This is an application definition for 2-D small angle scattering data collected with a
     monochromatic beam and an area detector. It is meant to be suitable both for neutron SANS and
@@ -38,8 +35,9 @@ documentation:
 
 .. rubric:: Basic Structure of **NXsas**
 
-::
-
+.. code-block:: text
+    :linenos:
+    
     NXsas (application definition, version 1.0b)
       (overlays NXentry)
       NXentry
@@ -84,12 +82,16 @@ documentation:
           name:NX_CHAR
     
 
+.. rubric:: Symbols used in definition of **NXsas**
+
+No symbols are defined in this NXDL file
+
+
+
 .. rubric:: Comprehensive Structure of **NXsas**
 
-
-=====================  ========  =========  ===================================
-Name and Attributes    Type      Units      Description (and Occurrences)
-=====================  ========  =========  ===================================
-class                  ..        ..         ..
-=====================  ========  =========  ===================================
-        
++---------------------+----------+-------+-------------------------------+
+| Name and Attributes | Type     | Units | Description (and Occurrences) |
++=====================+==========+=======+===============================+
+| class               | NX_FLOAT | ..    | ..                            |
++---------------------+----------+-------+-------------------------------+
