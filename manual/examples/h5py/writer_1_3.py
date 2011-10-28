@@ -16,7 +16,7 @@ tthData, countsData = my_lib.get_2column_data(INPUT_FILE)
 
 f = my_lib.makeFile(HDF5_FILE)  # create the HDF5 NeXus file
 
-nxentry = my_lib.makeGroup(f, 'entry', 'NXentry')
+nxentry = my_lib.makeGroup(f, 'Scan', 'NXentry')
 nxdata = my_lib.makeGroup(nxentry, 'data', 'NXdata')
 
 # call h5py library routine directly rather than our my_lib support

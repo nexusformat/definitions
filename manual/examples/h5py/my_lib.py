@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-Library of routines to support NeXus HDF5 files using h5py
+my_lib Library of routines to support NeXus HDF5 files using h5py
 '''
 
 import h5py    # HDF5 support
