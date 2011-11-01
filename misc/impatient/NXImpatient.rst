@@ -283,14 +283,14 @@ When trying to establish a data standard we encounter a few challenges,
 some of which can slow effort:
 
 Science does new things
-    By definition science is about doing new things, and of course new things
+    By definition, science is about doing new things, and of course new things
     cannot always be forced into strict standards. Thus any standardization effort
-    in science will be an on going process.
+    in science will be an ongoing process.
 Consensus
-    In order to establish a standard a large portion of a scientific community must agree.
+    In order to establish a standard, a large portion of a scientific community must agree.
 Resources
-    A data standard requires scientific programming resources in order to
-    be implemented in acquisition and analysis software, but such resources
+    A data standard requires scientific programming resources to
+    implement in acquisition and analysis software, but such resources
     are scarce especially at already established facilities.
 
 However, there are many benefits to be gained from having the NeXus
@@ -308,7 +308,6 @@ Programming
 Storing complete data
    Storing all this metadata when saving the data takes extra effort,
    but benefits include:
-
      * The file will include the necessary fields for yet unforeseen ways to
        analyse the data.
      * If something is wrong with the data it becomes possible to figure
