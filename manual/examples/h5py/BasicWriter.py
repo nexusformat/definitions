@@ -2,22 +2,14 @@
 '''Writes a NeXus HDF5 file using h5py'''
 
 import h5py    # HDF5 support
+import numpy
 
 print "Write a NeXus HDF5 file"
 fileName = "prj_test.nexus.hdf5"
 timestamp = "2010-10-18T17:17:04-0500"
 
-# prepare the data
-f = open('input.dat',  'r')
-TWO_COLUMNS = f.read()
-f.close()
-
-data = {'mr': [], 'I00': []}
-buffer = TWO_COLUMNS.strip().split("\n")
-for row in buffer:
-    (x, y) = row.split()
-    data['mr'].append(float(x))
-    data['I00'].append(int(y))
+# load data from two column format
+data = numpy.loadtxt('input.dat').T
 
 # create the HDF5 NeXus file
 f = h5py.File(fileName, "w")
@@ -35,10 +27,10 @@ nxentry.attrs["NX_class"] = "NXentry"   # identify NeXus base class
 nxdata = nxentry.create_group("mr_scan")
 nxdata.attrs["NX_class"] = "NXdata"   # identify NeXus base class
 
-mr = nxdata.create_dataset("mr", data=data['mr'])
+mr = nxdata.create_dataset("mr", data=data[0])
 mr.attrs['units'] = "degrees"
 
-i00 = nxdata.create_dataset("I00", data=data['I00'])
+i00 = nxdata.create_dataset("I00", data=numpy.asarray(data[1],'int32'))
 i00.attrs['units'] = "counts"
 
 # NeXus wants to provide a default plot
