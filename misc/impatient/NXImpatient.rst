@@ -308,6 +308,7 @@ Programming
 Storing complete data
    Storing all this metadata when saving the data takes extra effort,
    but benefits include:
+
      * The file will include the necessary fields for yet unforeseen ways to
        analyse the data.
      * If something is wrong with the data it becomes possible to figure
