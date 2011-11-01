@@ -13,7 +13,8 @@ Why NeXus?
 ===========
 
 The NeXus data format is a tool which has been designed to
-solve the problems of travelling scientists, who undertake experiments at several different
+solve the problems of travelling scientists, 
+who undertake experiments at several different
 neutron, x-ray or muon facilities. Such people will apply to
 different facilities with different proposals in order to get
 their science done by combining the data thus collected at the various
@@ -152,9 +153,9 @@ indentation
 name:NXname
     This describes a NeXus group. The second name starting with NX is the NeXus
     class name of the group. Each NeXus class defines a set of allowed field names
-	that may be used to describe a component of the experiment,
+    that may be used to describe a component of the experiment,
     such as detector distance and angle. Not all such names are required - 
-	those relevant to a particular use case are specified by the appropriate application definition.
+    those relevant to a particular use case are specified by the appropriate application definition.
     Some experiments have multiple groups
     of the same class, such as apertures and detectors.
 name:NX_TYPE[dim,dim,...]
@@ -519,9 +520,9 @@ similar to the reading code. For both approaches more information is
 available in the NeXus Manual or the NeXus Reference Manual.
 
 To give you taste of what it is like to write a NeXus file using the
-NeXus API here is code example. It shows how to create a
+NeXus API, here is complete code example in C. It shows how to create a
 scan:NXentry/data:NXdata structure and store two arrays, counts and
-two_theta in there::
+two_theta::
 
  #include "napi.h"
 
@@ -577,9 +578,8 @@ Who is behind NeXus?
 NeXus was developed from three independent proposals from Jonathan Tischler,
 APS, Przemek Klosowski, NIST and Mark Koennecke, ISIS (now PSI) by an
 international team of scientists during a series of SoftNess workshops
-in 1996 - 1998. More work was done during NOBUGS conferences. Since 2001
+in 1994 - 1996. More work was done during NOBUGS conferences. Since 2001,
 NeXus is overseen by the NeXus International Advisory Committee (NIAC)
 which meets once a  year. The NIAC strives to have a representative for
 each participating facility. The NIAC has a constitution which you can
 find on our WWW-site.
-
