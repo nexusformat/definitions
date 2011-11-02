@@ -4,15 +4,21 @@ my_lib Library of routines to support NeXus HDF5 files using h5py
 '''
 
 import h5py    # HDF5 support
+import numpy   # in this case, provides data structures
 
-def makeFile(filename):
+# TODO: refactor attr dictionaries into keyword arguments
+
+def makeFile(filename, attr = None):
     """
     create and open an empty NeXus HDF5 file using h5py
 
     :param str filename: valid file name
+    :param dict attr: optional dictionary of attributes
     :return: h5py file object
     """
-    return h5py.File(filename, "w")
+    f = h5py.File(filename, "w")
+    add_attributes(f, attr)
+    return f
 
 def makeGroup(parent, name, nxclass):
     """
@@ -34,20 +40,13 @@ def makeDataset(parent, name, data = None, attr = None):
     :param obj parent: parent group
     :param str name: valid NeXus dataset name
     :param obj data: the data to be saved
-    :param dict attr: dictionary of attributes
+    :param dict attr: optional dictionary of attributes
     '''
     if data == None:
         obj = parent.create_dataset(name)
-    elif type(data) == type("a string"):
-	# pad strings with an extra space
-	obj = parent.create_dataset(name, data=[data + " "])
     else:
         obj = parent.create_dataset(name, data=data)
-    if attr:
-        if type(attr) == type({}):
-            # attr is a dictionary of attributes
-            for k, v in attr.items():
-                obj.attrs[k] = v
+    add_attributes(obj, attr)
     return obj
 
 def makeLink(parent, sourceObject, targetName):
@@ -59,22 +58,25 @@ def makeLink(parent, sourceObject, targetName):
     :param str targetName: HDF5 node path string, such as /entry/data/data
     """
     if not 'target' in sourceObject.attrs:
-        # NeXus-style link identifies full sourceObject HDF5 path
-        sourceObject.attrs["target"] = str(sourceObject.name) # no unicode
+        # NeXus link, NOT an HDF5 link!
+        sourceObject.attrs["target"] = sourceObject.name
     parent._id.link(sourceObject.name, targetName, h5py.h5g.LINK_HARD)
 
+def add_attributes(parent, attr):
+    """
+    add attributes to an h5py data item
+
+    :param obj parent: h5py parent object
+    :param dict attr: dictionary of attributes
+    """
+    if attr and type(attr) == type({}):
+        # attr is a dictionary of attributes
+        for k, v in attr.items():
+            parent.attrs[k] = v
 
 def get_2column_data(fileName):
-    '''read two-column data from a file'''
-    f = open(fileName,  'r')
-    TWO_COLUMNS = f.read()
-    f.close()
-
-    xArr = []
-    yArr = []
-    buffer = TWO_COLUMNS.strip().split("\n")
-    for row in buffer:
-    	(x, y) = row.split()
-    	xArr.append(float(x))
-    	yArr.append(int(y))
+    '''read two-column data from a file, first column is float, second column is integer'''
+    buffer = numpy.loadtxt(fileName).T
+    xArr = buffer[0]
+    yArr = numpy.asarray(buffer[1],'int32')
     return xArr, yArr
