@@ -56,6 +56,19 @@ No symbols are defined in this NXDL file
 
 
 
+.. rubric:: Attributes of ``definition`` element in **NXcharacterization**
+
++------------+---------+-------+--------------------------------+
+| Attributes | Type    | Units | Description (and Occurrences)  |
++============+=========+=======+================================+
+| @source    | NX_CHAR | ..    | ..                             |
++------------+---------+-------+--------------------------------+
+| @location  | NX_CHAR | ..    | ..                             |
++------------+---------+-------+--------------------------------+
+| @mime_type | NX_CHAR | ..    | ..                             |
++------------+---------+-------+--------------------------------+
+
+
 .. rubric:: Comprehensive Structure of **NXcharacterization**
 
 +---------------------+----------+-------+-------------------------------+

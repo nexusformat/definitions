@@ -102,6 +102,15 @@ No symbols are defined in this NXDL file
 
 
 
+.. rubric:: Attributes of ``definition`` element in **NXsubentry**
+
++--------------+---------+-------+--------------------------------+
+| Attributes   | Type    | Units | Description (and Occurrences)  |
++==============+=========+=======+================================+
+| @IDF_Version | NX_CHAR | ..    | ..                             |
++--------------+---------+-------+--------------------------------+
+
+
 .. rubric:: Comprehensive Structure of **NXsubentry**
 
 +---------------------+----------+-------+-------------------------------+

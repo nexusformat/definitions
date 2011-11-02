@@ -104,6 +104,8 @@ These symbols will be used below to coordinate dimensions with the same lengths.
 +------------+------------------------------------------------+
 
 
+
+
 .. rubric:: Comprehensive Structure of **NXcrystal**
 
 +---------------------+----------+-------+-------------------------------+

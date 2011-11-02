@@ -76,6 +76,8 @@ No symbols are defined in this NXDL file
 
 
 
+
+
 .. rubric:: Comprehensive Structure of **NXsource**
 
 +---------------------+----------+-------+-------------------------------+

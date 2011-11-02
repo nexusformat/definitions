@@ -74,6 +74,8 @@ class Describe:
         
         rest += self.symbols_table(root) + "\n\n"
         
+        rest += self.top_attributes_table(root) + "\n\n"
+        
         rest += "\n.. rubric:: Comprehensive Structure of **%s**\n\n" % self.nxdlName
         t = Table()
         t.labels = ('Name and Attributes', 'Type', 'Units', 'Description (and Occurrences)', )
@@ -201,6 +203,29 @@ describe an additional information in a note*
             doc = str(obj).strip() + "\n"
             #doc = DN.text
         return doc
+    
+    def top_attributes_table(self, root):
+        '''Return a table of ReST references to the attributes defined
+        in the root element of this NXDL
+        
+        :param root: root of XML tree
+        '''
+        rest = ""
+        nodelist = root.findall( '{%s}attribute' % self.ns['nx'] )
+        if len(nodelist) > 0:
+            fmt = "\n.. rubric:: Attributes of ``definition`` element in **%s**\n\n"
+            rest = fmt % self.nxdlName
+            table = Table()
+            table.labels = ('Attributes', 'Type', 'Units', 'Description (and Occurrences) ', )
+            for node in nodelist:
+                name = '@' + node.get('name')
+                type = node.get('type', 'NX_CHAR')
+                units = node.get('type', '..')
+                # FIXME: this has not been finished
+                description = '..'
+                table.rows.append( [name, type, units, description] )
+            rest += table.reST()
+        return rest
 
 
 class Table:

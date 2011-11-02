@@ -107,6 +107,8 @@ symbolic array lengths to be coordinated between various fields
 +--------------+--------------------------------------------+
 
 
+
+
 .. rubric:: Comprehensive Structure of **NXsample**
 
 +---------------------+----------+-------+-------------------------------+

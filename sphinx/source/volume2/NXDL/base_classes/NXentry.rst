@@ -83,6 +83,15 @@ No symbols are defined in this NXDL file
 
 
 
+.. rubric:: Attributes of ``definition`` element in **NXentry**
+
++--------------+---------+-------+--------------------------------+
+| Attributes   | Type    | Units | Description (and Occurrences)  |
++==============+=========+=======+================================+
+| @IDF_Version | NX_CHAR | ..    | ..                             |
++--------------+---------+-------+--------------------------------+
+
+
 .. rubric:: Comprehensive Structure of **NXentry**
 
 +---------------------+----------+-------+-------------------------------+
