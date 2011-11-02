@@ -21,12 +21,8 @@ f = my_lib.makeFile(HDF5_FILE)
 nxentry = my_lib.makeGroup(f, 'Scan', 'NXentry')
 nxdata = my_lib.makeGroup(nxentry, 'data', 'NXdata')
 
-my_lib.makeDataset(nxdata, "two_theta", tthData, {'units': 'degrees'})
+my_lib.makeDataset(nxdata, "two_theta", tthData, units='degrees')
 my_lib.makeDataset(nxdata, "counts", countsData, 
-    {
-        'units': 'counts',
-        'signal': '1',
-        'axes': 'two_theta',
-    })
+                   units='counts', signal='1', axes='two_theta')
 
 f.close()	# be CERTAIN to close the file

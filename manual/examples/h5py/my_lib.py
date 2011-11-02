@@ -6,14 +6,16 @@ my_lib Library of routines to support NeXus HDF5 files using h5py
 import h5py    # HDF5 support
 import numpy   # in this case, provides data structures
 
-# TODO: refactor attr dictionaries into keyword arguments
-
-def makeFile(filename, attr = None):
+def makeFile(filename, **attr):
     """
     create and open an empty NeXus HDF5 file using h5py
+    
+    Any named parameters in the call to this method will be saved as
+    attributes of the root of the file.
+    Note that **attr is a dictionary of named parameters.
 
     :param str filename: valid file name
-    :param dict attr: optional dictionary of attributes
+    :param attr: optional keywords of attributes
     :return: h5py file object
     """
     f = h5py.File(filename, "w")
@@ -33,14 +35,14 @@ def makeGroup(parent, name, nxclass):
     group.attrs["NX_class"] = nxclass
     return group
 
-def makeDataset(parent, name, data = None, attr = None):
+def makeDataset(parent, name, data = None, **attr):
     '''
     create and write data to a dataset in the HDF5 file hierarchy
 
     :param obj parent: parent group
     :param str name: valid NeXus dataset name
     :param obj data: the data to be saved
-    :param dict attr: optional dictionary of attributes
+    :param attr: optional keywords of attributes
     '''
     if data == None:
         obj = parent.create_dataset(name)
@@ -59,7 +61,7 @@ def makeLink(parent, sourceObject, targetName):
     """
     if not 'target' in sourceObject.attrs:
         # NeXus link, NOT an HDF5 link!
-        sourceObject.attrs["target"] = sourceObject.name
+        sourceObject.attrs["target"] = str(sourceObject.name)
     parent._id.link(sourceObject.name, targetName, h5py.h5g.LINK_HARD)
 
 def add_attributes(parent, attr):

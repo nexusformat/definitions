@@ -19,12 +19,9 @@ nxentry = my_lib.makeGroup(f, 'entry', 'NXentry')
 nxinstrument = my_lib.makeGroup(nxentry, 'instrument', 'NXinstrument')
 nxdetector = my_lib.makeGroup(nxinstrument, 'detector', 'NXdetector')
 
-tth = my_lib.makeDataset(nxdetector, "two_theta", tthData, {'units': "degrees"})
-counts = my_lib.makeDataset(nxdetector, "counts", countsData, {
-      'units': "counts",
-      'signal': "1",
-      'axes': "two_theta",
-      })
+tth = my_lib.makeDataset(nxdetector, "two_theta", tthData, units='degrees')
+counts = my_lib.makeDataset(nxdetector, "counts", countsData, 
+                   units='counts', signal='1', axes='two_theta')
 
 nxdata = my_lib.makeGroup(nxentry, 'data', 'NXdata')
 my_lib.makeLink(nxdetector, tth, nxdata.name+'/two_theta')
