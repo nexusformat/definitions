@@ -27,11 +27,66 @@ in the NeXus docs.
 
 import sys, os
 import db2rst
+import lxml.etree as ET
 
 NEXUS_DIR = "../manual"
 #NEXUS_DIR = "../../NeXus/definitions/trunk/manual"
 NEXUS_DIR = os.path.abspath(NEXUS_DIR)
 DocBook_FILE_LIST = []
+
+
+class NeXus_Convert(db2rst.Convert):
+    '''
+    NeXus overrides of the db2rst standard Convert class
+    '''
+
+    def e_table(self, el):
+        # This still breaks for tables with embedded lists and other pathologies.
+        s = "\n\n"
+        id = el.get(self.parent.id_attrib, "")
+        if len(id) > 0:
+            s += ".. _%s:\n\n" % id
+        
+        s += ".. rubric:: Table: "
+        title = self.childNodeText(el, 'title')
+        if title is not None:
+            s += title
+        s += "\n\n"
+        
+        # get number of columns
+        cols = int(el.find(self.parent.ns+'tgroup').attrib['cols'])
+        
+        # calculate the widths of all the columns
+        row_nodes = ET.ETXPath( './/%srow' % self.parent.ns )(el)
+        widths = [ 0  for _ in range(cols)]
+        for r in row_nodes:
+            i = 0
+            for c in r.findall(self.parent.ns+'entry'):
+                widths[i] = max( len( self._conv(c, do_assert = False) ), widths[i])
+                i += 1
+        fmt = ' '.join(['%%-%is' % (size,) for size in widths]) + '\n'
+        divider = fmt % tuple(['=' * size for size in widths])
+        
+        s += divider   # top row of table
+
+        tgroup = el.find(self.parent.ns+'tgroup')
+        thead = tgroup.find(self.parent.ns+'thead')
+        if thead is None:
+            s += fmt % tuple(['..' for _ in range(cols)])
+        else:
+            nodes = thead.find(self.parent.ns+'row').findall(self.parent.ns+'entry')
+            s += fmt % tuple(map(self._conv, nodes))
+
+        s += divider   # label-end row of table
+
+        tbody = tgroup.find(self.parent.ns+'tbody')
+        rows = tbody.findall(self.parent.ns+'row')
+        for row in rows:
+            entries = row.findall(self.parent.ns+'entry')
+            s += fmt % tuple(map(self._conv, entries))
+        
+        s += divider   # bottom row of table
+        return s
 
 
 def buildList(item):
@@ -71,7 +126,7 @@ converter.removeComments(False)
 converter.writeUnusedLabels(True)
 converter.id_attrib = "{http://www.w3.org/XML/1998/namespace}id"
 converter.linkend = "{http://www.w3.org/1999/xlink}href"
-converter.useStdTableHandler = False
+converter.converter = NeXus_Convert
 
 for xml_file in DocBook_FILE_LIST:
     sys.stderr.write("Processing DocBook file `%s'...\n" % xml_file)

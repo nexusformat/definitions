@@ -36,24 +36,7 @@ __contributors__ = ('Kurt McKee <contactme@kurtmckee.org>',
                    )
 
 
-def old_main(args):
-    if len(args) < 2 or len(args) > 3 or args[1] == '-h' or args[1] == '--help':
-        sys.stderr.write(__doc__)
-        sys.exit()
-    input_file = args[1]
-    if len(args) == 3:
-        output_dir = args[2]
-    else:
-        output_dir = None
-    sys.stderr.write("Parsing XML file `%s'...\n" % input_file)
-
-    converter = Db2Rst()
-    result = converter.process( input_file )
-    if result is not None:
-        return str(obj)
-
-
-class Db2Rst():
+class Db2Rst:
     ''' 
     handle conversion of DocBook source code files 
     into ReST: Restructured Text source code documents
@@ -69,7 +52,7 @@ class Db2Rst():
         self.output_dir = None              # if converting a set of docbook files
         self.namespacePrefix = None         # as used in the DocBook file
         self.ns = ""
-        self.useStdTableHandler = True      # option to pick an alternate handler for <table>
+        self.converter = Convert
     
     def process(self, dbfile):
         '''
@@ -83,7 +66,7 @@ class Db2Rst():
         root = tree.getroot()
         self.ns = "{%s}" % root.nsmap[self.namespacePrefix]
         self._linked_ids = self._get_linked_ids(tree)
-        obj = Convert(root, self)
+        obj = self.converter(root, self)
         if self.output_dir:
             self.writeToDir(obj)
             return None
@@ -203,18 +186,21 @@ class Convert(object):
         The function e_tag() has one argument, 
         the DocBook element node to process.
         '''
-        # need to strip self.parent.ns from el.tag here
         tag = str(el.tag)
         if tag.find(self.parent.ns) == 0:
+            # strip off the default namespace
             tag = tag[len(self.parent.ns):]
-        if hasattr(self, 'e_' + tag):
-            a = getattr(self, 'e_' + tag)
-            s = a(el)
-            # FIXME: What happens if len(s)==0?  Why should this be an error?  
-            # Because zip() in the caller needs non-empty.
-            #if do_assert:
-            #    assert s, "Error: %s -> None\n" % self._get_path(el)
-            return s
+        if tag.startswith("{"):
+            # identify other namespaces by prefix used in XML file
+            ns, rawTag = tag[1:].split("}")
+            if ns in el.nsmap.values():
+                # find the namespace prefix, given its full value
+                prefix = [k for k, v in el.nsmap.iteritems() if v == ns][0]
+            if prefix is not None:
+                tag = "_".join([prefix, rawTag])
+        method_name = 'e_' + tag
+        if hasattr(self, method_name):
+            return getattr(self, method_name)(el)   # call the e_tag(el) method
         elif isinstance(el, ET._Comment):
             if el.text.strip():
                 return self.Comment(el)
@@ -404,14 +390,33 @@ class Convert(object):
     def e_informalexample(self, el):
         return self._docbook_source(el, 'INFORMALEXAMPLE')
     
-    def e_include(self, el):
-        return self._docbook_source(el, 'INCLUDE')
-    
     def e_calloutlist(self, el):
         return self._docbook_source(el, 'CALLOUTLIST')
+
+    def e_xi_include(self, el):
+        '''
+        process Xinclude "include" directives 
+        as triggered by this attribute in the root element::
+        
+            xmlns:xi="http://www.w3.org/2001/XInclude"
+
+        and a statement such as this::
+        
+            <xi:include href="preface.xml"/>
+        
+        This _should_ result in a toctree entry but there may exist
+        questions/problems related to file paths and subdirectories.
+        For now, leave a big fat comment.
+        Try to pull the referenced file from the href attribute.
+        '''
+        f = el.get("href", None)
+        if f is None:
+            s = self._docbook_source(el, "INCLUDE")
+        else:
+            s = "\n\n.. rubric:  INCLUDE %s\n\n" % f
+        return s
     
-    def e_include(self, el):
-        return self._docbook_source(el, "INCLUDE")
+    e_include = e_xi_include    # handle this the same way
     
     # general inline elements
     
@@ -909,20 +914,17 @@ class Convert(object):
         s += self._indent(el.find(self.parent.ns+"revdescription"), 4, ", ".join(t) + "\n    ")
         return s
 
-    # table support
+    #  + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
+    #  + + + + + + + + + + + + table support + + + + + + + + + + + +
+    #  + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
 
     def _calc_col_width(self, el):
         return len(self._conv(el).strip())
 
     def e_table(self, el):
-        # consider refactoring this code!  It fails now on <entry /> DocBook elements at the zip().
+        # consider refactoring this code!  
+        # It fails now on empty <entry /> DocBook elements at the zip().
         # get each column size
-        if self.parent.useStdTableHandler:
-            return self._std_table(el)
-        else:
-            return self._alt_table(el)
-
-    def _std_table(self, el):
         text = (el.getchildren()[0].text or '') + (el.getchildren()[0].tail or '') + '\n\n'
         cols = int(el.find(self.parent.ns+'tgroup').attrib['cols'])
         colsizes = self._column_widths(el)
@@ -940,61 +942,30 @@ class Convert(object):
     
     def _column_widths(self, el):
         ''' returns a list with the maximum width of each column '''
-        # FIXME: This fails on <entry /> DocBook elements at the zip().
+        # FIXME: This fails on empty <entry /> DocBook elements at the zip().
         # TODO: make this code more obvious and easier to maintain
         return map(max, zip(*[map(self._calc_col_width, r) for r in ET.ETXPath( './/%srow' % self.parent.ns )(el)]))
 
-    def _alt_table(self, el):
-        # This still breaks for tables with embedded lists and other pathologies.
-        s = "\n\n"
-        id = el.get(self.parent.id_attrib, "")
-        if len(id) > 0:
-            s += ".. _%s:\n\n" % id
-        
-        s += ".. rubric:: Table: "
-        title = self.childNodeText(el, 'title')
-        if title is not None:
-            s += title
-        s += "\n\n"
-        
-        # get number of columns
-        cols = int(el.find(self.parent.ns+'tgroup').attrib['cols'])
-        
-        # calculate the widths of all the columns
-        row_nodes = ET.ETXPath( './/%srow' % self.parent.ns )(el)
-        widths = [ 0  for _ in range(cols)]
-        for r in row_nodes:
-            i = 0
-            for c in r.findall(self.parent.ns+'entry'):
-                widths[i] = max( len( self._conv(c, do_assert = False) ), widths[i])
-                i += 1
-        fmt = ' '.join(['%%-%is' % (size,) for size in widths]) + '\n'
-        divider = fmt % tuple(['=' * size for size in widths])
-        
-        s += divider   # top row of table
 
-        tgroup = el.find(self.parent.ns+'tgroup')
-        thead = tgroup.find(self.parent.ns+'thead')
-        if thead is None:
-            s += fmt % tuple(['..' for _ in range(cols)])
-        else:
-            nodes = thead.find(self.parent.ns+'row').findall(self.parent.ns+'entry')
-            s += fmt % tuple(map(self._conv, nodes))
+def original_main(args):
+    if len(args) < 2 or len(args) > 3 or args[1] == '-h' or args[1] == '--help':
+        sys.stderr.write(__doc__)
+        sys.exit()
+    input_file = args[1]
+    if len(args) == 3:
+        output_dir = args[2]
+    else:
+        output_dir = None
+    sys.stderr.write("Parsing XML file `%s'...\n" % input_file)
 
-        s += divider   # label-end row of table
-
-        tbody = tgroup.find(self.parent.ns+'tbody')
-        rows = tbody.findall(self.parent.ns+'row')
-        for row in rows:
-            entries = row.findall(self.parent.ns+'entry')
-            s += fmt % tuple(map(self._conv, entries))
-        
-        s += divider   # bottom row of table
-        return s
+    converter = Db2Rst()
+    result = converter.process( input_file )
+    if result is not None:
+        return str(obj)
 
 
 if __name__ == '__main__':
-    result = old_main(sys.argv)
+    result = original_main(sys.argv)
     if result is not None:
         print result
 
