@@ -11,26 +11,22 @@
 '''
 Runs the ``db2rst`` program on a specific DocBook XML file.
 This code was written to test the db2rst code as it is being 
-converted into a class that can be called simply:
+extended to convert the NeXus documentation into sphinx:
 
     converter = Db2Rst()
     result = converter.process( input_file )
     if result is not None:
         return str(obj)
 
-The plan is to add namespace consideration into ``db2rst``
-to aid in converting the NeXus documentation from DocBook into ReSt.
-Additional handlers will also need to be added for the tags used 
-in the NeXus docs.
 '''
 
 
 import sys, os
 import db2rst
 import lxml.etree as ET
+import logging
 
 NEXUS_DIR = "../manual"
-#NEXUS_DIR = "../../NeXus/definitions/trunk/manual"
 NEXUS_DIR = os.path.abspath(NEXUS_DIR)
 DocBook_FILE_LIST = []
 
@@ -109,8 +105,8 @@ buildList("introduction.xml")
 buildList("issues.xml")
 buildList("license.xml")
 buildList("mailinglist.xml")
-buildList("motivations.xml")
-buildList("napi-java.xml")
+buildList("motivations.xml")  # some <primary> element is not getting handled here
+buildList("napi-java.xml")    # ... or here ...
 buildList("NIAC.xml")
 buildList("NXDL.xml")
 buildList("preface.xml")
@@ -120,17 +116,18 @@ buildList("subversion.xml")
 buildList("utilities.xml")
 buildList("validation.xml")
 buildList("classes/NXentry.xml")
+buildList("examples.xml")
 
 converter = db2rst.Db2Rst()
 converter.removeComments(False)
 converter.writeUnusedLabels(True)
 converter.id_attrib = "{http://www.w3.org/XML/1998/namespace}id"
 converter.linkend = "{http://www.w3.org/1999/xlink}href"
-converter.converter = NeXus_Convert
 
 for xml_file in DocBook_FILE_LIST:
-    sys.stderr.write("Processing DocBook file `%s'...\n" % xml_file)
-    result = converter.process( xml_file )
+    logging.basicConfig(filename='runner.log',level=logging.INFO)
+    logging.info("Processing DocBook file `%s'...\n" % xml_file)
+    result = converter.process( xml_file, NeXus_Convert )
     header = '.. $%s$\n\n' % 'Id'      # ID string updated by version control
     if result is not None:
         rst_file = os.path.splitext(os.path.basename(xml_file))[0] + '.rst'
@@ -138,4 +135,4 @@ for xml_file in DocBook_FILE_LIST:
         f.write( header )
         f.write( result )
         f.close()
-    sys.stderr.write("-"*60 + "\n")
+    logging.info("-"*60 + "\n")

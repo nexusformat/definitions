@@ -29,6 +29,7 @@ import os.path
 import sys
 import re
 import lxml.etree as ET
+import logging
 
 __contributors__ = ('Kurt McKee <contactme@kurtmckee.org>',
                     'Anthony Scopatz <ascopatz@enthought.com>',
@@ -42,7 +43,7 @@ class Db2Rst:
     into ReST: Restructured Text source code documents
     '''
     
-    def __init__(self): # TODO: add and handle optional argument of a namespace dictionary
+    def __init__(self):
         self.namespaces = {}
         self.remove_comments = False
         self.write_unused_labels = False
@@ -52,13 +53,13 @@ class Db2Rst:
         self.output_dir = None              # if converting a set of docbook files
         self.namespacePrefix = None         # as used in the DocBook file
         self.ns = ""
-        self.converter = Convert
     
-    def process(self, dbfile):
+    def process(self, dbfile, converter  = None):
         '''
         process one DocBook XML file
         
         :param str dbfile: name of DocBook source code file
+        :param obj converter: optional subclass of Convert to provide additional or override handlers
         :return: None or string buffer with converted ReST source
         '''
         parser = ET.XMLParser(remove_comments=self.remove_comments)
@@ -66,7 +67,10 @@ class Db2Rst:
         root = tree.getroot()
         self.ns = "{%s}" % root.nsmap[self.namespacePrefix]
         self._linked_ids = self._get_linked_ids(tree)
-        obj = self.converter(root, self)
+        if converter is None:
+            obj = Convert(root, self)
+        else:
+            obj = converter(root, self)
         if self.output_dir:
             self.writeToDir(obj)
             return None
@@ -214,7 +218,7 @@ class Convert(object):
             return self._concat(el)
     
     def _warn(self, s):
-        sys.stderr.write("WARNING: %s\n" % s)   # TODO: refactor to use logging package
+        logging.warning("WARNING: %s\n" % s)
     
     def _supports_only(self, el, tags):
         "print warning if there are unexpected children"
