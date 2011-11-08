@@ -85,13 +85,13 @@ if len(classes) == 0:
 else:
     print "  <para>"
     print "    <itemizedlist>"
-    for item in classes:
+    for item in sorted(classes):
         cl = item.split("/")[1].split(".")[0]
         href = '<link xlink:href="#%s">%s</link>' % (cl, cl)
         print '      <listitem><para>%s</para></listitem>' % href
     print "    </itemizedlist>"
     print "  </para>"
-    for item in classes:
+    for item in sorted(classes):
     	cl = item.split("/")[1]
     	print '  <xi:include href="%s" />' % cl
 print '</section>'
