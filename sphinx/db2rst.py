@@ -62,8 +62,11 @@ class Db2Rst:
         :param obj converter: optional subclass of Convert to provide additional or override handlers
         :return: None or string buffer with converted ReST source
         '''
+        logging.info('parsing %s with converter %s' % (dbfile, str(converter)))
         parser = ET.XMLParser(remove_comments=self.remove_comments)
+        logging.info('created the parser')
         tree = ET.parse(dbfile, parser=parser)
+        logging.info('parsed XML file')
         root = tree.getroot()
         self.ns = "{%s}" % root.nsmap[self.namespacePrefix]
         self._linked_ids = self._get_linked_ids(tree)
@@ -190,7 +193,12 @@ class Convert(object):
         The function e_tag() has one argument, 
         the DocBook element node to process.
         '''
+        #logging.info("_conv(): line %d in %s" % (el.sourceline, str(el.base)))
         tag = str(el.tag)
+        if tag == "<built-in function ProcessingInstruction>":
+            logging.info("_conv(): line %d in %s" % (el.sourceline, str(el.base)))
+            logging.info("ignoring ProcessingInstruction for now")
+            return ""
         if tag.find(self.parent.ns) == 0:
             # strip off the default namespace
             tag = tag[len(self.parent.ns):]
@@ -212,13 +220,13 @@ class Convert(object):
                 return u''
         else:
             if el.tag not in self._not_handled_tags:
+                logging.info("line %d in %s" % (el.sourceline, str(el.base)))
                 self._warn("Don't know how to handle <%s>" % el.tag)
-                #self._warn(" ... from path: %s" % self._get_path(el))
                 self._not_handled_tags.add(el.tag)
             return self._concat(el)
     
     def _warn(self, s):
-        logging.warning("WARNING: %s\n" % s)
+        logging.warning(s)
     
     def _supports_only(self, el, tags):
         "print warning if there are unexpected children"
@@ -347,7 +355,7 @@ class Convert(object):
     
     def _directive(self, el, name):
         '''
-        Creates an ReST directive::
+        Creates a reST directive::
         
           .. name: ``el.text`` provides the content.
                    Indentation is sized automatically like this.
@@ -637,6 +645,8 @@ class Convert(object):
     def e_blockquote(self, el):
         return self._indent(el, 4)
     
+    e_set = _no_special_markup
+    e_volume = _no_special_markup
     e_book = _no_special_markup
     e_article = _no_special_markup
     e_para = _block_separated_with_blank_line
@@ -654,6 +664,8 @@ class Convert(object):
         return s
     
     def e_entry(self, el):
+        # TODO: FIXME: <entry spanname="fullrow" ...  
+        # This is not handled now and raises exception at runtime due to short list
         s = self._concat(el)
         if s is None:
             s = ""
@@ -761,6 +773,7 @@ class Convert(object):
                                  self.parent.ns + 'tertiary',
                                  self.parent.ns + 'see',
                                  self.parent.ns + 'seealso',))
+        # TODO need routines for primary, secondary, tertiary
         pri = self.childNodeText(el, "primary").strip("`")
         s = ""
         for term in ('see', 'seealso', ):
@@ -927,7 +940,9 @@ class Convert(object):
 
     def e_table(self, el):
         # consider refactoring this code!  
-        # It fails now on empty <entry /> DocBook elements at the zip().
+        # It fails now at the zip() due to
+        #     empty <entry /> DocBook elements 
+        #     or <entry spanname="fullrow" ...
         # get each column size
         text = (el.getchildren()[0].text or '') + (el.getchildren()[0].tail or '') + '\n\n'
         cols = int(el.find(self.parent.ns+'tgroup').attrib['cols'])
