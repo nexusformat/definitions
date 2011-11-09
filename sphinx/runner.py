@@ -28,7 +28,6 @@ import logging
 
 NEXUS_DIR = "../manual"
 NEXUS_DIR = os.path.abspath(NEXUS_DIR)
-DocBook_FILE_LIST = []
 
 
 class NeXus_Convert(db2rst.Convert):
@@ -37,6 +36,84 @@ class NeXus_Convert(db2rst.Convert):
     '''
 
     def e_table(self, el):
+        s = "\n\n"
+        id = el.get(self.parent.id_attrib, "")
+        if len(id) > 0:
+            s += ".. _%s:\n\n" % id
+        
+        s += ".. rubric:: Table: "
+        title = self.childNodeText(el, 'title')
+        if title is not None:
+            s += title
+        s += "\n\n"
+        
+        # get number of columns
+        tgroup_node = el.find(self.parent.ns+'tgroup')
+        cols = int(tgroup_node.attrib['cols'])
+        widths = [ 0 ] * cols
+        
+        # calculate the widths of all the columns
+        row_nodes = ET.ETXPath( './/%srow' % self.parent.ns )(el)
+
+        for rowNum in range(len(row_nodes)):
+            r = row_nodes[rowNum]
+            col_nodes = r.findall(self.parent.ns+'entry')
+            for colNum in range(len(col_nodes)):
+                c = col_nodes[colNum]
+                text = self._conv(c, do_assert = False)
+                for line in text.split("\n"):
+                    widths[colNum] = max( len(line), widths[colNum] )
+        
+        # write the tableText into s
+        fmt = ' '.join(['%%-%is' % (size,) for size in widths]) + '\n'
+        divider = fmt % tuple(['=' * size for size in widths])
+        
+        s += divider   # top row of table
+        
+        # TODO: consider that any entry might span multiple lines
+        # TODO: consider trapping any directives for colspan or rowspan
+
+        thead = tgroup_node.find(self.parent.ns+'thead')
+        if thead is None:
+            # fake the column labels
+            s += fmt % tuple(['..' for _ in range(cols)])
+        else:
+            # actual column labels
+            nodes = thead.find(self.parent.ns+'row').findall(self.parent.ns+'entry')
+            s += fmt % tuple(map(self._conv, nodes))
+
+        s += divider   # label-end row of table
+
+        tbody = tgroup_node.find(self.parent.ns+'tbody')
+        rows = tbody.findall(self.parent.ns+'row')
+        for row in rows:
+            rowText = self._get_entry_text_list( row )
+            # any <entry> might have one or more "\n"
+            # we should line them up right
+            numLines = map(len, rowText)
+            maxNumLines = max( numLines )
+            for lineNum in range( maxNumLines ):
+                lineText = []
+                for colNum in range(cols):
+                    text = rowText[colNum]
+                    if lineNum < len(text):
+                        lineText.append(text[lineNum])
+                    else:
+                        lineText.append("")
+                s += fmt % tuple(lineText)
+        
+        s += divider   # bottom row of table
+        
+        return s
+    
+    def _get_entry_text_list(self, parent_node):
+        '''
+        '''
+        nodes = parent_node.findall(self.parent.ns+'entry')
+        rowText = [self._conv(item).split("\n") for item in nodes]
+        return rowText
+
+    def e_table_0000(self, el):
         # This still breaks for tables with embedded lists and other pathologies.
         s = "\n\n"
         id = el.get(self.parent.id_attrib, "")
@@ -50,11 +127,12 @@ class NeXus_Convert(db2rst.Convert):
         s += "\n\n"
         
         # get number of columns
-        cols = int(el.find(self.parent.ns+'tgroup').attrib['cols'])
+        tgroup_node = el.find(self.parent.ns+'tgroup')
+        cols = int(tgroup_node.attrib['cols'])
         
         # calculate the widths of all the columns
         row_nodes = ET.ETXPath( './/%srow' % self.parent.ns )(el)
-        widths = [ 0  for _ in range(cols)]
+        widths = [ 0 ] * cols
         for r in row_nodes:
             i = 0
             for c in r.findall(self.parent.ns+'entry'):
@@ -65,8 +143,7 @@ class NeXus_Convert(db2rst.Convert):
         
         s += divider   # top row of table
 
-        tgroup = el.find(self.parent.ns+'tgroup')
-        thead = tgroup.find(self.parent.ns+'thead')
+        thead = tgroup_node.find(self.parent.ns+'thead')
         if thead is None:
             s += fmt % tuple(['..' for _ in range(cols)])
         else:
@@ -75,7 +152,7 @@ class NeXus_Convert(db2rst.Convert):
 
         s += divider   # label-end row of table
 
-        tbody = tgroup.find(self.parent.ns+'tbody')
+        tbody = tgroup_node.find(self.parent.ns+'tbody')
         rows = tbody.findall(self.parent.ns+'row')
         for row in rows:
             entries = row.findall(self.parent.ns+'entry')
@@ -273,6 +350,9 @@ WARNING:root:Don't know how to handle <{http://docbook.org/ns/docbook}legalnotic
     '''
 
 
+DocBook_FILE_LIST = []
+
+
 def buildList(item):
     path = os.path.join(NEXUS_DIR, item)
     DocBook_FILE_LIST.append(path)
@@ -324,6 +404,7 @@ buildList("volume1.xml")
 buildList("volume2.xml")
 buildList("writer_1_3.xml")
 buildList("writer_2_1.xml")
+
 
 converter = db2rst.Db2Rst()
 converter.removeComments(False)

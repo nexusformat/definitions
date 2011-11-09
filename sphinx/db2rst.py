@@ -199,6 +199,9 @@ class Convert(object):
             logging.info("_conv(): line %d in %s" % (el.sourceline, str(el.base)))
             logging.info("ignoring ProcessingInstruction for now")
             return ""
+        if tag == "<built-in function Comment>":
+            logging.info("_conv(): line %d in %s" % (el.sourceline, str(el.base)))
+            logging.info("ignoring Comment for now")
         if tag.find(self.parent.ns) == 0:
             # strip off the default namespace
             tag = tag[len(self.parent.ns):]
@@ -746,6 +749,10 @@ class Convert(object):
         if result is not None:
             result = self._concat(result).strip()
         return result
+
+    def e_index(self, el):
+        ''' <index/> directive automatically handled by sphinx '''
+        return ''
 
     def e_indexterm(self, el):
         ''' 
