@@ -19,29 +19,24 @@ import os
 import db2rst
 import lxml.etree as ET
 import logging
+import rest_table
 
 NEXUS_DIR = "../manual"
 NEXUS_DIR = os.path.abspath(NEXUS_DIR)
 
 
-'''
-WARNING:root:Don't know how to handle these DocBook elements: 
-+  primary
-+  subtitle
-+  info
-+  pubdate
-+  org
-+  uri
-+  copyright
-+  year
-+  holder
-+  legalnotice
-'''
-
-
 class NeXus_Convert(db2rst.Convert):
     '''
-    NeXus overrides of the db2rst standard Convert class
+    NeXus overrides of the db2rst Convert class for these DocBook elements:
+    + table
+    + example
+    + informalexample
+    + figure
+    + subtitle
+    + info
+    + revdescription
+    + legalnotice
+    + revhistory
     '''
 
     def e_table(self, el):
@@ -88,44 +83,55 @@ class NeXus_Convert(db2rst.Convert):
         else:
             # actual column labels
             rows = thead.findall(self.parent.ns+'row')
-            s += self._table_row(rows, divider, fmt, cols)
+            s += self.format_table_rows(rows, fmt)
 
         s += divider   # label-end row of table
 
         tbody = tgroup_node.find(self.parent.ns+'tbody')
         rows = tbody.findall(self.parent.ns+'row')
-        s += self._table_row(rows, divider, fmt, cols)
+        s += self.format_table_rows(rows, fmt)
         
         s += divider   # bottom row of table
         
         return s
     
-    def _get_entry_text_list(self, parent_node):
+    def get_entry_text_list(self, parent_node):
         '''
+        Return a list with the text of the child entry nodes.
+        The members of the list are themselves lists,
+        separated by strings at line breaks.
         '''
         nodes = parent_node.findall(self.parent.ns+'entry')
         rowText = [self._conv(item).split("\n") for item in nodes]
         return rowText
     
-    def _table_row(self, rows, divider, fmt, cols):
+    def format_table_rows(self, rows, fmt):
         '''
+        return the formatted table rows
+        
+        :param obj rows: XML document Element node, DocBook <row/> element
+        :param str fmt: format string for each line of table text
         '''
         s = ''
         for row in rows:
-            rowText = self._get_entry_text_list( row )
-            # any <entry> might have one or more "\n"
-            # we should line them up right
+            rowText = self.get_entry_text_list( row )
+            # Any <entry> might have one or more line breaks.
+            # We should line them up right.
             numLines = map(len, rowText)
             maxNumLines = max( numLines )
             for lineNum in range( maxNumLines ):
-                lineText = []
-                for colNum in range(cols):
-                    text = rowText[colNum]
-                    if lineNum < len(text):
-                        lineText.append(text[lineNum])
-                    else:
-                        lineText.append("")
+                lineText = [self.pick_line(text, lineNum) for text in rowText]
                 s += fmt % tuple(lineText)
+        return s
+    
+    def pick_line(self, text, lineNum):
+        '''
+        pick the specific line of text or supply an empty string
+        '''
+        if lineNum < len(text):
+            s = text[lineNum]
+        else:
+            s = ""
         return s
     
     def e_example(self, el):
@@ -300,5 +306,57 @@ class NeXus_Convert(db2rst.Convert):
         '''
         t = self._concat(el).strip()
         return "\n\n" + t + "\n" + "@" * len(t)
+    
+    def e_info(self, el):
+        '''
+        NeXus-style <info ... element
+        '''
+        s = self._make_title("Volume Information", 1)
+        s += "\n\n.. rubric:: %s\n\n" % el.find(self.parent.ns+'title').text
+        s += ".. How to get the current subversion info here (from subtitle.xml or ...)?\n\n"
+        s += "|today|\n\n"
+        
+        s += ".. author group could be shown here\n\n"
 
-    e_info = db2rst.Convert._block_separated_with_blank_line
+        pubdate = el.find(self.parent.ns+'pubdate').text
+        orgname = el.find(self.parent.ns+'org').find(self.parent.ns+'orgname').text
+        uri = el.find(self.parent.ns+'org').find(self.parent.ns+'uri').text
+        s += "Published %s by %s, %s\n\n" % (pubdate, orgname, uri)
+
+        year = el.find(self.parent.ns+'copyright').find(self.parent.ns+'year').text
+        holder = el.find(self.parent.ns+'copyright').find(self.parent.ns+'holder').text
+        s += "Copyright (c) %s, %s\n\n" % (year, holder)
+
+        s += self._make_title("Legal Notices", 2) + "\n\n"
+        for notice in el.findall(self.parent.ns+'legalnotice'):
+            s += self._conv(notice).strip() + "\n\n"
+
+        s += ".. release information could be shown here\n\n"
+        s += ".. revision history could be shown here\n\n"
+        return s
+    
+    e_revdescription = db2rst.Convert._no_special_markup
+    e_legalnotice = db2rst.Convert._no_special_markup
+
+    def e_revhistory(self, el):
+        '''
+        Revision history of the NeXus manual
+        '''
+
+        t = rest_table.Table()
+        t.labels = ('date', 'release', 'description', 'who?', )
+        for revnode in el.findall(self.parent.ns+'revision'):
+            node = revnode.find(self.parent.ns+'revnumber')
+            if node is None:
+                revnumber = ""
+            else:
+                revnumber = node.text
+            date = revnode.find(self.parent.ns+'date').text
+            authorinitials = revnode.find(self.parent.ns+'authorinitials').text
+            revdescription = self._conv(revnode.find(self.parent.ns+'revdescription')).strip()
+            t.rows.append( [date, revnumber, revdescription, authorinitials, ] )
+        
+        s = self._make_title("Revision History", 1)
+        s += "\n\n"
+        s += t.reST()
+        return s

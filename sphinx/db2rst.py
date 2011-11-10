@@ -585,6 +585,8 @@ class Convert(object):
     e_guimenuitem = e_guilabel
     e_mousebutton = _no_special_markup
     
+    e_uri = _no_special_markup
+    
     # system elements
     
     def e_keycap(self, el):
@@ -659,6 +661,7 @@ class Convert(object):
     e_preface = _block_separated_with_blank_line
     e_simplesect = _block_separated_with_blank_line
     e_revhistory = _block_separated_with_blank_line
+    e_info = _block_separated_with_blank_line
     
     def e_revhistory(self, el):
         # TODO: only make a title here if no title has been defined
@@ -804,6 +807,9 @@ class Convert(object):
             # still need to edit the ReST to replace INDEX_POINT with short printable text.
 	    s = ":index:`INDEX_POINT <single: %s>`" % s
         return s
+    e_primary = _no_special_markup
+    e_secondary = _no_special_markup
+    e_tertiary = _no_special_markup
     
     def e_footnote(self, el):
         self._supports_only(el, (self.parent.ns+"para",))

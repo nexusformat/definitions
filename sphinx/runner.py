@@ -64,7 +64,7 @@ buildList("NIAC.xml")
 buildList("nxdl_desc.xml")
 buildList("NXDL.xml")
 buildList("preface.xml")
-buildList("releaseinfo.xml")
+#buildList("releaseinfo.xml")  # can we get this another way?  use |today|
 buildList("revhistory.xml")
 buildList("Roadmap.xml")
 buildList("rules.xml")

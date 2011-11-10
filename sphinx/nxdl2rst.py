@@ -20,6 +20,7 @@ http://download.nexusformat.org/doc/html/ClassDefinitions-Base.html#NXentry
 import sys, os
 import lxml.etree
 import db2rst
+import rest_table
 
 
 class Describe:
@@ -77,30 +78,10 @@ class Describe:
         rest += self.top_attributes_table(root) + "\n\n"
         
         rest += "\n.. rubric:: Comprehensive Structure of **%s**\n\n" % self.nxdlName
-        t = Table()
+        t = rest_table.Table()
         t.labels = ('Name and Attributes', 'Type', 'Units', 'Description (and Occurrences)', )
         t.rows.append( ['class', 'NX_FLOAT', '..', '..', ] )
         rest += t.reST()
-        
-        '''
-Table 3.3. NXaperture
-Name and Attributes    Type    Units    Description (and Occurrences)
-     NXgeometry          
-
-location and shape of aperture
-     NXgeometry          
-
-location and shape of each blade
-material     NX_CHAR         
-
-Absorbing material of the aperture
-description     NX_CHAR         
-
-Description of aperture
-     NXnote          
-
-describe an additional information in a note*
-        '''
         
         return rstFile, rest
     
@@ -180,7 +161,7 @@ describe an additional information in a note*
         if node is None:
             rest += 'No symbols are defined in this NXDL file\n'
         else:
-            table = Table()
+            table = rest_table.Table()
             table.labels = ('Symbol', 'Description', )
             title = self.get_doc(node, None)
             if title is not None:
@@ -215,7 +196,7 @@ describe an additional information in a note*
         if len(nodelist) > 0:
             fmt = "\n.. rubric:: Attributes of ``definition`` element in **%s**\n\n"
             rest = fmt % self.nxdlName
-            table = Table()
+            table = rest_table.Table()
             table.labels = ('Attributes', 'Type', 'Units', 'Description (and Occurrences) ', )
             for node in nodelist:
                 name = '@' + node.get('name')
@@ -226,68 +207,6 @@ describe an additional information in a note*
                 table.rows.append( [name, type, units, description] )
             rest += table.reST()
         return rest
-
-
-class Table:
-    ''' construct a table in reST '''
-    
-    def __init__(self):
-        self.rows = []
-        self.labels = []
-    
-    def reST(self, indentation = ''):
-        '''return the table in reST format'''
-        if len(self.rows) == 0:
-            return ''
-        
-    
-        width = []    # find the widths of all columns
-        height = []   # find the height of all rows
-        for label in self.labels:
-            parts = label.split("\n")
-            width.append( max( map(len, parts) ) )
-            height.append( len(parts) )
-        for row in self.rows:
-            rowHeight = -1
-            for i in range( len(row) ):
-                parts = row[i].split("\n")
-                w = max( map(len, parts) )
-                width[i] = max(width[i], w)
-                rowHeight = max( rowHeight, len(parts) )
-            height.append( rowHeight )
-        
-        separator = '+'
-        labelSep = '+'
-        for w in width:
-            separator += '-'*(w+2) + '+'
-            labelSep += '='*(w+2) + '+'
-        
-        rest = '%s%s' % (indentation, separator)                                           # top line
-        rest += self._reST_table_line(self.labels, height.pop(0), width, indentation)      # labels
-        rest += '\n%s%s' % (indentation, labelSep)                                         # label separator line
-        for row in self.rows:
-            rest += self._reST_table_line(row, height.pop(0), width, indentation)          # table rows
-            rest += '\n%s%s' % (indentation, separator)                                    # line below each table row
-        return rest
-    
-    def _reST_table_line(self, items, height, width, indentation):
-        '''
-        return a single line of the reST table
-        
-        :param [str] items: table values
-        :param int height: maximum number of rows this line takes (as determined by \n line breaks)
-        :param [int] width: list of column widths
-        :note: len(width) must be equal to len(items)
-        '''
-        if len(width) != len(width):
-            raise RuntimeError, "len(width) != len(items)"
-        line = ''
-        for r in range(height):
-            line += '\n%s|' % indentation
-            for i in range( len(items) ):
-                f = ' %%-%ds ' % width[i]
-                line += f % items[i].split('\n')[r] + '|'
-        return line
 
 
 if __name__ == '__main__':
