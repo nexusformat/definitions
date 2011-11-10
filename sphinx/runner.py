@@ -70,7 +70,6 @@ class NeXus_Convert(db2rst.Convert):
         
         s += divider   # top row of table
         
-        # TODO: consider that any entry might span multiple lines
         # TODO: consider trapping any directives for colspan or rowspan
 
         thead = tgroup_node.find(self.parent.ns+'thead')
@@ -79,13 +78,30 @@ class NeXus_Convert(db2rst.Convert):
             s += fmt % tuple(['..' for _ in range(cols)])
         else:
             # actual column labels
-            nodes = thead.find(self.parent.ns+'row').findall(self.parent.ns+'entry')
-            s += fmt % tuple(map(self._conv, nodes))
+            rows = thead.findall(self.parent.ns+'row')
+            s += self._table_row(rows, divider, fmt, cols)
 
         s += divider   # label-end row of table
 
         tbody = tgroup_node.find(self.parent.ns+'tbody')
         rows = tbody.findall(self.parent.ns+'row')
+        s += self._table_row(rows, divider, fmt, cols)
+        
+        s += divider   # bottom row of table
+        
+        return s
+    
+    def _get_entry_text_list(self, parent_node):
+        '''
+        '''
+        nodes = parent_node.findall(self.parent.ns+'entry')
+        rowText = [self._conv(item).split("\n") for item in nodes]
+        return rowText
+    
+    def _table_row(self, rows, divider, fmt, cols):
+        '''
+        '''
+        s = ''
         for row in rows:
             rowText = self._get_entry_text_list( row )
             # any <entry> might have one or more "\n"
@@ -101,64 +117,6 @@ class NeXus_Convert(db2rst.Convert):
                     else:
                         lineText.append("")
                 s += fmt % tuple(lineText)
-        
-        s += divider   # bottom row of table
-        
-        return s
-    
-    def _get_entry_text_list(self, parent_node):
-        '''
-        '''
-        nodes = parent_node.findall(self.parent.ns+'entry')
-        rowText = [self._conv(item).split("\n") for item in nodes]
-        return rowText
-
-    def e_table_0000(self, el):
-        # This still breaks for tables with embedded lists and other pathologies.
-        s = "\n\n"
-        id = el.get(self.parent.id_attrib, "")
-        if len(id) > 0:
-            s += ".. _%s:\n\n" % id
-        
-        s += ".. rubric:: Table: "
-        title = self.childNodeText(el, 'title')
-        if title is not None:
-            s += title
-        s += "\n\n"
-        
-        # get number of columns
-        tgroup_node = el.find(self.parent.ns+'tgroup')
-        cols = int(tgroup_node.attrib['cols'])
-        
-        # calculate the widths of all the columns
-        row_nodes = ET.ETXPath( './/%srow' % self.parent.ns )(el)
-        widths = [ 0 ] * cols
-        for r in row_nodes:
-            i = 0
-            for c in r.findall(self.parent.ns+'entry'):
-                widths[i] = max( len( self._conv(c, do_assert = False) ), widths[i])
-                i += 1
-        fmt = ' '.join(['%%-%is' % (size,) for size in widths]) + '\n'
-        divider = fmt % tuple(['=' * size for size in widths])
-        
-        s += divider   # top row of table
-
-        thead = tgroup_node.find(self.parent.ns+'thead')
-        if thead is None:
-            s += fmt % tuple(['..' for _ in range(cols)])
-        else:
-            nodes = thead.find(self.parent.ns+'row').findall(self.parent.ns+'entry')
-            s += fmt % tuple(map(self._conv, nodes))
-
-        s += divider   # label-end row of table
-
-        tbody = tgroup_node.find(self.parent.ns+'tbody')
-        rows = tbody.findall(self.parent.ns+'row')
-        for row in rows:
-            entries = row.findall(self.parent.ns+'entry')
-            s += fmt % tuple(map(self._conv, entries))
-        
-        s += divider   # bottom row of table
         return s
     
     def e_example(self, el):
@@ -372,7 +330,7 @@ buildList("fileformat.xml")
 buildList("h5py-example.xml")
 #buildList("hierarchy.xml")    # not used in the manual now
 buildList("history.xml")
-buildList("impatient.xml")
+#buildList("impatient.xml")    # not used in the manual now
 buildList("installation.xml")
 buildList("introduction.xml")
 buildList("issues.xml")
