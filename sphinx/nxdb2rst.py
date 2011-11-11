@@ -51,78 +51,28 @@ class NeXus_Convert(db2rst.Convert):
             s += title
         s += "\n\n"
         
-        # get number of columns
+        t = rest_table.Table()
         tgroup_node = el.find(self.parent.ns+'tgroup')
-        cols = int(tgroup_node.attrib['cols'])
-        widths = [ 0 ] * cols
-        
-        # calculate the widths of all the columns
-        row_nodes = ET.ETXPath( './/%srow' % self.parent.ns )(el)
-
-        for rowNum in range(len(row_nodes)):
-            r = row_nodes[rowNum]
-            col_nodes = r.findall(self.parent.ns+'entry')
-            for colNum in range(len(col_nodes)):
-                c = col_nodes[colNum]
-                text = self._conv(c, do_assert = False)
-                for line in text.split("\n"):
-                    widths[colNum] = max( len(line), widths[colNum] )
-        
-        # write the tableText into s
-        fmt = ' '.join(['%%-%is' % (size,) for size in widths]) + '\n'
-        divider = fmt % tuple(['=' * size for size in widths])
-        
-        s += divider   # top row of table
-        
-        # TODO: consider trapping any directives for colspan or rowspan
-
         thead = tgroup_node.find(self.parent.ns+'thead')
-        if thead is None:
-            # fake the column labels
-            s += fmt % tuple(['..' for _ in range(cols)])
-        else:
-            # actual column labels
-            rows = thead.findall(self.parent.ns+'row')
-            s += self.format_table_rows(rows, fmt)
-
-        s += divider   # label-end row of table
+        if thead is not None:
+            row = thead.find(self.parent.ns+'row')
+            t.labels = self.get_entry_text_list( row )
 
         tbody = tgroup_node.find(self.parent.ns+'tbody')
         rows = tbody.findall(self.parent.ns+'row')
-        s += self.format_table_rows(rows, fmt)
-        
-        s += divider   # bottom row of table
-        
+        t.rows = map(self.get_entry_text_list, rows)
+
+        s = t.reST(format='simple')
         return s
     
     def get_entry_text_list(self, parent_node):
         '''
         Return a list with the text of the child entry nodes.
-        The members of the list are themselves lists,
-        separated by strings at line breaks.
+        The members of the list are strings with optional line breaks.
         '''
         nodes = parent_node.findall(self.parent.ns+'entry')
         rowText = [self._conv(item).split("\n") for item in nodes]
-        return rowText
-    
-    def format_table_rows(self, rows, fmt):
-        '''
-        return the formatted table rows
-        
-        :param obj rows: XML document Element node, DocBook <row/> element
-        :param str fmt: format string for each line of table text
-        '''
-        s = ''
-        for row in rows:
-            rowText = self.get_entry_text_list( row )
-            # Any <entry> might have one or more line breaks.
-            # We should line them up right.
-            numLines = map(len, rowText)
-            maxNumLines = max( numLines )
-            for lineNum in range( maxNumLines ):
-                lineText = [self.pick_line(text, lineNum) for text in rowText]
-                s += fmt % tuple(lineText)
-        return s
+        return map( "\n".join, rowText)
     
     def pick_line(self, text, lineNum):
         '''
@@ -342,7 +292,6 @@ class NeXus_Convert(db2rst.Convert):
         '''
         Revision history of the NeXus manual
         '''
-
         t = rest_table.Table()
         t.labels = ('date', 'release', 'description', 'who?', )
         for revnode in el.findall(self.parent.ns+'revision'):
@@ -358,5 +307,5 @@ class NeXus_Convert(db2rst.Convert):
         
         s = self._make_title("Revision History", 1)
         s += "\n\n"
-        s += t.reST()
+        s += t.reST(format='complex')
         return s
