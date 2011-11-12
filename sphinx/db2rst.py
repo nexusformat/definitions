@@ -28,7 +28,7 @@ import os
 import os.path
 import sys
 import re
-import lxml.etree as ET
+import lxml.etree
 import logging
 
 __contributors__ = ('Kurt McKee <contactme@kurtmckee.org>',
@@ -63,9 +63,9 @@ class Db2Rst:
         :return: None or string buffer with converted ReST source
         '''
         logging.info('parsing %s with converter %s' % (dbfile, str(converter)))
-        parser = ET.XMLParser(remove_comments=self.remove_comments)
+        parser = lxml.etree.XMLParser(remove_comments=self.remove_comments)
         logging.info('created the parser')
-        tree = ET.parse(dbfile, parser=parser)
+        tree = lxml.etree.parse(dbfile, parser=parser)
         logging.info('parsed XML file')
         root = tree.getroot()
         self.ns = "{%s}" % root.nsmap[self.namespacePrefix]
@@ -216,7 +216,7 @@ class Convert(object):
         method_name = 'e_' + tag
         if hasattr(self, method_name):
             return getattr(self, method_name)(el)   # call the e_tag(el) method
-        elif isinstance(el, ET._Comment):
+        elif isinstance(el, lxml.etree._Comment):
             if el.text.strip():
                 return self.Comment(el)
             else:
@@ -241,7 +241,7 @@ class Convert(object):
         "returns string describing the element, such as <para> or Comment"
         if isinstance(el.tag, basestring):
             return "<%s>" % el.tag
-        elif isinstance(el, ET._Comment):
+        elif isinstance(el, lxml.etree._Comment):
             return "Comment"
         else:
             return str(el)
@@ -293,10 +293,10 @@ class Convert(object):
         return s
     
     def _original_xml(self, el):
-        return ET.tostring(el, with_tail=False)
+        return lxml.etree.tostring(el, with_tail=False)
     
     def _no_markup(self, el):
-        s = ET.tostring(el, with_tail=False)
+        s = lxml.etree.tostring(el, with_tail=False)
         s = re.sub(r"<.+?>", " ", s) # remove tags
         s = re.sub(r"\s+", " ", s) # replace all blanks with single space
         return s
@@ -326,7 +326,7 @@ class Convert(object):
         return sep.join(self._conv(i) for i in el.getchildren())
     
     def _block_separated_with_blank_line(self, el):
-        pi = [i for i in el.iterchildren() if isinstance(i, ET._ProcessingInstruction)]
+        pi = [i for i in el.iterchildren() if isinstance(i, lxml.etree._ProcessingInstruction)]
         if pi and 'filename=' in pi[0].text:
             fname = pi[0].text.split('=')[1][1:-1].split('.')[0]
             #import pdb; pdb.set_trace()
@@ -976,7 +976,7 @@ class Convert(object):
         ''' returns a list with the maximum width of each column '''
         # FIXME: This fails on empty <entry /> DocBook elements at the zip().
         # TODO: make this code more obvious and easier to maintain
-        return map(max, zip(*[map(self._calc_col_width, r) for r in ET.ETXPath( './/%srow' % self.parent.ns )(el)]))
+        return map(max, zip(*[map(self._calc_col_width, r) for r in lxml.etree.ETXPath( './/%srow' % self.parent.ns )(el)]))
 
 
 def original_main(args):

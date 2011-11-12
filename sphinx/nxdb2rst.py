@@ -17,7 +17,7 @@ text (reST) documents.
 
 import os
 import db2rst
-import lxml.etree as ET
+import lxml.etree
 import logging
 import rest_table
 
@@ -25,7 +25,7 @@ NEXUS_DIR = "../manual"
 NEXUS_DIR = os.path.abspath(NEXUS_DIR)
 
 
-class NeXus_Convert(db2rst.Convert):
+class Convert(db2rst.Convert):
     '''
     NeXus overrides of the db2rst Convert class for these DocBook elements:
     + table
@@ -221,7 +221,7 @@ class NeXus_Convert(db2rst.Convert):
         id = el.get(self.parent.id_attrib, None)
         title = self._concat( el.find(self.parent.ns+"title") ).strip()
         xreflabel = el.get("xreflabel", None)
-        img_data_objs = ET.ETXPath( './/%simagedata' % self.parent.ns )(el)
+        img_data_objs = lxml.etree.ETXPath( './/%simagedata' % self.parent.ns )(el)
         if len(img_data_objs) < 1:
             raise RuntimeWarning, "no <imagedata /> element found"
         if len(img_data_objs) > 1:

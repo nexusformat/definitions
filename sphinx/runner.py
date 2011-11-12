@@ -93,7 +93,7 @@ converter.linkend = "{http://www.w3.org/1999/xlink}href"
 for xml_file in DocBook_FILE_LIST:
     logging.basicConfig(filename='runner.log',level=logging.INFO)
     logging.info("Processing DocBook file `%s'..." % xml_file)
-    result = converter.process( xml_file, nxdb2rst.NeXus_Convert )
+    result = converter.process( xml_file, nxdb2rst.Convert )
     header = '.. $%s$\n\n' % 'Id'      # ID string updated by version control
     if result is not None:
         rst_file = os.path.splitext(os.path.basename(xml_file))[0] + '.rst'

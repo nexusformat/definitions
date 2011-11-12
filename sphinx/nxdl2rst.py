@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-from argparse import ArgumentError
 
 ########### SVN repository information ###################
 # $Date$
@@ -20,7 +19,9 @@ http://download.nexusformat.org/doc/html/ClassDefinitions-Base.html#NXentry
 import sys, os
 import lxml.etree
 import db2rst
+import nxdb2rst
 import rest_table
+from argparse import ArgumentError
 
 
 class Describe:
@@ -37,9 +38,7 @@ class Describe:
         
         stem, self.nxdlName = os.path.split(nxdlFile[:nxdlFile.find('.nxdl.xml')])
         self.nxdlType = os.path.split(stem)[1]
-        
         self.tree = lxml.etree.parse(nxdlFile)
-        pass
     
     def report(self, outputDir = '.'):
         rstFile = os.path.join(outputDir, self.nxdlType , self.nxdlName+ self.fileSuffix)
@@ -50,19 +49,25 @@ class Describe:
         rest = self.make_heading(self.nxdlName, 1, self.nxdlName, True)
 
         rest += ".. index::  ! . NXDL %s; %s\n\n" % (self.nxdlType, self.nxdlName)
-        rest += self.make_definition('category:', self.nxdlType)
-        #N = ":index:`%s <single: ! %s; %s>`" % (self.nxdlName, self.nxdlType, self.nxdlName)
+        
         URL = "http://svn.nexusformat.org/definitions/trunk/%s/%s.nxdl.xml" % (self.nxdlType, self.nxdlName)
-        rest += self.make_definition('NXDL source:', "%s\n\n(%s)" % (self.nxdlName, URL) )
-        rest += self.make_definition('version:', root.get('version', 'unknown') )
-        rest += self.make_definition('SVN Id:', root.get('svnid', 'none') )
         extends = root.get('extends', 'none')
         if extends != "none":
             extends = ":ref:`%s`" % extends
-        rest += self.make_definition('extends class:', extends )
-        rest += self.make_definition('other classes included:', self.groups_list(root) )
-        rest += self.make_definition('documentation:', self.get_doc(root, "No documentation provided.") )  # TODO: 
 
+        rest += self.get_doc(root, "No documentation provided.") + "\n\n"
+        
+        t = rest_table.Table()
+        t.labels = ('item', 'Description', )
+        t.rows.append( ['category', self.nxdlType, ] )
+        t.rows.append( ['NXDL class', "*%s*" % self.nxdlName, ] )
+        t.rows.append( ['URL', "%s" % URL, ] )
+        t.rows.append( ['version', root.get('version', 'unknown'), ] )
+        t.rows.append( ['SVN Id', "`" + root.get('svnid', 'none') + "`", ] )
+        t.rows.append( ['extends class', extends, ] )
+        t.rows.append( ['included classes', self.groups_list(root), ] )
+        rest += t.reST(format='simple')
+        
         rest += "\n"
         rest += ".. rubric:: Basic Structure of **%s**\n\n" % self.nxdlName
         # make the XSLT transformation, see: http://lxml.de/xpathxslt.html#xslt
@@ -77,10 +82,24 @@ class Describe:
         
         rest += self.top_attributes_table(root) + "\n\n"
         
-        rest += "\n.. rubric:: Comprehensive Structure of **%s**\n\n" % self.nxdlName
         t = rest_table.Table()
-        t.labels = ('Name and Attributes', 'Type', 'Units', 'Description (and Occurrences)', )
-        t.rows.append( ['class', 'NX_FLOAT', '..', '..', ] )
+        t.labels = ('Name and Attributes', 
+                    'Type', 
+                    'Units', 
+                    'Description (and Occurrences)', )
+        for node in root.findall('*'):
+            try:
+                tag = node.tag.split('}')[-1]
+            except:
+                continue
+            if tag in ('group', 'field'):
+                name = node.get('name', {'group': '', 'field': 'unknown'}[tag])
+                type = node.get('type', {'group': 'unknown', 'field': 'NX_CHAR'}[tag])
+                units = ''
+                description = ''
+                t.rows.append( [name, type, units, description, ] )
+        
+        rest += "\n.. rubric:: Comprehensive Structure of **%s**\n\n" % self.nxdlName
         rest += t.reST()
         
         return rstFile, rest
@@ -132,7 +151,7 @@ class Describe:
         return s
     
     def groups_list(self, root):
-        '''Return a string of ReST references to the groups used
+        '''Return a string of reST references to the groups used
         in this NXDL, sorted alphabetically
         
         :param root: root of XML tree
@@ -144,14 +163,13 @@ class Describe:
                 N = ":ref:`%s`" % G.get('type')
                 if N not in L:
                     L.append( N )
-            groups = ", ".join(sorted( L ))
+            groups = ",\n".join(sorted( L ))
         else:
             groups = "none"
         return groups
     
     def symbols_table(self, root):
-        '''Return a table of ReST references to the symbols defined
-        in this NXDL
+        '''Return a table of ReST references to the symbols defined in this NXDL
         
         :param root: root of XML tree
         '''
@@ -179,8 +197,8 @@ class Describe:
             doc = undefined
         else:
             # TODO: this could be much, much better
-            ns = "http://definition.nexusformat.org/nxdl/3.1"
-            obj = db2rst.Convert(DN, namespace=ns)
+            ns = self.ns['nx']
+            obj = Convert(DN, namespace=ns)
             doc = str(obj).strip() + "\n"
             #doc = DN.text
         return doc
@@ -201,18 +219,27 @@ class Describe:
             for node in nodelist:
                 name = '@' + node.get('name')
                 type = node.get('type', 'NX_CHAR')
-                units = node.get('type', '..')
                 # FIXME: this has not been finished
+                units = node.get('type', '..')
+                # start db2rst parsing from this node
+                # put result into description
                 description = '..'
                 table.rows.append( [name, type, units, description] )
             rest += table.reST()
         return rest
 
 
+class Convert(nxdb2rst.Convert):
+    '''
+    Treat our NXDL doc element like a DocBook para element
+    '''
+    e_doc = db2rst.Convert.e_para
+
+
 if __name__ == '__main__':
-    
-    
-    NXDL_DIRS = ['../base_classes', '../applications', '../contributed_definitions', ]
+    NXDL_DIRS = ['../base_classes', 
+                 '../applications', 
+                 '../contributed_definitions', ]
     OUTPUT_DIR = os.path.join(*list('./source/volume2/NXDL'.split('/')))
     nxdl_file_list = []
     for dir in NXDL_DIRS:
@@ -220,12 +247,11 @@ if __name__ == '__main__':
         for _, dirs, files in os.walk(dir):
             if '.svn' in dirs:
                 dirs.remove('.svn')
-            for file in files:
+            for file in sorted(files):
                 if file.endswith('.nxdl.xml'):
                     nxdlFile = os.path.join(fulldir, file)
                     nxdl_file_list.append(nxdlFile)
                     obj = Describe()
-                     # TODO: add and handle optional argument of a namespace dictionary
                     obj.parse(nxdlFile)
                     rstFile, restText = obj.report(OUTPUT_DIR)
                     print rstFile
