@@ -993,7 +993,7 @@ def original_main(args):
     converter = Db2Rst()
     result = converter.process( input_file )
     if result is not None:
-        return str(obj)
+        return str(result)
 
 
 if __name__ == '__main__':
