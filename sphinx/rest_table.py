@@ -49,13 +49,13 @@ class Table:
         self.rows = []
         self.labels = []
     
-    def reST(self, indentation = '', format = 'simple'):
+    def reST(self, indentation = '', fmt = 'simple'):
         '''return the table in reST format'''
-        return {'simple': self.simple,
-                'complex': self.complex,}[format](indentation)
+        return {'simple': self.simple_table,
+                'complex': self.complex_table,}[fmt](indentation)
     
-    def simple(self, indentation = ''):
-        '''return the table in simple reST format'''
+    def simple_table(self, indentation = ''):
+        '''return the table in simple rest format'''
         # maximum column widths, considering possible line breaks in each cell
         width = self.find_widths()
         
@@ -63,38 +63,43 @@ class Table:
         separator = " ".join(['='*w for w in width]) + '\n'
         fmt = " ".join(["%%-%ds" % w for w in width]) + '\n'
         
-        reST = '%s%s' % (indentation, separator)         # top line
-        reST += self._row(self.labels, fmt, indentation) # labels
-        reST += '%s%s' % (indentation, separator)        # end of the labels
+        rest = '%s%s' % (indentation, separator)         # top line
+        rest += self._row(self.labels, fmt, indentation) # labels
+        rest += '%s%s' % (indentation, separator)        # end of the labels
         for row in self.rows:
-            reST += self._row(row, fmt, indentation)     # each row
-        reST += '%s%s' % (indentation, separator)        # end of table
-        return reST
+            rest += self._row(row, fmt, indentation)     # each row
+        rest += '%s%s' % (indentation, separator)        # end of table
+        return rest
     
-    def complex(self, indentation = ''):
-        '''return the table in complex reST format'''
+    def complex_table(self, indentation = ''):
+        '''return the table in complex rest format'''
         # maximum column widths, considering possible line breaks in each cell
         width = self.find_widths()
         
         # build the row separators
         separator = '+' + "".join(['-'*(w+2) + '+' for w in width]) + '\n'
-        labelSep  = '+' + "".join(['='*(w+2) + '+' for w in width]) + '\n'
+        label_sep = '+' + "".join(['='*(w+2) + '+' for w in width]) + '\n'
         fmt = '|' + "".join([" %%-%ds |" % w for w in width]) + '\n'
         
-        reST = '%s%s' % (indentation, separator)         # top line
-        reST += self._row(self.labels, fmt, indentation) # labels
-        reST += '%s%s' % (indentation, labelSep)         # end of the labels
+        rest = '%s%s' % (indentation, separator)         # top line
+        rest += self._row(self.labels, fmt, indentation) # labels
+        rest += '%s%s' % (indentation, label_sep)         # end of the labels
         for row in self.rows:
-            reST += self._row(row, fmt, indentation)     # each row
-            reST += '%s%s' % (indentation, separator)    # row separator
-        return reST
+            rest += self._row(row, fmt, indentation)     # each row
+            rest += '%s%s' % (indentation, separator)    # row separator
+        return rest
     
     def _row(self, row, fmt, indentation = ''):
+        '''
+        Given a list of <entry nodes in this table <row, 
+        build one line of the table with one text from each entry element.
+        The lines are separated by line breaks.
+        '''
         text = ""
         if len(row) > 0:
-            for lineNum in range( max(map(len, [_.split("\n") for _ in row])) ):
-                L = [self.pick_line(T.split("\n"), lineNum) for T in row]
-                text += indentation + fmt % tuple(L)
+            for line_num in range( max(map(len, [_.split("\n") for _ in row])) ):
+                item = [self.pick_line(r.split("\n"), line_num) for r in row]
+                text += indentation + fmt % tuple(item)
         return text
     
     def pick_line(self, text, lineNum):
@@ -108,7 +113,10 @@ class Table:
         return s
     
     def find_widths(self):
-        '''maximum column widths, considering possible line breaks in each cell'''
+        '''
+	measure the maximum width of each column, 
+	considering possible line breaks in each cell
+	'''
         width = []
         if len(self.labels) > 0:
             width = [max(map(len, _.split("\n"))) for _ in self.labels]
@@ -122,7 +130,10 @@ class Table:
 
 if __name__ == '__main__':
     t = Table()
-    t.labels = ('Name\nand\nAttributes', 'Type', 'Units', 'Description\n(and Occurrences)', )
+    t.labels = ('Name\nand\nAttributes', 
+                'Type', 
+                'Units', 
+                'Description\n(and Occurrences)', )
     t.rows.append( ['one,\ntwo', "buckle my", "shoe.\n\n\nthree,\nfour", ""] )
     t.rows.append( ['class', 'NX_FLOAT', '..', '..', ] )
     print t.reST()

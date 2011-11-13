@@ -24,7 +24,6 @@
 	:URL: https://raw.github.com/kurtmckee/db2rst/master/db2rst.py
 """
 
-import os
 import os.path
 import sys
 import re
@@ -44,22 +43,21 @@ class Db2Rst:
     '''
     
     def __init__(self):
-        self.namespaces = {}
         self.remove_comments = False
         self.write_unused_labels = False
-        self._linked_ids = set()            # to remember which id/labels are really needed
-        self.id_attrib = "id"               # can modify if namespace is present (a hack until namespaces are supported here)
-        self.linkend = "linkend"            # can modify if namespace is present (a hack until namespaces are supported here)
-        self.output_dir = None              # if converting a set of docbook files
-        self.namespacePrefix = None         # as used in the DocBook file
+        self._linked_ids = set()        # which id/labels are really needed
+        self.id_attrib = "id"           # can modify if namespace is present
+        self.linkend = "linkend"        # can modify if namespace is present
+        self.output_dir = None          # if converting a set of docbook files
+        self.namespacePrefix = None     # as used in the DocBook file
         self.ns = ""
     
-    def process(self, dbfile, converter  = None):
+    def process(self, dbfile, converter=None):
         '''
         process one DocBook XML file
         
         :param str dbfile: name of DocBook source code file
-        :param obj converter: optional subclass of Convert to provide additional or override handlers
+        :param obj converter: optional subclass override of Convert
         :return: None or string buffer with converted ReST source
         '''
         logging.info('parsing %s with converter %s' % (dbfile, str(converter)))
@@ -68,7 +66,8 @@ class Db2Rst:
         tree = lxml.etree.parse(dbfile, parser=parser)
         logging.info('parsed XML file')
         root = tree.getroot()
-        self.ns = "{%s}" % root.nsmap[self.namespacePrefix]
+        if self.namespacePrefix is not None:
+            self.ns = "{%s}" % root.nsmap[self.namespacePrefix]
         self._linked_ids = self._get_linked_ids(tree)
         if converter is None:
             obj = Convert(root, self)
@@ -90,11 +89,11 @@ class Db2Rst:
         '''
         ids = set()
         for elem in tree.getiterator():
-            if elem.tag in (self.ns+"xref", self.ns+"link"):
+            if elem.tag in (self.ns + "xref", self.ns + "link"):
                 for nskey, nsstr in elem.nsmap.items():
                     ns = "{%s}" % nsstr
                     for term in ('linkend', 'href'):
-                        text = elem.get(ns+term)
+                        text = elem.get(ns + term)
                         if text is not None:
                             ids.add(text.lstrip('#'))
         return ids
@@ -110,19 +109,19 @@ class Db2Rst:
             return
             output = str(obj).strip()
         for fname in obj.files:
-            f = open(os.path.join(output_dir, fname + '.rst'), 'wb')
+            f = open(os.path.join(self.output_dir, fname + '.rst'), 'wb')
             f.write(obj.files[fname].encode('utf-8').strip())
             f.close()
         # write the index if it doesn't exist already
         if 'index' not in obj.files:
-            f = open(os.path.join(output_dir, 'index.rst'), 'wb')
+            f = open(os.path.join(self.output_dir, 'index.rst'), 'wb')
             f.write(output)
             f.write('\n\n.. toctree::\n   :maxdepth: 1\n\n')
             for fname in sorted(obj.files):
-                f.write('   %s\n' % (fname, ))
+                f.write('   %s\n' % (fname,))
             f.close()
         # write a simple conf.py
-        c = open(os.path.join(output_dir, 'conf.py'), 'wb')
+        c = open(os.path.join(self.output_dir, 'conf.py'), 'wb')
         c.write("extensions = []\n")
         c.write("master_doc = 'index'\n")
         c.write("project = u'projname'\n")
@@ -165,17 +164,20 @@ class Db2Rst:
 class Convert(object):
     ''' converts DocBook tree into reST '''
     
-    def __init__(self, el, parent = None, namespace = None):
+    def __init__(self, el, parent=None, namespace=None):
         self.el = el
         self.files = {}
         if parent is None:
-            parent = Db2Rst()       # looks inverted but provides basic constants
+            parent = Db2Rst()       # looks inverted, provides basic constants
         if namespace is not None:
             parent.ns = "{%s}" % namespace
-        self.parent = parent        # db2rst.Db2Rst object that called the converter
+        self.parent = parent        # object that called the converter
         self._not_handled_tags = set()      # to avoid duplicate error reports
         self._substitutions = set()         # to avoid duplicate substitutions
-        self._buffer = ""                   # buffer that is flushed after the end of paragraph, used for ReST substitutions
+        
+        # _buffer is flushed after the end of paragraph
+        # used for ReST substitutions
+        self._buffer = ""
 
     def __str__(self):
         output = self._conv(self.el)
@@ -185,7 +187,7 @@ class Convert(object):
         output = re.sub(r"\n{3,}", "\n\n", output)
         return output.encode('utf-8')
 
-    def _conv(self, el, do_assert = True):
+    def _conv(self, el, do_assert=True):
         '''
         Element to string conversion.
         Looks for a defined function e_tag() and calls it,
@@ -193,14 +195,15 @@ class Convert(object):
         The function e_tag() has one argument, 
         the DocBook element node to process.
         '''
-        #logging.info("_conv(): line %d in %s" % (el.sourceline, str(el.base)))
         tag = str(el.tag)
         if tag == "<built-in function ProcessingInstruction>":
-            logging.info("_conv(): line %d in %s" % (el.sourceline, str(el.base)))
+            logging.info("_conv(): line %d in %s" % (el.sourceline, 
+                                                     str(el.base)))
             logging.info("ignoring ProcessingInstruction for now")
             return ""
         if tag == "<built-in function Comment>":
-            logging.info("_conv(): line %d in %s" % (el.sourceline, str(el.base)))
+            logging.info("_conv(): line %d in %s" % (el.sourceline, 
+                                                     str(el.base)))
             logging.info("ignoring Comment for now")
         if tag.find(self.parent.ns) == 0:
             # strip off the default namespace
@@ -250,42 +253,52 @@ class Convert(object):
         "print warning if there are any children"
         if el.getchildren():
             self._warn("children of %s are skipped: %s" % (self._get_path(el),
-                                  ", ".join(self._what(i) for i in el.getchildren())))
+                      ", ".join(self._what(i) for i in el.getchildren())))
     
     def _has_no_text(self, el):
         "print warning if there is any non-blank text"
         if el.text is not None and not el.text.isspace():
-            self._warn("skipping text of <%s>: %s" % (self._get_path(el), el.text))
+            self._warn("skipping text of <%s>: %s" % (self._get_path(el), 
+                                                      el.text))
         for i in el.getchildren():
             if i.tail is not None and not i.tail.isspace():
-                self._warn("skipping tail of <%s>: %s" % (self._get_path(i), i.tail))
+                self._warn("skipping tail of <%s>: %s" % (self._get_path(i), 
+                                                          i.tail))
     
     def _no_special_markup(self, el):
         return self._concat(el)
     
     def _remove_indent_and_escape(self, s):
-        "remove indentation from the string s, escape some of the special chars"
+        """
+        remove indentation from the string s
+        escape some of the special chars
+        """
         s = "\n".join(i.lstrip().replace("\\", "\\\\") for i in s.splitlines())
         # escape inline mark-up start-string characters (even if there is no
         # end-string, docutils show warning if the start-string is not escaped)
         # TODO: handle also Unicode: � � � � � � as preceding chars
         s = re.sub(r"([\s'\"([{</:-])" # start-string is preceded by one of these
                    r"([|*`[])" # the start-string
-                   r"(\S)",    # start-string is followed by non-whitespace
+                   r"(\S)", # start-string is followed by non-whitespace
                    r"\1\\\2\3", # insert backslash
                    s)
         return s
     
     def _concat(self, el):
-        "concatenate .text with children (self._conv'ed to text) and their tails"
+        """
+        concatenate .text with children (self._conv'ed to text) and their tails
+        """
         s = ""
-        id = el.get(self.parent.id_attrib)
-        if id is not None and (self.parent.write_unused_labels or id in self.parent._linked_ids):
-            s += "\n\n.. _%s:\n\n" % id
+        xml_id = el.get(self.parent.id_attrib)
+        if xml_id is not None and (
+                self.parent.write_unused_labels 
+                or xml_id in self.parent._linked_ids):
+            s += "\n\n.. _%s:\n\n" % xml_id
         if el.text is not None:
             s += self._remove_indent_and_escape(el.text)
         for i in el.getchildren():
-            s += self._conv(i)      # FIXME: fails for an empty <entry> element in a <table>
+            # FIXME: fails for an empty <entry> element in a <table>
+            s += self._conv(i)
             if i.tail is not None:
                 if len(s) > 0 and not s[-1].isspace() and i.tail[0] in " \t":
                     s += i.tail[0]
@@ -303,7 +316,7 @@ class Convert(object):
     
     def _get_level(self, el):
         "return number of ancestors"
-        return sum(1 for i in el.iterancestors())
+        return sum(1 for _ in el.iterancestors())
     
     def _get_path(self, el):
         t = [el] + list(el.iterancestors())
@@ -316,17 +329,18 @@ class Convert(object):
         '''
         if level == 1:
             return "\n\n" + "=" * len(t) + "\n" + t + "\n" + "=" * len(t)
-        char = ["#", "=", "-", "~", "^", ".", "*", "+", "_", ",", ":", "'", 
-                "!", "?", '"', '$', '%', '&', ';', '(', ')', '/', '<', '>', 
+        char = ["#", "=", "-", "~", "^", ".", "*", "+", "_", ",", ":", "'",
+                "!", "?", '"', '$', '%', '&', ';', '(', ')', '/', '<', '>',
                 "@", "[", "]", "`", "{", "}", "|", "\\", ]
-        return "\n\n" + t + "\n" + char[level-2] * len(t)
+        return "\n\n" + t + "\n" + char[level - 2] * len(t)
     
     def _join_children(self, el, sep):
         self._has_no_text(el)
         return sep.join(self._conv(i) for i in el.getchildren())
     
     def _block_separated_with_blank_line(self, el):
-        pi = [i for i in el.iterchildren() if isinstance(i, lxml.etree._ProcessingInstruction)]
+        pi = [i for i in el.iterchildren() if isinstance(i, 
+                                         lxml.etree._ProcessingInstruction)]
         if pi and 'filename=' in pi[0].text:
             fname = pi[0].text.split('=')[1][1:-1].split('.')[0]
             #import pdb; pdb.set_trace()
@@ -352,7 +366,7 @@ class Convert(object):
     def _normalize_whitespace(self, s):
         return " ".join(s.split())
     
-    ###################           DocBook elements        #####################
+    ###################      DocBook elements    #####################
     
     # special "elements"
     
@@ -379,7 +393,7 @@ class Convert(object):
     
     def _docbook_source(self, el, name):
         s = "\n\n.. rubric:: %s\n\n::\n\n" % name
-        s += " "*4 + self._original_xml( el )
+        s += " "*4 + self._original_xml(el)
         s += "\n\n"
         return s
     
@@ -450,22 +464,22 @@ class Convert(object):
         return ":dfn:`%s`" % el.text
     
     def e_acronym(self, el):
-        if el.attrib.get('condition'):      # TODO: confirm if needs: self.parent.ns+
+        if el.attrib.get('condition'):
             return u":abbr:`%s (%s)`" % (el.text, el.attrib['condition'])
         else:
-            return u":abbr:`%s`" % (el.text, )
+            return u":abbr:`%s`" % (el.text,)
     
-    def e_userinput(self, el):
-        return u":kbd:`%s`" % (el.text, )
+    #def e_userinput(self, el):
+    #    return u":kbd:`%s`" % (el.text,)
 
     def e_quote(self, el):
-        q = " ".join( el.text.split("\n") )
-        return u'"%s"' % (q, )
+        q = " ".join(el.text.split("\n"))
+        return u'"%s"' % (q,)
     
     # links
     
     def e_ulink(self, el):
-        url = el.get("url")      # TODO: confirm if needs: self.parent.ns+
+        url = el.get("url")
         text = self._concat(el).strip()
         if text.startswith(".. image::"):
             return "%s\n   :target: %s\n\n" % (text, url)
@@ -484,7 +498,7 @@ class Convert(object):
     # (in DocBook was: the section called �Variables�)
     
     def e_xref(self, el):
-        return ":ref:`%s`" % el.get("linkend")      # TODO: confirm if needs: self.parent.ns+
+        return ":ref:`%s`" % el.get("linkend")
     
     def e_link(self, el):
         # <link linkend="">some text</link>
@@ -492,7 +506,7 @@ class Convert(object):
         # <link xlink:href="#RegExpName">regular expression example</link>
         text = self._concat(el).strip().strip("`")
         # TODO: handle properly
-        link = el.get( self.parent.linkend )      # TODO: confirm if needs: self.parent.ns+
+        link = el.get(self.parent.linkend)
         if link is None:
             return ":ref:`%s`" % text
         else:
@@ -503,42 +517,46 @@ class Convert(object):
     
     
     # math and media
-    # the DocBook syntax to embed equations is sick. Usually, (inline)equation is
+    # the DocBook syntax to embed equations is sick. 
+    # Usually, (inline)equation is
     # a (inline)mediaobject, which is imageobject + textobject
     
     def e_inlineequation(self, el):
-        self._supports_only(el, (self.parent.ns+"inlinemediaobject",))
+        self._supports_only(el, (self.parent.ns + "inlinemediaobject",))
         return self._concat(el).strip()
     
     def e_informalequation(self, el):
-        self._supports_only(el, (self.parent.ns+"mediaobject",))
+        self._supports_only(el, (self.parent.ns + "mediaobject",))
         return self._concat(el)
     
     def e_equation(self, el):
-        self._supports_only(el, (self.parent.ns+"title", self.parent.ns+"mediaobject"))
-        title = el.find(self.parent.ns+"title")
+        self._supports_only(el, (self.parent.ns + "title", 
+                                 self.parent.ns + "mediaobject"))
+        title = el.find(self.parent.ns + "title")
         if title is not None:
             s = "\n\n**%s:**" % self._concat(title).strip()
         else:
             s = ""
-        for mo in el.findall(self.parent.ns+"mediaobject"):
+        for mo in el.findall(self.parent.ns + "mediaobject"):
             s += "\n" + self._conv(mo)
         return s
     
     def e_mediaobject(self, el, substitute=False):
-        self._supports_only(el, (self.parent.ns+"imageobject", self.parent.ns+"textobject"))
+        self._supports_only(el, (self.parent.ns + "imageobject", 
+                                 self.parent.ns + "textobject"))
         # assume the most common case is one imageobject and one (or none)
         alt = ""
-        for txto in el.findall(self.parent.ns+"textobject"):
-            self._supports_only(txto, (self.parent.ns+"phrase",))
+        for txto in el.findall(self.parent.ns + "textobject"):
+            self._supports_only(txto, (self.parent.ns + "phrase",))
             if alt:
                 alt += "; "
-            alt += self._normalize_whitespace(self._concat(txto.find(self.parent.ns+"phrase")))
+            alt += self._normalize_whitespace(
+                          self._concat(txto.find(self.parent.ns + "phrase")))
         symbols = []
         img = ""
-        for imgo in el.findall(self.parent.ns+"imageobject"):
-            self._supports_only(imgo, (self.parent.ns+"imagedata",))
-            fileref = imgo.find(self.parent.ns+"imagedata").get("fileref")      # TODO: confirm if needs: self.parent.ns+
+        for imgo in el.findall(self.parent.ns + "imageobject"):
+            self._supports_only(imgo, (self.parent.ns + "imagedata",))
+            fileref = imgo.find(self.parent.ns + "imagedata").get("fileref")
             s = "\n\n.. image:: %s" % fileref
             if (alt):
                 s += "\n   :alt: %s" % alt
@@ -628,8 +646,9 @@ class Convert(object):
     
     def e_constant(self, el):
         self._has_only_text(el)
-        #return ":constant:`%s`" % el.text
-        return "``%s``" % ((el.text or '') + ''.join(map(self._conv, el.getchildren())))
+        return "``%s``" % (
+                           (el.text or '') + 
+                           ''.join(map(self._conv, el.getchildren())))
     
     e_varname = e_constant
     
@@ -639,9 +658,9 @@ class Convert(object):
         # Titles in some elements may be handled from the title's parent.
         t = self._concat(el).strip()
         level = self._get_level(el)
-        parent = el.getparent().tag
+        #parent = el.getparent().tag
         ## title in elements other than the following will trigger assertion
-        #if parent in ("book", "chapter", "section", "variablelist", "appendix"):
+        #? parent in ("book", "chapter", "section", "variablelist", "appendix")
         return self._make_title(t, level)
     e_screen = _literal_source
     e_literallayout = _literal_source
@@ -671,7 +690,8 @@ class Convert(object):
     
     def e_entry(self, el):
         # TODO: FIXME: <entry spanname="fullrow" ...  
-        # This is not handled now and raises exception at runtime due to short list
+        # This is not handled now and raises exception at runtime 
+        # due to short list
         s = self._concat(el)
         if s is None:
             s = ""
@@ -680,15 +700,15 @@ class Convert(object):
     # lists
     
     def e_glosslist(self, el):
-        self._supports_only(el, (self.parent.ns+"glossentry"))
+        self._supports_only(el, (self.parent.ns + "glossentry"))
         return self._concat(el)
     
     def e_glossentry(self, el):
-        self._supports_only(el, (self.parent.ns+"glossterm", 
-                                 self.parent.ns+"glossdef"))
+        self._supports_only(el, (self.parent.ns + "glossterm",
+                                 self.parent.ns + "glossdef"))
         s = "\n\n"
-        t = self._concat( el.find(self.parent.ns+"glossterm") ) + "\n" + " "*4
-        s += self._indent(el.find(self.parent.ns+"glossdef"), 4, t)
+        t = self._concat(el.find(self.parent.ns + "glossterm")) + "\n" + " "*4
+        s += self._indent(el.find(self.parent.ns + "glossdef"), 4, t)
         return s
     
     def e_glossterm(self, el):
@@ -701,7 +721,7 @@ class Convert(object):
         # ItemizedList ::= (ListItem+)
         s = ""
         for i in el.getchildren():
-            s += self._indent(i, len(bullet)+1, bullet+" ")
+            s += self._indent(i, len(bullet) + 1, bullet + " ")
         return s + "\n\n"
     
     def e_orderedlist(self, el):
@@ -712,7 +732,7 @@ class Convert(object):
         # SimpleList ::= (Member+)
         # The simplelist is the most complicated one. There are 3 kinds of 
         # SimpleList: Inline, Horiz and Vert.
-        if el.get("type") == "inline":      # TODO: confirm if needs: self.parent.ns+
+        if el.get("type") == "inline":
             return self._join_children(el, ", ")
         else:
             # members should be rendered in tabular fashion, with number
@@ -723,32 +743,34 @@ class Convert(object):
     def e_variablelist(self, el):
         #VariableList ::= ((Title,TitleAbbrev?)?, VarListEntry+)
         #VarListEntry ::= (Term+,ListItem)
-        self._supports_only(el, (self.parent.ns+"title", self.parent.ns+"varlistentry"))
+        self._supports_only(el, (self.parent.ns + "title", 
+                                 self.parent.ns + "varlistentry"))
         s = ""
-        title = el.find(self.parent.ns+"title")
+        title = el.find(self.parent.ns + "title")
         if title is not None:
             s += self._conv(title)
-        for entry in el.findall(self.parent.ns+"varlistentry"):
+        for entry in el.findall(self.parent.ns + "varlistentry"):
             s += "\n\n"
-            s += ", ".join(self._concat(i).strip() for i in entry.findall(self.parent.ns+"term"))
-            s += self._indent(entry.find(self.parent.ns+"listitem"), 4)[1:]
+            s += ", ".join(self._concat(i).strip() 
+                           for i in entry.findall(self.parent.ns + "term"))
+            s += self._indent(entry.find(self.parent.ns + "listitem"), 4)[1:]
         return s
     
     def e_qandaset(self, el):
         #self._supports_only(el, ("qandaentry", "question", "answer"))
         s = ""
-        for entry in el.findall(self.parent.ns+"qandaentry"):
+        for entry in el.findall(self.parent.ns + "qandaentry"):
             q = " ".join(self.childNodeText(entry, "question").split("\n"))
             s += "\n\n#. %s" % q
             # TODO: check this!
-            s += "\n\n%s" % self._indent( entry.find(self.parent.ns+"answer"), 4)
+            s += "\n\n%s" % self._indent(entry.find(self.parent.ns + "answer"), 4)
         return s
     #e_question = _no_special_markup
     #e_answer = _no_special_markup
     
     def childNodeText(self, el, tag):
         '''looks for a child XML node and returns its text, or None'''
-        result = el.find(self.parent.ns+tag)
+        result = el.find(self.parent.ns + tag)
         if result is not None:
             result = self._concat(result).strip()
         return result
@@ -769,14 +791,15 @@ class Convert(object):
                 <primary>NeXus International Advisory Committee</primary>
                 <see>NIAC</see>
             </indexterm>
-            <indexterm significance="preferred"><primary>units</primary></indexterm>
+            <indexterm significance="preferred"><primary>units</primary>
+            </indexterm>
         
         should generate this ReST code::
         
             :index:`see: NeXus International Advisory Committee; NIAC `
             :index:`! units`
         '''
-        if len(el.findall(self.parent.ns+"primary")) == 0:
+        if len(el.findall(self.parent.ns + "primary")) == 0:
             raise RuntimeError, "indexterm has no primary element"
         self._supports_only(el, (self.parent.ns + 'primary',
                                  self.parent.ns + 'secondary',
@@ -786,7 +809,7 @@ class Convert(object):
         # TODO need routines for primary, secondary, tertiary
         pri = self.childNodeText(el, "primary").strip("`")
         s = ""
-        for term in ('see', 'seealso', ):
+        for term in ('see', 'seealso',):
             text = self.childNodeText(el, term)
             if text is not None:
                 if len(s) > 0:
@@ -804,16 +827,18 @@ class Convert(object):
             ter = self.childNodeText(el, "tertiary")
             if ter is not None:
                 s += " - " + ter.strip("`")
-            # still need to edit the ReST to replace INDEX_POINT with short printable text.
-	    s = ":index:`INDEX_POINT <single: %s>`" % s
+            # still need to edit the ReST to replace 
+            # INDEX_POINT with short printable text.
+        s = ":index:`INDEX_POINT <single: %s>`" % s
         return s
     e_primary = _no_special_markup
     e_secondary = _no_special_markup
     e_tertiary = _no_special_markup
     
     def e_footnote(self, el):
-        self._supports_only(el, (self.parent.ns+"para",))
-        s = "{FOOTNOTE: %s}" % self._conv(el.find(self.parent.ns+"para")).strip()
+        self._supports_only(el, (self.parent.ns + "para",))
+        s = "{FOOTNOTE: %s}" % self._conv(
+                                  el.find(self.parent.ns + "para")).strip()
         return s
     
     # admonition directives
@@ -834,26 +859,24 @@ class Convert(object):
     def e_author(self, el):
         # <author> could be in <biblioentry> or <authorgroup>.  
         # Hope these conditionals help it apply to both.
-        self._supports_only(el, (self.parent.ns+"personname", 
-                                 self.parent.ns+"address", 
-                                 self.parent.ns+"affiliation", 
-                                 self.parent.ns+"email",))
+        self._supports_only(el, (self.parent.ns + "personname",
+                                 self.parent.ns + "address",
+                                 self.parent.ns + "affiliation",
+                                 self.parent.ns + "email",))
         s = "\n\n"
-        s += self._conv(el.find(self.parent.ns+"personname")).strip()
-        node = el.find(self.parent.ns+"email")
+        s += self._conv(el.find(self.parent.ns + "personname")).strip()
+        node = el.find(self.parent.ns + "email")
         if node is not None:
             s += " ``<%s>``" % self._conv(node).strip()
-        node = el.find(self.parent.ns+"affiliation")
+        node = el.find(self.parent.ns + "affiliation")
         if node is not None:
             s += ", " + self._conv(node).strip()
-        node = el.find(self.parent.ns+"address")
+        node = el.find(self.parent.ns + "address")
         if node is not None:
             s += ", " + self._join_children(node, ", ").strip()
         return s
     
     def e_personname(self, el):
-        #self._supports_only(el, (self.parent.ns+"firstname", self.parent.ns+"surname"))
-        #return el.findtext(self.parent.ns+"firstname") + " " + el.findtext(self.parent.ns+"surname")
         return self._join_children(el, " ").strip()
     
     e_editor = e_author
@@ -872,76 +895,79 @@ class Convert(object):
     
     def e_authorgroup(self, el):
         # TODO: only make a title here if no title has been defined
-	s = self._make_title("Authorgroup", 1)
-	s += self._join_children(el, ", ")
+        s = self._make_title("Authorgroup", 1)
+        s += self._join_children(el, ", ")
         return s
 
     def e_biblioentry(self, el):
-        self._supports_only(el, (self.parent.ns+"abbrev", 
-                                 self.parent.ns+"authorgroup", 
-                                 self.parent.ns+"author", 
-                                 self.parent.ns+"editor", 
-                                 self.parent.ns+"title",
-                                 self.parent.ns+"publishername", 
-                                 self.parent.ns+"pubdate", 
-                                 self.parent.ns+"address"))
+        self._supports_only(el, (self.parent.ns + "abbrev",
+                                 self.parent.ns + "authorgroup",
+                                 self.parent.ns + "author",
+                                 self.parent.ns + "editor",
+                                 self.parent.ns + "title",
+                                 self.parent.ns + "publishername",
+                                 self.parent.ns + "pubdate",
+                                 self.parent.ns + "address"))
         s = "\n"
     
-        abbrev = el.find(self.parent.ns+"abbrev")
+        abbrev = el.find(self.parent.ns + "abbrev")
         if abbrev is not None:
             self._has_only_text(abbrev)
             s += "[%s] " % abbrev.text
     
-        auth = el.find(self.parent.ns+"authorgroup")
+        auth = el.find(self.parent.ns + "authorgroup")
         if auth is None:
-            auth = el.find(self.parent.ns+"author")
+            auth = el.find(self.parent.ns + "author")
         if auth is not None:
             s += "%s. " % self._conv(auth)
     
-        editor = el.find(self.parent.ns+"editor")
+        editor = el.find(self.parent.ns + "editor")
         if editor is not None:
             s += "%s. " % self._conv(editor)
     
-        title = el.find(self.parent.ns+"title")
+        title = el.find(self.parent.ns + "title")
         if title is not None:
             self._has_only_text(title)
             s += "*%s*. " % title.text.strip()
     
-        address = el.find(self.parent.ns+"address")
+        address = el.find(self.parent.ns + "address")
         if address is not None:
-            self._supports_only(address, (self.parent.ns+"otheraddr",))
-            s += "%s " % address.findtext(self.parent.ns+"otheraddr")
+            self._supports_only(address, (self.parent.ns + "otheraddr",))
+            s += "%s " % address.findtext(self.parent.ns + "otheraddr")
     
-        publishername = el.find(self.parent.ns+"publishername")
+        publishername = el.find(self.parent.ns + "publishername")
         if publishername is not None:
             self._has_only_text(publishername)
             s += "%s. " % publishername.text
     
-        pubdate = el.find(self.parent.ns+"pubdate")
+        pubdate = el.find(self.parent.ns + "pubdate")
         if pubdate is not None:
             self._has_only_text(pubdate)
             s += "%s. " % pubdate.text
         return s
     
     def e_bibliography(self, el):
-        self._supports_only(el, (self.parent.ns+"biblioentry",))
-        return self._make_title("Bibliography", 2) + "\n" + self._join_children(el, "\n")
+        self._supports_only(el, (self.parent.ns + "biblioentry",))
+        s = self._make_title("Bibliography", 2) + "\n"
+        s += self._join_children(el, "\n")
+        return s
     
     def e_revision(self, el):
-        self._supports_only(el, (self.parent.ns+"date",
-                                 self.parent.ns+"authorinitials",
-                                 self.parent.ns+"revnumber",
-                                 self.parent.ns+"revdescription",))
+        self._supports_only(el, (self.parent.ns + "date",
+                                 self.parent.ns + "authorinitials",
+                                 self.parent.ns + "revnumber",
+                                 self.parent.ns + "revdescription",))
         t = []
-        for k, v in {"date": "*%s*", 
-                     "revnumber": "**%s**", 
+        for k, v in {"date": "*%s*",
+                     "revnumber": "**%s**",
                      "authorinitials": "*%s*"}.items():
-            node = el.find(self.parent.ns+k)
+            node = el.find(self.parent.ns + k)
             if node is not None:
                 self._has_only_text(node)
-                t.append( v % node.text )
+                t.append(v % node.text)
         s = "\n\n"
-        s += self._indent(el.find(self.parent.ns+"revdescription"), 4, ", ".join(t) + "\n    ")
+        s += self._indent(el.find(self.parent.ns + "revdescription"), 
+                          4, ", ".join(t) + "\n    ")
         return s
 
     #  + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
@@ -952,23 +978,23 @@ class Convert(object):
         return len(self._conv(el).strip())
 
     def e_table(self, el):
-        # consider refactoring this code!  
+        # TODO: refactor this code!  
         # It fails now at the zip() due to
         #     empty <entry /> DocBook elements 
         #     or <entry spanname="fullrow" ...
         # get each column size
         text = (el.getchildren()[0].text or '') + (el.getchildren()[0].tail or '') + '\n\n'
-        cols = int(el.find(self.parent.ns+'tgroup').attrib['cols'])
+        #cols = int(el.find(self.parent.ns + 'tgroup').attrib['cols'])
         colsizes = self._column_widths(el)
         fmt = ' '.join(['%%-%is' % (size,) for size in colsizes]) + '\n'
         divider = fmt % tuple(['=' * size for size in colsizes])
         text += divider
-        node = el.find(self.parent.ns+'tgroup').find(self.parent.ns+'thead')
+        node = el.find(self.parent.ns + 'tgroup').find(self.parent.ns + 'thead')
         if node is not None:
-            text += fmt % tuple(map(self._conv, node.find(self.parent.ns+'row').findall(self.parent.ns+'entry')))
+            text += fmt % tuple(map(self._conv, node.find(self.parent.ns + 'row').findall(self.parent.ns + 'entry')))
         text += divider
-        for row in el.find(self.parent.ns+'tgroup').find(self.parent.ns+'tbody').findall(self.parent.ns+'row'):
-            text += fmt % tuple(map(self._conv, row.findall(self.parent.ns+'entry')))
+        for row in el.find(self.parent.ns + 'tgroup').find(self.parent.ns + 'tbody').findall(self.parent.ns + 'row'):
+            text += fmt % tuple(map(self._conv, row.findall(self.parent.ns + 'entry')))
         text += divider
         return text
     
@@ -976,7 +1002,9 @@ class Convert(object):
         ''' returns a list with the maximum width of each column '''
         # FIXME: This fails on empty <entry /> DocBook elements at the zip().
         # TODO: make this code more obvious and easier to maintain
-        return map(max, zip(*[map(self._calc_col_width, r) for r in lxml.etree.ETXPath( './/%srow' % self.parent.ns )(el)]))
+        return map(max, zip(*[map(self._calc_col_width, r) 
+                      for r in lxml.etree.ETXPath(
+                                      './/%srow' % self.parent.ns)(el)]))
 
 
 def original_main(args):
@@ -991,13 +1019,16 @@ def original_main(args):
     sys.stderr.write("Parsing XML file `%s'...\n" % input_file)
 
     converter = Db2Rst()
-    result = converter.process( input_file )
+    if output_dir is not None:
+        converter.output_dir = output_dir
+    result = converter.process(input_file)
     if result is not None:
         return str(result)
 
 
 if __name__ == '__main__':
-    result = original_main(sys.argv)
+    #result = original_main(sys.argv)
+    result = original_main([sys.argv[0], 'docbook.xml'])
     if result is not None:
         print result
 

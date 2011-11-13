@@ -66,7 +66,7 @@ class Describe:
         t.rows.append( ['SVN Id', "`" + root.get('svnid', 'none') + "`", ] )
         t.rows.append( ['extends class', extends, ] )
         t.rows.append( ['included classes', self.groups_list(root), ] )
-        rest += t.reST(format='simple')
+        rest += t.reST(fmt='simple')
         
         rest += "\n"
         rest += ".. rubric:: Basic Structure of **%s**\n\n" % self.nxdlName

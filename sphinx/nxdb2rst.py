@@ -62,7 +62,7 @@ class Convert(db2rst.Convert):
         rows = tbody.findall(self.parent.ns+'row')
         t.rows = map(self.get_entry_text_list, rows)
 
-        s = t.reST(format='simple')
+        s = t.reST(fmt='simple')
         return s
     
     def get_entry_text_list(self, parent_node):
@@ -307,5 +307,5 @@ class Convert(db2rst.Convert):
         
         s = self._make_title("Revision History", 1)
         s += "\n\n"
-        s += t.reST(format='complex')
+        s += t.reST(fmt='complex')
         return s
