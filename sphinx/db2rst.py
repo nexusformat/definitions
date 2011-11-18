@@ -970,41 +970,149 @@ class Convert(object):
                           4, ", ".join(t) + "\n    ")
         return s
 
-    #  + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
-    #  + + + + + + + + + + + + table support + + + + + + + + + + + +
-    #  + + + + + + + + + + + + + + + + + + + + + + + + + + + + + + +
-
-    def _calc_col_width(self, el):
-        return len(self._conv(el).strip())
-
     def e_table(self, el):
-        # TODO: refactor this code!  
-        # It fails now at the zip() due to
-        #     empty <entry /> DocBook elements 
-        #     or <entry spanname="fullrow" ...
-        # get each column size
-        text = (el.getchildren()[0].text or '') + (el.getchildren()[0].tail or '') + '\n\n'
-        #cols = int(el.find(self.parent.ns + 'tgroup').attrib['cols'])
-        colsizes = self._column_widths(el)
-        fmt = ' '.join(['%%-%is' % (size,) for size in colsizes]) + '\n'
-        divider = fmt % tuple(['=' * size for size in colsizes])
-        text += divider
-        node = el.find(self.parent.ns + 'tgroup').find(self.parent.ns + 'thead')
-        if node is not None:
-            text += fmt % tuple(map(self._conv, node.find(self.parent.ns + 'row').findall(self.parent.ns + 'entry')))
-        text += divider
-        for row in el.find(self.parent.ns + 'tgroup').find(self.parent.ns + 'tbody').findall(self.parent.ns + 'row'):
-            text += fmt % tuple(map(self._conv, row.findall(self.parent.ns + 'entry')))
-        text += divider
+        # Probably fails for these cases at least:
+        #     * <entry /> (empty DocBook elements) 
+        #     * <entry spanname="fullrow" ...
+        t = Table()
+        tgroup_node = el.find(self.parent.ns+'tgroup')
+        thead = tgroup_node.find(self.parent.ns+'thead')
+        if thead is not None:
+            row = thead.find(self.parent.ns+'row')
+            t.labels = self._get_entry_text_list( row )
+
+        tbody = tgroup_node.find(self.parent.ns+'tbody')
+        t.rows = map(self._get_entry_text_list, 
+                     tbody.findall(self.parent.ns+'row'))
+
+        s = t.reST(fmt='simple')
+        return s
+    
+    def _get_entry_text_list(self, parent_node):
+        '''
+        Return a list with the text of the child "entry" nodes.
+        The members of the list are strings with optional line breaks.
+        This is useful in the analysis of tables.
+        '''
+        nodes = parent_node.findall(self.parent.ns+'entry')
+        rowText = [self._conv(item).split("\n") for item in nodes]
+        return map( "\n".join, rowText)
+
+
+class Table:
+    '''
+    Construct a table in reST (no row or column spans).
+    Each cell may have multiple lines, separated by "\n"
+    
+    EXAMPLE
+    
+    These commands::
+    
+        t = Table()
+        t.labels = ('Name\nand\nAttributes', 'Type', 'Units', 'Description\n(and Occurrences)', )
+        t.rows.append( ['one,\ntwo', "buckle my", "shoe.\n\n\nthree,\nfour", "..."] )
+        t.rows.append( ['class', 'NX_FLOAT', '..', '..', ] )
+        print t.reST(format='complex')
+
+    build this table source code::
+    
+        +------------+-----------+--------+-------------------+
+        + Name       + Type      + Units  + Description       +
+        + and        +           +        + (and Occurrences) +
+        + Attributes +           +        +                   +
+        +============+===========+========+===================+
+        + one,       + buckle my + shoe.  + ...               +
+        + two        +           +        +                   +
+        +            +           +        +                   +
+        +            +           + three, +                   +
+        +            +           + four   +                   +
+        +------------+-----------+--------+-------------------+
+        + class      + NX_FLOAT  + ..     + ..                +
+        +------------+-----------+--------+-------------------+
+    '''
+    
+    def __init__(self):
+        self.rows = []
+        self.labels = []
+    
+    def reST(self, indentation = '', fmt = 'simple'):
+        '''return the table in reST format'''
+        return {'simple': self.simple_table,
+                'complex': self.complex_table,}[fmt](indentation)
+    
+    def simple_table(self, indentation = ''):
+        '''return the table in simple rest format'''
+        # maximum column widths, considering possible line breaks in each cell
+        width = self.find_widths()
+        
+        # build the row separators
+        separator = " ".join(['='*w for w in width]) + '\n'
+        fmt = " ".join(["%%-%ds" % w for w in width]) + '\n'
+        
+        rest = '%s%s' % (indentation, separator)         # top line
+        rest += self._row(self.labels, fmt, indentation) # labels
+        rest += '%s%s' % (indentation, separator)        # end of the labels
+        for row in self.rows:
+            rest += self._row(row, fmt, indentation)     # each row
+        rest += '%s%s' % (indentation, separator)        # end of table
+        return rest
+    
+    def complex_table(self, indentation = ''):
+        '''return the table in complex rest format'''
+        # maximum column widths, considering possible line breaks in each cell
+        width = self.find_widths()
+        
+        # build the row separators
+        separator = '+' + "".join(['-'*(w+2) + '+' for w in width]) + '\n'
+        label_sep = '+' + "".join(['='*(w+2) + '+' for w in width]) + '\n'
+        fmt = '|' + "".join([" %%-%ds |" % w for w in width]) + '\n'
+        
+        rest = '%s%s' % (indentation, separator)         # top line
+        rest += self._row(self.labels, fmt, indentation) # labels
+        rest += '%s%s' % (indentation, label_sep)         # end of the labels
+        for row in self.rows:
+            rest += self._row(row, fmt, indentation)     # each row
+            rest += '%s%s' % (indentation, separator)    # row separator
+        return rest
+    
+    def _row(self, row, fmt, indentation = ''):
+        '''
+        Given a list of <entry nodes in this table <row, 
+        build one line of the table with one text from each entry element.
+        The lines are separated by line breaks.
+        '''
+        text = ""
+        if len(row) > 0:
+            for line_num in range( max(map(len, [_.split("\n") for _ in row])) ):
+                item = [self._pick_line(r.split("\n"), line_num) for r in row]
+                text += indentation + fmt % tuple(item)
         return text
     
-    def _column_widths(self, el):
-        ''' returns a list with the maximum width of each column '''
-        # FIXME: This fails on empty <entry /> DocBook elements at the zip().
-        # TODO: make this code more obvious and easier to maintain
-        return map(max, zip(*[map(self._calc_col_width, r) 
-                      for r in lxml.etree.ETXPath(
-                                      './/%srow' % self.parent.ns)(el)]))
+    def find_widths(self):
+        '''
+    measure the maximum width of each column, 
+    considering possible line breaks in each cell
+    '''
+        width = []
+        if len(self.labels) > 0:
+            width = [max(map(len, _.split("\n"))) for _ in self.labels]
+        for row in self.rows:
+            row_width = [max(map(len, _.split("\n"))) for _ in row]
+            if len(width) == 0:
+                width = row_width
+            width = map( max, zip(width, row_width) )
+        return width
+    
+    def _pick_line(self, text, lineNum):
+        '''
+        Pick the specific line of text or supply an empty string.
+        Convenience routine when analyzing tables.
+        '''
+        if lineNum < len(text):
+            s = text[lineNum]
+        else:
+            s = ""
+        return s
 
 
 def original_main(args):
@@ -1028,7 +1136,10 @@ def original_main(args):
 
 if __name__ == '__main__':
     #result = original_main(sys.argv)
-    result = original_main([sys.argv[0], 'docbook.xml'])
+    docbook_file = 'docbook.xml'
+    if len(sys.argv) == 2 and os.path.exists(sys.argv[1]):
+        docbook_file = sys.argv[1]
+    result = original_main([sys.argv[0], docbook_file])
     if result is not None:
         print result
 

@@ -20,7 +20,6 @@ import sys, os
 import lxml.etree
 import db2rst
 import nxdb2rst
-import rest_table
 from argparse import ArgumentError
 
 
@@ -57,7 +56,7 @@ class Describe:
 
         rest += self.get_doc(root, "No documentation provided.") + "\n\n"
         
-        t = rest_table.Table()
+        t = db2rst.Table()
         t.labels = ('item', 'Description', )
         t.rows.append( ['category', self.nxdlType, ] )
         t.rows.append( ['NXDL class', "*%s*" % self.nxdlName, ] )
@@ -82,7 +81,7 @@ class Describe:
         
         rest += self.top_attributes_table(root) + "\n\n"
         
-        t = rest_table.Table()
+        t = db2rst.Table()
         t.labels = ('Name and Attributes', 
                     'Type', 
                     'Units', 
@@ -179,7 +178,7 @@ class Describe:
         if node is None:
             rest += 'No symbols are defined in this NXDL file\n'
         else:
-            table = rest_table.Table()
+            table = db2rst.Table()
             table.labels = ('Symbol', 'Description', )
             title = self.get_doc(node, None)
             if title is not None:
@@ -214,7 +213,7 @@ class Describe:
         if len(nodelist) > 0:
             fmt = "\n.. rubric:: Attributes of ``definition`` element in **%s**\n\n"
             rest = fmt % self.nxdlName
-            table = rest_table.Table()
+            table = db2rst.Table()
             table.labels = ('Attributes', 'Type', 'Units', 'Description (and Occurrences) ', )
             for node in nodelist:
                 name = '@' + node.get('name')

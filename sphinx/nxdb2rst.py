@@ -19,7 +19,6 @@ import os
 import db2rst
 import lxml.etree
 import logging
-import rest_table
 
 NEXUS_DIR = "../manual"
 NEXUS_DIR = os.path.abspath(NEXUS_DIR)
@@ -51,7 +50,7 @@ class Convert(db2rst.Convert):
             s += title
         s += "\n\n"
         
-        t = rest_table.Table()
+        t = db2rst.Table()
         tgroup_node = el.find(self.parent.ns+'tgroup')
         thead = tgroup_node.find(self.parent.ns+'thead')
         if thead is not None:
@@ -292,7 +291,7 @@ class Convert(db2rst.Convert):
         '''
         Revision history of the NeXus manual
         '''
-        t = rest_table.Table()
+        t = db2rst.Table()
         t.labels = ('date', 'release', 'description', 'who?', )
         for revnode in el.findall(self.parent.ns+'revision'):
             node = revnode.find(self.parent.ns+'revnumber')
