@@ -96,6 +96,8 @@ class Describe:
                 type = node.get('type', {'group': 'unknown', 'field': 'NX_CHAR'}[tag])
                 units = ''
                 description = ''
+                if name == '':
+                    name = '..'
                 t.rows.append( [name, type, units, description, ] )
         
         rest += "\n.. rubric:: Comprehensive Structure of **%s**\n\n" % self.nxdlName
