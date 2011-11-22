@@ -353,12 +353,15 @@ Matlab support in version R2011b is similar::
     >> title(title)
 
 Note that matlab will require explicit casting from integer data to floating
-point data to perform many operations.  For example, to plot a 2D data set
-using log intensity::
+point data to perform many operations.  For example, to plot a 2D data set 
+[#lrcs3701]_ using log intensity::
 
     >> data = h5read('lrcs3701.nxs','/Histogram1/data/data');
     >> h = pcolor(log(double(data+1))); set(h,'EdgeAlpha',0)
 
+.. [#lrcs3701] The ``lrcs3701.nxs`` NeXus HDF-5 data file may be found at
+   http://svn.nexusformat.org/definitions/exampledata/IPNS/LRMECS/lrcs3701.nxs
+	
 Support for HDF is available in other scientific computing environments,
 including IDL, Igor, Mathematica and R.
 
@@ -463,9 +466,13 @@ specifed in an "application definition".
 
 Before the mechanics of writing a NeXus file can be explained we need
 to know which fields are written into the NeXus file at which position
-in the hierarchy. The example will be to store data from a new
-instrument. A couple of steps are required::
+in the hierarchy. The example will be to store basic data. 
+A couple of steps are required::
 
+  entry:NXentry
+     data:NXdata
+
+..  This is the original BUT the example is simpler (see above)
   entry:NXentry
      instrument:NXinstrument
      sample:NXsample
@@ -519,9 +526,9 @@ do it with the HDF-5 API. The complexity of NeXus file writing is
 similar to the reading code. For both approaches more information is
 available in the NeXus Manual or the NeXus Reference Manual.
 
-To give you taste of what it is like to write a NeXus file using the
-NeXus API, here is complete code example in C. It shows how to create a
-scan:NXentry/data:NXdata structure and store two arrays, counts and
+To give you a taste of what it is like to write a NeXus file using the
+NeXus API, here is a complete code example in C. It shows how to create a
+``scan:NXentry/data:NXdata`` structure and store two arrays, counts and
 two_theta::
 
  #include "napi.h"
@@ -550,10 +557,26 @@ two_theta::
      return;
  }
 
-The programming model is mimicking a file system interface: You mkdir directories,
-groups (NXmakegroup) cd (NXopengroup) into them and create further groups or
-datasets (NXmakedata), open them (NXopendata), write data to them (NXputdata) and
-close them again (NXclosedata). You cd out of groups with NXclosegroup.
+The programming model mimicks a file system interface.  
+Your activities might include: 
+
+=======================   ===================================================
+file system               NeXus API
+=======================   ===================================================
+..                        ``NXopen`` create or open a NeXus data file
+``mkdir`` directory       ``NXmakegroup`` groups
+``cd`` into a dir         ``NXopengroup`` into a group
+create a file             ``NXmakedata`` create a dataset
+open a file               ``NXopendata`` focus on a specific dataset
+write to the file         ``NXputdata`` write data to the dataset
+read from the file        ``NXgetdata`` read data from the dataset
+..                        ``NXputattr`` write an attribute to the dataset
+..                        ``NXgetattr`` read an attribute from the dataset
+close a file              ``NXclosedata`` change the focus out of a 
+                          dataset back to the group
+``cd ..``                 ``NXclosegroup`` change focus to outer group
+..                        ``NXclose`` close the NeXus data file
+=======================   ===================================================
 
 
 More Information
