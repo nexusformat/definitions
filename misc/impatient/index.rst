@@ -208,6 +208,90 @@ The following additional groups are present in most NeXus data files:
     This group contains the counting information: which preset
     was used, how long we counted, monitor counts, etc.
 
+What goes into a NeXus File?
+------------------------------
+
+Before starting to describe how to decide what goes into a NeXus file,
+some more details about NeXus groups and base classes need to be
+explained. As seen in the examples, NeXus uses groups with well-defined 
+class names starting with "NX". NeXus calls these NX classes
+"base classes", which is slightly misleading when you are used to
+object-oriented notations. For each NeXus base class, there
+exists a dictionary description that details which other groups and
+which fields are allowed in this base class. This dictionary is where you will find
+appropriate field names for the data items you wish to describe. The NeXus base
+classes are documented in the NeXus Reference Manual. [#RefDoc]_
+A common
+misconception among NeXus beginners is that you have to specify all
+fields which exist in a given NeXus base class. This is **not**
+the case! You only need to choose those fields from the NeXus base
+class dictionary which make sense for your application. But, you are
+encouraged to store the additional information if it is available
+since it can be used to diagnose problems with the instrument. The minimum
+set of fields that are appropraie to a given technique are usually
+specifed in an "application definition".
+
+Before the mechanics of writing a NeXus file can be explained, we need
+to know which fields are written into the NeXus file at which position
+in the hierarchy. The example will be to store basic data. 
+A couple of steps are required:
+
+.. code-block:: text
+   :linenos:
+
+   entry:NXentry
+      data:NXdata
+
+..  This is the original BUT the example is simpler (see above)
+  entry:NXentry
+     instrument:NXinstrument
+     sample:NXsample
+     control:NXmonitor
+     data:NXdata
+
+Example 3: NeXus Raw Data File Template
+
+#. The start is a NeXus raw data file template as shown in example 3.
+#. At this level you can decide what needs to be known about the
+   sample and put it into the NXsample group.
+#. Look at a design drawing of the instrument. For each major
+   instrument component find a suitable NeXus class and add it
+   to the NXinstrument group.
+#. Decide for each instrument component which data fields are
+   required  and add them to the corresponding group.
+#. Add required counting information to the control class.
+#. Decide which data sets make up the most important data items
+   in the experiment. Create links to these data items in the data
+   group.
+#. Investigate if a NeXus application definition exists for
+   your instrument type. If so, check if all required fields
+   are stored in the appropriate form.
+
+Before beginning this process, it might be worthwhile to look at some
+of the NeXus application definitions in the NeXus reference manual
+for examples and inspiration. But be aware that each NeXus application
+definition only defines the minimum sets for a certain usage case.
+
+In this process you might encounter the situation that you wish to
+store more information then foreseen by NeXus. There are two options
+which have to be considered:
+
+#. The data item to store is special to your instrument and of no general
+   interest. Then make up a name and store it. The beauty of NeXus is
+   that this is possible without breaking the standard compliance
+   of the file.  Usual practice is to use a pattern like ``facilityname_fieldname``
+   which is unlikely to collide with fields that are added to the NeXus
+   definition in the future.
+#. The data item is of general interest and should be added to NeXus.
+   Then suggest a name and document what this really is what you suggest.
+   Forward this information to the NeXus International Advisory Committee
+   (nexus-committee@nexusformat.org).
+   Usually such suggestions are accepted quickly when they pose no
+   conflicts with existing definitions.
+
+Be sure that the names of things you define have no embedded whitespace 
+and begin with a letter.
+
 .. _processed_data_hierarchy:
 
 The NeXus Processed Data Hierarchy
@@ -293,6 +377,20 @@ sample is rotated and data is collected in an area detector:
    	   data --> /entry/instrument/detector/data
    	   rotation_angle --> /entry/sample/rotation_angle
 
+Finding the plottable data
+--------------------------
+
+Any program whose aim is to identify plottable data should use the following procedure:
+
+#. Open the first top level NeXus group with class NXentry.
+#. Open the first NeXus group with class NXdata.
+#. Loop through NeXus fields in this group searching for the item with attribute signal="1" indicating this field has the plottable data.
+#. Check to see if this field has an attribute called axes. If so, the attribute value contains a colon (or comma) delimited list (in the C-order of the data array) with the names of the dimension scales associated with the plottable data. And then you can skip the next two steps.
+#. If the axes attribute is not defined, search for the one-dimensional NeXus fields with attribute primary="1".
+#. These are the dimension scales to label the axes of each dimension of the data.
+#. Link each dimension scale to the respective data dimension by the axis attribute (axis="1", axis="2", ... up to the rank of the data).
+#. If necessary, close the NXdata group, open the next one and repeat steps 3 to 6.
+#. If necessary, close the NXentry group, open the next one and repeat steps 2 to 7.
 
 NeXus Benefits
 ================
@@ -472,90 +570,6 @@ Writing NeXus Files
 ====================
 
 You can skip this section if you only wish to read NeXus files. 
-
-What goes into a NeXus File?
-------------------------------
-
-Before starting to describe how to decide what goes into a NeXus file,
-some more details about NeXus groups and base classes need to be
-explained. As seen in the examples, NeXus uses groups with well-defined 
-class names starting with "NX". NeXus calls these NX classes
-"base classes", which is slightly misleading when you are used to
-object-oriented notations. For each NeXus base class, there
-exists a dictionary description that details which other groups and
-which fields are allowed in this base class. This dictionary is where you will find
-appropriate field names for the data items you wish to describe. The NeXus base
-classes are documented in the NeXus Reference Manual. [#RefDoc]_
-A common
-misconception among NeXus beginners is that you have to specify all
-fields which exist in a given NeXus base class. This is **not**
-the case! You only need to choose those fields from the NeXus base
-class dictionary which make sense for your application. But, you are
-encouraged to store the additional information if it is available
-since it can be used to diagnose problems with the instrument. The minimum
-set of fields that are appropraie to a given technique are usually
-specifed in an "application definition".
-
-Before the mechanics of writing a NeXus file can be explained, we need
-to know which fields are written into the NeXus file at which position
-in the hierarchy. The example will be to store basic data. 
-A couple of steps are required:
-
-.. code-block:: text
-   :linenos:
-
-   entry:NXentry
-      data:NXdata
-
-..  This is the original BUT the example is simpler (see above)
-  entry:NXentry
-     instrument:NXinstrument
-     sample:NXsample
-     control:NXmonitor
-     data:NXdata
-
-Example 3: NeXus Raw Data File Template
-
-#. The start is a NeXus raw data file template as shown in example 3.
-#. At this level you can decide what needs to be known about the
-   sample and put it into the NXsample group.
-#. Look at a design drawing of the instrument. For each major
-   instrument component find a suitable NeXus class and add it
-   to the NXinstrument group.
-#. Decide for each instrument component which data fields are
-   required  and add them to the corresponding group.
-#. Add required counting information to the control class.
-#. Decide which data sets make up the most important data items
-   in the experiment. Create links to these data items in the data
-   group.
-#. Investigate if a NeXus application definition exists for
-   your instrument type. If so, check if all required fields
-   are stored in the appropriate form.
-
-Before beginning this process, it might be worthwhile to look at some
-of the NeXus application definitions in the NeXus reference manual
-for examples and inspiration. But be aware that each NeXus application
-definition only defines the minimum sets for a certain usage case.
-
-In this process you might encounter the situation that you wish to
-store more information then foreseen by NeXus. There are two options
-which have to be considered:
-
-#. The data item to store is special to your instrument and of no general
-   interest. Then make up a name and store it. The beauty of NeXus is
-   that this is possible without breaking the standard compliance
-   of the file.  Usual practice is to use a pattern like ``facilityname_fieldname``
-   which is unlikely to collide with fields that are added to the NeXus
-   definition in the future.
-#. The data item is of general interest and should be added to NeXus.
-   Then suggest a name and document what this really is what you suggest.
-   Forward this information to the NeXus International Advisory Committee
-   (nexus-committee@nexusformat.org).
-   Usually such suggestions are accepted quickly when they pose no
-   conflicts with existing definitions.
-
-Be sure that the names of things you define have no embedded whitespace 
-and begin with a letter.
 
 Writing the NeXus File
 ------------------------
