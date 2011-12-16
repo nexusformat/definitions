@@ -13,7 +13,9 @@ Why NeXus?
 ===========
 
 .. note::  This document is available in different formats:
-   [#www]_, [#pdf]_, or [#epub]_
+   `HTML (online) <http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html>`_,
+   :download:`PDF <NXImpatient.pdf>`, or
+   :download:`EPUB <NXImpatient.epub>`.
 
 The NeXus data format is a tool which has been designed to
 solve the problems of travelling scientists, 
@@ -658,12 +660,6 @@ find on the NeXus WWW site.
 
 
 
-.. [#www] This document online:
-   http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html
-
-.. [#pdf] This document as a :download:`PDF <NXImpatient.pdf>`.
-
-.. [#epub] This document as an :download:`EPUB <NXImpatient.epub>`.
 
 .. [#h5py] *h5py*: http://code.google.com/p/h5py/
 
