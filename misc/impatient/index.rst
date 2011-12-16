@@ -569,10 +569,7 @@ the *Examples* chapter of the NeXus Reference Documentation. [#RefDoc]_
 Writing NeXus Files
 ====================
 
-You can skip this section if you only wish to read NeXus files. 
-
-Writing the NeXus File
-------------------------
+You can obviously skip this section if you only wish to read NeXus files. 
 
 For writing the NeXus file, you have the option to use the NeXus API or to
 use the HDF-5 API. The complexity of NeXus file writing code is
@@ -617,32 +614,6 @@ two_theta:
 More examples of writing NeXus data files can be found in 
 the *Examples* chapter of the NeXus Reference Documentation. [#RefDoc]_
 
-
-NAPI Programming Model
-------------------------
-
-The programming model mimicks a file system interface.  
-Your activities might include: 
-
-===================================   ===================================================
-file system			      NeXus API
-===================================   ===================================================
-create or open your lab notebook      ``NXopen`` create or open a NeXus data file
-``mkdir`` directory		      ``NXmakegroup`` groups
-``cd`` into a dir		      ``NXopengroup`` into a group
-create a file			      ``NXmakedata`` create a dataset
-open a file			      ``NXopendata`` focus on a specific dataset
-write to the file		      ``NXputdata`` write data to the dataset
-read from the file		      ``NXgetdata`` read data from the dataset
-..				      ``NXputattr`` write an attribute to the dataset
-..				      ``NXgetattr`` read an attribute from the dataset
-close a file			      ``NXclosedata`` change the focus out of a
- 				      dataset back to the group
-``cd ..``			      ``NXclosegroup`` change focus to outer group
-close your lab notebook 	      ``NXclose`` close the NeXus data file
-===================================   ===================================================
-
-
 More Information
 =================
 
@@ -671,9 +642,6 @@ NeXus is overseen by the NeXus International Advisory Committee (NIAC)
 which meets once a  year. The NIAC strives to have a representative for
 each participating facility. The NIAC has a constitution which you can
 find on the NeXus WWW site.
-
-
-
 
 .. [#h5py] *h5py*: http://code.google.com/p/h5py/
 
