@@ -182,8 +182,8 @@ latex_elements = {
 #  http://osdir.com/ml/sphinx-dev/2011-03/msg00036.html
 #  BUT, latex does not recognize these two lines when in the preamble
 'preamble': '''%
-% \pagestyle{plain}
-% \pagenumberstyle{arabic}
+ \pagestyle{plain}
+ \pagenumbering{arabic}
 ''',
 }
 
