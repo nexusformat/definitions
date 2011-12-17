@@ -178,7 +178,13 @@ latex_elements = {
 #'pointsize': '10pt',
 
 # Additional stuff for the LaTeX preamble.
-#'preamble': '',
+# FIXME: roman page numbers in TOC, and no page numbers later
+#  http://osdir.com/ml/sphinx-dev/2011-03/msg00036.html
+#  BUT, latex does not recognize these two lines when in the preamble
+'preamble': '''%
+% \pagestyle{plain}
+% \pagenumberstyle{arabic}
+''',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples

@@ -16,6 +16,8 @@ Why NeXus?
    `HTML (online) <http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html>`_,
    :download:`PDF <NXImpatient.pdf>`, or
    :download:`EPUB <NXImpatient.epub>`.
+   
+   See: http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html
 
 The NeXus data format is a tool which has been designed to
 solve the problems of travelling scientists, 
@@ -156,30 +158,6 @@ This hierarchy is applicable to raw data files as written by some facility instr
    	   data --> /entry/instrument/detector/data
 
 
-A few words on notation in this representation:
-
-indentation
-    Describes hierarchy level
-``name:NXname``
-    This describes a NeXus group. The second name starting with NX is the NeXus
-    class name of the group. Each NeXus class defines a set of allowed field names
-    that may be used to describe a component of the experiment,
-    such as detector distance and angle. Not all such names are required - 
-    those relevant to a particular use case are specified by the appropriate application definition.
-    Some experiments have multiple groups
-    of the same class, such as apertures and detectors.
-``name:NX_TYPE[dim,dim,...]``
-    This describes a dataset with a given numeric type and dimensions.  In this
-    example, the detector data is a 512 x 512 array of 32-bit integers.
-``@name=value``
-    This describes an attribute name and value.  The attribute signal=1 indicates
-    to NeXus that this is the dependent data to be plotted.
-``name -->  path``
-    Describes a link from one location to another.  This allows us to gather
-    the most important data together in an ``NXdata`` group while leaving
-    detailed metadata in the individual component definitions.
-
-
 The following groups are required to be present in all NeXus data files:
 
 ``entry:NXentry``
@@ -204,9 +182,33 @@ The following additional groups are present in most NeXus data files:
     This group contains further groups and fields which describe
     the components of the instrument used for this experiment.
 
-``monitor:NXmonitor``
+``control:NXmonitor``
     This group contains the counting information: which preset
     was used, how long we counted, monitor counts, etc.
+
+.. note::  A few words on notation in this representation:
+
+   indentation
+       Describes hierarchy level
+   ``name:NXname``
+       This describes a NeXus group. The second name starting with NX is the NeXus
+       class name of the group. Each NeXus class defines a set of allowed field names
+       that may be used to describe a component of the experiment,
+       such as detector distance and angle. Not all such names are required -
+       those relevant to a particular use case are specified by the appropriate application definition.
+       Some experiments have multiple groups
+       of the same class, such as apertures and detectors.
+   ``name:NX_TYPE[dim,dim,...]``
+       This describes a dataset with a given numeric type and dimensions.  In this
+       example, the detector data is a 512 x 512 array of 32-bit integers.
+   ``@name=value``
+       This describes an attribute name and value.  The attribute signal=1 indicates
+       to NeXus that this is the dependent data to be plotted.
+   ``name -->  path``
+       Describes a link from one location to another.  This allows us to gather
+       the most important data together in an ``NXdata`` group while leaving
+       detailed metadata in the individual component definitions.
+
 
 What goes into a NeXus File?
 ------------------------------
