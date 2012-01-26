@@ -4,7 +4,7 @@
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
-#  Copyright (C) 2011 Stephen Rankin
+#  Copyright (C) 2011 Freddie Akeroyd
 #  
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -26,28 +26,7 @@
 #
 #====================================================================
 
-cmake_minimum_required(VERSION 2.8.4)
-project(NeXusDefinitions)
 
-set(NEXUS_DEFINITIONS share/nexus/definitions)
-set(NEXUS_MANUAL share/nexus/manual)
+FILE(GLOB BASE_FILES ${CMAKE_SOURCE_DIR}/base_classes/*.nxdl.xml)
 
-find_package(LATEX)
-find_package(PythonInterp)
-# Recurse into the subdirectories.
-#add_subdirectory (tutorial)
-add_subdirectory (base_classes)
-add_subdirectory (contributed_definitions)
-add_subdirectory (applications)
-add_subdirectory (schema)
-add_subdirectory (manual)
-#add_subdirectory (sphinx)
-
-INSTALL(FILES nxdl.xsd nxdlTypes.xsd DESTINATION ${NEXUS_DEFINITIONS} COMPONENT All)
-INSTALL(FILES BASE.xsd NeXus.xsd DESTINATION ${NEXUS_DEFINITIONS} COMPONENT All)
-# CPack must always be last
-configure_file("${PROJECT_SOURCE_DIR}/CPackOptions.cmake.in"
-                                "${PROJECT_BINARY_DIRECTORY}CPackOptions.cmake"
-                                @ONLY)
-set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIRECTORY}CPackOptions.cmake")
-include(CPack)
+INSTALL(FILES ${BASE_FILES} DESTINATION ${NEXUS_DEFINITIONS}/base_classes COMPONENT All)

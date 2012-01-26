@@ -319,3 +319,5 @@ if (DBLATEX)
 endif (DBLATEX)
 
 
+install(FILES NeXusManual.html NeXusManual.pdf NeXusRefDoc.pdf DESTINATION ${NEXUS_MANUAL} COMPONENT All)
+install(DIRECTORY html img examples DESTINATION ${NEXUS_MANUAL} COMPONENT All)

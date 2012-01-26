@@ -176,6 +176,6 @@ else (XSLTPROC AND (XSL_TYPE STREQUAL "BEFORE"))
 
 endif(XSLTPROC AND (XSL_TYPE STREQUAL "BEFORE"))
 
-
-
+set(NXDL_FILES all_base.nxdl.xml all_base.sch all.nxdl.xml all.sch all_unsorted.xsd  all.xsd)
+install(FILES ${NXDL_FILES} DESTINATION ${NEXUS_DEFINITIONS} COMPONENT All)
 
