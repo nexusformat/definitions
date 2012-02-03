@@ -29,6 +29,8 @@
 cmake_minimum_required(VERSION 2.8.4)
 project(NeXusDefinitions)
 
+option (BUILD_SPHINX "Build documentation using sphinx" OFF)
+
 set(NEXUS_DEFINITIONS share/nexus/definitions)
 set(NEXUS_MANUAL share/nexus/manual)
 
@@ -41,13 +43,29 @@ add_subdirectory (contributed_definitions)
 add_subdirectory (applications)
 add_subdirectory (schema)
 add_subdirectory (manual)
-#add_subdirectory (sphinx)
+if(BUILD_SPHINX)
+    add_subdirectory (sphinx)
+endif(BUILD_SPHINX)
 
-INSTALL(FILES nxdl.xsd nxdlTypes.xsd DESTINATION ${NEXUS_DEFINITIONS} COMPONENT All)
-INSTALL(FILES BASE.xsd NeXus.xsd DESTINATION ${NEXUS_DEFINITIONS} COMPONENT All)
-# CPack must always be last
+INSTALL(FILES nxdl.xsd nxdlTypes.xsd DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
+INSTALL(FILES BASE.xsd NeXus.xsd DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
+
+#
+# set CPack packaging options
+#
 configure_file("${PROJECT_SOURCE_DIR}/CPackOptions.cmake.in"
                                 "${PROJECT_BINARY_DIRECTORY}CPackOptions.cmake"
                                 @ONLY)
 set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIRECTORY}CPackOptions.cmake")
+set (CPACK_GENERATOR ZIP;TGZ)
+if(UNIX)
+    set (CPACK_GENERATOR ${CPACK_GENERATOR};DEB;RPM)
+endif(UNIX)
+if(WIN32)
+    set (CPACK_GENERATOR ${CPACK_GENERATOR};NSIS)
+endif(WIN32)
+if(APPLE)
+    set (CPACK_GENERATOR ${CPACK_GENERATOR};PackageMaker)
+endif(APPLE)
+# Include of CPack must always be last
 include(CPack)

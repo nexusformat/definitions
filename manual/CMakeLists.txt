@@ -54,16 +54,18 @@ file(GLOB NXDL_BASE_CLASSES RELATIVE ${BASE_CLASS_PATH} ${BASE_CLASS_PATH}/*.${N
 file(GLOB NXDL_APPLICATIONS RELATIVE ${APPLICATIONS_CLASS_PATH} ${APPLICATIONS_CLASS_PATH}/*.${NXDL_SUFFIX})
 file(GLOB NXDL_CONTRIBUTED RELATIVE ${CONTRIBUTED_CLASS_PATH} ${CONTRIBUTED_CLASS_PATH}/*.${NXDL_SUFFIX})
 
+
 # put them all together in one big list
 # be careful, empty directories will return the $(DIR)/*.$(NXDL_SUFFIX) search pattern
 set (ALL_NXDL ${NXDL_BASE_CLASSES} ${NXDL_APPLICATIONS} ${NXDL_CONTRIBUTED})
 
 set(BUILT_NEXUSMANUAL NeXusManual.pdf NeXusManual.html NeXusRefDoc.pdf)
 
-set(CLEANING_LIST ${BUILT_NEXUSMANUAL} ${BUILT_NEXUSREFDOC} html/ classes/ types.xml units.xml nxdl_desc.xml)
+
+#set(CLEANING_LIST ${BUILT_NEXUSMANUAL} ${BUILT_NEXUSREFDOC} html/ classes/ types.xml units.xml nxdl_desc.xml)
 
 # for details, see: http://dblatex.sourceforge.net/doc/sec-custom.html
-set (DBLATEX_OPTS -P table.in.float=0 -P doc.lot.show="figure" -b pdftex -tpdf)
+set (DBLATEX_OPTS -P table.in.float=0 -P doc.lot.show="figure" -I"${CMAKE_SOURCE_DIR}/manual" -b pdftex -tpdf -x "--path" -x "${CMAKE_BINARY_DIR}/manual:${CMAKE_BINARY_DIR}/manual/classes" )
 
 set(OUTPUT_BASE_TEXT_FILES)
 set(OUTPUT_BASE_XML_FILES)
@@ -74,21 +76,21 @@ foreach(NXDL_FILE ${NXDL_BASE_CLASSES})
   string(REPLACE "${NXDL_SUFFIX}" "txt" TEXT_FILE ${NXDL_FILE})
   string(REPLACE "${NXDL_SUFFIX}" "xml" XML_FILE ${NXDL_FILE})
   add_custom_command(
-    OUTPUT ${CMAKE_SOURCE_DIR}/manual/classes/${TEXT_FILE} 
+    OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_SOURCE_DIR}/manual/classes/${TEXT_FILE} ${BASE_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${BASE_CLASS_PATH}/${NXDL_FILE}
     DEPENDS ${BASE_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating BASE TXT File ${TEXT_FILE}"
   ) 
   add_custom_command(
-    OUTPUT ${CMAKE_SOURCE_DIR}/manual/classes/${XML_FILE} 
+    OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_SOURCE_DIR}/manual/classes/${XML_FILE} ${XSLT} ${BASE_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${BASE_CLASS_PATH}/${NXDL_FILE}
     DEPENDS ${BASE_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating BASE XML File ${XML_FILE}"
   ) 
-  set(OUTPUT_BASE_TEXT_FILES ${OUTPUT_BASE_TEXT_FILES} ${CMAKE_SOURCE_DIR}/manual/classes/${TEXT_FILE})
-  set(OUTPUT_BASE_XML_FILES ${OUTPUT_BASE_XML_FILES} ${CMAKE_SOURCE_DIR}/manual/classes/${XML_FILE})
+  set(OUTPUT_BASE_TEXT_FILES ${OUTPUT_BASE_TEXT_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE})
+  set(OUTPUT_BASE_XML_FILES ${OUTPUT_BASE_XML_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE})
   set(OUTPUT_BASE_XML_TARGETS ${OUTPUT_BASE_XML_TARGETS} classes/${XML_FILE})
 endforeach(NXDL_FILE)
 
@@ -104,21 +106,21 @@ foreach(NXDL_FILE ${NXDL_APPLICATIONS})
   string(REPLACE "${NXDL_SUFFIX}" "txt" TEXT_FILE ${NXDL_FILE})
   string(REPLACE "${NXDL_SUFFIX}" "xml" XML_FILE ${NXDL_FILE})
   add_custom_command(
-    OUTPUT ${CMAKE_SOURCE_DIR}/manual/classes/${TEXT_FILE} 
+    OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_SOURCE_DIR}/manual/classes/${TEXT_FILE} ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
     DEPENDS ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating APPLICATIONS TXT File ${TEXT_FILE}"
   ) 
   add_custom_command(
-    OUTPUT ${CMAKE_SOURCE_DIR}/manual/classes/${XML_FILE} 
+    OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_SOURCE_DIR}/manual/classes/${XML_FILE} ${XSLT} ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
     DEPENDS ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating APPLICATIONS XML File ${XML_FILE}"
   ) 
-  set(OUTPUT_APPLICATIONS_TEXT_FILES ${OUTPUT_APPLICATIONS_TEXT_FILES} ${CMAKE_SOURCE_DIR}/manual/classes/${TEXT_FILE})
-  set(OUTPUT_APPLICATIONS_XML_FILES ${OUTPUT_APPLICATIONS_XML_FILES} ${CMAKE_SOURCE_DIR}/manual/classes/${XML_FILE})
+  set(OUTPUT_APPLICATIONS_TEXT_FILES ${OUTPUT_APPLICATIONS_TEXT_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE})
+  set(OUTPUT_APPLICATIONS_XML_FILES ${OUTPUT_APPLICATIONS_XML_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE})
   set(OUTPUT_APPLICATIONS_XML_TARGETS ${OUTPUT_APPLICATIONS_XML_TARGETS} classes/${XML_FILE})
 endforeach(NXDL_FILE)
 
@@ -134,21 +136,21 @@ foreach(NXDL_FILE ${NXDL_CONTRIBUTED})
   string(REPLACE "${NXDL_SUFFIX}" "txt" TEXT_FILE ${NXDL_FILE})
   string(REPLACE "${NXDL_SUFFIX}" "xml" XML_FILE ${NXDL_FILE})
   add_custom_command(
-    OUTPUT ${CMAKE_SOURCE_DIR}/manual/classes/${TEXT_FILE} 
+    OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_SOURCE_DIR}/manual/classes/${TEXT_FILE} ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
     DEPENDS ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating CONTRIBUTED TXT File ${TEXT_FILE}"
   ) 
   add_custom_command(
-    OUTPUT ${CMAKE_SOURCE_DIR}/manual/classes/${XML_FILE} 
+    OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_SOURCE_DIR}/manual/classes/${XML_FILE} ${XSLT} ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
     DEPENDS ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating CONTRIBUTED XML File ${XML_FILE}"
   ) 
-  set(OUTPUT_CONTRIBUTED_TEXT_FILES ${OUTPUT_CONTRIBUTED_TEXT_FILES} ${CMAKE_SOURCE_DIR}/manual/classes/${TEXT_FILE})
-  set(OUTPUT_CONTRIBUTED_XML_FILES ${OUTPUT_CONTRIBUTED_XML_FILES} ${CMAKE_SOURCE_DIR}/manual/classes/${XML_FILE})
+  set(OUTPUT_CONTRIBUTED_TEXT_FILES ${OUTPUT_CONTRIBUTED_TEXT_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE})
+  set(OUTPUT_CONTRIBUTED_XML_FILES ${OUTPUT_CONTRIBUTED_XML_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE})
   set(OUTPUT_CONTRIBUTED_XML_TARGETS ${OUTPUT_CONTRIBUTED_XML_TARGETS} classes/${XML_FILE})
 endforeach(NXDL_FILE)
 
@@ -156,95 +158,95 @@ add_custom_target(BuildCONTRIBUTEDTXTFiles ALL DEPENDS ${OUTPUT_CONTRIBUTED_TEXT
 add_custom_target(BuildCONTRIBUTEDXMLFiles ALL DEPENDS ${OUTPUT_CONTRIBUTED_XML_FILES})
 
 add_custom_command( 
-    OUTPUT    ${CMAKE_SOURCE_DIR}/manual/subtitle.xml
+    OUTPUT    ${CMAKE_BINARY_DIR}/manual/subtitle.xml
     COMMAND   ${CMAKE_COMMAND}
     ARGS      -P ${CMAKE_SOURCE_DIR}/utils/setsubtitle.cmake
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/manual
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/manual
     COMMENT   "Generating subtitle.xml"
 )
 
 add_custom_target(NexusCreateSubtitleBuild ALL echo
-    DEPENDS   ${CMAKE_SOURCE_DIR}/manual/subtitle.xml
+    DEPENDS   ${CMAKE_BINARY_DIR}/manual/subtitle.xml
 )
 
 if (XSLTPROC)
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/manual/types.xml
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/types.xml
         COMMAND   ${XSLTPROC}
-        ARGS      ${XSLT_PATH}/nxdl_types2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd > ${CMAKE_SOURCE_DIR}/manual/types.xml
+        ARGS      ${XSLT_PATH}/nxdl_types2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd > ${CMAKE_BINARY_DIR}/manual/types.xml
         DEPENDS   ${XSLT_PATH}/nxdl_types2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd
         COMMENT   "Generating types.xml"
     )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/manual/units.xml
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/units.xml
         COMMAND   ${XSLTPROC}
-        ARGS      ${XSLT_PATH}/nxdl_units2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd > ${CMAKE_SOURCE_DIR}/manual/units.xml
-        DEPENDS   ${XSLT_PATH}/nxdl_units2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd ${CMAKE_SOURCE_DIR}/manual/types.xml
+        ARGS      ${XSLT_PATH}/nxdl_units2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd > ${CMAKE_BINARY_DIR}/manual/units.xml
+        DEPENDS   ${XSLT_PATH}/nxdl_units2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd ${CMAKE_BINARY_DIR}/manual/types.xml
         COMMENT   "Generating units.xml"
     )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/manual/nxdl_desc.xml
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/nxdl_desc.xml
         COMMAND   ${XSLTPROC}
-        ARGS      ${XSLT_PATH}/nxdl_desc2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdl.xsd > ${CMAKE_SOURCE_DIR}/manual/nxdl_desc.xml
-        DEPENDS   ${XSLT_PATH}/nxdl_desc2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdl.xsd ${CMAKE_SOURCE_DIR}/manual/units.xml
+        ARGS      ${XSLT_PATH}/nxdl_desc2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdl.xsd > ${CMAKE_BINARY_DIR}/manual/nxdl_desc.xml
+        DEPENDS   ${XSLT_PATH}/nxdl_desc2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdl.xsd ${CMAKE_BINARY_DIR}/manual/units.xml
         COMMENT   "Generating nxdl_desc.xml"
     )
 
     add_custom_target(NexusGeneratingXML ALL echo
-        DEPENDS   ${CMAKE_SOURCE_DIR}/manual/nxdl_desc.xml
+        DEPENDS   ${CMAKE_BINARY_DIR}/manual/nxdl_desc.xml
     )
   
     add_dependencies(NexusGeneratingXML NexusCreateSubtitleBuild)
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/manual/index.html
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/index.html
         COMMAND   ${XSLTPROC}
-        ARGS      --xinclude --stringparam use.extensions 0 --stringparam callout.graphics.path "img/callouts/" --stringparam chunker.output.encoding UTF-8 ${DBXSL}/html/onechunk.xsl ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/manual
+        ARGS      --xinclude --path "${CMAKE_BINARY_DIR}/manual:${CMAKE_BINARY_DIR}/manual/classes" --stringparam use.extensions 0 --stringparam callout.graphics.path "img/callouts/" --stringparam chunker.output.encoding UTF-8 ${DBXSL}/html/onechunk.xsl ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/manual
         DEPENDS   ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml
-        COMMENT   "Generating ${CMAKE_SOURCE_DIR}/manual/index.html"
+        COMMENT   "Generating ${CMAKE_BINARY_DIR}/manual/index.html"
     )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/manual/NeXusManual.html
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/NeXusManual.html
         COMMAND   ${CMAKE_COMMAND}
-        ARGS      -E rename ${CMAKE_SOURCE_DIR}/manual/index.html ${CMAKE_SOURCE_DIR}/manual/NeXusManual.html
-        DEPENDS   ${CMAKE_SOURCE_DIR}/manual/index.html
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/manual
+        ARGS      -E rename ${CMAKE_BINARY_DIR}/manual/index.html ${CMAKE_BINARY_DIR}/manual/NeXusManual.html
+        DEPENDS   ${CMAKE_BINARY_DIR}/manual/index.html
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/manual
         COMMENT   "Generating NeXusManual.html"
     )
 
     add_custom_target(NexusHTMLManual2 ALL echo
-        DEPENDS   ${CMAKE_SOURCE_DIR}/manual/NeXusManual.html
+        DEPENDS   ${CMAKE_BINARY_DIR}/manual/NeXusManual.html
     )
 
 #    if(NOT EXISTS ${CMAKE_SOURCE_DIR}/manual/html)
 
         add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/manual/html
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/html
         COMMAND   ${CMAKE_COMMAND}
-        ARGS      -E make_directory ${CMAKE_SOURCE_DIR}/manual/html
+        ARGS      -E make_directory ${CMAKE_BINARY_DIR}/manual/html
         DEPENDS   ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml
-        COMMENT   "Generating ${CMAKE_SOURCE_DIR}/manual/html"
+        COMMENT   "Generating ${CMAKE_BINARY_DIR}/manual/html"
        )
 
 #    endif(NOT EXISTS ${CMAKE_SOURCE_DIR}/manual/html)
 
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/manual/html/index.html
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/html/index.html
         COMMAND   ${XSLTPROC}
-        ARGS      --xinclude --stringparam use.id.as.filename 1 --stringparam use.extensions 0 --stringparam callout.graphics.path "../img/callouts/" --stringparam chunker.output.encoding UTF-8 ${DBXSL}/html/chunk.xsl ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/manual/html
-        DEPENDS   ${CMAKE_SOURCE_DIR}/manual/html
-        COMMENT   "Generating ${CMAKE_SOURCE_DIR}/manual/html/index.html"
+        ARGS      --xinclude --path "${CMAKE_BINARY_DIR}/manual:${CMAKE_BINARY_DIR}/manual/classes" --stringparam use.id.as.filename 1 --stringparam use.extensions 0 --stringparam callout.graphics.path "img/callouts/" --stringparam chunker.output.encoding UTF-8 ${DBXSL}/html/chunk.xsl ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/manual/html
+        DEPENDS   ${CMAKE_BINARY_DIR}/manual/html
+        COMMENT   "Generating ${CMAKE_BINARY_DIR}/manual/html/index.html"
     )
 
     add_custom_target(NexusHTMLManual1 ALL echo
-        DEPENDS   ${CMAKE_SOURCE_DIR}/manual/html/index.html
+        DEPENDS   ${CMAKE_BINARY_DIR}/manual/html/index.html
     )
 
 
@@ -252,33 +254,33 @@ endif (XSLTPROC)
 
 if (PYTHONINTERP_FOUND)
 
-    file(WRITE ${CMAKE_SOURCE_DIR}/manual/debug.out ${OUTPUT_BASE_XML_TARGETS})
+    file(WRITE ${CMAKE_BINARY_DIR}/manual/debug.out ${OUTPUT_BASE_XML_TARGETS})
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/manual/classes/BaseClassSections.xml
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
-        ARGS      ${CLASS_HEAD_PYTHON} 'Base' ${OUTPUT_BASE_XML_TARGETS} > ${CMAKE_SOURCE_DIR}/manual/classes/BaseClassSections.xml
+        ARGS      ${CLASS_HEAD_PYTHON} 'Base' ${OUTPUT_BASE_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
         COMMENT   "Generating BaseClassSections.xml" 
     )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/manual/classes/ApplicationClassSections.xml
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
-        ARGS      ${CLASS_HEAD_PYTHON} 'Application' ${OUTPUT_APPLICATIONS_XML_TARGETS} > ${CMAKE_SOURCE_DIR}/manual/classes/ApplicationClassSections.xml
-        DEPENDS   ${CMAKE_SOURCE_DIR}/manual/classes/BaseClassSections.xml
+        ARGS      ${CLASS_HEAD_PYTHON} 'Application' ${OUTPUT_APPLICATIONS_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
+        DEPENDS   ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
         COMMENT   "Generating ApplicationClassSections.xml"
     )
 
     add_custom_command( 
-        OUTPUT    ContributedClassSections.xml
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
-        ARGS      ${CLASS_HEAD_PYTHON} 'Contributed' ${OUTPUT_CONTRIBUTED_XML_TARGETS} > ${CMAKE_SOURCE_DIR}/manual/classes/ContributedClassSections.xml
-        DEPENDS   ${CMAKE_SOURCE_DIR}/manual/classes/ApplicationClassSections.xml
+        ARGS      ${CLASS_HEAD_PYTHON} 'Contributed' ${OUTPUT_CONTRIBUTED_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml
+        DEPENDS   ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
         COMMENT   "Generating ContributedClassSections.xml"
     )
 
     add_custom_target(NexusClassSections ALL echo
-        DEPENDS   ContributedClassSections.xml
+        DEPENDS   ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml
     )
 
     add_dependencies(NexusClassSections BuildBASEXMLFiles BuildAPPLICATIONSXMLFiles BuildCONTRIBUTEDXMLFiles)
@@ -287,20 +289,19 @@ endif (PYTHONINTERP_FOUND)
 
 if (DBLATEX)
 
-    set(DBLATEX_OPTS -P table.in.float=0 -P doc.lot.show="figure" -b pdftex -tpdf )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/manual/NeXusManual.pdf
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/NeXusManual.pdf
         COMMAND   ${DBLATEX}
-        ARGS      -V -Pset.book.num=1 ${DBLATEX_OPTS} ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml -o ${CMAKE_SOURCE_DIR}/manual/NeXusManual.pdf
+        ARGS      -V -Pset.book.num=1 ${DBLATEX_OPTS} ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml -o ${CMAKE_BINARY_DIR}/manual/NeXusManual.pdf
         DEPENDS   ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml
         COMMENT   "Generating NeXusManual.pdf"
     )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/manual/NeXusRefDoc.pdf
+        OUTPUT    ${CMAKE_BINARY_DIR}/manual/NeXusRefDoc.pdf
         COMMAND   ${DBLATEX}
-        ARGS      -V -Pset.book.num=2 ${DBLATEX_OPTS} ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml -o ${CMAKE_SOURCE_DIR}/manual/NeXusRefDoc.pdf
+        ARGS      -V -Pset.book.num=2 ${DBLATEX_OPTS} ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml -o ${CMAKE_BINARY_DIR}/manual/NeXusRefDoc.pdf
         DEPENDS   ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml
         COMMENT   "Generating NeXusRefDoc.pdf"
     )
@@ -318,6 +319,16 @@ if (DBLATEX)
 
 endif (DBLATEX)
 
+# some of the nxdl images do not get picked up without this, despite
+# setting the path on dblatex
+if ( DBLATEX AND NOT (${CMAKE_CURRENT_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR}) )
+    add_custom_target(imgdir ALL COMMENT "Copying img directory")
+    add_custom_command(TARGET imgdir COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/img ${CMAKE_CURRENT_BINARY_DIR}/img)
+    add_dependencies(NeXusManualBuild imgdir)
+    add_dependencies(NeXusRefDocBuild imgdir)
+    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES img)
+endif()
 
-install(FILES NeXusManual.html NeXusManual.pdf NeXusRefDoc.pdf DESTINATION ${NEXUS_MANUAL} COMPONENT All)
-install(DIRECTORY html img examples DESTINATION ${NEXUS_MANUAL} COMPONENT All)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NeXusManual.html ${CMAKE_CURRENT_BINARY_DIR}/NeXusManual.pdf ${CMAKE_CURRENT_BINARY_DIR}/NeXusRefDoc.pdf DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html img examples DESTINATION ${NEXUS_MANUAL} COMPONENT manual PATTERN ".svn" EXCLUDE)

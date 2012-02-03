@@ -47,26 +47,26 @@ file(GLOB NXDL_CONTRIBUTED ${CONTRIBUTED_CLASS_PATH}/*.${NXDL_SUFFIX})
 # be careful, empty directories will return the $(DIR)/*.$(NXDL_SUFFIX) search pattern
 set (ALL_NXDL ${NXDL_BASE_CLASSES} ${NXDL_APPLICATIONS} ${NXDL_CONTRIBUTED})
 
-file(WRITE ${MY_SOURCE_DIR}/schema/all_base.nxdl.xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-file(APPEND ${MY_SOURCE_DIR}/schema/all_base.nxdl.xml "<definitions>\n")
+file(WRITE ${MY_BINARY_DIR}/schema/all_base.nxdl.xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+file(APPEND ${MY_BINARY_DIR}/schema/all_base.nxdl.xml "<definitions>\n")
 
 foreach(NXDL_FILE ${NXDL_BASE_CLASSES})
     file (READ ${NXDL_FILE} IN_FILE)
     string (REPLACE "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" ""  IN_FILE2 "${IN_FILE}")
     string (REPLACE "<?xml-stylesheet type=\"text/xsl\" href=\"nxdlformat.xsl\" ?>" ""  IN_FILE3 "${IN_FILE2}")
-    file(APPEND ${MY_SOURCE_DIR}/schema/all_base.nxdl.xml "${IN_FILE3}")
+    file(APPEND ${MY_BINARY_DIR}/schema/all_base.nxdl.xml "${IN_FILE3}")
 endforeach(NXDL_FILE)
-file(APPEND ${MY_SOURCE_DIR}/schema/all_base.nxdl.xml "</definitions>\n")
+file(APPEND ${MY_BINARY_DIR}/schema/all_base.nxdl.xml "</definitions>\n")
 
-file(WRITE ${MY_SOURCE_DIR}/schema/all.nxdl.xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-file(APPEND ${MY_SOURCE_DIR}/schema/all.nxdl.xml "<definitions>\n")
+file(WRITE ${MY_BINARY_DIR}/schema/all.nxdl.xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+file(APPEND ${MY_BINARY_DIR}/schema/all.nxdl.xml "<definitions>\n")
 
 foreach(NXDL_FILE ${ALL_NXDL})
     file (READ ${NXDL_FILE} IN_FILE)
     string (REPLACE "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" ""  IN_FILE2 "${IN_FILE}")
     string (REPLACE "<?xml-stylesheet type=\"text/xsl\" href=\"nxdlformat.xsl\" ?>" ""  IN_FILE3 "${IN_FILE2}")
-    file(APPEND ${MY_SOURCE_DIR}/schema/all.nxdl.xml "${IN_FILE3}")
+    file(APPEND ${MY_BINARY_DIR}/schema/all.nxdl.xml "${IN_FILE3}")
 endforeach(NXDL_FILE)
-file(APPEND ${MY_SOURCE_DIR}/schema/all.nxdl.xml "</definitions>\n")
+file(APPEND ${MY_BINARY_DIR}/schema/all.nxdl.xml "</definitions>\n")
 
 

@@ -89,93 +89,93 @@ if(XSLTPROC AND (XSL_TYPE STREQUAL "BEFORE"))
 
     message("BEFORE")
     add_custom_command(
-        OUTPUT ${CMAKE_SOURCE_DIR}/schema/all_base.nxdl.xml ${CMAKE_SOURCE_DIR}/schema/all.nxdl.xml
+        OUTPUT ${CMAKE_BINARY_DIR}/schema/all_base.nxdl.xml ${CMAKE_BINARY_DIR}/schema/all.nxdl.xml
         COMMAND ${CMAKE_COMMAND}
-        ARGS -DMY_SOURCE_DIR="${CMAKE_SOURCE_DIR}" -P ${CMAKE_SOURCE_DIR}/schema/GenerateBASE.cmake
-        COMMENT   "Generating all_base.nxdl.xml and all.nxdl.xml"
+        ARGS -DMY_SOURCE_DIR="${CMAKE_SOURCE_DIR}" -DMY_BINARY_DIR="${CMAKE_BINARY_DIR}" -P ${CMAKE_SOURCE_DIR}/schema/GenerateBASE.cmake
+        COMMENT   "Generating ${CMAKE_BINARY_DIR}/schema/all_base.nxdl.xml and ${CMAKE_BINARY_DIR}/schema/all.nxdl.xml"
     ) 
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/schema/all_unsorted.xsd
+        OUTPUT    ${CMAKE_BINARY_DIR}/schema/all_unsorted.xsd
         COMMAND   ${XSLTPROC}
-        ARGS      -o ${CMAKE_SOURCE_DIR}/schema/all_unsorted.xsd ${XSL_BEFORE} ${CMAKE_SOURCE_DIR}/schema/all.nxdl.xml
-        DEPENDS   ${XSL_BEFORE} ${CMAKE_SOURCE_DIR}/schema/all_base.nxdl.xml ${CMAKE_SOURCE_DIR}/schema/all.nxdl.xml
-        COMMENT   "Generating ${CMAKE_SOURCE_DIR}/schema/all_unsorted.xsd"
+        ARGS      -o ${CMAKE_BINARY_DIR}/schema/all_unsorted.xsd ${XSL_BEFORE} ${CMAKE_BINARY_DIR}/schema/all.nxdl.xml
+        DEPENDS   ${XSL_BEFORE} ${CMAKE_BINARY_DIR}/schema/all_base.nxdl.xml ${CMAKE_BINARY_DIR}/schema/all.nxdl.xml
+        COMMENT   "Generating ${CMAKE_BINARY_DIR}/schema/all_unsorted.xsd"
     )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/schema/all.xsd
+        OUTPUT    ${CMAKE_BINARY_DIR}/schema/all.xsd
         COMMAND   ${XSLTPROC}
-        ARGS      -o ${CMAKE_SOURCE_DIR}/schema/all.xsd ${XSLSORT_BEFORE} ${CMAKE_SOURCE_DIR}/schema/all_unsorted.xsd
-        DEPENDS   ${CMAKE_SOURCE_DIR}/schema/all_unsorted.xsd
-        COMMENT   "Generating ${CMAKE_SOURCE_DIR}/schema/all.xsd"
+        ARGS      -o ${CMAKE_BINARY_DIR}/schema/all.xsd ${XSLSORT_BEFORE} ${CMAKE_BINARY_DIR}/schema/all_unsorted.xsd
+        DEPENDS   ${CMAKE_BINARY_DIR}/schema/all_unsorted.xsd
+        COMMENT   "Generating ${CMAKE_BINARY_DIR}/schema/all.xsd"
     )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/schema/all_base.sch
+        OUTPUT    ${CMAKE_BINARY_DIR}/schema/all_base.sch
         COMMAND   ${XSLTPROC}
-        ARGS      -o ${CMAKE_SOURCE_DIR}/schema/all_base.sch ${XSLSCH_BEFORE} ${CMAKE_SOURCE_DIR}/schema/all_base.nxdl.xml
-        DEPENDS   ${CMAKE_SOURCE_DIR}/schema/all.xsd
-        COMMENT   "Generating ${CMAKE_SOURCE_DIR}/schema/all_base.sch"
+        ARGS      -o ${CMAKE_BINARY_DIR}/schema/all_base.sch ${XSLSCH_BEFORE} ${CMAKE_BINARY_DIR}/schema/all_base.nxdl.xml
+        DEPENDS   ${CMAKE_BINARY_DIR}/schema/all.xsd
+        COMMENT   "Generating ${CMAKE_BINARY_DIR}/schema/all_base.sch"
     )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/schema/all.sch
+        OUTPUT    ${CMAKE_BINARY_DIR}/schema/all.sch
         COMMAND   ${XSLTPROC}
-        ARGS      -o ${CMAKE_SOURCE_DIR}/schema/all.sch ${XSLSCH_BEFORE} ${CMAKE_SOURCE_DIR}/schema/all.nxdl.xml
-        DEPENDS   ${CMAKE_SOURCE_DIR}/schema/all_base.sch
-        COMMENT   "Generating ${CMAKE_SOURCE_DIR}/schema/all.sch"
+        ARGS      -o ${CMAKE_BINARY_DIR}/schema/all.sch ${XSLSCH_BEFORE} ${CMAKE_BINARY_DIR}/schema/all.nxdl.xml
+        DEPENDS   ${CMAKE_BINARY_DIR}/schema/all_base.sch
+        COMMENT   "Generating ${CMAKE_BINARY_DIR}/schema/all.sch"
     )
 
-    add_custom_target(BuildSchemaFiles ALL DEPENDS ${CMAKE_SOURCE_DIR}/schema/all.sch)
+    add_custom_target(BuildSchemaFiles ALL DEPENDS ${CMAKE_BINARY_DIR}/schema/all.sch)
 
 else (XSLTPROC AND (XSL_TYPE STREQUAL "BEFORE"))
 
     message(AFTER)
     add_custom_command(
-        OUTPUT ${CMAKE_SOURCE_DIR}/schema/all_base.nxdl.xml ${CMAKE_SOURCE_DIR}/schema/all.nxdl.xml
+        OUTPUT ${CMAKE_BINARY_DIR}/schema/all_base.nxdl.xml ${CMAKE_BINARY_DIR}/schema/all.nxdl.xml
         COMMAND ${CMAKE_COMMAND}
-        ARGS -DMY_SOURCE_DIR="${CMAKE_SOURCE_DIR}" -P ${CMAKE_SOURCE_DIR}/schema/GenerateBASE.cmake
+        ARGS -DMY_SOURCE_DIR="${CMAKE_SOURCE_DIR}" -DMY_BINARY_DIR="${CMAKE_BINARY_DIR}" -P ${CMAKE_SOURCE_DIR}/schema/GenerateBASE.cmake
         COMMENT   "Generating all_base.nxdl.xml and all.nxdl.xml"
     ) 
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/schema/all_unsorted.xsd
+        OUTPUT    ${CMAKE_BINARY_DIR}/schema/all_unsorted.xsd
         COMMAND   ${XSLTPROC}
-        ARGS      -o ${CMAKE_SOURCE_DIR}/schema/all_unsorted.xsd ${CMAKE_SOURCE_DIR}/schema/all.nxdl.xml ${XSL_AFTER}
-        DEPENDS   ${XSL_BEFORE} ${CMAKE_SOURCE_DIR}/schema/all_base.nxdl.xml ${CMAKE_SOURCE_DIR}/schema/all.nxdl.xml
-        COMMENT   "Generating ${CMAKE_SOURCE_DIR}/schema/all_unsorted.xsd"
+        ARGS      -o ${CMAKE_BINARY_DIR}/schema/all_unsorted.xsd ${CMAKE_BINARY_DIR}/schema/all.nxdl.xml ${XSL_AFTER}
+        DEPENDS   ${XSL_BEFORE} ${CMAKE_BINARY_DIR}/schema/all_base.nxdl.xml ${CMAKE_BINARY_DIR}/schema/all.nxdl.xml
+        COMMENT   "Generating ${CMAKE_BINARY_DIR}/schema/all_unsorted.xsd"
     )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/schema/all.xsd
+        OUTPUT    ${CMAKE_BINARY_DIR}/schema/all.xsd
         COMMAND   ${XSLTPROC}
-        ARGS      -o ${CMAKE_SOURCE_DIR}/schema/all.xsd ${CMAKE_SOURCE_DIR}/schema/all_unsorted.xsd ${XSLSORT_AFTER}
-        DEPENDS   ${CMAKE_SOURCE_DIR}/schema/all_unsorted.xsd
-        COMMENT   "Generating ${CMAKE_SOURCE_DIR}/schema/all.xsd"
+        ARGS      -o ${CMAKE_BINARY_DIR}/schema/all.xsd ${CMAKE_BINARY_DIR}/schema/all_unsorted.xsd ${XSLSORT_AFTER}
+        DEPENDS   ${CMAKE_BINARY_DIR}/schema/all_unsorted.xsd
+        COMMENT   "Generating ${CMAKE_BINARY_DIR}/schema/all.xsd"
     )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/schema/all_base.sch
+        OUTPUT    ${CMAKE_BINARY_DIR}/schema/all_base.sch
         COMMAND   ${XSLTPROC}
-        ARGS      -o ${CMAKE_SOURCE_DIR}/schema/all_base.sch ${CMAKE_SOURCE_DIR}/schema/all_base.nxdl.xml ${XSLSCH_AFTER}
+        ARGS      -o ${CMAKE_BINARY_DIR}/schema/all_base.sch ${CMAKE_BINARY_DIR}/schema/all_base.nxdl.xml ${XSLSCH_AFTER}
         DEPENDS   ${CMAKE_SOURCE_DIR}/schema/all.xsd
         COMMENT   "Generating ${CMAKE_SOURCE_DIR}/schema/all_base.sch"
     )
 
     add_custom_command( 
-        OUTPUT    ${CMAKE_SOURCE_DIR}/schema/all.sch
+        OUTPUT    ${CMAKE_BINARY_DIR}/schema/all.sch
         COMMAND   ${XSLTPROC}
-        ARGS      -o ${CMAKE_SOURCE_DIR}/schema/all.sch ${CMAKE_SOURCE_DIR}/schema/all.nxdl.xml ${XSLSCH_AFTER}
-        DEPENDS   ${CMAKE_SOURCE_DIR}/schema/all_base.sch
-        COMMENT   "Generating ${CMAKE_SOURCE_DIR}/schema/all.sch"
+        ARGS      -o ${CMAKE_BINARY_DIR}/schema/all.sch ${CMAKE_BINARY_DIR}/schema/all.nxdl.xml ${XSLSCH_AFTER}
+        DEPENDS   ${CMAKE_BINARY_DIR}/schema/all_base.sch
+        COMMENT   "Generating ${CMAKE_BINARY_DIR}/schema/all.sch"
     )
 
-    add_custom_target(BuildSchemaFiles ALL DEPENDS ${CMAKE_SOURCE_DIR}/schema/all.sch)
+    add_custom_target(BuildSchemaFiles ALL DEPENDS ${CMAKE_BINARY_DIR}/schema/all.sch)
 
 
 endif(XSLTPROC AND (XSL_TYPE STREQUAL "BEFORE"))
 
-set(NXDL_FILES all_base.nxdl.xml all_base.sch all.nxdl.xml all.sch all_unsorted.xsd  all.xsd)
-install(FILES ${NXDL_FILES} DESTINATION ${NEXUS_DEFINITIONS} COMPONENT All)
+#set(NXDL_FILES all_base.nxdl.xml all_base.sch all.nxdl.xml all.sch all_unsorted.xsd  all.xsd)
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR} DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions FILES_MATCHING PATTERN "*.xml" PATTERN "*.sch" PATTERN "*.xsd")
 
