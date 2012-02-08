@@ -34,11 +34,6 @@ class H5toText(object):
     requested_filename = None
     isNeXus = False
     array_items_shown = 5
-    group_equivalents = (
-    	"<class 'h5py.highlevel.File'>",
-    	"<class 'h5py.highlevel.Group'>",
-    	"<class 'h5py._hl.group.Group'>",
-    )
 
     def __init__(self, filename, makeReport = False):
         ''' Constructor '''
@@ -65,12 +60,13 @@ class H5toText(object):
         try:
             f = h5py.File(self.filename, 'r')
             for value in f.itervalues():
-		if str(type(value)) in self.group_equivalents:
-		    if 'NX_class' in value.attrs:
-			v = value.attrs['NX_class']
-			if v == 'NXentry':
-			    result = True
-                            break
+                if str(type(value)) in ("<class 'h5py.highlevel.Group'>"):
+                    if 'NX_class' in value.attrs:
+                        v = value.attrs['NX_class']
+                        if type(v) == type("a string"):
+                            if v == 'NXentry':
+                                result = True
+                                break
             f.close()
         except:
             pass
@@ -84,15 +80,20 @@ class H5toText(object):
             nxclass = ":" + str(class_attr)
         print indentation + name + nxclass
         self.showAttributes(obj, indentation)
+        group_equivalents = (
+	    "<class 'h5py.highlevel.File'>", 
+	    "<class 'h5py.highlevel.Group'>", 
+	    "<class 'h5py._hl.group.Group'>",
+	)
         # show datasets (and links) first
         for itemname in sorted(obj):
             value = obj[itemname]
-            if str(type(value)) not in self.group_equivalents:
-		self.showDataset(value, itemname, indentation = indentation+"  ")
+            if str(type(value)) not in group_equivalents:
+                self.showDataset(value, itemname, indentation = indentation+"  ")
         # then show things that look like groups
         for itemname in sorted(obj):
             value = obj[itemname]
-            if str(type(value)) in self.group_equivalents:
+            if str(type(value)) in group_equivalents:
                 self.showGroup(value, itemname, indentation = indentation+"  ")
 
     def showAttributes(self, obj, indentation = "  "):
@@ -115,7 +116,7 @@ class H5toText(object):
             print "%s%s:%s%s%s" % (indentation, name, txType, txShape, value)
             self.showAttributes(dset, indentation)
         else:
-            print "%s%s:%s%s = __array" % (indentation, name, txType, txShape)
+	    print "%s%s:%s%s = __array" % (indentation, name, txType, txShape)
             self.showAttributes(dset, indentation)  # show these before __array
             if self.array_items_shown > 2:
                 value = self.formatArray(dset, indentation + '  ')
@@ -197,9 +198,21 @@ class H5toText(object):
 if __name__ == '__main__':
     limit = 5
     filelist = []
-    filelist.append('writer_1_3.hdf5')
-    filelist.append('writer_2_1.hdf5')
-    filelist.append('prj_test.nexus.hdf5')
+    filelist.append('../Create/example1.hdf5')
+    filelist.append('../Create/example2.hdf5')
+    filelist.append('../Create/example3.hdf5')
+    filelist.append('../Create/example4.hdf5')
+    filelist.append('../../../NeXus/definitions/trunk/manual/examples/h5py/prj_test.nexus.hdf5')
+    filelist.append('../../../NeXus/definitions/exampledata/code/hdf5/dmc01.h5')
+    filelist.append('../../../NeXus/definitions/exampledata/code/hdf5/dmc02.h5')
+    filelist.append('../../../NeXus/definitions/exampledata/code/hdf5/focus2007n001335.hdf')
+    filelist.append('../../../NeXus/definitions/exampledata/code/hdf5/NXtest.h5')
+    filelist.append('../../../NeXus/definitions/exampledata/code/hdf5/sans2009n012333.hdf')
+    filelist.append('../Create/simple5.nxs')
+    filelist.append('../Create/bad.h5')
+    #filelist = []
+    #filelist.append('testG.h5')
+    #filelist.append('testG-pj.h5')
     if len(sys.argv) > 1:
         try:
             opts, args = getopt.getopt(sys.argv[1:], "n:")
