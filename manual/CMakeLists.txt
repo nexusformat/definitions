@@ -27,7 +27,6 @@
 #====================================================================
 
 find_program(DBLATEX dblatex)
-find_program(XSLTPROC xsltproc)
 
 set(XSLT_PATH ${CMAKE_SOURCE_DIR}/xslt)
 set (XSLT ${XSLT_PATH}/nxdl2docbook.xsl)
@@ -259,14 +258,14 @@ if (PYTHONINTERP_FOUND)
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
-        ARGS      ${CLASS_HEAD_PYTHON} 'Base' ${OUTPUT_BASE_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
+        ARGS      ${CLASS_HEAD_PYTHON} "Base" ${OUTPUT_BASE_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
         COMMENT   "Generating BaseClassSections.xml" 
     )
 
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
-        ARGS      ${CLASS_HEAD_PYTHON} 'Application' ${OUTPUT_APPLICATIONS_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
+        ARGS      ${CLASS_HEAD_PYTHON} "Application" ${OUTPUT_APPLICATIONS_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
         DEPENDS   ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
         COMMENT   "Generating ApplicationClassSections.xml"
     )
@@ -274,7 +273,7 @@ if (PYTHONINTERP_FOUND)
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
-        ARGS      ${CLASS_HEAD_PYTHON} 'Contributed' ${OUTPUT_CONTRIBUTED_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml
+        ARGS      ${CLASS_HEAD_PYTHON} "Contributed" ${OUTPUT_CONTRIBUTED_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml
         DEPENDS   ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
         COMMENT   "Generating ContributedClassSections.xml"
     )
