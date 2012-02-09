@@ -117,8 +117,6 @@ if(XSLTPROC AND (XSL_TYPE STREQUAL "BEFORE"))
         COMMENT   "Generating ${CMAKE_BINARY_DIR}/schema/all.sch"
     )
 
-    add_custom_target(BuildSchemaFiles ALL DEPENDS ${CMAKE_BINARY_DIR}/schema/all.sch)
-
 else (XSLTPROC AND (XSL_TYPE STREQUAL "BEFORE"))
 
 #    message(AFTER)
@@ -161,10 +159,11 @@ else (XSLTPROC AND (XSL_TYPE STREQUAL "BEFORE"))
         COMMENT   "Generating ${CMAKE_BINARY_DIR}/schema/all.sch"
     )
 
-    add_custom_target(BuildSchemaFiles ALL DEPENDS ${CMAKE_BINARY_DIR}/schema/all.sch)
 
 
 endif(XSLTPROC AND (XSL_TYPE STREQUAL "BEFORE"))
+
+add_custom_target(BuildSchemaFiles ALL DEPENDS ${CMAKE_BINARY_DIR}/schema/all.sch ${CMAKE_BINARY_DIR}/schema/all_base.sch ${CMAKE_BINARY_DIR}/schema/all.xsd)
 
 #set(NXDL_FILES all_base.nxdl.xml all_base.sch all.nxdl.xml all.sch all_unsorted.xsd  all.xsd)
 set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES "all_base.sch;all.sch;all.nxdl.xml;all_base.nxdl.xml;all.xsd;all_unsorted.xsd")

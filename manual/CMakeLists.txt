@@ -182,7 +182,7 @@ if (XSLTPROC)
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/units.xml
         COMMAND   ${XSLTPROC}
         ARGS      ${XSLT_PATH}/nxdl_units2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd > ${CMAKE_BINARY_DIR}/manual/units.xml
-        DEPENDS   ${XSLT_PATH}/nxdl_units2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd ${CMAKE_BINARY_DIR}/manual/types.xml
+        DEPENDS   ${XSLT_PATH}/nxdl_units2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd # ${CMAKE_BINARY_DIR}/manual/types.xml
         COMMENT   "Generating units.xml"
     )
 
@@ -190,15 +190,15 @@ if (XSLTPROC)
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/nxdl_desc.xml
         COMMAND   ${XSLTPROC}
         ARGS      ${XSLT_PATH}/nxdl_desc2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdl.xsd > ${CMAKE_BINARY_DIR}/manual/nxdl_desc.xml
-        DEPENDS   ${XSLT_PATH}/nxdl_desc2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdl.xsd ${CMAKE_BINARY_DIR}/manual/units.xml
+        DEPENDS   ${XSLT_PATH}/nxdl_desc2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdl.xsd # ${CMAKE_BINARY_DIR}/manual/units.xml
         COMMENT   "Generating nxdl_desc.xml"
     )
 
     add_custom_target(NexusGeneratingXML ALL echo
-        DEPENDS   ${CMAKE_BINARY_DIR}/manual/nxdl_desc.xml
+        DEPENDS   ${CMAKE_BINARY_DIR}/manual/nxdl_desc.xml ${CMAKE_BINARY_DIR}/manual/units.xml ${CMAKE_BINARY_DIR}/manual/types.xml
     )
   
-    add_dependencies(NexusGeneratingXML NexusCreateSubtitleBuild)
+#    add_dependencies(NexusGeneratingXML NexusCreateSubtitleBuild)
 
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/index.html
@@ -254,11 +254,13 @@ endif (XSLTPROC)
 if (PYTHONINTERP_FOUND)
 
     file(WRITE ${CMAKE_BINARY_DIR}/manual/debug.out ${OUTPUT_BASE_XML_TARGETS})
+    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_BINARY_DIR}/manual/debug.out)
 
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
         ARGS      ${CLASS_HEAD_PYTHON} "Base" ${OUTPUT_BASE_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
+		DEPENDS   ${OUTPUT_BASE_XML_TARGETS}
         COMMENT   "Generating BaseClassSections.xml" 
     )
 
@@ -266,7 +268,7 @@ if (PYTHONINTERP_FOUND)
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
         ARGS      ${CLASS_HEAD_PYTHON} "Application" ${OUTPUT_APPLICATIONS_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
-        DEPENDS   ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
+        DEPENDS   ${OUTPUT_APPLICATIONS_XML_TARGETS}
         COMMENT   "Generating ApplicationClassSections.xml"
     )
 
@@ -274,12 +276,12 @@ if (PYTHONINTERP_FOUND)
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
         ARGS      ${CLASS_HEAD_PYTHON} "Contributed" ${OUTPUT_CONTRIBUTED_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml
-        DEPENDS   ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
+        DEPENDS   ${OUTPUT_CONTRIBUTED_XML_TARGETS}
         COMMENT   "Generating ContributedClassSections.xml"
     )
 
     add_custom_target(NexusClassSections ALL echo
-        DEPENDS   ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml
+        DEPENDS   ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
     )
 
     add_dependencies(NexusClassSections BuildBASEXMLFiles BuildAPPLICATIONSXMLFiles BuildCONTRIBUTEDXMLFiles)
@@ -313,20 +315,23 @@ if (DBLATEX)
         DEPENDS   NeXusRefDoc.pdf
     )
 
-    add_dependencies(NeXusManualBuild NexusGeneratingXML NexusClassSections NexusCreateSubtitleBuild NexusCreateSubtitleBuild)
-    add_dependencies(NeXusRefDocBuild NexusGeneratingXML NexusClassSections NexusCreateSubtitleBuild NexusCreateSubtitleBuild)
+    add_dependencies(NeXusManualBuild NexusGeneratingXML NexusClassSections NexusCreateSubtitleBuild)
+    add_dependencies(NeXusRefDocBuild NexusGeneratingXML NexusClassSections NexusCreateSubtitleBuild)
 
 endif (DBLATEX)
 
 # some of the nxdl images do not get picked up without this, despite
 # setting the path on dblatex
 if ( DBLATEX AND NOT (${CMAKE_CURRENT_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURCE_DIR}) )
-    add_custom_target(imgdir ALL COMMENT "Copying img directory")
-    add_custom_command(TARGET imgdir COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/img ${CMAKE_CURRENT_BINARY_DIR}/img)
+    add_custom_target(imgdir ALL)
+    add_custom_command(TARGET imgdir COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/img ${CMAKE_CURRENT_BINARY_DIR}/img 
+	          DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/img COMMENT "Copying img directory")
     add_dependencies(NeXusManualBuild imgdir)
     add_dependencies(NeXusRefDocBuild imgdir)
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES img)
 endif()
+
+set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES classes)
 
 
 if (DBLATEX)

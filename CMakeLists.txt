@@ -26,10 +26,10 @@
 #
 #====================================================================
 if(WIN32)
-cmake_minimum_required (VERSION 2.8.7)
+    cmake_minimum_required (VERSION 2.8.7)
 else()
-cmake_minimum_required (VERSION 2.8.3)
-set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove this line when CMake >= 2.8.4 is required
+    cmake_minimum_required (VERSION 2.8.3)
+    set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove this line when CMake >= 2.8.4 is required
 endif()
 project(NeXusDefinitions)
 
@@ -78,5 +78,7 @@ endif(WIN32)
 if(APPLE)
     set (CPACK_GENERATOR ${CPACK_GENERATOR};PackageMaker)
 endif(APPLE)
+if(CYGWIN)
+endif(CYGWIN)
 # Include of CPack must always be last
 include(CPack)
