@@ -78,14 +78,14 @@ foreach(NXDL_FILE ${NXDL_BASE_CLASSES})
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} 
     COMMAND ${XSLTPROC}
     ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${BASE_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS ${BASE_CLASS_PATH}/${NXDL_FILE}
+    DEPENDS classes ${BASE_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating BASE TXT File ${TEXT_FILE}"
   ) 
   add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} 
     COMMAND ${XSLTPROC}
     ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${BASE_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS ${BASE_CLASS_PATH}/${NXDL_FILE}
+    DEPENDS classes ${BASE_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating BASE XML File ${XML_FILE}"
   ) 
   set(OUTPUT_BASE_TEXT_FILES ${OUTPUT_BASE_TEXT_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE})
@@ -108,14 +108,14 @@ foreach(NXDL_FILE ${NXDL_APPLICATIONS})
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} 
     COMMAND ${XSLTPROC}
     ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
+    DEPENDS classes ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating APPLICATIONS TXT File ${TEXT_FILE}"
   ) 
   add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} 
     COMMAND ${XSLTPROC}
     ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
+    DEPENDS classes ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating APPLICATIONS XML File ${XML_FILE}"
   ) 
   set(OUTPUT_APPLICATIONS_TEXT_FILES ${OUTPUT_APPLICATIONS_TEXT_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE})
@@ -138,14 +138,14 @@ foreach(NXDL_FILE ${NXDL_CONTRIBUTED})
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} 
     COMMAND ${XSLTPROC}
     ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
+    DEPENDS classes ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating CONTRIBUTED TXT File ${TEXT_FILE}"
   ) 
   add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} 
     COMMAND ${XSLTPROC}
     ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
+    DEPENDS classes ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
     COMMENT   "Generating CONTRIBUTED XML File ${XML_FILE}"
   ) 
   set(OUTPUT_CONTRIBUTED_TEXT_FILES ${OUTPUT_CONTRIBUTED_TEXT_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE})
@@ -166,6 +166,13 @@ add_custom_command(
 
 add_custom_target(NexusCreateSubtitleBuild ALL echo
     DEPENDS   ${CMAKE_BINARY_DIR}/manual/subtitle.xml
+)
+
+add_custom_command(
+    OUTPUT classes
+	COMMAND ${CMAKE_COMMAND}
+	ARGS -E make_directory classes
+	COMMENT "Creating empty classes dir"
 )
 
 if (XSLTPROC)
