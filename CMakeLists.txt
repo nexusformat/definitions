@@ -4,7 +4,7 @@
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
-#  Copyright (C) 2011 Stephen Rankin
+#  Copyright (C) 2011-2012 Stephen Rankin
 #  
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,14 @@ else()
 endif()
 project(NeXusDefinitions)
 
+set (CPACK_PACKAGE_VENDOR "NeXus International Advisory Committee")
+set (CPACK_PACKAGE_CONTACT "NeXus Developers <nexus-tech@nexusformat.org>")
+set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "NeXus - NXDL class definitions, http://www.nexusformat.org/")
+set (CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/cmake_include/nexus_description.txt")
+set (CPACK_PACKAGE_VERSION_MAJOR "3")
+set (CPACK_PACKAGE_VERSION_MINOR "1")
+set (CPACK_PACKAGE_VERSION_PATCH "0")
+
 option (BUILD_SPHINX "Build documentation using sphinx" OFF)
 
 set(NEXUS_DEFINITIONS share/nexus/definitions)
@@ -60,6 +68,7 @@ endif(BUILD_SPHINX)
 
 INSTALL(FILES nxdl.xsd nxdlTypes.xsd DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
 INSTALL(FILES BASE.xsd NeXus.xsd DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
+INSTALL(FILES LGPL DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
 
 #
 # set CPack packaging options
