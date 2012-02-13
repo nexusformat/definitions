@@ -26,15 +26,15 @@
 #
 #====================================================================
 
-file(WRITE subtitle.xml "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-file(APPEND subtitle.xml "<?oxygen \n")
-file(APPEND subtitle.xml "    RNGSchema=\"http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rng\" \n")
-file(APPEND subtitle.xml "    type=\"xml\"?>\n")
-file(APPEND subtitle.xml "<subtitle \n")
-file(APPEND subtitle.xml "    xmlns=\"http://docbook.org/ns/docbook\" \n")
-file(APPEND subtitle.xml "    version=\"5.0\">\n")
-file(APPEND subtitle.xml "    <!-- manual was last rebuilt on this date/time -->\n")
-#file(APPEND subtitle.xml "    Id:' ${svnid}, `date\n")
-file(APPEND subtitle.xml "</subtitle>\n")
+file(WRITE subtitle.xml.tmp "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
+file(APPEND subtitle.xml.tmp "<?oxygen \n")
+file(APPEND subtitle.xml.tmp "    RNGSchema=\"http://www.oasis-open.org/docbook/xml/5.0/rng/docbookxi.rng\" \n")
+file(APPEND subtitle.xml.tmp "    type=\"xml\"?>\n")
+file(APPEND subtitle.xml.tmp "<subtitle \n")
+file(APPEND subtitle.xml.tmp "    xmlns=\"http://docbook.org/ns/docbook\" \n")
+file(APPEND subtitle.xml.tmp "    version=\"5.0\">\n")
+file(APPEND subtitle.xml.tmp "    <!-- manual was last rebuilt on this date/time -->\n")
+#file(APPEND subtitle.xml.tmp "    Id:' ${svnid}, `date\n")
+file(APPEND subtitle.xml.tmp "</subtitle>\n")
 
 

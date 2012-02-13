@@ -26,7 +26,27 @@
 #
 #====================================================================
 
+set(CONTRIBUTED_FILES 
+	NXbeamline.nxdl.xml 
+	NXelectrostatic_kicker.nxdl.xml 
+	NXmagnetic_kicker.nxdl.xml 
+	NXquadrupole_magnet.nxdl.xml 
+	NXsai_controller.nxdl.xml 
+	NXseparator.nxdl.xml 
+	NXsnsevent.nxdl.xml 
+	NXsnshisto.nxdl.xml 
+	NXsolenoid_magnet.nxdl.xml 
+	NXspin_rotator.nxdl.xml 
+	NXtechnical_data.nxdl.xml 
+)
 
-FILE(GLOB CONTRIBUTED_FILES ${CMAKE_SOURCE_DIR}/contributed_definitions/*.nxdl.xml)
+set(CONTRIBUTED_SOURCE ${CMAKE_SOURCE_DIR}/contributed_definitions)
 
-INSTALL(FILES ${CONTRIBUTED_FILES} DESTINATION ${NEXUS_DEFINITIONS}/contributed_definitions COMPONENT definitions)
+set(CONTRIBUTED_DIST ${CMAKE_BINARY_DIR}/dist/contributed_definitions)
+
+add_custom_target(CheckContributedClasses ALL COMMENT "Checking contributed classes")
+configure_nxdl(CheckContributedClasses "${CONTRIBUTED_SOURCE}" "${CONTRIBUTED_DIST}" "${CONTRIBUTED_FILES}")
+
+foreach(F ${CONTRIBUTED_FILES})
+    install(FILES ${CONTRIBUTED_DIST}/${F} DESTINATION ${NEXUS_DEFINITIONS}/contributed_definitions  COMPONENT definitions)
+endforeach()

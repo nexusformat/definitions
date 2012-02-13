@@ -27,6 +27,47 @@
 #====================================================================
 
 
-FILE(GLOB APPLICATION_FILES ${CMAKE_SOURCE_DIR}/applications/*.nxdl.xml)
+set(APPLICATION_FILES 
+	NXarchive.nxdl.xml 
+	NXdirecttof.nxdl.xml 
+	NXfluo.nxdl.xml 
+	NXindirecttof.nxdl.xml 
+	NXiqproc.nxdl.xml 
+	NXlauetof.nxdl.xml 
+	NXmonopd.nxdl.xml 
+	NXrefscan.nxdl.xml 
+	NXreftof.nxdl.xml 
+	NXsas.nxdl.xml 
+	NXsastof.nxdl.xml 
+	NXscan.nxdl.xml 
+	NXspe.nxdl.xml 
+	NXsqom.nxdl.xml 
+	NXtas.nxdl.xml 
+	NXtofnpd.nxdl.xml 
+	NXtofraw.nxdl.xml 
+	NXtofsingle.nxdl.xml 
+	NXtomo.nxdl.xml 
+	NXtomophase.nxdl.xml 
+	NXtomoproc.nxdl.xml 
+	NXxas.nxdl.xml 
+	NXxasproc.nxdl.xml 
+	NXxbase.nxdl.xml 
+	NXxeuler.nxdl.xml 
+	NXxkappa.nxdl.xml 
+	NXxlaue.nxdl.xml 
+	NXxlaueplate.nxdl.xml 
+	NXxnb.nxdl.xml 
+	NXxrot.nxdl.xml 
+)
 
-INSTALL(FILES ${APPLICATION_FILES} DESTINATION ${NEXUS_DEFINITIONS}/applications COMPONENT definitions)
+set(APPLICATION_SOURCE ${CMAKE_SOURCE_DIR}/applications)
+
+set(APPLICATION_DIST ${CMAKE_BINARY_DIR}/dist/applications)
+
+add_custom_target(CheckApplicationClasses ALL COMMENT "Checking application classes")
+
+configure_nxdl(CheckApplicationClasses "${APPLICATION_SOURCE}" "${APPLICATION_DIST}" "${APPLICATION_FILES}")
+
+foreach(F ${APPLICATION_FILES})
+    install(FILES ${APPLICATION_DIST}/${F} DESTINATION ${NEXUS_DEFINITIONS}/applications COMPONENT definitions)
+endforeach()

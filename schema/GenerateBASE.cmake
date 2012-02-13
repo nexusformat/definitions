@@ -33,9 +33,9 @@
 set(NXDL_SUFFIX nxdl.xml)
 
 # relative locations for the NXDL instance files
-set (BASE_CLASS_PATH ${MY_SOURCE_DIR}/base_classes)
-set (APPLICATIONS_CLASS_PATH ${MY_SOURCE_DIR}/applications)
-set (CONTRIBUTED_CLASS_PATH ${MY_SOURCE_DIR}/contributed_definitions)
+set (BASE_CLASS_PATH ${MY_BINARY_DIR}/dist/base_classes)
+set (APPLICATIONS_CLASS_PATH ${MY_BINARY_DIR}/dist/applications)
+set (CONTRIBUTED_CLASS_PATH ${MY_BINARY_DIR}/dist/contributed_definitions)
 
 # make lists of all the NXDL instances 
 # (useful to make separate lists for category)

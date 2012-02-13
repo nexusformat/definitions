@@ -33,13 +33,20 @@ else()
 endif()
 project(NeXusDefinitions)
 
-set (CPACK_PACKAGE_VENDOR "NeXus International Advisory Committee")
-set (CPACK_PACKAGE_CONTACT "NeXus Developers <nexus-tech@nexusformat.org>")
-set (CPACK_PACKAGE_DESCRIPTION_SUMMARY "NeXus - NXDL class definitions, http://www.nexusformat.org/")
-set (CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_SOURCE_DIR}/cmake_include/nexus_description.txt")
-set (CPACK_PACKAGE_VERSION_MAJOR "3")
-set (CPACK_PACKAGE_VERSION_MINOR "1")
-set (CPACK_PACKAGE_VERSION_PATCH "0")
+# include NXDL release number information
+include(cmake_include/nxdl_release.cmake)
+
+function(configure_nxdl TARGET NXDL_DIR DIST_DIR NXDL_FILES)
+    foreach(F ${NXDL_FILES})
+	set(NXDL ${NXDL_DIR}/${F})
+	add_custom_command(OUTPUT "${DIST_DIR}/${F}" COMMAND ${CMAKE_COMMAND} -DINPUT_FILE="${NXDL}" -DOUTPUT_FILE="${DIST_DIR}/${F}" -DMATCH_STRING="\@NXDL_RELEASE\@" -DREPLACE_STRING="${NXDL_RELEASE}" -P "${CMAKE_SOURCE_DIR}/cmake_include/replace.cmake" DEPENDS "${NXDL}" "${CMAKE_BINARY_DIR}/CMakeCache.txt" COMMENT "Rebuilding ${F}")
+	add_custom_target(${F} DEPENDS "${DIST_DIR}/${F}")
+	add_dependencies(${TARGET} ${F})
+    endforeach()
+    add_custom_command(OUTPUT "${DIST_DIR}/nxdlformat.xsl" COMMAND ${CMAKE_COMMAND} -E copy "${NXDL_DIR}/nxdlformat.xsl" "${DIST_DIR}/nxdlformat.xsl" DEPENDS "${NXDL_DIR}/nxdlformat.xsl" COMMENT "Rebuilding nxdlformat")
+    add_custom_target(${TARGET}-nxdlformat DEPENDS "${DIST_DIR}/nxdlformat.xsl")
+    add_dependencies(${TARGET} ${TARGET}-nxdlformat)
+endfunction()
 
 option (BUILD_SPHINX "Build documentation using sphinx" OFF)
 
@@ -54,6 +61,7 @@ if (WIN32)
 else(WIN32)
     find_program(XSLTPROC xsltproc )
 endif()
+find_program(SVNVERSION svnversion)
 
 # Recurse into the subdirectories.
 #add_subdirectory (tutorial)
@@ -78,11 +86,13 @@ configure_file("${PROJECT_SOURCE_DIR}/CPackOptions.cmake.in"
                                 @ONLY)
 set(CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIRECTORY}CPackOptions.cmake")
 set (CPACK_GENERATOR TGZ) # not use ZIP on UNIX as problem with symlinks
+set (CPACK_SOURCE_GENERATOR TGZ) # not use ZIP on UNIX as problem with symlinks
 if(UNIX)
     set (CPACK_GENERATOR ${CPACK_GENERATOR};DEB;RPM)
 endif(UNIX)
 if(WIN32)
     set (CPACK_GENERATOR ${CPACK_GENERATOR};ZIP;NSIS)
+    set (CPACK_SOURCE_GENERATOR ${CPACK_SOURCE_GENERATOR};ZIP) 
 endif(WIN32)
 if(APPLE)
     set (CPACK_GENERATOR ${CPACK_GENERATOR};PackageMaker)

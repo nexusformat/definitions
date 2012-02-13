@@ -26,7 +26,63 @@
 #
 #====================================================================
 
+set(BASE_FILES 
+	NXaperture.nxdl.xml 
+	NXattenuator.nxdl.xml 
+	NXbeam.nxdl.xml 
+	NXbeam_stop.nxdl.xml 
+	NXbending_magnet.nxdl.xml 
+	NXcapillary.nxdl.xml 
+	NXcharacterization.nxdl.xml 
+	NXcollection.nxdl.xml 
+	NXcollimator.nxdl.xml 
+	NXcrystal.nxdl.xml 
+	NXdata.nxdl.xml 
+	NXdetector_group.nxdl.xml 
+	NXdetector.nxdl.xml 
+	NXdisk_chopper.nxdl.xml 
+	NXentry.nxdl.xml 
+	NXenvironment.nxdl.xml 
+	NXevent_data.nxdl.xml 
+	NXfermi_chopper.nxdl.xml 
+	NXfilter.nxdl.xml 
+	NXflipper.nxdl.xml 
+	NXgeometry.nxdl.xml 
+	NXguide.nxdl.xml 
+	NXinsertion_device.nxdl.xml 
+	NXinstrument.nxdl.xml 
+	NXlog.nxdl.xml 
+	NXmirror.nxdl.xml 
+	NXmoderator.nxdl.xml 
+	NXmonitor.nxdl.xml 
+	NXmonochromator.nxdl.xml 
+	NXnote.nxdl.xml 
+	NXobject.nxdl.xml 
+	NXorientation.nxdl.xml 
+	NXparameters.nxdl.xml 
+	NXpolarizer.nxdl.xml 
+	NXpositioner.nxdl.xml
+	NXprocess.nxdl.xml 
+	NXroot.nxdl.xml 
+	NXsample.nxdl.xml 
+	NXsensor.nxdl.xml 
+	NXshape.nxdl.xml 
+	NXsource.nxdl.xml 
+	NXsubentry.nxdl.xml 
+	NXtranslation.nxdl.xml 
+	NXuser.nxdl.xml 
+	NXvelocity_selector.nxdl.xml 
+	NXxraylens.nxdl.xml 
+)
 
-FILE(GLOB BASE_FILES ${CMAKE_SOURCE_DIR}/base_classes/*.nxdl.xml)
+set(BASE_SOURCE ${CMAKE_SOURCE_DIR}/base_classes)
 
-INSTALL(FILES ${BASE_FILES} DESTINATION ${NEXUS_DEFINITIONS}/base_classes COMPONENT definitions)
+set(BASE_DIST ${CMAKE_BINARY_DIR}/dist/base_classes)
+
+add_custom_target(CheckBaseClasses ALL COMMENT "Checking base classes")
+
+configure_nxdl(CheckBaseClasses "${BASE_SOURCE}" "${BASE_DIST}" "${BASE_FILES}")
+
+foreach(F ${BASE_FILES})
+    install(FILES ${BASE_DIST}/${F} DESTINATION ${NEXUS_DEFINITIONS}/base_classes COMPONENT definitions)
+endforeach()

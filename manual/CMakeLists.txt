@@ -44,8 +44,9 @@ set(NXDL_SUFFIX nxdl.xml)
 set (BASE_CLASS_PATH ${CMAKE_SOURCE_DIR}/base_classes)
 set (APPLICATIONS_CLASS_PATH ${CMAKE_SOURCE_DIR}/applications)
 set (CONTRIBUTED_CLASS_PATH ${CMAKE_SOURCE_DIR}/contributed_definitions)
-
-set (VPATH ${BASE_CLASS_PATH} ${APPLICATIONS_CLASS_PATH} ${CONTRIBUTED_CLASS_PATH})
+set (BASE_CLASS_DIST_PATH ${CMAKE_BINARY_DIR}/dist/base_classes)
+set (APPLICATIONS_CLASS_DIST_PATH ${CMAKE_BINARY_DIR}/dist/applications)
+set (CONTRIBUTED_CLASS_DIST_PATH ${CMAKE_BINARY_DIR}/dist/contributed_definitions)
 
 # make lists of all the NXDL instances 
 # (useful to make separate lists for category)
@@ -77,15 +78,15 @@ foreach(NXDL_FILE ${NXDL_BASE_CLASSES})
   add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${BASE_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS classes ${BASE_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${BASE_CLASS_DIST_PATH}/${NXDL_FILE}
+    DEPENDS ${BASE_CLASS_DIST_PATH}/${NXDL_FILE}
     COMMENT   "Generating BASE TXT File ${TEXT_FILE}"
   ) 
   add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${BASE_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS classes ${BASE_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${BASE_CLASS_DIST_PATH}/${NXDL_FILE}
+    DEPENDS ${BASE_CLASS_DIST_PATH}/${NXDL_FILE}
     COMMENT   "Generating BASE XML File ${XML_FILE}"
   ) 
   set(OUTPUT_BASE_TEXT_FILES ${OUTPUT_BASE_TEXT_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE})
@@ -107,15 +108,15 @@ foreach(NXDL_FILE ${NXDL_APPLICATIONS})
   add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS classes ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${APPLICATIONS_CLASS_DIST_PATH}/${NXDL_FILE}
+    DEPENDS classes ${APPLICATIONS_CLASS_DIST_PATH}/${NXDL_FILE}
     COMMENT   "Generating APPLICATIONS TXT File ${TEXT_FILE}"
   ) 
   add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS classes ${APPLICATIONS_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${APPLICATIONS_CLASS_DIST_PATH}/${NXDL_FILE}
+    DEPENDS classes ${APPLICATIONS_CLASS_DIST_PATH}/${NXDL_FILE}
     COMMENT   "Generating APPLICATIONS XML File ${XML_FILE}"
   ) 
   set(OUTPUT_APPLICATIONS_TEXT_FILES ${OUTPUT_APPLICATIONS_TEXT_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE})
@@ -137,15 +138,15 @@ foreach(NXDL_FILE ${NXDL_CONTRIBUTED})
   add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS classes ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE} ${CONTRIBUTED_CLASS_DIST_PATH}/${NXDL_FILE}
+    DEPENDS classes ${CONTRIBUTED_CLASS_DIST_PATH}/${NXDL_FILE}
     COMMENT   "Generating CONTRIBUTED TXT File ${TEXT_FILE}"
   ) 
   add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} 
     COMMAND ${XSLTPROC}
-    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
-    DEPENDS classes ${CONTRIBUTED_CLASS_PATH}/${NXDL_FILE}
+    ARGS -o ${CMAKE_BINARY_DIR}/manual/classes/${XML_FILE} ${XSLT} ${CONTRIBUTED_CLASS_DIST_PATH}/${NXDL_FILE}
+    DEPENDS classes ${CONTRIBUTED_CLASS_DIST_PATH}/${NXDL_FILE}
     COMMENT   "Generating CONTRIBUTED XML File ${XML_FILE}"
   ) 
   set(OUTPUT_CONTRIBUTED_TEXT_FILES ${OUTPUT_CONTRIBUTED_TEXT_FILES} ${CMAKE_BINARY_DIR}/manual/classes/${TEXT_FILE})
@@ -156,12 +157,20 @@ endforeach(NXDL_FILE)
 add_custom_target(BuildCONTRIBUTEDTXTFiles ALL DEPENDS ${OUTPUT_CONTRIBUTED_TEXT_FILES})
 add_custom_target(BuildCONTRIBUTEDXMLFiles ALL DEPENDS ${OUTPUT_CONTRIBUTED_XML_FILES})
 
-add_custom_command( 
-    OUTPUT    ${CMAKE_BINARY_DIR}/manual/subtitle.xml
+#    Generating subtitle.xml.tmp
+add_custom_target(GenerateSubtitleTmp ALL 
     COMMAND   ${CMAKE_COMMAND}
     ARGS      -P ${CMAKE_SOURCE_DIR}/utils/setsubtitle.cmake
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/manual
-    COMMENT   "Generating subtitle.xml"
+)
+
+add_custom_command( 
+    OUTPUT    ${CMAKE_BINARY_DIR}/manual/subtitle.xml
+    COMMAND   ${CMAKE_COMMAND}
+    ARGS      -E copy_if_different subtitle.xml.tmp subtitle.xml
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/manual
+    DEPENDS    ${CMAKE_BINARY_DIR}/manual/subtitle.xml.tmp
+    COMMENT   "Re-generating subtitle.xml (if required)"
 )
 
 add_custom_target(NexusCreateSubtitleBuild ALL echo
@@ -267,7 +276,7 @@ if (PYTHONINTERP_FOUND)
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
         ARGS      ${CLASS_HEAD_PYTHON} "Base" ${OUTPUT_BASE_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
-		DEPENDS   ${OUTPUT_BASE_XML_TARGETS}
+		DEPENDS   classes ${OUTPUT_BASE_XML_TARGETS}
         COMMENT   "Generating BaseClassSections.xml" 
     )
 
@@ -275,7 +284,7 @@ if (PYTHONINTERP_FOUND)
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
         ARGS      ${CLASS_HEAD_PYTHON} "Application" ${OUTPUT_APPLICATIONS_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml
-        DEPENDS   ${OUTPUT_APPLICATIONS_XML_TARGETS}
+        DEPENDS   classes ${OUTPUT_APPLICATIONS_XML_TARGETS}
         COMMENT   "Generating ApplicationClassSections.xml"
     )
 
@@ -283,7 +292,7 @@ if (PYTHONINTERP_FOUND)
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml
         COMMAND   ${PYTHON_EXECUTABLE}
         ARGS      ${CLASS_HEAD_PYTHON} "Contributed" ${OUTPUT_CONTRIBUTED_XML_TARGETS} > ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml
-        DEPENDS   ${OUTPUT_CONTRIBUTED_XML_TARGETS}
+        DEPENDS   classes ${OUTPUT_CONTRIBUTED_XML_TARGETS}
         COMMENT   "Generating ContributedClassSections.xml"
     )
 
@@ -338,7 +347,7 @@ if ( DBLATEX AND NOT (${CMAKE_CURRENT_BINARY_DIR} STREQUAL ${CMAKE_CURRENT_SOURC
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES img)
 endif()
 
-set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES classes)
+#set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES classes)
 
 
 if (DBLATEX)
