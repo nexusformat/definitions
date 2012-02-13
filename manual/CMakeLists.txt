@@ -189,24 +189,24 @@ if (XSLTPROC)
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/types.xml
         COMMAND   ${XSLTPROC}
-        ARGS      ${XSLT_PATH}/nxdl_types2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd > ${CMAKE_BINARY_DIR}/manual/types.xml
-        DEPENDS   ${XSLT_PATH}/nxdl_types2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd
+        ARGS      ${XSLT_PATH}/nxdl_types2docbook.xsl ${CMAKE_BINARY_DIR}/dist/nxdlTypes.xsd > ${CMAKE_BINARY_DIR}/manual/types.xml
+        DEPENDS   ${XSLT_PATH}/nxdl_types2docbook.xsl ${CMAKE_BINARY_DIR}/dist/nxdlTypes.xsd
         COMMENT   "Generating types.xml"
     )
 
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/units.xml
         COMMAND   ${XSLTPROC}
-        ARGS      ${XSLT_PATH}/nxdl_units2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd > ${CMAKE_BINARY_DIR}/manual/units.xml
-        DEPENDS   ${XSLT_PATH}/nxdl_units2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd # ${CMAKE_BINARY_DIR}/manual/types.xml
+        ARGS      ${XSLT_PATH}/nxdl_units2docbook.xsl ${CMAKE_BINARY_DIR}/dist/nxdlTypes.xsd > ${CMAKE_BINARY_DIR}/manual/units.xml
+        DEPENDS   ${XSLT_PATH}/nxdl_units2docbook.xsl ${CMAKE_BINARY_DIR}/dist/nxdlTypes.xsd # ${CMAKE_BINARY_DIR}/manual/types.xml
         COMMENT   "Generating units.xml"
     )
 
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/nxdl_desc.xml
         COMMAND   ${XSLTPROC}
-        ARGS      ${XSLT_PATH}/nxdl_desc2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdl.xsd > ${CMAKE_BINARY_DIR}/manual/nxdl_desc.xml
-        DEPENDS   ${XSLT_PATH}/nxdl_desc2docbook.xsl ${CMAKE_SOURCE_DIR}/nxdl.xsd # ${CMAKE_BINARY_DIR}/manual/units.xml
+        ARGS      ${XSLT_PATH}/nxdl_desc2docbook.xsl ${CMAKE_BINARY_DIR}/dist/nxdl.xsd > ${CMAKE_BINARY_DIR}/manual/nxdl_desc.xml
+        DEPENDS   ${XSLT_PATH}/nxdl_desc2docbook.xsl ${CMAKE_BINARY_DIR}/dist/nxdl.xsd # ${CMAKE_BINARY_DIR}/manual/units.xml
         COMMENT   "Generating nxdl_desc.xml"
     )
 

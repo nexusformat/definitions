@@ -36,17 +36,26 @@ project(NeXusDefinitions)
 # include NXDL release number information
 include(cmake_include/nxdl_release.cmake)
 
+function(configure_release TARGET INFILE OUTFILE)
+	get_filename_component(F ${INFILE} NAME)
+	add_custom_command(OUTPUT "${OUTFILE}" COMMAND ${CMAKE_COMMAND} -DINPUT_FILE="${INFILE}" -DOUTPUT_FILE="${OUTFILE}" -DMATCH_STRING="\@NXDL_RELEASE\@" -DREPLACE_STRING="${NXDL_RELEASE}" -P "${CMAKE_SOURCE_DIR}/cmake_include/replace.cmake" DEPENDS "${INFILE}" "${CMAKE_BINARY_DIR}/CMakeCache.txt" COMMENT "Rebuilding ${F}")
+	add_custom_target(${TARGET}-${F} DEPENDS "${OUTFILE}")
+	add_dependencies(${TARGET} ${TARGET}-${F})
+endfunction()
+
 function(configure_nxdl TARGET NXDL_DIR DIST_DIR NXDL_FILES)
     foreach(F ${NXDL_FILES})
 	set(NXDL ${NXDL_DIR}/${F})
-	add_custom_command(OUTPUT "${DIST_DIR}/${F}" COMMAND ${CMAKE_COMMAND} -DINPUT_FILE="${NXDL}" -DOUTPUT_FILE="${DIST_DIR}/${F}" -DMATCH_STRING="\@NXDL_RELEASE\@" -DREPLACE_STRING="${NXDL_RELEASE}" -P "${CMAKE_SOURCE_DIR}/cmake_include/replace.cmake" DEPENDS "${NXDL}" "${CMAKE_BINARY_DIR}/CMakeCache.txt" COMMENT "Rebuilding ${F}")
-	add_custom_target(${F} DEPENDS "${DIST_DIR}/${F}")
-	add_dependencies(${TARGET} ${F})
+	configure_release(${TARGET} ${NXDL} ${DIST_DIR}/${F})
     endforeach()
-    add_custom_command(OUTPUT "${DIST_DIR}/nxdlformat.xsl" COMMAND ${CMAKE_COMMAND} -E copy "${NXDL_DIR}/nxdlformat.xsl" "${DIST_DIR}/nxdlformat.xsl" DEPENDS "${NXDL_DIR}/nxdlformat.xsl" COMMENT "Rebuilding nxdlformat")
-    add_custom_target(${TARGET}-nxdlformat DEPENDS "${DIST_DIR}/nxdlformat.xsl")
-    add_dependencies(${TARGET} ${TARGET}-nxdlformat)
+    configure_release(${TARGET} ${NXDL_DIR}/nxdlformat.xsl ${DIST_DIR}/nxdlformat.xsl)
 endfunction()
+
+set(XSD_FILES NeXus.xsd nxdl.xsd nxdlTypes.xsd BASE.xsd)
+add_custom_target("DoXSD" ALL)
+foreach(F ${XSD_FILES})
+    configure_release("DoXSD" ${CMAKE_SOURCE_DIR}/${F} ${CMAKE_BINARY_DIR}/dist/${F})
+endforeach()
 
 option (BUILD_SPHINX "Build documentation using sphinx" OFF)
 
@@ -74,8 +83,7 @@ if(BUILD_SPHINX)
     add_subdirectory (sphinx)
 endif(BUILD_SPHINX)
 
-INSTALL(FILES nxdl.xsd nxdlTypes.xsd DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
-INSTALL(FILES BASE.xsd NeXus.xsd DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
+INSTALL(FILES ${CMAKE_BINARY_DIR}/dist/${XSD_FILES} DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
 INSTALL(FILES LGPL DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
 
 #

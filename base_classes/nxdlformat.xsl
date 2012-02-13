@@ -25,7 +25,7 @@ line breaks are VERY TRICKY here, be careful how you edit!
 -->
 
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
-     xmlns:nx="http://definition.nexusformat.org/nxdl/3.1" version="1.0">
+     xmlns:nx="http://definition.nexusformat.org/nxdl/@NXDL_RELEASE@" version="1.0">
 
      <xsl:output method="text"/>
      <xsl:variable name="indent_step" select="'  '"/>
