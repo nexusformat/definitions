@@ -1,7 +1,7 @@
 ## Process this file with cmake
-# $Id: $
+# $Id$
 #====================================================================
-#  NeXus - Neutron & X-ray Common Data Format
+#  NeXus - A common data format for neutron, x-ray and muon science.
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
@@ -280,7 +280,7 @@ if (PYTHONINTERP_FOUND)
         DEPENDS   ${CMAKE_BINARY_DIR}/manual/classes/ContributedClassSections.xml ${CMAKE_BINARY_DIR}/manual/classes/ApplicationClassSections.xml ${CMAKE_BINARY_DIR}/manual/classes/BaseClassSections.xml
     )
 
-    add_dependencies(NexusClassSections BuildBASEXMLFiles BuildAPPLICATIONSXMLFiles BuildCONTRIBUTEDXMLFiles)
+    add_dependencies(NexusClassSections BuildBASEXMLFiles BuildAPPLICATIONSXMLFiles BuildCONTRIBUTEDXMLFiles BuildBASETXTFiles BuildAPPLICATIONSTXTFiles BuildCONTRIBUTEDTXTFiles )
 
 endif (PYTHONINTERP_FOUND)
 

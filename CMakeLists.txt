@@ -1,7 +1,7 @@
 ## Process this file with cmake
-# $Id: $
+# $Id$
 #====================================================================
-#  NeXus - Neutron & X-ray Common Data Format
+#  NeXus - A common data format for neutron, x-ray and muon science.
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
