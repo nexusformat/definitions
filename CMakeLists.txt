@@ -1,4 +1,5 @@
 ## Process this file with cmake
+# $Id: $
 #====================================================================
 #  NeXus - Neutron & X-ray Common Data Format
 #  
