@@ -206,7 +206,7 @@ class Describe:
     
     def top_attributes_table(self, root):
         '''Return a table of ReST references to the attributes defined
-        in the root element of this NXDL
+        in the root element of this NXDL.
         
         :param root: root of XML tree
         '''

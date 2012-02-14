@@ -90,8 +90,8 @@ converter.writeUnusedLabels(True)
 converter.id_attrib = "{http://www.w3.org/XML/1998/namespace}id"
 converter.linkend = "{http://www.w3.org/1999/xlink}href"
 
+logging.basicConfig(filename='runner.log',level=logging.INFO)
 for xml_file in DocBook_FILE_LIST:
-    logging.basicConfig(filename='runner.log',level=logging.INFO)
     logging.info("Processing DocBook file `%s'..." % xml_file)
     result = converter.process( xml_file, nxdb2rst.Convert )
     header = '.. $%s$\n\n' % 'Id'      # ID string updated by version control
