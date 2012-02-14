@@ -4,7 +4,7 @@
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
-#  Copyright (C) 2011 Stephen Rankin
+#  Copyright (C) 2011-2012 Stephen Rankin
 #  
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -33,8 +33,7 @@ set (XSLT ${XSLT_PATH}/nxdl2docbook.xsl)
 set (DBXSL ${XSLT_PATH}/docbook-xsl-1.75.2)
 
 set(DYNAMIC_DOCBOOK_SECTIONS classes/BaseClassSections.xml classes/ApplicationClassSections.xml 
-                             classes/ContributedClassSections.xml types.xml units.xml nxdl_desc.xml
-                             subtitle.xml)
+                             classes/ContributedClassSections.xml types.xml units.xml nxdl_desc.xml)
 
 set (CLASS_HEAD_PYTHON ${CMAKE_SOURCE_DIR}/utils/classSectionHead.py)
 
@@ -157,26 +156,6 @@ endforeach(NXDL_FILE)
 add_custom_target(BuildCONTRIBUTEDTXTFiles ALL DEPENDS ${OUTPUT_CONTRIBUTED_TEXT_FILES})
 add_custom_target(BuildCONTRIBUTEDXMLFiles ALL DEPENDS ${OUTPUT_CONTRIBUTED_XML_FILES})
 
-#    Generating subtitle.xml.tmp
-add_custom_target(GenerateSubtitleTmp ALL 
-    COMMAND   ${CMAKE_COMMAND}
-    ARGS      -P ${CMAKE_SOURCE_DIR}/utils/setsubtitle.cmake
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/manual
-)
-
-add_custom_command( 
-    OUTPUT    ${CMAKE_BINARY_DIR}/manual/subtitle.xml
-    COMMAND   ${CMAKE_COMMAND}
-    ARGS      -E copy_if_different subtitle.xml.tmp subtitle.xml
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/manual
-    DEPENDS    ${CMAKE_BINARY_DIR}/manual/subtitle.xml.tmp
-    COMMENT   "Re-generating subtitle.xml (if required)"
-)
-
-add_custom_target(NexusCreateSubtitleBuild ALL echo
-    DEPENDS   ${CMAKE_BINARY_DIR}/manual/subtitle.xml
-)
-
 add_custom_command(
     OUTPUT classes
 	COMMAND ${CMAKE_COMMAND}
@@ -214,7 +193,7 @@ if (XSLTPROC)
         DEPENDS   ${CMAKE_BINARY_DIR}/manual/nxdl_desc.xml ${CMAKE_BINARY_DIR}/manual/units.xml ${CMAKE_BINARY_DIR}/manual/types.xml
     )
   
-#    add_dependencies(NexusGeneratingXML NexusCreateSubtitleBuild)
+#    add_dependencies(NexusGeneratingXML)
 
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/index.html
@@ -331,8 +310,8 @@ if (DBLATEX)
         DEPENDS   NeXusRefDoc.pdf
     )
 
-    add_dependencies(NeXusManualBuild NexusGeneratingXML NexusClassSections NexusCreateSubtitleBuild)
-    add_dependencies(NeXusRefDocBuild NexusGeneratingXML NexusClassSections NexusCreateSubtitleBuild)
+    add_dependencies(NeXusManualBuild NexusGeneratingXML NexusClassSections)
+    add_dependencies(NeXusRefDocBuild NexusGeneratingXML NexusClassSections)
 
 endif (DBLATEX)
 
@@ -355,3 +334,4 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NeXusManual.pdf ${CMAKE_CURRENT_BINARY
 endif(DBLATEX)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NeXusManual.html DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html img examples DESTINATION ${NEXUS_MANUAL} COMPONENT manual PATTERN ".svn" EXCLUDE)
+
