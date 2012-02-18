@@ -7,6 +7,16 @@
 Frequently Asked Questions
 ==========================
 
+.. Undefined Labels
+   ----------------
+
+.. _this example:
+.. _mailing lists:
+.. _nexus api:
+.. _definitions repository:
+.. _nxvalidate-java:
+
+
 .. index:: FAQ
 
 This is a list of commonly asked questions concerning the NeXus data format.
@@ -16,10 +26,11 @@ How many facilities use NeXus?
 -----------------------------------------------------------
 
 This is not easy to say, not all facilities using NeXus actively
-participate in the committee. Some facilities have reported their
-adoption status on the :ref:``Facilities Wiki page``.
+participate in the committee. Some facilities (the list is incomplete) 
+have reported their adoption status on the NeXus wiki [#]_.
 Please have a look at this list.
-Keep in mind that it is not complete.
+
+    .. [#] Facilities reporting use of NeXus:  http://wiki.nexusformat.org/Facilities
 
 NeXus files are binary? This is crazy! How am I supposed to see my data?
 ---------------------------------------------------------------------------
