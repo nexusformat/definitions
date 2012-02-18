@@ -69,7 +69,6 @@ buildList("revhistory.xml")
 buildList("Roadmap.xml")
 buildList("rules.xml")
 buildList("strategies.xml")
-buildList("subtitle.xml")
 buildList("subversion.xml")
 buildList("Summary.xml")
 buildList("types.xml")
@@ -81,7 +80,7 @@ buildList("validation.xml")
 buildList("volume1.xml")
 buildList("volume2.xml")
 buildList("writer_1_3.xml")
-buildList("writer_2_1.xml")
+buildList("writer_2_1.xml")  # does not strip DocBook namespace from elements!
 
 
 converter = db2rst.Db2Rst()
@@ -102,3 +101,17 @@ for xml_file in DocBook_FILE_LIST:
         f.write( result )
         f.close()
     logging.info("-"*60)
+
+
+# TODO: need to deal with these
+NEEDS_HANDLING = '''
+include these files by name (with source code formatting)
+.. rubric:  INCLUDE examples/h5py/writer_2_1.py
+.. rubric:  INCLUDE examples/h5py/writer_2_1_h5dump.txt
+
+These things go into a table of contents
+.. rubric:  INCLUDE NAPI.xml
+.. rubric:  INCLUDE NXDL.xml
+
+authorgroup is unformatted, improve it programmatically?
+'''
