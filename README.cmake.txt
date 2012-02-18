@@ -1,6 +1,8 @@
-cmake is now used to generate the initial "Makefile" (or whatever other build system you wish to use) and to package files. For example on unix you could type from the top source directory:
+cmake is now used to generate the initial "Makefile" (or whatever other build system you wish to use) and to package files. It is advised to do the build in an "out of source" directory such as a "build" directory.  For example on unix you could type from the top source directory:
 
-    cmake .
+    mkdir build
+    cd build
+    cmake ..
     make
     make install  #  or   make install DESTDIR=/some/where    for testing
     make package  #  build install kit
@@ -38,3 +40,6 @@ These values can be set in the gui or from the command line e.g.
 in the top of the build directory run
 
     cmake -DBUILD_SPHINX=ON .  # set BUILD_SPHINX option for subsequent "make"
+
+But this is just an example.  The sphinx version of the manual is not ready to use cmake.
+
