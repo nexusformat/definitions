@@ -58,7 +58,8 @@ foreach(F ${XSD_FILES})
     configure_release("DoXSD" ${CMAKE_SOURCE_DIR}/${F} ${CMAKE_BINARY_DIR}/dist/${F})
 endforeach()
 
-option (BUILD_SPHINX "Build documentation using sphinx" OFF)
+# 2012-02-18,PRJ: sphinx directory is not ready for cmake yet
+#option (BUILD_SPHINX "Build documentation using sphinx" OFF)
 
 set(NEXUS_DEFINITIONS share/nexus/definitions)
 set(NEXUS_MANUAL share/nexus/manual)
@@ -80,9 +81,10 @@ add_subdirectory (contributed_definitions)
 add_subdirectory (applications)
 add_subdirectory (schema)
 add_subdirectory (manual)
-if(BUILD_SPHINX)
-    add_subdirectory (sphinx)
-endif(BUILD_SPHINX)
+# 2012-02-18,PRJ: sphinx directory is not ready for cmake yet
+#if(BUILD_SPHINX)
+#    add_subdirectory (sphinx)
+#endif(BUILD_SPHINX)
 
 foreach(F ${XSD_FILES})
     INSTALL(FILES ${CMAKE_BINARY_DIR}/dist/${F} DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)

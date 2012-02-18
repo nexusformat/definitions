@@ -15,6 +15,21 @@ TODO items
 
 * note there is a figure number extension: https://bitbucket.org/arjones6/sphinx-numfig/wiki/Home
 
+Undefined reST Document Labels
+++++++++++++++++++++++++++++++++
+
+As the manual is converted from DocBook into sphinx, some 
+pages may have references to sections of the manual that need labels.
+Until properly assigned, those labels are collected here (TODO.rst) so the build
+will proceed without comment.
+
+.. _this example:
+.. _mailing lists:
+.. _nexus api:
+.. _definitions repository:
+.. _nxvalidate-java:
+
+
 NeXus home page
 ---------------
 

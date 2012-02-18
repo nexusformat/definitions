@@ -31,10 +31,10 @@ documentation:
     http://www.icatproject.org/),
     
     .. COMMENT: text from the icatproject.org site
-    the database (with supporting software) that provides an
-    interface to all ISIS experimental data and will provide
-    a mechanism to link all aspects of ISIS research from
-    proposal through to publication.
+       the database (with supporting software) that provides an
+       interface to all ISIS experimental data and will provide
+       a mechanism to link all aspects of ISIS research from
+       proposal through to publication.
     
 
 
@@ -104,3 +104,4 @@ No symbols are defined in this NXDL file
 +=====================+==========+=======+===============================+
 | class               | NX_FLOAT | ..    | ..                            |
 +---------------------+----------+-------+-------------------------------+
+

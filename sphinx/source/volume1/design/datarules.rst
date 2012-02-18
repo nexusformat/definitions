@@ -44,9 +44,10 @@ please suggest the addition to the NIAC. The addition will usually be
 accepted provided it is adequately documented
 and not a duplication of an existing field. 
 
-.. note:: The NeXus base classes provide a comprehensive dictionary
-       of terms than can be used for each class. 
-       :index:`NeXus basic motivation; defined dictionary`
+.. note:
+   The NeXus base classes provide a comprehensive dictionary
+   of terms than can be used for each class. 
+   :index:`NeXus basic motivation; defined dictionary`
 
 
 

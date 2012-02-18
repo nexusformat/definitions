@@ -93,7 +93,7 @@ Important Classes
 Here are some of the important classes found in nearly all NeXus files. A
 complete list can be found in the NeXus Design section (:ref:`NeXus-Design`).
 
-.. note:: :ref:`NXentry` and :ref:`NXdata`
+.. note: :ref:`NXentry` and :ref:`NXdata`
 	are the only two classes **required** in a valid NeXus data file.
 
 .. index:: classes; base class: NXentry
