@@ -25,11 +25,6 @@ TODO items
    * Yes.  See: http://www.w3schools.com/xml/xml_cdata.asp
 
 * note there is a figure number extension: https://bitbucket.org/arjones6/sphinx-numfig/wiki/Home
-* coordinate release version in ../../CPackOptions.cmake.in with conf.py.  These lines define the terms we need::
-
-   set (CPACK_PACKAGE_VERSION_MAJOR "3")
-   set (CPACK_PACKAGE_VERSION_MINOR "1")
-   set (CPACK_PACKAGE_VERSION_PATCH "0")
 
 
 NeXus home page
