@@ -20,6 +20,7 @@
      # $Id$
      ########### SVN repository information ###################
 
+Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
 
 line breaks are VERY TRICKY here, be careful how you edit!
 -->

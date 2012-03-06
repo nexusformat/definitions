@@ -125,7 +125,7 @@ class Db2Rst:
         c.write("extensions = []\n")
         c.write("master_doc = 'index'\n")
         c.write("project = u'projname'\n")
-        c.write("#copyright = u'2011, authname'\n")
+        c.write("#copyright = u'2012, authname'\n")
         c.write("exclude_patterns = ['_build']\n")
         c.close()
 

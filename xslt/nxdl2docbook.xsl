@@ -69,7 +69,7 @@ Usage:
  <xsl:comment><!-- NeXus license comes next -->
 # NeXus - Neutron, X-ray, and Muon Science Common Data Format
 # 
-# Copyright (C) 2008-2011 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

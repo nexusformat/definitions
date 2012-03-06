@@ -8,6 +8,8 @@ Created on Feb 15, 2011
           specifications.  Write an XML document
           with enough information to build a cross-reference.
 @author: jemian
+'''
+
 ########### SVN repository information ###################
 # $Date$
 # $Author$
@@ -15,7 +17,6 @@ Created on Feb 15, 2011
 # $URL$
 # $Id$
 ########### SVN repository information ###################
-'''
 
 
 import os
