@@ -41,7 +41,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'NeXus for the Impatient'
-copyright = u'2011, http://nexusformat.org'
+copyright = u'2012, http://nexusformat.org'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -254,8 +254,8 @@ texinfo_documents = [
 # Bibliographic Dublin Core info.
 epub_title = u'NeXus for the Impatient'
 epub_author = u'nexusformat.org'
-epub_publisher = u'nexusformat.org'
-epub_copyright = u'2011, nexusformat.org'
+epub_publisher = u'http://nexusformat.org'
+epub_copyright = u'2012, http://nexusformat.org'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
