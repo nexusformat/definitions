@@ -104,10 +104,10 @@ html_theme = 'sphinxdoc'
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-html_title = "NeXus for the Impatient"
+html_title = None
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-#html_short_title = None
+html_short_title = project
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
@@ -190,7 +190,7 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'NXImpatient.tex', u'NeXus for the Impatient documentation',
+  ('index', 'NXImpatient.tex', project,
    u'nexusformat.org', 'howto'),
 ]
 
@@ -220,7 +220,7 @@ latex_domain_indices = False
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'nximpatient', u'NeXus for the Impatient documentation',
+    ('index', 'nximpatient', project,
      [u'nexusformat.org'], 1)
 ]
 
@@ -234,8 +234,9 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'NXImpatient', u'NeXus for the Impatient documentation',
-   u'nexusformat.org', 'NXImpatient', 'One line description of project.',
+  ('index', 'NXImpatient', project,
+   u'nexusformat.org', 'NXImpatient', 
+   'Brief overview of the NeXus data format.',
    'Miscellaneous'),
 ]
 
@@ -252,10 +253,10 @@ texinfo_documents = [
 # -- Options for Epub output ---------------------------------------------------
 
 # Bibliographic Dublin Core info.
-epub_title = u'NeXus for the Impatient'
+epub_title = project
 epub_author = u'nexusformat.org'
 epub_publisher = u'http://nexusformat.org'
-epub_copyright = u'2012, http://nexusformat.org'
+epub_copyright = copyright
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
