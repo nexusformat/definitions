@@ -146,6 +146,8 @@ This hierarchy is applicable to raw data files as written by some facility instr
    :linenos:
 
    entry:NXentry
+       data:NXdata
+   	   data --> /entry/instrument/detector/data
        instrument:NXinstrument
    	   source:NXsource
    	   ....
@@ -154,22 +156,24 @@ This hierarchy is applicable to raw data files as written by some facility instr
    		   @signal = 1
        sample:NXsample
        control:NXmonitor
-       data:NXdata
-   	   data --> /entry/instrument/detector/data
 
 
-The following groups are required to be present in all NeXus data files:
+The following two groups are required for all NeXus data files:
 
 ``entry:NXentry``
     At the top/root level of a NeXus file are the NXentry groups.
     Each entry represents a separate collection of datasets.
 
 ``data:NXdata``
-    This is a convenience group so that a general plotting
-    program can identify *from this group alone* what is
-    the default data to render on a plot.
-    It is supposed to hold the most
+    This group is supposed to hold the most
     important data items of the experiment.
+    This is a convenience so that a general plotting
+    program can identify *from this group alone* what is
+    the default data to render on a plot. 
+    Therefore the data is linked here from the specific 
+    detector entry recording the data which is described below. 
+    Axis information is usually included here as well, the 
+    details of which are covered in the full manual.
 
 The following additional groups are present in most NeXus data files:
 
@@ -180,7 +184,8 @@ The following additional groups are present in most NeXus data files:
 
 ``instrument:NXinstrument``
     This group contains further groups and fields which describe
-    the components of the instrument used for this experiment.
+    the components of the instrument (i.e. beamline for synchroton sources)
+    used for this experiment.
 
 ``control:NXmonitor``
     This group contains the counting information: which preset
