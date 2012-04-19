@@ -12,12 +12,14 @@ NeXus for the Impatient
 Why NeXus? 
 ===========
 
-.. note::  This document is available in different formats:
+.. seealso:: 
+
+   This document is available in different formats:
    `HTML (online) <http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html>`_,
    :download:`PDF <NXImpatient.pdf>`, or
    :download:`EPUB <NXImpatient.epub>`.
    
-   See: http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html
+   http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html
 
 The NeXus data format is a tool which has been designed to
 solve the problems of travelling scientists, 
@@ -158,7 +160,19 @@ This hierarchy is applicable to raw data files as written by some facility instr
        control:NXmonitor
 
 
+
 The following two groups are required for all NeXus data files:
+
+.. sidebar::  About the terms: ``entry:NXentry``
+
+   A NeXus group is shown with a two-part name, as in ``entry:NXentry``.
+   The first part, shown here as ``entry`` is the HDF5 group name 
+   and can be just about
+   any text that is a valid variable name in most programming languages.
+   See the NeXus manual for full details and note that **no spaces
+   are allowed**.  The second part, shown here as ``NXentry``, is the 
+   name of the NeXus class that describes the structure within this group.
+
 
 ``entry:NXentry``
     At the top/root level of a NeXus file are the NXentry groups.
