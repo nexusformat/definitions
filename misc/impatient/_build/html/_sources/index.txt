@@ -1,4 +1,4 @@
-.. $Id: index.rst 1066 2012-04-19 18:12:08Z Pete Jemian $
+.. $Id: index.rst 1068 2012-04-19 18:51:04Z Pete Jemian $
    NeXus definitions trac ticket #200
 
 .. image:: NeXus-logo.png
@@ -21,7 +21,7 @@ Why NeXus?
    
    http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html
 
-The NeXus data format is a tool which has been designed to
+The NeXus data format [#NeXus]_ is a tool which has been designed to
 solve the problems of travelling scientists, 
 who undertake experiments at several different
 neutron, x-ray or muon facilities. Such people will apply to
@@ -65,7 +65,9 @@ flexible
 NeXus Concepts
 ===============
 
-NeXus uses HDF-5 files as container files. HDF-5 is a popular scientific
+NeXus uses `HDF-5 <http://www.hdfgroup.org/HDF5/>`_ 
+[#HDF5]_
+files as container files. HDF-5 is a popular scientific
 data format which has been developed by the National Center for Supercomputing
 Applications (NCSA), University of Illinois Urbana-Champaign  and is currently
 being maintained by the HDF Group. There is built-in support for HDF-5 in many scientific
@@ -163,13 +165,19 @@ This hierarchy is applicable to raw data files as written by some facility instr
 
 The following two groups are required for all NeXus data files:
 
+.. code-block:: text
+   :linenos:
+
+   entry:NXentry
+      data:NXdata
+
 .. sidebar::  About the terms: ``entry:NXentry``
 
    A NeXus group is shown with a two-part name, as in ``entry:NXentry``.
    The first part, shown here as ``entry`` is the HDF5 group name 
    and can be just about
    any text that is a valid variable name in most programming languages.
-   See the NeXus manual for full details and note that **no spaces
+   See the NeXus manual [#Manual]_ for full details and note that **no spaces
    are allowed**.  The second part, shown here as ``NXentry``, is the 
    name of the NeXus class that describes the structure within this group.
 
@@ -189,7 +197,7 @@ The following two groups are required for all NeXus data files:
     Axis information is usually included here as well, the 
     details of which are covered in the full manual.
 
-The following additional groups are present in most NeXus data files:
+The following additional groups are present in many NeXus data files:
 
 ``sample:NXsample``
     This group contains datasets which describe everything we
@@ -210,7 +218,7 @@ The following additional groups are present in most NeXus data files:
    indentation
        Describes hierarchy level
    ``name:NXname``
-       This describes a NeXus group. The second name starting with NX is the NeXus
+       This describes a NeXus group. The second name, starting with ``NX``, is the NeXus
        class name of the group. Each NeXus class defines a set of allowed field names
        that may be used to describe a component of the experiment,
        such as detector distance and angle. Not all such names are required -
@@ -247,30 +255,26 @@ misconception among NeXus beginners is that you have to specify all
 fields which exist in a given NeXus base class. This is **not**
 the case! You only need to choose those fields from the NeXus base
 class dictionary which make sense for your application. But, you are
-encouraged to store the additional information if it is available
+encouraged to store additional, available information 
 since it can be used to diagnose problems with the instrument. The minimum
-set of fields that are appropraie to a given technique are usually
+set of fields that are appropriate to a given technique are usually
 specifed in an "application definition".
 
 Before the mechanics of writing a NeXus file can be explained, we need
 to know which fields are written into the NeXus file at which position
 in the hierarchy. The example will be to store basic data. 
-A couple of steps are required:
+Some steps are required:
+
+Example 3: NeXus Raw Data File Template
 
 .. code-block:: text
    :linenos:
 
    entry:NXentry
+      instrument:NXinstrument
+      sample:NXsample
+      control:NXmonitor
       data:NXdata
-
-..  This is the original BUT the example is simpler (see above)
-  entry:NXentry
-     instrument:NXinstrument
-     sample:NXsample
-     control:NXmonitor
-     data:NXdata
-
-Example 3: NeXus Raw Data File Template
 
 #. The start is a NeXus raw data file template as shown in example 3.
 #. At this level you can decide what needs to be known about the
@@ -405,11 +409,18 @@ Any program whose aim is to identify plottable data should use the following pro
 
 #. Open the first top level NeXus group with class NXentry.
 #. Open the first NeXus group with class NXdata.
-#. Loop through NeXus fields in this group searching for the item with attribute signal="1" indicating this field has the plottable data.
-#. Check to see if this field has an attribute called axes. If so, the attribute value contains a colon (or comma) delimited list (in the C-order of the data array) with the names of the dimension scales associated with the plottable data. And then you can skip the next two steps.
-#. If the axes attribute is not defined, search for the one-dimensional NeXus fields with attribute primary="1".
+#. Loop through NeXus fields in this group searching for the item with 
+   attribute ``signal="1"`` indicating this field has the plottable data.
+#. Check to see if this field has an attribute called axes. If so, the 
+   attribute value contains a colon (or comma) delimited list (in the 
+   C-language order of the data array) with the names of the dimension 
+   scales associated with the plottable data. 
+   And then you can skip the next two steps.
+#. If the axes attribute is not defined, search for the 
+   one-dimensional NeXus fields with attribute ``primary="1"``.
 #. These are the dimension scales to label the axes of each dimension of the data.
-#. Link each dimension scale to the respective data dimension by the axis attribute (axis="1", axis="2", ... up to the rank of the data).
+#. Link each dimension scale to the respective data dimension by the axis 
+   attribute (``axis="1"``, ``axis="2"``, ... up to the rank of the data).
 #. If necessary, close the NXdata group, open the next one and repeat steps 3 to 6.
 #. If necessary, close the NXentry group, open the next one and repeat steps 2 to 7.
 
@@ -663,6 +674,12 @@ NeXus is overseen by the NeXus International Advisory Committee (NIAC)
 which meets once a  year. The NIAC strives to have a representative for
 each participating facility. The NIAC has a constitution which you can
 find on the NeXus WWW site.
+
+.. [#NeXus] NeXus: http://www.nexusformat.org/
+
+  .. shameless self-promotion
+
+.. [#HDF5] HDF-5: http://www.hdfgroup.org/HDF5/
 
 .. [#h5py] *h5py*: http://code.google.com/p/h5py/
 
