@@ -27,6 +27,7 @@
 #====================================================================
 
 set(CONTRIBUTED_FILES 
+	NXarpes.nxdl.xml 
 	NXbeamline.nxdl.xml 
 	NXelectrostatic_kicker.nxdl.xml 
 	NXmagnetic_kicker.nxdl.xml 
