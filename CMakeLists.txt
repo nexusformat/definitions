@@ -61,8 +61,11 @@ endforeach()
 # 2012-02-18,PRJ: sphinx directory is not ready for cmake yet
 #option (BUILD_SPHINX "Build documentation using sphinx" OFF)
 
-set(NEXUS_DEFINITIONS share/nexus/definitions)
-set(NEXUS_MANUAL share/nexus/manual)
+# CMAKE_INSTALL_PREFIX is only used if CMAKE_SET_DESTDIR is true,
+# so it will not be used in zip and tgz packages
+set(CMAKE_INSTALL_PREFIX "/usr/share/nexus/")
+set(NEXUS_DEFINITIONS "definitions")
+set(NEXUS_MANUAL "manual")
 
 find_package(LATEX)
 find_package(PythonInterp)
