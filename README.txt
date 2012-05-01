@@ -18,6 +18,8 @@ utils/			      various tools used in the definitions tree
 www/			      launch (home) page of NeXus WWW site
 xslt/			      various transformations
 
+See README.cmake.txt for building instructions
+
 --
 $Id$
 

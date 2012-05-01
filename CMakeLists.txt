@@ -26,12 +26,17 @@
 #
 #
 #====================================================================
+
+# we need 2.8.8 for correct component install with CPACK for archives
 if(WIN32)
-    cmake_minimum_required (VERSION 2.8.7)
+    cmake_minimum_required (VERSION 2.8.8)
 else()
-    cmake_minimum_required (VERSION 2.8.3)
-    set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove this line when CMake >= 2.8.4 is required
+    cmake_minimum_required (VERSION 2.8.8)
+    if (${CMAKE_VERSION} VERSION_LESS 2.8.4)
+        set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove this line when CMake >= 2.8.4 is required
+    endif()
 endif()
+
 project(NeXusDefinitions)
 
 # include NXDL release number information
