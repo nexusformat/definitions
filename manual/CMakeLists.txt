@@ -27,7 +27,6 @@
 #
 #====================================================================
 
-find_program(DBLATEX dblatex)
 
 set(XSLT_PATH ${CMAKE_SOURCE_DIR}/xslt)
 set (XSLT ${XSLT_PATH}/nxdl2docbook.xsl)

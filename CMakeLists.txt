@@ -68,12 +68,15 @@ endforeach()
 
 # CMAKE_INSTALL_PREFIX is only used if CMAKE_SET_DESTDIR is true,
 # so it will not be used in zip and tgz packages
-set(CMAKE_INSTALL_PREFIX "/usr/share/nexus/")
+if(UNIX)
+    set(CMAKE_INSTALL_PREFIX "/usr/share/nexus/")
+endif()
 set(NEXUS_DEFINITIONS "definitions")
 set(NEXUS_MANUAL "manual")
 
-find_package(LATEX)
 find_package(PythonInterp)
+find_package(LATEX)
+find_program(DBLATEX dblatex)
 
 if (WIN32)
     find_program(XSLTPROC xsltproc PATHS "${CMAKE_SOURCE_DIR}/utils/win32")
@@ -81,6 +84,10 @@ else(WIN32)
     find_program(XSLTPROC xsltproc )
 endif()
 find_program(SVNVERSION svnversion)
+
+#configure_file("${PROJECT_SOURCE_DIR}/utils/win32/dblatex_cygwin.bat.in"
+#                                "${PROJECT_BINARY_DIRECTORY}/utils/win32/dblatex_cygwin.bat"
+#                                @ONLY)
 
 # Recurse into the subdirectories.
 #add_subdirectory (tutorial)
@@ -99,6 +106,8 @@ foreach(F ${XSD_FILES})
 endforeach()
 INSTALL(FILES LGPL DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
 
+file(TO_NATIVE_PATH ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_NATIVE) 
+string(REPLACE "\\" "\\\\" CMAKE_SOURCE_DIR_NATIVE_D ${CMAKE_SOURCE_DIR_NATIVE})
 #
 # set CPack packaging options
 #
