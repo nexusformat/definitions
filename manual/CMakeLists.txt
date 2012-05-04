@@ -63,9 +63,16 @@ set(BUILT_NEXUSMANUAL NeXusManual.pdf NeXusManual.html NeXusRefDoc.pdf)
 
 #set(CLEANING_LIST ${BUILT_NEXUSMANUAL} ${BUILT_NEXUSREFDOC} html/ classes/ types.xml units.xml nxdl_desc.xml)
 
-# for details, see: http://dblatex.sourceforge.net/doc/sec-custom.html
-set (DBLATEX_OPTS -P table.in.float=0 -P doc.lot.show="figure" -I"${CMAKE_SOURCE_DIR}/manual" -b pdftex -tpdf -x "--path" -x "${CMAKE_BINARY_DIR}/manual:${CMAKE_BINARY_DIR}/manual/classes" )
+if(WIN32)
+    to_cygwin_path("${CMAKE_SOURCE_DIR}" CMAKE_SOURCE_DIR_DBLATEX)
+    to_cygwin_path("${CMAKE_BINARY_DIR}" CMAKE_BINARY_DIR_DBLATEX)
+else()
+    set(CMAKE_SOURCE_DIR_DBLATEX "${CMAKE_SOURCE_DIR}")
+    set(CMAKE_BINARY_DIR_DBLATEX "${CMAKE_BINARY_DIR}")
+endif()
 
+# for details, see: http://dblatex.sourceforge.net/doc/sec-custom.html
+set(DBLATEX_OPTS -P table.in.float=0 -P doc.lot.show="figure" -I"${CMAKE_SOURCE_DIR_DBLATEX}/manual" -b pdftex -tpdf -x "--path" -x "${CMAKE_BINARY_DIR_DBLATEX}/manual:${CMAKE_BINARY_DIR_DBLATEX}/manual/classes" )
 set(OUTPUT_BASE_TEXT_FILES)
 set(OUTPUT_BASE_XML_FILES)
 set(OUTPUT_BASE_XML_TARGETS)
@@ -289,7 +296,7 @@ if (DBLATEX)
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/NeXusManual.pdf
         COMMAND   ${DBLATEX}
-        ARGS      -V -Pset.book.num=1 ${DBLATEX_OPTS} ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml -o ${CMAKE_BINARY_DIR}/manual/NeXusManual.pdf
+        ARGS      -V -Pset.book.num=1 ${DBLATEX_OPTS} -o ${CMAKE_BINARY_DIR_DBLATEX}/manual/NeXusManual.pdf ${CMAKE_SOURCE_DIR_DBLATEX}/manual/NeXusManual.xml 
         DEPENDS   ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml
         COMMENT   "Generating NeXusManual.pdf"
     )
@@ -297,7 +304,7 @@ if (DBLATEX)
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/NeXusRefDoc.pdf
         COMMAND   ${DBLATEX}
-        ARGS      -V -Pset.book.num=2 ${DBLATEX_OPTS} ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml -o ${CMAKE_BINARY_DIR}/manual/NeXusRefDoc.pdf
+        ARGS      -V -Pset.book.num=2 ${DBLATEX_OPTS} -o ${CMAKE_BINARY_DIR_DBLATEX}/manual/NeXusRefDoc.pdf ${CMAKE_SOURCE_DIR_DBLATEX}/manual/NeXusManual.xml 
         DEPENDS   ${CMAKE_SOURCE_DIR}/manual/NeXusManual.xml
         COMMENT   "Generating NeXusRefDoc.pdf"
     )
@@ -330,7 +337,7 @@ endif()
 
 
 if (DBLATEX)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NeXusManual.pdf ${CMAKE_CURRENT_BINARY_DIR}/NeXusRefDoc.pdf DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
+	install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NeXusManual.pdf ${CMAKE_CURRENT_BINARY_DIR}/NeXusRefDoc.pdf DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
 endif(DBLATEX)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/NeXusManual.html DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html img examples DESTINATION ${NEXUS_MANUAL} COMPONENT manual PATTERN ".svn" EXCLUDE)

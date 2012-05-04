@@ -55,3 +55,8 @@ But this is just an example.
 The sphinx version of the manual is not ready to use cmake.
 
 If you are building a distribution kit on Windows using NSIS, see http://nsis.sourceforge.net/ZipDLL_plug-in if you get a ZipDLL error
+
+Windows
+-------
+
+To build PDF documentation on windows cygwin is required - it is called from the windows build to run DBLATEX. 

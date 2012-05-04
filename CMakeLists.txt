@@ -51,10 +51,19 @@ endfunction()
 
 function(configure_nxdl TARGET NXDL_DIR DIST_DIR NXDL_FILES)
     foreach(F ${NXDL_FILES})
-	set(NXDL ${NXDL_DIR}/${F})
-	configure_release(${TARGET} ${NXDL} ${DIST_DIR}/${F})
+		set(NXDL ${NXDL_DIR}/${F})
+		configure_release(${TARGET} ${NXDL} ${DIST_DIR}/${F})
     endforeach()
     configure_release(${TARGET} ${NXDL_DIR}/nxdlformat.xsl ${DIST_DIR}/nxdlformat.xsl)
+endfunction()
+
+#
+# convert a native windows path to its equivalent cygwin path
+#
+function(to_cygwin_path PATH RESULT)
+    file(TO_CMAKE_PATH ${PATH} CP)								# changes \ to / on windows
+    string(REGEX REPLACE "^([a-zA-Z]):/" "/\\1/" CP2 ${CP})   	# c:/ -> /c/
+	set(${RESULT} "/cygdrive${CP2}" PARENT_SCOPE) 				# /c/ -> /cygdrive/c/
 endfunction()
 
 set(XSD_FILES NeXus.xsd nxdl.xsd nxdlTypes.xsd BASE.xsd)
@@ -75,8 +84,6 @@ set(NEXUS_DEFINITIONS "definitions")
 set(NEXUS_MANUAL "manual")
 
 find_package(PythonInterp)
-find_package(LATEX)
-find_program(DBLATEX dblatex)
 
 if (WIN32)
     find_program(XSLTPROC xsltproc PATHS "${CMAKE_SOURCE_DIR}/utils/win32")
@@ -85,10 +92,35 @@ else(WIN32)
 endif()
 find_program(SVNVERSION svnversion)
 
-#configure_file("${PROJECT_SOURCE_DIR}/utils/win32/dblatex_cygwin.bat.in"
-#                                "${PROJECT_BINARY_DIRECTORY}/utils/win32/dblatex_cygwin.bat"
+# needed for windows NSIS installer
+file(TO_NATIVE_PATH ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_NATIVE) 
+file(TO_NATIVE_PATH ${CMAKE_BINARY_DIR} CMAKE_BINARY_DIR_NATIVE) 
+string(REPLACE "\\" "\\\\" CMAKE_SOURCE_DIR_NATIVE_D ${CMAKE_SOURCE_DIR_NATIVE})
+string(REPLACE "\\" "\\\\" CMAKE_BINARY_DIR_NATIVE_D ${CMAKE_BINARY_DIR_NATIVE})
+
+#configure_file("${PROJECT_SOURCE_DIR}/utils/win32/dblatex_win.bat.in"
+#                                "${PROJECT_BINARY_DIR}/dblatex_win.bat"
 #                                @ONLY)
 
+
+if(WIN32)
+# we use cygwin on windows for dblatex etc
+	find_program(CYGPATH_EXECUTABLE cygpath PATHS "c:/cygwin" PATH_SUFFIXES "bin" DOC "CYGWIN cygpath program") 
+	get_filename_component(CYGPATHDIR "${CYGPATH_EXECUTABLE}" PATH) 
+	get_filename_component(CYGDIR "${CYGPATHDIR}/.." ABSOLUTE)
+	file(TO_NATIVE_PATH ${CYGDIR} CYGDIR_NATIVE)
+	configure_file("${PROJECT_SOURCE_DIR}/utils/win32/dblatex_cygwin.bat.in"
+                                "${PROJECT_BINARY_DIR}/dblatex_cygwin.bat"
+                                @ONLY)
+	if(IS_DIRECTORY "${CYGDIR}" AND EXISTS "${CYGDIR}/bin/dblatex")
+		set(DBLATEX "${PROJECT_BINARY_DIR}/dblatex_cygwin.bat")
+	else()
+		message(WARNING "CYGWIN dblatex NOT FOUND - no PDF documentation")
+	endif()
+else()
+	find_package(LATEX)
+	find_program(DBLATEX dblatex)
+endif()
 # Recurse into the subdirectories.
 #add_subdirectory (tutorial)
 add_subdirectory (base_classes)
@@ -106,8 +138,6 @@ foreach(F ${XSD_FILES})
 endforeach()
 INSTALL(FILES LGPL DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
 
-file(TO_NATIVE_PATH ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_NATIVE) 
-string(REPLACE "\\" "\\\\" CMAKE_SOURCE_DIR_NATIVE_D ${CMAKE_SOURCE_DIR_NATIVE})
 #
 # set CPack packaging options
 #
