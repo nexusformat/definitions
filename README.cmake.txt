@@ -60,3 +60,4 @@ Windows
 -------
 
 To build PDF documentation on windows cygwin is required - it is called from the windows build to run DBLATEX. 
+Check the definition of CYGPATH_EXECUTABLE in the CMake cache
