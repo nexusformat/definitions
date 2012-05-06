@@ -1,7 +1,7 @@
 These are the components that define the structure of NeXus data files in the development directory.
 
 BASE.xsd		      used to validate NeXus data files, defines NXroot
-LGPL			      one proposed license model
+LGPL.txt		      one proposed license model
 NeXus.xsd		      used to validate NeXus data files
 README.txt  		      this file
 applications/		      NXDL files for applications and instrument defs
