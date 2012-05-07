@@ -214,7 +214,7 @@ if (XSLTPROC)
     add_custom_command( 
         OUTPUT    ${CMAKE_BINARY_DIR}/manual/NeXusManual.html
         COMMAND   ${CMAKE_COMMAND}
-        ARGS      -E rename ${CMAKE_BINARY_DIR}/manual/index.html ${CMAKE_BINARY_DIR}/manual/NeXusManual.html
+        ARGS      -E copy_if_different ${CMAKE_BINARY_DIR}/manual/index.html ${CMAKE_BINARY_DIR}/manual/NeXusManual.html
         DEPENDS   ${CMAKE_BINARY_DIR}/manual/index.html
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/manual
         COMMENT   "Generating NeXusManual.html"

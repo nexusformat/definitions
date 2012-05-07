@@ -136,7 +136,9 @@ add_subdirectory (manual)
 foreach(F ${XSD_FILES})
     INSTALL(FILES ${CMAKE_BINARY_DIR}/dist/${F} DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
 endforeach()
+
 INSTALL(FILES LGPL.txt DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
+INSTALL(FILES LGPL.txt DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
 
 #
 # set CPack packaging options
