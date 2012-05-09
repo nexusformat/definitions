@@ -144,9 +144,9 @@ INSTALL(FILES LGPL.txt DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
 # set CPack packaging options
 #
 configure_file("${PROJECT_SOURCE_DIR}/CPackOptions.cmake.in"
-                                "${PROJECT_BINARY_DIRECTORY}CPackOptions.cmake"
+                                "${PROJECT_BINARY_DIRECTORY}/CPackOptions.cmake"
                                 @ONLY)
-set (CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIRECTORY}CPackOptions.cmake")
+set (CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIRECTORY}/CPackOptions.cmake")
 set (CPACK_GENERATOR TGZ) # not use ZIP on UNIX as problem with symlinks
 set (CPACK_SOURCE_GENERATOR TGZ) # not use ZIP on UNIX as problem with symlinks
 if(WIN32)
