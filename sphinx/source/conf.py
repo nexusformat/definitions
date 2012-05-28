@@ -58,7 +58,7 @@ copyright = u'2012, http://nexusformat.org'
 # The short X.Y version.
 version = '2012'
 # The full version, including alpha/beta/rc tags.
-release = '2012-03'
+release = '2012-05'
 
 
 # 2012-02-18,PRJ:

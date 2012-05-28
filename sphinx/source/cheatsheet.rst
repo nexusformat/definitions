@@ -1,10 +1,10 @@
 .. $Id$
 
-##########
-Cheatsheet
-##########
+#################
+Sphinx Cheatsheet
+#################
 
-This is a cheat sheet and will be removed later.
+This is a sphinx cheat sheet and will be removed later.
 
 Section headings automatically get labels assigned.
 For example, see this:  `Demo list-table`_

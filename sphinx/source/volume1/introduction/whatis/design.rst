@@ -65,9 +65,11 @@ is designed to make it easy to navigate a NeXus file.
 Example of a NeXus File
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-The following diagram shows an example of a NeXus data file 
-:index:`example;  NeXus data file` represented as a tree 
-structure.  :index:`hierarchy; example NeXus data file`
+.. index:: hierarchy; example NeXus data file
+.. index:: example;  NeXus data file
+
+The following diagram shows an example of a NeXus data file
+represented as a tree structure.  
 
 .. figure:: Hierarchy.png
 	:width: 300 pt
@@ -236,7 +238,8 @@ a short Python program and NeXpy:
 
 ``verysimple.py``: Using NeXpy to write a very simple NeXus Data file (in HDF5)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-.. index:: example; very simple
-.. literalinclude:: ../../../../../manual/examples/verysimple.py
-	:linenos: 
-	:tab-width: 4
+
+.. literalinclude:: ../../../../../docbook/examples/verysimple.py
+   :language: python
+   :linenos:
+   :tab-width: 4
