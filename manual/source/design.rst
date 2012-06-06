@@ -225,6 +225,16 @@ a more descriptive representation of the concept of linking.
 
         Figure: Linking in a NeXus file
 
+.. TODO: weave this content about HDF5 external file links into the manual near here
+
+..  Here is an example (from DLS) of an external file link in HDF5
+	.. codeblock::
+
+			 EXTERNAL_LINK "data" {
+				TARGETFILE "/dls/i22/data/2012/sm7594-1/i22-69201-Pilatus2M.h5"
+				TARGETPATH "entry/instrument/detector/data"
+			 }
+
 
 .. _Design-NeXusClasses:
 
