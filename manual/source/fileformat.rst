@@ -110,7 +110,7 @@ chapter of Volume II for examples that use the native HDF5 calls to write NeXus 
 
 .. compound::
 
-    .. rubric:: Figure: ``h5dump`` of a NeXus ``NXentry`` group
+    .. rubric:: ``h5dump`` of a NeXus ``NXentry`` group
 
     .. literalinclude:: examples/h5dump_group.txt
         :tab-width: 4
@@ -119,7 +119,7 @@ chapter of Volume II for examples that use the native HDF5 calls to write NeXus 
 
 .. compound::
 
-    .. rubric:: Figure: ``h5dump`` of a NeXus field (HDF5 dataset)
+    .. rubric:: ``h5dump`` of a NeXus field (HDF5 dataset)
 
     .. literalinclude:: examples/h5dump_field.txt
         :tab-width: 4
@@ -128,7 +128,7 @@ chapter of Volume II for examples that use the native HDF5 calls to write NeXus 
 
 .. compound::
 
-    .. rubric:: Figure: ``h5dump`` of a NeXus attribute
+    .. rubric:: ``h5dump`` of a NeXus attribute
 
     .. literalinclude:: examples/h5dump_attribute.txt
         :tab-width: 4
@@ -137,7 +137,7 @@ chapter of Volume II for examples that use the native HDF5 calls to write NeXus 
 
 .. compound::
 
-    .. rubric:: Figure: ``h5dump`` of a NeXus link
+    .. rubric:: ``h5dump`` of a NeXus link
 
     .. literalinclude:: examples/h5dump_link.txt
         :tab-width: 4
@@ -164,7 +164,7 @@ NeXus name of the group. Further group attributes become XML attributes. An exam
 
 .. compound::
 
-    .. rubric:: Figure: NeXus group element in XML
+    .. rubric:: NeXus group element in XML
 
     .. literalinclude:: examples/mapping1.xml.txt
         :tab-width: 4
@@ -183,7 +183,7 @@ stored as ``PCDATA`` [#PCDATA]_ in the element. Another example:
 
 .. compound::
 
-    .. rubric:: Figure: NeXus data elements
+    .. rubric:: NeXus data elements
 
     .. literalinclude:: examples/mapping2.xml.txt
         :tab-width: 4

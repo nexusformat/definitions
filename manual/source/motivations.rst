@@ -170,9 +170,9 @@ the red circle only maps to one other format.
 
     .. figure:: img/data-pre-nexus.jpg
         :alt: fig.data-pre-nexus
-        :width: 80%
+        :width: 50%
 
-        Figure: *N* separate file formats
+        *N* separate file formats
 
 One early idea has been for NeXus to become the common data exchange format,
 and thereby reduce the number of data conversion routines from
@@ -185,9 +185,9 @@ and thereby reduce the number of data conversion routines from
 
     .. figure:: img/data-post-nexus.jpg
         :alt: fig.data-post-nexus
-        :width: 80%
+        :width: 50%
 
-        Figure: *N* separate file formats joined by a common NeXus converter
+        *N* separate file formats joined by a common NeXus converter
 
 .. _DefinedDictionary:
 

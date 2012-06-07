@@ -64,7 +64,7 @@ changes are not so frequent.
     .. figure:: img/nxvalidate.png
         :alt: figure.nxvalidate
 
-        Figure: Flowchart of the NeXus validation process.
+        Flowchart of the NeXus validation process.
 
 NeXus data files
     NeXus data files (also known as NeXus data file instances) are validated
@@ -223,7 +223,7 @@ from a directory that contains ``nxdl.xsd``,
 
 .. compound::
 
-    .. rubric:: Figure: Use of ``xmllint`` to validate a NXDL specification.
+    .. rubric:: Use of ``xmllint`` to validate a NXDL specification.
 
     .. code-block:: guess
     
@@ -246,7 +246,7 @@ UNIX/Linux command line tools
 
 .. compound::
 
-    .. rubric:: Figure: Use of ``xmllint`` to validate the NXDL rules.
+    .. rubric:: Use of ``xmllint`` to validate the NXDL rules.
 
     .. code-block:: guess
 

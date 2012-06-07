@@ -41,16 +41,16 @@ is linked to the 2-D detector data (a 512x512 array of 32-bit integers)
 which has the attribute ``signal=1``.
 Note that ``[,]`` represents a 2D array.
 
-.. compound::
-
-    .. rubric:: Figure: NeXus Raw Data Hierarchy
-
-    .. _table.RawData:
-
-    .. literalinclude:: examples/hierarchy-raw.txt
-        :tab-width: 4
-        :linenos:
-        :language: guess
+	.. compound::
+	
+	    .. rubric:: NeXus Raw Data Hierarchy
+	
+	    .. _table.RawData:
+	
+	    .. literalinclude:: examples/hierarchy-raw.txt
+	        :tab-width: 4
+	        :linenos:
+	        :language: guess
 
 An ``NXentry`` describing raw data contains at least a ``NXsample``,
 one ``NXmonitor``,
@@ -80,16 +80,16 @@ Processed data, see figure  :ref:`Processed Data <table.ProcessedData>`,
 in this context means the results of a data reduction or
 data analysis program. Note that ``[]`` represents a 1D array.
 
-.. compound::
-
-    .. rubric:: Figure: NeXus Processed Data Hierarchy
-
-    .. _table.ProcessedData:
-
-    .. literalinclude:: examples/hierarchy-processed.txt
-        :tab-width: 4
-        :linenos:
-        :language: guess
+	.. compound::
+	
+	    .. rubric:: NeXus Processed Data Hierarchy
+	
+	    .. _table.ProcessedData:
+	
+	    .. literalinclude:: examples/hierarchy-processed.txt
+	        :tab-width: 4
+	        :linenos:
+	        :language: guess
 
 NeXus stores such data in a simplified
 ``NXentry`` structure. A processed data ``NXentry``
@@ -135,16 +135,16 @@ easily resolved. In order to solve this issue, the following scheme was implemen
 See figure :ref:`NeXus Multi Method Hierarchy <table.NXsubentry>` for an example hierarchy.
 Note that ``[,]`` represents a 2D array.
 
-.. compound::
-
-    .. rubric:: Figure: NeXus Multi Method Hierarchy
-
-    .. _table.NXsubentry:
-
-    .. literalinclude:: examples/hierarchy-subentry.txt
-        :tab-width: 4
-        :linenos:
-        :language: guess
+	.. compound::
+	
+	    .. rubric:: NeXus Multi Method Hierarchy
+	
+	    .. _table.NXsubentry:
+	
+	    .. literalinclude:: examples/hierarchy-subentry.txt
+	        :tab-width: 4
+	        :linenos:
+	        :language: guess
 
 .. _Rules-SpecialCases:
 
@@ -188,31 +188,31 @@ rotated around its rotation axis and data is collected in a single point
 detector. See figure :ref:`Simple Scan <table.SimpleScan>` for an overview.
 Then we have:
 
-- A dataset at ``NXentry/NXinstrument/NXdetector/data``
-  of length ``NP`` containing
-  the count data.
-
-- A dataset at ``NXentry/NXsample/rotation_angle``
-  of length ``NP`` containing
-  the positions of ``rotation_angle`` at the various steps of the scan.
-
-- ``NXdata`` contains links to:
-
-  + ``NXentry/NXinstrument/NXdetector/data``
-  + ``NXentry/NXsample/rotation_angle``
-
-- All other data fields have their normal dimensions.
-
-.. compound::
-
-    .. rubric:: Figure: NeXus Simple Scan Example
-
-    .. _table.SimpleScan:
-
-    .. literalinclude:: examples/simplescan.txt
-        :tab-width: 4
-        :linenos:
-        :language: guess
+	- A dataset at ``NXentry/NXinstrument/NXdetector/data``
+	  of length ``NP`` containing
+	  the count data.
+	
+	- A dataset at ``NXentry/NXsample/rotation_angle``
+	  of length ``NP`` containing
+	  the positions of ``rotation_angle`` at the various steps of the scan.
+	
+	- ``NXdata`` contains links to:
+	
+	  + ``NXentry/NXinstrument/NXdetector/data``
+	  + ``NXentry/NXsample/rotation_angle``
+	
+	- All other data fields have their normal dimensions.
+	
+	.. compound::
+	
+	    .. rubric:: NeXus Simple Scan Example
+	
+	    .. _table.SimpleScan:
+	
+	    .. literalinclude:: examples/simplescan.txt
+	        :tab-width: 4
+	        :linenos:
+	        :language: guess
 
 Simple scan with area detector
 ------------------------------
@@ -222,16 +222,16 @@ times ``ysize`` pixels. The only thing which changes is that
 ``/NXentry/NXinstrument/NXdetector/data`` will have the dimensions
 ``NP, xsize, ysize``. See figure :ref:`Simple Scan with Area Detector <fig.SimpleScanArea>` for an overview.
 
-.. compound::
-
-    .. rubric:: Figure: NeXus Simple Scan Example with Area Detector
-
-    .. _fig.SimpleScanArea:
-
-    .. literalinclude:: examples/simplescanarea.txt
-        :tab-width: 4
-        :linenos:
-        :language: guess
+	.. compound::
+	
+	    .. rubric:: NeXus Simple Scan Example with Area Detector
+	
+	    .. _fig.SimpleScanArea:
+	
+	    .. literalinclude:: examples/simplescanarea.txt
+	        :tab-width: 4
+	        :linenos:
+	        :language: guess
 
 Complex *hkl* scan
 ------------------
@@ -289,7 +289,7 @@ varied during the scan. We then have:
 
 .. compound::
 
-    .. rubric:: Figure: NeXus Complex *hkl* Scan
+    .. rubric:: NeXus Complex *hkl* Scan
 
     .. _table.ComplexScan:
 
@@ -316,16 +316,16 @@ groups to demonstrate that such things are possible.
 Note that the length of the 1-D energy array is ``NE`` while
 the length of the 1-D temperature array is ``NT``
 
-.. compound::
-
-    .. rubric:: Figure: NeXus Multi-parameter scan: XAS
-
-    .. _table.XasScan:
-
-    .. literalinclude:: examples/xas.txt
-        :tab-width: 4
-        :linenos:
-        :language: guess
+	.. compound::
+	
+	    .. rubric:: NeXus Multi-parameter scan: XAS
+	
+	    .. _table.XasScan:
+	
+	    .. literalinclude:: examples/xas.txt
+	        :tab-width: 4
+	        :linenos:
+	        :language: guess
 
 .. _Rules-SpecialCases-Rastering:
 
@@ -365,13 +365,13 @@ to data for an instrument scientist or another expert.
 An example usage case is documented in  figure
 :ref:`NXcollection example <table.SimpleScanArea>`.
 
-.. compound::
-
-    .. rubric:: Figure: NXcollection Example
-
-    .. _table.NXcollection:
-
-    .. literalinclude:: examples/nxcollection.txt
-        :tab-width: 4
-        :linenos:
-        :language: guess
+	.. compound::
+	
+	    .. rubric:: ``NXcollection`` Example
+	
+	    .. _table.NXcollection:
+	
+	    .. literalinclude:: examples/nxcollection.txt
+	        :tab-width: 4
+	        :linenos:
+	        :language: guess

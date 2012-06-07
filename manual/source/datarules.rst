@@ -24,7 +24,7 @@ This set may be described by this regular expression syntax :index:`regular expr
 
 	.. RegExpName:
 
-    .. rubric:: Figure: Regular expression pattern for NXDL group and field names
+    .. rubric:: Regular expression pattern for NXDL group and field names
     
     .. code-block:: guess
        :linenos:
@@ -96,7 +96,7 @@ make when incrementing the dimension. This is best explained by some examples.
 
 .. compound::
 
-    .. rubric:: Figure: Offset and Stride for 1 D data:
+    .. rubric:: Offset and Stride for 1 D data:
 
     .. literalinclude:: examples/offset-stride-1d.txt
         :tab-width: 4
@@ -105,7 +105,7 @@ make when incrementing the dimension. This is best explained by some examples.
 
 .. compound::
 
-    .. rubric:: Figure: Offset and Stride for 2D Data
+    .. rubric:: Offset and Stride for 2D Data
 
     .. literalinclude:: examples/offset-stride-2d.txt
         :tab-width: 4
@@ -114,7 +114,7 @@ make when incrementing the dimension. This is best explained by some examples.
 
 .. compound::
 
-    .. rubric:: Figure: Offset and Stride for 3D Data
+    .. rubric:: Offset and Stride for 3D Data
 
     .. literalinclude:: examples/offset-stride-3d.txt
         :tab-width: 4
@@ -221,7 +221,7 @@ and is appropriate for machine sorting.
 
 .. compound::
 
-    .. rubric:: Figure: strftime() format specifiers for ISO-8601 time
+    .. rubric:: strftime() format specifiers for ISO-8601 time
 
     .. code-block:: guess
     
@@ -316,7 +316,7 @@ For example:
 
 .. compound::
 
-    .. rubric:: Figure: Preferred way of denoting axes
+    .. rubric:: Preferred way of denoting axes
 
     .. literalinclude:: examples/axes-preferred.xml.txt
         :tab-width: 4
@@ -342,7 +342,7 @@ would contain:
 
 .. compound::
 
-    .. rubric:: Figure: Original way of denoting axes
+    .. rubric:: Original way of denoting axes
 
     .. literalinclude:: examples/axes-old.xml.txt
         :tab-width: 4

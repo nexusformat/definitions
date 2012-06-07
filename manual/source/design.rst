@@ -90,24 +90,36 @@ store both experimental results (counts, detector angles, etc), and other
 information associated with the experiment (start and end times, user names,
 etc). Data fields are identified by their names, which must be unique within the
 group in which they are stored.
+	
+	.. compound::
 
-================ ==================================== ============================================================
-Name             Type                                 Description
-================ ==================================== ============================================================
-file_name        NX_CHAR                              File name of original NeXus file to assist in identification
-                                                      if the external name has been changed
-file_time        ISO 8601                             Date and time of file creation
-
-                 .. index::
-                    single: ISO 8601
-                    single: time
-                    single: date and time; time
-                    single: date and time
-                    see: date and time; ISO 8601
-file_update_time ISO 8601                             Date and time of last file change at close
-NeXus_version    NX_CHAR                              Version of NeXus API used in writing the file
-creator          NX_CHAR                              Facility or program where the file originated
-================ ==================================== ============================================================
+		.. changed from table since sphinx PDF table columns were not sized correctly
+		
+		.. rubric::  Examples of data fields
+		
+		``file_name`` (*NX_CHAR*)
+			File name of original NeXus file
+			to assist in identification
+			if the external name has been changed
+		
+		.. index::
+		    single: ISO 8601
+		    single: time
+		    single: date and time; time
+		    single: date and time
+		    see: date and time; ISO 8601
+		
+		``file_time`` (*ISO 8601*)
+			Date and time of file creation
+		
+		``file_update_time`` (*ISO 8601*)
+			Date and time of last file change at close
+		
+		``NeXus_version`` (*NX_CHAR*)
+			Version of NeXus API used in writing the file
+		
+		``creator`` (*NX_CHAR*)
+			Facility or program where the file originated
 
 
 .. _Design-Attributes:
@@ -129,70 +141,87 @@ in the :ref:`global attributes <table.GlobalAttributes>`.
 that identify the NeXus version, file creation time, etc.
 Attributes are identified by their
 names, which must be unique in each field.
-
-.. FIXME: This table looks bad in PDF.  Fix it.
-
-================== ======== ========================================================================
-Name               Type     Description
-================== ======== ========================================================================
-units              NX_CHAR  :index:`Data units <units>`
-                            given as character strings,
-                            must conform to the NeXus units standard.   See the
-                            :ref:`Design-Units`
-                            section for details.
-signal             NX_INT   Defines which data set contains the signal
-                            to be :index:`plotted <NeXus basic motivation; default plot>`,
-                            use ``signal="1"`` for main signal
-axes               NX_CHAR  :index:`axes <axes>` defines the names of the 
-                            :index:`dimension scales <dimension scale>`
-                            for this data set
-                            as a colon-delimited list.  Note that some legacy data files
-                            may use a comma as delimiter.
-
-                            For example, suppose ``data`` is an array with
-                            elements ``data[j][i]`` (C) or ``data(i,j)``
-                            (Fortran), with dimension scales ``time_of_flight[i]``
-                            and ``polar_angle[j]``,
-                            then ``data`` would have an
-                            attribute ``axes="polar_angle:time_of_flight"``
-                            in addition to an attribute ``signal="1"``.
-axis               NX_INT   :index:`axis <axis>`
-                            The original way of designating data for 
-                            :index:`plotting <NeXus basic motivation; default plot>`,
-                            now superceded by
-                            the ``axes`` attribute.
-                            This defines
-                            the :index:`rank <rank>`
-                            of the signal data for which this data set is a
-                            :index:`dimension scale <dimension scale>`
-                            in order of the fastest varying index (see a
-                            longer discussion in the section on ``NXdata`` structure), i.e. if
-                            the array being stored is ``data``, with elements
-                            ``data[j][i]`` in C and ``data(i,j)`` in
-                            Fortran, ``axis`` would have the following values:
-                            ith dimension (``axis="1"``),
-                            jth dimension (``axis="2"``),
-                            etc.
-primary            NX_INT32 Defines the order of preference 
-                            for :index:`dimension scales <dimension scale>`
-                            which apply to the same :index:`rank <rank>`
-                            of signal data.  Use ``primary="1"`` to indicate preferred
-                            dimension scale
-long_name          NX_CHAR  Defines title of signal data or axis label of dimension
-                            scale
-calibration_status NX_CHAR  Defines status of data value - set to ``Nominal`` or
-                            ``Measured``
-offset             NX_INT   Rank values off offsets to use for each 
-                            :index:`dimension <dimension>`
-                            if the data is not in C storage order
-stride             NX_INT   Rank values of steps to use when incrementing the dimension
-vector             NX_FLOAT 3 values describing the axis of rotation or the direction of translation
-interpretation     NX_CHAR  Describes how to display the data.  Allowed values include:
-                            ``scaler`` (0-D data),
-                            ``spectrum`` (1-D data),
-                            ``image`` (2-D data), or
-                            ``vertex`` (3-D data).
-================== ======== ========================================================================
+	
+	.. compound::
+	
+		.. rubric::  Examples of data attributes
+	
+		``units`` (*NX_CHAR*)
+			:index:`Data units <units>` given as character strings,
+			must conform to the NeXus units standard.   See the
+			:ref:`Design-Units` section for details.
+		
+		``signal`` (*NX_INT*)
+			Defines which data set contains the signal
+			to be :index:`plotted <NeXus basic motivation; default plot>`,
+			use ``signal="1"`` for main signal
+		
+		``axes`` (*NX_CHAR*)
+			:index:`axes <axes>` defines the names of the 
+			:index:`dimension scales <dimension scale>`
+			for this data set
+			as a colon-delimited list.  Note that some legacy data files
+			may use a comma as delimiter.
+			
+			For example, suppose ``data`` is an array with
+			elements ``data[j][i]`` (C) or ``data(i,j)``
+			(Fortran), with dimension scales ``time_of_flight[i]``
+			and ``polar_angle[j]``,
+			then ``data`` would have an
+			attribute ``axes="polar_angle:time_of_flight"``
+			in addition to an attribute ``signal="1"``.
+		
+		.. index::
+			axis
+		
+		``axis`` (*NX_INT*)
+			The original way of designating data for 
+			:index:`plotting <NeXus basic motivation; default plot>`,
+			now superceded by the ``axes`` attribute.
+			This defines the :index:`rank <rank>`
+			of the signal data for which this data set is a
+			:index:`dimension scale <dimension scale>`
+			in order of the fastest varying index (see a
+			longer discussion in the section on ``NXdata`` structure), i.e. if
+			the array being stored is ``data``, with elements
+			``data[j][i]`` in C and ``data(i,j)`` in
+			Fortran, ``axis`` would have the following values:
+			ith dimension (``axis="1"``),
+			jth dimension (``axis="2"``), etc.
+		
+		``primary`` (*NX_INT32*)
+			Defines the order of preference 
+			for :index:`dimension scales <dimension scale>`
+			which apply to the same :index:`rank <rank>`
+			of signal data.  Use ``primary="1"`` to indicate preferred
+			dimension scale
+		
+		``long_name`` (*NX_CHAR*)
+			Defines title of signal data or axis label of dimension scale
+		
+		``calibration_status`` (*NX_CHAR*)
+			Defines	status of data value - set to ``Nominal`` or ``Measured``
+		
+		``offset`` (*NX_INT*)
+			Rank values off offsets to use for each 
+			:index:`dimension <dimension>`
+			if the data is not in C storage order
+		
+		``stride`` (*NX_INT*)
+			Rank values of steps to use when incrementing the dimension
+		
+		``vector`` (*NX_FLOAT*)
+			3 values describing the axis of rotation 
+			or the direction of translation
+		
+		``interpretation`` (*NX_CHAR*)
+			Describes how to display the data.  
+			Allowed values include:
+			
+			* ``scaler`` (0-D data)
+			* ``spectrum`` (1-D data)
+			* ``image`` (2-D data)
+			* ``vertex`` (3-D data)
 
 
 .. _Design-Links:
@@ -221,15 +250,26 @@ a more descriptive representation of the concept of linking.
 
     .. figure:: img/data-linking.png
         :alt: fig.data-linking
-        :width: 80%
+        :width: 60%
 
-        Figure: Linking in a NeXus file
+        Linking in a NeXus file
 
-.. TODO: weave this content about HDF5 external file links into the manual near here
 
-..  Here is an example (from DLS) of an external file link in HDF5
-	.. codeblock::
+NeXus also allows for links to external files.
+Here is an example (from Diamond Light Source) 
+of an external file link in HDF5:
 
+	.. TODO: and why might we want to do this?
+	   * Data file (with metadata from DAS) written by beam line
+	   * image data file written by COTS vendor software
+
+	.. compound::
+	
+		.. rubric:: Example of linking to data in an external HDF5 file
+		
+		.. code-block:: guess
+			:linenos:
+			
 			 EXTERNAL_LINK "data" {
 				TARGETFILE "/dls/i22/data/2012/sm7594-1/i22-69201-Pilatus2M.h5"
 				TARGETPATH "entry/instrument/detector/data"
@@ -292,7 +332,8 @@ But there are some base classes which have special uses which need to be mention
     or a photo of your boss.
 
 :ref:`NXgeometry`
-    ``NXgeometry`` and its subgroups ``NXtranslation``,``NXorientation``, ``NXshape`` are  used to store absolute positions in the
+    ``NXgeometry`` and its subgroups ``NXtranslation``,
+    ``NXorientation``, ``NXshape`` are  used to store absolute positions in the
     laboratory coordinate system or to define shapes.
     
 These groups can appear anywhere in the NeXus hierarchy, where needed. Preferably close to the component they
@@ -372,9 +413,10 @@ which allows one to validate a NeXus file against a given application definition
 
 Another way to look at a NeXus application definition is as a
 contract between a file producer (writer) and a file consumer (reader).
-The contract reads:
-*If you write your files following a particular NeXus application definition,
-I can process these files with my software.*
+
+	The contract reads:
+	*If you write your files following a particular NeXus application definition,
+	I can process these files with my software.*
 
 Yet another way to look at a NeXus application definition is to understand it as an interface definition
 between data files and the software which uses this file. Much like an interface in the Java or other modern
@@ -421,9 +463,12 @@ for NeXus. ``NXgeometry`` was expanded to allow the description of shapes
 when the demand came up. Later, members of the 
 :index:`CIF <coordinate systems; CIF>` team
 convinced the NeXus team of the beauty of transformation matrices and
-NeXus was enhanced to store the necessary information to fully map CIF concepts. Not much had to be changed though as we
-choose to document the existing angles in CIF terms. The CIF system allows to store arbitrary operations and nevertheless calculate
-absolute coordinates in the laboratory coordinate system. It also allows to convert from local, for example detector
+NeXus was enhanced to store the necessary information to fully map CIF 
+concepts. Not much had to be changed though as we
+choose to document the existing angles in CIF terms. The CIF system 
+allows to store arbitrary operations and nevertheless calculate
+absolute coordinates in the laboratory coordinate system. It also 
+allows to convert from local, for example detector
 coordinate systems, to absolute coordinates in the laboratory system.
 
 .. _Design-Coordinate-NXgeometry:
@@ -456,7 +501,7 @@ illustrated in figure :ref:`McStas Coordinate System <fig.mcstasccord>`.
         :alt: fig.mcstas-coord
         :width: 80%
 
-        Figure: The McStas Coordinate System
+        The McStas Coordinate System
 
 .. note:: The NeXus definition of :math:`+z` is opposite to that
           in the :index:`IUCr <coordinate systems; IUCr>` 
@@ -465,9 +510,11 @@ illustrated in figure :ref:`McStas Coordinate System <fig.mcstasccord>`.
 
 The NeXus NXgeometry class directly uses the 
 :index:`McStas coordinate system <coordinate systems; McStas>`.
-NXgeometry classes can appear in any
-component in order to specify its position. The suggested name to use is geometry. In NXgeometry the NXtranslation/values
-field defines the absolute position of the component in the McStas coordinate system. The NXorientation/value field describes
+``NXgeometry`` classes can appear in any
+component in order to specify its position. 
+The suggested name to use is geometry. 
+In ``NXgeometry`` the ``NXtranslation/values``
+field defines the absolute position of the component in the McStas coordinate system. The ``NXorientation/value`` field describes
 the orientation of the component as a vector of in the McStas coordinate system.
 
 ..  Comment by MK: I think NXgeometry sucks. It is decided upon, so we have to document it as is. But I do think that
@@ -502,7 +549,7 @@ In order to understand this spherical polar coordinate system it is helpful
 to look initially at the common condition that *azimuthal_angle*
 is zero. This corresponds to working directly in the horizontal scattering
 plane of the instrument. In this case *polar_angle* maps
-directly to the setting commonly known as *two theta*.
+directly to the setting commonly known as *two theta* (:math:`2\theta`).
 Now, there are instruments where components live outside of the scattering plane.
 Most notably detectors. In order to describe such components we first apply
 the tilt out of the horizontal scattering plane as the
@@ -511,7 +558,7 @@ to the component. The beauty of this is that *polar_angle*
 is always *two theta*. Which, in the case of a component
 out of the horizontal scattering plane, is not identical to the value read
 from the motor responsible for rotating the component. This situation is shown in
-:ref:`Figure: Polar Coordinate System <fig.polar-geometry-figure>`.
+:ref:`Polar Coordinate System <fig.polar-geometry-figure>`.
 
 .. compound::
 
@@ -521,7 +568,7 @@ from the motor responsible for rotating the component. This situation is shown i
         :alt: fig.polar-geometry-figure
         :width: 80%
 
-        Figure: NeXus Simple (Spherical Polar) Coordinate System
+        NeXus Simple (Spherical Polar) Coordinate System
 
 .. _CoordinateTransformations:
 
@@ -544,17 +591,17 @@ operation: this can be studied under the condition that all other operations are
 
 In order to use coordinate transformations, several morsels of information need to be known:
 
-**Type**
-    The type of operation: rotation or translation
-
-**Direction**
-    The direction of the translation or the direction of the rotation axis
-
-**Value**
-    The angle of rotation or the length of the translation
-
-**Order**
-    The order of operations to apply to move a component into its place.
+	**Type**
+	    The type of operation: rotation or translation
+	
+	**Direction**
+	    The direction of the translation or the direction of the rotation axis
+	
+	**Value**
+	    The angle of rotation or the length of the translation
+	
+	**Order**
+	    The order of operations to apply to move a component into its place.
 
 ..  TODO: restore this table after its use has been decided, see definitions ticket #112
 
@@ -592,13 +639,13 @@ can be calculated.
 
 For the NeXus spherical coordinate system, the order is implicit and is given in the next example.
 
-.. compound::
-
-    .. rubric:: Figure: implicit order of NeXus spherical coordinate system
-    
-    .. code-block:: text
-
-	    azimuthal_angle:polar_angle:distance
+	.. compound::
+	
+	    .. rubric:: implicit order of NeXus spherical coordinate system
+	    
+	    .. code-block:: text
+	
+		    azimuthal_angle:polar_angle:distance
 
 This is also a nice example of the application of transformation matrices:
 

@@ -32,7 +32,7 @@ Links are made from that data to the ``/entry/data`` group.
     .. figure:: img/ex_writer_2_1.png
         :alt: fig.writer_2_1
 
-        Figure: h5py example showing linking in a NeXus file
+        h5py example showing linking in a NeXus file
 
 The Python code to build an HDF5 data file with that structure (using
 numerical data from the previous example) is shown below.

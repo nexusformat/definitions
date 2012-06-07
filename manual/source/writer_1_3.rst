@@ -24,7 +24,7 @@ as shown in the next figure.
     .. figure:: img/ex_writer_1_3.png
         :alt: fig.simple-example-h5py
 
-        Figure: Simple Example
+        Simple Example
 
 In the above figure, the data file (``writer_1_3_h5py.hdf5``) contains
 a hierarchy of items, starting with an ``NXentry`` named ``entry``.

@@ -43,7 +43,7 @@ use any of the existing NXDL application definitions.
     .. figure:: img/woni-schematic.png
         :alt: FigWoniSchematic
 
-        Figure: The (fictional) WONI example powder diffractometer
+        The (fictional) WONI example powder diffractometer
 
 WONI uses collimators and a monochromator to illuminate the
 sample with neutrons of a selected wavelength as described in
@@ -59,7 +59,7 @@ There is a generous background to the data plus quite a number of diffraction pe
     .. figure:: img/woni-powderimage.png
         :alt: FigWoniPowderData
 
-        Figure: Example Powder Diffraction Plot from (fictional) WONI at HYNES
+        Example Powder Diffraction Plot from (fictional) WONI at HYNES
 
 Constructing a NeXus file for WONI
 ##################################
@@ -78,7 +78,7 @@ figure :ref:`FigShell`. In order to arrive at a full neXus file the following st
 
 .. compound::
 
-    .. rubric:: Figure: Basic structure of a NeXus file
+    .. rubric:: Basic structure of a NeXus file
 
     .. _FigShell:
 
@@ -111,7 +111,7 @@ the basic NeXus file the file looks like in figure :ref:`FigShellMono`
 
 .. compound::
 
-    .. rubric:: Figure: Basic structure of a NeXus file with a monochromator added
+    .. rubric:: Basic structure of a NeXus file with a monochromator added
 
     .. _FigShellMono:
 
@@ -378,7 +378,7 @@ some of the documentation strings.
 
 .. compound::
 
-    .. rubric:: Figure: NXDL template file
+    .. rubric:: NXDL template file
 
     .. literalinclude:: examples/NX__template__.nxdl.xml
         :tab-width: 4

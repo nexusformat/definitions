@@ -42,7 +42,7 @@ Consider this prototype example:
 
 .. compound::
 
-    .. rubric:: Figure: example of NeXus data file structure
+    .. rubric:: example of NeXus data file structure
 
     .. _examples-prototype:
 

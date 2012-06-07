@@ -18,7 +18,7 @@ Compare these code examples with :ref:`NAPI-Examples`.
 
 .. compound::
 
-    .. rubric:: Figure: Writing a simple NeXus file using native HDF5 commands
+    .. rubric:: Writing a simple NeXus file using native HDF5 commands
 
     .. literalinclude:: examples/nxh5write.c
         :tab-width: 4
@@ -27,7 +27,7 @@ Compare these code examples with :ref:`NAPI-Examples`.
 
 .. compound::
 
-    .. rubric:: Figure: Reading a simple NeXus file using native HDF5 commands
+    .. rubric:: Reading a simple NeXus file using native HDF5 commands
 
     .. literalinclude:: examples/nxh5read.c
         :tab-width: 4

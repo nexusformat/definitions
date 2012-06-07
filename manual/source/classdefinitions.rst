@@ -131,7 +131,7 @@ In the above example, the fields might appear in a NeXus XML data file as
 
 .. compound::
 
-    .. rubric:: Figure: Example fragment of a NeXus XML data file
+    .. rubric:: Example fragment of a NeXus XML data file
 
     .. literalinclude:: examples/xml-data-file-fragment.xml.txt
         :tab-width: 4

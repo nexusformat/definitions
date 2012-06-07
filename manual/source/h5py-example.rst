@@ -33,9 +33,9 @@ Volume I <fig.simple-example>`) except that the names will be different, as show
 	.. figure:: img/Simple.png
 	    :alt: simple data structure
 	
-	    Figure: data structure, (from Introduction)
+	    data structure, (from Introduction)
 	
-	.. rubric:: Figure: our h5py example
+	.. rubric:: our h5py example
 	
 	.. literalinclude:: examples/h5py/data-model.txt
 	    :tab-width: 4
@@ -47,9 +47,9 @@ Volume I <fig.simple-example>`) except that the names will be different, as show
 	.. figure:: examples/h5py/s00008.png
 	    :alt: Example-H5py-Plot
 	
-	    Figure: plot of our *mr_scan*
+	    plot of our *mr_scan*
 	
-	.. rubric:: Figure: two-column data for our *mr_scan*
+	.. rubric:: two-column data for our *mr_scan*
 	
 	.. literalinclude:: examples/h5py/input.dat
 	    :tab-width: 4
@@ -116,7 +116,7 @@ corrupt the file when the program quits.
 
 .. compound::
 
-    .. rubric:: Figure: *BasicWriter.py*: Write a NeXus HDF5 file using Python with h5py
+    .. rubric:: *BasicWriter.py*: Write a NeXus HDF5 file using Python with h5py
 
     .. literalinclude:: examples/h5py/BasicWriter.py
 	    :tab-width: 4
@@ -145,7 +145,7 @@ extracting other useful stuff from the file.
 
 .. compound::
 
-    .. rubric:: Figure: *BasicReader.py*: Read a NeXus HDF5 file using Python with h5py
+    .. rubric:: *BasicReader.py*: Read a NeXus HDF5 file using Python with h5py
 
     .. literalinclude:: examples/h5py/BasicReader.py
 	    :tab-width: 4
@@ -156,7 +156,7 @@ Output from ``BasicReader.py`` is shown in :ref:`Example-H5py-Output`.
 
 .. compound::
 
-    .. rubric:: Figure: Output from ``BasicReader.py``
+    .. rubric:: Output from ``BasicReader.py``
 
     .. literalinclude:: examples/h5py/output.txt
 	    :tab-width: 4
@@ -196,7 +196,7 @@ this is not a problem.
     .. figure:: examples/h5py/nxvalidate.png
         :alt: fig-Example-H5py-Validation
 
-        Figure: NeXus validation of our HDF5 file
+        NeXus validation of our HDF5 file
 
 .. note:: Note that ``NXvalidate`` shows
           only the first data field for *mr* and
@@ -230,7 +230,7 @@ it that way by default.
     .. figure:: examples/h5py/nexpy.png
         :alt: fig-Example-H5py-nexpy-plot
 
-        Figure: plot of our *mr_scan* using NeXpy
+        plot of our *mr_scan* using NeXpy
 
 
 

@@ -26,7 +26,7 @@ Compare these code examples with :ref:`native-HDF5-Examples`.
 
 .. compound::
 
-    .. rubric:: Figure: NAPI C Example: write simple NeXus file
+    .. rubric:: NAPI C Example: write simple NeXus file
 
     .. literalinclude:: examples/napi-example.c
         :tab-width: 4
@@ -35,7 +35,7 @@ Compare these code examples with :ref:`native-HDF5-Examples`.
 
 .. compound::
 
-    .. rubric:: Figure: NAPI F77 Example: write simple NeXus file
+    .. rubric:: NAPI F77 Example: write simple NeXus file
 
     .. literalinclude:: examples/napi-example.f77
         :tab-width: 4
@@ -44,7 +44,7 @@ Compare these code examples with :ref:`native-HDF5-Examples`.
 
 .. compound::
 
-    .. rubric:: Figure: NAPI F90 Example: write simple NeXus file
+    .. rubric:: NAPI F90 Example: write simple NeXus file
 
     .. literalinclude:: examples/napi-example.f90
         :tab-width: 4
@@ -67,7 +67,7 @@ which each value of the array is stored in a NeXus HDF5 data file.
 
 .. compound::
 
-    .. rubric:: Figure: NAPI Python Example: write simple NeXus file
+    .. rubric:: NAPI Python Example: write simple NeXus file
 
     .. literalinclude:: examples/simple3D.py
         :tab-width: 4
@@ -83,7 +83,7 @@ the ``h5dump`` tool provided as part of the HDF5 tool kit:
 
 .. compound::
 
-    .. rubric:: Figure: NAPI Python Example: ``h5dump`` output of NeXus HDF5 file
+    .. rubric:: NAPI Python Example: ``h5dump`` output of NeXus HDF5 file
 
     .. literalinclude:: examples/simple3D.h5dump.txt
         :tab-width: 4
@@ -100,7 +100,7 @@ HDF5 file that we create.
 
 .. compound::
 
-    .. rubric:: Figure: NAPI Python Example: ``h5toText`` output of NeXus HDF5 file
+    .. rubric:: NAPI Python Example: ``h5toText`` output of NeXus HDF5 file
 
     .. literalinclude:: examples/simple3D.xture.txt
         :tab-width: 4

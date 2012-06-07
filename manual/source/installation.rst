@@ -8,12 +8,14 @@
 Installation
 ============
 
-This section descibes how to install the NeXus API and details the requirements. The NeXus
+This section describes how to install the NeXus API and details the requirements. The NeXus
 API is distributed under the terms of the GNU Lesser Public License.
 
 The source code and binary versions for some popular platforms can be found on
-http://download.nexusformat.org/kits/. Up to date instructions can be found on the :ref:`Wiki <http://www.nexusformat.org/Download/>`
-In case you need help feel free to contact the :ref:`nexus mailing list <http://lists.nexusformat.org/mailman/listinfo/nexus>`.
+http://download.nexusformat.org/kits/. Up to date instructions can be found on 
+the :ref:`Wiki <http://www.nexusformat.org/Download/>`
+In case you need help feel free to contact the 
+:ref:`nexus mailing list <http://lists.nexusformat.org/mailman/listinfo/nexus>`.
 
 .. _Installation-Binary:
 

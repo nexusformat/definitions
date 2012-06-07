@@ -120,7 +120,7 @@ Here are examples for a UNIX shell and the Windows shell.
 
 .. compound::
 
-    .. rubric:: Figure: UNIX example shell script to start ``jnexus.jar``
+    .. rubric:: UNIX example shell script to start ``jnexus.jar``
 
     .. literalinclude:: examples/napi-java-jnexus.sh
         :tab-width: 4
@@ -129,7 +129,7 @@ Here are examples for a UNIX shell and the Windows shell.
 
 .. compound::
 
-    .. rubric:: Figure: Windows 32 example batch file to start ``jnexus.jar``
+    .. rubric:: Windows 32 example batch file to start ``jnexus.jar``
 
     .. literalinclude:: examples/napi-java-jnexus.bat
         :tab-width: 4
@@ -163,7 +163,7 @@ to get a feeling for the API:
 
 .. compound::
 
-    .. rubric:: Figure: fragment for opening and closing
+    .. rubric:: fragment for opening and closing
 
     .. literalinclude:: examples/napi-java-prog1.java
         :tab-width: 4
@@ -204,7 +204,7 @@ Again a code sample which shows how this looks like:
 
 .. compound::
 
-    .. rubric:: Figure: fragment for writing and reading
+    .. rubric:: fragment for writing and reading
 
     .. literalinclude:: examples/napi-java-datarw1.java
         :tab-width: 4
@@ -230,7 +230,7 @@ converted to and from bytes when reading string data. See a writing example:
 
 .. compound::
 
-    .. rubric:: Figure: String writing
+    .. rubric:: String writing
 
     .. literalinclude:: examples/napi-java-datarw2.java
         :tab-width: 4
@@ -241,7 +241,7 @@ And reading:
 
 .. compound::
 
-    .. rubric:: Figure: String reading
+    .. rubric:: String reading
 
     .. literalinclude:: examples/napi-java-datarw2.java
         :tab-width: 4
@@ -261,7 +261,7 @@ Let us compare the C-API and Java-API signatures of the
 
 .. compound::
 
-    .. rubric:: Figure: C API signature of ``getinfo()``
+    .. rubric:: C API signature of ``getinfo()``
 
     .. literalinclude:: examples/frag-c-api-sig-getinfo.c
         :tab-width: 4
@@ -270,7 +270,7 @@ Let us compare the C-API and Java-API signatures of the
 
 .. compound::
 
-    .. rubric:: Figure: Java API signature of ``getinfo()``
+    .. rubric:: Java API signature of ``getinfo()``
 
     .. literalinclude:: examples/frag-c-api-sig-getinfo.java
         :tab-width: 4
@@ -290,7 +290,7 @@ stored object for the key. Thus the code for a vGroup search looks like this:
 
 .. compound::
 
-    .. rubric:: Figure: vGroup search
+    .. rubric:: vGroup search
 
     .. literalinclude:: examples/napi-java-inquiry1.java
         :tab-width: 4
@@ -303,7 +303,7 @@ information as value. Thus an attribute search looks like this in the Java-API:
 
 .. compound::
 
-    .. rubric:: Figure: attribute search
+    .. rubric:: attribute search
 
     .. literalinclude:: examples/napi-java-inquiry2.java
         :tab-width: 4
