@@ -123,13 +123,10 @@ size and array dimensions. In addition to the types in the following table, the
 ``NAPI`` type is defined when one wishes to permit a field
 with any of these data types.
 
-..  Generated from ../nxdlTypes.xsd via an XSLT transformation
-    xsltproc ../../xslt/nxdl_units2docbook.xsl ../../nxdlTypes.xsd > types.xml
+..  Generated from ../nxdlTypes.xsd via a custom Python tool
+    ../../utils/types2rst.py ../../nxdlTypes.xsd > types.table
 
-.. literalinclude:: types.xml
-    :tab-width: 4
-    :linenos:
-    :language: guess
+.. include:: types.table
 
 ..  + + + + + + + + + + +
 
@@ -143,13 +140,10 @@ valid units consistent with the section on
 The values for unit categories are restricted (by
 an enumeration) to the following table.
 
-..  Generated from ../nxdlTypes.xsd via an XSLT transformation
-    xsltproc ../../xslt/nxdl_units2docbook.xsl ../../nxdlTypes.xsd > units.xml
+..  Generated from ../nxdlTypes.xsd via a custom Python tool
+    ../../utils/units2rst.py ../../nxdlTypes.xsd > units.table
 
-.. literalinclude:: units.xml
-    :tab-width: 4
-    :linenos:
-    :language: guess
+.. include:: units.table
 
 ..  + + + + + + + + + + +
 
