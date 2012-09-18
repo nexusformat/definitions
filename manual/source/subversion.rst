@@ -10,7 +10,7 @@ NeXus Subversion Repositories
 
 NeXus NXDL class definitions (both base classes and instruments) and
 the NeXus code library source are held in a
-:ref:`subversion repository <http://subversion.tigris.org>`.
+:ref:`subversion repository <http://subversion.apache.org>`.
 The repository is world readable and though you can browse the
 :ref:`NeXus code library and applications <http://svn.nexusformat.org/code>`
 or

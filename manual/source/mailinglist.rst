@@ -43,7 +43,7 @@ There are several mailing lists associated with NeXus.
     + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-developers
     + Archive: http://lists.nexusformat.org/pipermail/nexus-developers
     
-    Subversion (http://subversion.tigris.org)
+    Subversion (http://subversion.apache.org)
 	    is the revision control system used by the NeXus developers.
     TRAC (http://trac.edgewall.org)
 	    is the issue tracking and bug reporting system used by the NeXus developers.
