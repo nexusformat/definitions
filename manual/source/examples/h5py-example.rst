@@ -30,35 +30,37 @@ Volume I <fig.simple-example>`) except that the names will be different, as show
 
 .. compound::
 	
-	.. figure:: img/Simple.png
+	.. figure:: ../img/Simple.png
 	    :alt: simple data structure
 	
 	    data structure, (from Introduction)
 	
 	.. rubric:: our h5py example
 	
-	.. literalinclude:: examples/h5py/data-model.txt
+	.. literalinclude:: h5py/data-model.txt
 	    :tab-width: 4
 	    :linenos:
 	    :language: guess
 	
 	.. _Example-H5py-Plot:
 	
-	.. figure:: examples/h5py/s00008.png
+	.. figure:: h5py/s00008.png
 	    :alt: Example-H5py-Plot
 	
 	    plot of our *mr_scan*
 	
 	.. rubric:: two-column data for our *mr_scan*
 	
-	.. literalinclude:: examples/h5py/input.dat
+	.. literalinclude:: h5py/input.dat
 	    :tab-width: 4
 	    :linenos:
 	    :language: guess
 
-.. include:: writer_1_3.rst
-
-.. include:: writer_2_1.rst
+.. toctree::
+	:maxdepth: 1
+	
+	writer_1_3
+	writer_2_1
 
 .. _Example-H5py-complete:
 
@@ -93,10 +95,13 @@ Since we are not using the NAPI, our
 support library must create and set the ``NX_class`` attribute on each group.
 
 .. note:: We want to create the desired structure of
-          ``/entry:NXentry/mr_scan:NXdata/``. First, our support library calls ``nxentry =
-          f.create_group("entry")`` to create the ``NXentry`` group called
-          ``entry`` at the root level. Then, it calls ``nxdata =
-          nxentry.create_group("mr_scan")`` to create the ``NXentry`` group called
+          ``/entry:NXentry/mr_scan:NXdata/``. 
+          First, our support library calls 
+          ``nxentry = f.create_group("entry")`` 
+          to create the ``NXentry`` group called
+          ``entry`` at the root level. Then, it calls 
+          ``nxdata = nxentry.create_group("mr_scan")`` 
+          to create the ``NXentry`` group called
           ``entry`` as a child of the ``NXentry`` group.
 
 Next, we create a dataset called ``title`` to hold a title string that can
@@ -118,7 +123,7 @@ corrupt the file when the program quits.
 
     .. rubric:: *BasicWriter.py*: Write a NeXus HDF5 file using Python with h5py
 
-    .. literalinclude:: examples/h5py/BasicWriter.py
+    .. literalinclude:: h5py/BasicWriter.py
 	    :tab-width: 4
 	    :linenos:
 	    :language: guess
@@ -147,7 +152,7 @@ extracting other useful stuff from the file.
 
     .. rubric:: *BasicReader.py*: Read a NeXus HDF5 file using Python with h5py
 
-    .. literalinclude:: examples/h5py/BasicReader.py
+    .. literalinclude:: h5py/BasicReader.py
 	    :tab-width: 4
 	    :linenos:
 	    :language: guess
@@ -158,7 +163,7 @@ Output from ``BasicReader.py`` is shown in :ref:`Example-H5py-Output`.
 
     .. rubric:: Output from ``BasicReader.py``
 
-    .. literalinclude:: examples/h5py/output.txt
+    .. literalinclude:: h5py/output.txt
 	    :tab-width: 4
 	    :linenos:
 	    :language: text
@@ -193,7 +198,7 @@ this is not a problem.
 
     .. _fig-Example-H5py-Validation:
 
-    .. figure:: examples/h5py/nxvalidate.png
+    .. figure:: h5py/nxvalidate.png
         :alt: fig-Example-H5py-Validation
 
         NeXus validation of our HDF5 file
@@ -227,7 +232,7 @@ it that way by default.
 
     .. _fig-Example-H5py-nexpy-plot:
 
-    .. figure:: examples/h5py/nexpy.png
+    .. figure:: h5py/nexpy.png
         :alt: fig-Example-H5py-nexpy-plot
 
         plot of our *mr_scan* using NeXpy
@@ -259,7 +264,7 @@ various NeXus data components of
 In a smaller sense, this subroutine library (``my_lib``) fills the role of the NAPI for writing
 the data using h5py.
 
-.. literalinclude:: examples/h5py/my_lib.py
+.. literalinclude:: h5py/my_lib.py
     :tab-width: 4
     :linenos:
     :language: python
@@ -274,7 +279,7 @@ structure of the groups, datasets, attributes, and links in that file.
 There is a command-line option to print out more or less of the data
 in the dataset arrays.
 
-.. literalinclude:: examples/h5py/h5toText.py
+.. literalinclude:: h5py/h5toText.py
     :tab-width: 4
     :linenos:
     :language: python

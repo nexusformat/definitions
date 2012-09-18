@@ -27,7 +27,7 @@ Compare these code examples with :ref:`native-HDF5-Examples`.
 NAPI C Example: write simple NeXus file
 +++++++++++++++++++++++++++++++++++++++++++++
 
-.. literalinclude:: examples/napi-example.c
+.. literalinclude:: napi-example.c
     :tab-width: 4
     :linenos:
     :language: guess
@@ -37,7 +37,7 @@ NAPI F77 Example: write simple NeXus file
 
 .. note:: The F77 interface is no longer being developed.
 
-.. literalinclude:: examples/napi-example.f77
+.. literalinclude:: napi-example.f77
     :tab-width: 4
     :linenos:
     :language: guess
@@ -45,7 +45,7 @@ NAPI F77 Example: write simple NeXus file
 NAPI F90 Example: write simple NeXus file
 ++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. literalinclude:: examples/napi-example.f90
+.. literalinclude:: napi-example.f90
     :tab-width: 4
     :linenos:
     :language: guess
@@ -71,7 +71,7 @@ which each value of the array is stored in a NeXus HDF5 data file.
 NAPI Python Example: write simple NeXus file
 ++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. literalinclude:: examples/simple3D.py
+.. literalinclude:: simple3D.py
     :tab-width: 4
     :linenos:
     :language: guess
@@ -89,7 +89,7 @@ the ``h5dump`` tool provided as part of the HDF5 tool kit:
 NAPI Python Example: ``h5dump`` output of NeXus HDF5 file
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. literalinclude:: examples/simple3D.h5dump.txt
+.. literalinclude:: simple3D.h5dump.txt
     :tab-width: 4
     :linenos:
     :language: guess
@@ -108,7 +108,7 @@ HDF5 file that we create.
 NAPI Python Example: ``h5toText`` output of NeXus HDF5 file
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. literalinclude:: examples/simple3D.xture.txt
+.. literalinclude:: simple3D.xture.txt
     :tab-width: 4
     :linenos:
     :language: guess

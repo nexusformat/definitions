@@ -24,7 +24,7 @@ Various examples are given that show how to read and write NeXus data files usin
 .. toctree::
 	:maxdepth: 1
 	
-	ex_code_napi
+	examples/code_napi
 
 .. _Examples.nonNAPI:
 
@@ -39,6 +39,6 @@ supported by NeXus (HDF4, HDF5, or XML).
 .. toctree::
 	:maxdepth: 1
 
-	ex_code_native
-	h5py-example
-	lrmecs-example
+	examples/code_native
+	examples/h5py-example
+	examples/lrmecs-example

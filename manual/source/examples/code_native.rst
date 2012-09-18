@@ -19,7 +19,7 @@ Compare these code examples with :ref:`NAPI-Examples`.
 Writing a simple NeXus file using native HDF5 commands in C
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. literalinclude:: examples/nxh5write.c
+.. literalinclude:: nxh5write.c
     :tab-width: 4
     :linenos:
     :language: guess
@@ -27,7 +27,7 @@ Writing a simple NeXus file using native HDF5 commands in C
 Reading a simple NeXus file using native HDF5 commands in C
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. literalinclude:: examples/nxh5read.c
+.. literalinclude:: nxh5read.c
     :tab-width: 4
     :linenos:
     :language: guess
