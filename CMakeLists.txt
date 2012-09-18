@@ -78,7 +78,7 @@ endforeach()
 # CMAKE_INSTALL_PREFIX is only used if CMAKE_SET_DESTDIR is true,
 # so it will not be used in zip and tgz packages
 if(UNIX)
-    set(CMAKE_INSTALL_PREFIX "/usr/share/nexus/")
+    set(CMAKE_INSTALL_PREFIX "/usr/share/nexus/" CACHE PATH "")
 endif()
 set(NEXUS_DEFINITIONS "definitions")
 set(NEXUS_MANUAL "manual")
