@@ -195,7 +195,7 @@ Many Uniform Resource Locators (URLs) have been used in this section.
 This is a table describing them.
 
 Subversion revision management software
-    http://subversion.tigris.org/
+    http://subversion.apache.org/
 
 ViewVC versions control repository viewing software
     http://www.viewvc.org/
