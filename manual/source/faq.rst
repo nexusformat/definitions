@@ -14,8 +14,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     This is not easy to say, not all facilities using NeXus actively
     participate in the committee. Some facilities have reported their
-    adoption status on the
-    :role:`Facilities Wiki page <http://www.nexusformat.org/Facilities>`.
+    adoption status on the `Facilities Wiki page <http://www.nexusformat.org/Facilities>`_.
     Please have a look at this list. Keep in mind that it is not
     complete.
 
@@ -23,7 +22,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     NeXus files are not per se binary. If you use the XML backend the
     data are stored in a relatively human readable form (see
-    :role:`this example <http://trac.nexusformat.org/definitions/browser/exampledata/code/xml/NXtest.xml.txt>`).
+    `this example <http://trac.nexusformat.org/definitions/browser/exampledata/code/xml/NXtest.xml.txt>`_).
     This backend however is only recommended for very small data sets. With
     the multidimensional data that is routinely recorded on many modern
     instruments it is very difficult anyway to retrieve useful
@@ -79,13 +78,13 @@ This is a list of commonly asked questions concerning the NeXus data format.
     sufficient to describe your configuration, please contact the :index:`NIAC`
     Executive Secretary explaining the problem, and post a suggestion
     at the relevant class wiki page. Or raise the problem in one of the
-    :role:`mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`.
+    `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
     The NIAC is always willing to consider new proposals.
 
 #. I want to produce an application definition. How do I go about it?
 
     Read the :index:`NXDL` Tutorial in :ref:`NXDL_Tutorial-CreatingNxdlSpec`
-    and have a try. You can ask for help on the :role:`mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`.
+    and have a try. You can ask for help on the `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
     Once you have a definition that is working well for at least your case,
     you can submit it to the NIAC for acceptance as a standard.
     The procedures for acceptance are defined in the NIAC constitution. [#]_
@@ -132,7 +131,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 #. Specifications are complicated and often provide too much information for what I need.  Where can I find some good example data files?
 
     There are a few checked into the
-    :role:`definitions repository <http://trac.nexusformat.org/definitions/browser/exampledata>`.
+    `definitions repository <http://trac.nexusformat.org/definitions/browser/exampledata>`_.
     At the moment the selection is quite limited and not very representative.
     This repository will be edited as more example files become available.
 
