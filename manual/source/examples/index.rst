@@ -6,7 +6,7 @@
 Examples of writing and reading NeXus data files
 ================================================
 
-.. image:: img/NeXus.png
+.. image:: ../img/NeXus.png
 
 Simple examples of reading and writing NeXus data files
 are provided in the :ref:`Introduction` chapter of Volume I and also
@@ -24,7 +24,7 @@ Various examples are given that show how to read and write NeXus data files usin
 .. toctree::
 	:maxdepth: 1
 	
-	examples/code_napi
+	code_napi
 
 .. _Examples.nonNAPI:
 
@@ -39,6 +39,6 @@ supported by NeXus (HDF4, HDF5, or XML).
 .. toctree::
 	:maxdepth: 1
 
-	examples/code_native
-	examples/h5py-example
-	examples/lrmecs-example
+	code_native
+	h5py/index
+	lrmecs/index

@@ -30,28 +30,29 @@ Volume I <fig.simple-example>`) except that the names will be different, as show
 
 .. compound::
 	
-	.. figure:: ../img/Simple.png
-	    :alt: simple data structure
-	
-	    data structure, (from Introduction)
+	.. figure:: ../../img/Simple.png
+		:width: 60%
+		:alt: simple data structure
+		
+		data structure, (from Introduction)
 	
 	.. rubric:: our h5py example
 	
-	.. literalinclude:: h5py/data-model.txt
+	.. literalinclude:: data-model.txt
 	    :tab-width: 4
 	    :linenos:
 	    :language: guess
 	
 	.. _Example-H5py-Plot:
 	
-	.. figure:: h5py/s00008.png
+	.. figure:: s00008.png
 	    :alt: Example-H5py-Plot
 	
 	    plot of our *mr_scan*
 	
 	.. rubric:: two-column data for our *mr_scan*
 	
-	.. literalinclude:: h5py/input.dat
+	.. literalinclude:: input.dat
 	    :tab-width: 4
 	    :linenos:
 	    :language: guess
@@ -123,7 +124,7 @@ corrupt the file when the program quits.
 
     .. rubric:: *BasicWriter.py*: Write a NeXus HDF5 file using Python with h5py
 
-    .. literalinclude:: h5py/BasicWriter.py
+    .. literalinclude:: BasicWriter.py
 	    :tab-width: 4
 	    :linenos:
 	    :language: guess
@@ -152,7 +153,7 @@ extracting other useful stuff from the file.
 
     .. rubric:: *BasicReader.py*: Read a NeXus HDF5 file using Python with h5py
 
-    .. literalinclude:: h5py/BasicReader.py
+    .. literalinclude:: BasicReader.py
 	    :tab-width: 4
 	    :linenos:
 	    :language: guess
@@ -163,7 +164,7 @@ Output from ``BasicReader.py`` is shown in :ref:`Example-H5py-Output`.
 
     .. rubric:: Output from ``BasicReader.py``
 
-    .. literalinclude:: h5py/output.txt
+    .. literalinclude:: output.txt
 	    :tab-width: 4
 	    :linenos:
 	    :language: text
@@ -198,7 +199,7 @@ this is not a problem.
 
     .. _fig-Example-H5py-Validation:
 
-    .. figure:: h5py/nxvalidate.png
+    .. figure:: nxvalidate.png
         :alt: fig-Example-H5py-Validation
 
         NeXus validation of our HDF5 file
@@ -232,8 +233,9 @@ it that way by default.
 
     .. _fig-Example-H5py-nexpy-plot:
 
-    .. figure:: h5py/nexpy.png
+    .. figure:: nexpy.png
         :alt: fig-Example-H5py-nexpy-plot
+        :width: 80%
 
         plot of our *mr_scan* using NeXpy
 
@@ -264,7 +266,7 @@ various NeXus data components of
 In a smaller sense, this subroutine library (``my_lib``) fills the role of the NAPI for writing
 the data using h5py.
 
-.. literalinclude:: h5py/my_lib.py
+.. literalinclude:: my_lib.py
     :tab-width: 4
     :linenos:
     :language: python
@@ -279,7 +281,7 @@ structure of the groups, datasets, attributes, and links in that file.
 There is a command-line option to print out more or less of the data
 in the dataset arrays.
 
-.. literalinclude:: h5py/h5toText.py
+.. literalinclude:: h5toText.py
     :tab-width: 4
     :linenos:
     :language: python

@@ -34,7 +34,7 @@ has been edited to only show the first *NXdata* group (``/Histogram1/data``):
 LRMECS ``lrcs3701`` data: ``h5dump`` output
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. literalinclude:: lrmecs/dump-histogram1-data.txt
+.. literalinclude:: dump-histogram1-data.txt
     :tab-width: 4
     :linenos:
     :language: guess
@@ -52,9 +52,9 @@ On opening up to the first ``NXdata`` group */Histogram1/data*
 (as above), and then double-clicking the dataset called: *data*, we get
 our first view of the data.
 
-.. figure:: lrmecs/hdfview.jpg
+.. figure:: hdfview.jpg
     :alt: fig.data-linking
-    :width: 300pt
+    :width: 80%
 
     LRMECS ``lrcs3701`` data: *HDFview*
 
@@ -68,16 +68,16 @@ radio button, and then (accepting everything else as a default) press the
 .. note:: In this image, dark represents low intensity 
 			while white represents high intensity.
 
-.. figure:: lrmecs/hdfview-open-as.jpg
-    :width: 300pt
+.. figure:: hdfview-open-as.jpg
+    :width: 80%
 
     LRMECS ``lrcs3701`` data: *HDFview* *Open As* dialog
 
 LRMECS ``lrcs3701`` data: image
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. figure:: lrmecs/hdfview-image.jpg
-    :width: 300pt
+.. figure:: hdfview-image.jpg
+    :width: 80%
 
     LRMECS ``lrcs3701`` data: *HDFview* Image
 
@@ -101,8 +101,8 @@ Next, select from the menus and submenus:
 ``Data; Load Waves; Packages; Install HDF5 Package`` as shown in the next figure.
 IgorPro may direct you to perform more activities before you progress from this step.
 
-.. figure:: lrmecs/igor-install-hdf5-package.jpg
-    :width: 300pt
+.. figure:: igor-install-hdf5-package.jpg
+    :width: 80%
 
     LRMECS ``lrcs3701`` data: *IgorPro* install HDF5 Browser
 
@@ -111,8 +111,8 @@ the menus and submenus:
 ``Data; Load Waves; New HDF5 Browser`` 
 as shown in the next figure.
 
-.. figure:: lrmecs/igor-menu-selection.jpg
-    :width: 600pt
+.. figure:: igor-menu-selection.jpg
+    :width: 80%
 
     LRMECS ``lrcs3701`` data: *IgorPro* *HDFBrowser* dialog
 
@@ -128,15 +128,15 @@ to display the image.
 	      while white represents high intensity.  The image has 
 	      been rotated for easier representation in this manual.
 
-.. figure:: lrmecs/Igor-HDFBrowser-demo.jpg
-    :width: 300pt
+.. figure:: Igor-HDFBrowser-demo.jpg
+    :width: 80%
 
     LRMECS ``lrcs3701`` data: *IgorPro* *HDFBrowser* dialog
 
 LRMECS ``lrcs3701`` data: image
 ++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. figure:: lrmecs/igor-data.jpg
-    :width: 300pt
+.. figure:: igor-data.jpg
+    :width: 80%
 
     LRMECS ``lrcs3701`` data: *IgorPro* Image

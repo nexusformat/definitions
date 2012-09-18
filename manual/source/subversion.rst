@@ -5,7 +5,8 @@
 =============================
 NeXus Subversion Repositories
 =============================
-:index:`EDIT_ME <subversion>`
+
+.. :index:`EDIT_ME <subversion>`
 
 NeXus NXDL class definitions (both base classes and instruments) and
 the NeXus code library source are held in a

@@ -13,5 +13,5 @@ NeXus: Reference Documentation
 	napi
 	nxdl
 	classdefinitions
-	examples
+	examples/index
 	license

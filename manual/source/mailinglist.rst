@@ -10,7 +10,7 @@ NeXus Mailing Lists
 
 There are several mailing lists associated with NeXus.
 
-NeXus Mailing List
+:NeXus Mailing List:
     We invite anyone who is associated with neutron and/or X-ray
     synchrotron scattering and who wishes to be involved in the
     development and testing of the NeXus format to subscribe to
@@ -21,7 +21,7 @@ NeXus Mailing List
     + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus
     + Archive: http://lists.nexusformat.org/pipermail/nexus
 
-NeXus International Advisory Committee (NIAC) Mailing List
+:NeXus International Advisory Committee (NIAC) Mailing List:
     This list contains discussions of the
     :ref:`NeXus International Advisory Committee (NIAC) <NIAC>`,
     :index:`EDIT_ME <NIAC>`
@@ -34,7 +34,7 @@ NeXus International Advisory Committee (NIAC) Mailing List
     + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-committee
     + Archive: http://lists.nexusformat.org/pipermail/nexus-committee
 
-NeXus Developers Mailing List
+:NeXus Developers Mailing List:
     This mailing list is for discussions concerning the technical
     development of NeXus (the Definitions, NXDL, and
     the NeXus Application Program Interface).
@@ -48,7 +48,7 @@ NeXus Developers Mailing List
     TRAC (http://trac.edgewall.org)
 	    is the issue tracking and bug reporting system used by the NeXus developers.
 
-NeXus Code Subversion Mailing List
+:NeXus Code Subversion Mailing List:
     Members of this list will receive an email whenever a commit
     is made to the :ref:`NeXus code repository <Subversion>`.
     This list cannot be posted to - all questions should instead
@@ -59,7 +59,7 @@ NeXus Code Subversion Mailing List
     + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-code-svn
     + Archive: http://lists.nexusformat.org/pipermail/nexus-code-svn
 
-NeXus Code Tickets Mailing List
+:NeXus Code Tickets Mailing List:
     Members of this list will receive an email whenever a
     ticket (bug/issue/task) associated with
     NeXus code library development is modified on the
@@ -73,7 +73,7 @@ NeXus Code Tickets Mailing List
     + Archive: http://lists.nexusformat.org/pipermail/nexus-code-tickets
     + TRAC Timeline: http://trac.nexusformat.org/code/report/1
 
-NeXus Definitions Subversion Mailing List
+:NeXus Definitions Subversion Mailing List:
     Members of this list will receive an email whenever a commit
     is made to the :ref:`NeXus definitions repository <Subversion>`.
     This list cannot be posted to - all questions should instead
@@ -84,7 +84,7 @@ NeXus Definitions Subversion Mailing List
     + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-definitions-svn
     + Archive: http://lists.nexusformat.org/pipermail/nexus-definitions-svn
 
-NeXus Definitions Tickets Mailing List
+:NeXus Definitions Tickets Mailing List:
     Members of this list will receive an email whenever a
     ticket (bug/issue/task) associated with
     NeXus definitions development is modified on the

@@ -9,8 +9,8 @@
 In this example, the 1-D scan data will be written into the simplest
 possible NeXus HDF5 data file, containing only the required NeXus components.
 NeXus requires at least one :ref:`NXentry` group at the root level of
-an HDF5 file.  The ``NXentry`` group "all the data and associated
-information that comprise a single measurement."
+an HDF5 file.  The ``NXentry`` group contains *all the data and associated
+information that comprise a single measurement.*
 NeXus also requires that each ``NXentry`` group must contain at least
 one :ref:`NXdata` group.  ``NXdata`` is used to describe the
 plottable data in the ``NXentry`` group.  The simplest place to store
@@ -21,8 +21,9 @@ as shown in the next figure.
 
     .. _fig.simple-example-h5py:
 
-    .. figure:: ../img/ex_writer_1_3.png
+    .. figure:: ../../img/ex_writer_1_3.png
         :alt: fig.simple-example-h5py
+        :width: 80%
 
         Simple Example
 
@@ -43,7 +44,7 @@ When the next Python program (``writer_1_3_h5py.py``) is run from the
 command line (and there are no problems), the ``writer_1_3_h5py.hdf5``
 file is generated.
 
-.. literalinclude:: h5py/writer_1_3_h5py.py
+.. literalinclude:: writer_1_3_h5py.py
     :tab-width: 4
     :linenos:
     :language: python
@@ -60,7 +61,7 @@ more complicated projects.)  Here's the revision that replaces direct calls to `
 and ``h5py`` with calls to our library.  It generates the file
 ``writer_1_3.hdf5``.
 
-.. literalinclude:: h5py/writer_1_3.py
+.. literalinclude:: writer_1_3.py
     :tab-width: 4
     :linenos:
     :language: python
@@ -79,7 +80,7 @@ decided by the ``h5py`` support package.
           level of the file that tells the original file name, time it was written, and some version information
           about the software involved.
 
-.. literalinclude:: h5py/writer_1_3_h5dump.txt
+.. literalinclude:: writer_1_3_h5dump.txt
     :tab-width: 4
     :linenos:
     :language: guess
@@ -91,7 +92,7 @@ print out the structure of HDF5 data files.  This tool provides a simplified vie
 of the NeXus file.  It is run with a command like this:
 ``python h5toText.py h5dump writer_1_3.hdf5``.  Here is the output:
 
-.. literalinclude:: h5py/writer_1_3_structure.txt
+.. literalinclude:: writer_1_3_structure.txt
     :tab-width: 4
     :linenos:
     :language: guess

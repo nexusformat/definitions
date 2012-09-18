@@ -29,15 +29,16 @@ Links are made from that data to the ``/entry/data`` group.
 
     .. _fig.writer_2_1:
 
-    .. figure:: ../img/ex_writer_2_1.png
+    .. figure:: ../../img/ex_writer_2_1.png
         :alt: fig.writer_2_1
+        :width: 80%
 
         h5py example showing linking in a NeXus file
 
 The Python code to build an HDF5 data file with that structure (using
 numerical data from the previous example) is shown below.
 
-.. literalinclude:: h5py/writer_2_1.py
+.. literalinclude:: writer_2_1.py
     :tab-width: 4
     :linenos:
     :language: python
@@ -45,7 +46,7 @@ numerical data from the previous example) is shown below.
 It is interesting to compare the output of the ``h5dump``
 of the data file ``writer_2_1.hdf5`` with our Python instructions.
 
-.. literalinclude:: h5py/writer_2_1_h5dump.txt
+.. literalinclude:: writer_2_1_h5dump.txt
     :tab-width: 4
     :linenos:
     :language: guess
@@ -76,7 +77,7 @@ The ``h5toText.py`` tool knows about the additional NeXus
 ``target`` attribute and shows the data to appear in its original
 location, in the ``NXdetector`` group.
 
-.. literalinclude:: h5py/writer_2_1_structure.txt
+.. literalinclude:: writer_2_1_structure.txt
     :tab-width: 4
     :linenos:
     :language: guess
