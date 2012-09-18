@@ -350,7 +350,7 @@ annotate or in a ``NXcollection``. All of the base classes are documented in the
     single: NeXus basic motivation, default plot; automatic plotting
     single: dimension scale
 
-The most notable special base class (or *group* in NeXus is ``NXdata``.
+The most notable special base class (or *group* in NeXus) is ``NXdata``.
 ``NXdata`` is the answer to a basic motivation of NeXus to facilitate 
 automatic plotting of data.
 ``NXdata`` is designed to contain the main dataset and its associated dimension scales (axes)
@@ -578,7 +578,7 @@ Coordinate Transformations
 Another way to look at coordinates is through
 the use of :index:`transformation matrices <coordinate systems; transformations>`.
 In this world view, the absolute position of a component or a detector pixel with respect to
-the laboratory corrdinate system is calculated by applying a series of translations and
+the laboratory coordinate system is calculated by applying a series of translations and
 rotations. These operations are commonly expressed as transformation matrices and their
 combination as matrix multiplication. A very important aspect is that the order of application
 of the individual operations *does* matter. Another important aspect is that

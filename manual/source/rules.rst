@@ -361,8 +361,9 @@ otherwise fit easily into the ``NXinstrument``
 or ``NXsample`` hierarchy, such as the intent to record
 *all* motor positions on a synchrotron beamline.
 Thus, ``NXcollection`` serves as a quick point of access
-to data for an instrument scientist or another expert.
-An example usage case is documented in  figure
+to data for an instrument scientist or another expert. NXcollection is 
+also an fature for those who are to lazy to build up the complete NeXus 
+hierarchy. An example usage case is documented in  figure
 :ref:`NXcollection example <table.SimpleScanArea>`.
 
 	.. compound::

@@ -121,19 +121,6 @@ links to further information, as available.
     NXDL-based standard. Note: This Java GUI is different than the command-line
     tool: ``nxvalidate``.
 
-.. index:: 
-	utility, NeXus; NXdump
-	NXdump
-
-**NXdump**
-    ``NXdump`` is a
-    temporary wrapper script for ``NXdump`` in the
-    NeXus code repository. From the source code documentation: 
-    
-	    "The NXdump program
-	    cannot be directly executed until all the *libtool* libraries that it depends on are
-	    installed. This wrapper script should never be moved out of the build directory. If
-	    it is, it will not operate correctly."
 
 .. index:: 
 	utility, NeXus; NXplot

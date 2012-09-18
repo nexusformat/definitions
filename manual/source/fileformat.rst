@@ -25,11 +25,17 @@ Choice of HDF as Underlying File Format
 #######################################
 
 At its beginnings, the founders of NeXus identified the
-Hierarchical Data Format (HDF),
-initially from the National Center for Supercomputing Applications (NCSA)
-at the University of Illinois at Urbana-Champaign (UIUC) and later spun off into its own
-group called The HDF Group (THG), [#HDFGroup]_ as a multi-platform data storage format with capacity for conveying large
-data payloads and a substantial user community. HDF (now HDF5) was provided with
+Hierarchical Data Format (HDF) as a capable and efficient multi-platform 
+data storage format. HDF was designed for large data sets and already 
+had a substantial user community. HDF was developed and maintained
+initially by the National Center for Supercomputing Applications (NCSA)
+at the University of Illinois at Urbana-Champaign (UIUC) and later spun 
+off into its own
+group called The HDF Group (THG), [#HDFGroup]_ . Rather then developing 
+an own physical file format, the NeXus group choose to build NeXus on top
+of HDF.
+
+HDF (now HDF5) is provided with
 software to read and write data (this is the application-programmer interface, or API)
 using a large number of computing systems in common use for neutron and
 X-ray science. HDF is a binary data file format that supports compression and structured
