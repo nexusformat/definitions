@@ -114,7 +114,7 @@ Name                Type                                                      Un
                                                                                         resolution plot of the NXdata.
 ``@mime_type``      NX_CHAR                                                             expected: *mime_type="image/\*"*
 
-                    :ref:`NXgeometry <http://www.nexusformat.org/NXgeometry>`           describe the geometry of this class
+..                  :ref:`NXgeometry <http://www.nexusformat.org/NXgeometry>`           describe the geometry of this class
 ``distance``        NX_FLOAT                                                  NX_LENGTH Distance from sample
 ``mode``            "Single Bunch"                                                      source operating mode
                     | "Multi Bunch"
