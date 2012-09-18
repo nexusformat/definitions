@@ -13,6 +13,7 @@ User Manual and Reference Documentation
    
    volume1
    volume2
+   authorgroup
 
 This manual built |today|
 

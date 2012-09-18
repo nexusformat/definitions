@@ -34,7 +34,7 @@ the documentation of each generation of data format is often lacking.
 Three parallel developments have led to NeXus:
 
 #. *June 1994*:
-   Mark Koennecke (Paul Scherer Institute, Switzerland) made a
+   Mark Könnecke (Paul Scherer Institute, Switzerland) made a
    proposal using netCDF for the European neutron scattering
    community while working at the ISIS pulsed neutron facility.
 

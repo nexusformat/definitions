@@ -21,7 +21,10 @@ Code Examples that use the NAPI
 Various examples are given that show how to read and write NeXus data files using the
 :ref:`NAPI`.
 
-.. include:: ex_code_napi.rst
+.. toctree::
+	:maxdepth: 1
+	
+	ex_code_napi
 
 .. _Examples.nonNAPI:
 
@@ -33,8 +36,9 @@ NeXus files without using the routines provided by the :ref:`NAPI`.
 Each example in this section is written to support just one of the low-level file formats
 supported by NeXus (HDF4, HDF5, or XML).
 
-.. include:: ex_code_native.rst
+.. toctree::
+	:maxdepth: 1
 
-.. include:: h5py-example.rst
-
-.. include:: lrmecs-example.rst
+	ex_code_native
+	h5py-example
+	lrmecs-example

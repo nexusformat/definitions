@@ -7,12 +7,11 @@ NeXus: Reference Documentation
 ==============================
 
 .. toctree::
-   :maxdepth: 1
-   :glob:
+	:maxdepth: 1
+	:glob:
    
+	napi
 	nxdl
 	classdefinitions
 	examples
 	license
-	
-	.. napi

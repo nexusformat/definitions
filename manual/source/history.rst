@@ -14,7 +14,7 @@ Two things to note about the development and history of NeXus:
 - The NIAC has already discussed many matters related to the format.
 
 June 1994
-    Mark Koennecke (then ISIS, now PSI) made a proposal using netCDF [#]_
+    Mark Könnecke (then ISIS, now PSI) made a proposal using netCDF [#]_
     for the European neutron scattering community while working at ISIS
 
 August 1994
@@ -25,7 +25,7 @@ October 1994
     Ray Osborn convened a series of three workshops called
     *SoftNeSS*. [#]_
     In the first meeting,
-    Mark Koennecke and Jon Tischler were invited to meet with representatives
+    Mark Könnecke and Jon Tischler were invited to meet with representatives
     from all the major U.S. neutron scattering laboratories
     at Argonne National Laboratory to discuss future software
     development for the analysis and visualization of neutron data.
@@ -36,7 +36,7 @@ September 1995
     At *SoftNeSS 1995* (at NIST),
     three individual data format proposals by
     Przemek Klosowski (NIST),
-    Mark Koennecke (then ISIS),
+    Mark Könnecke (then ISIS),
     and Jonathan Tischler (ORNL and APS/ANL)
     were joined to form the basis of the current NeXus format.
     At this workshop, the name *NeXus* was chosen.
@@ -53,7 +53,7 @@ October 1996
     as it provided the best grouping support.
     The basic structure of a NeXus file was agreed upon.
     the various data format proposals were combined into a single document by
-    Przemek Klosowski (NIST), Mark Koennecke (then ISIS),
+    Przemek Klosowski (NIST), Mark Könnecke (then ISIS),
     Jonathan Tischler (ORNL and APS/ANL), and Ray Osborn (IPNS/ANL)
     coauthored the first proposal for the NeXus scientific data
     standard. [#]_

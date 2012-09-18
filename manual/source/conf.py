@@ -32,7 +32,6 @@ extensions.append( 'sphinx.ext.pngmath' )
 extensions.append( 'sphinx.ext.ifconfig' )
 extensions.append( 'matplotlib.sphinxext.mathmpl' )
 extensions.append( 'sphinx.ext.todo' )
-extensions.append( 'sphinx.ext.ifconfig' )
 extensions.append( 'sphinx.ext.viewcode' )
 
 # Add any paths that contain templates here, relative to this directory.
@@ -43,6 +42,7 @@ source_suffix = '.rst'
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'
+#source_encoding = 'ISO-8859-1'
 
 # The master toctree document.
 master_doc = 'index'

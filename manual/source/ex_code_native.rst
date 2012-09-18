@@ -16,21 +16,19 @@ and :ref:`reading <ex.simple.read>` given in the
 :ref:`Introduction <Introduction>` chapter.
 Compare these code examples with :ref:`NAPI-Examples`.
 
-.. compound::
+Writing a simple NeXus file using native HDF5 commands in C
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-    .. rubric:: Writing a simple NeXus file using native HDF5 commands
+.. literalinclude:: examples/nxh5write.c
+    :tab-width: 4
+    :linenos:
+    :language: guess
 
-    .. literalinclude:: examples/nxh5write.c
-        :tab-width: 4
-        :linenos:
-        :language: guess
+Reading a simple NeXus file using native HDF5 commands in C
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. compound::
-
-    .. rubric:: Reading a simple NeXus file using native HDF5 commands
-
-    .. literalinclude:: examples/nxh5read.c
-        :tab-width: 4
-        :linenos:
-        :language: guess
+.. literalinclude:: examples/nxh5read.c
+    :tab-width: 4
+    :linenos:
+    :language: guess
     
