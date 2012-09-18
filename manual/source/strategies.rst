@@ -58,9 +58,9 @@ positioner arrays        detector arrays
     instrument with multiple, simultaneous application definitions
     instrument with rapidly changing needs
 
-.. _Strategies-next:
-
-Strategies: The next case
-#########################
-
-... this section was new in 2010-10, we are gathering and adding historical cases ...
+	.. _Strategies-next:
+	
+	Strategies: The next case
+	#########################
+	
+	... this section was new in 2010-10, we are gathering and adding historical cases ...

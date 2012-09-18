@@ -9,6 +9,8 @@ The full texts of the software licenses governing this document
 
 .. index:: license; FDL
 
+.. _FDL:
+
 FDL: GNU Free Documentation License
 ###################################
 
@@ -17,7 +19,10 @@ FDL: GNU Free Documentation License
     :language: guess
     :linenos:
 
+
 .. index:: license; LGPL
+
+.. _LGPL:
 
 LGPL: GNU Lesser Gnu Public License
 ###################################

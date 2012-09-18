@@ -416,11 +416,18 @@ NeXus Application Programmer Interface
 (:ref:`NAPI`) and the
 NeXus class definitions.
 
+
+.. toctree::
+   :maxdepth: 2
+   :glob:
+   
+   motivations
+
 ..  =====================================
     section: NeXus Motivations
     =====================================
 
-.. include:: motivations.rst
+	.. include:: motivations.rst
 
 ..  ================================================
     section: NeXus Application Programming Interface

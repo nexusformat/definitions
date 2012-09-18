@@ -14,4 +14,3 @@ NeXus: Reference Documentation
 	nxdl
 	classdefinitions
 	examples/index
-	license

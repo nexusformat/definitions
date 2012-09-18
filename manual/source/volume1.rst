@@ -10,15 +10,14 @@ NeXus: User Manual
    :maxdepth: 1
    :glob:
    
-   v1frontinfo
    preface
    introduction
    design
    applying-nexus
+   strategies
    history
    community
    installation
    validation
    utilities
    faq
-   license
