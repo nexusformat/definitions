@@ -51,7 +51,7 @@ converted into an internal format to facilitate validation, including data types
 dimensions, naming, and other items. Most of the data is not converted since data
 validation is non-trivial. Also note that the units are not validated. All the NXDL
 files are converted into a single Schematron file (again, internal use for validation)
-only when NXDL revisions are checked in to the NeXus definitions repository as NXDL
+only when NXDL revisions are checked into the NeXus definitions repository as NXDL
 changes are not so frequent.
 
 ..  TODO: Will we describe how validation code can check to see if it is
@@ -140,7 +140,7 @@ XSLT
 
 .. [#Schematron] http://www.schematron.com
 .. [#XML]        http://www.w3schools.com/xml
-.. [#XSD]        http://www.w3schools.com/xsd
+.. [#XSD]        http://www.w3schools.com/schema
 .. [#XSLT]       http://www.w3schools.com/xsl/
 
 ..  ++++++++++++++++++++++++++++
@@ -228,7 +228,7 @@ from a directory that contains ``nxdl.xsd``,
 
     .. code-block:: guess
     
-	    xmllint noout --schema nxdl.xsd applications/NXsas.nxdl.xml
+	    xmllint --noout --schema nxdl.xsd applications/NXsas.nxdl.xml
 
 ..  ++++++++++++++++++++++++++++
 
@@ -308,7 +308,7 @@ The NXDL definition files are converted into a set of Schematron
 instance file (either in XML, HDF4, or HDF5)
 is turned into a reduced XML validation file.
 This file is very similar to a pure NeXus XML file, but with additional metadata for
-dimenions and also with most of the actual numeric data removed.
+dimensions and also with most of the actual numeric data removed.
 
 The validation process then compares the set of Schematron rules against the
 *reduced XML* validation file. Schematron itself is
