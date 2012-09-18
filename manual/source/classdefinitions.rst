@@ -99,6 +99,8 @@ The table has columns to describe the basic information about each field or grou
 the class. An example of the varieties of specifications are given in the following
 table using items found in various NeXus base classes.
 
+.. tabularcolumns:: |l|L|l|L|
+
 =================== ========================================================= ========= ================================================================
 Name                Type                                                      Units     Description (and Occurrences)
 =================== ========================================================= ========= ================================================================

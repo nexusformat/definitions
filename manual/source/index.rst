@@ -10,7 +10,7 @@ User Manual and Reference Documentation
 .. toctree::
 	:maxdepth: 1
 
-	frontinfo
+	copyright
 
 .. toctree::
 	:maxdepth: 2
