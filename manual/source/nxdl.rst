@@ -104,6 +104,7 @@ neutron, X-ray, or muon instrument.
 ..  + + + + + + + + + + +
 
 ..  auto-generated: NXDL Elements and Data Types, built from nxdl.xsd by nxdl_desc2docbook.xsl
+    xsltproc ../../xslt/nxdl_desc2docbook.xsl ../../nxdlTypes.xsd > nxdl_desc.xml
 
 .. literalinclude:: nxdl_desc.xml
     :tab-width: 4
@@ -123,7 +124,7 @@ size and array dimensions. In addition to the types in the following table, the
 with any of these data types.
 
 ..  Generated from ../nxdlTypes.xsd via an XSLT transformation
-    xsltproc ../xslt/nxdl_units2docbook.xsl ../nxdlTypes.xsd > types.xml
+    xsltproc ../../xslt/nxdl_units2docbook.xsl ../../nxdlTypes.xsd > types.xml
 
 .. literalinclude:: types.xml
     :tab-width: 4
@@ -143,7 +144,7 @@ The values for unit categories are restricted (by
 an enumeration) to the following table.
 
 ..  Generated from ../nxdlTypes.xsd via an XSLT transformation
-    xsltproc ../xslt/nxdl_units2docbook.xsl ../nxdlTypes.xsd > units.xml
+    xsltproc ../../xslt/nxdl_units2docbook.xsl ../../nxdlTypes.xsd > units.xml
 
 .. literalinclude:: units.xml
     :tab-width: 4

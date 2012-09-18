@@ -15,7 +15,7 @@ Purpose:
 	specifications into DocBook content for use in NXDL.xml.
 
 Usage:
-    xsltproc ../xslt/nxdl_units2docbook.xsl ../nxdlTypes.xsd > types.xml
+    xsltproc ../xslt/nxdl_desc2docbook.xsl ../nxdlTypes.xsd > types.xml
 -->
 
 <xslt:stylesheet

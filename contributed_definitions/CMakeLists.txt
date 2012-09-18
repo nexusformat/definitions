@@ -32,13 +32,11 @@ set(CONTRIBUTED_FILES
 	NXelectrostatic_kicker.nxdl.xml 
 	NXmagnetic_kicker.nxdl.xml 
 	NXquadrupole_magnet.nxdl.xml 
-	NXsai_controller.nxdl.xml 
 	NXseparator.nxdl.xml 
 	NXsnsevent.nxdl.xml 
 	NXsnshisto.nxdl.xml 
 	NXsolenoid_magnet.nxdl.xml 
 	NXspin_rotator.nxdl.xml 
-	NXtechnical_data.nxdl.xml 
 )
 
 set(CONTRIBUTED_SOURCE ${CMAKE_SOURCE_DIR}/contributed_definitions)
