@@ -47,6 +47,7 @@ Volume I <fig.simple-example>`) except that the names will be different, as show
 	
 	.. figure:: s00008.png
 	    :alt: Example-H5py-Plot
+	    :width: 80%
 	
 	    plot of our *mr_scan*
 	
@@ -57,6 +58,15 @@ Volume I <fig.simple-example>`) except that the names will be different, as show
 	    :linenos:
 	    :language: guess
 
+Writing the simplest data using ``h5py``
+########################################
+
+These two examples show how to write the simplest data (above).
+One example writes the data directly to the :ref:`NXdata` group 
+while the other example writes the data to ``NXinstrument/NXdetector/data``
+and then creates a soft link to that data in ``NXdata``.
+
+
 .. toctree::
 	:maxdepth: 1
 	
@@ -65,8 +75,8 @@ Volume I <fig.simple-example>`) except that the names will be different, as show
 
 .. _Example-H5py-complete:
 
-A complete example of writing and reading a NeXus data file using ``h5py``
-##########################################################################
+Complete ``h5py`` example writing and reading a NeXus data file
+###############################################################
 
 .. _Example-H5py-Writing:
 
@@ -201,6 +211,7 @@ this is not a problem.
 
     .. figure:: nxvalidate.png
         :alt: fig-Example-H5py-Validation
+        :width: 80%
 
         NeXus validation of our HDF5 file
 
@@ -243,8 +254,8 @@ it that way by default.
 
 .. _h5py-example-helpers:
 
-Python Helper Modules for h5py Examples
-#######################################
+Python Helper Modules for ``h5py`` Examples
+###########################################
 
 Two additional Python modules were used to describe these ``h5py`` examples.
 The source code for each is given here.  The first is a library we wrote that helps us
@@ -253,8 +264,8 @@ us inspect the content and structure of HDF5 files.
 
 .. _h5py-example-my_lib:
 
-mylib support module
-====================
+``mylib`` support module
+========================
 
 The examples in this section make use of
 a small helper library that calls ``h5py`` to create the
@@ -273,8 +284,8 @@ the data using h5py.
 
 .. _h5py-example-h5toText:
 
-h5toText support module
-=======================
+``h5toText`` support module
+===========================
 
 The module ``h5toText`` reads an HDF5 data file and prints out the
 structure of the groups, datasets, attributes, and links in that file.
