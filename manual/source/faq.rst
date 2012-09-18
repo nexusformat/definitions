@@ -61,7 +61,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     If you consider using an efficient on disk storage format,
     HDF5 is a better choice than most others. It is fast and efficient
-    and well supported in all main stream programming languages and a
+    and well supported in all mainstream programming languages and a
     fair share of popular analysis packages. The format is so widely
     used and backed by a big organisation that it will continue to be
     supported for the foreseeable future.
@@ -70,7 +70,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     community spent years trying to get the standard right and
     while you will not agree with every single choice they made in the
     past, you should be able to store the data you have in a quite
-    reasonable way. If you do not comply with NeXus chances are most
+    reasonable way. If you do not comply with NeXus, chances are most
     people will perceive your format as different but not necessarily
     better than NeXus by any large measure. So it may not be worth the
     effort. Seriously.
@@ -84,8 +84,12 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
 #. I want to produce an application definition. How do I go about it?
 
-    Read the :index:`NXDL` Tutorial in :ref:`NXDL_Tutorial-CreatingNxdlSpec`.
-	The procedures for acceptance are defined in the NIAC constitution. [#]_
+    Read the :index:`NXDL` Tutorial in :ref:`NXDL_Tutorial-CreatingNxdlSpec`
+    and have a try. You can ask for help on the :ref:`mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`.
+    Once you have a definition that is working well for at least your case,
+    you can submit it to the NIAC for acceptance as a standard.
+    The procedures for acceptance are defined in the NIAC constitution. [#]_
+        
 
 	.. [#]
 	    Refer to the most recent version of the NIAC constitution on the
