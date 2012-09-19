@@ -23,7 +23,7 @@ NXDL itself is governed by a set of rules (a *schema*)
 that should simplify learning the few terms in NXDL.
 In fact, the NXDL rules, written as an XML Schema, are machine-readable
 using industry-standard and widely-available software tools for XML files such as
-``xsltproc``, ``xmllint``, and ``DocBook``.
+``xsltproc`` and ``xmllint``.
 This chapter describes the rules and terms from which NXDL files are constructed.
 
 Introduction

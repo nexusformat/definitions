@@ -7,6 +7,8 @@ NeXus Documentation
 User Manual and Reference Documentation
 ---------------------------------------
 
+http://www.nexusformat.org/
+
 .. toctree::
 	:maxdepth: 1
 
@@ -14,7 +16,7 @@ User Manual and Reference Documentation
 
 .. toctree::
 	:maxdepth: 2
-	:numbered:
+	:numbered: 4
 
 	volume1
 	volume2
@@ -26,13 +28,15 @@ User Manual and Reference Documentation
 	revhistory
 	license
 
-This manual built |today|
+This manual built |today|.  
+A released version is available online: 
+http://download.nexusformat.org/doc/html/UserManual.html
 
 ..  Suggestions for adding to this manual:
 
     Look for some other "section" such as "introduction.rst" and act similarly.
-    Any examples go as text files in the examples/ subdirectory and are pulled into the
-    DocBook inside a programlisting using xi:include elements.  Look for the pattern
+    Any examples go as text files in the examples/ subdirectory and are pulled into 
+    Sphinx inside a :directive:`literalcode` directive.  Look for the pattern
     or wing it.  If you are game for it, add index entries.  Many examples of the
     constructs you might use are already in the manual.  Please apply these subversion
     properties to the source code files (example shown with hypothetical file 
