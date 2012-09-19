@@ -106,10 +106,14 @@ neutron, X-ray, or muon instrument.
 ..  auto-generated: NXDL Elements and Data Types, built from nxdl.xsd by nxdl_desc2docbook.xsl
     xsltproc ../../xslt/nxdl_desc2docbook.xsl ../../nxdlTypes.xsd > nxdl_desc.xml
 
-.. literalinclude:: nxdl_desc.xml
-    :tab-width: 4
-    :linenos:
-    :language: guess
+	.. literalinclude:: nxdl_desc.xml
+	    :tab-width: 4
+	    :linenos:
+	    :language: guess
+
+.. toctree::
+
+	nxdl_desc
 
 ..  + + + + + + + + + + +
 		
@@ -229,5 +233,5 @@ approving.
 
 .. rubric:: Footnotes
 
-.. [#] For example *XML Copy Editor*::ref:`xml-copy-editor.sourceforge.net`
+.. [#] For example *XML Copy Editor* (http://xml-copy-editor.sourceforge.net/)
 .. [#] http://en.wikipedia.org/wiki/XML#Well-formedness_and_error-handling

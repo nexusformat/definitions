@@ -124,9 +124,9 @@ class Table:
     
     def find_widths(self):
         '''
-    measure the maximum width of each column, 
-    considering possible line breaks in each cell
-    '''
+        measure the maximum width of each column, 
+        considering possible line breaks in each cell
+        '''
         width = []
         if len(self.labels) > 0:
             width = [max(map(len, _.split("\n"))) for _ in self.labels]
