@@ -57,7 +57,8 @@ def makeLink(parent, sourceObject, targetName):
 
     :param obj parent: parent group of source
     :param obj sourceObject: HDF5 object
-    :param str targetName: HDF5 node path string, such as /entry/data/data
+    :param str targetName: HDF5 node path string, 
+                            such as /entry/data/data
     """
     if not 'target' in sourceObject.attrs:
         # NeXus link, NOT an HDF5 link!
@@ -77,7 +78,11 @@ def add_attributes(parent, attr):
             parent.attrs[k] = v
 
 def get_2column_data(fileName):
-    '''read two-column data from a file, first column is float, second column is integer'''
+    '''
+    read two-column data from a file, 
+    first column is float, 
+    second column is integer
+    '''
     buffer = numpy.loadtxt(fileName).T
     xArr = buffer[0]
     yArr = numpy.asarray(buffer[1],'int32')

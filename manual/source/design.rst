@@ -254,14 +254,17 @@ a more descriptive representation of the concept of linking.
 
         Linking in a NeXus file
 
+.. index:: link; external file
 
 NeXus also allows for links to external files.
+Consider the case where an instrument uses a detector with 
+a closed-system software support provided by a commercial vendor.
+This system writes its images into a NeXus HDF5 file.
+The instrument's data acquisition system writes instrument metadata
+into another NeXus HDF5 file.  In this case, the instrument metadata file
+might link to the data in the detector image file.
 Here is an example (from Diamond Light Source) 
-of an external file link in HDF5:
-
-	.. TODO: and why might we want to do this?
-	   * Data file (with metadata from DAS) written by beam line
-	   * image data file written by COTS vendor software
+showing an external file link in HDF5:
 
 	.. compound::
 	
@@ -658,44 +661,43 @@ This is also a nice example of the application of transformation matrices:
 #. This also moves the direction of the *z* vector.
    Along which you translate the component to place by distance.
 
-..  <section xml:id="Size-Shape">
-    <title>Size and Shape (<code>NXshape</code>)</title>
-    <para>
+..  
+    .. _Size-Shape:
+    
+    Size and Shape (``NXshape``)
+    ============================
+    
+    .. index::
+    	NeXus basic motivation; defined dictionary
+    
     Many instrument components define
-    <indexterm>
-    <primary>NeXus basic motivation</primary>
-    <secondary>defined dictionary</secondary>
-    </indexterm>
     variables to specify their size.
-    For example, <emphasis>radius</emphasis> might be used to specify a circular object
-    while <emphasis>height</emphasis> and
-    <emphasis>width</emphasis> might be used to specify a rectangular object.
+    For example, *radius* might be used to specify a circular object
+    while *height* and
+    *width* might be used to specify a rectangular object.
     Rather than specify all
     these different names, an alternative scheme is proposed based on the
-    <emphasis>shape</emphasis> of the object and the local coordinate axes this
+    *shape* of the object and the local coordinate axes this
     shape defines. All objects would just need to specify a shape
-    (<emphasis>cuboid</emphasis>, <emphasis>cylinder</emphasis> etc.) and a size
-    array. Specifying <code>size[3]</code> would give the dimensions of the object along its
-    local <emphasis>(+-x,+-y,+-z</emphasis>) axes; specifying <code>size[6]</code> would give the extent along
-    <emphasis>(+x,+y,+z,-x,-y,-z)</emphasis> and allow for e.g. asymmetric jaws where the reference point
+    (*cuboid*, *cylinder* etc.) and a size
+    array. Specifying ``size[3]`` would give the dimensions of the object along its
+    local *(+-x,+-y,+-z*) axes; specifying ``size[6]`` would give the extent along
+    *(+x,+y,+z,-x,-y,-z)* and allow for e.g. asymmetric jaws where the reference point
     may not be the centre of the rectangle.
-    </para>
-    <para>
+    
     For example take
-    <code>shape="cylinder"</code>: the <code>NXtranslation</code> variable of position
+    ``shape="cylinder"``: the ``NXtranslation`` variable of position
     would define the location of the reference point for the origin of the local
-    axes: <emphasis>z</emphasis> in the direction of the cylinder axis,
-    <emphasis>x</emphasis> and <emphasis>y</emphasis> in plane. With no rotation,
+    axes: *z* in the direction of the cylinder axis,
+    *x* and *y* in plane. With no rotation,
     the object would be oriented with its local axes pointing in the direction of
     axes of the object it was defined relative to, but this can be altered with the
-    <code>NXorientation</code> variable within position. If a <code>size[3]</code> array variable was
+    ``NXorientation`` variable within position. If a ``size[3]`` array variable was
     specified, the reference point must be the centre of the cylinder and the
-    dimension are <code>size[0]=size[1]=radius</code>, <code>size[2]=length/2</code>. If <code>size[6]</code> was
+    dimension are ``size[0]=size[1]=radius``, ``size[2]=length/2``. If ``size[6]`` was
     specified then the reference point would be elsewhere in the object, with its
     distance from the cylinder edges along the various axes given by elements of the
-    <code>size[6]</code> array. </para>
-    </section>
-    </section>
+    ``size[6]`` array.
 
 
 

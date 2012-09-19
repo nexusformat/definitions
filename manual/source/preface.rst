@@ -6,7 +6,8 @@
 Preface
 =======
 
-.. image:: img/NeXus.png
+..
+	.. image:: img/NeXus.png
 
 With this edition of the manual, NeXus introduces a complete version
 of the documentation of the NeXus standard.  The content from the wiki

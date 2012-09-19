@@ -78,7 +78,7 @@ NeXus data files
 		tools is not possible. To validate NeXus data files, it is necessary to
 		use ``nxvalidate``.
               
-	..  <emphasis role="bold"> What about the Java tools? </emphasis>
+	..  *What about the Java tools?*
 
 NeXus Definition Language (NXDL) specification files
     NXDL files are validated to ensure they adhere to the  :index:`rules <rules; NXDL>` 
@@ -93,44 +93,42 @@ Definitions of these terms
 
 Let's be clear about some terms used in this section.
 
-HDF
+:HDF:
     :index:`Hierarchical Data Format <HDF>` from The HDF Group.
     NeXus data files using HDF
     may be stored in either version 4 (HDF4) or version 5 (HDF5). New NeXus HDF
     files should only use HDF5. The preferred file extensions
-    (but not required)
-    include ``.hdf``, ``.h5``, ``.nxs``,
-    and ``.nx5``.
+    (but not required) include ``.hdf``, ``.h5``, ``.nxs``, and ``.nx5``.
 
-NXDL
+:NXDL:
     NeXus Definition Language files define the spcifications for NeXus base
     classes, application definitions, and contributed classes and definitions.
     It is fully described in the NXDL chapter in Volume II of this documentation.
 
-Schematron
+:Schematron:
     :index:`Schematron` [#Schematron]_
     is an alternative to XSD and is used to validate the content
     and structure of an XML file.  NeXus uses Schematron internally to
     validate data files.
 
-Validation
+:Validation:
     File validation is the comparison of file contents, in an unbiased way,
     with the set of rules that define the structure of such files.
 
-XML
+:XML:
     The eXtensible Markup Language (:index:`!XML`) [#XML]_
     is a standard business tool for the
     exchange of information. It is broadly supported by a large software library
     in many languages. NeXus uses XML for several purposes: data files, NXDL
     definitions, rules, and XSLT transformations.
 
-XSD
+:XSD:
     XML files are often defined by a set of rules (or
     *schema*). A common language used to implement these
     rules is XML Schema (:index:`XSD`)  [#XSD]_
     Fundamentally, all XML, XSD, XSLT, and Schematron files are  XML.
 
-XSLT
+:XSLT:
     XML files can be flexible enough to convert from one set of rules to
     another. An example is when one company wishes to exchange catalog or
     production information with another. The XML StyLsheet Transformation

@@ -28,7 +28,8 @@ my_lib.makeDataset(nxentry, 'title', data='1-D scan of I00 v. mr')
 
 nxdata = my_lib.makeGroup(nxentry, "mr_scan", "NXdata")
 
-my_lib.makeDataset(nxdata,  "mr",  mr_arr, units='degrees', long_name='USAXS mr (degrees)')
+my_lib.makeDataset(nxdata,  "mr",  mr_arr, units='degrees', 
+                   long_name='USAXS mr (degrees)')
 
 my_lib.makeDataset(nxdata,  "I00",  i00_arr, units='counts',
       signal='1',     # Y axis of default plot

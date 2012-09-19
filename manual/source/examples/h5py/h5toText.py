@@ -89,12 +89,14 @@ class H5toText(object):
         for itemname in sorted(obj):
             value = obj[itemname]
             if str(type(value)) not in group_equivalents:
-                self.showDataset(value, itemname, indentation = indentation+"  ")
+                self.showDataset(value, itemname, 
+                                 indentation = indentation+"  ")
         # then show things that look like groups
         for itemname in sorted(obj):
             value = obj[itemname]
             if str(type(value)) in group_equivalents:
-                self.showGroup(value, itemname, indentation = indentation+"  ")
+                self.showGroup(value, itemname, 
+                               indentation = indentation+"  ")
 
     def showAttributes(self, obj, indentation = "  "):
         '''print any attributes'''
@@ -107,17 +109,21 @@ class H5toText(object):
         if self.isNeXus:
             if "target" in dset.attrs:
                 if dset.attrs['target'] != dset.name:
-                    print "%s%s --> %s" % (indentation, name, dset.attrs['target'])
+                    print "%s%s --> %s" % (indentation, name, 
+                                           dset.attrs['target'])
                     return
         txType = self.getType(dset)
         txShape = self.getShape(dset)
         if shape == (1,):
             value = " = %s" % str(dset[0])
-            print "%s%s:%s%s%s" % (indentation, name, txType, txShape, value)
+            print "%s%s:%s%s%s" % (indentation, name, txType, 
+                                   txShape, value)
             self.showAttributes(dset, indentation)
         else:
-	    print "%s%s:%s%s = __array" % (indentation, name, txType, txShape)
-            self.showAttributes(dset, indentation)  # show these before __array
+	    print "%s%s:%s%s = __array" % (indentation, name, 
+                                       txType, txShape)
+            # show these before __array
+            self.showAttributes(dset, indentation)
             if self.array_items_shown > 2:
                 value = self.formatArray(dset, indentation + '  ')
                 print "%s  %s = %s" % (indentation, "__array", value)
@@ -172,9 +178,12 @@ class H5toText(object):
         for i in range(n):
             if rank == 1: item = obj[i]
             if rank == 2: item = self.formatNdArray(obj[i, :])
-            if rank == 3: item = self.formatNdArray(obj[i, :, :], indentation + '  ')
-            if rank == 4: item = self.formatNdArray(obj[i, :, :, :], indentation + '  ')
-            if rank == 5: item = self.formatNdArray(obj[i, :, :, :, :], indentation + '  ')
+            if rank == 3: item = self.formatNdArray(obj[i, :, :], 
+                                                    indentation + '  ')
+            if rank == 4: item = self.formatNdArray(obj[i, :, :, :], 
+                                                    indentation + '  ')
+            if rank == 5: item = self.formatNdArray(obj[i, :, :, :, :], 
+                                                    indentation + '  ')
             r.append( item )
         if n < shape[0]:
             # skip over most
@@ -182,9 +191,12 @@ class H5toText(object):
             #  get the last one
             if rank == 1: item = obj[-1]
             if rank == 2: item = self.formatNdArray(obj[-1, :])
-            if rank == 3: item = self.formatNdArray(obj[-1, :, :], indentation + '  ')
-            if rank == 4: item = self.formatNdArray(obj[-1, :, :, :], indentation + '  ')
-            if rank == 5: item = self.formatNdArray(obj[-1, :, :, :, :], indentation + '  ')
+            if rank == 3: item = self.formatNdArray(obj[-1, :, :], 
+                                                    indentation + '  ')
+            if rank == 4: item = self.formatNdArray(obj[-1, :, :, :], 
+                                                    indentation + '  ')
+            if rank == 5: item = self.formatNdArray(obj[-1, :, :, :, :], 
+                                                    indentation + '  ')
             r.append( item )
         if rank == 1:
             s = str( r )

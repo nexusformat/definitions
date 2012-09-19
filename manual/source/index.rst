@@ -1,18 +1,17 @@
 .. $Id$
 
-===================
-NeXus Documentation
-===================
-
+=========================================================
 User Manual and Reference Documentation
----------------------------------------
+=========================================================
+
+.. image:: img/NeXus.png
+	:width: 40%
+
+..
+	User Manual and Reference Documentation
+	---------------------------------------
 
 http://www.nexusformat.org/
-
-.. toctree::
-	:maxdepth: 1
-
-	copyright
 
 .. toctree::
 	:maxdepth: 2
@@ -27,6 +26,9 @@ http://www.nexusformat.org/
 	authorgroup
 	revhistory
 	license
+	copyright
+
+.. rubric:: Publishing Information
 
 This manual built |today|.  
 A released version is available online: 

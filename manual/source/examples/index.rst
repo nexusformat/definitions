@@ -5,8 +5,8 @@
 ================================================
 Examples of writing and reading NeXus data files
 ================================================
-
-.. image:: ../img/NeXus.png
+..
+	.. image:: ../img/NeXus.png
 
 Simple examples of reading and writing NeXus data files
 are provided in the :ref:`Introduction` chapter of Volume I and also

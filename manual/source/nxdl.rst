@@ -10,7 +10,8 @@
 NXDL: The NeXus Definition Language
 ===================================
 
-.. image:: img/NeXus.png
+..
+	.. image:: img/NeXus.png
 
 Information in NeXus data files is arranged by a set of rules.
 These rules facilitate the exchange of data between scientists and software
@@ -103,13 +104,8 @@ neutron, X-ray, or muon instrument.
 
 ..  + + + + + + + + + + +
 
-..  auto-generated: NXDL Elements and Data Types, built from nxdl.xsd by nxdl_desc2docbook.xsl
-    xsltproc ../../xslt/nxdl_desc2docbook.xsl ../../nxdlTypes.xsd > nxdl_desc.xml
-
-	.. literalinclude:: nxdl_desc.xml
-	    :tab-width: 4
-	    :linenos:
-	    :language: guess
+..  auto-generated: NXDL Elements and Data Types, built from nxdl.xsd
+    ../../utils/nxdl_desc2rst.py ../../nxdl.xsd > nxdl_desc.xml
 
 .. toctree::
 
@@ -213,7 +209,7 @@ very loosely defined to include:
 
 - specification of input or output of a specific software program
 
-..  The term <emphasis>the sky is the limit</emphasis> seems to apply.
+..  The term *the sky is the limit* seems to apply.
 
 The point of the
 *NeXus Application Definition*

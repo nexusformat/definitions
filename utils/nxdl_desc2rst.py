@@ -19,6 +19,11 @@ the NXDL chapter.
 import os, sys
 import lxml.etree
 
+# TODO: look at ALL the select= clauses in nxdl_desc2rst.xsl before declaring this job is complete
+# replicate the function of this clause
+#      <xslt:template match="xsd:complexType|xsd:simpleType|xsd:group|xsd:element|xsd:attribute">
+
+
 
 ELEMENT_LIST = (
                 'attribute',
@@ -32,6 +37,78 @@ ELEMENT_LIST = (
                 'symbols',
                 )
 
+DATATYPE_DICT = {
+                 'basicComponent': '''/xs:schema//xs:complexType[@name='basicComponent']''',
+                 'validItemName': '''/xs:schema//xs:simpleType[@name='validItemName']''',
+                 'validNXClassName': '''/xs:schema//xs:simpleType[@name='validNXClassName']''',
+                 'validTargetName': '''/xs:schema//xs:simpleType[@name='validTargetName']''',
+                 'nonNegativeUnbounded': '''/xs:schema//xs:simpleType[@name='nonNegativeUnbounded']''',
+                 }
+
+ELEMENT_PREAMBLE = '''
+===============================
+NXDL Elements and Data Types
+===============================
+
+The documentation in this section has been obtained directly 
+from the NXDL Schema file:  *nxdl.xsd*.
+First, the basic elements are defined in alphabetical order.  
+Attributes to an element are indicated immediately following the element
+and are preceded with an "@" symbol, such as
+**@attribute**.
+Then, the common data types used within the NXDL specification are defined.
+Pay particular attention to the rules for *validItemName*
+and  *validNXClassName*.
+
+..
+    2010-11-29,PRJ:
+    This contains a lot of special case code to lay out the NXDL chapter.
+    It could be cleaner but that would also involve some cooperation on 
+    anyone who edits nxdl.xsd which is sure to break.  The special case ensures
+    the parts come out in the chosen order.  BUT, it is possible that new
+    items in nxdl.xsd will not automatically go in the manual.
+    Can this be streamlined with some common methods?
+    Also, there is probably too much documentation in nxdl.xsd.  Obscures the function.
+
+.. _NXDL.elements:
+
+NXDL Elements
+=================
+
+    '''
+
+DATATYPE_PREAMBLE = '''
+
+.. _NXDL.data.types:
+
+NXDL Data Types (internal)
+============================
+
+Data types that define the NXDL language are described here.
+These data types are defined in the XSD Schema (``nxdl.xsd``)
+and are used in various parts of the Schema to define common structures
+or to simplify a complicated entry.  While the data types are not intended for
+use in NXDL specifications, they define structures that may be used in NXDL specifications. 
+
+'''
+
+DATATYPE_POSTAMBLE = '''
+**The** ``xs:string`` **data type**
+    The ``xs:string`` data type can contain characters, 
+    line feeds, carriage returns, and tab characters.
+    See http://www.w3schools.com/Schema/schema_dtypes_string.asp 
+    for more details.
+
+**The** ``xs:token`` **data type**
+    The ``xs:string`` data type is derived from the 
+    ``xs:string`` data type.
+
+    The ``xs:token`` data type also contains characters, 
+    but the XML processor will remove line feeds, carriage returns, tabs, 
+    leading and trailing spaces, and multiple spaces.
+    See http://www.w3schools.com/Schema/schema_dtypes_string.asp 
+    for more details.
+'''
 
 def getDocFromNode(node, retval=None):
     docnodes = node.xpath('xs:annotation//xs:documentation', namespaces=ns)
@@ -66,7 +143,7 @@ def describeElement(ns, name=None, docpath=None):
     if name == None:
         raise "Must provide an element name"
     print '\n.. _NXDL.element.%s:\n' % name
-    print '%s\n%s\n' % (name, '='*len(name))
+    print '%s\n%s\n' % (name, '-'*len(name))
     print '.. index:: NXDL element; %s\n' % name
 
     # next: document this name
@@ -124,6 +201,8 @@ def describeElement(ns, name=None, docpath=None):
 
     # next, look for a sequence, it will contain nodes for variables
     variables = node.xpath('xs:sequence//xs:element', namespaces=ns)
+    if variables is None:
+        pass
     # TODO: also look for xs:complexContent/xs:extension/xs:sequence//xs:element
     if variables is not None and len(variables) > 0:
         print '.. rubric:: List of Variables in ``%s`` element\n' % name
@@ -137,6 +216,17 @@ def describeElement(ns, name=None, docpath=None):
             for line in db[k].splitlines():
                 print '    %s' % line
             print ''
+
+        # TODO: consider all these cases?
+        #    <xslt:apply-templates select="xsd:sequence//xsd:element"/>
+        #    <xslt:apply-templates select="xsd:simpleType"/>
+        #    <xslt:apply-templates select="xsd:complexType"/>
+        #    <xslt:apply-templates select="xsd:complexType//xsd:attribute"/>
+
+
+def describeDatatype(ns, name=None, docpath=None):
+    if name == None:
+        raise "Must provide a data type name"
 
 
 if __name__ == '__main__':
@@ -155,40 +245,20 @@ if __name__ == '__main__':
     tree = lxml.etree.parse(NXDL_SCHEMA_FILE)
     
     print ".. auto-generated by a script"
-    print '''
-===============================
-NXDL Elements and Data Types
-===============================
-
-The documentation in this section has been obtained directly 
-from the NXDL Schema file:  *nxdl.xsd*.
-First, the basic elements are defined in alphabetical order.  
-Attributes to an element are indicated immediately following the element
-and are preceded with an "@" symbol, such as
-**@attribute**.
-Then, the common data types used within the NXDL specification are defined.
-Pay particular attention to the rules for *validItemName*
-and  *validNXClassName*.
-
-..
-    2010-11-29,PRJ:
-    This contains a lot of special case code to lay out the NXDL chapter.
-    It could be cleaner but that would also involve some cooperation on 
-    anyone who edits nxdl.xsd which is sure to break.  The special case ensures
-    the parts come out in the chosen order.  BUT, it is possible that new
-    items in nxdl.xsd will not automatically go in the manual.
-    Can this be streamlined with some common methods?
-    Also, there is probably too much documentation in nxdl.xsd.  Obscures the function.
-
-    '''
+    print ELEMENT_PREAMBLE
     
     NAMESPACE = 'http://www.w3.org/2001/XMLSchema'
     ns = {'xs': NAMESPACE}
 
-    #    describeElement(ns, name, node)
     for name in sorted(ELEMENT_LIST):
         fmt = '''/xs:schema//xs:complexType[@name='%sType']'''
         docpath = fmt % name
         describeElement(ns, name=name, docpath=docpath)
-        
-    # TODO: What about the common data types?
+
+    print DATATYPE_PREAMBLE
+
+    for name in sorted(DATATYPE_DICT):
+        docpath = DATATYPE_DICT[name]
+        describeDatatype(ns, name=name, docpath=docpath)
+
+    print DATATYPE_POSTAMBLE
