@@ -25,7 +25,7 @@ import sys, os
 import nxdb2rst, db2rst
 import logging
 
-NEXUS_DIR = "../manual"
+NEXUS_DIR = "../docbook"
 NEXUS_DIR = os.path.abspath(NEXUS_DIR)
 
 DocBook_FILE_LIST = []
@@ -33,7 +33,8 @@ DocBook_FILE_LIST = []
 
 def buildList(item):
     path = os.path.join(NEXUS_DIR, item)
-    DocBook_FILE_LIST.append(path)
+    if os.path.exists(path):
+        DocBook_FILE_LIST.append(path)
 
 
 buildList("applying-nexus.xml")
@@ -56,8 +57,8 @@ buildList("introduction.xml")
 buildList("issues.xml")
 buildList("license.xml")
 buildList("mailinglist.xml")
-buildList("motivations.xml")  # some <primary> element is not getting handled here
-buildList("napi-java.xml")    # ... or here ...
+buildList("motivations.xml")
+buildList("napi-java.xml")
 #buildList("NAPI.xml")        # !!! problem here !!!  <entry spanname="fullrow" ...
 buildList("NeXusManual.xml")
 buildList("NIAC.xml")
@@ -84,6 +85,7 @@ buildList("writer_2_1.xml")  # does not strip DocBook namespace from elements!
 
 
 converter = db2rst.Db2Rst()
+converter.namespacePrefix = None
 converter.removeComments(False)
 converter.writeUnusedLabels(True)
 converter.id_attrib = "{http://www.w3.org/XML/1998/namespace}id"

@@ -16,7 +16,7 @@ are now assigned to one of three classifications:
 
 #. *base classes* (that represent the components used 
    to build a NeXus data file), 
-#. *application definitions* (used to define a minimum 
+#. *application definitions* (that define a minimum 
    set of data for a specific purpose such as scientific data processing
    or an instrument definition),
    and

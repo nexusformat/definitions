@@ -29,11 +29,31 @@ import sys
 import re
 import lxml.etree
 import logging
+import itertools
 
 __contributors__ = ('Kurt McKee <contactme@kurtmckee.org>',
                     'Anthony Scopatz <ascopatz@enthought.com>',
                     'Pete Jemian <jemian@anl.gov>',
                    )
+INDENT = ' '*4
+
+
+def write_footnotes(footnotes):
+    if len(footnotes) == 0:
+        return None
+    s = ".. rubric:: Footnote"
+    if len(footnotes) > 1:
+        s += "s"
+    s += '\n\n'
+    for note in footnotes:
+        s += '.. [#] '
+        if len(note.split('\n')) == 1:
+            s += note + '\n'
+        else:
+            s += '\n'
+            for line in note.split("\n"):
+                s += INDENT + line + '\n'
+    return s
 
 
 class Db2Rst:
@@ -66,7 +86,7 @@ class Db2Rst:
         tree = lxml.etree.parse(dbfile, parser=parser)
         logging.info('parsed XML file')
         root = tree.getroot()
-        if self.namespacePrefix is not None:
+        if self.namespacePrefix in root.nsmap:
             self.ns = "{%s}" % root.nsmap[self.namespacePrefix]
         self._linked_ids = self._get_linked_ids(tree)
         if converter is None:
@@ -178,9 +198,15 @@ class Convert(object):
         # _buffer is flushed after the end of paragraph
         # used for ReST substitutions
         self._buffer = ""
+        self.footnotes = []
 
     def __str__(self):
         output = self._conv(self.el)
+        
+        notes = write_footnotes(self.footnotes)
+        if notes is not None:
+            output += '\n' + notes
+
         # remove trailing whitespace
         output = re.sub(r"[ \t]+\n", "\n", output)
         # leave only one blank line
@@ -202,9 +228,10 @@ class Convert(object):
             logging.info("ignoring ProcessingInstruction for now")
             return ""
         if tag == "<built-in function Comment>":
-            logging.info("_conv(): line %d in %s" % (el.sourceline, 
-                                                     str(el.base)))
-            logging.info("ignoring Comment for now")
+            #logging.info("_conv(): line %d in %s" % (el.sourceline, 
+            #                                         str(el.base)))
+            #logging.info("ignoring Comment for now")
+            return self.Comment(el)
         if tag.find(self.parent.ns) == 0:
             # strip off the default namespace
             tag = tag[len(self.parent.ns):]
@@ -216,6 +243,10 @@ class Convert(object):
                 prefix = [k for k, v in el.nsmap.iteritems() if v == ns][0]
             if prefix is not None:
                 tag = "_".join([prefix, rawTag])
+        #
+        #if len(self.footnotes):
+        #    print len(self.footnotes), self._what(el)
+        #
         method_name = 'e_' + tag
         if hasattr(self, method_name):
             return getattr(self, method_name)(el)   # call the e_tag(el) method
@@ -393,16 +424,25 @@ class Convert(object):
     
     def _docbook_source(self, el, name):
         s = "\n\n.. rubric:: %s\n\n::\n\n" % name
-        s += " "*4 + self._original_xml(el)
+        s += INDENT + self._original_xml(el)
         s += "\n\n"
         return s
     
+    def _include_source(self, el):
+        s = "literalinclude:: %s\n"
+        s += INDENT + ":language: %s\n"
+        s += INDENT + ":linenos:\n"
+        s += INDENT + ":tab-width: %s\n"
+        s += "\n" + INDENT
+        return self._directive(el, s)
+    
     def _literal_source(self, el):
-        return "\n::\n" + self._indent(el, 4) + "\n"
+        #return "\n::\n" + self._indent(el, 4) + "\n"
+        #s = "\n\n.. code-block:: guess"
+        return self._directive(el, 'code-block: guess\n    :linenos:\n\n    ')
     
     def Comment(self, el):
-        # _original_xml
-        return self._directive(el, 'COMMENT')
+        return self._indent(el, 4, "..  ")
 
     def ProcessingInstruction(self, el):
         # TODO: How/where to call this?
@@ -413,8 +453,6 @@ class Convert(object):
     
     def e_example(self, el):
         return self._docbook_source(el, 'EXAMPLE')
-        #s = "\n\n.. code-block:: guess"
-        #return self._directive(el, 'code-block: guess\n    :linenos:\n    ')
     
     def e_informalexample(self, el):
         return self._docbook_source(el, 'INFORMALEXAMPLE')
@@ -422,30 +460,22 @@ class Convert(object):
     def e_calloutlist(self, el):
         return self._docbook_source(el, 'CALLOUTLIST')
 
-    def e_xi_include(self, el):
+    def e_include(self, el):
         '''
-        process Xinclude "include" directives 
-        as triggered by this attribute in the root element::
+        process  "include" directives 
+        as triggered by a statement such as this::
         
-            xmlns:xi="http://www.w3.org/2001/XInclude"
-
-        and a statement such as this::
+            <include href="preface.xml"/>
         
-            <xi:include href="preface.xml"/>
+        This produces the ReST result::
         
-        This _should_ result in a toctree entry but there may exist
-        questions/problems related to file paths and subdirectories.
-        For now, leave a big fat comment.
-        Try to pull the referenced file from the href attribute.
+            .. include:: preface.xml
         '''
-        f = el.get("href", None)
-        if f is None:
-            s = self._docbook_source(el, "INCLUDE")
-        else:
-            s = "\n\n.. rubric:  INCLUDE %s\n\n" % f
-        return s
-    
-    e_include = e_xi_include    # handle this the same way
+        logging.info("line %d in %s" % (el.sourceline, str(el.base)))
+        href = el.get('href', None)
+        if href is not None:
+            return "\n\n.. include:: %s\n\n" % href
+        return "\n\n.. UNHANDLED LINE %d in %s" % (el.sourceline, str(el.base))
     
     # general inline elements
     
@@ -640,8 +670,6 @@ class Convert(object):
     # programming elements
     
     def e_function(self, el):
-        #self._has_only_text(el)
-        #return ":func:`%s`" % self._concat(el)
         return "``%s``" % self._concat(el).strip()
     
     def e_constant(self, el):
@@ -664,7 +692,7 @@ class Convert(object):
         return self._make_title(t, level)
     e_screen = _literal_source
     e_literallayout = _literal_source
-    e_programlisting = _literal_source
+    e_programlisting = _include_source
     
     def e_blockquote(self, el):
         return self._indent(el, 4)
@@ -780,66 +808,52 @@ class Convert(object):
         return ''
 
     def e_indexterm(self, el):
-        ''' 
-        In sphinx v1.1, an index role was added.
-        Now assume all <indexentry> elements are to be :index:`tag`.
-        (http://sphinx.pocoo.org/markup/misc.html#role-index)
-        
-        This DocBook code::
-
-            <indexterm>
-                <primary>NeXus International Advisory Committee</primary>
-                <see>NIAC</see>
-            </indexterm>
-            <indexterm significance="preferred"><primary>units</primary>
-            </indexterm>
-        
-        should generate this ReST code::
-        
-            :index:`see: NeXus International Advisory Committee; NIAC `
-            :index:`! units`
+        # http://www.docbook.org/tdg/en/html/indexterm.html
         '''
-        if len(el.findall(self.parent.ns + "primary")) == 0:
-            raise RuntimeError, "indexterm has no primary element"
-        self._supports_only(el, (self.parent.ns + 'primary',
-                                 self.parent.ns + 'secondary',
-                                 self.parent.ns + 'tertiary',
-                                 self.parent.ns + 'see',
-                                 self.parent.ns + 'seealso',))
-        # TODO need routines for primary, secondary, tertiary
-        pri = self.childNodeText(el, "primary").strip("`")
+        The resulting .rst document will contain some entries such as::
+        
+            :index:`EDIT_ME <!NAPI>`
+        
+        Since the EDIT_ME text will appear in the final, formatted document, 
+        it is necessary to replace EDIT_ME with appropriate text from the local context
+        and weave this index entry into the local context.
+        
+        * Use the index role (requires sphinx v.1.1+) for all DocBook <indexterm> elements
+        * use the (implied) single option as default
+        * avoid the triple option, it looks bad due to the commas
+        * options for 'see' (and 'seealso' treated synonymously) should be entered as additional index roles
+        '''
+        logging.info("line %d in %s" % (el.sourceline, str(el.base)))
+        preferred_significance = el.get("significance", "normal") == 'preferred'
+        nodes = [el.find(self.parent.ns+t) for t in ('primary', 'secondary', 'tertiary')]
         s = ""
-        for term in ('see', 'seealso',):
-            text = self.childNodeText(el, term)
-            if text is not None:
-                if len(s) > 0:
-                    s += " "
-                s += ":index:`INDEX_POINT <%s: %s; %s>`" % (term, pri, text)
-        if len(s) == 0:
-            if el.attrib.get('significance', "").lower() == "preferred":
-                s += "! "
-            s += pri
-            sec = self.childNodeText(el, "secondary")
-            if sec is not None:
-                s += "; " + sec.strip("`")
-            # ReST and Sphinx do not provide for tertiary index specifications.
-            # Do the best we can here.
-            ter = self.childNodeText(el, "tertiary")
-            if ter is not None:
-                s += " - " + ter.strip("`")
-            # still need to edit the ReST to replace 
-            # INDEX_POINT with short printable text.
-        s = ":index:`INDEX_POINT <single: %s>`" % s
+        if len([c for c in nodes if c is not None]) > 0:
+            terms = [self._concat(node).strip() for node in nodes if node is not None]
+            items = "; ".join(terms)
+            if preferred_significance:
+                items = "!" + items
+            s += ":index:`EDIT_ME <%s>` " % items     # EDIT_ME will appear in the formatted text, fix it in the editor
+        
+        # are there any "see" or "seealso" elements?
+        related_nodes =  [el.find(self.parent.ns+t) for t in ('see', 'seealso')]
+        if len([c for c in related_nodes if c is not None]) > 0:
+            seealso_terms = [self._concat(node).strip() for node in related_nodes if node is not None]
+            items = "; ".join(list(itertools.chain(*[seealso_terms, [terms[0]]])))
+            s += ":index:`EDIT_ME <see: %s>` " % items
         return s
-    e_primary = _no_special_markup
-    e_secondary = _no_special_markup
-    e_tertiary = _no_special_markup
     
     def e_footnote(self, el):
-        self._supports_only(el, (self.parent.ns + "para",))
-        s = "{FOOTNOTE: %s}" % self._conv(
-                                  el.find(self.parent.ns + "para")).strip()
-        return s
+        '''
+        Collect the content of footnotes in a queue.
+        Return a generic reference ([#]_) for now.
+        Write out the queue contents later.
+        "Later" could be when the file is done processing, 
+        before writing, or earlier.
+        '''
+        logging.info("line %d in %s" % (el.sourceline, str(el.base)))
+        s = self._concat(el).strip()
+        self.footnotes.append(s)
+        return ' [#]_'
     
     # admonition directives
     
@@ -1036,12 +1050,12 @@ class Table:
         self.labels = []
     
     def reST(self, indentation = '', fmt = 'simple'):
-        '''return the table in reST format'''
+        '''render the table in reST format'''
         return {'simple': self.simple_table,
                 'complex': self.complex_table,}[fmt](indentation)
     
     def simple_table(self, indentation = ''):
-        '''return the table in simple rest format'''
+        '''render the table in simple rest format'''
         # maximum column widths, considering possible line breaks in each cell
         width = self.find_widths()
         
@@ -1058,7 +1072,7 @@ class Table:
         return rest
     
     def complex_table(self, indentation = ''):
-        '''return the table in complex rest format'''
+        '''render the table in complex rest format'''
         # maximum column widths, considering possible line breaks in each cell
         width = self.find_widths()
         

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
+<!-- # $Id: h5py-example.xml 974 2011-10-27 05:11:55Z Pete Jemian $ -->
+<section  xml:id="Example-writer_2_1" 
+  xreflabel="h5py example writing a simple NeXus data file with links"
+  xmlns="http://docbook.org/ns/docbook" 
+  version="5.0"
+  xmlns:xlink="http://www.w3.org/1999/xlink" 
+  xmlns:xi="http://www.w3.org/2001/XInclude">
+  <title><code>h5py</code> example writing a simple NeXus data file with links</title>
+              
+              <para>Building on the previous example, we wish to identify our measured data with 
+                            the detector on the instrument where it was generated.
+                            In this hypothetical case, since the detector was positioned at some
+                            angle <emphasis>two_theta</emphasis>, we choose to store both datasets,
+                            <code>two_theta</code> and <code>counts</code>, in a NeXus group.  
+                            One appropriate NeXus group is <xref linkend="NXdetector"/>.
+                            This group is placed in a <xref linkend="NXinstrument"/> group 
+                            which is placed in a <xref linkend="NXentry"/> group. 
+                            Still, NeXus requires a <xref linkend="NXdata"/> group.
+                            Rather than duplicate the same data already placed in the detector group,
+                            we choose to link to those datasets from the <code>NXdata</code> group.
+                            (Compare the next figure with <xref linkend="fig.data-linking"/> in the
+                            <xref linkend="Design"/> chapter of the NeXus User Manual.)
+                            The <xref linkend="Design"/> chapter provides a figure 
+                            (<xref linkend="fig.data-linking"/>) with a small variation from our
+                            previous example, placing the measured data
+                            within the <code>/entry/instrument/detector</code> group.
+                            Links are made from that data to the <code>/entry/data</code> group.</para>
+              <figure xml:id="fig.writer_2_1" xreflabel="h5py example showing data linking">
+                            <title>h5py example showing linking in a NeXus file</title>
+                            <mediaobject>
+                                          <imageobject>
+                                                        <imagedata fileref="img/ex_writer_2_1.png" width="400pt"
+                                                                      scalefit="1"/>
+                                          </imageobject>
+                            </mediaobject>
+              </figure> 
+              <para>The Python code to build an HDF5 data file with that structure (using 
+                            numerical data from the previous example) is shown below.</para>
+              <programlisting linenumbering="numbered" language="python"
+                ><xi:include href="examples/h5py/writer_2_1.py" parse="text"
+                /></programlisting>
+              <para>It is interesting to compare the output of the <code>h5dump</code>
+                            of the data file <code>writer_2_1.hdf5</code> with our Python instructions.</para>
+              
+              <programlisting linenumbering="numbered"
+                ><xi:include href="examples/h5py/writer_2_1_h5dump.txt" parse="text"
+                /></programlisting>
+              <para>Look carefully!  It <emphasis>appears</emphasis> from the output of
+                            <code>h5dump</code> that the actual data for <code>two_theta</code> 
+                            and <code>counts</code> has <emphasis>moved</emphasis> into
+                            the <code>NXdata</code> group at HDF5 path <code>/entry/data</code>!  But we stored
+                            that data in the <code>NXdetector</code> group at <code>/entry/instrument/detector</code>.
+                            This is normal for <code>h5dump</code> output.</para>
+              <para>A bit of explanation is necessary at this point.  
+                            The data is not stored in either HDF5 group directly.  Instead, HDF5
+                            creates a <code>DATA</code> storage element in the file and posts a reference
+                            to that <code>DATA</code> storage element as needed.  
+                            An HDF5 <emphasis>hard link</emphasis>
+                            requests another reference to that same <code>DATA</code> storage element.
+                            The <code>h5dump</code> tool describes in full that <code>DATA</code> storage element
+                            the first time (alphabetically) it is called.  In our case, that is within the 
+                            <code>NXdata</code> group.  The next time it is called, within the 
+                            <code>NXdetector</code> group, <code>h5dump</code> reports that a hard link
+                            has been made and shows the HDF5 path to the description.</para>
+              <para>NeXus recognizes this behavior of the HDF5 library and adds an additional structure
+                            when building hard links, the <code>target</code> attribute,
+                            to preserve the original location of the data.  Not that it actually matters.
+                            The <code>h5toText.py</code> tool knows about the additional NeXus
+                            <code>target</code> attribute and shows the data to appear in its original 
+                            location, in the <code>NXdetector</code> group.</para>
+              <programlisting linenumbering="numbered"
+                ><xi:include href="examples/h5py/writer_2_1_structure.txt" parse="text"
+                /></programlisting>
+  
+</section>

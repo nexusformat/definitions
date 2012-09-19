@@ -4,16 +4,16 @@
 .. :title-reference:`NeXus Documentation: User Manual and Reference Documentation`
 
 ################################################################
-NeXus: a common data format for neutron, x-ray, and muon science
+NeXus: a common data format for neutron, X-ray, and muon science
 ################################################################
 
 NeXus is a common data format for neutron, 
-x-ray, and muon science. It is developed as an 
+X-ray, and muon science. It is developed as an 
 international standard by scientists and programmers 
 representing major scientific facilities in Europe, Asia, 
 Australia, and North America in order to facilitate 
 greater cooperation in the analysis and visualization 
-of neutron, x-ray, and muon data. 
+of neutron, X-ray, and muon data. 
 
 NeXus home:
 http://nexusformat.org
@@ -23,7 +23,6 @@ http://nexusformat.org
    :glob:
    
    contents
-   cheatsheet
-   markup-spec
+   frontmatter
 
 This manual built |today|

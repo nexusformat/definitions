@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
+<!-- # $Id$ -->
+<chapter xml:id="ClassDefinitions" 
+    version="5.0"
+    xmlns="http://docbook.org/ns/docbook" 
+    xmlns:xi="http://www.w3.org/2001/XInclude" 
+    xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>NeXus classes</title>
+        <mediaobject>
+            <imageobject>
+                <imagedata fileref="img/NeXus.png" width="300pt" scalefit="1"/>
+            </imageobject>
+        </mediaobject>
+    <para>
+        Information is stored in a NeXus data file by grouping together similar parts.
+        For example, information about the sample could include a descriptive name, the
+        temperature, and other items.  NeXus specifies the contents of these groupings
+        using <emphasis>classes</emphasis>.  In some parts of this manual, these
+        classes might be called <emphasis>group type</emphasis> or some similar term.
+        In this section, the NeXus classes are described in detail.  Each class is specified
+        using the <emphasis>NeXus Definition Language</emphasis> (NXDL).  The rules and
+        structure of NXDL are described in a separate chapter.
+    </para>
+    <para>
+        There are three types of NeXus class file: base classes, application definitions, and
+        contributed definitions.
+        Base class definitions define the <emphasis>complete</emphasis>
+        set of terms that
+        <emphasis>might</emphasis> be used in an instance of that class.
+        Application definitions define the <emphasis>minimum</emphasis>
+        set of terms that
+        <emphasis>must</emphasis> be used in an instance of that class.
+        Contributed definitions include propositions from
+        the community for NeXus base classes or application definitions, as well
+        as other NXDL files for long-term archival by NeXus.
+    </para>
+
+    <section xml:id="ClassDefinitions-Overview">
+        <title>Overview of NeXus classes</title>
+
+        <para> Each of the NeXus classes is described in two basic ways. First, a short list of
+            descriptive information is provided as a header, then a condensed listing of the 
+            basic structure, then a table providing documentation for the various components
+            of the NeXus class.
+            <variablelist>
+                <varlistentry>
+                    <term>category</term>
+                    <listitem>
+                        <para>The category of NXDL, either: 
+                            <simplelist>
+                                <member>
+                                    <literal>base</literal> (base class)
+                                </member>
+                                <member>
+                                    <literal>application</literal> (application definition)
+                                </member>
+                                <member>
+                                    <literal>contributed</literal> (contributed definition)
+                                </member>
+                            </simplelist>
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>NXDL source</term>
+                    <listitem>
+                        <para>Name of the NeXus class and a URL to the source listing in the NeXus
+                            subversion repository.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>version</term>
+                    <listitem>
+                        <para>A string that documents this particular 
+                            version of this NXDL.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>SVN Id</term>
+                    <listitem>
+                        <para>Subversion repository checkout identification, stripped of the
+                            surrounding dollar signs. (The <emphasis role="italic">Id</emphasis> is
+                            blank on files copied direct from the repository that are not checked
+                            out by a subversion client.)</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>NeXus Definition Language</term>
+                    <listitem>
+                        <para>
+                            The 
+                            <link xlink:href="#NXDL"
+                                >NeXus Definition Language (NXDL)</link>
+                            <indexterm><primary>NXDL</primary></indexterm>
+                            (described in <xref linkend="NXDL"/>)
+                            is used to describe the components in the NeXus
+                            Base Classes, as well as application and contributed definitions.
+                            The intent of NXDL is to provide a
+                            rules-based method
+                            <indexterm>
+                                <primary>rules</primary>
+                                <secondary>NXDL</secondary>
+                            </indexterm>
+                            for defining a NeXus data file that is
+                            specific to either an instrument (where NeXus has been
+                            for years) or an area of scientific technique or analysis.
+                            NXDL replaces the meta-DTD method used previously to
+                            define the NeXus base classes.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>extends class</term>
+                    <listitem>
+                        <para>NeXus class extended by this class. Most NeXus base classes only
+                            extend the base class definition (NXDL).</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>other classes included</term>
+                    <listitem>
+                        <para>List (including URLs) of other classes used to define this
+                            class.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>symbol list</term>
+                    <listitem>
+                        <para>List of the <code>symbols</code> (if present) that define mnemonics that
+                            represent the length of each dimension in a vector or array.
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>documentation</term>
+                    <listitem>
+                        <para>Description of the NeXus class. DocBook markup (formatting is
+                            allowed).</para>
+                    </listitem>
+                </varlistentry>
+            </variablelist></para>
+        <para>
+            <!-- <title>Basic structure of the <code>class</code></title> -->
+            A compact listing of the basic structure 
+                (groups, fields, dimensions, attributes, and links)
+                is prepared for each NXDL specification.  Indentation shows
+                nested structure.  Attributes are prepended with the <code>@</code>
+                symbol while links use the characters <code> --> </code>
+                to represent the path to the intended source of the information.
+        </para>
+        <para>The table has columns to describe the basic information about each field or group in
+            the class. An example of the varieties of specifications are given in the following
+            table using items found in various NeXus base classes.</para>
+        <table role="small">
+            <title>Example Tabular representation of a NeXus class</title>
+            <tgroup cols="4">
+                <colspec colwidth="15*"/>
+                <colspec colwidth="15*"/>
+                <colspec colwidth="20*"/>
+                <colspec colwidth="30*"/>
+                <thead>
+                    <row>
+                        <entry><?dblatex bgcolor="[gray]{0.8}"?>Name</entry>
+                        <entry><?dblatex bgcolor="[gray]{0.8}"?>Type</entry>
+                        <entry><?dblatex bgcolor="[gray]{0.8}"?>Units</entry>
+                        <entry><?dblatex bgcolor="[gray]{0.8}"?>Description (and Occurrences)</entry>
+                    </row>
+                </thead>
+                <tbody>
+                    <row rowsep="0">
+                        <entry><literal>program_name</literal></entry>
+                        <entry>NX_CHAR</entry>
+                        <entry/>
+                        <entry>
+                            <para>Name of program used to generate this file</para>
+                        </entry>
+                    </row>
+                    <row rowsep="0">
+                        <entry><literal> @version</literal></entry>
+                        <entry>NX_CHAR</entry>
+                        <entry/>
+                        <entry>
+                            <para>Program version number</para>
+                            <para> Occurences: 1 : <emphasis role="italic"> default
+                                </emphasis></para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><literal> @configuration</literal></entry>
+                        <entry>NX_CHAR</entry>
+                        <entry/>
+                        <entry>
+                            <para>configuration of the program</para>
+                        </entry>
+                    </row>
+                    <row rowsep="0">
+                        <entry><literal>thumbnail</literal></entry>
+                        <entry>
+                            <link xlink:href="http://www.nexusformat.org/NXnote">NXnote</link>
+                        </entry>
+                        <entry/>
+                        <entry>
+                            <para>A small image that is representative of the entry. An example of
+                                this is a 640x480 JPEG image automatically produced by a low
+                                resolution plot of the NXdata.</para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><literal> @mime_type</literal></entry>
+                        <entry>NX_CHAR</entry>
+                        <entry/>
+                        <entry>expected: <emphasis role="bold"
+                            >mime_type="image/*"</emphasis></entry>
+                    </row>
+                    <row>
+                        <entry/>
+                        <entry>
+                            <link xlink:href="http://www.nexusformat.org/NXgeometry"
+                                ><literal>NXgeometry</literal></link>
+                        </entry>
+                        <entry/>
+                        <entry>describe the geometry of this class</entry>
+                    </row>
+                    <row>
+                        <entry><literal>distance</literal></entry>
+                        <entry>NX_FLOAT</entry>
+                        <entry>NX_LENGTH</entry>
+                        <entry>
+                            <para>Distance from sample</para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><literal>mode</literal></entry>
+                        <entry>
+                            <para>"Single Bunch" </para>
+                            <para> | "Multi Bunch"</para>
+                        </entry>
+                        <entry/>
+                        <entry>
+                            <para>source operating mode</para>
+                        </entry>
+                    </row>
+                    <row>
+                        <entry><literal>target_material</literal></entry>
+                        <entry>
+                            <para>Ta</para>
+                            <para> | W</para>
+                            <para> | depleted_U</para>
+                            <para> | enriched_U</para>
+                            <para> | Hg</para>
+                            <para> | Pb</para>
+                            <para> | C</para>
+                        </entry>
+                        <entry/>
+                        <entry>
+                            <para>Pulsed source target material</para>
+                        </entry>
+                    </row>
+                </tbody>
+            </tgroup>
+        </table>
+        <para> In the above example, the fields might appear in a NeXus XML data file as </para>
+        <example>
+            <title>Example fragment of a NeXus XML data file</title>
+            <programlisting language="xml" linenumbering="numbered"
+                ><xi:include href="examples/xml-data-file-fragment.xml.txt" 
+                    parse="text"/></programlisting>
+        </example>
+        <para> The columns in the table are described as follows: </para>
+        <para>
+            <variablelist>
+                <varlistentry>
+                    <term>Name (and attributes)</term>
+                    <listitem>
+                        <para>
+                            Name of the data field. 
+                            Since <literal>name</literal> needs to be restricted to valid 
+                            program variable names,
+                            no "<literal>-</literal>" characters can be allowed. 
+                            Name must satisfy both HDF and XML
+                            naming rules.
+                            <indexterm>
+                                <primary>rules</primary>
+                                <secondary>naming</secondary>
+                            </indexterm>
+                            <indexterm>
+                                <primary>rules</primary>
+                                <secondary>HDF</secondary>
+                            </indexterm>
+                            <indexterm>
+                                <primary>rules</primary>
+                                <secondary>XML</secondary>
+                            </indexterm>
+                            <programlisting language="xml" linenumbering="numbered"
+                                ><xi:include href="examples/naming-convention.txt" 
+                                parse="text"/></programlisting>
+                        </para>
+                        <para>
+                            Attributes,
+                            <indexterm significance="preferred">
+                                <primary>attributes</primary>
+                            </indexterm>
+                            identified with a leading "at" symbol (<literal>@</literal>) 
+                            and belong with the preceding field or group,
+                            are additional metadata used to define this field or group. 
+                        </para>
+                        <para>
+                            In the example above, the
+                                <literal>program_name</literal> element has two attributes:
+                                <literal>version</literal> (required) and
+                                <literal>configuration</literal> (optional) while the
+                                <literal>thumbnail</literal> element has one attribute:
+                                <literal>mime_type</literal> (optional).</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Type</term>
+                    <listitem>
+                        <para>Type of data to be represented by this variable. 
+                            The type is one of
+                            those specified in the <link 
+                                xlink:href="#NXDL"
+                                ><code>NeXus Definition Language</code></link>
+                            (see <xref linkend="NXDL"/>).
+                        </para>
+                        <para>In the case where the variable can take only one value from a known
+                            list, the list of known values is presented, such as in the
+                            <literal>target_material</literal> field above: 
+                            <literal>
+                                Ta | W | depleted_U | enriched_U | Hg | Pb | C
+                            </literal>.
+                            Selections with included whitespace are surrounded by quotes. See the
+                            example above for usage.</para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Units</term>
+                    <listitem>
+                        <para>
+                            Data units, 
+                            <indexterm><primary>units</primary></indexterm>
+                            given as character strings,
+                            must conform to the NeXus units standard.  
+                            See the 
+                            <link xlink:href="#Design-Units"
+                                >"NeXus units"</link> section for details.
+                            
+                        </para>
+                    </listitem>
+                </varlistentry>
+                <varlistentry>
+                    <term>Description (and Occurences)</term>
+                    <listitem>
+                        <para>A simple text description of the data field. No markup or formatting
+                            is allowed.</para>
+                        <para>The absence of <emphasis>Occurences</emphasis> in the item 
+                            description signifies that
+                            both <literal>minOccurs</literal> and <literal>maxOccurs</literal> have
+                            the default values.
+                            If the number of occurences of an item are specified
+                            in the NXDL (through <literal>@minOccurs</literal> and
+                                <literal>@maxOccurs</literal> attributes), they will be reported in
+                            the Description column similar to the example shown above.</para>
+                        <para> Default values for occurences are shown in the following table. The
+                                <literal>NXDL element type</literal> is either a group (such as a
+                            NeXus base class), a field (that specifies the name and type of a
+                            variable), or an attribute of a field or group. The number of times an
+                            item can appear ranges between <literal>minOccurs</literal> and
+                                <literal>maxOccurs</literal>. A default <literal>minOccurs</literal>
+                            of zero means the item is optional. For attributes,
+                                <literal>maxOccurs</literal> cannot be greater than 1. </para>
+                        <table role="small">
+                            <title>Default values for occurences</title>
+                            <tgroup cols="3">
+                                <thead>
+                                    <row>
+                                        <entry><?dblatex bgcolor="[gray]{0.8}"?>NXDL element type</entry>
+                                        <entry><?dblatex bgcolor="[gray]{0.8}"?>minOccurs</entry>
+                                        <entry><?dblatex bgcolor="[gray]{0.8}"?>maxOccurs</entry>
+                                    </row>
+                                </thead>
+                                <tbody>
+                                    <row>
+                                        <entry>group</entry>
+                                        <entry>0</entry>
+                                        <entry>unbounded</entry>
+                                    </row>
+                                    <row>
+                                        <entry>field</entry>
+                                        <entry>0</entry>
+                                        <entry>unbounded</entry>
+                                    </row>
+                                    <row>
+                                        <entry>attribute</entry>
+                                        <entry>0</entry>
+                                        <entry>1</entry>
+                                    </row>
+                                </tbody>
+                            </tgroup>
+                        </table>
+                    </listitem>
+                </varlistentry>
+            </variablelist>
+        </para>
+    </section>
+	<!-- 
+	    the next three sections are autogenerated by Makefile from NXDL files, 
+	    do NOT edit them directly
+	-->
+    <xi:include href="classes/BaseClassSections.xml"/>
+    <xi:include href="classes/ApplicationClassSections.xml"/>
+    <xi:include href="classes/ContributedClassSections.xml"/>
+</chapter>

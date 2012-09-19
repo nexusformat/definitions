@@ -20,6 +20,9 @@ storing single items of data.
    with their meaning between NeXus data file instances and 
    NXDL specification files.
 
+.. index:: hierarchy
+.. index:: data objects; fields
+
 The structure of NeXus files is extremely flexible, 
 allowing the storage both of simple data sets, such as a 
 single data array and its axes, and also of highly complex 
@@ -27,8 +30,8 @@ data, such as the simulation results or an entire
 multi-component instrument. This flexibility is a necessity 
 as NeXus strives to capture data from a wild variety of 
 applications in x-ray, muSR and neutron scattering. The 
-flexibility is achieved through a hierarchical :index:`hierarchy`
-structure, with related *fields* :index:`data objects; fields`
+flexibility is achieved through a structural 
+:index:`hierarchy`, with related *fields*
 collected together into *groups*, 
 making NeXus files easy to navigate, even without any
 documentation. NeXus files are self-describing, and 

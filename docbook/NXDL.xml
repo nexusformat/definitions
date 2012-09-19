@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?oxygen RNGSchema="http://www.oasis-open.org/docbook/xml/5.0/rng/docbook.rng" type="xml"?>
+<!-- # $Id$ -->
+<chapter 
+    xml:id="NXDL"
+    xreflabel="NXDL: NeXus Definition Language"
+    version="5.0" 
+    xmlns="http://docbook.org/ns/docbook" 
+    xmlns:xlink="http://www.w3.org/1999/xlink"
+    xmlns:xi="http://www.w3.org/2001/XInclude" >
+    <title>NXDL: The NeXus Definition Language</title>
+    <mediaobject>
+        <imageobject>
+            <imagedata fileref="img/NeXus.png" width="300pt" scalefit="1"/>
+        </imageobject>
+    </mediaobject>
+    <indexterm significance="preferred"><primary>NXDL</primary></indexterm>
+    <indexterm significance="preferred">
+        <primary>NeXus Definition Language</primary>
+        <see>NXDL</see>
+    </indexterm>
+    
+    <para>
+        Information in NeXus data files is arranged by a set of rules.
+        These rules facilitate the exchange of data between scientists and software
+        by standardizing common terms such as the way engineering units are described
+        and the names for common things and the way that arrays are described and stored.
+    </para>
+    
+    <para>
+        The set of rules for storing information in NeXus data files
+        is declared using the NeXus Definition Language.
+        NXDL itself is governed by a set of rules (a <emphasis>schema</emphasis>)
+        that should simplify learning the few terms in NXDL.
+        In fact, the NXDL rules, written as an XML Schema, are machine-readable
+        using industry-standard and widely-available software tools for XML files such as
+        <literal>xsltproc</literal>, <literal>xmllint</literal>, and
+        <literal>DocBook</literal>.
+        This chapter describes the rules and terms from which NXDL files are constructed.
+    </para>
+
+    <section>
+        <title>Introduction</title>
+        <para>
+            NXDL (NeXus Definition Language)
+            <indexterm>
+                <primary>NXDL</primary>
+            </indexterm>
+            files allow scientists to define the nomenclature and 
+            arrangement of information
+            in NeXus data files.  These NXDL files can be
+            specific to a scientific discipline such as
+            tomography or small-angle scattering,
+            specific analysis or data reduction software,
+            or even to define another component (base class)
+            used to design and build NeXus data files.
+        </para>
+        <para>
+            In addition to this chapter and the 
+            <link xlink:href="#NXDL_Tutorial">Tutorial</link> in Volume I, look at the
+            set of NeXus NXDL files to learn how to read
+            and write NXDL files.  These files are available from
+            the NeXus <emphasis>definitions</emphasis> repository
+            and are most easily viewed through the TRAC site:
+            <link
+                xlink:href="http://trac.nexusformat.org/definitions/browser/trunk"
+                ><code>http://trac.nexusformat.org/definitions/browser/trunk</code
+                ></link>
+            in the <code>base_classes</code>,
+            <code>applications</code>,
+            and  <code>contributed</code>
+            directories.  The rules (expressed as XML Schema) 
+            for NXDL files may also be
+            viewed from this URL.  See the files
+            <code>nxdl.xsd</code> for the main XML Schema
+            and <code>nxdlTypes.xsd</code> for the listings of
+            allowed data types and categories of units
+            allowed in NXDL files.
+        </para>
+        <para>
+            NXDL files can be checked (validated) for syntax 
+            and content.
+            With validation, scientists can be certain their definitions
+            will be free of syntax errors.  Since NXDL is based 
+            on the XML standard, there are many editing 
+            programs<footnote><para>
+                For example <emphasis>XML Copy Editor</emphasis>:<link
+                    xlink:href="xml-copy-editor.sourceforge.net"
+                    ><code>xml-copy-editor.sourceforge.net</code
+                    ></link>
+            </para></footnote> 
+            available to ensure that the files are 
+            <emphasis>well-formed</emphasis>.<footnote><para><link
+                xlink:href="http://en.wikipedia.org/wiki/XML#Well-formedness_and_error-handling"
+                ><code>http://en.wikipedia.org/wiki/XML#Well-formedness_and_error-handling</code
+                ></link></para></footnote>
+            There are many standard tools such as <code>xmllint</code>
+            and <code>xsltproc</code> that can process XML files.
+            Further, NXDL files are backed by a set of rules
+            (an <emphasis>XML Schema</emphasis>) that define the 
+            language and can be used to check that an NXDL file
+            is both correct by syntax and valid by the NeXus rules.
+        </para>
+        <para>  
+            NXDL files are machine-readable.
+            This enables their automated conversion into schema files
+            that can be used, in combination with other NXDL files,
+            to validate NeXus data files.  In fact, all of the tables in the 
+            <link xlink:href="#ClassDefinitions">Class Definitions</link> Chapter
+            have been generated directly from the NXDL files.
+        </para>
+        <para>
+            The language of NXDL files is intentionally quite small,
+            to provide only that which is necessary to describe
+            scientific data structures (or to establish the 
+            necessary XML structures).  Rather than have scientists
+            prepare XML Schema files directly, NXDL was designed to 
+            reduce the jargon necessary to define the structure of
+            data files.  The two principle objects in NXDL files are:
+            <code>group</code> and <code>field</code>.
+            Documentation (<code>doc</code>) is optional for any NXDL 
+            component.
+            Either of these objects may have additional
+            <code>attribute</code>s that contribute simple metadata.
+        </para>
+        <para>The 
+            <link xlink:href="#ClassDefinitions">Class Definitions</link> Chapter
+            lists the various classes from which a NeXus file is
+            constructed. These classes provide the glossary of items that 
+            could, in principle, be stored
+            in a standard-conforming NeXus file (other items may be inserted into the file if
+            the author wishes, but they won't be part of the standard). If you are going to
+            include a particular piece of metadata,
+            <indexterm><primary>metadata</primary></indexterm> refer to the class definitions
+            for the standard nomenclature. 
+            However, to assist those writing data analysis
+            software, it is useful to provide more than a glossary; it is important to define
+            the required contents of NeXus files that contain data from particular classes of
+            neutron, x-ray, or muon instrument.</para>
+    </section>
+    
+    <!-- + + + + + + + + + + + -->
+    
+    <!-- auto-generated: NXDL Elements and Data Types, built from nxdl.xsd by nxdl_desc2docbook.xsl -->
+    <xi:include href="nxdl_desc.xml"/>
+    
+    <!-- + + + + + + + + + + + -->
+    
+    <section>
+        <title>Data Types allowed in NXDL specifications</title>
+        <para> 
+            Data Types for use in NXDL specifications
+            <indexterm><primary>NXDL</primary><secondary>data
+                types</secondary></indexterm>
+            <indexterm><primary>data types</primary><secondary>NXDL</secondary></indexterm>
+            describe the expected type of data for a NeXus field. These terms are very
+            broad. More specific terms are used in actual NeXus data files that describe
+            size and array dimensions. In addition to the types in the following table, the
+            <literal>NAPI</literal> type is defined when one wishes to permit a field
+            with any of these data types. 
+        </para>
+
+        <!-- 
+            Generated from ../nxdlTypes.xsd via an XSLT transformation
+            xsltproc ../xslt/nxdl_units2docbook.xsl ../nxdlTypes.xsd > types.xml 
+        -->
+        <xi:include href="types.xml"/>
+
+    </section>
+    
+    <!-- + + + + + + + + + + + -->
+    
+    <section>
+        <title>Unit Categories allowed in NXDL specifications</title>
+        <para> 
+            Unit categories in NXDL specifications
+            <indexterm><primary>NXDL</primary><secondary>units</secondary></indexterm>
+            <indexterm><primary>units</primary><secondary>NXDL</secondary></indexterm>
+            describe the expected type of units for a NeXus field. They should describe
+            valid units consistent with the section on 
+            <link xlink:href="#Design-Units">NeXus units</link> in Volume I. 
+            The values for unit categories are restricted (by
+            an enumeration) to the following table. 
+        </para>
+
+        <!-- 
+            Generated from ../nxdlTypes.xsd via an XSLT transformation
+            xsltproc ../xslt/nxdl_units2docbook.xsl ../nxdlTypes.xsd > units.xml 
+        -->
+        <xi:include href="units.xml"/>
+
+    </section>
+    
+    <!-- + + + + + + + + + + + -->
+    
+    <section>
+        <title>Historical notes about the Development of NXDL</title>
+        <!-- This might be just so much dirty laundry.  Consider removing it. -->
+        
+        <para>
+            This section contains a few brief notes about the history of NXDL
+            and the motivations for its creation.
+        </para>
+        
+        <para> Previously, the structure of NeXus data files was described using
+            <emphasis>Meta-DTD</emphasis>, an XML format that provided a compact
+            description. The terse format was not obvious to all and was difficult to
+            machine-process. NXDL was conceived to be a simpler syntax than Meta-DTD.
+            The switch to NXDL was not intended to change what was in the data files, just
+            to provide an easier (and more generic) way of describing data files. </para>
+        
+        <para>The NeXus Design page lists the group classes from which a NeXus file is
+            constructed. They provide the glossary of items that could, in principle, be stored
+            in a standard-conforming NeXus file (other items may be inserted into the file if
+            the author wishes, but they won't be part of the standard). 
+            When planning to include a particular piece of metadata,
+            <indexterm><primary>metadata</primary></indexterm> consult the class definitions
+            to find out what to call it. However, to assist those writing data analysis
+            software, it is useful to provide more than a glossary; it is important to define
+            the required contents of NeXus files that contain data from particular classes of
+            neutron, x-ray, or muon instrument.</para>
+        
+        <para>As part of the NeXus standard, the NIAC identified a number of generic instruments
+            that describe an appreciable number of existing instruments around the world.
+            Although not identical in every detail, they share many common characteristics,
+            and more importantly, they require sufficiently similar modes of data analysis, 
+            enough to make a standard description useful. 
+            Many of the application definitions were built from these instrument definitions
+            using the NeXus Definition Language (NXDL) 
+            <indexterm>
+                <primary>NXDL</primary>
+            </indexterm> format. </para>
+
+            <para> Class definitions in NeXus prior to 2008 had been in the form of base classes and
+                instrument definitions. All of these were in the same category. As the development
+                of NeXus had been led mostly by scientists from neutron sources, this represented
+                their typical situations. </para>
+            <para> Both those new to NeXus and also those familiar saw the previous emphasis on
+                instrument definitions as a deficiency that limited flexibility and possibly usage.
+                The point was made that NeXus should attempt to describe better reduced data and
+                also data for analysis since synchrotron instruments are rarely adhering to a fixed
+                definition. </para>
+            <para> The design of NeXus is moving towards an object-oriented approach where the base
+                classes will be the objects and the application definitions will use the objects
+                to specify the required components as fits some application. Here, 
+                <emphasis>application</emphasis> is
+                very loosely defined to include: 
+                <itemizedlist>
+                    <listitem><para>specification of a scientific instrument (example: TOF-USANS at SNS)</para></listitem>
+                    <listitem><para>specification of what is expected for a scientific technique (example:
+                        small-angle scattering data for common analysis programs)</para></listitem>
+                    <listitem><para>specification of generic data acquisition stream (example: TOFRAW - raw
+                        time-of-flight data from a pulsed neutron source)</para></listitem>
+                    <listitem><para>specification of input or output of a specific software program</para></listitem>
+                </itemizedlist>
+                <!--The term <emphasis>the sky is the limit</emphasis> seems to apply. -->
+                The point of the
+                <emphasis>NeXus Application Definition</emphasis> 
+                is that all of these start with <code>NX</code> and all have
+                been approved by the NIAC. </para>
+            <para> Those NXDL specifications not yet approved by the NIAC fall into the category of
+                <emphasis>NeXus contributed definitions</emphasis> 
+                for which NeXus has a place in the repository. 
+                Consider the NXDL files in the <code>contributed</code> directory
+                as <emphasis>in incubation</emphasis>.
+                This category is the place to put an NXDL (a
+                candidate for a base class or application definition) for the NIAC to consider
+                approving. </para>
+        
+    </section>
+    
+    <!-- + + + + + + + + + + + -->
+    
+</chapter>

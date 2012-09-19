@@ -80,3 +80,36 @@ Something Else
 
         import image
 
+
+
+Fun with the Index
+----------------------
+
+This is a paragraph where we have some :index:`fun <!item1; item2>` with the index.
+
+.. index::
+    single: item3, item4
+
+You can even combine separate index entries under one directive.
+
+.. index::
+    pair:     item6;  item7
+    pair:     item8;  item9
+    single:   item1;  item5
+    see:      item11; item12
+    seealso:  item13; item14
+    see:      item8;  item6
+    see:      item4;  item8;  item6
+
+Emphasize an **item** in the index with a preceding bang (!).
+
+.. index:: !item0
+
+There are index entries that appear on a :index:`single <index1, index2>` line.
+Sometimes, they have some :index:`hierarchy <!index3; index4>`.
+It is possible to :index:`coordinate <pair: index5; index6>` entries,
+even with some complexity.
+
+What about the :index:`tertiary, inline Docbook index <i primary; i secondary; i tertiary>` entry?
+This is not the way to handle the *seealso* :index:`element <single: index7, index8; pair: i four; i five>`.
+Instead, use :index:`two <single: index7s, index8s>` :index:`separate <see: i four S; i five S>` index roles.
