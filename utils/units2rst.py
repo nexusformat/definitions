@@ -47,18 +47,19 @@ def worker(nodeMatchString):
     for node in tree.xpath("//xs:simpleType", namespaces=ns):
         if node.get('name') == nodeMatchString:
             for item in node.xpath('xs:restriction//xs:enumeration', namespaces=ns):
-                key = '``%s``' % item.get('value')
+                key = '%s' % item.get('value')
                 words = item.xpath('xs:annotation/xs:documentation', namespaces=ns)[0]
                 db[key] = words.text
     
     print '\n'.join(output)
     
-    t = rst_table.Table()
-    t.labels = labels
-    t.alignment = ['l', 'L']
+    # this list is too long to make this a table in latex
+    # for two columns,  a Sphinx fieldlist will do just as well
     for key in sorted(db):
-        t.rows.append( [key, db[key]] )
-    print t.reST(format='complex')
+        print ':%s:' % key
+        for line in db[key].splitlines():
+            print '    %s' % line
+        print ''
 
 
 if __name__ == '__main__':

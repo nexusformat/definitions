@@ -12,7 +12,10 @@ PAPEROPT_a4     = -D latex_paper_size=a4
 PAPEROPT_letter = -D latex_paper_size=letter
 ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) source
 
-.PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest
+SUBDIRS = source
+
+.PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest  subdirs $(SUBDIRS)
+
 
 help:
 	@echo "Please use \`make <target>' where <target> is one of"
@@ -36,6 +39,11 @@ help:
 clean:
 	-rm -rf $(BUILDDIR)/doctrees $(BUILDDIR)/latex $(BUILDDIR)/epub
 
+subdirs: $(SUBDIRS)
+
+$(SUBDIRS):
+	$(MAKE) -C $@
+
 realclean:
 	-rm -rf $(BUILDDIR)/*
 
@@ -44,7 +52,7 @@ complete: html latexpdf
 	@echo
 	@echo "Build finished. The HTML and PDF pages are in $(BUILDDIR)/html."
 
-html:
+html: subdirs
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
@@ -98,7 +106,7 @@ epub:
 	@echo
 	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
 
-latex:
+latex: subdirs
 	$(SPHINXBUILD) -b latex $(ALLSPHINXOPTS) $(BUILDDIR)/latex
 	@echo
 	@echo "Build finished; the LaTeX files are in $(BUILDDIR)/latex."

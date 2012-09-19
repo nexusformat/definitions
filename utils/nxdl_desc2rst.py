@@ -18,7 +18,6 @@ the NXDL chapter.
 
 import os, sys
 import lxml.etree
-import rst_table
 
 
 ELEMENT_LIST = (
@@ -41,7 +40,7 @@ def getDocFromNode(node, retval=None):
     if not len(docnodes) == 1:
         return retval
     text = docnodes[0].text
-    # TODO: resolve any ReST indentation problems
+    # TODO: what about embedded tabs? v. spaces
     lines = text.splitlines()
     if len(lines) > 1:
         indent0 = len(lines[0]) - len(lines[0].lstrip())
@@ -98,39 +97,51 @@ def describeElement(ns, name=None, docpath=None):
     # next, look for attributes nodes
     attributes = node.xpath('xs:attribute', namespaces=ns)
     if attributes is not None and len(attributes) > 0:
-        print '.. rubric:: Table of Attributes of ``%s`` element' % name
-        t = rst_table.Table()
-        t.labels = ('Attribute', 'Description', )
-        t.alignment = ('l', 'L', )
+        print '.. rubric:: List of Attributes of ``%s`` element\n' % name
+        db = {}
         for item in attributes:
-            item_name = '``%s``' % item.get('name')
-            usage = item.get('use')
+            item_name = '%s' % item.get('name')
             prefix = ''
+            usage = item.get('use')
             if usage is not None:
                 prefix = '(**%s**) ' % usage
             item_doc = prefix + getDocFromNode(item)
-            t.rows.append( [item_name, item_doc] )
-        print t.reST(format='complex')
+            db[item_name] = item_doc
+        # make sure the required attributes appear first
+        for k in sorted(db):
+            if db[k].startswith('(**required**) '):
+                print ':%s:' % k
+                for line in db[k].splitlines():
+                    print '    %s' % line
+                print ''
+        # now show the other attributes
+        for k in sorted(db):
+            if not db[k].startswith('(**required**) '):
+                print ':%s:' % k
+                for line in db[k].splitlines():
+                    print '    %s' % line
+                print ''
 
     # next, look for a sequence, it will contain nodes for variables
     variables = node.xpath('xs:sequence//xs:element', namespaces=ns)
+    # TODO: also look for xs:complexContent/xs:extension/xs:sequence//xs:element
     if variables is not None and len(variables) > 0:
-        print '.. rubric:: Table of Variables in ``%s`` element' % name
-        t = rst_table.Table()
-        t.labels = ('Variable', 'Description', )
-        t.alignment = ('l', 'L', )
+        print '.. rubric:: List of Variables in ``%s`` element\n' % name
+        db = {}
         for item in variables:
-            item_name = '``%s``' % item.get('name')
-            if item_name == '``dim``':
-                pass
+            item_name = '%s' % item.get('name')
             item_doc = getDocFromNode(item)
-            t.rows.append( [item_name, item_doc] )
-        print t.reST(format='complex')
+            db[item_name] = item_doc
+        for k in sorted(db):
+            print ':%s:' % k
+            for line in db[k].splitlines():
+                print '    %s' % line
+            print ''
 
 
 if __name__ == '__main__':
     developermode =True
-    if developermode:
+    if developermode and len(sys.argv) != 2:
         NXDL_SCHEMA_FILE = os.path.join('..', 'nxdl.xsd')
     else:
         if len(sys.argv) != 2:
@@ -179,3 +190,5 @@ and  *validNXClassName*.
         fmt = '''/xs:schema//xs:complexType[@name='%sType']'''
         docpath = fmt % name
         describeElement(ns, name=name, docpath=docpath)
+        
+    # TODO: What about the common data types?

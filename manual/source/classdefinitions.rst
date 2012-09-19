@@ -6,7 +6,8 @@
 NeXus classes
 =============
 
-.. image:: img/NeXus.png
+..
+	.. image:: img/NeXus.png
 
 Information is stored in a NeXus data file by grouping together similar parts.
 For example, information about the sample could include a descriptive name, the
