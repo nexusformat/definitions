@@ -110,13 +110,102 @@ DATATYPE_POSTAMBLE = '''
     for more details.
 '''
 
+
+def _tag_match(ns, parent, match_list):
+    '''match this tag to a list'''
+    if parent is None:
+        raise "Must supply a valid parent node"
+    parent_tag = parent.tag
+    tag_found = False
+    for item in match_list:
+        # this routine only handles certain XML Schema components
+        tag_found = parent_tag == '{%s}%s' % (ns['xs'], item)
+        if tag_found:
+            break
+    return tag_found
+
+
+def _apply_templates(ns, parent, path, indent):
+    '''iterate the nodes found on the supplied XPath expression'''
+    for node in parent.xpath(path, namespaces=ns):
+        generalHandler(ns, node, indent)
+
+
+def generalHandler(ns, parent=None, indent=''):
+    '''Handle XML nodes like the former XSLT template'''
+    # this routine only handles certain XML Schema components
+    if not _tag_match(ns, parent, ('complexType', 'simpleType', 'group', 'element', 'attribute')):
+        return
+    parent_name = parent.get('name')
+    if parent_name is None:
+        return
+    
+    simple_tag = parent.tag[parent.tag.find('}')+1:]    # cut off the namespace identifier
+    subindent = indent + ' '*4
+    
+    _apply_templates(ns, parent, 'xs:attribute', subindent)
+    
+    # <varlistentry> ...
+    name = parent_name  # + ' data type'
+    if simple_tag == 'attribute':
+        name = '@' + name
+    print indent + name
+    docs = getDocFromNode(parent)
+    _apply_templates(ns, parent, 'xs:restriction', subindent)
+    if len(parent.xpath('xs:simpleType/xs:restriction//xs:enumeration', namespaces=ns)) > 0:
+        _apply_templates(ns, parent, 'xs:simpleType/xs:restriction', subindent)
+    
+    _apply_templates(ns, parent, 'xs:sequence//xs:element', subindent)
+    _apply_templates(ns, parent, 'xs:simpleType', subindent)
+    _apply_templates(ns, parent, 'xs:complexType', subindent)
+    _apply_templates(ns, parent, 'xs:complexType//xs:attribute', subindent)
+
+
+def restrictionHandler(ns, parent=None, indent=''):
+    '''Handle XSD restriction nodes like the former XSLT template'''
+    if not _tag_match(ns, parent, ('restriction')):
+        return
+    print indent + 'The value may be any'
+    base = parent.get('base')
+    pattern_nodes = parent.xpath('xs:pattern', namespaces=ns)
+    enumeration_nodes = parent.xpath('xs:enumeration', namespaces=ns)
+    if len(pattern_nodes):
+        print indent + '``%s``' % base + ' that *also* matches the regular expression::'
+        print indent + ' '*4 + pattern_nodes[0].get('value')
+    elif len(pattern_nodes):
+        # how will this be reached?
+        print indent + '``%s``' % base + ' from this list:'
+        for node in enumeration_nodes:
+            enumerationHandler(ns, node, indent)
+        print indent
+    elif len(enumeration_nodes):
+        print indent + 'one from this list only:'
+        for node in enumeration_nodes:
+            enumerationHandler(ns, node, indent)
+        print indent
+    else:
+        print '@' + base
+
+
+def enumerationHandler(ns, parent=None, indent=''):
+    '''Handle XSD enumeration nodes like the former XSLT template'''
+    if not _tag_match(ns, parent, ('enumeration')):
+        return
+    print indent + '* ``%s``' % parent.get('value')
+
+
 def getDocFromNode(node, retval=None):
     docnodes = node.xpath('xs:annotation//xs:documentation', namespaces=ns)
     if docnodes == None:
         return retval
     if not len(docnodes) == 1:
         return retval
-    text = docnodes[0].text
+    #text = docnodes[0].text
+    s = lxml.etree.tostring(docnodes[0], pretty_print=True)
+    p1 = s.find('>')+1
+    p2 = s.rfind('</')
+    text = s[p1:p2].lstrip('\n')
+    #s = lxml.etree.fromstring(s).text
     # TODO: what about embedded tabs? v. spaces
     lines = text.splitlines()
     if len(lines) > 1:
@@ -217,12 +306,6 @@ def describeElement(ns, name=None, docpath=None):
                 print '    %s' % line
             print ''
 
-        # TODO: consider all these cases?
-        #    <xslt:apply-templates select="xsd:sequence//xsd:element"/>
-        #    <xslt:apply-templates select="xsd:simpleType"/>
-        #    <xslt:apply-templates select="xsd:complexType"/>
-        #    <xslt:apply-templates select="xsd:complexType//xsd:attribute"/>
-
 
 def describeDatatype(ns, name=None, docpath=None):
     if name == None:
@@ -262,3 +345,11 @@ if __name__ == '__main__':
         describeDatatype(ns, name=name, docpath=docpath)
 
     print DATATYPE_POSTAMBLE
+    
+    print '\n\n..  ++++++++++++++++ start to write these like the XSLT did +++++++++++++++\n\n'
+
+    m = "<type 'lxml.etree._Element'>"
+    for item in list(tree.getroot()):
+        s = str(type(item))
+        if s == m:
+            generalHandler(ns, parent=item, indent='.. ')
