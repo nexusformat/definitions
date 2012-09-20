@@ -28,11 +28,19 @@ http://www.nexusformat.org/
 	license
 	copyright
 
+-----------
+
 .. rubric:: Publishing Information
 
 This manual built |today|.  
+
 A released version is available online: 
+
 http://download.nexusformat.org/doc/html/UserManual.html
+
+A very brief overview is also available.
+
+http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html
 
 ..  Suggestions for adding to this manual:
 
