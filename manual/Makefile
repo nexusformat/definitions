@@ -38,6 +38,7 @@ help:
 
 clean:
 	-rm -rf $(BUILDDIR)/doctrees $(BUILDDIR)/latex $(BUILDDIR)/epub
+	$(MAKE) clean -C $(SUBDIRS)
 
 subdirs: $(SUBDIRS)
 
@@ -46,6 +47,7 @@ $(SUBDIRS):
 
 realclean:
 	-rm -rf $(BUILDDIR)/*
+	$(MAKE) clean -C $(SUBDIRS)
 
 complete: html latexpdf
 	-cp -f $(BUILDDIR)/latex/*.pdf $(BUILDDIR)/html
