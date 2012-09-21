@@ -19,23 +19,102 @@ the NXDL chapter.
 import os, sys
 import lxml.etree
 
-# TODO: look at ALL the select= clauses in nxdl_desc2rst.xsl before declaring this job is complete
-# replicate the function of this clause
-#      <xslt:template match="xsd:complexType|xsd:simpleType|xsd:group|xsd:element|xsd:attribute">
+# TODO: document the *any* elements (see the XSLT)
 
 
+TITLE_MARKERS = '- + ~ ^ * @'.split()  # used for underscoring section titles
+INDENTATION = ' '*4
 
-ELEMENT_LIST = (
-                'attribute',
-                'definition',
-                'dimensions',
-                'doc',
-                'enumeration',
-                'field',
-                'group',
-                'link',
-                'symbols',
-                )
+
+ELEMENT_DICT = {
+                'attribute': '''
+.. index:: NXDL element; attribute
+
+An ``attribute`` element can *only* be a child of a 
+``field`` or ``group`` element.
+It is used to define *attribute* elements to be used and their data types
+and possibly an enumeration of allowed values.
+                ''',
+                
+                'definition': '''
+.. index:: NXDL element; definition
+
+A ``definition`` element can *only* be used
+at the root level of an NXDL specification.
+Note:  Due to the large number of attributes of the ``definition`` element,
+they have been omitted from the figure below.
+                ''',
+                
+                'dimensions': '''
+.. index:: NXDL element; dimensions
+
+The ``dimensions`` element describes the *shape* of an array.
+It is used *only* as a child of a ``field`` element.
+                ''',
+                
+                'doc': '''
+.. index:: NXDL element; doc
+
+A ``doc`` element can be a child of most NXDL elements.  In most cases, the
+content of the ``doc`` element will also become part of the NeXus manual.
+
+:element: {any}:
+
+In documentation, it may be useful to
+use an element that is not directly specified by the NXDL language. 
+The *any* element here says that one can use any element
+at all in a ``doc`` element and NXDL will not process it but pass it through.
+                ''',
+                
+                'enumeration': '''
+.. index:: NXDL element; enumeration
+
+An ``enumeration`` element can *only* be a child of a 
+``field`` or ``attribute`` element.
+It is used to restrict the available choices to a predefined list,
+such as to control varieties in spelling of a controversial word (such as
+*metre* vs. *meter*).
+                ''',
+                
+                'field': '''
+.. index:: NXDL element; field
+
+The ``field`` element provides the value of a named item.  Many different attributes
+are available to further define the ``field``.  Some of the attributes are not
+allowed to be used together (such as ``axes`` and ``axis``); see the documentation
+of each for details.
+It is used *only* as a child of a ``group`` element.
+                ''',
+                
+                'group': '''
+.. index:: NXDL element; group
+
+A ``group`` element can *only* be a child of a 
+``definition`` or ``group`` element.
+It describes a common level of organization in a NeXus data file, similar
+to a subdirectory in a file directory tree.
+                ''',
+                
+                'link': '''
+.. index:: 
+    NXDL element; link
+    see: link; target
+    link
+
+A ``link`` element can *only* be a child of a 
+``field`` or ``group`` element.
+It describes the path to the original source of the parent
+``field`` or ``group``.
+                ''',
+                
+                'symbols': '''
+.. index:: NXDL element; symbols
+
+A ``symbols`` element can *only* be a child of a ``definition`` element.
+It defines the array index symbols to be used when defining arrays as
+``field`` elements with common dimensions and lengths.
+                ''',
+                }
 
 DATATYPE_DICT = {
                  'basicComponent': '''/xs:schema//xs:complexType[@name='basicComponent']''',
@@ -111,7 +190,7 @@ DATATYPE_POSTAMBLE = '''
 '''
 
 
-def _tag_match(ns, parent, match_list):
+def _tagMatch(ns, parent, match_list):
     '''match this tag to a list'''
     if parent is None:
         raise "Must supply a valid parent node"
@@ -125,103 +204,147 @@ def _tag_match(ns, parent, match_list):
     return tag_found
 
 
-def generalHandler(ns, parent=None, indent=''):
+def _indent(indentLevel):
+    return INDENTATION*indentLevel
+
+
+def printTitle(title, indentLevel):
+    print title
+    print TITLE_MARKERS[indentLevel]*len(title) + '\n'
+
+
+def generalHandler(ns, parent=None, indentLevel=0):
     '''Handle XML nodes like the former XSLT template'''
-    # this routine only handles certain XML Schema components
-    if not _tag_match(ns, parent, ('complexType', 'simpleType', 'group', 'element', 'attribute')):
+    # ignore things we don't know how to handle
+    known_tags = ('complexType', 'simpleType', 'group', 'element', 'attribute')
+    if not _tagMatch(ns, parent, known_tags):
         return
+    
     parent_name = parent.get('name')
     if parent_name is None:
         return
     
     simple_tag = parent.tag[parent.tag.find('}')+1:]    # cut off the namespace identifier
-    subindent = indent + ' '*4
-    
-    _apply_templates(ns, parent, 'xs:attribute', subindent)
     
     # <varlistentry> ...
     name = parent_name  # + ' data type'
     if simple_tag == 'attribute':
         name = '@' + name
-    print indent + '**' + name + '**'
-    # TODO: Do not do this if it is an attribute, that will happen later
-    if simple_tag not in ('attribute'):
-        printDocs(ns, parent, indent)
-    _apply_templates(ns, parent, 'xs:restriction', subindent, handler=restrictionHandler)
-    if len(parent.xpath('xs:simpleType/xs:restriction//xs:enumeration', namespaces=ns)) > 0:
-        _apply_templates(ns, parent, 'xs:simpleType/xs:restriction', subindent, handler=restrictionHandler)
+    printTitle(name, indentLevel)
     
-    _apply_templates(ns, parent, 'xs:sequence//xs:element', subindent)
-    _apply_templates(ns, parent, 'xs:simpleType', subindent)
-    _apply_templates(ns, parent, 'xs:complexType', subindent)
-    _apply_templates(ns, parent, 'xs:complexType//xs:attribute', subindent)
+    printDocs(ns, parent, indentLevel)
+    
+    if len(parent.xpath('xs:attribute', namespaces=ns)) > 0:
+        printTitle("Attributes of "+name, indentLevel+1)
+        applyTemplates(ns, parent, 'xs:attribute', indentLevel+1)
+
+    node_list = parent.xpath('xs:restriction', namespaces=ns)
+    if len(node_list) > 0:
+        #printTitle("Restrictions of "+name, indentLevel+1)
+        restrictionHandler(ns, node_list[0], indentLevel+1)
+    node_list = parent.xpath('xs:simpleType/xs:restriction/xs:enumeration', namespaces=ns)
+    if len(node_list) > 0:
+#        printTitle("Enumerations of "+name, indentLevel+1)
+        applyTemplates(ns, parent, 'xs:simpleType/xs:restriction', 
+                       indentLevel+1, handler=restrictionHandler)
+    
+    if len(parent.xpath('xs:sequence/xs:element', namespaces=ns)) > 0:
+        printTitle("Elements of "+name, indentLevel+1)
+        applyTemplates(ns, parent, 'xs:sequence/xs:element', indentLevel+1)
+    
+    node_list = parent.xpath('xs:sequence/xs:group', namespaces=ns)
+    if len(node_list) > 0:
+        printTitle("Groups under "+name, indentLevel+1)
+        printDocs(ns, node_list[0], indentLevel+1)
+
+    applyTemplates(ns, parent, 'xs:simpleType', indentLevel+1)
+    applyTemplates(ns, parent, 'xs:complexType', indentLevel+1)
+    applyTemplates(ns, parent, 'xs:complexType/xs:attribute', indentLevel+1)
+    applyTemplates(ns, parent, 'xs:complexContent/xs:extension/xs:attribute', indentLevel+1)
+    applyTemplates(ns, parent, 'xs:complexType/xs:sequence/xs:attribute', indentLevel+1)
+    applyTemplates(ns, parent, 'xs:complexType/xs:sequence/xs:element', indentLevel+1)
+    applyTemplates(ns, parent, 'xs:complexContent/xs:extension/xs:sequence/xs:element', indentLevel+1)
 
 
-def restrictionHandler(ns, parent=None, indent=''):
+def restrictionHandler(ns, parent=None, indentLevel=0):
     '''Handle XSD restriction nodes like the former XSLT template'''
-    if not _tag_match(ns, parent, ('restriction')):
+    if not _tagMatch(ns, parent, ('restriction',)):
         return
-    print indent + 'The value may be any'
+    printDocs(ns, parent, indentLevel)
+    print '\n'
+    print _indent(indentLevel) + 'The value may be any'
     base = parent.get('base')
     pattern_nodes = parent.xpath('xs:pattern', namespaces=ns)
     enumeration_nodes = parent.xpath('xs:enumeration', namespaces=ns)
-    if len(pattern_nodes):
-        print indent + '``%s``' % base + ' that *also* matches the regular expression::'
-        print indent + ' '*4 + pattern_nodes[0].get('value')
-    elif len(pattern_nodes):
-        # how will this be reached?
-        print indent + '``%s``' % base + ' from this list:'
+    if len(pattern_nodes) > 0:
+        print _indent(indentLevel) + '``%s``' % base + ' that *also* matches the regular expression::\n'
+        print _indent(indentLevel) + ' '*4 + pattern_nodes[0].get('value')
+    elif len(pattern_nodes) > 0:
+        # how will this be reached?  Perhaps a deprecated procedure
+        print _indent(indentLevel) + '``%s``' % base + ' from this list:'
         for node in enumeration_nodes:
-            enumerationHandler(ns, node, indent)
-            printDocs(ns, node, indent)
-        print indent
-    elif len(enumeration_nodes):
-        print indent + 'one from this list only:'
+            enumerationHandler(ns, node, indentLevel)
+            printDocs(ns, node, indentLevel)
+        print _indent(indentLevel)
+    elif len(enumeration_nodes) > 0:
+        print _indent(indentLevel) + 'one from this list only:\n'
         for node in enumeration_nodes:
-            enumerationHandler(ns, node, indent)
-            printDocs(ns, parent, indent)
-        print indent
+            enumerationHandler(ns, node, indentLevel)
+            printDocs(ns, parent, indentLevel)
+        print _indent(indentLevel)
     else:
         print '@' + base
+    print '\n'
 
 
-def enumerationHandler(ns, parent=None, indent=''):
+def enumerationHandler(ns, parent=None, indentLevel=0):
     '''Handle XSD enumeration nodes like the former XSLT template'''
-    if not _tag_match(ns, parent, ('enumeration')):
+    if not _tagMatch(ns, parent, ['enumeration']):
         return
-    print indent + '* ``%s``' % parent.get('value')
-    printDocs(ns, parent, indent+'E ')
+    print _indent(indentLevel) + '* ``%s``' % parent.get('value')
+    printDocs(ns, parent, indentLevel)
 
 
-def _apply_templates(ns, parent, path, indent, handler=generalHandler):
+def applyTemplates(ns, parent, path, indentLevel, handler=generalHandler):
     '''iterate the nodes found on the supplied XPath expression'''
+    db = {}
     for node in parent.xpath(path, namespaces=ns):
-        handler(ns, node, indent)
-        printDocs(ns, node, indent)
+        name = node.get('name') or node.get('ref') or node.get('value')
+        if name is not None:
+            if name in ('nx:groupGroup'):
+                print ">"*45, name
+            if name in db:
+                raise "Duplicate name found: " + name
+            db[name] = node
+    for name in sorted(db):
+        node = db[name]
+        handler(ns, node, indentLevel)
+        #printDocs(ns, node, indentLevel)
 
 
-def printDocs(ns, parent, indent=''):
+def printDocs(ns, parent, indentLevel=0):
     docs = getDocFromNode(ns, parent)
     if docs is not None:
-        print indent + '\n'
+        print _indent(indentLevel) + '\n'
         for line in docs.splitlines():
-            print indent + line
-        print indent + '\n'
+            print _indent(indentLevel) + line
+        print _indent(indentLevel) + '\n'
 
 
 def getDocFromNode(ns, node, retval=None):
-    docnodes = node.xpath('xs:annotation//xs:documentation', namespaces=ns)
+    docnodes = node.xpath('xs:annotation/xs:documentation', namespaces=ns)
     if docnodes == None:
         return retval
     if not len(docnodes) == 1:
         return retval
-    #text = docnodes[0].text
+    
+    # be sure to grab _all_ content in the documentation
+    # it might look like XML
     s = lxml.etree.tostring(docnodes[0], pretty_print=True)
     p1 = s.find('>')+1
     p2 = s.rfind('</')
-    text = s[p1:p2].lstrip('\n')
-    #s = lxml.etree.fromstring(s).text
-    # TODO: what about embedded tabs? v. spaces
+    text = s[p1:p2].lstrip('\n')    # cut off the enclosing tag
+    
     lines = text.splitlines()
     if len(lines) > 1:
         indent0 = len(lines[0]) - len(lines[0].lstrip())
@@ -243,24 +366,13 @@ def getDocFromNode(ns, node, retval=None):
     return text.lstrip()
 
 
-def describeElement(ns, name=None, docpath=None):
-    if name == None:
-        raise "Must provide an element name"
-    print '\n.. _NXDL.element.%s:\n' % name
-    print '%s\n%s\n' % (name, '-'*len(name))
-    print '.. index:: NXDL element; %s\n' % name
-
-    # next: document this name
-    node = tree.xpath(docpath, namespaces=ns)[0]
-    printDocs(ns, node)
-
-    # next: get the image for this node
+def addFigure(name, indentLevel=0):
     fmt = '''
 .. compound::
 
-    .. _fig.nxdl_%s:
+    .. _%s:
 
-    .. figure:: img/nxdl/nxdl_%s.jpg
+    .. figure:: %s
         :alt: fig.nxdl/nxdl_%s
         :width: %s
 
@@ -273,58 +385,59 @@ def describeElement(ns, name=None, docpath=None):
         Set the name: "nxdl_%s.jpg" and move the file into the correct location using
         your operating system's commands.  Commit the revision to version control.
     '''
-    print fmt % (name, name, name, '80%', name, name, )
-
-    # next, look for attributes nodes
-    attributes = node.xpath('xs:attribute', namespaces=ns)
-    if attributes is not None and len(attributes) > 0:
-        print '.. rubric:: List of Attributes of ``%s`` element\n' % name
-        db = {}
-        for item in attributes:
-            item_name = '%s' % item.get('name')
-            prefix = ''
-            usage = item.get('use')
-            if usage is not None:
-                prefix = '(**%s**) ' % usage
-            item_doc = prefix + getDocFromNode(ns, item)
-            db[item_name] = item_doc
-        # make sure the required attributes appear first
-        for k in sorted(db):
-            if db[k].startswith('(**required**) '):
-                print ':%s:' % k
-                for line in db[k].splitlines():
-                    print '    %s' % line
-                print ''
-        # now show the other attributes
-        for k in sorted(db):
-            if not db[k].startswith('(**required**) '):
-                print ':%s:' % k
-                for line in db[k].splitlines():
-                    print '    %s' % line
-                print ''
-
-    # next, look for a sequence, it will contain nodes for variables
-    variables = node.xpath('xs:sequence//xs:element', namespaces=ns)
-    if variables is None:
-        pass
-    # TODO: also look for xs:complexContent/xs:extension/xs:sequence//xs:element
-    if variables is not None and len(variables) > 0:
-        print '.. rubric:: List of Variables in ``%s`` element\n' % name
-        db = {}
-        for item in variables:
-            item_name = '%s' % item.get('name')
-            item_doc = getDocFromNode(ns, item)
-            db[item_name] = item_doc
-        for k in sorted(db):
-            print ':%s:' % k
-            for line in db[k].splitlines():
-                print '    %s' % line
-            print ''
+    imageFile = 'img/nxdl/nxdl_%s.jpg' % name
+    figure_id = 'fig.nxdl_%s' % name
+    if not os.path.exists(os.path.abspath(imageFile)):
+        return
+    text = fmt % (figure_id, imageFile, name, '80%', name, name, )
+    indent = _indent(indentLevel)
+    for line in text.splitlines():
+        print indent + line
+    print '\n'
 
 
-def describeDatatype(ns, name=None, docpath=None):
-    if name == None:
-        raise "Must provide a data type name"
+def pickNodesFromXpath(ns, parent, path):
+    return parent.xpath(path, namespaces=ns)
+
+
+def main(tree, ns):
+    print ".. auto-generated by a script"
+    print ELEMENT_PREAMBLE
+
+    for name in sorted(ELEMENT_DICT):
+        printTitle(name, indentLevel=0)
+        print '\n'
+        print ELEMENT_DICT[name]
+        print '\n'
+        addFigure(name, indentLevel=0)
+        
+
+    print DATATYPE_PREAMBLE
+
+    path_list = (
+                 "/xs:schema/xs:complexType[@name='attributeType']",
+                 "/xs:schema/xs:element[@name='definition']",
+                 "/xs:schema/xs:complexType[@name='definitionType']",
+                 "/xs:schema/xs:simpleType[@name='definitionTypeAttr']",
+                 "/xs:schema/xs:complexType[@name='dimensionsType']",
+                 "/xs:schema/xs:complexType[@name='docType']",
+                 "/xs:schema/xs:complexType[@name='enumerationType']",
+                 "/xs:schema/xs:complexType[@name='fieldType']",
+                 "/xs:schema/xs:complexType[@name='groupType']",
+                 "/xs:schema/xs:complexType[@name='linkType']",
+                 "/xs:schema/xs:complexType[@name='symbolsType']",
+                 "/xs:schema/xs:complexType[@name='basicComponent']",
+                 "/xs:schema/xs:simpleType[@name='validItemName']",
+                 "/xs:schema/xs:simpleType[@name='validNXClassName']",
+                 "/xs:schema/xs:simpleType[@name='validTargetName']",
+                 "/xs:schema/xs:simpleType[@name='nonNegativeUnbounded']",
+                 )
+    for path in path_list:
+        nodes = pickNodesFromXpath(ns, tree, path)
+        print "\n.. Xpath = %s\n" % path
+        generalHandler(ns, parent=nodes[0])
+
+    print DATATYPE_POSTAMBLE
 
 
 if __name__ == '__main__':
@@ -341,30 +454,7 @@ if __name__ == '__main__':
         exit()
         
     tree = lxml.etree.parse(NXDL_SCHEMA_FILE)
-    
-    print ".. auto-generated by a script"
-    print ELEMENT_PREAMBLE
-    
     NAMESPACE = 'http://www.w3.org/2001/XMLSchema'
     ns = {'xs': NAMESPACE}
-
-    for name in sorted(ELEMENT_LIST):
-        fmt = '''/xs:schema//xs:complexType[@name='%sType']'''
-        docpath = fmt % name
-        describeElement(ns, name=name, docpath=docpath)
-
-    print DATATYPE_PREAMBLE
-
-    for name in sorted(DATATYPE_DICT):
-        docpath = DATATYPE_DICT[name]
-        describeDatatype(ns, name=name, docpath=docpath)
-
-    print DATATYPE_POSTAMBLE
     
-    print '\n\n..  ++++++++++++++++ start to write these like the XSLT did +++++++++++++++\n\n'
-
-    m = "<type 'lxml.etree._Element'>"
-    for item in list(tree.getroot()):
-        s = str(type(item))
-        if s == m:
-            generalHandler(ns, parent=item, indent='.. ')
+    main(tree, ns)

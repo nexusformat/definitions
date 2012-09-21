@@ -118,9 +118,7 @@ Two things to note about the development and history of NeXus:
 :January 2010:
     NXDL presented to ESRF HDF5 workshop on hyperspectral data
 
----------------------
 
-.. rubric:: Footnotes
 
 .. [#] http://wiki.nexusformat.org/images/b/b8/European-Formats.pdf
 

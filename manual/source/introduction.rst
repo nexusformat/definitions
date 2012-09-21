@@ -622,7 +622,6 @@ provides an example of how to write a NeXus reader.
 The test programs included in the :ref:`NeXus
 API <Introduction-NAPI>` may also be useful to study.
 
-.. rubric:: Footnotes
 
 .. [#] http://download.nexusformat.org
 

@@ -53,7 +53,7 @@ plan:
   along with interested members of the NIAC. This is intended to be a working
   meeting with a small group.
 
-.. rubric:: Footnote
+
 
 .. [#]
     For more details about the NIAC constitution, procedures, and meetings, refer to

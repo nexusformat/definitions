@@ -108,7 +108,8 @@ neutron, X-ray, or muon instrument.
     ../../utils/nxdl_desc2rst.py ../../nxdl.xsd > nxdl_desc.xml
 
 .. toctree::
-
+	:maxdepth: 3
+	
 	nxdl_desc
 
 ..  + + + + + + + + + + +
@@ -225,9 +226,7 @@ This category is the place to put an NXDL (a
 candidate for a base class or application definition) for the NIAC to consider
 approving.
 
-..  + + + + + + + + + + +
 
-.. rubric:: Footnotes
 
 .. [#] For example *XML Copy Editor* (http://xml-copy-editor.sourceforge.net/)
 .. [#] http://en.wikipedia.org/wiki/XML#Well-formedness_and_error-handling

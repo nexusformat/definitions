@@ -248,6 +248,6 @@ NeXus code repository (password required)
 NeXus definitions repository (password required)
     https://svn.nexusformat.org/definitions/trunk
 
-.. rubric:: Footnote
+
 
 .. [#] http://tortoisesvn.tigris.org/`

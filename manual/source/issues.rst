@@ -61,6 +61,6 @@ repository timeline (recent ticket and definition changes):
 repository roadmap:
     http://trac.nexusformat.org/definitions/roadmap
 
-.. rubric:: Footnote
+
 
 .. [#] http://trac.edgewall.org
