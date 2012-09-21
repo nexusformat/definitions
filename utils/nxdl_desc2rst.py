@@ -19,8 +19,6 @@ the NXDL chapter.
 import os, sys
 import lxml.etree
 
-# TODO: document the *any* elements (see the XSLT)
-
 
 TITLE_MARKERS = '- + ~ ^ * @'.split()  # used for underscoring section titles
 INDENTATION = ' '*4
@@ -34,6 +32,9 @@ An ``attribute`` element can *only* be a child of a
 ``field`` or ``group`` element.
 It is used to define *attribute* elements to be used and their data types
 and possibly an enumeration of allowed values.
+
+For more details, see: 
+:ref:`NXDL.data.type.attributeType`
                 ''',
                 
                 'definition': '''
@@ -43,6 +44,11 @@ A ``definition`` element can *only* be used
 at the root level of an NXDL specification.
 Note:  Due to the large number of attributes of the ``definition`` element,
 they have been omitted from the figure below.
+
+For more details, see: 
+:ref:`NXDL.data.type.definition`,
+:ref:`NXDL.data.type.definitionType`, and
+:ref:`NXDL.data.type.definitionTypeAttr`
                 ''',
                 
                 'dimensions': '''
@@ -50,6 +56,9 @@ they have been omitted from the figure below.
 
 The ``dimensions`` element describes the *shape* of an array.
 It is used *only* as a child of a ``field`` element.
+
+For more details, see: 
+:ref:`NXDL.data.type.dimensionsType`
                 ''',
                 
                 'doc': '''
@@ -64,6 +73,9 @@ In documentation, it may be useful to
 use an element that is not directly specified by the NXDL language. 
 The *any* element here says that one can use any element
 at all in a ``doc`` element and NXDL will not process it but pass it through.
+
+For more details, see: 
+:ref:`NXDL.data.type.docType`
                 ''',
                 
                 'enumeration': '''
@@ -74,6 +86,9 @@ An ``enumeration`` element can *only* be a child of a
 It is used to restrict the available choices to a predefined list,
 such as to control varieties in spelling of a controversial word (such as
 *metre* vs. *meter*).
+
+For more details, see: 
+:ref:`NXDL.data.type.enumerationType`
                 ''',
                 
                 'field': '''
@@ -84,6 +99,9 @@ are available to further define the ``field``.  Some of the attributes are not
 allowed to be used together (such as ``axes`` and ``axis``); see the documentation
 of each for details.
 It is used *only* as a child of a ``group`` element.
+
+For more details, see: 
+:ref:`NXDL.data.type.fieldType`
                 ''',
                 
                 'group': '''
@@ -93,6 +111,9 @@ A ``group`` element can *only* be a child of a
 ``definition`` or ``group`` element.
 It describes a common level of organization in a NeXus data file, similar
 to a subdirectory in a file directory tree.
+
+For more details, see: 
+:ref:`NXDL.data.type.groupType`
                 ''',
                 
                 'link': '''
@@ -105,6 +126,9 @@ A ``link`` element can *only* be a child of a
 ``field`` or ``group`` element.
 It describes the path to the original source of the parent
 ``field`` or ``group``.
+
+For more details, see: 
+:ref:`NXDL.data.type.linkType`
                 ''',
                 
                 'symbols': '''
@@ -113,6 +137,9 @@ It describes the path to the original source of the parent
 A ``symbols`` element can *only* be a child of a ``definition`` element.
 It defines the array index symbols to be used when defining arrays as
 ``field`` elements with common dimensions and lengths.
+
+For more details, see: 
+:ref:`NXDL.data.type.symbolsType`
                 ''',
                 }
 
@@ -158,7 +185,7 @@ NXDL Elements
 
 DATATYPE_PREAMBLE = '''
 
-.. _NXDL.data.types:
+.. _NXDL.data.types.internal:
 
 NXDL Data Types (internal)
 ============================
@@ -230,6 +257,10 @@ def generalHandler(ns, parent=None, indentLevel=0):
     name = parent_name  # + ' data type'
     if simple_tag == 'attribute':
         name = '@' + name
+    
+    if indentLevel == 0 and not simple_tag in ('attribute'):
+        print '\n.. _%s:\n' % ('NXDL.data.type.'+name)
+
     printTitle(name, indentLevel)
     
     printDocs(ns, parent, indentLevel)
@@ -405,6 +436,7 @@ def main(tree, ns):
     print ELEMENT_PREAMBLE
 
     for name in sorted(ELEMENT_DICT):
+        print '\n.. _%s:\n' % ('NXDL.element.'+name)
         printTitle(name, indentLevel=0)
         print '\n'
         print ELEMENT_DICT[name]
