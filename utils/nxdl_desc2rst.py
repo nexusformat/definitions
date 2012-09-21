@@ -125,12 +125,6 @@ def _tag_match(ns, parent, match_list):
     return tag_found
 
 
-def _apply_templates(ns, parent, path, indent):
-    '''iterate the nodes found on the supplied XPath expression'''
-    for node in parent.xpath(path, namespaces=ns):
-        generalHandler(ns, node, indent)
-
-
 def generalHandler(ns, parent=None, indent=''):
     '''Handle XML nodes like the former XSLT template'''
     # this routine only handles certain XML Schema components
@@ -149,11 +143,13 @@ def generalHandler(ns, parent=None, indent=''):
     name = parent_name  # + ' data type'
     if simple_tag == 'attribute':
         name = '@' + name
-    print indent + name
-    docs = getDocFromNode(parent)
-    _apply_templates(ns, parent, 'xs:restriction', subindent)
+    print indent + '**' + name + '**'
+    # TODO: Do not do this if it is an attribute, that will happen later
+    if simple_tag not in ('attribute'):
+        printDocs(ns, parent, indent)
+    _apply_templates(ns, parent, 'xs:restriction', subindent, handler=restrictionHandler)
     if len(parent.xpath('xs:simpleType/xs:restriction//xs:enumeration', namespaces=ns)) > 0:
-        _apply_templates(ns, parent, 'xs:simpleType/xs:restriction', subindent)
+        _apply_templates(ns, parent, 'xs:simpleType/xs:restriction', subindent, handler=restrictionHandler)
     
     _apply_templates(ns, parent, 'xs:sequence//xs:element', subindent)
     _apply_templates(ns, parent, 'xs:simpleType', subindent)
@@ -177,11 +173,13 @@ def restrictionHandler(ns, parent=None, indent=''):
         print indent + '``%s``' % base + ' from this list:'
         for node in enumeration_nodes:
             enumerationHandler(ns, node, indent)
+            printDocs(ns, node, indent)
         print indent
     elif len(enumeration_nodes):
         print indent + 'one from this list only:'
         for node in enumeration_nodes:
             enumerationHandler(ns, node, indent)
+            printDocs(ns, parent, indent)
         print indent
     else:
         print '@' + base
@@ -192,9 +190,26 @@ def enumerationHandler(ns, parent=None, indent=''):
     if not _tag_match(ns, parent, ('enumeration')):
         return
     print indent + '* ``%s``' % parent.get('value')
+    printDocs(ns, parent, indent+'E ')
 
 
-def getDocFromNode(node, retval=None):
+def _apply_templates(ns, parent, path, indent, handler=generalHandler):
+    '''iterate the nodes found on the supplied XPath expression'''
+    for node in parent.xpath(path, namespaces=ns):
+        handler(ns, node, indent)
+        printDocs(ns, node, indent)
+
+
+def printDocs(ns, parent, indent=''):
+    docs = getDocFromNode(ns, parent)
+    if docs is not None:
+        print indent + '\n'
+        for line in docs.splitlines():
+            print indent + line
+        print indent + '\n'
+
+
+def getDocFromNode(ns, node, retval=None):
     docnodes = node.xpath('xs:annotation//xs:documentation', namespaces=ns)
     if docnodes == None:
         return retval
@@ -237,7 +252,7 @@ def describeElement(ns, name=None, docpath=None):
 
     # next: document this name
     node = tree.xpath(docpath, namespaces=ns)[0]
-    print getDocFromNode(node)
+    printDocs(ns, node)
 
     # next: get the image for this node
     fmt = '''
@@ -271,7 +286,7 @@ def describeElement(ns, name=None, docpath=None):
             usage = item.get('use')
             if usage is not None:
                 prefix = '(**%s**) ' % usage
-            item_doc = prefix + getDocFromNode(item)
+            item_doc = prefix + getDocFromNode(ns, item)
             db[item_name] = item_doc
         # make sure the required attributes appear first
         for k in sorted(db):
@@ -298,7 +313,7 @@ def describeElement(ns, name=None, docpath=None):
         db = {}
         for item in variables:
             item_name = '%s' % item.get('name')
-            item_doc = getDocFromNode(item)
+            item_doc = getDocFromNode(ns, item)
             db[item_name] = item_doc
         for k in sorted(db):
             print ':%s:' % k

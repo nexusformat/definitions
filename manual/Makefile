@@ -14,7 +14,11 @@ ALLSPHINXOPTS   = -d $(BUILDDIR)/doctrees $(PAPEROPT_$(PAPER)) $(SPHINXOPTS) sou
 
 SUBDIRS = source
 
-.PHONY: help clean html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf text man changes linkcheck doctest  subdirs $(SUBDIRS)
+.PHONY: help clean html dirhtml singlehtml \
+	pickle json htmlhelp qthelp devhelp \
+	epub latex latexpdf text man changes \
+	linkcheck doctest  subdirs $(SUBDIRS) \
+	rebuild
 
 
 help:
@@ -45,14 +49,15 @@ subdirs: $(SUBDIRS)
 $(SUBDIRS):
 	$(MAKE) -C $@
 
+rebuild :: realclean complete
+
 realclean:
 	-rm -rf $(BUILDDIR)/*
 	$(MAKE) clean -C $(SUBDIRS)
 
-complete: html latexpdf
-	-cp -f $(BUILDDIR)/latex/*.pdf $(BUILDDIR)/html
+complete: latexpdf epub html
 	@echo
-	@echo "Build finished. The HTML and PDF pages are in $(BUILDDIR)/html."
+	@echo "Build finished. The HTML, EPUB, and PDF documents are in $(BUILDDIR)/html."
 
 html: subdirs
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
@@ -105,6 +110,7 @@ devhelp:
 
 epub:
 	$(SPHINXBUILD) -b epub $(ALLSPHINXOPTS) $(BUILDDIR)/epub
+	-cp -f $(BUILDDIR)/epub/*.epub $(BUILDDIR)/../source
 	@echo
 	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
 
@@ -118,6 +124,7 @@ latex: subdirs
 latexpdf: latex
 	@echo "Running LaTeX files through pdflatex..."
 	make -C $(BUILDDIR)/latex all-pdf
+	-cp -f $(BUILDDIR)/latex/*.pdf $(BUILDDIR)/../source
 	@echo "pdflatex finished; the PDF files are in $(BUILDDIR)/latex."
 
 text:

@@ -1,11 +1,11 @@
 .. $Id$
 
+.. image:: img/NeXus.png
+	:width: 40%
+
 =========================================================
 User Manual and Reference Documentation
 =========================================================
-
-.. image:: img/NeXus.png
-	:width: 40%
 
 ..
 	User Manual and Reference Documentation
@@ -14,19 +14,24 @@ User Manual and Reference Documentation
 http://www.nexusformat.org/
 
 .. toctree::
-	:maxdepth: 2
-	:numbered: 4
+    :maxdepth: 2
+    :numbered: 4
 
-	volume1
-	volume2
+    volume1
+    volume2
 
 .. toctree::
-	:maxdepth: 1
+    :maxdepth: 1
 
-	authorgroup
-	revhistory
-	license
-	copyright
+    authorgroup
+    community
+    installation
+    utilities
+    faq
+    history
+    revhistory
+    license
+    copyright
 
 -----------
 
@@ -34,13 +39,22 @@ http://www.nexusformat.org/
 
 This manual built |today|.  
 
-A released version is available online: 
+.. seealso:: 
 
-http://download.nexusformat.org/doc/html/UserManual.html
+   This document is available in different formats:
+   
+   :online HTML:
+   	http://download.nexusformat.org/doc/html/UserManual.html
+   :PDF:
+   	:download:`nexus.pdf` (available via online HTML link above)
+   :epub:
+   	:download:`NeXusManual.epub` (available via online HTML link above)
+   
+   A very brief overview is also available.
+   
+   :HTML:
+   	http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html
 
-A very brief overview is also available.
-
-http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html
 
 ..  Suggestions for adding to this manual:
 
