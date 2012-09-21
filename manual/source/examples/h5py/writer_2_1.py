@@ -11,7 +11,7 @@ HDF5_FILE = 'writer_2_1.hdf5'
 
 #---------------------------
 
-tthData, countsData = my_lib.get_2column_data(INPUT_FILE)
+tthData, countsData = my_lib.get2ColumnData(INPUT_FILE)
 
 f = my_lib.makeFile(HDF5_FILE)  # create the HDF5 NeXus file
 

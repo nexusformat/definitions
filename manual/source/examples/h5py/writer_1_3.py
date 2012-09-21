@@ -13,7 +13,7 @@ HDF5_FILE = 'writer_1_3.hdf5'
 
 #---------------------------
 
-tthData, countsData = my_lib.get_2column_data(INPUT_FILE)
+tthData, countsData = my_lib.get2ColumnData(INPUT_FILE)
 
 f = my_lib.makeFile(HDF5_FILE)
 # since this is a simple example, no attributes are used at this point

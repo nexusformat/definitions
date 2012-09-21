@@ -19,7 +19,7 @@ def makeFile(filename, **attr):
     :return: h5py file object
     """
     f = h5py.File(filename, "w")
-    add_attributes(f, attr)
+    addAttributes(f, attr)
     return f
 
 def makeGroup(parent, name, nxclass):
@@ -48,7 +48,7 @@ def makeDataset(parent, name, data = None, **attr):
         obj = parent.create_dataset(name)
     else:
         obj = parent.create_dataset(name, data=data)
-    add_attributes(obj, attr)
+    addAttributes(obj, attr)
     return obj
 
 def makeLink(parent, sourceObject, targetName):
@@ -65,7 +65,7 @@ def makeLink(parent, sourceObject, targetName):
         sourceObject.attrs["target"] = str(sourceObject.name)
     parent._id.link(sourceObject.name, targetName, h5py.h5g.LINK_HARD)
 
-def add_attributes(parent, attr):
+def addAttributes(parent, attr):
     """
     add attributes to an h5py data item
 
@@ -77,7 +77,7 @@ def add_attributes(parent, attr):
         for k, v in attr.items():
             parent.attrs[k] = v
 
-def get_2column_data(fileName):
+def get2ColumnData(fileName):
     '''
     read two-column data from a file, 
     first column is float, 
