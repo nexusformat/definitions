@@ -175,7 +175,7 @@ complete list can be found in the :ref:`Design` chapter.
 :ref:`NXentry`
     *Required:*
     The top level of any NeXus file contains one or more
-    groups with the :index:`class <classes; base classes; NXentry>` ``NXentry``. 
+    groups with the :index:`class <base classes; NXentry>` ``NXentry``. 
     These contain all the data that is required to
     describe an experimental run or scan. Each
     ``NXentry`` typically contains a number of
@@ -187,7 +187,7 @@ complete list can be found in the :ref:`Design` chapter.
 :ref:`NXdata`
     *Required:*
     Each ``NXentry`` group contains one or more
-    groups with :index:`class <classes; base classes; NXdata>` ``NXdata``. 
+    groups with :index:`class <base classes; NXdata>` ``NXdata``. 
     These groups contain the experimental results
     in a self-contained way, i.e., it should be possible to
     generate a sensible :index:`plot <NeXus basic motivation; default plot>`
@@ -198,7 +198,7 @@ complete list can be found in the :ref:`Design` chapter.
 
 :ref:`NXsample`
     A ``NXentry`` group will often contain a group
-    with :index:`class <classes; base classes; NXsample>` ``NXsample``. 
+    with :index:`class <base classes; NXsample>` ``NXsample``. 
     This group contains information pertaining to
     the sample, such as its chemical composition, mass, and
     environment variables (temperature, pressure, magnetic
@@ -206,7 +206,7 @@ complete list can be found in the :ref:`Design` chapter.
 
 :ref:`NXinstrument`
     There might also be a group with 
-    :index:`class <classes; base classes; NXinstrument>`
+    :index:`class <base classes; NXinstrument>`
     ``NXinstrument``. This is designed to encapsulate all the
     instrumental information that might be relevant to a
     measurement, such as flight paths, collimation, chopper
@@ -221,7 +221,7 @@ complete list can be found in the :ref:`Design` chapter.
 	    .. image:: img/NXinstrument.png
 	        :width: 50%
 
-	Since an instrument can comprise several beamline components each
+	Since an instrument can include several beamline components each
 	defined by several parameters, the components are each specified by a separate group.
 	This hides the complexity from generic file browsers, but makes the
 	information available in an intuitively obvious way if it is required.

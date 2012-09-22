@@ -30,7 +30,6 @@ http://www.nexusformat.org/
     faq
     history
     revhistory
-    license
     copyright
 
 -----------

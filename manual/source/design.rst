@@ -137,7 +137,7 @@ and their axes, etc. A description of possible attributes can be found in table
 :ref:`data attributes <table.ExampleAttributes>`.
 Finally, NeXus files themselves have global attributes which are listed
 in the :ref:`global attributes <table.GlobalAttributes>`.
-:index:`table <data objects; attributes; global>`
+:index:`table <data objects, attributes; global>`
 that identify the NeXus version, file creation time, etc.
 Attributes are identified by their
 names, which must be unique in each field.
@@ -631,7 +631,7 @@ In order to use coordinate transformations, several morsels of information need 
 	
 
 How NeXus describes the order of operations to apply has not yet been 
-:index:`decided <coordinate systems; transformations; order of operations>`.
+:index:`decided <coordinate systems, transformations; order of operations>`.
 The authors favourite scheme
 is to use a special field at each instrument component, named *transform* which describes the
 operations to apply to get the component into its position as a list of colon separated paths to the operations
