@@ -38,9 +38,9 @@ of the NeXus class.
 :category:
     The category of NXDL, one of these:
     
-    + ``base`` (:ref:`base class <base.class.definitions>`)
-    + ``application`` (:ref:`application definition <application.definitions>`)
-    + ``contributed`` (:ref:`contributed definition <contributed.definitions>`)
+    + ``base`` (meaning: :ref:`base class <base.class.definitions>`)
+    + ``application`` (meaning: :ref:`application definition <application.definitions>`)
+    + ``contributed`` (meaning: :ref:`contributed definition <contributed.definitions>`)
 
 :NXDL source:
     Name of the NeXus class and a URL to the source listing in the NeXus

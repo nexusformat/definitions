@@ -30,18 +30,15 @@ data storage format. HDF was designed for large data sets and already
 had a substantial user community. HDF was developed and maintained
 initially by the National Center for Supercomputing Applications (NCSA)
 at the University of Illinois at Urbana-Champaign (UIUC) and later spun 
-off into its own
-group called The HDF Group (THG), [#HDFGroup]_ . Rather then developing 
-an own physical file format, the NeXus group choose to build NeXus on top
-of HDF.
+off into its own group called The HDF Group (THG: http://www.hdfgroup.org/). 
+Rather then developing its own unique physical file format, the NeXus group 
+choose to build NeXus on top of HDF.
 
 HDF (now HDF5) is provided with
 software to read and write data (this is the application-programmer interface, or API)
 using a large number of computing systems in common use for neutron and
 X-ray science. HDF is a binary data file format that supports compression and structured
 data.
-
-.. [#HDFGroup] The HDF Group: http://www.hdfgroup.org/
 
 
 
@@ -65,31 +62,33 @@ and value of the NeXus class name.
 
 A NeXus ``link`` directly maps to the HDF linking mechanisms.
 
-.. note:: Examples are provided in the :ref:`Examples` chapter of Volume II of this manual.
+.. note:: **Examples** are provided in the :ref:`Examples` chapter.
           These examples include software to write and read NeXus data files using the NAPI, as
           well as other software examples that use native (non-NAPI) libraries.  In some cases the
           examples show the content of the NeXus data files that are produced.
           Here are links to some of the examples:
-          - :ref:`ex.simple.write`
-          - :ref:`ex.simple.read`
-          - :ref:`native.hdf5.simple.write`
-          - :ref:`native.hdf5.simple.read`
-          - :ref:`Example-H5py-BasicWriter`
-          - :ref:`Example-H5py-Reader`
+          
+          - :ref:`Introduction-HowToWrite`
+          - :ref:`Introduction-HowToRead`
+          - :ref:`example.napi.simple.2d.write`
+          - :ref:`code_native.writing`
+          - :ref:`code_native.reading`
+          - :ref:`Example-H5py-Writing`
+          - :ref:`Example-H5py-Reading`
 
 Perhaps the easiest way to view the implementation of NeXus in HDF5 is to view
 how the data structures look.  For this, we use the ``h5dump`` command-line
 utility provided with the HDF5 support libraries.  Short examples are provided for the
 basic NeXus data components:
 
-- :ref:`h5dump_group`:
+- :ref:`group <h5dump_group>`:
   created in C NAPI by:
   
   .. code-block:: c
 
 	  NXmakegroup (fileID, "entry", "NXentry");
 
-- :ref:`h5dump_field`:
+- :ref:`field <h5dump_field>`:
   created in C NAPI by:
   
   .. code-block:: c
@@ -98,17 +97,21 @@ basic NeXus data components:
 	    NXopendata (fileID, "two_theta");
 	  NXputdata (fileID, tth);
 
-- :ref:`h5dump_attribute`:
+- :ref:`attribute <h5dump_attribute>`:
   created in C NAPI by:
   
   .. code-block:: c
 
 	  NXputattr (fileID, "units", "degrees", 7, NX_CHAR);
 
-- :ref:`h5dump_link`
-	--tba--
+- :ref:`link <h5dump_link>`
+  created in C NAPI by:
+  
+  .. code-block:: c
 
-.. TODO: write some text about HDF5 hard links
+	  # --tba--
+	  # TODO: write some text about HDF5 hard links
+	  # until then, see the h5dump example below
 
 See the sections :ref:`example.napi.simple.2d.write`
 and  :ref:`example.napi.simple.3d.write.python` in the :ref:`Examples`
@@ -117,6 +120,8 @@ chapter of Volume II for examples that use the native HDF5 calls to write NeXus 
 .. compound::
 
     .. rubric:: ``h5dump`` of a NeXus ``NXentry`` group
+    
+    .. _h5dump_group:
 
     .. literalinclude:: examples/h5dump_group.txt
         :tab-width: 4
@@ -126,6 +131,8 @@ chapter of Volume II for examples that use the native HDF5 calls to write NeXus 
 .. compound::
 
     .. rubric:: ``h5dump`` of a NeXus field (HDF5 dataset)
+    
+    .. _h5dump_field:
 
     .. literalinclude:: examples/h5dump_field.txt
         :tab-width: 4
@@ -135,6 +142,8 @@ chapter of Volume II for examples that use the native HDF5 calls to write NeXus 
 .. compound::
 
     .. rubric:: ``h5dump`` of a NeXus attribute
+    
+    .. _h5dump_attribute:
 
     .. literalinclude:: examples/h5dump_attribute.txt
         :tab-width: 4
@@ -144,6 +153,8 @@ chapter of Volume II for examples that use the native HDF5 calls to write NeXus 
 .. compound::
 
     .. rubric:: ``h5dump`` of a NeXus link
+    
+    .. _h5dump_link:
 
     .. literalinclude:: examples/h5dump_link.txt
         :tab-width: 4
@@ -162,7 +173,7 @@ Further :index:`XML attributes <attributes>` to
 ``NXroot`` define the NeXus file level attributes.
 An example NeXus XML data file is provided in the
 :ref:`Introduction` chapter as
-Example :ref:`ex.verysimple.xml`
+Example :ref:`A very simple NeXus Data file (in XML) <fig.simple-data-file-xml>`.
 
 NeXus groups are encoded into XML as elements with the
 name of the NeXus class and an XML attribute ``name`` which defines the

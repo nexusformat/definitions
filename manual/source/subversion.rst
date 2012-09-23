@@ -16,15 +16,22 @@ The repositories are world readable. You can browse them directly:
 :NeXus NXDL class definitions
 	http://svn.nexusformat.org/definitions
 
-Better looking interfaces are also provided using the software tools
-**ViewVC** (http://www.viewvc.org) and **TRAC** (http://trac.edgewall.org)
-added to the NeXus WWW site.
+Better looking interfaces are also provided using 
+*ViewVC* [#]_ and *TRAC* [#]_.  These software tools 
+have been added to the NeXus WWW site server.
 
-+ Browse the NeXus code (library and applications) repository using either
+.. [#] **ViewVC**: http://www.viewvc.org 
+.. [#] **TRAC**: http://trac.edgewall.org
+
+Browse the NeXus version control repositories:
+
++ *code* repository (NAPI, library, and applications)
+
   - **ViewVC** http://svn.nexusformat.org/viewvc/NeXusCode
   - **TRAC**   http://trac.nexusformat.org/code/browser
 
-+ Browse NeXus definitions (NXDL classes) repository using either
++ *definitions* repository (NXDL classes and manual source)
+
   - **ViewVC** http://svn.nexusformat.org/viewvc/NeXusDefinitions
   - **TRAC**   http://trac.nexusformat.org/definitions/browser
 

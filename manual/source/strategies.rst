@@ -60,7 +60,11 @@ positioner arrays        detector arrays
 
 	.. _Strategies-next:
 	
-	Strategies: The next case
-	#########################
+Strategies: The next case
+#########################
 	
-	... this section was new in 2010-10, we are gathering and adding historical cases ...
+	.. this section was new in 2010-10, we are gathering and adding historical cases ...
+
+The :ref:`NIAC` welcomes suggestions for additional sections in this chapter.
+
+.. TODO: There are some strategies listed elsewhere in the manual.  Find them and cross-reference here.

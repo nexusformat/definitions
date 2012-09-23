@@ -46,7 +46,7 @@ The  :index:`NeXus <!NeXus>` data format has four components:
     to allow the development of portable analysis software.
 
 :ref:`A set of subroutines <Introduction-SetOfSubroutines>`
-    (:ref:`Utilities`) to make it easy
+    :ref:`Utilities <Utilities>` and :ref:`examples <Examples>` to make it easy
     to read and write NeXus data files.
 
 :ref:`A Scientific Community <Introduction-Community>`
@@ -62,15 +62,13 @@ The NeXus Application-Programmer Interface
 :index:`(NAPI) <NAPI>`, which
 provides the set of subroutines for reading and writing NeXus data files,
 is described briefly in :ref:`Introduction-NAPI`.
-(Further details are provided in the NAPI chapter of Volume II of this
-documentation.)
+(Further details are provided in the :ref:`NAPI <NAPI>` chapter.)
 
 The principles guiding the design and implementation of the NeXus standard
 are described in the :ref:`Design` chapter.
 
 Base classes, which comprise the data storage objects used in NeXus data files,
-are detailed in the :ref:`ClassDefinitions-Base`
-chapter of Volume II of this documentation.
+are detailed in the :ref:`base.class.definitions` chapter.
 
 ..  With this information, it should be possible to bypass the NAPI and
     read & write NeXus data directly in the low-level file format.
@@ -306,7 +304,7 @@ for incubation before they are adopted by the NIAC or for availability
 to the community.
 
 These instrument definitions are formalized as XML files, using NXDL,
-(as described in the NXDL chapter in Volume II of this documentation)
+(as described in the :ref:`NXDL <NXDL>` chapter)
 to specify the names of data fields, and other NeXus data objects.
 The following is an example of such a file for
 the simple NeXus file shown above.
@@ -322,14 +320,14 @@ the simple NeXus file shown above.
         :linenos:
         :language: guess
 
-For complete examples of reading and writing NeXus data files, refer to
-the :ref:`Examples` chapter in Volume II.
+Complete examples of reading and writing NeXus data files are 
+provided :ref:`later <Examples>`.
 This chapter has several examples of writing and reading NeXus data files.
 If you want to define the format of a particular type of NeXus file
 for your own use, e.g. as the standard output from a program, you are encouraged
 to *publish* the format using this XML format.
-An example of how to do this is shown in the section titled
-:ref:`NXDL_Tutorial-CreatingNxdlSpec`.
+An example of how to do this is shown in the
+:ref:`NXDL_Tutorial-CreatingNxdlSpec` section.
 
 .. _Introduction-SetOfSubroutines:
 
@@ -431,7 +429,7 @@ scientific programmers and other users of the NeXus Data Standard.
 This section will provide a brief overview of the available functionality.
 Further documentation of the NeXus Application Programming Interface
 (NAPI) for bindings to specific programming language can be found
-in the NAPI chapter in Volume II of this documentation and obtained
+in the :ref:`NAPI <NAPI>` chapter and may be downloaded
 from the NeXus development site. [#]_
 
 For an even more detailed description of the internal workings of NAPI
@@ -455,13 +453,13 @@ Python, C++, and IDL.
 The API uses a very simple *state*
 model to navigate through a NeXus file.
 (Compare this example with :ref:`example.napi.simple.2d.write`,
-in the NAPI chapter of Volume II,
-using the native HDF5 commands.)
+in the :ref:`NAPI <NAPI>` chapter, using the native HDF5 commands.)
 When you open a file,
 the API provides a file *handle*, which stores the
-current location, i.e. which group and/or field is currently open. Read and
-write operations then act on the currently open entity.
-Following the simple example of :ref:`fig.simple-example`,
+current location, i.e. which group and/or field is currently open. 
+Read and write operations then act on the currently open entity.
+Following the simple example titled
+:ref:`Example structure of a simple data file <fig.simple-example>`,
 we walk through a schematic of NeXus program written in C
 (without any error checking or real data).
 
@@ -536,10 +534,8 @@ How do I read a NeXus file?
 Reading a NeXus file works in the same way by traversing the tree with the handle.
 
 This schematic C code will read the two-theta array
-created in :ref:`ex.simple.write` above.
-(Again, compare this example with one in the NAPI chapter of
-Volume II [#]_
-using the native HDF5 commands.)
+created in the :ref:`example above <fig.ex-c-write>`.
+(Again, compare this example with :ref:`code_native.reading`.)
 
 .. compound::
 	
@@ -562,10 +558,9 @@ How do I browse a NeXus file?
 NeXus files can also be viewed by a command-line browser,
 ``nxbrowse``, which is included as a helper tool in the
 :ref:`NeXus API <Introduction-NAPI>`
-distribution. The
-following is an example session of :index:`using <utility; nxbrowse>` ``nxbrowse``
-to view a data file. The following commands
-are used in :ref:`ex.NXbrowse.lrmecs` in this session:
+distribution. The :ref:`following <fig.nxbrowse>` 
+is an example session of :index:`using <utility; nxbrowse>` 
+``nxbrowse`` to view a data file.
 
 .. compound::
 	
@@ -624,8 +619,6 @@ API <Introduction-NAPI>` may also be useful to study.
     The NeXus rule about data units is described in the
     :ref:`Design-Units` section.
 
-.. [#] :ref:`nxdl-types`
-
-.. [#] :ref:`native.hdf5.simple.read`
+.. [#] see :ref:`nxdl-types`
 
 .. [#] https://svn.nexusformat.org/code/trunk/applications/NXbrowse/NXbrowse.c

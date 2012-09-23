@@ -144,7 +144,8 @@ attributes can be found in the next table:
 		``signal`` (*NX_INT*)
 			Defines which data set contains the signal
 			to be :index:`plotted <NeXus basic motivation; default plot>`,
-			use ``signal="1"`` for main signal
+			use ``signal="1"`` for main signal, ``signal="2"`` for a second
+			item to plot, and so on.
 		
 		``axes`` (*NX_CHAR*)
 			:index:`axes <axes>` defines the names of the 
@@ -222,7 +223,7 @@ All attributes are identified by their names, which must be unique within each f
 
 		.. changed from table since sphinx PDF table columns were not sized correctly
 		
-		.. rubric::  Examples of data fields
+		.. rubric::  Examples of global attributes
 		
 		``file_name`` (*NX_CHAR*)
 			File name of original NeXus file
@@ -312,7 +313,8 @@ NeXus Base Classes
 Data groups often describe objects in the experiment (monitors, detectors,
 monochromators, etc.), so that the contents (both data fields and/or other data
 groups) comprise the properties of that object. NeXus has defined a set of standard
-objects, or base classes, out of which a NeXus file can be constructed. This is each data group
+objects, or :ref:`base classes <base.class.definitions>`, 
+out of which a NeXus file can be constructed. This is each data group
 is identified by a name and a class. The group class, defines the type of object
 and the properties that it can contain, whereas the group name defines a unique instance
 of that class. These classes are
@@ -332,6 +334,12 @@ sample environment logs, beam profiles, etc.
 There can be multiple instances of each class. On
 the other hand, a typical NeXus file will only contain a small subset of the
 possible classes.
+
+.. note:: 
+	The groups, fields, links, and attributes of a base class
+	definition are all **optional**, with a few particular exceptions in 
+	``NXentry`` and ``NXdata``.  They are named in the specification
+	to describe the exact spelling and usage of the term when it appears.
 
 NeXus base classes are not proper classes in the same sense as used in object oriented programming
 languages. In fact the use of the term classes is actually misleading but has established itself during the
@@ -428,15 +436,16 @@ NeXus Application Definitions
 =============================
 
 The objects described so far provide us with the means to store data from a wide variety of instruments,
-simulations or processed data as resulting from data analysis. But NeXus strives to express strict standards for
-certain applications of NeXus too. The tool which NeXus uses for the expression of such strict standards is the NeXus
-Application Definition. A NeXus Application Definition describes which groups and data items have to be present in
+simulations, or processed data as resulting from data analysis. But NeXus strives to express strict standards for
+certain applications of NeXus, too. The tool which NeXus uses for the expression of such strict standards is the NeXus
+:ref:`Application Definition <application.definitions>`.
+A NeXus Application Definition describes which groups and data items have to be present in
 a file in order to properly describe an application of NeXus. For example for describing  a powder diffraction
 experiment. Typically an application definition will contain only a small subset of the many groups and fields
 defined in NeXus. NeXus application definitions are also expressed in the NeXus Definition Language (NXDL). A tool exists
 which allows one to validate a NeXus file against a given application definition.
 
-.. note:: NeXus application definitions define the *minimum* information
+.. note:: NeXus application definitions define the *minimum required* information
           necessary to satisfy data analysis or other data processing.
 
 Another way to look at a NeXus application definition is as a
@@ -457,6 +466,9 @@ common analysis with data. Practical files will nearly always contain more data.
 that it is always possible to add more data to a file without breaking its compliance with its application definition.
 
 
+.. index::
+    ! coordinate systems; NeXus
+
 .. _Design-CoordinateSystem:
 
 NeXus Coordinate Systems
@@ -465,20 +477,45 @@ NeXus Coordinate Systems
 .. index::
     single: geometry
     coordinate systems; McStas
-    McStas
+    coordinate systems; IUCr
 
-NeXus uses the *McStas coordinate system*
-(http://mcstas.risoe.dk)
-as its laboratory coordinate system.
+The NeXus coordinate system is shown :ref:`below <fig.NeXus-coord>`.
+Note that it is the same as that used by *McStas* (http://mcstas.risoe.dk).
+
+.. compound::
+
+    .. _fig.NeXus-coord:
+
+	.. side-by-side figures do not build properly in LaTeX!
+		+----------------------------------------------------------+----------------------------------------------------------+
+		| Coordinate System, as viewed from source                 | Coordinate System, as viewed from detector               |
+		+==========================================================+==========================================================+
+		| .. figure:: img/translation-orientation-geometry.jpg     | .. figure:: img/translation-orientation-geometry-2.jpg   |
+		|       :alt: fig.coord.source.view                        |        :alt: fig.coord.detector.view                     |
+		|       :width: 48%                                        |        :width: 48%                                       |
+		+----------------------------------------------------------+----------------------------------------------------------+
+	
+	.. figure:: img/translation-orientation-geometry-2.jpg
+	      :alt: fig.coord.detector.view
+	      :width: 48%
+	      
+	      NeXus coordinate system, as viewed from detector
+
+.. note:: The NeXus definition of :math:`+z` is opposite to that
+          in the :index:`IUCr <coordinate systems; IUCr>` 
+          International Tables for Crystallography, volume G,
+          and consequently, :math:`+x` is also reversed.
+
+
 
 :index:`Coordinate systems <coordinate systems>`
-in NeXus have undergone significant development. Initially, just motor
-positions of relevant motors were stored without further standardization.
+in NeXus have undergone significant development. Initially, only motor
+positions of the relevant motors were stored without further standardization.
 This soon proved to be
-to little and the *NeXus polar coordinate* system
+t0o little and the *NeXus polar coordinate* system
 :index:`was <coordinate systems; NeXus polar coordinate>`
 developed. This system still
-is very close to angles meaningful to an instrument scientist
+is very close to angles that are meaningful to an instrument scientist
 but allows to define general positions of
 components easily. Then users from the simulation community
 approached the NeXus team and asked for a means
@@ -527,14 +564,10 @@ illustrated in the next figure:
 
     .. figure:: img/mcstascoord.png
         :alt: fig.mcstas-coord
-        :width: 80%
+        :width: 60%
+        :align: center
 
         The McStas Coordinate System
-
-.. note:: The NeXus definition of :math:`+z` is opposite to that
-          in the :index:`IUCr <coordinate systems; IUCr>` 
-          International Tables for Crystallography, volume G,
-          and consequently, :math:`+x` is also reversed.
 
 The NeXus NXgeometry class directly uses the 
 :index:`McStas coordinate system <coordinate systems; McStas>`.
@@ -547,10 +580,10 @@ the orientation of the component as a vector of in the McStas coordinate system.
 
 ..  Comment by MK: I think NXgeometry sucks. It is decided upon, so we have to document it as is. But I do think that
     it introduces too many levels of hierarchy. I would rather like to have:
-    - an absolute_position[n,3] field at component level. This makes the absolute position easy to see and the n opens up
+    - an absolute_position[n,3] field at component level. This makes the absolute position easy to see and the ``n`` opens up
     easily for those components which consist of many subcomponents like a many pixel detector.
-    - an absolute_orientation[n?,3] field to define the orientation at component level. May be we need an n here too for multi
-    pixel components.
+    - an ``absolute_orientation[n?,3]`` field to define the orientation at component level. 
+    Maybe we need an ``n`` here too for multi-pixel components.
     - I would love to pull down the NXshape group to component level too.
     Perhaps we can allow that and mark NXgeometry deprecated?
 
@@ -594,7 +627,8 @@ from the motor responsible for rotating the component. This situation is shown i
 
     .. figure:: img/polplane.png
         :alt: fig.polar-geometry-figure
-        :width: 80%
+        :width: 60%
+        :align: center
 
         NeXus Simple (Spherical Polar) Coordinate System
 
@@ -678,12 +712,12 @@ For the NeXus spherical coordinate system, the order is implicit and is given in
 This is also a nice example of the application of transformation matrices:
 
 #. You first apply ``azimuthal_angle`` as a rotation
-   around *z*.  This rotates the whole coordinate out of the plane.
+   around :math:`z`.  This rotates the whole coordinate out of the plane.
 
 #. Then you apply ``polar_angle`` as a rotation around
-   *y* in the tilted coordinate system.
+   :math:`y` in the tilted coordinate system.
 
-#. This also moves the direction of the *z* vector.
+#. This also moves the direction of the :math:`z` vector.
    Along which you translate the component to place by distance.
 
 ..  

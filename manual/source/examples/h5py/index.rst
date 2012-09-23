@@ -82,8 +82,8 @@ Complete ``h5py`` example writing and reading a NeXus data file
 
 .. _Example-H5py-Writing:
 
-Writing the HDF5 file
-=====================
+Writing the HDF5 file using **h5py**
+==========================================
 
 In the main code section of :ref:`BasicWriter.py <Example-H5py-BasicWriter>`, a current time stamp
 is written in the format of *ISO 8601*.
@@ -145,8 +145,8 @@ corrupt the file when the program quits.
 
 .. _Example-H5py-Reading:
 
-Reading the HDF5 file
-=====================
+Reading the HDF5 file using **h5py**
+==========================================
 
 The file reader, :ref:`BasicReader.py <Example-H5py-Reader>`,
 is very simple since the bulk of the work is done by ``h5py``.

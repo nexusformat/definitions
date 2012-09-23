@@ -25,8 +25,8 @@ Whenever an update is made to a ticket, a message is also
 posted to the appropriate
 :ref:`ticket mailing list <MailingLists>`.
 
-NeXus Code (Library and Applications)
-#####################################
+NeXus Code (NAPI, Library, and Applications)
+############################################
 
 :Report a new issue:
     http://trac.nexusformat.org/code

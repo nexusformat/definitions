@@ -113,6 +113,7 @@ neutron, X-ray, or muon instrument.
 	nxdl_desc
 
 
+.. _nxdl-types:
 		
 Data Types allowed in NXDL specifications
 #########################################

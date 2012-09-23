@@ -231,7 +231,9 @@ and is appropriate for machine sorting.
           to indicate the beginning of the time element, as specified
           in ISO 8601.  It is common to use a space in place of the
           ``T``, such as ``1996-07-31 21:15:22+0600``.
-          While human-readable, compatibility with the ISO 8601 standard is not
+          While human-readable (and later allowed in a relaxed revision
+          of the standard), compatibility with libraries supporting
+          the ISO 8601 standard is not
           assured with this substitution.  The ``strftime()``
           format specifier for this is "``%Y-%m-%d %H:%M:%S%z``".
 
@@ -452,6 +454,11 @@ Monitor data may be multidimensional. Good examples are scan monitors
 where a monitor value per scan point is expected or
 time-of-flight monitors.
 
+.. index::
+	automatic plotting
+	NeXus basic motivation; default plot
+	! plottable data; how to find it
+
 .. _Find-Plottable-Data:
 
 Find the plottable data
@@ -479,15 +486,11 @@ following procedure:
    associated with the plottable data. And
    then you can skip the next two steps.
 
-#. If the
-   ``axes``
-   attribute is not defined, search for the one-dimensional NeXus
-   fields with attribute
-   ``primary="1"``.
+#. If the ``axes`` attribute is not defined, search for the 
+   one-dimensional NeXus fields with attribute ``primary="1"``.
 
-#. These are the dimension scales
-   to label the axes of each
-   dimension of the data.
+#. These are the dimension scales to label 
+   the axes of each dimension of the data.
 
 #. Link each dimension scale
    to the respective data dimension by

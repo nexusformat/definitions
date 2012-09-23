@@ -64,6 +64,7 @@ changes are not so frequent.
     .. figure:: img/nxvalidate.png
         :alt: figure.nxvalidate
         :width: 80%
+        :align: center
 
         Flowchart of the NeXus validation process.
 
