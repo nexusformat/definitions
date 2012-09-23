@@ -41,7 +41,7 @@ or even to define another component (base class)
 used to design and build NeXus data files.
 
 In addition to this chapter and the
-:ref:`Tutorial <NXDL_Tutorial>` in Volume I, look at the
+:ref:`Tutorial <NXDL_Tutorial>` chapter, look at the
 set of NeXus NXDL files to learn how to read
 and write NXDL files.  These files are available from
 the NeXus *definitions* repository
@@ -137,8 +137,7 @@ Unit Categories allowed in NXDL specifications
 
 Unit categories in  :index:`NXDL specifications <pair: NXDL; units>`
 describe the expected type of units for a NeXus field. They should describe
-valid units consistent with the section on
-:ref:`NeXus units <Design-Units>` in Volume I.
+valid units consistent with the :ref:`NeXus units <Design-Units>` section.
 The values for unit categories are restricted (by
 an enumeration) to the following table.
 

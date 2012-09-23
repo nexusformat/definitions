@@ -56,9 +56,9 @@ copyright = u'2012, http://nexusformat.org'
 # built documents.
 #
 # The short X.Y version.
-version = '2012'
+version = 'CPACK_definition'
 # The full version, including alpha/beta/rc tags.
-release = '2012-05'
+release = version
 
 
 # 2012-02-18,PRJ:

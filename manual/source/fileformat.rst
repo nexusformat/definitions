@@ -115,7 +115,7 @@ basic NeXus data components:
 
 See the sections :ref:`example.napi.simple.2d.write`
 and  :ref:`example.napi.simple.3d.write.python` in the :ref:`Examples`
-chapter of Volume II for examples that use the native HDF5 calls to write NeXus data files.
+chapter for examples that use the native HDF5 calls to write NeXus data files.
 
 .. compound::
 

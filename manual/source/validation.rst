@@ -102,9 +102,9 @@ Let's be clear about some terms used in this section.
     (but not required) include ``.hdf``, ``.h5``, ``.nxs``, and ``.nx5``.
 
 :NXDL:
-    NeXus Definition Language files define the spcifications for NeXus base
+    NeXus Definition Language files define the specifications for NeXus base
     classes, application definitions, and contributed classes and definitions.
-    It is fully described in the NXDL chapter in Volume II of this documentation.
+    It is fully described in the :ref:`NXDL <NXDL>` chapter.
 
 :Schematron:
     :index:`Schematron` [#Schematron]_

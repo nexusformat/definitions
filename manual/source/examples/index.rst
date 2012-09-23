@@ -9,8 +9,8 @@ Examples of writing and reading NeXus data files
 	.. image:: ../img/NeXus.png
 
 Simple examples of reading and writing NeXus data files
-are provided in the :ref:`Introduction` chapter of Volume I and also
-in the :ref:`NAPI` chapter of Volume II.  Here, three examples are provided
+are provided in the :ref:`Introduction` chapter and also
+in the :ref:`NAPI` chapter.  Here, three examples are provided
 showing how to write a NeXus data file without using the NAPI.
 
 .. _Examples.NAPI:

@@ -26,8 +26,8 @@ since these examples are meant for those who are unfamiliar with NeXus.
 The data shown plotted in the next figure will be written to the NeXus HDF5 file
 using the only two required NeXus objects ``NXentry`` and ``NXdata`` in the first example
 and then minor variations on this structure in the next two examples.  The
-data model is identical to the one in the :ref:`Introduction to
-Volume I <fig.simple-example>`) except that the names will be different, as shown below:
+data model is identical to the one in the :ref:`Introduction <fig.simple-example>` 
+chapter except that the names will be different, as shown below:
 
 
 .. compound::

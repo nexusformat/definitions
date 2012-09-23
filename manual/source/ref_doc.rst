@@ -3,8 +3,6 @@
 .. image:: img/NeXus.png
     :width: 40%
 
-.. index:: Volume II, Reference Documentation
-
 .. _ReferenceDocumentation:
 
 ==============================

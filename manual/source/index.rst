@@ -17,8 +17,8 @@ http://www.nexusformat.org/
     :maxdepth: 2
     :numbered: 4
 
-    volume1
-    volume2
+    user_manual
+    ref_doc
 
 .. toctree::
     :maxdepth: 1
