@@ -2,9 +2,9 @@
 
 .. _ClassDefinitions:
 
-=============
-NeXus classes
-=============
+==========================
+NeXus class definitions
+==========================
 
 ..
 	.. image:: img/NeXus.png
@@ -15,8 +15,7 @@ temperature, and other items.  NeXus specifies the contents of these groupings
 using *classes*.  In some parts of this manual, these
 classes might be called *group type* or some similar term.
 In this section, the NeXus classes are described in detail.  Each class is specified
-using the *NeXus Definition Language* (NXDL).  The rules and
-structure of NXDL are described in a separate chapter.
+using :ref:`NXDL`, described in a separate chapter.
 
 There are three types of NeXus class file: base classes, application definitions, 
 and contributed definitions.  Base class definitions define the *complete* set of 
@@ -37,10 +36,11 @@ basic structure, then a table providing documentation for the various components
 of the NeXus class.
 
 :category:
-    The category of NXDL, either:
-    + ``base`` (base class)
-    + ``application`` (application definition)
-    + ``contributed`` (contributed definition)
+    The category of NXDL, one of these:
+    
+    + ``base`` (:ref:`base class <base.class.definitions>`)
+    + ``application`` (:ref:`application definition <application.definitions>`)
+    + ``contributed`` (:ref:`contributed definition <contributed.definitions>`)
 
 :NXDL source:
     Name of the NeXus class and a URL to the source listing in the NeXus
@@ -56,10 +56,10 @@ of the NeXus class.
     blank on files copied direct from the repository that are not checked
     out by a subversion client.)
 
+.. index:: NXDL
+
 :NeXus Definition Language:
-    The :ref:`NeXus Definition Language <NXDL>` (:index:`NXDL`)
-    (described in :ref:`NXDL`)
-    is used to describe the components in the NeXus
+    :ref:`NXDL` is used to describe the components in the NeXus
     Base Classes, as well as application and contributed definitions.
     The intent of NXDL is to provide a
     :index:`rules-based method <rules; NXDL>`
@@ -110,12 +110,12 @@ Name                Type                                                      Un
 
                                                                                         Occurences: 1 : *default*
 ``@configuration``  NX_CHAR                                                             configuration of the program
-``thumbnail``       :ref:`NXnote <http://www.nexusformat.org/NXnote>`                   A small image that is representative of the entry. An example of
+``thumbnail``       :ref:`NXnote`                                                       A small image that is representative of the entry. An example of
                                                                                         this is a 640x480 JPEG image automatically produced by a low
                                                                                         resolution plot of the NXdata.
 ``@mime_type``      NX_CHAR                                                             expected: *mime_type="image/\*"*
 
-..                  :ref:`NXgeometry <http://www.nexusformat.org/NXgeometry>`           describe the geometry of this class
+..                  :ref:`NXgeometry`                                                   describe the geometry of this class
 ``distance``        NX_FLOAT                                                  NX_LENGTH Distance from sample
 ``mode``            "Single Bunch"                                                      source operating mode
                     | "Multi Bunch"
@@ -168,9 +168,7 @@ The columns in the table are described as follows:
 
 :Type:
     Type of data to be represented by this variable.
-    The type is one of
-    those specified in the :ref:`NeXus Definition Language <NXDL>`
-    (see :ref:`NXDL`).
+    The type is one of those specified in :ref:`NXDL`.
     In the case where the variable can take only one value from a known
     list, the list of known values is presented, such as in the
     ``target_material`` field above:
@@ -182,7 +180,7 @@ The columns in the table are described as follows:
     :index:`Data units <units>`,
     given as character strings,
     must conform to the NeXus units standard.
-    See the :ref:`"NeXus units" <Design-Units>` section for details.
+    See the :ref:`NeXus units <Design-Units>` section for details.
 
 :Description (and Occurrences):
     A simple text description of the data field. No markup or formatting
@@ -217,8 +215,26 @@ The columns in the table are described as follows:
 
 .. not available yet
 
-	.. include:: classes/BaseClassSections.xml
+	.. toctree::
 	
-	.. include:: classes/ApplicationClassSections.xml
-	
-	.. include:: classes/ContributedClassSections.xml
+		classes/base_classes
+		classes/application_definitions
+		classes/contributed_definitions
+
+
+.. _base.class.definitions:
+
+Base Class Definitions
+#########################
+
+
+.. _application.definitions:
+
+Application Definitions
+#########################
+
+
+.. _contributed.definitions:
+
+Contributed Definitions
+#########################

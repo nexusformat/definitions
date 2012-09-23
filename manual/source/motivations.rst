@@ -64,9 +64,9 @@ for this standard were:
 
 #. :ref:`SimplePlotting`
 
-#. A :ref:`UnifiedFormat`
+#. :ref:`UnifiedFormat`
 
-#. A :ref:`DefinedDictionary`
+#. :ref:`DefinedDictionary`
 
 .. _SimplePlotting:
 

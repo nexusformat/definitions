@@ -41,8 +41,8 @@ The  :index:`NeXus <!NeXus>` data format has four components:
     to help people understand what is in the data files.
 
 :ref:`A set of data storage objects <Introduction-DataStorageObjects>`
-    (:ref:`ClassDefinitions-Base`
-    and :ref:`ClassDefinitions-Application`)
+    (:ref:`base.class.definitions`
+    and :ref:`application.definitions`)
     to allow the development of portable analysis software.
 
 :ref:`A set of subroutines <Introduction-SetOfSubroutines>`
@@ -61,8 +61,7 @@ detail in the :ref:`Fileformat` section.
 The NeXus Application-Programmer Interface 
 :index:`(NAPI) <NAPI>`, which
 provides the set of subroutines for reading and writing NeXus data files,
-is described briefly in
-:ref:`Introduction-NAPI`.
+is described briefly in :ref:`Introduction-NAPI`.
 (Further details are provided in the NAPI chapter of Volume II of this
 documentation.)
 
@@ -152,8 +151,7 @@ tree :index:`structure <hierarchy; example NeXus file>`.
 
 Note that each field is identified by a name, such as ``counts``,
 but each group is identified both by a name and, after a colon as a
-delimiter, the class
-type, e.g., ``monitor:NXmonitor``).
+delimiter, the class type, e.g., ``monitor:NXmonitor``).
 The class types, which all begin with
 ``NX``, define the sort of fields that the group should contain, in this
 case, counts from a beamline monitor. The hierarchical design, with data
@@ -285,10 +283,8 @@ a short Python program and NeXpy:
 A Set of Data Storage Objects
 =============================
 
-If the design principles are followed,
-it will be easy for anyone browsing a
-NeXus file to understand what it contains,
-without any prior information.
+If the design principles are followed, it will be easy for anyone browsing a
+NeXus file to understand what it contains, without any prior information.
 However, if you are writing specialized
 visualization or analysis software, you will need to
 know precisely what specific information is contained
@@ -375,22 +371,6 @@ file is opened.
 We shall provide a more complete example when we have discussed the contents
 of the NeXus files.
 
-..  <section xml:id="LowLevelFormat">
-    <title>A Set of Low-Level File Formats</title>
-    <para>
-    To actually store NeXus files on physical media, different low-level file
-    formats <indexterm>
-    <primary>NeXus</primary>
-    <secondary>low-level file formats</secondary>
-    </indexterm>
-    are available, namely HDF4, HDF5, and XML. The NeXus code library may be
-    configured to support all of them, or any nonempty subset. Applications that
-    create NeXus files need to decide (or let the user decide) in which low-level
-    format data shall be stored. Generic data analysis applications should be able
-    to read any low-level format.  More information is provided in
-    <xref linkend="Fileformat"/>.
-    </para>
-    </section>
 
 .. _Introduction-Community:
 
@@ -410,11 +390,8 @@ community to exchange ideas in data storage through the NeXus wiki.
 The NeXus International Advisory Committee supervises the
 development and maintenance of the NeXus common data
 format for neutron, X-ray, and muon science.
-The :ref:`NIAC`
-supervises a technical committee to oversee the
-NeXus Application Programmer Interface
-(:ref:`NAPI`) and the
-NeXus class definitions.
+The :ref:`NIAC` supervises a technical committee to oversee the
+:ref:`NAPI` and the :ref:`ClassDefinitions`.
 
 
 .. toctree::
@@ -440,12 +417,16 @@ NeXus class definitions.
 NAPI: The NeXus Application Programming Interface
 #################################################
 
-The :index:`NeXus API <!NAPI>` consists of routines to read and
+The :index:`NeXus API <! NAPI>` consists of routines to read and
 write NeXus data files.
 It was written to provide a simple to use and consistent common interface for
 all supported backends (XML, HDF4 and HDF5) to
-scientific programmers and other
-users of the NeXus Data Standard.
+scientific programmers and other users of the NeXus Data Standard.
+
+.. note:: It is not necessary to use the NAPI to write or read
+	NeXus data files.  The intent of the NAPI is to simplify
+	the programming effort to use the HDF programming
+	interface.  There are :ref:`Examples` to help you understand.
 
 This section will provide a brief overview of the available functionality.
 Further documentation of the NeXus Application Programming Interface
@@ -454,8 +435,7 @@ in the NAPI chapter in Volume II of this documentation and obtained
 from the NeXus development site. [#]_
 
 For an even more detailed description of the internal workings of NAPI
-see :ref:`NeXusIntern.pdf <http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf>` [#]_
-in the NeXus code repository.
+see :download:`NeXusIntern.pdf`, copied from the NeXus code repository.
 That document is written for programmers who want to work on the NAPI itself.
 If you are new to NeXus and just want to implement basic file reading or writing
 you should not start by reading that.
@@ -487,7 +467,7 @@ we walk through a schematic of NeXus program written in C
 
 .. compound::
 	
-	.. _fig.ex-c-write.c:
+	.. _fig.ex-c-write:
 
     .. rubric:: Writing a simple NeXus file using NAPI
 
@@ -563,7 +543,7 @@ using the native HDF5 commands.)
 
 .. compound::
 	
-	.. _fig.ex-c-read.c:
+	.. _fig.ex-c-read:
 
     .. rubric:: Reading a simple NeXus file using NAPI
 
@@ -625,13 +605,11 @@ API <Introduction-NAPI>` may also be useful to study.
 
 .. [#] http://download.nexusformat.org
 
-.. [#] http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf
-
 .. [#] :ref:`NAPI`
 
 .. [#]
-    See the chapter about
-    NeXus :ref:`ClassDefinitions-Base`
+    See the chapter 
+    :ref:`base.class.definitions`
     for more information.
 
 .. [#]

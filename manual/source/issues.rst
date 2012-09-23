@@ -1,16 +1,16 @@
 .. $Id$
 
-.. _IssueReporting:
-
 .. index::
 	issue reporting
 	TRAC
+
+.. _IssueReporting:
 
 =====================
 NeXus Issue Reporting
 =====================
 
-NeXus is using :ref:`TRAC <http://trac.edgewall.org>` [#]_ for problem/issue reporting.
+NeXus is using *TRAC* (http://trac.edgewall.org) for problem/issue reporting.
 The issue reports (see *View current issues*
 below) are used to guide the NeXus developers in
 resolving problems as well as implementing new features.  As such,
@@ -28,39 +28,35 @@ posted to the appropriate
 NeXus Code (Library and Applications)
 #####################################
 
-Report a new issue:
+:Report a new issue:
     http://trac.nexusformat.org/code
 
-View current issues:
+:View current issues:
     http://trac.nexusformat.org/code/report/1
 
-Archive of ticket update emails:
+:Archive of ticket update emails:
     http://lists.nexusformat.org/pipermail/nexus-code-tickets/
 
-repository timeline (recent ticket and code changes):
+:repository timeline (recent ticket and code changes):
     http://trac.nexusformat.org/code/timeline
 
-repository roadmap:
+:repository roadmap:
     http://trac.nexusformat.org/code/roadmap
 
 NeXus Definitions (NXDL base classes and application definitions)
 #################################################################
 
-Report a new issue:
+:Report a new issue:
     http://trac.nexusformat.org/definitions
 
-View current issues:
+:View current issues:
     http://trac.nexusformat.org/definitions/report/1
 
-Archive of ticket update emails:
+:Archive of ticket update emails:
     http://lists.nexusformat.org/pipermail/nexus-definitions-tickets/
 
-repository timeline (recent ticket and definition changes):
+:repository timeline (recent ticket and definition changes):
     http://trac.nexusformat.org/definitions/timeline
 
-repository roadmap:
+:repository roadmap:
     http://trac.nexusformat.org/definitions/roadmap
-
-
-
-.. [#] http://trac.edgewall.org

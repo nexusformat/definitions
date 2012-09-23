@@ -27,8 +27,39 @@ The NIAC supervises a technical committee to oversee the
 NeXus Application Programmer Interface (NAPI) and the
 NeXus class definitions.
 
-There are several mechanisms in place in order to coordinate the development of NeXus
-with the larger community.
+There are several mechanisms in place in order to coordinate the 
+development of NeXus with the larger community.
+
+.. index:: ! NeXus wiki
+
+.. _NeXus.wiki:
+
+NeXus Wiki
+============
+
+First of all, there is the NeXus wiki,
+http://wiki.nexusformat.org/,
+which provides all kinds of information, including membership, minutes, and 
+discussions from the meetings of the NIAC and Technical Committee
+Code Camps, proposed designs for consideration by NeXus, the NeXus logo,
+as well as some
+legacy documentation that we have not quite managed to move into the manual.
+
+.. index:: Contributed Definitions
+
+.. _community.Contributed.Definitions:
+
+Contributed Definitions
+========================
+
+The community is encouraged to provide new definitions 
+(:ref:`base.class.definitions` or :ref:`application.definitions`) for consideration
+in the NeXus standard.  These community contributions
+will be entered in the :ref:`contributed.definitions` 
+and will be curated according to procedures set forth by the :ref:`NIAC`.
+
+Other Ways NeXus Coordinates with the Scientific Community
+============================================================
 
 .. toctree::
    :maxdepth: 1

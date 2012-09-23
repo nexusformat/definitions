@@ -1,6 +1,6 @@
 .. $Id$
 
-..  xml:id="PrefaceChapter" - do not use since this file is loaded in each Volume
+..  _PrefaceChapter:
 
 =======
 Preface
@@ -20,16 +20,19 @@ NXDL replaces the previous method (meta-DTD) to define NeXus classes.
 NeXus base classes and instrument definitions
 are now assigned to one of three classifications:
 
-(1) *base classes* (that represent the components used
-	to build a NeXus data file),
-(2) *application definitions* (used to define a minimum
-	set of data for a specific purpose such as scientific data processing
-	or an instrument definition), and
-(3) *contributed definitions* (definitions and specifications
-	that are in an incubation status before ratification by the NIAC).
-	Additional examples have been added to respond to
-	inquiry from the users of the NeXus standard about implementation
-	and usage.  
+#. *base classes* (that represent the components used
+   to build a NeXus data file)
+
+#. *application definitions* (used to define a minimum
+   set of data for a specific purpose such as scientific data processing
+   or an instrument definition)
+
+#. *contributed definitions* (definitions and specifications
+   that are in an incubation status before ratification by the NIAC).
+
+Additional examples have been added to respond to
+inquiry from the users of the NeXus standard about implementation
+and usage.  
 
 Hopefully, the improved documentation with
 more examples and the new NXDL will reduce

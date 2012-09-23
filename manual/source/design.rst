@@ -89,7 +89,9 @@ be scalar values or multidimensional arrays of a variety of sizes (1-byte,
 store both experimental results (counts, detector angles, etc), and other
 information associated with the experiment (start and end times, user names,
 etc). Data fields are identified by their names, which must be unique within the
-group in which they are stored.
+group in which they are stored.  Some fields have engineering units to be specified.  
+In some cases, such in ``NXdetector/data``, a field is expected to have be
+an array of several dimensions.
 	
 	.. compound::
 
@@ -97,29 +99,23 @@ group in which they are stored.
 		
 		.. rubric::  Examples of data fields
 		
-		``file_name`` (*NX_CHAR*)
-			File name of original NeXus file
-			to assist in identification
-			if the external name has been changed
+		``variable`` (*NX_NUMBER*)
+			Dimension scale defining an axis of the data.
 		
-		.. index::
-		    single: ISO 8601
-		    single: time
-		    single: date and time; time
-		    single: date and time
-		    see: date and time; ISO 8601
+		``variable_errors`` (*NX_NUMBER*)
+			Errors (uncertainties) associated with axis ``variable``.
 		
-		``file_time`` (*ISO 8601*)
-			Date and time of file creation
+		``wavelength`` (*NX_FLOAT*)
+			wavelength of radiation, ``units="NX_FLOAT"``
 		
-		``file_update_time`` (*ISO 8601*)
-			Date and time of last file change at close
+		``chemical_formula`` (*NX_CHAR*)
+			The chemical formula specified using CIF conventions.
 		
-		``NeXus_version`` (*NX_CHAR*)
-			Version of NeXus API used in writing the file
+		``name`` (*NX_CHAR*)
+			Name of user responsible for this entry.
 		
-		``creator`` (*NX_CHAR*)
-			Facility or program where the file originated
+		``data`` (*NX_NUMBER*)
+			Data values from the detector, ``units="NX_ANY"``
 
 
 .. _Design-Attributes:
@@ -130,17 +126,11 @@ Data Attributes
 :index:`Attributes <!data objects; attributes>`
 are extra (meta-)information that are associated with particular
 fields. They are used to annotate the data, e.g. with physical 
-:index:`units <units>` or calibration offsets, and may be scalar numbers or character
+:index:`units` or calibration offsets, and may be scalar numbers or character
 strings. In addition, NeXus uses attributes to identify 
 :index:`plottable data <NeXus basic motivation; default plot>`
-and their axes, etc. A description of possible attributes can be found in table
-:ref:`data attributes <table.ExampleAttributes>`.
-Finally, NeXus files themselves have global attributes which are listed
-in the :ref:`global attributes <table.GlobalAttributes>`.
-:index:`table <data objects, attributes; global>`
-that identify the NeXus version, file creation time, etc.
-Attributes are identified by their
-names, which must be unique in each field.
+and their axes, etc. A description of some of the many possible 
+attributes can be found in the next table:
 	
 	.. compound::
 	
@@ -222,6 +212,41 @@ names, which must be unique in each field.
 			* ``spectrum`` (1-D data)
 			* ``image`` (2-D data)
 			* ``vertex`` (3-D data)
+
+Finally, NeXus files themselves have global attributes which are listed
+in the next :index:`table <data objects, attributes; global>`.
+These attributes identify the NeXus version, file creation time, etc.
+All attributes are identified by their names, which must be unique within each field.
+	
+	.. compound::
+
+		.. changed from table since sphinx PDF table columns were not sized correctly
+		
+		.. rubric::  Examples of data fields
+		
+		``file_name`` (*NX_CHAR*)
+			File name of original NeXus file
+			to assist in identification
+			if the external name has been changed
+		
+		.. index::
+		    single: ISO 8601
+		    single: time
+		    single: date and time; time
+		    single: date and time
+		    see: date and time; ISO 8601
+		
+		``file_time`` (*ISO 8601*)
+			Date and time of file creation
+		
+		``file_update_time`` (*ISO 8601*)
+			Date and time of last file change at close
+		
+		``NeXus_version`` (*NX_CHAR*)
+			Version of NeXus API used in writing the file
+		
+		``creator`` (*NX_CHAR*)
+			Facility or program where the file originated
 
 
 .. _Design-Links:
@@ -442,8 +467,8 @@ NeXus Coordinate Systems
     coordinate systems; McStas
     McStas
 
-NeXus uses the
-:ref:`*McStas coordinate system* <http://mcstas.risoe.dk>`
+NeXus uses the *McStas coordinate system*
+(http://mcstas.risoe.dk)
 as its laboratory coordinate system.
 
 :index:`Coordinate systems <coordinate systems>`
@@ -485,7 +510,7 @@ McStas and ``NXgeometry`` System
     McStas
 
 As stated above, NeXus uses the
-:ref:`*McStas coordinate system* <http://mcstas.risoe.dk>`
+*McStas coordinate system* (http://mcstas.risoe.dk)
 as its laboratory coordinate system.
 The instrument is given a global, absolute coordinate system where the
 *z* axis points in the direction of the incident beam,
@@ -494,7 +519,7 @@ plane pointing left as seen from the source, and the *y* axis
 points upwards. See  below for a drawing of the McStas coordinate system.  The origin of this
 coordinate system is the sample position or, if this is ambiguous, the center of the sample holder
 with all angles and translations set to zero.  The McStas coordinate system is
-illustrated in figure :ref:`McStas Coordinate System <fig.mcstasccord>`.
+illustrated in the next figure:
 
 .. compound::
 

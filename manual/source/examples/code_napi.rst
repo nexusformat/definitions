@@ -1,8 +1,8 @@
 .. $Id$
 
-.. _NAPI-Examples:
-
 .. index:: NAPI; examples
+
+.. _NAPI-Examples:
 
 =================================
 Example NeXus programs using NAPI

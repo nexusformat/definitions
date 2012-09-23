@@ -6,48 +6,43 @@
 NeXus Subversion Repositories
 =============================
 
-.. :index:`EDIT_ME <subversion>`
-
 NeXus NXDL class definitions (both base classes and instruments) and
-the NeXus code library source are held in a
-:ref:`subversion repository <http://subversion.apache.org>`.
-The repository is world readable and though you can browse the
-:ref:`NeXus code library and applications <http://svn.nexusformat.org/code>`
-or
-:ref:`NeXus NXDL class definitions <http://svn.nexusformat.org/definitions>`
-repositories directly, a better looking interface is provided
-by the
-:ref:`ViewVC <http://www.viewvc.org>`
-or
-:ref:`TRAC <http://trac.edgewall.org>`
-browsers.
+the NeXus code library source are held in a pair of *subversion* [#]_ repositories.
+The repositories are world readable. You can browse them directly:
 
-+ Browse the NeXus code (library and applications) repository using
-  :ref:`ViewVC <http://svn.nexusformat.org/viewvc/NeXusCode>`
-  or
-  :ref:`TRAC <http://trac.nexusformat.org/code/browser>`
+:NeXus code library and applications:
+	http://svn.nexusformat.org/code
 
-+ Browse NeXus definitions (NXDL classes) repository using
-  :ref:`ViewVC <http://svn.nexusformat.org/viewvc/NeXusDefinitions>` or
-  :ref:`TRAC <http://trac.nexusformat.org/definitions/browser>`
+:NeXus NXDL class definitions
+	http://svn.nexusformat.org/definitions
 
-The repository can alse be interrogated for recent updates via a
-:ref:`query form <http://svn.nexusformat.org/viewvc/NeXusCode/trunk/?view=queryform>`,
-such as:
+Better looking interfaces are also provided using the software tools
+**ViewVC** (http://www.viewvc.org) and **TRAC** (http://trac.edgewall.org)
+added to the NeXus WWW site.
+
++ Browse the NeXus code (library and applications) repository using either
+  - **ViewVC** http://svn.nexusformat.org/viewvc/NeXusCode
+  - **TRAC**   http://trac.nexusformat.org/code/browser
+
++ Browse NeXus definitions (NXDL classes) repository using either
+  - **ViewVC** http://svn.nexusformat.org/viewvc/NeXusDefinitions
+  - **TRAC**   http://trac.nexusformat.org/definitions/browser
+
+The repository can also be interrogated for recent updates via a
+*query form*, such as:
 
 .. code-block:: guess
 
     http://svn.nexusformat.org/viewvc/NeXusCode/trunk/?view=queryform
 
 For example, show me all changes in the last month for the
-:ref:`code (library and applications) <http://svn.nexusformat.org/viewvc/NeXusCode/trunk/?view=query&date=month&limit_changes=100>` repository
+code (library and applications) repository:
 
 .. code-block:: guess
 
     http://svn.nexusformat.org/viewvc/NeXusCode/trunk/?view=query&date=month&limit_changes=100
 
-or
-:ref:`Definition <http://trac.nexusformat.org/definitions/timeline?daysback=30>` repository
+or the from the **Definition repository**:
 
 .. code-block:: guess
 
@@ -68,16 +63,16 @@ should join the appropriate :ref:`Mailing Lists <MailingLists>`.
 There are pages that show the subversion repository activity in a timeline
 format or a tabular (revision log) format.
 
-code (library and applications) repository timeline
+:code (library and applications) repository timeline:
     http://trac.nexusformat.org/code/timeline
 
-definitions repository timeline
+:definitions repository timeline:
     http://trac.nexusformat.org/definitions/timeline
 
-code repository revision log
+:code repository revision log:
     http://trac.nexusformat.org/code/log
 
-definitions repository revision log
+:definitions repository revision log:
     http://trac.nexusformat.org/definitions/log
 
 .. _Subversion-Login:
@@ -86,8 +81,7 @@ Login
 #####
 
 To update files in these repositories you will need to use
-a subversion client such as
-:ref:`TortoiseSVN/ <http://tortoisesvn.tigris.org/>` [#]_
+a subversion client such as *TortoiseSVN* (http://tortoisesvn.tigris.org)
 for Microsoft Windows or ``svn`` for command-line shells
 and also provide your NeXus Wiki username and password.
 Note that for subversion write access:
@@ -100,34 +94,33 @@ Note that for subversion write access:
   (i.e. one that was
   emailed to you in response to a request). You must first
   log into MediaWiki with the temporary password and then
-  go to account
-  :ref:`NeXus wiki Preferences <http://www.nexusformat.org/Special:Preferences>`
+  go to your account section
+  (http://www.nexusformat.org/Special:Preferences)
   and change the password.
 
 - Your Wiki account must have an email address associated
   with it and this address must have been validated.
   To provide and/or validate your email address,
-  log in and go to your account
-  :ref:`NeXus wiki Preferences <http://www.nexusformat.org/Special:Preferences>`.
-  section.
+  log in and go to your account section
+  (http://www.nexusformat.org/Special:Preferences).
 
 - If you have login problems and have not changed your
   WIKI password since 20th October 2006, please go to the
-  :ref:`NeXus wiki login <http://www.nexusformat.org/Special:UserLogin>`
-  page and request to be emailed a
-  new password. To synchronise TRAC/Subversion/MediaWiki
+  NeXus wiki login page (http://www.nexusformat.org/Special:UserLogin)
+  and request a new password to be sent by email.
+  To synchronise TRAC/Subversion/MediaWiki
   required some changes to the authentication system which
   will have invalidated passwords set prior to that date.
 
 Here are the URLs to access the subversion repositories as a developer:
 
-code for library/applications
+:code for library/applications:
     https://svn.nexusformat.org/code/trunk
 
-definitions for NXDL classes
+:definitions for NXDL classes:
     https://svn.nexusformat.org/definitions/trunk
 
-checkout the code trunk
+:checkout the code trunk:
     .. code-block:: guess
 
         svn co --username "use your WIKI Username" https://svn.nexusformat.org/code/trunk nexus_code
@@ -249,5 +242,4 @@ NeXus definitions repository (password required)
     https://svn.nexusformat.org/definitions/trunk
 
 
-
-.. [#] http://tortoisesvn.tigris.org/`
+.. [#] *subversion*, revision control software: http://subversion.apache.org

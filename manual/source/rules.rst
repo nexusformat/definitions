@@ -364,7 +364,7 @@ Thus, ``NXcollection`` serves as a quick point of access
 to data for an instrument scientist or another expert. NXcollection is 
 also a feature for those who are t0o lazy to build up the complete NeXus 
 hierarchy.  An example usage case is documented in figure
-:ref:`NXcollection example <table.SimpleScanArea>`.
+:ref:`NXcollection example <table.NXcollection>`.
 
 	.. compound::
 	

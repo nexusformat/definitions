@@ -1,10 +1,10 @@
 .. $Id$
 
-.. _Fileformat:
-
 .. index::
 	NeXus; low-level file formats
 	NAPI; bypassing
+
+.. _Fileformat:
 
 ====================
 Physical File format

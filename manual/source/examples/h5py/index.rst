@@ -1,5 +1,7 @@
 .. $Id$
 
+.. index:: h5py
+
 .. _Example-H5py:
 
 ==============================
@@ -21,7 +23,7 @@ since these examples are meant for those who are unfamiliar with NeXus.
 .. [#] *SPEC*: http://certif.com/spec.html
 
 
-The data shown in :ref:`Example-H5py-Data` will be written to the NeXus HDF5 file
+The data shown plotted in the next figure will be written to the NeXus HDF5 file
 using the only two required NeXus objects ``NXentry`` and ``NXdata`` in the first example
 and then minor variations on this structure in the next two examples.  The
 data model is identical to the one in the :ref:`Introduction to
@@ -133,6 +135,8 @@ corrupt the file when the program quits.
 .. compound::
 
     .. rubric:: *BasicWriter.py*: Write a NeXus HDF5 file using Python with h5py
+    
+    .. _Example-H5py-BasicWriter:
 
     .. literalinclude:: BasicWriter.py
 	    :tab-width: 4
@@ -147,10 +151,8 @@ Reading the HDF5 file
 The file reader, :ref:`BasicReader.py <Example-H5py-Reader>`,
 is very simple since the bulk of the work is done by ``h5py``.
 Our code opens the HDF5 we wrote above,
-prints the HDF5 attributes from the file,
-reads the two datasets,
-and then prints them out as columns.
-As simple as that.
+prints the HDF5 attributes from the file, reads the two datasets,
+and then prints them out as columns.  As simple as that.
 Of course, real code might add some error-handling and
 extracting other useful stuff from the file.
 
@@ -162,13 +164,15 @@ extracting other useful stuff from the file.
 .. compound::
 
     .. rubric:: *BasicReader.py*: Read a NeXus HDF5 file using Python with h5py
+    
+    .. _Example-H5py-Reader:
 
     .. literalinclude:: BasicReader.py
 	    :tab-width: 4
 	    :linenos:
 	    :language: guess
 
-Output from ``BasicReader.py`` is shown in :ref:`Example-H5py-Output`.
+Output from ``BasicReader.py`` is shown next.
 
 .. compound::
 
@@ -190,8 +194,8 @@ has a specific arrangement of groups and datasets
 in an HDF5 file.
 
 To test that our HDF5 file conforms to the NeXus standard,
-we use the :ref:`NXvalidate-java`
-program.  Referring to the next figure,
+we use the :ref:`Java-version of NXvalidate <NXvalidate-java>`.  
+Referring to the next figure,
 we compare our HDF5 file with the rules for
 generic [#]_ data files (``all.nxdl.xml``).  The only items that have
 been flagged are the "non-standard field names" *mr* and

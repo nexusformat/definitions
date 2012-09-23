@@ -22,7 +22,7 @@ This set may be described by this regular expression syntax :index:`regular expr
 
 .. compound::
 
-	.. RegExpName:
+	.. _RegExpName:
 
     .. rubric:: Regular expression pattern for NXDL group and field names
     

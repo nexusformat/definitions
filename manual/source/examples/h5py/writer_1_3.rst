@@ -27,7 +27,8 @@ as shown in the next figure.
 
         Simple Example
 
-In the above figure, the data file (``writer_1_3_h5py.hdf5``) contains
+In the :ref:`above figure <fig.simple-example-h5py>`, 
+the data file (``writer_1_3_h5py.hdf5``) contains
 a hierarchy of items, starting with an ``NXentry`` named ``entry``.
 (The full HDF5 path reference, ``/entry`` in this case, is shown to the right of each
 component in the data structure.)  The next ``h5py`` code
@@ -39,7 +40,7 @@ In this example, you can see how the HDF5 file is created, how
 :ref:`Design-Groups` and datasets (:ref:`Design-Fields`)
 are created, and how :ref:`Design-Attributes` are assigned.
 Note particularly the ``NX_class`` attribute on each HDF5 group that
-describes which of the NeXus :ref:`ClassDefinitions-Base` is being used.
+describes which of the NeXus :ref:`base.class.definitions` is being used.
 When the next Python program (``writer_1_3_h5py.py``) is run from the
 command line (and there are no problems), the ``writer_1_3_h5py.hdf5``
 file is generated.

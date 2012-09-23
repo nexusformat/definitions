@@ -1,8 +1,8 @@
 .. $Id$
 
-.. _Installation:
-
 .. index:: !installation
+
+.. _Installation:
 
 ============
 Installation
@@ -13,9 +13,9 @@ API is distributed under the terms of the GNU Lesser Public License.
 
 The source code and binary versions for some popular platforms can be found on
 http://download.nexusformat.org/kits/. Up to date instructions can be found on 
-the :ref:`Wiki <http://www.nexusformat.org/Download/>`
-In case you need help feel free to contact the 
-:ref:`nexus mailing list <http://lists.nexusformat.org/mailman/listinfo/nexus>`.
+the :ref:`NeXus.wiki` Download page (http://www.nexusformat.org/Download).
+In case you need help, feel free to contact the 
+NeXus mailing list: http://lists.nexusformat.org/mailman/listinfo/nexus
 
 .. _Installation-Binary:
 
@@ -138,8 +138,8 @@ bindings, you need to have the respective build support in a place where autocon
 
 For more information see the
 README in the toplevel of the source distribution.
-In case you need help, feel free to contact the developers using the
-:ref:`nexus-developers mailing list <http://lists.nexusformat.org/mailman/listinfo/nexus-developers>`.
+In case you need help, feel free to contact the 
+NeXus developers mailing list: http://lists.nexusformat.org/mailman/listinfo/nexus-developers
 
 Download the appropriate gzipped tar file, unpack it, and run the standard configure
 procedure from the resulting nexus directory. For example, for version 4.2.1;

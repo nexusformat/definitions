@@ -64,8 +64,10 @@ There is a generous background to the data plus quite a number of diffraction pe
 Constructing a NeXus file for WONI
 ##################################
 
-The starting point for a NeXus file for  WONI will be an empty basic NeXus file hierarchy as documented in
-figure :ref:`FigShell`. In order to arrive at a full neXus file the following steps are required:
+The starting point for a NeXus file for WONI will be an 
+empty basic NeXus file hierarchy as documented in
+the next figure. In order to arrive at a full NeXus file, 
+the following steps are required:
 
 #. For each instrument component, decide which parameters need to be stored
 
@@ -107,7 +109,7 @@ instruments components.
 As an example, consider the monochromator. You may wish to store: the wavelength, the d-value of the reflection used,
 the type of the monochromator and its angle towards the incoming beam. The reference manual tells you that NXcrystal
 is the right base class to use. Suitable fields for your parameters can be found in there to. After adding them to
-the basic NeXus file the file looks like in figure :ref:`FigShellMono`
+the basic NeXus file, the file looks like in the next figure:
 
 .. compound::
 
@@ -326,8 +328,7 @@ Thus we add this mapping:
     :linenos:
     :language: c
 
-The full mapping of WONI data into NeXus is documented in
-:ref:`TableWoniFullMapping`.
+The full mapping of WONI data into NeXus is documented in the next table:
 
 ============================================== ================================================
 WONI data                                      NeXus path
@@ -371,10 +372,11 @@ Step 3: *Describe* this map in a NXDL file
 This is even easier. Some XML editing is necessary. Fire up your XML editor
 of choice and open a file. If your XML editor supports XML schema while editing XML, it is worth
 to load ``nxdl.xsd``. Now your XML editor can help you to create a proper NXDL
-file. As always, the start is an empty template file. This looks like
-:ref:`ExNxdlTemplate`.
-This is just the basic XML for a NXDL definition. It is advisable to change
-some of the documentation strings.
+file. As always, the start is an empty template file. This looks like the XML code below.
+
+.. note:: This is just the basic XML for a NXDL definition. 
+	It is advisable to change
+	some of the documentation strings.
 
 .. compound::
 
@@ -483,7 +485,7 @@ NeXus application definitions only standardize classes. You are free to decide
 upon names of groups, subject to them matching regular expression for NeXus
 name attributes (see the :ref:`regular expression
 pattern for NXDL group and field names <RegExpName>`
-in :ref:`RegExpName`).
+in the :ref:`Design-Naming` section).
 Note the length limit of 63 characters imposed by HDF5.
 Please use sensible, descriptive names and separate
 multi worded names with underscores.

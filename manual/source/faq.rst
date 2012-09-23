@@ -1,8 +1,8 @@
 .. $Id$
 
-.. _FAQ:
+.. index:: ! FAQ
 
-.. index:: !FAQ
+.. _FAQ:
 
 ==========================
 Frequently Asked Questions
@@ -143,7 +143,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     You would need to implement it for yourself. You would be wise to
     consult the algorithms in the Java version of
     ``NXvalidate``
-    (see :ref:`NXvalidate-java`) for more details.
+    (see the :ref:`Java-version of NXvalidate <NXvalidate-java>`) for more details.
 
 #. Why do I need to specify the ``NAPItype``? My programming language does not need that information and I don't care about C and colleagues.  Can I leave it out?
 
@@ -190,7 +190,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     will other software be able to read my data?
 
     Yes.  :ref:`NXsas`, like other
-    :ref:`ClassDefinitions-Application`,
+    :ref:`application.definitions`,
     defines and names the *minimum information*
     required for analysis or data processing.  As long as all the
     information required by the specification is present, analysis software

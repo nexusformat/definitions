@@ -114,6 +114,8 @@ links to further information, as available.
 .. index:: 
 	utility, NeXus; NXvalidate
 	NXvalidate
+	
+.. _NXvalidate-java:
 
 **NXvalidate**
     Java program (in development in 2010) to check

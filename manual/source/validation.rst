@@ -1,10 +1,10 @@
 .. $Id$
 
-.. _Verification:
-
 .. index::
 	!validation
 	!verification
+
+.. _Verification:
 
 ====================================
 Verification and validation of files
