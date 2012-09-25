@@ -264,8 +264,8 @@ latex_use_parts = False
 #latex_use_parts = True
 
 # If true, show page references after internal links.
-#latex_show_pagerefs = False
-latex_show_pagerefs = True
+latex_show_pagerefs = False
+#latex_show_pagerefs = True
 
 # If true, show URL addresses after external links.
 #latex_show_urls = False
