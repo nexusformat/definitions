@@ -45,7 +45,7 @@ This manual built |today|.
    :online HTML:
    	http://download.nexusformat.org/doc/html/UserManual.html
    :PDF:
-   	:download:`nexus.pdf` (available via online HTML link above)
+   	:download:`nexus.pdf` :download:`( <nexus.log>`available via online HTML link above)
    :epub:
    	:download:`NeXusManual.epub` (available via online HTML link above)
    
