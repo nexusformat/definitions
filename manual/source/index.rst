@@ -45,7 +45,7 @@ This manual built |today|.
    :online HTML:
    	http://download.nexusformat.org/doc/html/UserManual.html
    :PDF:
-   	:download:`nexus.pdf` :download:`( <nexus.log>`available via online HTML link above)
+   	:download:`nexus.pdf` (available via online HTML link above)
    :epub:
    	:download:`NeXusManual.epub` (available via online HTML link above)
    
@@ -53,7 +53,13 @@ This manual built |today|.
    
    :HTML:
    	http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html
-
+   
+   Also, some diagnostic files are available temporarily:
+   
+   :nexus.log:
+   	:download:`nexus.log`
+   :nexus.tex:
+   	:download:`nexus.tex`
 
 ..  Suggestions for adding to this manual:
 

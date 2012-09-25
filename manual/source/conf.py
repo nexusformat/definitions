@@ -129,6 +129,7 @@ if nxdl_version is not None:
 #today = ''
 # Else, today_fmt is used as the format for a strftime call.
 #today_fmt = '%B %d, %Y'
+today_fmt = '%Y-%m-%d %H:%M %Z'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -271,8 +272,10 @@ latex_show_pagerefs = True
 #latex_show_urls = False
 
 # Additional stuff for the LaTeX preamble.
-#latex_preamble = '''
+latex_preamble = '''
+% 2012-09-25,PRJ: #240  temporary diagnostic
 \\listfiles
+% when done, remove referencing from index.rst and cp from Makefile: latexpdf
 '''
 
 # Documents to append as an appendix to all manuals.

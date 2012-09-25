@@ -126,6 +126,7 @@ latexpdf: latex
 	make -C $(BUILDDIR)/latex all-pdf
 	-cp -f $(BUILDDIR)/latex/*.pdf $(BUILDDIR)/../source
 	-cp -f $(BUILDDIR)/latex/*.log $(BUILDDIR)/../source
+	-cp -f $(BUILDDIR)/latex/*.tex $(BUILDDIR)/../source
 	@echo "pdflatex finished; the PDF files are in $(BUILDDIR)/latex."
 
 text:
