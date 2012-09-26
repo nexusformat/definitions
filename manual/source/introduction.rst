@@ -169,8 +169,8 @@ complete list can be found in the :ref:`Design` chapter.
 
 :ref:`NXentry`
     *Required:*
-    The top level of any NeXus file contains one or more
-    groups with the :index:`class <base classes; NXentry>` ``NXentry``. 
+    The top level of any NeXus file contains one or more groups with the 
+    :index:`class <class definition -- Base Classes; NXentry>` ``NXentry``. 
     These contain all the data that is required to
     describe an experimental run or scan. Each
     ``NXentry`` typically contains a number of
@@ -181,8 +181,8 @@ complete list can be found in the :ref:`Design` chapter.
 
 :ref:`NXdata`
     *Required:*
-    Each ``NXentry`` group contains one or more
-    groups with :index:`class <base classes; NXdata>` ``NXdata``. 
+    Each ``NXentry`` group contains one or more groups with 
+    :index:`class <class definition -- Base Classes; NXdata>` ``NXdata``. 
     These groups contain the experimental results
     in a self-contained way, i.e., it should be possible to
     generate a sensible :index:`plot <NeXus basic motivation; default plot>`
@@ -192,8 +192,8 @@ complete list can be found in the :ref:`Design` chapter.
     data.
 
 :ref:`NXsample`
-    A ``NXentry`` group will often contain a group
-    with :index:`class <base classes; NXsample>` ``NXsample``. 
+    A ``NXentry`` group will often contain a group with 
+    :index:`class <class definition -- Base Classes; NXsample>` ``NXsample``. 
     This group contains information pertaining to
     the sample, such as its chemical composition, mass, and
     environment variables (temperature, pressure, magnetic
@@ -201,7 +201,7 @@ complete list can be found in the :ref:`Design` chapter.
 
 :ref:`NXinstrument`
     There might also be a group with 
-    :index:`class <base classes; NXinstrument>`
+    :index:`class <class definition -- Base Classes; NXinstrument>`
     ``NXinstrument``. This is designed to encapsulate all the
     instrumental information that might be relevant to a
     measurement, such as flight paths, collimation, chopper

@@ -105,20 +105,21 @@ neutron, X-ray, or muon instrument.
 
 
 ..  auto-generated: NXDL Elements and Data Types, built from nxdl.xsd
-    ../../utils/nxdl_desc2rst.py ../../nxdl.xsd > nxdl_desc.xml
+    ../../utils/nxdl_desc2rst.py ../../nxdl.xsd > nxdl_desc.rst
 
 .. toctree::
 	:maxdepth: 3
 	
 	nxdl_desc
 
+.. index:: ! NXDL data type 
 
 .. _nxdl-types:
 		
 Data Types allowed in NXDL specifications
 #########################################
 
-Data Types for use in :index:`NXDL specifications <pair: NXDL; data types>`
+Data types for use in NXDL
 describe the expected type of data for a NeXus field. These terms are very
 broad. More specific terms are used in actual NeXus data files that describe
 size and array dimensions. In addition to the types in the following table, the
@@ -132,10 +133,14 @@ with any of these data types.
 
 
 
+.. index:: ! NXDL units type 
+
+.. _nxdl-units:
+
 Unit Categories allowed in NXDL specifications
 ##############################################
 
-Unit categories in  :index:`NXDL specifications <pair: NXDL; units>`
+Unit categories in NXDL specifications
 describe the expected type of units for a NeXus field. They should describe
 valid units consistent with the :ref:`NeXus units <Design-Units>` section.
 The values for unit categories are restricted (by

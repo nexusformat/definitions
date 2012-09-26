@@ -26,8 +26,6 @@ INDENTATION = ' '*4
 
 ELEMENT_DICT = {
                 'attribute': '''
-.. index:: NXDL element; attribute
-
 An ``attribute`` element can *only* be a child of a 
 ``field`` or ``group`` element.
 It is used to define *attribute* elements to be used and their data types
@@ -38,8 +36,6 @@ For more details, see:
                 ''',
                 
                 'definition': '''
-.. index:: NXDL element; definition
-
 A ``definition`` element can *only* be used
 at the root level of an NXDL specification.
 Note:  Due to the large number of attributes of the ``definition`` element,
@@ -52,8 +48,6 @@ For more details, see:
                 ''',
                 
                 'dimensions': '''
-.. index:: NXDL element; dimensions
-
 The ``dimensions`` element describes the *shape* of an array.
 It is used *only* as a child of a ``field`` element.
 
@@ -62,8 +56,6 @@ For more details, see:
                 ''',
                 
                 'doc': '''
-.. index:: NXDL element; doc
-
 A ``doc`` element can be a child of most NXDL elements.  In most cases, the
 content of the ``doc`` element will also become part of the NeXus manual.
 
@@ -79,8 +71,6 @@ For more details, see:
                 ''',
                 
                 'enumeration': '''
-.. index:: NXDL element; enumeration
-
 An ``enumeration`` element can *only* be a child of a 
 ``field`` or ``attribute`` element.
 It is used to restrict the available choices to a predefined list,
@@ -92,8 +82,6 @@ For more details, see:
                 ''',
                 
                 'field': '''
-.. index:: NXDL element; field
-
 The ``field`` element provides the value of a named item.  Many different attributes
 are available to further define the ``field``.  Some of the attributes are not
 allowed to be used together (such as ``axes`` and ``axis``); see the documentation
@@ -105,8 +93,6 @@ For more details, see:
                 ''',
                 
                 'group': '''
-.. index:: NXDL element; group
-
 A ``group`` element can *only* be a child of a 
 ``definition`` or ``group`` element.
 It describes a common level of organization in a NeXus data file, similar
@@ -118,7 +104,6 @@ For more details, see:
                 
                 'link': '''
 .. index:: 
-    NXDL element; link
     see: link; target
     link
 
@@ -132,8 +117,6 @@ For more details, see:
                 ''',
                 
                 'symbols': '''
-.. index:: NXDL element; symbols
-
 A ``symbols`` element can *only* be a child of a ``definition`` element.
 It defines the array index symbols to be used when defining arrays as
 ``field`` elements with common dimensions and lengths.
@@ -175,6 +158,10 @@ and  *validNXClassName*.
     items in nxdl.xsd will not automatically go in the manual.
     Can this be streamlined with some common methods?
     Also, there is probably too much documentation in nxdl.xsd.  Obscures the function.
+
+
+
+.. index:: ! NXDL element
 
 .. _NXDL.elements:
 
@@ -436,7 +423,10 @@ def main(tree, ns):
     print ELEMENT_PREAMBLE
 
     for name in sorted(ELEMENT_DICT):
-        print '\n.. _%s:\n' % ('NXDL.element.'+name)
+        print
+        print '.. index:: ! NXDL element; %s\n' % name
+        #print '.. _%s:\n' % ('NXDL.element.'+name)
+        print '.. _%s:\n' % name
         printTitle(name, indentLevel=0)
         print '\n'
         print ELEMENT_DICT[name]

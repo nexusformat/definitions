@@ -57,6 +57,7 @@ class Table:
         self.rows = []
         self.labels = []
         self.alignment = []
+        self.longtable = False
     
     def reST(self, indentation = '', format = 'simple'):
         '''return the table in reST format'''
@@ -79,6 +80,8 @@ class Table:
         
         rest = indentation
         rest += '.. tabularcolumns:: |%s|' % '|'.join(self.alignment)
+        if self.longtable:
+            rest += '\n%s%s' % (' '*4, ':longtable:')
         rest += '\n\n'
         rest += '%s%s' % (indentation, separator)        # top line of table
         rest += self._row(self.labels, fmt, indentation) # labels
@@ -100,6 +103,8 @@ class Table:
         
         rest = indentation
         rest += '.. tabularcolumns:: |%s|' % '|'.join(self.alignment)
+        if self.longtable:
+            rest += '\n%s%s' % (' '*4, ':longtable:')
         rest += '\n\n'
         rest += '%s%s' % (indentation, separator)        # top line of table
         rest += self._row(self.labels, fmt, indentation) # labels
@@ -108,6 +113,37 @@ class Table:
             rest += self._row(row, fmt, indentation)     # each row
             rest += '%s%s' % (indentation, separator)    # row separator
         return rest
+    
+    def list_table(self, indentation = ''):
+        '''
+            Demo list-table:
+            
+            .. Does this work?
+            
+            It was found on this page
+                http://docutils.sourceforge.net/docs/ref/rst/directives.html
+            
+            .. list-table:: Frozen Delights!
+               :widths: 15 10 30
+               :header-rows: 1
+            
+               * - Treat
+                 - Quantity
+                 - Description
+               * - Albatross
+                 - 2.99
+                 - On a stick!
+               * - Crunchy Frog
+                 - 1.49
+                 - If we took the bones out, it wouldn't be
+                   crunchy, now would it?
+               * - Gannet Ripple
+                 - 1.99
+                 - On a stick!
+            
+            .. Yes, it _does_ work.  
+               Use it for the tables in the NXDL description.
+'''
     
     def _row(self, row, fmt, indentation = ''):
         '''

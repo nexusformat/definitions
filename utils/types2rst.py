@@ -20,4 +20,4 @@ import units2rst
 
 
 if __name__ == '__main__':
-    units2rst.worker('NAPI')
+    units2rst.worker('NAPI', section = 'data')

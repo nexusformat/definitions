@@ -28,27 +28,27 @@
 # $Id$
 ########### SVN repository information ###################
 
+all :: NXcrystal.rst NXentry.rst NXdata.rst
 
-all :: types.table units.table nxdl_desc.rst subdirs
+NXDL2RST = ../../../../utils/nxdl2rst.py
+SRCDIR = ../../../../base_classes
 
-types.table: ../../utils/types2rst.py ../../utils/units2rst.py ../../nxdlTypes.xsd
-	../../utils/types2rst.py ../../nxdlTypes.xsd > $@
+NXcrystal.rst: $(SRCDIR)/NXcrystal.nxdl.xml $(NXDL2RST) Makefile
+	$(NXDL2RST) $(SRCDIR)/NXcrystal.nxdl.xml > $@
+	#echo "----------------------"
+	#echo $(NXDL2RST)
+	#echo $@
+	#echo $<
+	#echo "----------------------"
 
-units.table: ../../utils/units2rst.py ../../nxdlTypes.xsd
-	../../utils/units2rst.py ../../nxdlTypes.xsd > $@
+NXentry.rst: $(NXDL2RST) $(SRCDIR)/NXentry.nxdl.xml
+	$(NXDL2RST) $(SRCDIR)/NXentry.nxdl.xml > $@
 
-nxdl_desc.rst: ../../utils/nxdl_desc2rst.py ../../nxdl.xsd
-	../../utils/nxdl_desc2rst.py ../../nxdl.xsd > $@
+NXdata.rst: $(NXDL2RST) $(SRCDIR)/NXdata.nxdl.xml
+	$(NXDL2RST) $(SRCDIR)/NXdata.nxdl.xml > $@
+
+%.rst: $(SRCDIR)%.nxdl.xml Makefile $(NXDL2RST)
+	echo $(NXDL2RST) $@ $<
 
 clean ::
-	$(RM) types.table units.table nxdl_desc.rst
-	$(MAKE) clean -C $(SUBDIRS)
-
-SUBDIRS = classes
-
-.PHONY: subdirs $(SUBDIRS)
-
-subdirs: $(SUBDIRS)
-
-$(SUBDIRS):
-	$(MAKE) -C $@
+	$(RM) NX*.rst

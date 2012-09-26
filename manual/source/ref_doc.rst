@@ -15,5 +15,5 @@ NeXus: Reference Documentation
    
     napi
     nxdl
-    classdefinitions
+    classes/index
     examples/index

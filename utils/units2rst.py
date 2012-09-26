@@ -21,7 +21,7 @@ import lxml.etree
 import rst_table
 
 
-def worker(nodeMatchString):
+def worker(nodeMatchString, section = 'units'):
     if len(sys.argv) != 2:
         print "usage: %s nxdlTypes.xsd" % sys.argv[0]
         exit()
@@ -56,6 +56,8 @@ def worker(nodeMatchString):
     # this list is too long to make this a table in latex
     # for two columns,  a Sphinx fieldlist will do just as well
     for key in sorted(db):
+        print '.. index:: ! NXDL %s type; %s\n' % (section, key)       # index entry
+        print '.. _%s:\n' % key       # cross-reference point
         print ':%s:' % key
         for line in db[key].splitlines():
             print '    %s' % line

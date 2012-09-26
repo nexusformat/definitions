@@ -28,27 +28,13 @@
 # $Id$
 ########### SVN repository information ###################
 
+all :: NXarpes.rst
 
-all :: types.table units.table nxdl_desc.rst subdirs
+NXDL2RST = ../../../../utils/nxdl2rst.py
+SRCDIR = ../../../../contributed_definitions
 
-types.table: ../../utils/types2rst.py ../../utils/units2rst.py ../../nxdlTypes.xsd
-	../../utils/types2rst.py ../../nxdlTypes.xsd > $@
-
-units.table: ../../utils/units2rst.py ../../nxdlTypes.xsd
-	../../utils/units2rst.py ../../nxdlTypes.xsd > $@
-
-nxdl_desc.rst: ../../utils/nxdl_desc2rst.py ../../nxdl.xsd
-	../../utils/nxdl_desc2rst.py ../../nxdl.xsd > $@
+NXarpes.rst: $(NXDL2RST) $(SRCDIR)/NXarpes.nxdl.xml
+	$(NXDL2RST) $(SRCDIR)/NXarpes.nxdl.xml > $@
 
 clean ::
-	$(RM) types.table units.table nxdl_desc.rst
-	$(MAKE) clean -C $(SUBDIRS)
-
-SUBDIRS = classes
-
-.PHONY: subdirs $(SUBDIRS)
-
-subdirs: $(SUBDIRS)
-
-$(SUBDIRS):
-	$(MAKE) -C $@
+	$(RM) NX*.rst
