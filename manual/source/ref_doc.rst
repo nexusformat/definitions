@@ -1,13 +1,13 @@
 .. $Id$
 
-.. image:: img/NeXus.png
-    :width: 40%
-
 .. _ReferenceDocumentation:
 
 ==============================
 NeXus: Reference Documentation
 ==============================
+
+.. image:: img/NeXus.png
+    :width: 40%
 
 .. toctree::
     :maxdepth: 1
