@@ -46,20 +46,17 @@ This manual built |today|.
    	http://download.nexusformat.org/doc/html/UserManual.html
    :PDF:
    	:download:`nexus.pdf` (available via online HTML link above)
-   :epub:
-   	:download:`NeXusManual.epub` (available via online HTML link above)
-   
+
+   :Sphinx html:
+   	http://download.nexusformat.org/sphinx/
+
    A very brief overview is also available.
    
    :HTML:
    	http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html
    
-   Also, some diagnostic files are available temporarily:
-   
-   :nexus.log:
-   	:download:`nexus.log`
-   :nexus.tex:
-   	:download:`nexus.tex`
+   Also, some diagnostic files are available temporarily: 
+   :download:`nexus.log`, :download:`nexus.tex`
 
 ..  Suggestions for adding to this manual:
 

@@ -41,7 +41,7 @@ help:
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
 clean:
-	-rm -rf $(BUILDDIR)/doctrees $(BUILDDIR)/latex $(BUILDDIR)/epub
+	-rm -rf $(BUILDDIR)/doctrees $(BUILDDIR)/latex
 	$(MAKE) clean -C $(SUBDIRS)
 
 subdirs: $(SUBDIRS)
@@ -55,9 +55,9 @@ realclean:
 	-rm -rf $(BUILDDIR)/*
 	$(MAKE) clean -C $(SUBDIRS)
 
-complete: latexpdf epub html
+complete: latexpdf html
 	@echo
-	@echo "Build finished. The HTML, EPUB, and PDF documents are in $(BUILDDIR)/html."
+	@echo "Build finished. The HTML, and PDF documents are in $(BUILDDIR)/html."
 
 html: subdirs
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
