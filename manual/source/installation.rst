@@ -9,7 +9,7 @@ Installation
 ============
 
 This section describes how to install the NeXus API and details the requirements. The NeXus
-API is distributed under the terms of the GNU Lesser Public License.
+API is distributed under the terms of the :ref:`LGPL`.
 
 The source code and binary versions for some popular platforms can be found on
 http://download.nexusformat.org/kits/. Up to date instructions can be found on 
@@ -34,7 +34,12 @@ Prerequisites
 HDF5/HDF4
 ---------
 
-Since NeXus uses HDF as the main underlying binary format, it is necessary first to
+.. note:: HDF5 is the preferred format to use for NeXus.
+
+NeXus uses HDF5 as the main underlying binary format.  
+(HDF4 is supported as a legacy underlying binary format
+but is not recommended for new use.)
+It is necessary first to
 install the HDF subroutine libraries and include files before compiling the NeXus API. It
 is not usually necessary to download the HDF source code since precompiled object libraries
 exist for a variety of operating systems including Windows, Mac OS X, Linux, and various
@@ -50,9 +55,13 @@ hdf5-devel) and Ubuntu/Debian (libhdf4g, libhdf5).
 XML
 ---
 
+.. note:: XML is not the preferred format to use for NeXus.
+
 The NeXus API also supports
-using XML as the underlying on-disk format. This uses the Mini-XML library, developed by
-Michael Sweet, which is also available as a precompiled binary library for several operating
+using XML as a legacy underlying on-disk format. 
+This uses the Mini-XML library, developed by
+Michael Sweet, which is also available as a precompiled 
+binary library for several operating
 systems. Check the Mini-XML web pages
 for more information: http://www.minixml.org/
 
