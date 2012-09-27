@@ -57,7 +57,7 @@ realclean:
 
 complete: latexpdf html
 	@echo
-	@echo "Build finished. The HTML, and PDF documents are in $(BUILDDIR)/html."
+	@echo "Build finished. The HTML and PDF documents are in $(BUILDDIR)/html."
 
 html: subdirs
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html

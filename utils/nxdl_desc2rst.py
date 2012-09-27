@@ -463,7 +463,8 @@ def main(tree, ns):
 
 
 if __name__ == '__main__':
-    developermode =True
+    developermode = True
+    developermode = False
     if developermode and len(sys.argv) != 2:
         NXDL_SCHEMA_FILE = os.path.join('..', 'nxdl.xsd')
     else:
