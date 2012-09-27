@@ -121,14 +121,30 @@ linked as shown.  (As you will see later, the ``NXdata`` group
 is required and enables NeXus clients to easily determine what to
 offer for display on a default plot.)
 
+.. _preface.Class.path.specification:
+
 Class path specification
 ########################
 
 In some places in this documentation, a path may be shown
-using the class types rather than names.  For example:
-``/NXentry/NXinstrument/NXcrystal/wavelength``
-identifies a dataset called ``wavelength``
-that is inside a group of type ``NXcrystal`` ...
-This nomemclature is used when the exact name of each group is
-either unimportant or not specified.  Often, this will be used in
-a NXDL specification to indicate the connections of a link.
+using the class types rather than names.  For example::
+
+	/NXentry/NXinstrument/NXcrystal/wavelength
+
+identifies a dataset called ``wavelength`` that is inside a 
+group of type ``NXcrystal`` ... As it turns out, this is the 
+syntax used in NXDL :ref:`link` specifications. It is also 
+used when the exact name of each group is either unimportant 
+or not specified.  Often, this will be used in a NXDL 
+specification to indicate the connections of a link.
+
+If the default names are taken for each class, then the 
+above class path is this HDF5 path::
+
+	/entry/instrument/crystal/wavelength
+
+In some places in this documentation, where clarity is 
+needed to specify both the path and class name, you may 
+find this equivalent path::
+
+	/entry:NXentry/instrument:NXinstrument/crystal:NXcrystal/wavelength

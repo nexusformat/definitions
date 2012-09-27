@@ -197,3 +197,25 @@ This is a list of commonly asked questions concerning the NeXus data format.
     should be able to process the data.
     If other information is also present, there is no guarantee that
     small-angle scattering analysis software will notice.
+
+#. Where do I store the wavelength of my experiment?
+
+    The canonical location to store wavelength has been::
+
+        /NXentry/NXinstrument/NXcrystal/wavelength
+
+    More recently, this location makes more sense to many::
+	
+        /NXentry/NXinstrument/NXmonochromator/wavelength
+
+    :ref:`NXcrystal` describes a crystal monochromator or analyzer.
+	Recently, scientists with monochromatic radiation not defined by a crystal,
+	such as from an electron-beam undulator or a neutron helical velocity
+	selector, were not satisfied with creating a fictitious instance of a
+	crystal just to preserve the wavelength from their instrument.
+	Thus, the addition of :ref:`NXmonochromator`, which also allows "energy" 
+	to be specified if one is so inclined.
+	
+	.. note:: See the :ref:`preface.Class.path.specification` section 
+		for a short discussion of the difference between the HDF5 path 
+		and the NeXus symbolic class path.
