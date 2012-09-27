@@ -28,13 +28,28 @@
 # $Id$
 ########### SVN repository information ###################
 
-all :: NXarchive.rst
+ROOTDIR = ../../../..
+NXDL2RST = $(ROOTDIR)/utils/nxdl2rst.py
+NXDL_SUFFIX = nxdl.xml
 
-NXDL2RST = ../../../../utils/nxdl2rst.py
-SRCDIR = ../../../../applications
+SRCDIR = $(ROOTDIR)/applications
 
-NXarchive.rst: $(NXDL2RST) $(SRCDIR)/NXarchive.nxdl.xml
-	$(NXDL2RST) $(SRCDIR)/NXarchive.nxdl.xml > $@
+SRCs = $(wildcard $(SRCDIR)/NX*.$(NXDL_SUFFIX) )
+RSTs := $(SRCs:.$(NXDL_SUFFIX)=.rst)
+RSTs := $(patsubst $(SRCDIR)/%, ./%, $(RSTs) )
+
+vpath %.$(NXDL_SUFFIX) $(SRCDIR)
+
+.PHONY: all clean test
+
+all :: $(RSTs)
+
+%.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
+	$(NXDL2RST) $< > $@
 
 clean ::
 	$(RM) NX*.rst
+
+test ::
+	# $(SRCs)
+	# $(RSTs)

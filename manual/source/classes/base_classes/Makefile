@@ -28,27 +28,28 @@
 # $Id$
 ########### SVN repository information ###################
 
-all :: NXcrystal.rst NXentry.rst NXdata.rst
+ROOTDIR = ../../../..
+NXDL2RST = $(ROOTDIR)/utils/nxdl2rst.py
+NXDL_SUFFIX = nxdl.xml
 
-NXDL2RST = ../../../../utils/nxdl2rst.py
-SRCDIR = ../../../../base_classes
+SRCDIR = $(ROOTDIR)/base_classes
 
-NXcrystal.rst: $(SRCDIR)/NXcrystal.nxdl.xml $(NXDL2RST) Makefile
-	$(NXDL2RST) $(SRCDIR)/NXcrystal.nxdl.xml > $@
-	#echo "----------------------"
-	#echo $(NXDL2RST)
-	#echo $@
-	#echo $<
-	#echo "----------------------"
+SRCs = $(wildcard $(SRCDIR)/NX*.$(NXDL_SUFFIX) )
+RSTs := $(SRCs:.$(NXDL_SUFFIX)=.rst)
+RSTs := $(patsubst $(SRCDIR)/%, ./%, $(RSTs) )
 
-NXentry.rst: $(NXDL2RST) $(SRCDIR)/NXentry.nxdl.xml
-	$(NXDL2RST) $(SRCDIR)/NXentry.nxdl.xml > $@
+vpath %.$(NXDL_SUFFIX) $(SRCDIR)
 
-NXdata.rst: $(NXDL2RST) $(SRCDIR)/NXdata.nxdl.xml
-	$(NXDL2RST) $(SRCDIR)/NXdata.nxdl.xml > $@
+.PHONY: all clean test
 
-%.rst: $(SRCDIR)%.nxdl.xml Makefile $(NXDL2RST)
-	echo $(NXDL2RST) $@ $<
+all :: $(RSTs)
+
+%.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
+	$(NXDL2RST) $< > $@
 
 clean ::
 	$(RM) NX*.rst
+
+test ::
+	# $(SRCs)
+	# $(RSTs)

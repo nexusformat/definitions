@@ -92,10 +92,10 @@ def _indent(indentLevel):
 
 def getDocFromNode(ns, node, retval=None):
     docnodes = node.xpath('nx:doc', namespaces=ns)
-    if docnodes == None:
+    if docnodes is None or len(docnodes)==0:
         return retval
-    if not len(docnodes) == 1:
-        return retval
+    if len(docnodes) > 1:
+        raise Exception, "Too many doc elements: line %d, %s" % (node.sourceline, node.base)
     
     # be sure to grab _all_ content in the documentation
     # it might look like XML
@@ -120,7 +120,7 @@ def getDocFromNode(ns, node, retval=None):
             text = lines[0][indent:]
         for line in lines[1:]:
             if not len(line[:indent].strip()) == 0:
-                raise "Something wrong with indentation on this line:\n" + line
+                raise Exception, "Something wrong with indentation on this line:\n" + line
             text += '\n' + line[indent:]
     return text.lstrip()
 
@@ -142,14 +142,28 @@ def main(tree, ns):
     print '.. _%s:\n' % name
     print '='*len(title)
     print title
-    print '='*len(title) 
+    print '='*len(title)
+
+    # documentation
+    print
+    doc = getDocFromNode(ns, root)
+    if doc is None:
+        raise Exception, "No documentation for: " + name
+    for line in doc.splitlines():
+        print '%s' % line
        
+    # various metrics and metadata about this specification
     t = rst_table.Table()
     t.labels = ['version', 'category', 'extends', ]
+    extends = root.get('extends')
+    if extends is not None:
+        extends = ':ref:`%s`' % extends
+    else:
+        extends = ''
     parts = [
              root.get('version').strip(),
              root.get('category').strip(),
-             ':ref:`%s`' % root.get('extends').strip(),
+             extends,
              ]
     node_list = root.xpath('//nx:group', namespaces=ns)
     t.labels.append('groups cited')
@@ -167,12 +181,6 @@ def main(tree, ns):
     print
     print t.reST(format='complex')
 
-    # documentation
-    print
-    doc = getDocFromNode(ns, root)
-    for line in doc.splitlines():
-        print '%s' % line
-
     # TODO: change instances of \t to proper indentation
     fmt = '\n%s:\n\t%s'
     html_root = 'http://svn.nexusformat.org/definitions/trunk'
@@ -186,28 +194,16 @@ def main(tree, ns):
     else:
         print '\nsymbol list:'
         doc = getDocFromNode(ns, node_list[0])
-        for line in doc.splitlines():
-            print '\t%s' % line
-        print
+        if doc is not None:
+            for line in doc.splitlines():
+                print '\t%s' % line
+            print
         for node in node_list[0].xpath('nx:symbol', namespaces=ns):
             doc = getDocFromNode(ns, node)
             print '\t:%s:' % node.get('name')
             for line in doc.splitlines():
                 print '\t\t%s' % line
             print
-    
-#    # other NeXus groups used by this specification
-#    node_list = root.xpath('//nx:group', namespaces=ns)
-#    groups = []
-#    for node in node_list:
-#        t = node.get('type')
-#        t_ref = ':ref:`%s`' % t
-#        if t.startswith('NX') and t_ref not in groups:
-#            groups.append(t_ref)
-#    if len(groups) > 0:
-#        print fmt % ('other classes included', ', '.join(sorted(groups)))
-#    else:
-#        print fmt % ('other classes included', 'none')
 
     # structure of NXDL specification
     print '\n%s:' % ':ref:`NXDL <NXDL>` source'
@@ -244,7 +240,10 @@ def main(tree, ns):
         for subnode in node.xpath('nx:attribute', namespaces=ns):
             t.rows.append( getAttributeData(ns, subnode) )
     print
-    print t.reST(format='complex')
+    if len(t.rows) > 0:
+        print t.reST(format='complex')
+    else:
+        print 'No members to be documented'
 
 
 def getGroupData(ns, node):
@@ -290,7 +289,10 @@ if __name__ == '__main__':
     if developermode and len(sys.argv) != 2:
         NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'applications', 'NXarchive.nxdl.xml')
         #NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'base_classes', 'NXcrystal.nxdl.xml')
-        NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXarpes.nxdl.xml')
+        NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'base_classes', 'NXobject.nxdl.xml')
+        #NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXarpes.nxdl.xml')
+        #NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXmagnetic_kicker.nxdl.xml')
+        
     else:
         if len(sys.argv) != 2:
             print "usage: %s someclass.nxdl.xml" % sys.argv[0]
