@@ -132,14 +132,15 @@ using the class types rather than names.  For example::
 	/NXentry/NXinstrument/NXcrystal/wavelength
 
 identifies a dataset called ``wavelength`` that is inside a 
-group of type ``NXcrystal`` ... As it turns out, this is the 
-syntax used in NXDL :ref:`link` specifications. It is also 
-used when the exact name of each group is either unimportant 
-or not specified.  Often, this will be used in a NXDL 
-specification to indicate the connections of a link.
+group of type ``NXcrystal`` ... 
 
-If the default names are taken for each class, then the 
-above class path is this HDF5 path::
+As it turns out, this syntax is the 
+syntax used in NXDL :ref:`link` specifications. This syntax is also 
+used when the exact name of each group is either unimportant 
+or not specified.
+
+If default names are taken for each class, then the 
+above class path is expressed as this equivalent HDF5 path::
 
 	/entry/instrument/crystal/wavelength
 

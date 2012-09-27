@@ -501,10 +501,10 @@ Note that it is the same as that used by *McStas* (http://mcstas.risoe.dk).
 	      
 	      NeXus coordinate system, as viewed from detector
 
-.. note:: The NeXus definition of :math:`+z` is opposite to that
+.. note:: The NeXus definition of *+z* is opposite to that
           in the :index:`IUCr <coordinate systems; IUCr>` 
           International Tables for Crystallography, volume G,
-          and consequently, :math:`+x` is also reversed.
+          and consequently, *+x* is also reversed.
 
 
 
@@ -610,7 +610,7 @@ In order to understand this spherical polar coordinate system it is helpful
 to look initially at the common condition that *azimuthal_angle*
 is zero. This corresponds to working directly in the horizontal scattering
 plane of the instrument. In this case *polar_angle* maps
-directly to the setting commonly known as *two theta* (:math:`2\theta`).
+directly to the setting commonly known as *two theta*.
 Now, there are instruments where components live outside of the scattering plane.
 Most notably detectors. In order to describe such components we first apply
 the tilt out of the horizontal scattering plane as the

@@ -209,13 +209,13 @@ This is a list of commonly asked questions concerning the NeXus data format.
         /NXentry/NXinstrument/NXmonochromator/wavelength
 
     :ref:`NXcrystal` describes a crystal monochromator or analyzer.
-	Recently, scientists with monochromatic radiation not defined by a crystal,
-	such as from an electron-beam undulator or a neutron helical velocity
-	selector, were not satisfied with creating a fictitious instance of a
-	crystal just to preserve the wavelength from their instrument.
-	Thus, the addition of :ref:`NXmonochromator`, which also allows "energy" 
-	to be specified if one is so inclined.
+    Recently, scientists with monochromatic radiation not defined by a crystal,
+    such as from an electron-beam undulator or a neutron helical velocity
+    selector, were not satisfied with creating a fictitious instance of a
+    crystal just to preserve the wavelength from their instrument.
+    Thus, the addition of the :ref:`NXmonochromator` base class to NeXus, 
+    which also allows "energy" to be specified if one is so inclined.
 	
-	.. note:: See the :ref:`preface.Class.path.specification` section 
+    .. note:: See the :ref:`preface.Class.path.specification` section 
 		for a short discussion of the difference between the HDF5 path 
 		and the NeXus symbolic class path.
