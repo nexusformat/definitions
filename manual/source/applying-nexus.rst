@@ -42,6 +42,8 @@ use any of the existing NXDL application definitions.
 
     .. figure:: img/woni-schematic.png
         :alt: FigWoniSchematic
+		:width: 90%
+		:align: center
 
         The (fictional) WONI example powder diffractometer
 
@@ -58,6 +60,8 @@ There is a generous background to the data plus quite a number of diffraction pe
 
     .. figure:: img/woni-powderimage.png
         :alt: FigWoniPowderData
+		:width: 90%
+		:align: center
 
         Example Powder Diffraction Plot from (fictional) WONI at HYNES
 

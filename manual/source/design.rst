@@ -712,12 +712,12 @@ For the NeXus spherical coordinate system, the order is implicit and is given in
 This is also a nice example of the application of transformation matrices:
 
 #. You first apply ``azimuthal_angle`` as a rotation
-   around :math:`z`.  This rotates the whole coordinate out of the plane.
+   around *z*.  This rotates the whole coordinate out of the plane.
 
 #. Then you apply ``polar_angle`` as a rotation around
-   :math:`y` in the tilted coordinate system.
+   *y* in the tilted coordinate system.
 
-#. This also moves the direction of the :math:`z` vector.
+#. This also moves the direction of the *z* vector.
    Along which you translate the component to place by distance.
 
 ..  

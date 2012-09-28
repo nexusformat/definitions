@@ -291,3 +291,12 @@ low level programmatic access to the data structures.
     MATLAB is a high-level technical computing language and interactive 
     environment for algorithm development, data visualization, 
     data analysis, and numeric computation.
+
+Language APIs
+-------------
+
+:h5py:
+	(http://code.google.com/p/h5py/)
+	HDF5 for Python (h5py) is a general-purpose Python interface to HDF5.
+
+.. TODO: list more APIs
