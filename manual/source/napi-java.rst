@@ -1,14 +1,14 @@
 .. $Id$
 
+.. index:: NAPI; java
+
 .. _NAPI-java:
 
-==============
-Java Interface
-==============
+===================
+NAPI Java Interface
+===================
 
 ..  http://www.nexusformat.org/Java_API
-
-.. index:: !NAPI; java
 
 This section includes installation notes,
 instructions for running NeXus for Java programs and a brief
