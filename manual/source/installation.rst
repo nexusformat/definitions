@@ -148,7 +148,12 @@ bindings, you need to have the respective build support in a place where autocon
 For more information see the
 README in the toplevel of the source distribution.
 In case you need help, feel free to contact the 
-NeXus developers mailing list: http://lists.nexusformat.org/mailman/listinfo/nexus-developers
+:ref:`NeXus.mailinglist.main`: 
+
+:Archives:
+   http://lists.nexusformat.org/mailman/listinfo/nexus
+:email:
+   nexus@nexusformat.org
 
 Download the appropriate gzipped tar file, unpack it, and run the standard configure
 procedure from the resulting nexus directory. For example, for version 4.2.1;

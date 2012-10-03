@@ -62,15 +62,12 @@ This mailing list is for discussions concerning the technical
 development of NeXus (the Definitions, NXDL, and
 the NeXus Application Program Interface).
 
-+ List Address: nexus-developers@nexusformat.org
-+ Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-developers
+.. closed for new contributions per NIAC 2012
+	+ List Address: nexus-developers@nexusformat.org
+	+ Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-developers
+
 + Archive: http://lists.nexusformat.org/pipermail/nexus-developers
 
-Subversion (http://subversion.apache.org)
-    the revision control system used by the NeXus developers.
-
-TRAC (http://trac.edgewall.org)
-    the issue tracking and bug reporting system used by the NeXus developers.
 
 
 .. _NeXus.mailinglist.code:
