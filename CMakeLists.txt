@@ -127,7 +127,7 @@ add_subdirectory (base_classes)
 add_subdirectory (contributed_definitions)
 add_subdirectory (applications)
 add_subdirectory (schema)
-add_subdirectory (manual)
+#add_subdirectory (manual)
 # 2012-02-18,PRJ: sphinx directory is not ready for cmake yet
 #if(BUILD_SPHINX)
 #    add_subdirectory (sphinx)
