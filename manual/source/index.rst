@@ -7,10 +7,6 @@
 User Manual and Reference Documentation
 =========================================================
 
-..
-	User Manual and Reference Documentation
-	---------------------------------------
-
 http://www.nexusformat.org/
 
 .. toctree::
@@ -31,6 +27,7 @@ http://www.nexusformat.org/
     history
     revhistory
     copyright
+    about
 
 -----------
 
@@ -43,20 +40,14 @@ This manual built |today|.
    This document is available in different formats:
    
    :online HTML:
-   	http://download.nexusformat.org/doc/html/UserManual.html
+   	http://download.nexusformat.org/doc/html/index.html
    :PDF:
    	:download:`nexus.pdf` (available via online HTML link above)
 
-   :Sphinx html:
-   	http://download.nexusformat.org/sphinx/
-
-   A very brief overview is also available.
+   A very brief overview is also available (separate from the manual).
    
    :HTML:
    	http://svn.nexusformat.org/definitions/trunk/misc/impatient/_build/html/index.html
-   
-   Also, some diagnostic files are available temporarily: 
-   :download:`nexus.log`, :download:`nexus.tex`
 
 ..  Suggestions for adding to this manual:
 
