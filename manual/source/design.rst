@@ -512,7 +512,7 @@ Note that it is the same as that used by *McStas* (http://mcstas.risoe.dk).
 in NeXus have undergone significant development. Initially, only motor
 positions of the relevant motors were stored without further standardization.
 This soon proved to be
-to little and the *NeXus polar coordinate* system
+too little and the *NeXus polar coordinate* system
 :index:`was <coordinate systems; NeXus polar coordinate>`
 developed. This system still
 is very close to angles that are meaningful to an instrument scientist
@@ -665,28 +665,30 @@ In order to use coordinate transformations, several morsels of information need 
 	**Order**
 	    The order of operations to apply to move a component into its place.
 
-NeXus choose to encode this information in the following way:
+NeXus chooses to encode this information in the following way:
 
 	**Type**
 	    Through a data set attribute **transformation_type**. This can either be translation 
-            or rotation.
+	    or rotation.
 	
 	**Direction**
-	    Through a data set attribute **vector**. This is three value describing either the components
-            of the rotation axis or the direction along which the translation happens. 
+	    Through a data set attribute **vector**. This is a set of three values 
+	    describing either the components of the rotation axis
+	    or the direction along which the translation happens. 
 	
 	**Value**
 	    This is represented in the actual data of the data set. In addition, there is the 
-            **offset** attribute which has three components describing a translation to apply before 
-            applying the operation of the real axis. Without the offset attribute additional virtual 
-            translations would need to be introduced in order to encode mechanical offsets in the axis. 
+	    **offset** attribute which has three components describing a translation to apply before 
+	    applying the operation of the real axis. Without the offset attribute additional virtual 
+	    translations would need to be introduced in order to encode mechanical offsets in the axis. 
 	
 	**Order**
-	    The order is encoded through the **depends_on** attribute on a data set.The value of the 
-            depends_on attribute is the axis the current axis sits upon. If the axis sits in the same 
-            group it is just a name, if it is in another group it is a path to the depndent axis. 
-            In addition there per NeXus component a dpends_on filed which points to the data set at the 
-            head of the axis dependency chain.  
+	    The order is encoded through the **depends_on** attribute on a data set. The value of the 
+	    **depends_on** attribute is the axis upon which the current axis sits. 
+	    If the axis sits in the same group it is just a name, 
+	    if it is in another group it is a path to the dependent axis. 
+	    In addition there per NeXus component a **depends_on** field which points to the data set at the 
+	    head of the axis dependency chain.  
 
 This sounds complicated. An example may help to clarify this. The example is the encoding for a eulerian 
 cradle as typically found on four circle diffractometers.
