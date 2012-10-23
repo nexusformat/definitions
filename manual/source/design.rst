@@ -512,7 +512,7 @@ Note that it is the same as that used by *McStas* (http://mcstas.risoe.dk).
 in NeXus have undergone significant development. Initially, only motor
 positions of the relevant motors were stored without further standardization.
 This soon proved to be
-t0o little and the *NeXus polar coordinate* system
+to little and the *NeXus polar coordinate* system
 :index:`was <coordinate systems; NeXus polar coordinate>`
 developed. This system still
 is very close to angles that are meaningful to an instrument scientist
@@ -665,10 +665,55 @@ In order to use coordinate transformations, several morsels of information need 
 	**Order**
 	    The order of operations to apply to move a component into its place.
 
-..  TODO: restore this table after its use has been decided, see definitions ticket #112
+NeXus choose to encode this information in the following way:
+
+	**Type**
+	    Through a data set attribute **transformation_type**. This can either be translation 
+            or rotation.
+	
+	**Direction**
+	    Through a data set attribute **vector**. This is three value describing either the components
+            of the rotation axis or the direction along which the translation happens. 
+	
+	**Value**
+	    This is represented in the actual data of the data set. In addition, there is the 
+            **offset** attribute which has three components describing a translation to apply before 
+            applying the operation of the real axis. Without the offset attribute additional virtual 
+            translations would need to be introduced in order to encode mechanical offsets in the axis. 
+	
+	**Order**
+	    The order is encoded through the **depends_on** attribute on a data set.The value of the 
+            depends_on attribute is the axis the current axis sits upon. If the axis sits in the same 
+            group it is just a name, if it is in another group it is a path to the depndent axis. 
+            In addition there per NeXus component a dpends_on filed which points to the data set at the 
+            head of the axis dependency chain.  
+
+This sounds complicated. An example may help to clarify this. The example is the encoding for a eulerian 
+cradle as typically found on four circle diffractometers.
+
+	.. compound::
+	
+	    .. rubric:: NeXus Transformation encoding
+	
+	    .. _table.EulerCIF:
+	
+	    .. literalinclude:: examples/euler-cif.txt
+	        :tab-width: 4
+	        :linenos:
+	        :language: guess
+
+    The type and direction of the NeXus standard operations is documented in :ref:`tb.table-transform`.
+    The rule is to always give the attributes to make perfectly clear how the axis work. The CIF scheme 
+    also allows to store and use arbitrarily named axis in a NeXus file. 
+
+     .. compound::
+
+	.. _tb.table-transform:
 
 	.. rubric:: Actions of standard NeXus fields
-	
+
+        :ref:`Transformation Actions<tb.table-transform>`
+
 	=================  =====================  ==========
 	Field Name         transformation_type    vector
 	=================  =====================  ==========
@@ -682,22 +727,8 @@ In order to use coordinate transformations, several morsels of information need 
 	phi                rotation               0 1 0
 	=================  =====================  ==========
 	
-    The type and direction of the NeXus standard operations is documented in :ref:`tb.table-transform`.
-    NeXus can now also allow non standard operations to be stored in data files. In such cases additional data
-    attributes are required which describe the operation. These are *transformation_type* which
-    can be either translation or rotation. The other is *vector* which is 3 float values describing
-    the direction of translation or rotation. The value is, of course, always the value of the data field in the data file.
-	
 
-How NeXus describes the order of operations to apply has not yet been 
-:index:`decided <coordinate systems, transformations; order of operations>`.
-The authors favourite scheme
-is to use a special field at each instrument component, named *transform* which describes the
-operations to apply to get the component into its position as a list of colon separated paths to the operations
-to apply relative to the current NXentry. For paths in the same group, only the name need to be given. Detectors
-may need two such fields: the transform field to get the detector as a whole into its position
-and a *transform_pixel* field which describes how the absolute position of a detector pixel
-can be calculated.
+	
 
 For the NeXus spherical coordinate system, the order is implicit and is given in the next example.
 
