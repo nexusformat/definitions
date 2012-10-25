@@ -637,6 +637,8 @@ from the motor responsible for rotating the component. This situation is shown i
 Coordinate Transformations
 ==========================
 
+.. index:: transformation matrices
+
 Another way to look at coordinates is through
 the use of :index:`transformation matrices <coordinate systems; transformations>`.
 In this world view, the absolute position of a component or a detector pixel with respect to
@@ -653,83 +655,84 @@ operation: this can be studied under the condition that all other operations are
 
 In order to use coordinate transformations, several morsels of information need to be known:
 
-	**Type**
-	    The type of operation: rotation or translation
-	
-	**Direction**
-	    The direction of the translation or the direction of the rotation axis
-	
-	**Value**
-	    The angle of rotation or the length of the translation
-	
-	**Order**
-	    The order of operations to apply to move a component into its place.
+    **Type**
+        The type of operation: rotation or translation
+
+    **Direction**
+        The direction of the translation or the direction of the rotation axis
+
+    **Value**
+        The angle of rotation or the length of the translation
+
+    **Order**
+        The order of operations to apply to move a component into its place.
 
 NeXus chooses to encode this information in the following way:
 
-	**Type**
-	    Through a data set attribute **transformation_type**. This can either be translation 
-	    or rotation.
-	
-	**Direction**
-	    Through a data set attribute **vector**. This is a set of three values 
-	    describing either the components of the rotation axis
-	    or the direction along which the translation happens. 
-	
-	**Value**
-	    This is represented in the actual data of the data set. In addition, there is the 
-	    **offset** attribute which has three components describing a translation to apply before 
-	    applying the operation of the real axis. Without the offset attribute additional virtual 
-	    translations would need to be introduced in order to encode mechanical offsets in the axis. 
-	
-	**Order**
-	    The order is encoded through the **depends_on** attribute on a data set. The value of the 
-	    **depends_on** attribute is the axis upon which the current axis sits. 
-	    If the axis sits in the same group it is just a name, 
-	    if it is in another group it is a path to the dependent axis. 
-	    In addition there per NeXus component a **depends_on** field which points to the data set at the 
-	    head of the axis dependency chain.  
+    **Type**
+    	Through a data set attribute **transformation_type**. 
+	This can take the value of either *translation*
+    	or *rotation*.
 
-This sounds complicated. An example may help to clarify this. The example is the encoding for a eulerian 
-cradle as typically found on four circle diffractometers.
+    **Direction**
+    	Through a data set attribute **vector**. This is a set of three values
+    	describing either the components of the rotation axis
+    	or the direction along which the translation happens.
 
-	.. compound::
-	
-	    .. rubric:: NeXus Transformation encoding
-	
-	    .. _table.EulerCIF:
-	
-	    .. literalinclude:: examples/euler-cif.txt
-	        :tab-width: 4
-	        :linenos:
-	        :language: guess
+    **Value**
+    	This is represented in the actual data of the data set. In addition, there is the
+    	**offset** attribute which has three components describing a translation to apply before
+    	applying the operation of the real axis. Without the offset attribute additional virtual
+    	translations would need to be introduced in order to encode mechanical offsets in the axis.
 
-    The type and direction of the NeXus standard operations is documented in :ref:`tb.table-transform`.
-    The rule is to always give the attributes to make perfectly clear how the axis work. The CIF scheme 
-    also allows to store and use arbitrarily named axis in a NeXus file. 
+    **Order**
+    	The order is encoded through the **depends_on** attribute on a data set. The value of the
+    	**depends_on** attribute is the axis upon which the current axis sits.
+    	If the axis sits in the same group it is just a name,
+    	if it is in another group it is a path to the dependent axis.
+    	In addition there per NeXus component a **depends_on** field which points to the data set at the
+    	head of the axis dependency chain.
 
-     .. compound::
+This sounds complicated. An example may help to clarify this. 
+The example is the encoding for a :index:`eulerian
+cradle` as typically found on a :index:`four-circle diffractometer`.
 
-	.. _tb.table-transform:
+    .. compound::
 
-	.. rubric:: Actions of standard NeXus fields
+ 	.. rubric:: NeXus Transformation encoding
 
-        :ref:`Transformation Actions<tb.table-transform>`
+ 	.. _table.EulerCIF:
 
-	=================  =====================  ==========
-	Field Name         transformation_type    vector
-	=================  =====================  ==========
-	polar_angle        rotation               0 1 0
-	azimuthal_angle    rotation               0 0 1
-	meridional_angle   rotation               1 0 0
-	distance           translation            0 0 1
-	height             translation            0 1 0
-	x_translation      translation            1 0 0
-	chi                rotation               0 0 1
-	phi                rotation               0 1 0
-	=================  =====================  ==========
-	
+ 	.. literalinclude:: examples/euler-cif.txt
+ 	    :tab-width: 4
+ 	    :linenos:
+ 	    :language: guess
 
+    The type and direction of the NeXus standard operations is documented below
+    in the table: :ref:`Actions of standard NeXus fields<tb.table-transform>`.
+    The rule is to always give the attributes to make perfectly clear how the axes work. The CIF scheme
+    also allows to store and use arbitrarily named axes in a NeXus file.
+
+    .. compound::
+
+       .. _tb.table-transform:
+
+       .. rubric:: Actions of standard NeXus fields
+
+       :ref:`Transformation Actions<tb.table-transform>`
+
+       =================  =====================  ==========
+       Field Name	  transformation_type	 vector
+       =================  =====================  ==========
+       polar_angle	  rotation		 0 1 0
+       azimuthal_angle    rotation		 0 0 1
+       meridional_angle   rotation		 1 0 0
+       distance 	  translation		 0 0 1
+       height		  translation		 0 1 0
+       x_translation	  translation		 1 0 0
+       chi		  rotation		 0 0 1
+       phi		  rotation		 0 1 0
+       =================  =====================  ==========
 	
 
 For the NeXus spherical coordinate system, the order is implicit and is given in the next example.
@@ -778,7 +781,7 @@ This is also a nice example of the application of transformation matrices:
     may not be the centre of the rectangle.
     
     For example take
-    ``shape="cylinder"``: the ``NXtranslation`` variable of position
+    ``shape="cylinder"``: the :ref:`NXtranslation` ``position`` field
     would define the location of the reference point for the origin of the local
     axes: *z* in the direction of the cylinder axis,
     *x* and *y* in plane. With no rotation,

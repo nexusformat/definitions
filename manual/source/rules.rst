@@ -237,7 +237,7 @@ Complex *hkl* scan
 ------------------
 
 The next example involves a complex movement along an axis in reciprocal
-space which requires mutiple motors of a four circle diffractometer to be
+space which requires mutiple motors of a :index:`four-circle diffractometer` to be
 varied during the scan. We then have:
 
 - A dataset at ``NXentry/NXinstrument/NXdetector/data`` of length

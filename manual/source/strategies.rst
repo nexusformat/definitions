@@ -58,7 +58,9 @@ positioner arrays        detector arrays
     instrument with multiple, simultaneous application definitions
     instrument with rapidly changing needs
 
-	.. _Strategies-wavelength:
+
+
+.. _Strategies-wavelength:
 	
 Strategies: The wavelength
 ##########################
