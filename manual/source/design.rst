@@ -692,48 +692,65 @@ NeXus chooses to encode this information in the following way:
     	if it is in another group it is a path to the dependent axis.
     	In addition, for each beamline component, there is a **depends_on** field which points to the data set at the
     	head of the axis dependency chain. Take as an example an :index:`eulerian cradle` as used on a 
-		:index:`four-circle diffractometer`. Such a cradle has a dependency chain of ``phi:chi:rotation_angle``. Then 
-        the ``depends_on`` field in :ref:`NXsample` would have the value ``phi``. 
+    	:index:`four-circle diffractometer`. Such a cradle has a dependency chain of ``phi:chi:rotation_angle``. Then 
+    	the ``depends_on`` field in :ref:`NXsample` would have the value ``phi``. 
 
-        .. compound::
+    	.. compound::
 
-            .. rubric:: NeXus Transformation encoding
+    	    .. rubric:: NeXus Transformation encoding
 
-            .. _table.EulerCIF:
+    	    .. _table.EulerCIF:
 			
-			Transformation encoding for an eulerian cradle on a four-circle diffractometer
+    	    Transformation encoding for an eulerian cradle on a four-circle diffractometer
 
-            .. literalinclude:: examples/euler-cif.txt
-            	:tab-width: 4
-            	:linenos:
-            	:language: guess
+    	    .. literalinclude:: examples/euler-cif.txt
+    	        :tab-width: 4
+    	        :linenos:
+    	        :language: guess
 
 The type and direction of the NeXus standard operations is documented below
 in the table: :ref:`Actions of standard NeXus fields<tb.table-transform>`.
-The rule is to always give the attributes to make perfectly clear how the axes work. The CIF scheme
+The rule is to always give the attributes to make perfectly clear how the axes work. The :index:`CIF` scheme
 also allows to store and use arbitrarily named axes in a NeXus file.
 
-    .. compound::
+..  2012-10-25,PRJ:
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    !!  The next compound block MUST be indented exactly  !!
+    !!  as the paragraph before it, otherwise latexpdf    !!
+    !!  will fail.  Here's the error that is given:	  !!
+    !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-       .. _tb.table-transform:
+    ! LaTeX Error: Something's wrong--perhaps a missing \item.
 
-       .. rubric:: Actions of standard NeXus fields
+    See the LaTeX manual or LaTeX Companion for explanation.
+    Type  H <return>  for immediate help.
+     ...
 
-       :ref:`Transformation Actions<tb.table-transform>`
+    l.1954 \end{quote}
 
-       =================  =====================  ==========
-       Field Name	  transformation_type	 vector
-       =================  =====================  ==========
-       polar_angle	  rotation		 0 1 0
-       azimuthal_angle    rotation		 0 0 1
-       meridional_angle   rotation		 1 0 0
-       distance 	  translation		 0 0 1
-       height		  translation		 0 1 0
-       x_translation	  translation		 1 0 0
-       chi		  rotation		 0 0 1
-       phi		  rotation		 0 1 0
-       =================  =====================  ==========
-	
+
+
+.. compound::
+
+    .. _tb.table-transform:
+
+    .. rubric:: Actions of standard NeXus fields
+
+    :ref:`Transformation Actions<tb.table-transform>`
+
+    =================  =====================  ==========
+    Field Name         transformation_type    vector
+    =================  =====================  ==========
+    polar_angle        rotation 	      0 1 0
+    azimuthal_angle    rotation 	      0 0 1
+    meridional_angle   rotation 	      1 0 0
+    distance	       translation	      0 0 1
+    height	       translation	      0 1 0
+    x_translation      translation	      1 0 0
+    chi 	       rotation 	      0 0 1
+    phi 	       rotation 	      0 1 0
+    =================  =====================  ==========
+
 
 For the NeXus spherical coordinate system, the order is implicit and is given in the next example.
 
