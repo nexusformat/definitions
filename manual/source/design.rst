@@ -690,8 +690,10 @@ NeXus chooses to encode this information in the following way:
     	**depends_on** attribute is the axis upon which the current axis sits.
     	If the axis sits in the same group it is just a name,
     	if it is in another group it is a path to the dependent axis.
-    	In addition there per NeXus component a **depends_on** field which points to the data set at the
-    	head of the axis dependency chain.
+    	In addition there per beamline component a **depends_on** field which points to the data set at the
+    	head of the axis dependency chain. Take as an example a eulerian cradle as used on a four 
+        circle diffractometer. Such a cradle has a dependency chain of phi:chi:rotation_angle. Then 
+        the depends_on fieldin NXsample  would have the value phi.   
 
 This sounds complicated. An example may help to clarify this. 
 The example is the encoding for a :index:`eulerian
