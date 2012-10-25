@@ -690,30 +690,28 @@ NeXus chooses to encode this information in the following way:
     	**depends_on** attribute is the axis upon which the current axis sits.
     	If the axis sits in the same group it is just a name,
     	if it is in another group it is a path to the dependent axis.
-    	In addition there per beamline component a **depends_on** field which points to the data set at the
-    	head of the axis dependency chain. Take as an example a eulerian cradle as used on a four 
-        circle diffractometer. Such a cradle has a dependency chain of phi:chi:rotation_angle. Then 
-        the depends_on fieldin NXsample  would have the value phi.   
+    	In addition, for each beamline component, there is a **depends_on** field which points to the data set at the
+    	head of the axis dependency chain. Take as an example an :index:`eulerian cradle` as used on a 
+		:index:`four-circle diffractometer`. Such a cradle has a dependency chain of ``phi:chi:rotation_angle``. Then 
+        the ``depends_on`` field in :ref:`NXsample` would have the value ``phi``. 
 
-This sounds complicated. An example may help to clarify this. 
-The example is the encoding for a :index:`eulerian
-cradle` as typically found on a :index:`four-circle diffractometer`.
+        .. compound::
 
-    .. compound::
+            .. rubric:: NeXus Transformation encoding
 
- 	.. rubric:: NeXus Transformation encoding
+            .. _table.EulerCIF:
+			
+			Transformation encoding for an eulerian cradle on a four-circle diffractometer
 
- 	.. _table.EulerCIF:
+            .. literalinclude:: examples/euler-cif.txt
+            	:tab-width: 4
+            	:linenos:
+            	:language: guess
 
- 	.. literalinclude:: examples/euler-cif.txt
- 	    :tab-width: 4
- 	    :linenos:
- 	    :language: guess
-
-    The type and direction of the NeXus standard operations is documented below
-    in the table: :ref:`Actions of standard NeXus fields<tb.table-transform>`.
-    The rule is to always give the attributes to make perfectly clear how the axes work. The CIF scheme
-    also allows to store and use arbitrarily named axes in a NeXus file.
+The type and direction of the NeXus standard operations is documented below
+in the table: :ref:`Actions of standard NeXus fields<tb.table-transform>`.
+The rule is to always give the attributes to make perfectly clear how the axes work. The CIF scheme
+also allows to store and use arbitrarily named axes in a NeXus file.
 
     .. compound::
 

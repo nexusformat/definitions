@@ -9,16 +9,12 @@ Preface
 ..
 	.. image:: img/NeXus.png
 
-With this edition of the manual, NeXus introduces a complete version
+With revision 3.1 of the manual, NeXus introduced a complete version
 of the documentation of the NeXus standard.  The content from the wiki
-has been converted, augmented (in some parts significantly), clarified,
-and indexed.  The
-NeXus Definition Language (NXDL) is introduced now
-to define base classes and
-application definitions.
-NXDL replaces the previous method (meta-DTD) to define NeXus classes.
-NeXus base classes and instrument definitions
-are now assigned to one of three classifications:
+was converted, augmented (in some parts significantly), clarified,
+and indexed.  The NeXus Definition Language (NXDL) was introduced 
+to define base classes and application definitions.
+NXDL established a method to define NeXus classes according to one of three classifications:
 
 #. *base classes* (that represent the components used
    to build a NeXus data file)
@@ -31,11 +27,11 @@ are now assigned to one of three classifications:
    that are in an incubation status before ratification by the NIAC).
 
 Additional examples have been added to respond to
-inquiry from the users of the NeXus standard about implementation
+inquiries from the users of the NeXus standard about implementation
 and usage.  
 
-Hopefully, the improved documentation with
-more examples and the new NXDL will reduce
+Hopefully, this improved documentation, with
+more examples and the new NXDL, will reduce
 the learning barriers incurred by those new to NeXus.
 
 Representation of data examples
