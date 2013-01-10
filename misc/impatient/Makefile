@@ -158,8 +158,8 @@ PDF_version: latexpdf
 EPUB_version: epub
 	cp $(BUILDDIR)/epub/NeXusfortheImpatient.epub ./NXImpatient.epub
 
-HTML_version:: PDF_version EPUB_version html
+HTML_version:: PDF_version  html
 
-all: PDF_version EPUB_version HTML_version
+all: PDF_version  HTML_version
 
 rebuild: clean all

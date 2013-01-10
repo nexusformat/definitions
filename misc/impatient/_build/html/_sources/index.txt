@@ -395,7 +395,7 @@ sample is rotated and data is collected in an area detector:
    		   @signal = 1
        sample:NXsample
    	   rotation_angle[NP]
-   	       @axis=1
+   	       @axis = 1
        control:NXmonitor
    	   data[NP]
        data:NXdata
@@ -410,7 +410,7 @@ Any program whose aim is to identify plottable data should use the following pro
 #. Open the first top level NeXus group with class NXentry.
 #. Open the first NeXus group with class NXdata.
 #. Loop through NeXus fields in this group searching for the item with 
-   attribute ``signal="1"`` indicating this field has the plottable data.
+   attribute ``signal=1`` indicating this field has the plottable data.
 #. Check to see if this field has an attribute called axes. If so, the 
    attribute value contains a colon (or comma) delimited list (in the 
    C-language order of the data array) with the names of the dimension 
@@ -420,7 +420,7 @@ Any program whose aim is to identify plottable data should use the following pro
    one-dimensional NeXus fields with attribute ``primary="1"``.
 #. These are the dimension scales to label the axes of each dimension of the data.
 #. Link each dimension scale to the respective data dimension by the axis 
-   attribute (``axis="1"``, ``axis="2"``, ... up to the rank of the data).
+   attribute (``axis=1``, ``axis=2``, ... up to the rank of the data).
 #. If necessary, close the NXdata group, open the next one and repeat steps 3 to 6.
 #. If necessary, close the NXentry group, open the next one and repeat steps 2 to 7.
 
