@@ -417,7 +417,7 @@ Any program whose aim is to identify plottable data should use the following pro
    scales associated with the plottable data. 
    And then you can skip the next two steps.
 #. If the axes attribute is not defined, search for the 
-   one-dimensional NeXus fields with attribute ``primary="1"``.
+   one-dimensional NeXus fields with attribute ``primary=1``.
 #. These are the dimension scales to label the axes of each dimension of the data.
 #. Link each dimension scale to the respective data dimension by the axis 
    attribute (``axis=1``, ``axis=2``, ... up to the rank of the data).
