@@ -217,7 +217,7 @@ the data is just a single value.
 Data attributes are represented as XML :index:`attributes`.
 If the attribute is not a text string, then the
 attribute is given in the form: *type:value*, for example:
-``signal="NX_INT32:1"``.
+``signal="NX_POSINT:1"``.
 
 
 :index:`NeXus links <link>` are stored in XML as XML elements

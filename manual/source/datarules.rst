@@ -368,14 +368,14 @@ of type integer called
 in which the scale is expected to be chosen for 
 :index:`plotting <NeXus basic motivation; default plot>`, i.e.
 
-+ 1st choice: ``primary="1"``
++ 1st choice: ``primary=1``
 
-+ 2nd choice: ``primary="2"``
++ 2nd choice: ``primary=2``
 
 + etc.
 
 If there is more than one scale with the same value of the ``axis`` attribute, one
-of them must have set ``primary="1"``. Defining the ``primary``
+of them must have set ``primary=1``. Defining the ``primary``
 attribute for the other scales is optional.
 
 	.. note:: The ``primary`` attribute can only be
@@ -401,9 +401,9 @@ of another data set.
 
 Only when alternative axes definitions are needed, the ``axis`` method
 should be used to specify an axis of a data set.  This is shown in the example above for
-the ``some_other_angle`` field where ``axis="1"``
+the ``some_other_angle`` field where ``axis=1``
 denotes another possible primary axis for plotting.  The default
-axis for plotting carries the ``primary="1"`` attribute.
+axis for plotting carries the ``primary=1`` attribute.
 
 Both methods of linking data axes will be supported in NeXus
 utilities that identify 
@@ -487,17 +487,15 @@ following procedure:
    then you can skip the next two steps.
 
 #. If the ``axes`` attribute is not defined, search for the 
-   one-dimensional NeXus fields with attribute ``primary="1"``.
+   one-dimensional NeXus fields with attribute ``primary=1``.
 
 #. These are the dimension scales to label 
    the axes of each dimension of the data.
 
 #. Link each dimension scale
    to the respective data dimension by
-   the ``axis`` attribute (``axis="1"``,
-   ``axis="2"``, ... up to the 
-   :index:`rank <rank>`
-   of the data).
+   the ``axis`` attribute (``axis=1``, ``axis=2``, 
+   ... up to the  :index:`rank <rank>` of the data).
 
 #. If necessary, close the
    ``NXdata``

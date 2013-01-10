@@ -124,7 +124,7 @@ Next, we create datasets for ``mr`` and ``I00`` using our support library.
 The data type of each, as represented in ``numpy``, will be recognized by
 ``h5py`` and automatically converted to the proper HDF5 type in the file.
 A Python dictionary of attributes is given, specifying the engineering units and other
-values needed by NeXus to provide a default plot of this data.  By setting ``signal="1"``
+values needed by NeXus to provide a default plot of this data.  By setting ``signal=1``
 as an attribute on ``I00``, NeXus recognizes ``I00`` as the default
 *y* axis for the plot.  The ``axes="mr"`` connects the dataset
 to be used as the *x* axis.

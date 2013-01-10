@@ -141,10 +141,10 @@ attributes can be found in the next table:
 			must conform to the NeXus units standard.   See the
 			:ref:`Design-Units` section for details.
 		
-		``signal`` (*NX_INT*)
+		``signal`` (*NX_POSINT*)
 			Defines which data set contains the signal
 			to be :index:`plotted <NeXus basic motivation; default plot>`,
-			use ``signal="1"`` for main signal, ``signal="2"`` for a second
+			use ``signal=1`` for main signal, ``signal=2`` for a second
 			item to plot, and so on.
 		
 		``axes`` (*NX_CHAR*)
@@ -160,12 +160,12 @@ attributes can be found in the next table:
 			and ``polar_angle[j]``,
 			then ``data`` would have an
 			attribute ``axes="polar_angle:time_of_flight"``
-			in addition to an attribute ``signal="1"``.
+			in addition to an attribute ``signal=1``.
 		
 		.. index::
 			axis
 		
-		``axis`` (*NX_INT*)
+		``axis`` (*NX_POSINT*)
 			The original way of designating data for 
 			:index:`plotting <NeXus basic motivation; default plot>`,
 			now superceded by the ``axes`` attribute.
@@ -177,14 +177,14 @@ attributes can be found in the next table:
 			the array being stored is ``data``, with elements
 			``data[j][i]`` in C and ``data(i,j)`` in
 			Fortran, ``axis`` would have the following values:
-			ith dimension (``axis="1"``),
-			jth dimension (``axis="2"``), etc.
+			ith dimension (``axis=1``),
+			jth dimension (``axis=2``), etc.
 		
-		``primary`` (*NX_INT32*)
+		``primary`` (*NX_POSINT*)
 			Defines the order of preference 
 			for :index:`dimension scales <dimension scale>`
 			which apply to the same :index:`rank <rank>`
-			of signal data.  Use ``primary="1"`` to indicate preferred
+			of signal data.  Use ``primary=1`` to indicate preferred
 			dimension scale
 		
 		``long_name`` (*NX_CHAR*)
@@ -194,7 +194,7 @@ attributes can be found in the next table:
 			Defines	status of data value - set to ``Nominal`` or ``Measured``
 		
 		``offset`` (*NX_INT*)
-			Rank values off offsets to use for each 
+			Rank values of offsets to use for each 
 			:index:`dimension <dimension>`
 			if the data is not in C storage order
 		
