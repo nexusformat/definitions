@@ -60,13 +60,19 @@ class H5toText(object):
         try:
             f = h5py.File(self.filename, 'r')
             for value in f.itervalues():
-                if str(type(value)) in ("<class 'h5py.highlevel.Group'>"):
+                #print str(type(value))
+                possible_types = ["<class 'h5py.highlevel.Group'>", ]
+                possible_types.append("<class 'h5py._hl.group.Group'>")
+                if str(type(value)) in possible_types:
+                    #print value.attrs.keys()
                     if 'NX_class' in value.attrs:
                         v = value.attrs['NX_class']
-                        if type(v) == type("a string"):
-                            if v == 'NXentry':
+                        #print type(v), v, type("a string")
+                        if str(type(v)) in ["<type 'numpy.string_'>", "<type 'str'>", ]:
+                            if str(v) == str('NXentry'):
                                 result = True
                                 break
+            print result
             f.close()
         except:
             pass
