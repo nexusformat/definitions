@@ -256,6 +256,103 @@ it that way by default.
 
 
 
+.. _h5py-example-external-links:
+
+Links to Data in External HDF5 Files
+####################################
+
+HDF5 files may contain links to data (or groups) in other files.
+This can be used to advantage to refer to data in existing HDF5 files
+and create NeXus-compliant data files.  Here, we show such an example, 
+using the same ``counts`` v. ``two_theta`` data from the examples above.
+
+file: external_angles.hdf5
+=================================
+
+Take for example, the structure of :download:`external_angles.hdf5`, 
+a simple HDF5 data file that contains just the ``two_theta``
+angles in an HDF5 dataset at the root level of the file.
+Although this is a valid HDF5 data file, it is not a valid NeXus data file:
+
+.. code-block:: guess
+    :linenos:
+
+	angles:float64[31] = [17.926079999999999, '...', 17.92108]
+	  @units = degrees
+
+file: external_counts.hdf5
+=================================
+
+The data in the file ``external_angles.hdf5`` might be referenced from
+another HDF5 file (such as :download:`external_counts.hdf5`) 
+by an HDF5 external link. [#]_  
+Here is an example of the structure
+
+.. code-block:: guess
+    :linenos:
+
+	entry:NXentry
+	  instrument:NXinstrument
+	    detector:NXdetector
+	      counts:NX_INT32[31] = [1037, '...', 1321]
+	        @units = counts
+	        @signal = 1
+	        @axes = two_theta
+	      two_theta --> file="external_angles.hdf5", path="/angles"
+
+.. note:: The file ``external_counts.hdf5`` is not a complete NeXus file since it does not 
+   contain an NXdata group containing a dataset with ``signal=1`` attribute.
+
+.. [#] see these URLs for further guidance on HDF5 external links:
+   http://www.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateExternal, 
+   http://www.h5py.org/docs-1.3/guide/group.html#external-links
+
+file: external_master.hdf5
+=================================
+
+A valid NeXus data file could be created that refers to the data in these files
+without making a copy of the data files themselves.  
+
+.. note::
+   It is necessary for all
+   these files to be located together in the same directory for the HDF5 external file 
+   links to work properly.`  
+
+To be a valid NeXus file, it must contain a :ref:`NXentry` group containing a 
+:ref:`NXdata` group containing only one dataset with the aatribute ``signal=1``.
+For the files above, it is simple to make a master file that links to
+the data we desire, from structure that we create.  In ``external_counts.hdf5`` above,
+see that the required attribute ``signal=1`` is already present.
+Here is :download:`external_master.hdf5`, an example:
+
+.. code-block:: guess
+    :linenos:
+
+	entry:NXentry
+	  instrument --> file="external_counts.hdf5", path="/entry/instrument"
+	  data:NXdata
+	    counts --> file="external_counts.hdf5", path="/entry/instrument/detector/counts"
+	    two_theta --> file="external_angles.hdf5", path="/angles"
+
+source code: externalExample.py
+=================================
+
+Here is the complete code of a Python program, using ``h5py``
+to write a NeXus-compliant HDF5 file with links to data in other HDF5 files.
+
+.. compound::
+
+    .. rubric:: *externalExample.py*: Write using HDF5 external links
+    
+    .. _Example-H5py-externalExample:
+
+    .. literalinclude:: externalExample.py
+	    :tab-width: 4
+	    :linenos:
+	    :language: guess
+
+
+
 .. _h5py-example-helpers:
 
 Python Helper Modules for ``h5py`` Examples

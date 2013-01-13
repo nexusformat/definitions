@@ -23,6 +23,6 @@ nxdata = my_lib.makeGroup(nxentry, 'data', 'NXdata')
 
 my_lib.makeDataset(nxdata, "two_theta", tthData, units='degrees')
 my_lib.makeDataset(nxdata, "counts", countsData, 
-                   units='counts', signal='1', axes='two_theta')
+                   units='counts', signal=1, axes='two_theta')
 
 f.close()	# be CERTAIN to close the file

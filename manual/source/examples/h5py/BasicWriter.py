@@ -32,7 +32,7 @@ my_lib.makeDataset(nxdata,  "mr",  mr_arr, units='degrees',
                    long_name='USAXS mr (degrees)')
 
 my_lib.makeDataset(nxdata,  "I00",  i00_arr, units='counts',
-      signal='1',     # Y axis of default plot
+      signal=1,          # Y axis of default plot
       axes='mr',	     # name "mr" as X axis
       long_name='USAXS I00 (counts)')
 

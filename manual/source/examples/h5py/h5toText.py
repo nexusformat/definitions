@@ -55,24 +55,35 @@ class H5toText(object):
         f.close()
 
     def testIsNeXus(self):
-        ''' test if the selected HDF5 file is a NeXus file '''
+        '''
+        test if the selected HDF5 file is a NeXus file
+        
+        At this time, the code only tests for the existence of
+        the NXentry group.  The tests should be extended to require
+        a NXdata group and a single dataset containing signal=1 attribute.
+        '''
         result = False
         try:
             f = h5py.File(self.filename, 'r')
             for value in f.itervalues():
                 #print str(type(value))
-                possible_types = ["<class 'h5py.highlevel.Group'>", ]
-                possible_types.append("<class 'h5py._hl.group.Group'>")
-                if str(type(value)) in possible_types:
-                    #print value.attrs.keys()
-                    if 'NX_class' in value.attrs:
-                        v = value.attrs['NX_class']
-                        #print type(v), v, type("a string")
-                        if str(type(v)) in ["<type 'numpy.string_'>", "<type 'str'>", ]:
-                            if str(v) == str('NXentry'):
-                                result = True
-                                break
-            print result
+                if '.Group' not in str(type(value)):
+                    continue
+                #print value.attrs.keys()
+                if 'NX_class' not in value.attrs:
+                    continue
+                v = value.attrs['NX_class']
+                #print type(v), v, type("a string")
+                possible_types = ["<type 'numpy.string_'>", ]
+                possible_types.append("<type 'str'>")
+                if str(type(v)) not in possible_types:
+                    continue
+                if str(v) == str('NXentry'):
+                    # TODO: apply more tests
+                    #    for group NXdata 
+                    #    and signal=1 attribute on only one dataset
+                    result = True
+                    break
             f.close()
         except:
             pass
@@ -86,23 +97,29 @@ class H5toText(object):
             nxclass = ":" + str(class_attr)
         print indentation + name + nxclass
         self.showAttributes(obj, indentation)
-        group_equivalents = (
-	    "<class 'h5py.highlevel.File'>", 
-	    "<class 'h5py.highlevel.Group'>", 
-	    "<class 'h5py._hl.group.Group'>",
-	)
-        # show datasets (and links) first
+        # show datasets and links next
+        groups = []
         for itemname in sorted(obj):
-            value = obj[itemname]
-            if str(type(value)) not in group_equivalents:
-                self.showDataset(value, itemname, 
-                                 indentation = indentation+"  ")
+            linkref = obj.get(itemname, getlink=True)
+            if '.ExternalLink' in str(type(linkref)):
+                # if the external file is not present, cannot know if
+                # link target is a dataset or a group or another link
+                fmt = '%s  %s --> file="%s", path="%s"'
+                print fmt % (indentation, itemname, linkref.filename, linkref.path)
+            else:
+                classref = obj.get(itemname, getclass=True)
+                value = obj.get(itemname)
+                if '.File' in str(classref) or '.Group' in str(classref):
+                    groups.append(value)
+                elif '.Dataset' in str(classref):
+                    self.showDataset(value, itemname, indentation+"  ")
+                else:
+                    msg = "unidentified %s: %s, %s", itemname, repr(classref), repr(linkref)
+                    raise Exception, msg
         # then show things that look like groups
-        for itemname in sorted(obj):
-            value = obj[itemname]
-            if str(type(value)) in group_equivalents:
-                self.showGroup(value, itemname, 
-                               indentation = indentation+"  ")
+        for value in groups:
+            itemname = value.name.split("/")[-1]
+            self.showGroup(value, itemname, indentation+"  ")
 
     def showAttributes(self, obj, indentation = "  "):
         '''print any attributes'''
@@ -213,9 +230,26 @@ class H5toText(object):
         return s
 
 
-if __name__ == '__main__':
-    limit = 5
+def do_filelist(filelist, limit=5):
+    '''
+    interpret the structure of a list of HDF5 files
+    
+    :param [str] filelist: one or more file names to be interpreted
+    :param int limit: maximum number of array items to be shown (default = 5)
+    '''
+    for item in filelist:
+        mc = H5toText(item)
+        mc.array_items_shown = limit
+        mc.report()
+
+
+def do_test():
+    limit = 3
     filelist = []
+    filelist.append('th02c_ps02_1_master.h5')
+    filelist.append('external_angles.hdf5')
+    filelist.append('external_counts.hdf5')
+    filelist.append('external_master.hdf5')
     filelist.append('../Create/example1.hdf5')
     filelist.append('../Create/example2.hdf5')
     filelist.append('../Create/example3.hdf5')
@@ -228,26 +262,31 @@ if __name__ == '__main__':
     filelist.append('../../../NeXus/definitions/exampledata/code/hdf5/sans2009n012333.hdf')
     filelist.append('../Create/simple5.nxs')
     filelist.append('../Create/bad.h5')
-    #filelist = []
-    #filelist.append('testG.h5')
-    #filelist.append('testG-pj.h5')
+    
+    do_filelist(filelist, limit)
+
+
+def main():
+    '''standard command-line interface'''
+    try:
+        opts, args = getopt.getopt(sys.argv[1:], "n:")
+    except:
+        print
+        print "SVN: $Id$"
+        print "usage: ", sys.argv[0], " [-n ##] HDF5_file_name [another_HDF5_file_name]"
+        print "  -n ## : limit number of displayed array items to ## (must be 3 or more or 'None')"
+        print
+    for item in opts:
+        if item[0] == "-n":
+            if item[1].lower() == "none":
+                limit = None
+            else:
+                limit = int(item[1])
+    do_filelist(args)
+
+
+if __name__ == '__main__':
     if len(sys.argv) > 1:
-        try:
-            opts, args = getopt.getopt(sys.argv[1:], "n:")
-        except:
-            print
-            print "SVN: $Id$"
-            print "usage: ", sys.argv[0], " [-n ##] HDF5_file_name [another_HDF5_file_name]"
-            print "  -n ## : limit number of displayed array items to ## (must be 3 or more or 'None')"
-            print
-        for item in opts:
-            if item[0] == "-n":
-                if item[1].lower() == "none":
-                    limit = None
-                else:
-                    limit = int(item[1])
-        filelist = args
-    for item in filelist:
-        mc = H5toText(item)
-        mc.array_items_shown = limit
-        mc.report()
+        main()
+    else:
+        do_test()

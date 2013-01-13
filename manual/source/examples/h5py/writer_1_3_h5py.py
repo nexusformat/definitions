@@ -29,7 +29,7 @@ tth.attrs['units'] = "degrees"
 
 counts = nxdata.create_dataset("counts", data=countsData)
 counts.attrs['units'] = "counts"
-counts.attrs['signal'] = "1"
+counts.attrs['signal'] = 1
 counts.attrs['axes'] = "two_theta"
 
 f.close()	# be CERTAIN to close the file

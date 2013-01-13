@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 '''
-my_lib Library of routines to support NeXus HDF5 files using h5py
+my_lib: routines to support reading & writing NeXus HDF5 files using h5py
 '''
 
 import h5py    # HDF5 support
@@ -53,17 +53,38 @@ def makeDataset(parent, name, data = None, **attr):
 
 def makeLink(parent, sourceObject, targetName):
     """
-    create a NeXus link in an HDF5 file.
+    create an internal NeXus (hard) link in an HDF5 file
 
     :param obj parent: parent group of source
-    :param obj sourceObject: HDF5 object
-    :param str targetName: HDF5 node path string, 
-                            such as /entry/data/data
+    :param obj sourceObject: existing HDF5 object
+    :param str targetName: HDF5 node path to be created, 
+                            such as ``/entry/data/data``
     """
     if not 'target' in sourceObject.attrs:
         # NeXus link, NOT an HDF5 link!
         sourceObject.attrs["target"] = str(sourceObject.name)
     parent._id.link(sourceObject.name, targetName, h5py.h5g.LINK_HARD)
+
+def makeExternalLink(hdf5FileObject, sourceFile, sourcePath, targetPath):
+    """
+    create an external link from sourceFile, sourcePath to targetPath in hdf5FileObject
+
+    :param obj hdf5FileObject: open HDF5 file object
+    :param str sourceFile: file containing existing HDF5 object at sourcePath
+    :param str sourcePath: path to existing HDF5 object in sourceFile
+    :param str targetPath: full node path to be created in current open HDF5 file, 
+                            such as ``/entry/data/data``
+                            
+    .. note::
+       Since the object retrieved is in a different file, 
+       its ".file" and ".parent" properties will refer to 
+       objects in that file, not the file in which the link resides.
+
+    .. see:: http://www.h5py.org/docs-1.3/guide/group.html#external-links
+    
+    This routine is provided as a reminder how to do this simple operation.
+    """
+    hdf5FileObject[targetPath] = h5py.ExternalLink(sourceFile, sourcePath)
 
 def addAttributes(parent, attr):
     """

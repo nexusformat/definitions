@@ -85,7 +85,7 @@ if __name__ == '__main__':
     i00 = nxdata.create_dataset("I00", data=data['I00'])
     i00.attrs['units'] = "counts"
     # tell NeXus this is primary data for plotting
-    i00.attrs['signal'] = "1"   
+    i00.attrs['signal'] = 1   
 
     # fill in some optional metadata
     nxentry.create_dataset("title", data="APS USAXS instrument MR (alignment) scan")
