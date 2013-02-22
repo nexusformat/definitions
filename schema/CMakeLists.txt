@@ -36,7 +36,7 @@ set(NXDL_SUFFIX nxdl.xml)
 # so XSL_TYPE needs to be set to BEFORE or AFTER as appropriate
 
 if(XSLTPROC)
-# set up approariate _BEFORE or _AFTER variables
+# set up appropriate _BEFORE or _AFTER variables
     set (XSL_TYPE BEFORE)
     set (XSL_BEFORE ${XSLT_PATH}/nxdl2xsd.xsl)
     set (XSLSORT_BEFORE ${XSLT_PATH}/sort_xsd.xsl)
@@ -44,7 +44,7 @@ if(XSLTPROC)
 endif(XSLTPROC)
 
 if(NOT XSLTPROC)
-# set up approariate _BEFORE or _AFTER variables
+# set up appropriate _BEFORE or _AFTER variables
     set (XSL_TYPE AFTER)
     set (XSL_AFTER ${XSLT_PATH}/nxdl2xsd.xsl)
     set (XSLSORT_AFTER ${XSLT_PATH}/sort_xsd.xsl)
