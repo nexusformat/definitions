@@ -18,31 +18,41 @@ def makeFile(filename, **attr):
     :param attr: optional keywords of attributes
     :return: h5py file object
     """
-    f = h5py.File(filename, "w")
-    addAttributes(f, attr)
-    return f
+    obj = h5py.File(filename, "w")
+    addAttributes(obj, attr)
+    return obj
 
-def makeGroup(parent, name, nxclass):
+def makeGroup(parent, name, nxclass, **attr):
     """
     create a NeXus group
+    
+    Any named parameters in the call to this method 
+	will be saved as attributes of the group.
+    Note that **attr is a dictionary of named parameters.
 
     :param obj parent: parent group
     :param str name: valid NeXus group name
     :param str nxclass: valid NeXus class name
+    :param attr: optional keywords of attributes
     :return: h5py group object
     """
-    group = parent.create_group(name)
-    group.attrs["NX_class"] = nxclass
-    return group
+    obj = parent.create_group(name)
+    obj.attrs["NX_class"] = nxclass
+    addAttributes(obj, attr)
+    return obj
 
 def makeDataset(parent, name, data = None, **attr):
     '''
     create and write data to a dataset in the HDF5 file hierarchy
+    
+    Any named parameters in the call to this method 
+	will be saved as attributes of the dataset.
 
     :param obj parent: parent group
     :param str name: valid NeXus dataset name
     :param obj data: the data to be saved
     :param attr: optional keywords of attributes
+    :return: h5py dataset object
     '''
     if data == None:
         obj = parent.create_dataset(name)

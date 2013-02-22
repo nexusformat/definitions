@@ -13,6 +13,10 @@ This section describes the rules which apply for storing single data fields in d
 Naming Conventions
 ##################
 
+.. index:: 
+   naming convention
+   name rules
+
 Group and field Names used within NeXus follow a naming convention
 which is made up from the following :index:`rules <rules; naming>`:
 The names of NeXus *group* and *field* items
@@ -29,7 +33,7 @@ This set may be described by this regular expression syntax :index:`regular expr
     .. code-block:: guess
        :linenos:
 
-       [A-Za-z_][\\w_]*
+       [A-Za-z_][\w_]*
 
 Note that this name pattern starts with a letter (upper or lower case)
 or "``_``" (underscore), then letters,
