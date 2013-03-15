@@ -1,0 +1,72 @@
+#!/bin/sh
+#====================================================================
+#  NeXus - Neutron & X-ray Common Data Format
+#  
+#  $Id: nxbuild.in 1030 2008-07-15 15:16:49Z Freddie Akeroyd $
+#
+#  @configure_input@
+#  
+#  Script for running nxvalidate
+#
+#  Copyright (C) 2013 Freddie Akeroyd, STFC ISIS Facility
+#  
+#  This library is free software; you can redistribute it and/or
+#  modify it under the terms of the GNU Lesser General Public
+#  License as published by the Free Software Foundation; either
+#  version 2 of the License, or (at your option) any later version.
+# 
+#  This library is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#  Lesser General Public License for more details.
+# 
+#  You should have received a copy of the GNU Lesser General Public
+#  License along with this library; if not, write to the Free 
+#  Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, 
+#  MA  02111-1307  USA
+#             
+#  For further information, see <http://www.nexusformat.org>
+#
+#====================================================================
+prefix="@prefix@"
+exec_prefix="@exec_prefix@"
+bindir="@bindir@"
+sbindir="@sbindir@"
+libexecdir="@libexecdir@"
+datadir="@datadir@"
+datarootdir="@datarootdir@"
+libdir="@libdir@"
+infodir="@infodir@"
+mandir="@mandir@"
+includedir="@includedir@"
+javadir="@datadir@/java"
+#pkgdatadir=$(datadir)/@PACKAGE@
+#pkglibdir=$(libdir)/@PACKAGE@
+#pkgincludedir=$(includedir)/@PACKAGE@
+#top_builddir=..
+
+definitions="@CMAKE_INSTALL_PREFIX@/@NEXUS_DEFINITIONS@"
+XSLT="java -jar ${definitions}/java/saxon9he.jar -versionmsg:off"
+NXDL2SCH=${definitions}/xslt/nxdl2sch.xsl
+NXDL=${definitions}/schema/all.nxdl.xml
+TMPDIR=/tmp
+TMPBASE=${TMPDIR}/nxvalidate.$$
+XML_DOCUMENT=${TMPBASE}.xml
+SCH=${definitions}/schematron
+if test ! -r "$1"; then
+    echo $0: Cannot open file \"$1\"
+    exit
+fi
+if test -n "$2"; then
+    NXDL="$2"
+fi
+echo Validating $1 against $NXDL
+nxconvert -d $1 ${XML_DOCUMENT}
+${XSLT} -xsl:${NXDL2SCH} -s:${NXDL} > ${TMPBASE}.sch
+${XSLT} -xsl:${SCH}/iso_dsdl_include.xsl -s:${TMPBASE}.sch > ${TMPBASE}.1.sch
+${XSLT} -xsl:${SCH}/iso_abstract_expand.xsl -s:${TMPBASE}.1.sch > ${TMPBASE}.2.sch
+#${XSLT} -xsl:${SCH}/iso_schematron_text.xsl -s:k2.sch > k.xsl
+#${XSLT} -xsl:${SCH}/iso_svrl_for_xslt2.xsl -s:k2.sch > k.xsl
+${XSLT} -xsl:${SCH}/iso_schematron_message_xslt2.xsl -s:${TMPBASE}.2.sch > ${TMPBASE}.xsl
+${XSLT} -xsl:${TMPBASE}.xsl -s:${XML_DOCUMENT}
+rm -f ${TMPBASE}.*

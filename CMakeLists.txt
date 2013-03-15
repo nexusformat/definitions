@@ -31,7 +31,7 @@
 if(WIN32)
     cmake_minimum_required (VERSION 2.8.8)
 else()
-    cmake_minimum_required (VERSION 2.8.8)
+    cmake_minimum_required (VERSION 2.8.0)
     if (${CMAKE_VERSION} VERSION_LESS 2.8.4)
         set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove this line when CMake >= 2.8.4 is required
     endif()
@@ -128,6 +128,7 @@ add_subdirectory (contributed_definitions)
 add_subdirectory (applications)
 add_subdirectory (schema)
 #add_subdirectory (manual)
+add_subdirectory (validate_cmdline)
 # 2012-02-18,PRJ: sphinx directory is not ready for cmake yet
 #if(BUILD_SPHINX)
 #    add_subdirectory (sphinx)
@@ -136,6 +137,9 @@ add_subdirectory (schema)
 foreach(F ${XSD_FILES})
     INSTALL(FILES ${CMAKE_BINARY_DIR}/dist/${F} DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
 endforeach()
+
+FILE(GLOB XSLT_FILES "xslt/*.xsl")
+INSTALL(FILES ${XSLT_FILES} DESTINATION ${NEXUS_DEFINITIONS}/xslt COMPONENT definitions)
 
 INSTALL(FILES LGPL.txt DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
 INSTALL(FILES LGPL.txt DESTINATION ${NEXUS_MANUAL} COMPONENT manual)

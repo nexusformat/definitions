@@ -339,7 +339,7 @@
                     </sch:report>-->
                 <!-- NAPItype MUST start with "NX_" -->
                 <sch:assert test="starts-with(@NAPItype,'NX_')"
-                    >NAPItype value should start with 'NX_'.</sch:assert>
+                    >NAPItype '<sch:value-of select="@NAPItype"/>' does not start with 'NX_'.</sch:assert>
                 <sch:assert test="matches(@NAPItype,$NAPItype_regexp)">
                     NAPItype attribute must be one of the allowed data types.
                     Value '<sch:value-of select="@NAPItype"/>' was found in 
