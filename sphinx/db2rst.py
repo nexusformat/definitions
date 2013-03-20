@@ -1026,7 +1026,7 @@ class Table:
         t.labels = ('Name\nand\nAttributes', 'Type', 'Units', 'Description\n(and Occurrences)', )
         t.rows.append( ['one,\ntwo', "buckle my", "shoe.\n\n\nthree,\nfour", "..."] )
         t.rows.append( ['class', 'NX_FLOAT', '..', '..', ] )
-        print t.reST(format='complex')
+        print t.reST(fmt='complex')
 
     build this table source code::
     
