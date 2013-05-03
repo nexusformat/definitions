@@ -1,5 +1,10 @@
 .. $Id$
 
+.. index:: subversion
+.. index:: repository
+.. index:: svn
+
+
 .. _Subversion:
 
 =============================
@@ -8,12 +13,16 @@ NeXus Subversion Repositories
 
 NeXus NXDL class definitions (both base classes and instruments) and
 the NeXus code library source are held in a pair of *subversion* [#]_ repositories.
+To locate specific releases of the NeXus code and definitions repositories,
+please consult the section titled :ref:`releases`.
+
+
 The repositories are world readable. You can browse them directly:
 
 :NeXus code library and applications:
 	http://svn.nexusformat.org/code
 
-:NeXus NXDL class definitions
+:NeXus NXDL class definitions:
 	http://svn.nexusformat.org/definitions
 
 Better looking interfaces are also provided using 

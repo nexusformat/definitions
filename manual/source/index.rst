@@ -21,6 +21,7 @@ http://www.nexusformat.org/
 
     authorgroup
     community
+	releases
     installation
     utilities
     faq
