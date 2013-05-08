@@ -19,13 +19,18 @@ to build Python Objects from NeXus classes
 ########### SVN repository information ###################
 
 
+from lxml import etree
+import copy
+import glob
+import gnosis.xml.objectify
 import os
 import sys
-import gnosis.xml.objectify
-import glob
-
+import time
 
 NeXusDir = os.path.join('..', )
+XML_ROOT_TAG = 'NXDL_class_hierarchy'
+spacer = ' '*2
+newline_spacer = '\n' + spacer
 
 
 def readXml(xmlFile):
@@ -33,6 +38,11 @@ def readXml(xmlFile):
     if not os.path.exists(xmlFile):
         raise RuntimeError("Cannot find XML file: " + xmlFile)
     return gnosis.xml.objectify.XML_Objectify(xmlFile).make_instance()
+
+
+def yyyymmdd_hhmmss(time_float = None):
+    '''return an ISO8601 time string'''
+    return time.strftime('%Y-%m-%d %H:%M:%S', time.gmtime( time_float ))
 
 
 class NXDL_schema(object):
@@ -105,18 +115,51 @@ def read_definitions(dirName):
     return NXDL_classes
 
 
-def showTree(classname, tree, indent, branch_nodes):
-    '''return a text list of the tree hierarchy starting from node classname'''
-    spacer = ' '*2
-    s = [spacer*indent + classname,]
+def build_hierarchy_dict(classname, tree, branch_nodes):
+    '''return a dictionary of the tree hierarchy starting from node classname'''
+    d = {classname: {}}
     if classname in branch_nodes:    # prevent recursion
         if len(tree[classname].children) > 0:
-            s[0] += '...'
+            d[classname] = {'...': {}}
     else:
         branch_nodes.append( classname )
         for node in sorted(tree[classname].children):
-            s += showTree(node, tree, indent+1, branch_nodes)
+            t = build_hierarchy_dict(node, tree, branch_nodes)
+            d[classname][node] = t[node]
+    return d
+
+
+def hierarchy_text_list(tree):
+    '''return a text list rendition of the tree hierarchy in tree'''
+    s = []   # use a list, it's more efficient
+    for classname, classgroups in sorted(tree.items()):
+        s += [ classname ]
+        if len(classgroups) > 0:
+            s += [ spacer + _ for _ in hierarchy_text_list(classgroups) ]
     return s
+
+
+def _attach_xml_branch(parent, branch):
+    '''add this branch to the parent XML document'''
+    for classname, classgroups in sorted(branch.items()):
+        node = etree.SubElement(parent, 'group')
+        node.attrib['name'] = classname
+        if len(classgroups) > 0:
+            _attach_xml_branch(node, classgroups)
+
+
+def hierarchy_xml_file(tree, xmlfile):
+    '''write the tree hierarchy to an XML file'''
+    root = etree.Element(XML_ROOT_TAG)
+    root.attrib['date'] = yyyymmdd_hhmmss()
+    _attach_xml_branch(root, tree)
+
+    text = etree.tostring(root, pretty_print=True, encoding='utf-8')
+    f = open(xmlfile, 'w')
+    f.write('<?xml version="1.0" encoding="UTF-8"?>\n')
+    #f.write('<?xml-stylesheet type="text/xsl" href="%s"?>\n' % xslt)
+    f.write( text )
+    f.close()
 
 
 def assign_relatives(tree):
@@ -145,13 +188,22 @@ if __name__ == '__main__':
     applications = read_definitions('applications')
     contributed  = read_definitions('contributed_definitions')
 
-    assign_relatives(base_classes)    # associate parent nodes with child nodes
+    all_classes = copy.deepcopy(base_classes)
+#     all_classes.update(applications)
+#     all_classes.update(contributed)
+
+    assign_relatives(all_classes)    # associate parent nodes with child nodes
     
     heads = []
-    for nodename, node in base_classes.items():
+    for nodename, node in all_classes.items():
         if len(node.parents) == 0:
             heads.append(nodename)
 
     for nodename in sorted(heads):
-        # TODO: write output in XML (filename passed on command line)
-        print '\n'.join(showTree(nodename, base_classes, 0, []))
+        d = build_hierarchy_dict(nodename, all_classes, [])
+
+        htl = hierarchy_text_list(d)
+        print '\n'.join(htl)
+        
+        xmlFile = 'hierarchy_' + nodename + '.xml'
+        hierarchy_xml_file(d, xmlFile)
