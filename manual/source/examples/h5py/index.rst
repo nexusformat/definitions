@@ -229,6 +229,9 @@ this is not a problem.
 Plotting the HDF5 file
 ======================
 
+.. index:: 
+	NeXpy
+
 Now that we are certain our file conforms to the NeXus
 standard, let's plot it using the ``NeXpy`` [#]_
 client tool.  To help label the plot, we added the
@@ -242,7 +245,7 @@ This is because the data is stored in the file in descending
 ``mr`` order and ``NeXpy`` has plotted
 it that way by default.
 
-.. [#] *NeXpy*:    http://trac.mcs.anl.gov/projects/nexpy
+.. [#] *NeXpy*:    https://github.com/nexpy/nexpy
 
 .. compound::
 

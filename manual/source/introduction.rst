@@ -261,6 +261,9 @@ sets. In the next example, a NeXus data file is shown as XML:
 	        :linenos:
 	        :language: xml
 
+.. index:: 
+	NeXpy
+
 NeXus files are easy to create.  This example NeXus file was created using
 a short Python program and NeXpy:
 

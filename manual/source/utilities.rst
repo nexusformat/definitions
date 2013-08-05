@@ -204,7 +204,7 @@ as a data format.  It is not intended to be a complete list of all available pac
 	utility; NeXpy
 	NeXpy
 
-**NeXpy** (http://trac.mcs.anl.gov/projects/nexpy)
+**NeXpy** (https://github.com/nexpy/nexpy)
     The goal of NeXpy is to provide a simple graphical environment,
     coupled with Python scripting capabilities, for the analysis of X-Ray and
     neutron scattering data.

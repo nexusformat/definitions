@@ -118,6 +118,8 @@ Two things to note about the development and history of NeXus:
 :January 2010:
     NXDL presented to ESRF HDF5 workshop on hyperspectral data
 
+:May 2012:
+    first release (3.1.0) of NXDL (NeXus Definition Language)
 
 
 .. [#] http://wiki.nexusformat.org/images/b/b8/European-Formats.pdf
