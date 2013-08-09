@@ -10,6 +10,13 @@ Frequently Asked Questions
 
 This is a list of commonly asked questions concerning the NeXus data format.
 
+#. Is it Nexus, NeXus or NeXuS?
+
+    NeXus is correct. It is a format for data from **Neutron** and **X-ray** 
+    facilities, hence those first letters are capitalised. The format is also 
+    used for muon experiments, but there is no *mu* (or m) in NeXus and no s 
+    in muon. So the s stays in lower case. 
+
 #. How many facilities use NeXus?
 
     This is not easy to say, not all facilities using NeXus actively
