@@ -58,9 +58,11 @@ are confined to the committee members, but the archives are public.
 NeXus Developers Mailing List
 ================================
 
-This mailing list is for discussions concerning the technical
+This mailing list was for discussions concerning the technical
 development of NeXus (the Definitions, NXDL, and
-the NeXus Application Program Interface).
+the NeXus Application Program Interface). There was, however, much 
+overlap with the general NeXus mailing list and so this separate list was 
+closed in October 2012, but the archive of previous posting is still available. 
 
 .. closed for new contributions per NIAC 2012
 	+ List Address: nexus-developers@nexusformat.org
