@@ -245,7 +245,7 @@ This is because the data is stored in the file in descending
 ``mr`` order and ``NeXpy`` has plotted
 it that way by default.
 
-.. [#] *NeXpy*:    https://github.com/nexpy/nexpy
+.. [#] *NeXpy*:    http://nexpy.github.io/nexpy/
 
 .. compound::
 
