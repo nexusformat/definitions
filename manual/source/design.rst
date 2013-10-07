@@ -536,6 +536,9 @@ absolute coordinates in the laboratory coordinate system. It also
 allows to convert from local, for example detector
 coordinate systems, to absolute coordinates in the laboratory system.
 
+Please note that NXgeometry and the polar coordinate system are suggested 
+to be deprecated. For new projects, rather use the CIF approach. 
+
 .. _Design-Coordinate-NXgeometry:
 
 McStas and ``NXgeometry`` System
@@ -587,6 +590,9 @@ the orientation of the component as a vector of in the McStas coordinate system.
     - I would love to pull down the NXshape group to component level too.
     Perhaps we can allow that and mark NXgeometry deprecated?
 
+Please note that it is planned to deprecate NXgeometry in favour of the transformation based
+system described below. 
+
 .. _Design-Coordinate-Spherical:
 
 Simple (Spherical Polar) Coordinate System
@@ -631,6 +637,10 @@ from the motor responsible for rotating the component. This situation is shown i
         :align: center
 
         NeXus Simple (Spherical Polar) Coordinate System
+
+Please note that it is planned to deprecate this polar system in favour of the transformation based 
+ system described below. 
+
 
 .. _CoordinateTransformations:
 
