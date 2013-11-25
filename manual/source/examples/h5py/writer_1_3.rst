@@ -23,7 +23,7 @@ as shown in the next figure.
 
     .. figure:: ../../img/ex_writer_1_3.png
         :alt: fig.simple-example-h5py
-        :width: 80%
+        :width: 50%
 
         Simple Example
 
