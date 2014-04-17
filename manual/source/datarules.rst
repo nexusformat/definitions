@@ -29,16 +29,41 @@ This set may be described by this regular expression syntax :index:`regular expr
 	.. _RegExpName:
 
     .. rubric:: Regular expression pattern for NXDL group and field names
+	
+	It is recommended that all group and field names 
+	contain only these characters:
+	
+	* lower case letters
+	* digits
+	* "_" (underscore character)
+	
+	and that they begin with a lower case letter.
+	This is the regular expression used to check 
+	this recommendation.
     
+    .. code-block:: guess
+       :linenos:
+
+       [a-z_][a-z\d_]*
+
+	The length should be limited to no more than 
+	63 characters (imposed by the HDF5 :index:`rules <rules; HDF5>` for names).
+	
+	It is recognized that some facilities will construct
+	group and field names with upper case letters.  *NeXus data 
+	files with upper case characters in the group or field 
+	names might not be accepted by all software that reads NeXus 
+	data files.*  Hence, group and field names that do not
+	pass the regular expression above but pass this
+	expression:
+
     .. code-block:: guess
        :linenos:
 
        [A-Za-z_][\w_]*
 
-Note that this name pattern starts with a letter (upper or lower case)
-or "``_``" (underscore), then letters,
-numbers, and "``_``" and is limited to no more than 63 characters
-(imposed by the HDF5 :index:`rules <rules; HDF5>` for names).
+	will be flagged as a warning during data file validation.
+	
 
 
 Sometimes it is necessary to combine words in order to build a
