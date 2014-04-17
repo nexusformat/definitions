@@ -65,6 +65,7 @@ This set may be described by this regular expression syntax :index:`regular expr
    will be flagged as a warning during data file validation.
 	
 
+.. rubric:: Use of underscore in descriptive names
 
 Sometimes it is necessary to combine words in order to build a
 descriptive name for a data field or a group.
