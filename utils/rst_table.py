@@ -167,7 +167,7 @@ class Table:
         if len(self.labels) > 0:
             width = [max(map(len, _.split("\n"))) for _ in self.labels]
         for row in self.rows:
-            row_width = [max(map(len, _.split("\n"))) for _ in row]
+            row_width = [max(map(len, str(_).split("\n"))) for _ in row]
             if len(width) == 0:
                 width = row_width
             width = map( max, zip(width, row_width) )
