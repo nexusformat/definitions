@@ -5,6 +5,9 @@ Read the the NeXus NXDL types specification and find
 all the valid data types.  Write a restructured
 text (.rst) document for use in the NeXus manual in 
 the NXDL chapter.
+
+.. note:: This code is now available in an installable
+   Python package:  pyRestTable.rest_table.Table()
 '''
 
 ########### SVN repository information ###################
@@ -14,10 +17,6 @@ the NXDL chapter.
 # $URL$
 # $Id$
 ########### SVN repository information ###################
-
-
-import os, sys
-import lxml.etree
 
 
 class Table:
@@ -151,10 +150,20 @@ class Table:
         build one line of the table with one text from each entry element.
         The lines are separated by line breaks.
         '''
+        def pick_line(text, lineNum):
+            '''
+            Pick the specific line of text or supply an empty string.
+            Convenience routine when analyzing tables.
+            '''
+            if lineNum < len(text):
+                s = text[lineNum]
+            else:
+                s = ""
+            return s
         text = ""
         if len(row) > 0:
-            for line_num in range( max(map(len, [_.split("\n") for _ in row])) ):
-                item = [self._pick_line(r.split("\n"), line_num) for r in row]
+            for line_num in range( max(map(len, [str(_).split("\n") for _ in row])) ):
+                item = [pick_line(str(r).split("\n"), line_num) for r in row]
                 text += indentation + fmt % tuple(item)
         return text
     
@@ -165,24 +174,13 @@ class Table:
         '''
         width = []
         if len(self.labels) > 0:
-            width = [max(map(len, _.split("\n"))) for _ in self.labels]
+            width = [max(map(len, str(_).split("\n"))) for _ in self.labels]
         for row in self.rows:
             row_width = [max(map(len, str(_).split("\n"))) for _ in row]
             if len(width) == 0:
                 width = row_width
             width = map( max, zip(width, row_width) )
         return width
-    
-    def _pick_line(self, text, lineNum):
-        '''
-        Pick the specific line of text or supply an empty string.
-        Convenience routine when analyzing tables.
-        '''
-        if lineNum < len(text):
-            s = text[lineNum]
-        else:
-            s = ""
-        return s
 
 
 if __name__ == '__main__':
