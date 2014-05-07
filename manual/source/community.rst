@@ -67,5 +67,5 @@ Other Ways NeXus Coordinates with the Scientific Community
    
    niac
    mailinglist
-   subversion
+   github
    issues
