@@ -4,7 +4,7 @@
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
-#  Copyright (C) 2011-2012 Freddie Akeroyd
+#  Copyright (C) 2011-2014 NIAC
 #  
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -73,6 +73,8 @@ set(BASE_FILES
 	NXuser.nxdl.xml 
 	NXvelocity_selector.nxdl.xml 
 	NXxraylens.nxdl.xml 
+	NXslit.nxdl.xml 
+	NXpinhole.nxdl.xml 
 )
 
 set(BASE_SOURCE ${CMAKE_SOURCE_DIR}/base_classes)
