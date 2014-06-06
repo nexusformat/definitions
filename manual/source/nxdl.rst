@@ -45,8 +45,8 @@ In addition to this chapter and the
 set of NeXus NXDL files to learn how to read
 and write NXDL files.  These files are available from
 the NeXus *definitions* repository
-and are most easily viewed through the TRAC site:
-http://trac.nexusformat.org/definitions/browser/trunk
+and are most easily viewed on GitHub:
+https://github.com/nexusformat/definitions
 in the ``base_classes``, ``applications``, and  ``contributed``
 directories.  The rules (expressed as XML Schema)
 for NXDL files may also be
