@@ -27,16 +27,20 @@
 #====================================================================
 
 set(CONTRIBUTED_FILES 
-	NXarpes.nxdl.xml 
-	NXbeamline.nxdl.xml 
-	NXelectrostatic_kicker.nxdl.xml 
-	NXmagnetic_kicker.nxdl.xml 
-	NXquadrupole_magnet.nxdl.xml 
-	NXseparator.nxdl.xml 
-	NXsnsevent.nxdl.xml 
-	NXsnshisto.nxdl.xml 
-	NXsolenoid_magnet.nxdl.xml 
-	NXspin_rotator.nxdl.xml 
+	NXarpes.nxdl.xml
+	NXbeamline.nxdl.xml
+	NXcite.nxdl.xml
+	NXelectrostatic_kicker.nxdl.xml
+	NXfresnel_zone_plate.nxdl.xml
+	NXmagnetic_kicker.nxdl.xml
+	NXmx.nxdl.xml
+	NXquadrupole_magnet.nxdl.xml
+	NXseparator.nxdl.xml
+	NXsnsevent.nxdl.xml
+	NXsnshisto.nxdl.xml
+	NXsolenoid_magnet.nxdl.xml
+	NXspin_rotator.nxdl.xml
+	NXtransformations.nxdl.xml
 )
 
 set(CONTRIBUTED_SOURCE ${CMAKE_SOURCE_DIR}/contributed_definitions)

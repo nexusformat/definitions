@@ -2,13 +2,13 @@
 
 <!--
      Stylesheet to provide a condensed view of a NeXus NXDL specification.
-     (see http://trac.nexusformat.org/definitions/ticket/181)
+     (see https://github.com/nexusformat/definitions/issues/181)
 
      The nxdlformat.xsl stylesheets differ between the directories 
      because of the rule regarding either /definition/NXentry or
      /definition/NXsubentry for application and contributed definitions.
-     (see http://trac.nexusformat.org/definitions/ticket/179)
-
+     (see https://github.com/nexusformat/definitions/issues/179)
+     
      Modify <xsl:template match="nx:definition">...</xsl:template> 
      for each directory.
      
@@ -47,6 +47,7 @@ line breaks are VERY TRICKY here, be careful how you edit!
           <xsl:call-template name="showClassName"/>
           <xsl:choose>
              <xsl:when test="count(nx:group[@type='NXentry'])=1"><!-- 
+                  assume this is a candidate for an application definition
              -->  (overlays NXentry)<xsl:text><!-- tricky line break here -->
 </xsl:text><!-- 
 --><xsl:apply-templates select="nx:attribute">
@@ -55,6 +56,7 @@ line breaks are VERY TRICKY here, be careful how you edit!
                        </xsl:with-param>
                   </xsl:apply-templates><xsl:call-template name="startFieldsGroups"/></xsl:when>
              <xsl:when test="count(nx:group[@type='NXsubentry'])=1"><!-- 
+                  assume this is a candidate for an application definition
              -->  (overlays NXsubentry)<xsl:text><!-- tricky line break here -->
 </xsl:text><!-- 
 --><xsl:apply-templates select="nx:attribute">
@@ -62,11 +64,10 @@ line breaks are VERY TRICKY here, be careful how you edit!
                             <xsl:value-of select="$indent_step"/>
                        </xsl:with-param>
                   </xsl:apply-templates><xsl:call-template name="startFieldsGroups"/></xsl:when>
-               <xsl:otherwise>
-                    <!-- enforce required rule for NXentry or NXsubentry  -->  
-                    /definition/NXentry or /definition/NXsubentry not found!
-                    Cannot be used as an application definition.
-               </xsl:otherwise>
+               <xsl:otherwise><!-- optional rule for NXentry or NXsubentry 
+             -->  (base class definition, NXentry or NXsubentry not found)<!--
+                    --><xsl:text><!-- tricky line break here -->
+</xsl:text><xsl:call-template name="startFieldsGroups"/></xsl:otherwise>
           </xsl:choose>
      </xsl:template>
      
