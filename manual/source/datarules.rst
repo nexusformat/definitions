@@ -289,7 +289,7 @@ a format compatible with `Unidata UDunits`_ [#UDunits]_
 Application definitions may specify units to be used for fields
 using :index:`an <enumeration>` ``enumeration``.
 
-.. _Unidata UDunits: http://www.unidata.ucar.edu/software/udunits/udunits-2-units.html
+.. _Unidata UDunits: http://www.unidata.ucar.edu/software/udunits/udunits-2.2.14/doc/udunits/udunits2.html#Database
 .. [#UDunits]
     The :index:`UDunits`
     specification also includes instructions  for derived units.
