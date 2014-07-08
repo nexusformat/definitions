@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: ! FAQ
 
 .. _FAQ:
@@ -208,3 +206,8 @@ This is a list of commonly asked questions concerning the NeXus data format.
 #. Where do I store the wavelength of my experiment?
 
     See the :ref:`Strategies-wavelength` section.
+
+#. Where do I store metadata about my experiment?
+
+   See the :ref:`where.to.store.metadata` section.
+

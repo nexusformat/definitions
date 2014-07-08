@@ -700,13 +700,11 @@ Usage:
 
     <!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
     
-    <!-- http://svn.nexusformat.org/definitions/trunk -->
-    <!-- http://trac.nexusformat.org/definitions/browser -->
     <!-- !!! line breaks are VERY important here, don't bust them !!! -->
     <xsl:template name="makeURL">
         <xsl:param name="name"/>
         <xsl:param name="category"
-        />http://svn.nexusformat.org/definitions/trunk/<xsl:choose>
+        />http://htmlpreview.github.io/?https://github.com/nexusformat/code/blob/master/<xsl:choose>
             <xsl:when test="$category='base'">base_classes</xsl:when
             ><xsl:when test="$category='application'">applications</xsl:when
             ><xsl:when test="$category='contributed'">contributed_definitions</xsl:when

@@ -2,12 +2,12 @@
 
 <!--
      Stylesheet to provide a condensed view of a NeXus NXDL specification.
-     (see http://trac.nexusformat.org/definitions/ticket/181)
+     (see https://github.com/nexusformat/definitions/issues/181)
 
      The nxdlformat.xsl stylesheets differ between the directories 
      because of the rule regarding either /definition/NXentry or
      /definition/NXsubentry for application and contributed definitions.
-     (see http://trac.nexusformat.org/definitions/ticket/179)
+     (see https://github.com/nexusformat/definitions/issues/179)
      
      Modify <xsl:template match="nx:definition">...</xsl:template> 
      for each directory.
