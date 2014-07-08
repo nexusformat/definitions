@@ -3,9 +3,9 @@
 .. image:: img/NeXus.png
 	:width: 40%
 
-=========================================================
+=======================================
 User Manual and Reference Documentation
-=========================================================
+=======================================
 
 http://www.nexusformat.org/
 
@@ -48,7 +48,7 @@ This manual built |today|.
    A very brief overview is also available (separate from the manual).
    
    :HTML:
-   http://htmlpreview.github.com/?https://github.com/nexusformat/definitions/blob/master/misc/impatient/_build/html/index.html
+      http://htmlpreview.github.com/?https://github.com/nexusformat/definitions/blob/master/misc/impatient/_build/html/index.html
 
 ..  Suggestions for adding to this manual:
 
