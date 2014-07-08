@@ -27,7 +27,15 @@ NeXus Class Specifications
 ##########################
 
 .. toctree::
-	:maxdepth: 2
+	:maxdepth: 1
 	
 	overview
-	specifications
+
+.. rubric:: Descriptions of the NeXus classes
+
+.. toctree::
+   :maxdepth: 1
+   
+   base_classes/index
+   applications/index
+   contributed_definitions/index
