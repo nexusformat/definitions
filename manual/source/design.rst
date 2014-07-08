@@ -1,5 +1,3 @@
-.. $Id$
-
 .. _Design:
 
 ============
@@ -428,6 +426,36 @@ groups. These ``NXdata`` groups represent the plottable data.  Here is the way a
 #. Having found the default plottable data and 
    its :index:`dimension scales <dimension scale>`:
    make the plot
+
+
+.. _where.to.store.metadata:
+
+Where to Store Metadata
+-----------------------
+
+.. index:: ! metadata
+
+There are many ways to store metadata about your experiments.
+Already there are many fields in the various base classes
+to store the more common or general metadata, such as wavelength.
+(For wavelength, see the :ref:`Strategies-wavelength` section.)
+
+One common scheme is to store the metadata all in one
+group.  If the group is to be validated for content,
+then there are several possibilities, as shown in the next table:
+
+==========================  ===========================================
+base class		    intent
+==========================  ===========================================
+:ref:`NXnote`		    to store additional information
+:ref:`NXlog`		    information that is time-stamped
+:ref:`NXparameters`	    parameters for processing or analysis
+:ref:`NXcharacterization`   do not use this, as it may be removed later
+==========================  ===========================================
+
+If the content of the metadata group is to be excluded from validation,
+then store it in a :ref:`NXcollection` group.
+
 
 
 .. _Design-NeXusApplications:
