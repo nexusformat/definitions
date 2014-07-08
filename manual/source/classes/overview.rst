@@ -1,10 +1,19 @@
-.. $Id$
-
 .. _ClassDefinitions-Overview:
 
-==========================
+=========================
 Overview of NeXus classes
-==========================
+=========================
+
+.. FIXME: Redundant information
+
+.. sidebar::  Redundant information.
+
+   Some of the information in this section is also provided in
+   :ref:`NeXus.Class.Specifications`.  More editing is needed
+   to remove redundancy.
+   
+   Also, the information in the tables has changed slightly since this was written.
+   Both pages need updating.
 
 Each of the NeXus classes is described in two basic ways. First, a short list of
 descriptive information is provided as a header, then a condensed listing of the
@@ -27,10 +36,8 @@ of the NeXus class.
     version of this NXDL.
 
 :SVN Id:
-    Subversion repository checkout identification, stripped of the
-    surrounding dollar signs. (The *Id* is
-    blank on files copied direct from the repository that are not checked
-    out by a subversion client.)
+    The SVN ID is now out of date since the version control switched from
+    subversion to git.
 
 .. index:: NXDL
 
@@ -63,7 +70,7 @@ of the NeXus class.
 
 
 Basic structure of the **class**
-----------------------------------------------
+--------------------------------
 
 A compact listing of the basic structure
 (groups, fields, dimensions, attributes, and links)
