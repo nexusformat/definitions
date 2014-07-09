@@ -6,18 +6,13 @@ Write a restructured text (.rst) document for use in the NeXus manual in
 the NeXus NXDL Classes chapter.
 '''
 
-########### SVN repository information ###################
-# $Date$
-# $Author$
-# $Revision$
-# $URL$
-# $Id$
-########### SVN repository information ###################
-
 
 import os, sys
 import lxml.etree
-import rst_table
+try:
+  from pyRestTable import rest_table
+except:
+  import rst_table as rest_table 
 
 
 TITLE_MARKERS = '# - + ~ ^ * @'.split()  # used for underscoring section titles
@@ -153,7 +148,7 @@ def printMemberTable(ns, parent, name, xref):
     :param str xref: cross-referencing label to use with this parent node member table
     '''
     # table(s) describing the specification
-    t = rst_table.Table()
+    t = rest_table.Table()
     t.labels = ('Name\nand\nAttributes', 'Type', 'Units', 'Description\n(and Occurrences)', )
     t.alignment = ('p{0.2\linewidth}', 'p{0.2\linewidth}', 'p{0.2\linewidth}', 'p{0.4\linewidth}', )
     #t.longtable = True
@@ -330,7 +325,7 @@ def main(tree, ns):
     print '='*len(title)
        
     # various metrics and metadata about this specification
-    t = rst_table.Table()
+    t = rest_table.Table()
     t.labels = ['version', 'category', 'extends', ]
     extends = root.get('extends')
     if extends is not None:

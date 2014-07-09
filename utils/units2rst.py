@@ -7,18 +7,9 @@ text (.rst) document for use in the NeXus manual in
 the NXDL chapter.
 '''
 
-########### SVN repository information ###################
-# $Date$
-# $Author$
-# $Revision$
-# $URL$
-# $Id$
-########### SVN repository information ###################
-
 
 import os, sys
 import lxml.etree
-import rst_table
 
 
 def worker(nodeMatchString, section = 'units'):
