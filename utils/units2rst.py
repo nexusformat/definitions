@@ -2,7 +2,7 @@
 
 '''
 Read the the NeXus NXDL types specification and find
-all the valid data types.  Write a restructured
+all the valid types of units.  Write a restructured
 text (.rst) document for use in the NeXus manual in 
 the NXDL chapter.
 '''
