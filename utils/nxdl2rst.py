@@ -182,7 +182,7 @@ def printMemberTable(ns, parent, name, xref):
     # in PDF, the section title is printed beside the table unless some text intervenes.
     print '\nDeclarations in the *%s* group.\n' % name
     if len(t.rows) > 0:
-        print t.reST(format='complex')
+        print t.reST(fmt='complex')
     else:
         print 'No members to be documented'
 
@@ -351,7 +351,7 @@ def main(tree, ns):
         parts.append('none')
     t.rows.append(parts)
     print
-    print t.reST(format='complex')
+    print t.reST(fmt='complex')
 
     # documentation
     print
