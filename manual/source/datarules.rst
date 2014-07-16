@@ -509,7 +509,7 @@ should use the following procedure:
    with attribute ``signal="1"``.
    Note: There should be *only one* field that matches.
 
-   This is default plottable data.
+   This is the default plottable data.
 
    #. If this field has an attribute ``axes``:
 
@@ -527,7 +527,7 @@ should use the following procedure:
 
       #. Search for datasets with attributes ``axis=1``, ``axis=2``, etc.
 
-         These are the fields describing your axis. There may be
+      #. These are the fields describing your axis. There may be
          several fields for any axis, i.e. there may be multiple 
          fields with the attribute ``axis=1``. Among them the 
          field with the attribute ``primary=1`` is the preferred one. 

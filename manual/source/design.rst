@@ -397,7 +397,7 @@ opens a ``NXentry`` and then continues to search for any ``NXdata``
 groups. These ``NXdata`` groups represent the plottable data.
 An algorithm for identifying the default plottable data
 is :ref:`presented <Find-Plottable-Data>` in the 
-chapter titled :ref`DataRules`.
+chapter titled :ref:`DataRules`.
 
 
 
