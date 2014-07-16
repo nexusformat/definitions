@@ -494,46 +494,87 @@ time-of-flight monitors.
 Find the plottable data
 #######################
 
-Any program whose aim is to identify plottable data should use the
-following procedure:
+Any program whose aim is to identify the default plottable data 
+should use the following procedure:
 
-#. Open the first top level NeXus group with class
-   ``NXentry``.
+#. Start at the top level of the NeXus data file.
 
-#. Open the first NeXus group with class
-   ``NXdata``.
+#. Loop through the groups with class ``NXentry`` 
+   until the next step succeeds.
 
-#. Loop through NeXus fields in this group searching for the item
-   with attribute
-   ``signal="1"``
-   indicating this field has the plottable data.
+#. Open the NXentry group and loop through the subgroups 
+   with class ``NXdata`` until the next step succeeds.
 
-#. Check to see if this field has an attribute called
-   ``axes``. If so, the attribute value contains a colon (or comma)
-   delimited list (in the C-order of the data array) with the names
-   of the 
-   :index:`dimension scales <dimension scale>`
-   associated with the plottable data. And
-   then you can skip the next two steps.
+#. Open the NXdata group and loop through the fields for the one field 
+   with attribute ``signal="1"``.
+   Note: There should be *only one* field that matches.
 
-#. If the ``axes`` attribute is not defined, search for the 
-   one-dimensional NeXus fields with attribute ``primary=1``.
+   This is default plottable data.
 
-#. These are the dimension scales to label 
-   the axes of each dimension of the data.
+   #. If this field has an attribute ``axes``:
 
-#. Link each dimension scale
-   to the respective data dimension by
-   the ``axis`` attribute (``axis=1``, ``axis=2``, 
-   ... up to the  :index:`rank <rank>` of the data).
+      #. The ``axes`` attribute value contains a colon (or comma)
+         delimited list (in the C-order of the data array) with 
+         the names of the 
+         :index:`dimension scales <dimension scale>`
+         associated with the plottable data.
+         Such as:  ``axes="polar_angle:time_of_flight"``
 
-#. If necessary, close the
-   ``NXdata``
-   group, open the next one and repeat steps 3 to 6.
+      #. Parse ``axes`` and open the datasets to describe your 
+         :index:`dimension scales <dimension scale>`
 
-#. If necessary, close the
-   ``NXentry``
-   group, open the next one and repeat steps 2 to 7.
+   #. If this field has no attribute ``axes``:
+
+      #. Search for datasets with attributes ``axis=1``, ``axis=2``, etc.
+
+         These are the fields describing your axis. There may be
+         several fields for any axis, i.e. there may be multiple 
+         fields with the attribute ``axis=1``. Among them the 
+         field with the attribute ``primary=1`` is the preferred one. 
+         All others are alternative :index:`dimension scales <dimension scale>`.
+
+#. Having found the default plottable data and its dimension scales: 
+   make the plot.
+
+.. the previous description
+
+	#. Open the first top level NeXus group with class
+	   ``NXentry``.
+
+	#. Open the first NeXus group with class
+	   ``NXdata``.
+
+	#. Loop through NeXus fields in this group searching for the item
+	   with attribute
+	   ``signal="1"``
+	   indicating this field has the plottable data.
+
+	#. Check to see if this field has an attribute called
+	   ``axes``. If so, the attribute value contains a colon (or comma)
+	   delimited list (in the C-order of the data array) with the names
+	   of the 
+	   :index:`dimension scales <dimension scale>`
+	   associated with the plottable data. And
+	   then you can skip the next two steps.
+
+	#. If the ``axes`` attribute is not defined, search for the 
+	   one-dimensional NeXus fields with attribute ``primary=1``.
+
+	#. These are the dimension scales to label 
+	   the axes of each dimension of the data.
+
+	#. Link each dimension scale
+	   to the respective data dimension by
+	   the ``axis`` attribute (``axis=1``, ``axis=2``, 
+	   ... up to the  :index:`rank <rank>` of the data).
+
+	#. If necessary, close the
+	   ``NXdata``
+	   group, open the next one and repeat steps 3 to 6.
+
+	#. If necessary, close the
+	   ``NXentry``
+	   group, open the next one and repeat steps 2 to 7.
 
 Consult the :ref:`NeXus API <Introduction-NAPI>`
 section, which describes the routines available to program these
