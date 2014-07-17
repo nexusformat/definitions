@@ -16,13 +16,30 @@ Naming Conventions
 .. index:: 
    naming convention
    name rules
+   NX; used as NX class prefix 
 
 Group and field Names used within NeXus follow a naming convention
-which is made up from the following :index:`rules <rules; naming>`:
-The names of NeXus *group* and *field* items
-must only contain a restricted set of characters.
-This set may be described by this regular expression syntax :index:`regular expression`
-:ref:`regular expression syntax <RegExpName>`:
+described by the following :index:`rules <rules; naming>`:
+
+* The names of NeXus *group* and *field* items
+  must only contain a restricted set of characters.
+  This set may be described by a regular expression 
+  syntax :index:`regular expression`
+  :ref:`regular expression syntax <RegExpName>`,
+  as described below.
+
+* For the class names [#]_ of NeXus *group* items,
+  the prefix *NX* is reserved. 
+  Thus all NeXus class names start with NX.
+  The chapter titled :ref:`nexus-class-definitions` lists the 
+  available NeXus class names as either *base classes*, 
+  *application definitions*, or *contributed definitions*.
+
+.. [#] The *class name* is the value assigned to the
+   *NX_class* attribute of an HDF5 group in the NeXus data file.
+   This *class name* is different than the *name* of the HDF5 group.
+   This is important when not using the NAPI to either read or write
+   the HDF5 data file.
 
 .. compound::
 

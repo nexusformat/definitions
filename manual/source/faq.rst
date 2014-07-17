@@ -92,13 +92,13 @@ This is a list of commonly asked questions concerning the NeXus data format.
     and have a try. You can ask for help on the `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
     Once you have a definition that is working well for at least your case,
     you can submit it to the NIAC for acceptance as a standard.
-    The procedures for acceptance are defined in the NIAC constitution. [#]_
+    The procedures for acceptance are defined in the NIAC :index:`constitution`. [#]_
         
 
 	.. [#]
 	    Refer to the most recent version of the NIAC constitution on the
 	    NIAC wiki:
-	    http://www.nexusformat.org/NIAC
+	    http://wiki.nexusformat.org/NIAC#Constitution
 
 
 #. What is the purpose of ``NXdata``?
