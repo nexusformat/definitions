@@ -308,6 +308,9 @@ showing an external file link in HDF5:
 NeXus Base Classes
 ==================
 
+.. index:: NX; used as NX class prefix
+.. index:: rules; NX prefix
+
 Data groups often describe objects in the experiment (monitors, detectors,
 monochromators, etc.), so that the contents (both data fields and/or other data
 groups) comprise the properties of that object. NeXus has defined a set of standard
@@ -387,45 +390,54 @@ annotate or in a ``NXcollection``. All of the base classes are documented in the
 The most notable special base class (or *group* in NeXus) is ``NXdata``.
 ``NXdata`` is the answer to a basic motivation of NeXus to facilitate 
 automatic plotting of data.
-``NXdata`` is designed to contain the main dataset and its associated dimension scales (axes)
-of a NeXus data file. The
-usage scenario is that an automatic data plotting program just opens a ``NXentry`` and then continues to search for any ``NXdata``
-groups. These ``NXdata`` groups represent the plottable data.  Here is the way an automatic plotting program ought to work:
+``NXdata`` is designed to contain the main dataset and its associated 
+dimension scales (axes) of a NeXus data file. 
+The usage scenario is that an automatic data plotting program just 
+opens a ``NXentry`` and then continues to search for any ``NXdata``
+groups. These ``NXdata`` groups represent the plottable data.
+An algorithm for identifying the default plottable data
+is :ref:`presented <Find-Plottable-Data>` in the 
+chapter titled :ref:`DataRules`.
 
-#. Search for ``NXentry`` groups
 
-#. Open an ``NXentry``
 
-#. Search for ``NXdata`` groups
+.. the previous description
+	Here is the way an automatic plotting program ought to work:
 
-#. Open an ``NXdata`` group
+	#. Search for ``NXentry`` groups
 
-#. Identify the plottable data.
+	#. Open an ``NXentry``
 
-   #. Search for a dataset with attribute ``signal=1``. This is your main dataset.
-      (There should be *only one* dataset that matches.)
-      
-   #. Try to read the ``axes`` attribute of the main dataset, if it exists.
-   
-      #. The value of ``axes`` is a colon- or comma-separated list of the datasets describing the 
-         :index:`dimension scales <dimension scale>`
-         (such as ``axes="polar_angle:time_of_flight"``).
-         
-      #. Parse ``axes`` and open the datasets to describe your 
-         :index:`dimension scales <dimension scale>`
-         
-   #. If ``axes`` does not exist:
-      
-      #. Search for datasets with attributes ``axis=1``, ``axis=2``, etc.
-         These are the datasets describing your axis. There may be
-         several datasets for any axis, i.e. there may be multiple datasets with the attribute ``axis=1``. Among them the dataset with the
-         attribute ``primary=1`` is the preferred one. All others are alternative :index:`dimension scales <dimension scale>`.
-         
-      #. Open the datasets to describe your dimension scales.
+	#. Search for ``NXdata`` groups
 
-#. Having found the default plottable data and 
-   its :index:`dimension scales <dimension scale>`:
-   make the plot
+	#. Open an ``NXdata`` group
+
+	#. Identify the plottable data.
+
+	   #. Search for a dataset with attribute ``signal=1``. This is your main dataset.
+		  (There should be *only one* dataset that matches.)
+
+	   #. Try to read the ``axes`` attribute of the main dataset, if it exists.
+
+		  #. The value of ``axes`` is a colon- or comma-separated list of the datasets describing the 
+			 :index:`dimension scales <dimension scale>`
+			 (such as ``axes="polar_angle:time_of_flight"``).
+
+		  #. Parse ``axes`` and open the datasets to describe your 
+			 :index:`dimension scales <dimension scale>`
+
+	   #. If ``axes`` does not exist:
+
+		  #. Search for datasets with attributes ``axis=1``, ``axis=2``, etc.
+			 These are the datasets describing your axis. There may be
+			 several datasets for any axis, i.e. there may be multiple datasets with the attribute ``axis=1``. Among them the dataset with the
+			 attribute ``primary=1`` is the preferred one. All others are alternative :index:`dimension scales <dimension scale>`.
+
+		  #. Open the datasets to describe your dimension scales.
+
+	#. Having found the default plottable data and 
+	   its :index:`dimension scales <dimension scale>`:
+	   make the plot.
 
 
 .. _where.to.store.metadata:
