@@ -42,8 +42,8 @@ Two things to note about the development and history of NeXus:
     At this workshop, the name *NeXus* was chosen.
 
 :August 1996:
-    The HDF-4 API is quite complex. Thus a NeXus Abstract Programmer Interface (NAPI)
-    :index:`EDIT_ME <NAPI>`
+    The HDF-4 API is quite complex. Thus a NeXus Abstract Programmer Interface
+    :index:`NAPI`
     was released which simplified reading and writing NeXus files.
 
 :October 1996:
