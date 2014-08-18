@@ -6,9 +6,9 @@
 
 .. _NAPI:
 
-===============================================
-NAPI: NeXus Application Programmer Interface
-===============================================
+=====================================================
+NAPI: NeXus Application Programmer Interface (frozen)
+=====================================================
 
 The Application Program Interface (API) has been developed to facilitate the 
 reading and writing of NeXus files. Those writing applications to produce 

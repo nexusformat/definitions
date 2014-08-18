@@ -1,8 +1,8 @@
 .. _ClassDefinitions:
 
-=======================
-NeXus class definitions
-=======================
+=================================
+Introduction to NeXus definitions
+=================================
 
 ..
 	.. image:: img/NeXus.png
@@ -29,13 +29,5 @@ NeXus Class Specifications
 .. toctree::
 	:maxdepth: 1
 	
-	overview
-
-.. rubric:: Descriptions of the NeXus classes
-
-.. toctree::
-   :maxdepth: 1
+	defs_overview
    
-   base_classes/index
-   applications/index
-   contributed_definitions/index
