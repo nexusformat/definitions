@@ -10,13 +10,27 @@
 NAPI: NeXus Application Programmer Interface (frozen)
 =====================================================
 
-The Application Program Interface (API) has been developed to facilitate the 
-reading and writing of NeXus files. Those writing applications to produce 
-NeXus files are encouraged to use the API in order to ensure compliance with 
-the NeXus standard. The API supports the reading and writing of HDF4, HDF5, 
-and XML files.  However, it is possible to create programs that write and/or 
-read NeXus files without using the NAPI.  Two examples are provided in 
-:ref:`native-HDF5-Examples`.
+.. index:: NAPI
+
+Status
+======
+
+This application program interface (API) was developed to support the 
+reading and writing of NeXus files through unified function calls,
+regardless of the physical data format (XML, HDF4, HDF5).
+
+In the meantime it has been decided that active development of NeXus
+definitions and tools will concentrate on HDF5
+as the only supported physical data format.
+It is expected that most application developers will use
+standard HDF5 tools to read and write NeXus.
+Two examples are provided in :ref:`native-HDF5-Examples`.
+
+Therefore, the decision has been taken to freeze the NAPI.
+Maintenance is reduced to bug fixes.
+
+Overview
+========
 
 The core routines have been written in C but wrappers are available for a 
 number of other languages including C++, Fortran 77, Fortran 90, Java, 
@@ -35,13 +49,6 @@ will not be of much use if all you want is to read and write files using the
 NAPI. 
 
 
-.. index:: NAPI; purpose
-
-.. _NAPI-Purpose:
-
-Purpose of API
-==============
-
 The NeXus Application Program Interface 
 call routines in the appropriate backend (HDF4, HDF5 or XML) to read and write files
 with the correct structure. The API serves a number of purposes:
@@ -51,14 +58,6 @@ with the correct structure. The API serves a number of purposes:
 #. It hides the implementation details of the format. 
    In particular, the API can read and write HDF4, HDF5, 
    and XML files using the same routines.
-
-.. note:: 
-	While it is possible to write NeXus compilant data files using 
-	a supported on-disk backend directly, we strongly encourage using 
-	the supported NeXus-API.  This ensures the maximum compatibily.
-
-
-
 
 	
 .. index:: NAPI; core
