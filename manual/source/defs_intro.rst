@@ -40,7 +40,7 @@ The documentation for each class consists of:
 #. **source**:
      a link to the authorative NXDL source
 #. **SVN ID**:
-     a subversion identifier. This is obsolete.
+     an obsolete subversion identifier.
 #. **tree outline**:
      hierarchical list of members.
 #. **member table**:
@@ -49,17 +49,20 @@ The documentation for each class consists of:
      member tables of subgroups.
 
 
-Basic structure of the **class**
---------------------------------
+Tree outlines
+-------------
 
 A compact listing of the basic structure
 (groups, fields, dimensions, attributes, and links)
 is prepared for each NXDL specification.  Indentation shows
-nested structure.  Attributes are prepended with the ``@``
-symbol while links use the characters ``-->``
-to represent the path to the intended source of the information.
+nested structure.  *Attributes* are prepended with the ``@``
+symbol.
+*Links* use the characters ``-->`` to represent the path to the intended source of the information.
 
-The table has columns to describe the basic information about each field or group in
+Member tables
+-------------
+
+Member tables provide basic information about each field or group in
 the class. An example of the varieties of specifications are given in the following
 table using items found in various NeXus base classes.
 
