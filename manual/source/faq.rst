@@ -19,7 +19,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     This is not easy to say, not all facilities using NeXus actively
     participate in the committee. Some facilities have reported their
-    adoption status on the `Facilities Wiki page <http://www.nexusformat.org/Facilities>`_.
+    adoption status on the `Facilities Wiki page <http://wiki.nexusformat.org/Facilities>`_.
     Please have a look at this list. Keep in mind that it is not
     complete.
 
