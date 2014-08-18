@@ -15,6 +15,7 @@ http://www.nexusformat.org/
 
     user_manual
     ref_doc
+    napi
 
 .. toctree::
     :maxdepth: 1

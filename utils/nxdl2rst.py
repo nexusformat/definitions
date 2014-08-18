@@ -388,7 +388,6 @@ def main(tree, ns):
     # structure of NXDL specification
     print '\n%s:' % ':ref:`NXDL <NXDL>` source'
     print '\t%s/%s/%s.nxdl.xml' % (html_root, subdir, name)
-    print fmt % ('svnid', str(root.get('svnid')).strip('$').strip())
     
     print '\n.. compound::\n'
     print '\t.. rubric:: Structure of %s\n' % name
