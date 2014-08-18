@@ -39,8 +39,6 @@ The documentation for each class consists of:
      keywords used to designate array dimensions. At present, this list is not guaranteed to be complete (some array dimension names appear only in the description column of the class member table, and not here)
 #. **source**:
      a link to the authorative NXDL source
-#. **SVN ID**:
-     an obsolete subversion identifier.
 #. **tree outline**:
      hierarchical list of members.
 #. **member table**:
