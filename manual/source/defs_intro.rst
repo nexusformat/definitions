@@ -7,139 +7,46 @@ Introduction to NeXus definitions
 ..
 	.. image:: img/NeXus.png
 
-Information is stored in a NeXus data file by grouping together similar parts.
-For example, information about the sample could include a descriptive name, the
-temperature, and other items.  NeXus specifies the contents of these groupings
-using *classes*.  In some parts of this manual, these
-classes might be called *group type* or some similar term.
-In this section, the NeXus classes are described in detail.  Each class is specified markup language, described in the chapter :ref:`NXDL`.
+While the design principles of NeXus are explained in the :ref:`UserManual`, this Reference Documentation specifies all allowed :ref:`base classes <base.class.definitions>` and all standardized :ref:`application definitions <application.definitions>`. Furthermore, it also contains :ref:`contributed definitions <contributed.definitions>` of new bases classes or application definitions that are currently under review.
 
-There are three types of NeXus class file: base classes, application definitions, 
-and contributed definitions.  Base class definitions define the *complete* set of 
+Base class definitions and application definitions have basically the same structure, but different semantics: Base class definitions define the *complete* set of 
 terms that *might* be used in an instance of that class.  Application definitions 
 define the *minimum* set of terms that *must* be used in an instance of that class.  
-Contributed definitions include propositions from the community for NeXus base 
-classes or application definitions, as well as other NXDL files for long-term 
-archival by NeXus.
+
+Base classes and application definitions are specified using a domain-specific XML scheme, the :ref:`NXDL`.
 
 .. _ClassDefinitions-Overview:
 
-Overview of NeXus classes
--------------------------
-
-.. TODO: organization could improve here!
+Overview of NeXus definitions
+-----------------------------
 
 .. index:: NXDL
 
-Each of the NeXus classes is described in the subsections below.
-The classes are organized by the category [#]_ of class, whether 
-:ref:`base class <Design-NeXusClasses>`, 
-:ref:`application definition <Design-NeXusApplications>`, 
-or :ref:`contributed definition <community.Contributed.Definitions>`.
 For each class definition, the documentation is derived from content
-provided in the NXDL [#]_ specification.  
+provided in the NXDL specification.
+
 The documentation for each class consists of:
 
-#. a short table:
+#. **short table**:
 
    * the current version of the NXDL specification used for the class
-   * the category of the class
+   * the category of the class (base class / application definition / contributed definition)
    * The  NeXus class extended by this class. 
      Most NeXus base classes only extend the base class definition (NXDL).
    * any other base classes (groups) cited by this class
 
-#. symbol list [#]_
-#. the class description
-#. a link to a tree outline of the class (or link to the NXDL source)
-
-   .. TODO: make this *always* a link to the source and not a link to the tree outline
-
-#. a tree outline of the class
-#. a table of the members of the class
-#. supplementary tables of members as needed [#]_
-
-
-.. [#] The *category* of NXDL, one of these:
-    
-    + ``base`` (meaning: :ref:`base class <base.class.definitions>`)
-    + ``application`` (meaning: :ref:`application definition <application.definitions>`)
-    + ``contributed`` (meaning: :ref:`contributed definition <contributed.definitions>`)
-
-.. [#] NXDL (NeXus Definition Language:)
-
-   :ref:`NXDL` is used to describe the components in the NeXus
-   Base Classes, as well as application and contributed definitions.
-   The intent of NXDL is to provide a
-   :index:`rules-based method <rules; NXDL>`
-   for defining a NeXus data file that is
-   specific to either an instrument (where NeXus has been
-   for years) or an area of scientific technique or analysis.
-   NXDL replaces the meta-DTD method used previously to
-   define the NeXus base classes
-
-.. [#] List of the ``symbols`` (if present) that define mnemonics that
-    represent the length of each dimension in a vector or array.
-   
-
-.. [#]  For application definitions (such as :ref:`NXsas`)
-   as well as some contributed definitions,
-   the NXDL specifies members of subgroups.  These specifications are described in
-   supplementary tables of members
-
-..
-
-   Each of the NeXus classes is described in several basic ways. First, a short list of
-   descriptive information is provided as a header, then a condensed listing of the
-   basic structure, then a table providing documentation for the various components
-   of the NeXus class.
-   
-   :category:
-       The category of NXDL, one of these:
-       
-       + ``base`` (meaning: :ref:`base class <base.class.definitions>`)
-       + ``application`` (meaning: :ref:`application definition <application.definitions>`)
-       + ``contributed`` (meaning: :ref:`contributed definition <contributed.definitions>`)
-   
-   :NXDL source:
-       Name of the NeXus class and a URL to the source listing in the NeXus
-       subversion repository.
-   
-   :version:
-       A string that documents this particular
-       version of this NXDL.
-   
-   :SVN Id:
-       The SVN ID is now out of date since the version control switched from
-       subversion to git.
-
-   .. index:: NXDL
-   
-   :NeXus Definition Language:
-       :ref:`NXDL` is used to describe the components in the NeXus
-       Base Classes, as well as application and contributed definitions.
-       The intent of NXDL is to provide a
-       :index:`rules-based method <rules; NXDL>`
-       for defining a NeXus data file that is
-       specific to either an instrument (where NeXus has been
-       for years) or an area of scientific technique or analysis.
-       NXDL replaces the meta-DTD method used previously to
-       define the NeXus base classes.
-   
-   :extends class:
-       NeXus class extended by this class. Most NeXus base classes only
-       extend the base class definition (NXDL).
-   
-   :other classes included:
-       List (including URLs) of other classes used to define this
-       class.
-   
-   :symbol list:
-       List of the ``symbols`` (if present) that define mnemonics that
-       represent the length of each dimension in a vector or array.
-   
-   :documentation:
-       Description of the NeXus class. DocBook markup (formatting is
-       allowed).
+#. **symbol list**:
+     keywords used to designate array dimensions. At present, this list is not guaranteed to be complete (some array dimension names appear only in the description column of the class member table, and not here)
+#. **source**:
+     a link to the authorative NXDL source
+#. **SVN ID**:
+     a subversion identifier. This is obsolete.
+#. **tree outline**:
+     hierarchical list of members.
+#. **member table**:
+     list of top-level members with natural-language annotations.
+#. **supplementary member tables** as needed:
+     member tables of subgroups.
 
 
 Basic structure of the **class**
