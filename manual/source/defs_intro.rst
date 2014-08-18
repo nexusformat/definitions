@@ -94,25 +94,6 @@ Name                Type                                                      Un
                     | C
 =================== ========================================================= ========= ================================================================
 
-In the above example, the fields might appear in a NeXus XML data file as
-
-.. compound::
-
-	.. rubric:: Example fragment of a NeXus XML data file
-	
-	.. code-block:: xml
-	    :linenos:
-	
-		<program_name version="1.0a" configuration="standard">
-		    MaxSAS
-		</program_name>
-		<NXnote name="thumbnail" mime_type="image/*">
-		    <!-- contents of an NXnote would appear here -->
-		</NXnote>
-		<distance units="mm">125.6</distance>
-		<mode> Single Bunch </mode>
-		<target_material>depleted_U</target_material>
-
 The columns in the table are described as follows:
 
 :Name (and attributes):
