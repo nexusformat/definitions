@@ -12,8 +12,7 @@ For example, information about the sample could include a descriptive name, the
 temperature, and other items.  NeXus specifies the contents of these groupings
 using *classes*.  In some parts of this manual, these
 classes might be called *group type* or some similar term.
-In this section, the NeXus classes are described in detail.  Each class is specified
-using :ref:`NXDL`, described in a separate chapter.
+In this section, the NeXus classes are described in detail.  Each class is specified markup language, described in the chapter :ref:`NXDL`.
 
 There are three types of NeXus class file: base classes, application definitions, 
 and contributed definitions.  Base class definitions define the *complete* set of 
