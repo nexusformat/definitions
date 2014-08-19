@@ -411,9 +411,12 @@ def main(tree, ns):
 
 
 if __name__ == '__main__':
+
+    # get NXDL_SCHEMA_FILE
     developermode = True
     developermode = False
     if developermode and len(sys.argv) != 2:
+        # use default input file
         NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'applications', 'NXarchive.nxdl.xml')
         NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'applications', 'NXsas.nxdl.xml')
         #NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'base_classes', 'NXcrystal.nxdl.xml')
@@ -422,15 +425,18 @@ if __name__ == '__main__':
         #NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXmagnetic_kicker.nxdl.xml')
         
     else:
+        # get input file from command line
         if len(sys.argv) != 2:
             print "usage: %s someclass.nxdl.xml" % sys.argv[0]
             exit()
         NXDL_SCHEMA_FILE = sys.argv[1]
+
+    # parse input file into tree
     if not os.path.exists(NXDL_SCHEMA_FILE):
         print "Cannot find %s" % NXDL_SCHEMA_FILE
         exit()
-        
     tree = lxml.etree.parse(NXDL_SCHEMA_FILE)
+
     NAMESPACE = 'http://definition.nexusformat.org/nxdl/@NXDL_RELEASE@'
     ns = {'nx': NAMESPACE}
     
