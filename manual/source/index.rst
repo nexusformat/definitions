@@ -16,20 +16,13 @@ http://www.nexusformat.org/
     user_manual
     ref_doc
     napi
-
-.. toctree::
-    :maxdepth: 1
-
-    authorgroup
     community
     releases
     installation
     utilities
     faq
     history
-    revhistory
-    copyright
-    about
+    docs_about
 
 -----------
 
