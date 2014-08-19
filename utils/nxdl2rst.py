@@ -363,7 +363,7 @@ def main(tree, ns):
 
     # TODO: change instances of \t to proper indentation
     fmt = '\n%s:\n\t%s'
-    html_root = 'http://svn.nexusformat.org/definitions/trunk'
+    html_root = 'https://github.com/nexusformat/definitions/blob/master'
         
     # symbol table
     node_list = root.xpath('nx:symbols', namespaces=ns)
@@ -388,7 +388,6 @@ def main(tree, ns):
     # structure of NXDL specification
     print '\n%s:' % ':ref:`NXDL <NXDL>` source'
     print '\t%s/%s/%s.nxdl.xml' % (html_root, subdir, name)
-    print fmt % ('svnid', str(root.get('svnid')).strip('$').strip())
     
     print '\n.. compound::\n'
     print '\t.. rubric:: Structure of %s\n' % name

@@ -15,20 +15,12 @@ http://www.nexusformat.org/
 
     user_manual
     ref_doc
-
-.. toctree::
-    :maxdepth: 1
-
-    authorgroup
+    napi
     community
-    releases
     installation
     utilities
-    faq
     history
-    revhistory
-    copyright
-    about
+    docs_about
 
 -----------
 

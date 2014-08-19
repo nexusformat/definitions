@@ -1,10 +1,11 @@
 .. $Id$
 
-=================
-About this Manual
-=================
+========
+Colophon
+========
 
-This manual was produced using Sphinx (http://sphinx.pocoo.org).
+These docs (manual and reference) were produced using Sphinx
+(http://sphinx.pocoo.org).
 The source for the manual shows many examples of the structures
 used to create the manual.  If you have any questions about 
 how to contribute to this manual, please contact the NeXus
