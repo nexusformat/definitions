@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    ########### SVN repository information ###################
-    # $LastChangedDate$
-    # $LastChangedBy$
-    # $LastChangedRevision$
-    # $HeadURL$
-    ########### SVN repository information ###################
-    
     Purpose:
     This stylesheet is used to translate the NeXus Definition Language
     specifications into Schematron Schema (.sch) files for use in

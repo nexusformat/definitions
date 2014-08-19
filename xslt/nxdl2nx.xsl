@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    ########### SVN repository information ###################
-    # $LastChangedDate: 2010-10-07 05:35:23 +0100 (Thu, 07 Oct 2010) $
-    # $LastChangedBy: Freddie Akeroyd $
-    # $LastChangedRevision: 601 $
-    # $HeadURL: http://svn.nexusformat.org/definitions/trunk/xslt/nxdl2sch.xsl $
-    ########### SVN repository information ###################
-    
     Purpose:
     This stylesheet is used to translate the NeXus Definition Language
     specifications into a sample XML file
