@@ -24,159 +24,17 @@ SUBTABLES = []
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# the problem with trying to improve the tables for the PDF ...
-"""
-This works better ...
-
-+---------+--------+------------------------+
-| name    | type   | units                  |
-+---------+--------+------------------------+
-|         | description                     |
-+=========+========+========================+
-| thing1  | small  | cat                    |
-+---------+--------+------------------------+
-|         | travels with big cat            |
-+---------+--------+------------------------+
-| ..                                        |
-+---------+--------+------------------------+
-| thing2  | small  | cat                    |
-+---------+--------+------------------------+
-| ..      | travels with big cat and thing1 |
-+---------+---------------------------------+
-
-
-.. than this in PDF (both are fine in HTML!)
-   but both fail in PDF when description is multi-line
-   and even worse if there is a bullet list in the description
-
-+---------------------+-----------------------------+--------------------------------------+
-| Name and Attributes | Type                        | Units                                |
-|                     +-----------------------------+--------------------------------------+
-|                     | Description (and Occurrences)                                      |
-+=====================+=============================+======================================+
-| variable            | NX_NUMBER                                                          |
-+                     +-----------------------------+--------------------------------------+
-|                     | Dimension scale defining an axis of the data.                      |
-|                     | Client is responsible for defining the dimensions of the data.     |
-|                     | The name of this field may be changed to fit the circumstances.    |
-|                     | Standard NeXus client tools will use the attributes to determine   |
-|                     | how to use this field.                                             |
-+---------------------+-----------------------------+--------------------------------------+
-| variable_errors     | NX_NUMBER                                                          |
-+                     +-----------------------------+--------------------------------------+
-|                     | Errors (uncertainties) associated with axis ``variable``           |
-|                     | Client is responsible for defining the dimensions of the data.     |
-|                     | The name of this field may be changed to fit the circumstances     |
-|                     | but is matched with the *variable*                                 |
-|                     | field with ``_errors`` appended.                                   |
-+---------------------+-----------------------------+--------------------------------------+
-| data                | NX_NUMBER                   |                                      |
-+                     +-----------------------------+--------------------------------------+
-|                     | This field contains the data values to be used as the              |
-|                     | NeXus *plottable data*.                                            |
-|                     | Client is responsible for defining the dimensions of the data.     |
-|                     | The name of this field may be changed to fit the circumstances.    |
-|                     | Standard NeXus client tools will use the attributes to determine   |
-|                     | how to use this field.                                             |
-+---------------------+-----------------------------+--------------------------------------+
-"""
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
 # testing:
 # cd /tmp
 # mkdir out
 # /G/nx-def/utils/nxdl2rst.py /G/nx-def/applications/NXsas.nxdl.xml > nxsas.rst && sphinx-build . out
 # then point browser to file:///tmp/out/nxsas.html
 
-def printAttribute( ns, node, indent ):
-    name = '@' + node.get('name')
-    typ  = node.get('type', '(:ref:`NX_CHAR <NX_CHAR>`)')
+def getTyp( node ):
+    typ = node.get('type', 'untyped (:ref:`NX_CHAR <NX_CHAR>`)')
     if typ.startswith('NX_'):
         typ = ':ref:`%s <%s>`' % (typ, typ)
-    units = node.get('units', '')
-    if units.startswith('NX_'):
-        units = ':ref:`%s <%s>`' % (units, units)
-    doc = getDocFromNode(ns, node, retval='')
-    doc = doc.strip()
-    doc = re.sub( '\n', ' ', doc )
-    print( "%s**%s**: %s\n%s  %s" % (indent, name, typ, indent, doc ) )
-    
-
-def printFullTree(ns, parent, name, indent):
-    '''
-    recursively print the full tree structure
-    
-    :param dict ns: dictionary of namespaces for use in XPath expressions
-    :param lxml_element_node parent: parent node to be documented
-    :param str name: name of elements, such as NXentry/NXuser
-    :param indent: to keep track of indentation level
-    '''
-    for node in parent.xpath('nx:field', namespaces=ns):
-        name = node.get('name')
-        typ  = node.get('type', '(:ref:`NX_CHAR <NX_CHAR>`)')
-        units = node.get('units', '')
-        if typ.startswith('NX_'):
-            typ = ':ref:`%s <%s>`' % (typ, typ)
-        if units.startswith('NX_'):
-            units = ':ref:`%s <%s>`' % (units, units)
-        units_out = ""
-        if units:
-            units_out = " {" + units + "}"
-        # TODO: look for "deprecated" element, add to doc
-        doc = getDocFromNode(ns, node, retval='')
-    
-        node_list = node.xpath('nx:enumeration', namespaces=ns)
-        if len(node_list) == 1:
-            doc += ' -:- ' + getEnumerationDescription(ns, node_list[0])
-        node_list = node.xpath('nx:dimensions', namespaces=ns)
-        if len(node_list) == 1:
-            doc += ' -:- ' + getDimensionsDescription(ns, node_list[0])
-        doc = doc.strip()
-        doc = re.sub( '\n', ' ', doc )
-        print( "%s**%s**: %s%s\n%s  %s" % (indent, name, typ, units_out, indent, doc ) )
-
-        for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, subnode, indent+"  " )
-    
-    for node in parent.xpath('nx:group', namespaces=ns):
-        name = node.get('name', '')
-        typ = node.get('type', '<ERROR!>')
-        if typ.startswith('NX'):
-            if name is '':
-                name = '(%s)' % typ.lstrip('NX')
-            typ = ':ref:`%s`' % typ
-        nodename = '%s/%s' % (name, node.get('type'))
-        doc = getDocFromNode(ns, node, retval='')
-        print( "%s**%s**: %s\n%s  %s" % (indent, name, typ, indent, doc ) )
-        doc = re.sub( '\n', ' ', doc )
-        for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, subnode, indent+"  " )
-        printFullTree(ns, node, nodename, indent+"  ")
-
-
-'''
-    TODO:
-
-    for node in parent.xpath('nx:link', namespaces=ns):
-        t.rows.append( getLinkData(ns, node) )
-
-    title = '**%s** Members' % name
-    print
-    print '%s\n%s\n' % (title, '='*len(title))
-    # in PDF, the section title is printed beside the table unless some text intervenes.
-    print '\nDeclarations in the *%s* group.\n' % name
-    if len(t.rows) > 0:
-        print t.reST(fmt='complex')
-    else:
-        print 'No members to be documented'
-'''
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-def _indent(indentLevel):
-    return INDENTATION*indentLevel
-
+    return typ
 
 def getDocFromNode(ns, node, retval=None):
     docnodes = node.xpath('nx:doc', namespaces=ns)
@@ -213,6 +71,88 @@ def getDocFromNode(ns, node, retval=None):
                 raise Exception, msg
             text += '\n' + line[indent:]
     return text.lstrip()
+
+def printAttribute( ns, node, indent ):
+    units = node.get('units', '')
+    if units.startswith('NX_'):
+        units = ':ref:`%s <%s>`' % (units, units)
+    doc = getDocFromNode(ns, node, retval='')
+    doc = doc.strip()
+    doc = re.sub( '\n', ' ', doc )
+    print( "%s**%s**: %s\n%s  %s" %
+           (indent, 
+            '@' + node.get('name'),
+            getTyp(node), indent, doc ) )
+    
+
+def printFullTree(ns, parent, name, indent):
+    '''
+    recursively print the full tree structure
+    
+    :param dict ns: dictionary of namespaces for use in XPath expressions
+    :param lxml_element_node parent: parent node to be documented
+    :param str name: name of elements, such as NXentry/NXuser
+    :param indent: to keep track of indentation level
+    '''
+
+    for node in parent.xpath('nx:field', namespaces=ns):
+        name = node.get('name')
+        units = node.get('units', '')
+        if units.startswith('NX_'):
+            units = ':ref:`%s <%s>`' % (units, units)
+        units_out = ""
+        if units:
+            units_out = " {" + units + "}"
+        # TODO: look for "deprecated" element, add to doc
+        doc = getDocFromNode(ns, node, retval='')
+    
+        node_list = node.xpath('nx:enumeration', namespaces=ns)
+        if len(node_list) == 1:
+            doc += ' -:- ' + getEnumerationDescription(ns, node_list[0])
+        node_list = node.xpath('nx:dimensions', namespaces=ns)
+        if len(node_list) == 1:
+            doc += ' -:- ' + getDimensionsDescription(ns, node_list[0])
+        doc = doc.strip()
+        doc = re.sub( '\n', ' ', doc )
+        print( "%s**%s**: %s%s\n%s  %s" % (
+            indent,
+            name,
+            getTyp(node),
+            units_out, indent, doc ) )
+
+        for subnode in node.xpath('nx:attribute', namespaces=ns):
+            printAttribute( ns, subnode, indent+"  " )
+    
+    for node in parent.xpath('nx:group', namespaces=ns):
+        name = node.get('name', '')
+        typ = node.get('type', 'untyped (this is an error; please report)')
+        if typ.startswith('NX'):
+            if name is '':
+                name = '(%s)' % typ.lstrip('NX')
+            typ = ':ref:`%s`' % typ
+        nodename = '%s/%s' % (name, node.get('type'))
+        doc = getDocFromNode(ns, node, retval='')
+        print( "%s**%s**: %s\n%s  %s" % (indent, name, typ, indent, doc ) )
+        doc = re.sub( '\n', ' ', doc )
+        for subnode in node.xpath('nx:attribute', namespaces=ns):
+            printAttribute( ns, subnode, indent+"  " )
+        printFullTree(ns, node, nodename, indent+"  ")
+
+    for node in parent.xpath('nx:link', namespaces=ns):
+        doc = getDocFromNode(ns, node, retval='')
+        doc = doc.strip()
+        doc = re.sub( '\n', ' ', doc )
+        print( "%s**%s** --> %s\n%s  %s" % (
+            indent,
+            node.get('name'),
+            node.get('target'), indent, doc ) )
+
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+def _indent(indentLevel):
+    return INDENTATION*indentLevel
+
+
 
 
 def getNextTableXref(name):
@@ -392,123 +332,6 @@ def getLinkData(ns, node):
     doc += getDocFromNode(ns, node, retval='')
     return [name, typ, units, doc.strip()]
 
-
-def main(tree, ns):
-    root = tree.getroot()
-    name = root.get('name')
-    subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
-    index_cat = {
-                 'base_classes': 'Base Classes',
-                 'applications': 'Application Definitions',
-                 'contributed_definitions': 'Contributed Definitions',
-                 }[subdir]
-    title = name
-
-    # print ReST comments and section header
-    print( '.. auto-generated by script %s from the NXDL source %s' %
-           (sys.argv[0], sys.argv[1]) )
-    print
-    print '.. index:: ! class definition -- %s; %s' % (index_cat, name)
-    print '.. index:: ! %s' % name
-    print
-    print '.. _%s:\n' % name
-    print '='*len(title)
-    print title
-    print '='*len(title)
-       
-    # print small table with various metadata about this specification
-    t = rest_table.Table()
-    t.labels = ['version', 'category', 'extends', ]
-    extends = root.get('extends')
-    if extends is not None:
-        extends = ':ref:`%s`' % extends
-    else:
-        extends = ''
-    parts = [
-             root.get('version').strip(),
-             root.get('category').strip(),
-             extends,
-             ]
-    node_list = root.xpath('//nx:group', namespaces=ns)
-    t.labels.append('groups cited')
-    groups = []
-    for node in node_list:
-        g = node.get('type')
-        g_ref = ':ref:`%s`' % g
-        if g.startswith('NX') and g_ref not in groups:
-            groups.append(g_ref)
-    if len(groups) > 0:
-        parts.append(', '.join(sorted(groups)))
-    else:
-        parts.append('none')
-    t.rows.append(parts)
-    print
-    print t.reST(fmt='complex')
-
-    # print official description of this class
-    print
-    doc = getDocFromNode(ns, root)
-    if doc is None:
-        raise Exception, "No documentation for: " + name
-    for line in doc.splitlines():
-        print '%s' % line
-
-    # TODO: change instances of \t to proper indentation
-    fmt = '\n%s:\n\t%s'
-    html_root = 'https://github.com/nexusformat/definitions/blob/master'
-        
-    # print symbol list
-    node_list = root.xpath('nx:symbols', namespaces=ns)
-    if len(node_list) == 0:
-        print fmt % ('symbol list', 'No symbol table.')
-    elif len(node_list) > 1:
-        print fmt % ('symbol list', 'Invalid symbol table.')
-    else:
-        print '\nsymbol list:'
-        doc = getDocFromNode(ns, node_list[0])
-        if doc is not None:
-            for line in doc.splitlines():
-                print '  %s' % line
-            print
-        for node in node_list[0].xpath('nx:symbol', namespaces=ns):
-            doc = getDocFromNode(ns, node)
-            print '  :%s:' % node.get('name')
-            for line in doc.splitlines():
-                print '    %s' % line
-            print
-
-    # print experimental full tree
-    print '**Structure**:\n'
-    printFullTree(ns, root, name, "  ")
-
-    bla = \
-''' 
-    # print structure tree
-    print '\n.. compound::\n'
-    print '\t.. rubric:: Structure of %s\n' % name
-    print '\t.. code-block:: guess'
-    print '\t\t:linenos:\n'
-    # relative path to XSLT
-    XSLT_FILE = os.path.join(BASEDIR, '..', subdir, 'nxdlformat.xsl')
-    # absolute path
-    XSLT_FILE = os.path.abspath(XSLT_FILE)
-    # same as: xsltproc NXDL_FILE XSLT_FILE
-    transform = lxml.etree.XSLT(lxml.etree.parse(XSLT_FILE))
-    for line in str(transform(root)).splitlines():
-        print '\t\t%s' % line
-
-    # print member table(s)
-    printMemberTable(ns, root, name, getNextTableXref(name))
-    while len(SUBTABLES) > 0:
-        item = SUBTABLES.pop(0)
-        if item is not None:
-            printMemberTable(ns, item['node'], item['name'], item['xref'])
-'''
-
-    # print NXDL source location
-    print 'This class description has been automatically generated from the :ref:`NXDL <NXDL>` source at %s/%s/%s.nxdl.xml' % (html_root, subdir, name)
-
-
 if __name__ == '__main__':
 
     # get NXDL_SCHEMA_FILE
@@ -542,4 +365,101 @@ if __name__ == '__main__':
     NAMESPACE = 'http://definition.nexusformat.org/nxdl/@NXDL_RELEASE@'
     ns = {'nx': NAMESPACE}
     
-    main(tree, ns)
+    root = tree.getroot()
+    name = root.get('name')
+    title = name
+
+    subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
+    index_cat = {
+                 'base_classes': 'Base Classes',
+                 'applications': 'Application Definitions',
+                 'contributed_definitions': 'Contributed Definitions',
+                 }[subdir]
+
+    # print ReST comments and section header
+    print( '.. auto-generated by script %s from the NXDL source %s' %
+           (sys.argv[0], sys.argv[1]) )
+    print
+    print '.. index:: ! class definition -- %s; %s' % (index_cat, name)
+    print '.. index:: ! %s' % name
+    print
+    print '.. _%s:\n' % name
+    print '='*len(title)
+    print title
+    print '='*len(title)
+
+    # print category
+    print
+    print '**Category**:'
+    print '  %s.' % ( root.get('category').strip() )
+
+    # print official description of this class
+    print
+    print '**Description**:'
+    doc = getDocFromNode(ns, root)
+    if doc is None:
+        raise Exception, "No documentation for: " + name
+    doc = doc.strip()
+    doc = re.sub( '\n', ' ', doc )
+    print '  %s\n' % doc
+    print
+
+    # print category
+    extends = root.get('extends')
+    if extends is not None:
+        extends = ':ref:`%s`' % extends
+    else:
+        extends = ''
+    print
+    print '**Extends**:'
+    print '  %s.' % ( extends )
+
+    # TODO: change instances of \t to proper indentation
+    html_root = 'https://github.com/nexusformat/definitions/blob/master'
+        
+    # print experimental full tree
+    print '**Structure**:\n'
+    printFullTree(ns, root, name, "  ")
+
+    # print symbol list
+    node_list = root.xpath('nx:symbols', namespaces=ns)
+    print '**Symbols**:\n'
+    if len(node_list) == 0:
+        print '  No symbol table.'
+    elif len(node_list) > 1:
+        print '  Invalid symbol table.'
+    else:
+        doc = getDocFromNode(ns, node_list[0])
+        if doc is not None:
+            for line in doc.splitlines():
+                print '  %s' % line
+            print
+        for node in node_list[0].xpath('nx:symbol', namespaces=ns):
+            doc = getDocFromNode(ns, node)
+            print '  :%s:' % node.get('name')
+            for line in doc.splitlines():
+                print '    %s' % line
+            print
+
+    # print group references
+    print '**Groups cited**:\n'
+    node_list = root.xpath('//nx:group', namespaces=ns)
+    groups = []
+    for node in node_list:
+        g = node.get('type')
+        g_ref = ':ref:`%s`' % g
+        if g.startswith('NX') and g_ref not in groups:
+            groups.append(g_ref)
+    txt = 'none'
+    if len(groups) > 0:
+        txt = ', '.join(sorted(groups))
+    print '  %s.' % ( txt )
+
+    # print history (currently, only a version number is available)
+    print '**History**:\n'
+    print '  Introduced in NeXus version %s.' % ( root.get('version').strip() )
+
+    # print NXDL source location
+    print '**Source**:\n'
+    print '  Automatically generated from %s/%s/%s.nxdl.xml.' % (
+        html_root, subdir, name)
