@@ -17,7 +17,6 @@ http://www.nexusformat.org/
     ref_doc
     napi
     community
-    releases
     installation
     utilities
     history
