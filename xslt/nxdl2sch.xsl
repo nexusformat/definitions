@@ -61,8 +61,6 @@
     </xsl:template>
         
     <xsl:template match="nxdl:definition">
-        <xsl:variable name="svnid" select="@svnid" />
-        <xsl:comment>Processing <xsl:value-of select="$svnid"/></xsl:comment>
         <xsl:variable name="mycontext">
             <xsl:choose>
                 <xsl:when test="@restricts">nx:<xsl:value-of select="@restricts"/>[@xsi:type='<xsl:value-of select="@name"/>']</xsl:when>

@@ -44,20 +44,17 @@
     </xsl:template>
     
     <xsl:template match="nxdl:definition">
-        <xsl:variable name="svnid" select="@svnid" />
-        <!--xsl:comment>Processing <xsl:value-of select="@category"/> definition <xsl:value-of select="@name"/>, version <xsl:value-of select="@version"/>(<xsl:value-of select="$svnid"/>)</xsl:comment-->
-
-	<!-- add an NXentry if no top level group present -->
+        <!-- add an NXentry if no top level group present -->
          <xsl:choose>
-         <xsl:when test="nxdl:group[@type='NXentry']" >
-         <xsl:apply-templates select="*" />
-         </xsl:when>
-         <xsl:otherwise>
-         <xsl:element name="NXentry">
-         <xsl:attribute name="name">entry</xsl:attribute>
-         <xsl:apply-templates select="*" />
-         </xsl:element>
-         </xsl:otherwise>
+          <xsl:when test="nxdl:group[@type='NXentry']" >
+           <xsl:apply-templates select="*" />
+          </xsl:when>
+          <xsl:otherwise>
+           <xsl:element name="NXentry">
+           <xsl:attribute name="name">entry</xsl:attribute>
+           <xsl:apply-templates select="*" />
+           </xsl:element>
+          </xsl:otherwise>
          </xsl:choose>
 
     </xsl:template>

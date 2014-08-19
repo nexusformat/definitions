@@ -513,15 +513,6 @@ Usage:
                     <para><xsl:value-of select="@version"/></para>
                 </listitem>
             </varlistentry>
-            <varlistentry><!-- show the SVN Id of the NXDL instance -->
-                <term>SVN Id</term>
-                <listitem>
-                    <para>
-                        <!-- strip the $ signs so SVN does not change the SVN Id in the target DocBook XML file -->
-                        <xsl:value-of select="substring-before(substring-after(@svnid,'$'),'$')"/>
-                    </para>
-                </listitem>
-            </varlistentry>
             <varlistentry><!-- show what this class extends -->
                 <term>extends class:</term>
                 <listitem>
