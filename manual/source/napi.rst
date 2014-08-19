@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: 
 	single: ! NAPI
 	seealso: NeXus Application Programming Interface; NAPI

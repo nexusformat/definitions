@@ -1,4 +1,3 @@
-	// $Id$
 	byte bData[] = new byte[132];
 	nf.opendata("string_data");
 	nf.getdata(bData);

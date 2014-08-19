@@ -1,4 +1,3 @@
-	// $Id$
 	int idata[][] = new idata[10][20];
 	int iDim[] = new int[2];
 

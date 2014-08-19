@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: NAPI; python
 
 .. _NAPI-Core-python:

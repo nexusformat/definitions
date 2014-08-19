@@ -18,7 +18,7 @@ i00_arr = numpy.asarray(data[1],'int32')
 f = my_lib.makeFile(fileName, file_name=fileName,
         file_time=timestamp,
         instrument="APS USAXS at 32ID-B",
-        creator="$Id$",
+        creator="BasicWriter.py",
         NeXus_version="4.3.0",
         HDF5_Version=h5py.version.hdf5_version,
         h5py_version=h5py.version.version)

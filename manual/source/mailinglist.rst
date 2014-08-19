@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: ! mailing lists
 
 .. _MailingLists:

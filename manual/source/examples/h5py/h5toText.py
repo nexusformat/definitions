@@ -2,8 +2,6 @@
 
 '''
 Print the structure of an HDF5 file to stdout
-
-$Id$
 '''
 
 
@@ -272,7 +270,6 @@ def main():
         opts, args = getopt.getopt(sys.argv[1:], "n:")
     except:
         print
-        print "SVN: $Id$"
         print "usage: ", sys.argv[0], " [-n ##] HDF5_file_name [another_HDF5_file_name]"
         print "  -n ## : limit number of displayed array items to ## (must be 3 or more or 'None')"
         print

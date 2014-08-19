@@ -4,8 +4,8 @@
 Authors
 ===========
 
-**Pete Jemian, Documentation Editor**:
-	``<jemian@anl.gov>``, Advanced Photon Source, Argonne, IL, USA,
+**Pete R. Jemian, Documentation Editor**:
+	``<jemian@anl.gov>``, Advanced Photon Source, Argonne National Laboratory, Argonne, IL, USA,
 
 **Frederick Akeroyd**:
 	``<freddie.akeroyd@stfc.ac.uk>``, Rutherford Appleton Laboratory, Didcot, UK,

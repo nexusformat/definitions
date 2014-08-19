@@ -1,5 +1,3 @@
-.. $Id$
-
 .. image:: img/NeXus.png
 	:width: 40%
 

@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: ! class definition -- Contributed Definitions
 
 .. _contributed.definitions:

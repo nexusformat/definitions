@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: h5py
 
 .. _Example-H5py:

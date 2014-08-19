@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: NAPI; f77
 
 .. _NAPI-Core-f77:
