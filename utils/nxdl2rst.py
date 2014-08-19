@@ -6,6 +6,12 @@ Write a restructured text (.rst) document for use in the NeXus manual in
 the NeXus NXDL Classes chapter.
 '''
 
+# testing:
+# cd /tmp
+# mkdir out
+# /G/nx-def/utils/nxdl2rst.py /G/nx-def/applications/NXsas.nxdl.xml > nxsas.rst && sphinx-build . out
+# then point browser to file:///tmp/out/nxsas.html
+
 import os, sys, re
 import lxml.etree
 try:
@@ -13,22 +19,10 @@ try:
 except:
     import rst_table as rest_table 
 
-
-TITLE_MARKERS = '# - + ~ ^ * @'.split()  # used for underscoring section titles
-INDENTATION = ' '*4
 # find the directory of this python file
 BASEDIR = os.path.split(os.path.abspath(__file__))[0]
 NEXT_TABLE_NUMBER = 1
 SUBTABLES = []
-
-
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-# testing:
-# cd /tmp
-# mkdir out
-# /G/nx-def/utils/nxdl2rst.py /G/nx-def/applications/NXsas.nxdl.xml > nxsas.rst && sphinx-build . out
-# then point browser to file:///tmp/out/nxsas.html
 
 def getTyp( node ):
     typ = node.get('type', 'untyped (:ref:`NX_CHAR <NX_CHAR>`)')
@@ -102,10 +96,10 @@ def printFullTree(ns, parent, name, indent):
             units = ':ref:`%s <%s>`' % (units, units)
         units_out = ""
         if units:
-            units_out = " {" + units + "}"
-        # TODO: look for "deprecated" element, add to doc
+            units_out = " {units=" + units + "}"
+        print( '%s**%s**: %s%s\n' % ( indent, name, getTyp(node), units_out ) )
+
         doc = getDocFromNode(ns, node, retval='')
-    
         node_list = node.xpath('nx:enumeration', namespaces=ns)
         if len(node_list) == 1:
             doc += ' -:- ' + getEnumerationDescription(ns, node_list[0])
@@ -114,11 +108,9 @@ def printFullTree(ns, parent, name, indent):
             doc += ' -:- ' + getDimensionsDescription(ns, node_list[0])
         doc = doc.strip()
         doc = re.sub( '\n', ' ', doc )
-        print( "%s**%s**: %s%s\n%s  %s" % (
-            indent,
-            name,
-            getTyp(node),
-            units_out, indent, doc ) )
+        print( '%s  %s' % ( indent, doc ) )
+
+        # TODO: look for "deprecated" element, add to doc
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
             printAttribute( ns, subnode, indent+"  " )
@@ -130,116 +122,26 @@ def printFullTree(ns, parent, name, indent):
             if name is '':
                 name = '(%s)' % typ.lstrip('NX')
             typ = ':ref:`%s`' % typ
-        nodename = '%s/%s' % (name, node.get('type'))
-        doc = getDocFromNode(ns, node, retval='')
-        print( "%s**%s**: %s\n%s  %s" % (indent, name, typ, indent, doc ) )
-        doc = re.sub( '\n', ' ', doc )
-        for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, subnode, indent+"  " )
-        printFullTree(ns, node, nodename, indent+"  ")
+        print( '%s**%s**: %s' % (indent, name, typ ) )
 
-    for node in parent.xpath('nx:link', namespaces=ns):
         doc = getDocFromNode(ns, node, retval='')
         doc = doc.strip()
         doc = re.sub( '\n', ' ', doc )
-        print( "%s**%s** --> %s\n%s  %s" % (
-            indent,
-            node.get('name'),
-            node.get('target'), indent, doc ) )
+        print( '%s  %s' % ( indent, doc ) )
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-
-def _indent(indentLevel):
-    return INDENTATION*indentLevel
-
-
-
-
-def getNextTableXref(name):
-    global NEXT_TABLE_NUMBER
-    xref = 'table.%02d.%s' % (NEXT_TABLE_NUMBER, name)
-    NEXT_TABLE_NUMBER += 1
-    return xref
-
-
-def printMemberTable(ns, parent, name, xref):
-    '''
-    print a table of the members in the parent node
-    
-    At each level, iterate over the children 
-    at each level to build one table.  
-    If there is a group, then append 
-    another level and repeat.
-    
-    :param dict ns: dictionary of namespaces for use in XPath expressions
-    :param lxml_element_node parent: parent node to be documented
-    :param str name: name of elements, such as NXentry/NXuser
-    :param str xref: cross-referencing label to use with this parent node member table
-    '''
-    # table(s) describing the specification
-    t = rest_table.Table()
-    t.labels = ('Name\nand\nAttributes', 'Type', 'Units', 'Description\n(and Occurrences)', )
-    t.alignment = ('p{0.2\linewidth}', 'p{0.2\linewidth}', 'p{0.2\linewidth}', 'p{0.4\linewidth}', )
-    #t.longtable = True
-    
-    for node in parent.xpath('nx:field', namespaces=ns):
-        t.rows.append( getFieldData(ns, node) )
         for subnode in node.xpath('nx:attribute', namespaces=ns):
-            t.rows.append( getAttributeData(ns, subnode) )
-    
-    for node in parent.xpath('nx:group', namespaces=ns):
-        # look for more levels to document
-        more_nodes = 0
-        for item in ('nx:group', 'nx:field', 'nx:link', ): 
-            more_nodes += len(node.xpath(item, namespaces=ns))
-        group_data = getGroupData(ns, node)
-        if more_nodes > 0:
-            addSubTable('%s/%s' % (name, node.get('type')), node, getNextTableXref(name))
-            group_data[3] += '\n\nSee table :ref:`%s`.' % SUBTABLES[-1]['xref']
-            group_data[3] = group_data[3].strip()
-        t.rows.append( group_data )
-        for subnode in node.xpath('nx:attribute', namespaces=ns):
-            t.rows.append( getAttributeData(ns, subnode) )
+            printAttribute( ns, subnode, indent+"  " )
+
+        nodename = '%s/%s' % (name, node.get('type'))
+        printFullTree(ns, node, nodename, indent+"  ")
 
     for node in parent.xpath('nx:link', namespaces=ns):
-        t.rows.append( getLinkData(ns, node) )
-
-    title = '**%s** Members' % name
-    print
-    print '.. _%s:\n' % xref
-    print '%s\n%s\n' % (title, '='*len(title))
-    # in PDF, the section title is printed beside the table unless some text intervenes.
-    print '\nDeclarations in the *%s* group.\n' % name
-    if len(t.rows) > 0:
-        print t.reST(fmt='complex')
-    else:
-        print 'No members to be documented'
-
-
-def addSubTable(name, node, xref):
-    SUBTABLES.append( {
-                       'name': name, 
-                       'node': node, 
-                       'xref': xref
-                       } )
-
-
-def getAttributeData(ns, node):
-    name = '@' + node.get('name')
-    typ  = node.get('type', '(:ref:`NX_CHAR <NX_CHAR>`)')
-    if typ.startswith('NX_'):
-        typ = ':ref:`%s <%s>`' % (typ, typ)
-    units = node.get('units', '')
-    if units.startswith('NX_'):
-        units = ':ref:`%s <%s>`' % (units, units)
-    doc = getDocFromNode(ns, node, retval='')
-    
-    node_list = node.xpath('nx:enumeration', namespaces=ns)
-    if len(node_list) == 1:
-        doc += '\n'*2 + getEnumerationDescription(ns, node_list[0])
-
-    return [name, typ, units, doc.strip()]
-
+        print( '%s**%s** --> %s\n' % (
+            indent, node.get('name'), node.get('target') ) )
+        doc = getDocFromNode(ns, node, retval='')
+        doc = doc.strip()
+        doc = re.sub( '\n', ' ', doc )
+        print( '%s  %s' % ( indent, doc ) )
 
 def getDimensionsDescription(ns, parent):
     desc = ''
@@ -280,57 +182,6 @@ def getEnumerationDescription(ns, parent):
                     row = '* ``%s``:' % name
             desc += row + '\n'
     return desc
-
-
-def getFieldData(ns, node):
-    name = node.get('name')
-    typ  = node.get('type', '(:ref:`NX_CHAR <NX_CHAR>`)')
-    if typ.startswith('NX_'):
-        typ = ':ref:`%s <%s>`' % (typ, typ)
-    units = node.get('units', '')
-    if units.startswith('NX_'):
-        units = ':ref:`%s <%s>`' % (units, units)
-    
-    # TODO: look for "deprecated" element, add to doc
-    
-    doc = getDocFromNode(ns, node, retval='')
-    
-    node_list = node.xpath('nx:enumeration', namespaces=ns)
-    if len(node_list) == 1:
-        doc += '\n'*2 + getEnumerationDescription(ns, node_list[0])
-    
-    node_list = node.xpath('nx:dimensions', namespaces=ns)
-    if len(node_list) == 1:
-        doc += '\n'*2 + getDimensionsDescription(ns, node_list[0])
-    
-    return [name, typ, units, doc.strip()]
-
-
-def getGroupData(ns, node):
-    name = node.get('name', '')
-    typ = node.get('type', '<ERROR!>')
-    if typ.startswith('NX'):
-        if name is '':
-            name = '(%s)' % typ.lstrip('NX')
-        typ = ':ref:`%s`' % typ
-    units = node.get('units', '')
-    if units.startswith('NX_'):
-        units = ':ref:`%s <%s>`' % (units, units)
-    doc = getDocFromNode(ns, node, retval='')
-    return [name, typ, units, doc.strip()]
-
-
-def getLinkData(ns, node):
-    name = node.get('name')
-    target = node.get('target')
-    typ  = ':ref:`link`'
-    units = ''
-    
-    # TODO: look for "deprecated" element, add to doc
-    
-    doc = 'target = ``%s``\n\n' % target
-    doc += getDocFromNode(ns, node, retval='')
-    return [name, typ, units, doc.strip()]
 
 if __name__ == '__main__':
 
