@@ -20,14 +20,6 @@
 #
 # For further information, see http://www.nexusformat.org
 
-########### SVN repository information ###################
-# $Date$
-# $Author$
-# $Revision$
-# $HeadURL$
-# $Id$
-########### SVN repository information ###################
-
 SUBDIRS = base_classes applications contributed_definitions
 
 .PHONY: subdirs $(SUBDIRS) clean

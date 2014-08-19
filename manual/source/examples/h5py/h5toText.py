@@ -5,15 +5,6 @@ Print the structure of an HDF5 file to stdout
 '''
 
 
-########### SVN repository information ###################
-# $Date$
-# $Author$
-# $Revision$
-# $URL$
-# $Id$
-########### SVN repository information ###################
-
-
 import h5py
 import os
 import sys

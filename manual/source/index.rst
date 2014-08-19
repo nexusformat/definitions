@@ -45,10 +45,6 @@ This manual built |today|.
     Look for some other "section" such as "introduction.rst" and act similarly.
     Any examples go as text files in the examples/ subdirectory and are pulled into 
     Sphinx inside a :directive:`literalcode` directive.  Look for the pattern
-    or wing it.  If you are game for it, add index entries.  Many examples of the
-    constructs you might use are already in the manual.  Please apply these subversion
-    properties to the source code files (example shown with hypothetical file 
-    ``thing.rst``)::
-
-	    svn propset svn:keywords Id thing.rst
-	    svn propset svn:eol-style native thing.rst
+    or wing it.  If you are ambitious, add index entries.  Many examples of the
+    constructs you might use are already in the manual.
+    
