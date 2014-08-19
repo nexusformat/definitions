@@ -363,7 +363,7 @@ def main(tree, ns):
 
     # TODO: change instances of \t to proper indentation
     fmt = '\n%s:\n\t%s'
-    html_root = 'http://svn.nexusformat.org/definitions/trunk'
+    html_root = 'https://github.com/nexusformat/definitions/blob/master'
         
     # symbol table
     node_list = root.xpath('nx:symbols', namespaces=ns)
