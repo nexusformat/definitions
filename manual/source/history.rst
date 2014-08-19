@@ -2,9 +2,12 @@
 
 .. _History:
 
-=================================
-Brief history of the NeXus format
-=================================
+======================
+Brief history of NeXus
+======================
+
+The NeXus format
+----------------
 
 Two things to note about the development and history of NeXus:
 
@@ -136,8 +139,8 @@ Two things to note about the development and history of NeXus:
     NXDL
     NeXus Definition Language
 
-Historical notes about the Development of NXDL
-##############################################
+The description language NXDL
+-----------------------------
 
 ..  This might be just so much dirty laundry.  Consider removing it.
 
