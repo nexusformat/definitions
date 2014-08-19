@@ -29,7 +29,7 @@ GNU Free Documentation License version 1.3.
 
 .. _LGPL:
 
-The examples in the NeXus manual are licensed under the terms of the
+The code examples in the NeXus manual are licensed under the terms of the
 GNU Lesser General Public License version 3.  
 
 :download:
