@@ -20,7 +20,6 @@ http://www.nexusformat.org/
     releases
     installation
     utilities
-    faq
     history
     docs_about
 

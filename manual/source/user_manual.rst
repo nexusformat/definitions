@@ -19,3 +19,4 @@ NeXus: User Manual
    applying-nexus
    strategies
    validation
+   faq
