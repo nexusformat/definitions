@@ -54,8 +54,6 @@ Usage:
 ######	 an NXDL file by an XSLT transformation.    ######
 ######	 Do NOT edit this DocBook XML file.         ######
 ##########################################################
-##### $Id$
-##########################################################
 </xsl:comment>
 
  <xsl:comment><!-- NeXus license comes next -->
