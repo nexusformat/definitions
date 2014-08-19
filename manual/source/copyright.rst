@@ -13,8 +13,6 @@ Copyright (c) 1996-2014, NeXus International Advisory Committee
 
 .. index:: license; FDL
 
-.. _FDL:
-
 The NeXus manual is licensed under the terms of the
 GNU Free Documentation License version 1.3.  
 
@@ -26,8 +24,6 @@ GNU Free Documentation License version 1.3.
 
 
 .. index:: license; LGPL
-
-.. _LGPL:
 
 The code examples in the NeXus manual are licensed under the terms of the
 GNU Lesser General Public License version 3.  
