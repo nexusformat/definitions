@@ -437,6 +437,9 @@ if __name__ == '__main__':
         exit()
     tree = lxml.etree.parse(NXDL_SCHEMA_FILE)
 
+    # The following URL is outdated, but that doesn't matter;
+    # it won't be accessed; it's just an arbitrary namespace name.
+    # It only needs to match the xmlns attribute in the NXDL files.
     NAMESPACE = 'http://definition.nexusformat.org/nxdl/@NXDL_RELEASE@'
     ns = {'nx': NAMESPACE}
     
