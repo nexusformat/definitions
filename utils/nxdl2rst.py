@@ -267,17 +267,13 @@ if __name__ == '__main__':
     elif len(node_list) > 1:
         raise Exception( 'Invalid symbol table in ' % root.get('name') )
     else:
-        doc = getDocLine(ns, node_list[0])
-        if doc is not None:
-            for line in doc.splitlines():
-                print( '  %s' % line )
-            print
+        printDoc( '  ', ns, node_list[0] )
         for node in node_list[0].xpath('nx:symbol', namespaces=ns):
             doc = getDocLine(ns, node)
-            print( '  :%s:' % node.get('name') )
-            for line in doc.splitlines():
-                print( '    %s' % line )
-            print('')
+            printf( '  %s' % node.get('name') )
+            if doc:
+                printf( ': %s' % doc )
+            print('\n')
 
     # print group references
     print( '**Groups cited**:' )
