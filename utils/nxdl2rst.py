@@ -54,10 +54,10 @@ def getDocBlocks( ns, node ):
     s = lxml.etree.tostring(docnodes[0], pretty_print=True)
     p1 = s.find('>')+1
     p2 = s.rfind('</')
-    text = s[p1:p2].lstrip('\n')    # cut off the enclosing tag
+    text = s[p1:p2]
     # Remove indentation; remove single \n; \n\n become \n
     blocks = re.split( '\n\s*\n', text )
-    blocks = [ re.sub( '\s*\n\s*', ' ', block ) for block in blocks ]
+    blocks = [ re.sub( '\s*\n\s*', ' ', block ).lstrip().rstrip() for block in blocks ]
     return blocks
 
 def getDocLine( ns, node ):
@@ -88,7 +88,7 @@ def printEnumeration( indent, ns, parent ):
         return ''
 
     if len(node_list) == 1:
-        printf( '%sThis value:' % ( indent ) )
+        printf( '%sObligatory value:' % ( indent ) )
     else:
         printf( '%sAny of these values:' % ( indent ) )
 
@@ -160,7 +160,7 @@ def printFullTree(ns, parent, name, indent):
             if name is '':
                 name = '(%s)' % typ.lstrip('NX')
             typ = ':ref:`%s`' % typ
-        print( '%s**%s**: %s' % (indent, name, typ ) )
+        print( '%s**%s**: %s\n' % (indent, name, typ ) )
 
         printDoc(indent+'  ', ns, node)
 
