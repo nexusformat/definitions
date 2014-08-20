@@ -24,11 +24,19 @@ BASEDIR = os.path.split(os.path.abspath(__file__))[0]
 NEXT_TABLE_NUMBER = 1
 SUBTABLES = []
 
-def getTyp( node ):
+def fmtTyp( node ):
     typ = node.get('type', 'untyped (:ref:`NX_CHAR <NX_CHAR>`)')
     if typ.startswith('NX_'):
         typ = ':ref:`%s <%s>`' % (typ, typ)
     return typ
+
+def fmtUnits( node ):
+    units = node.get('units', '')
+    if units.startswith('NX_'):
+        units = ' :ref:`%s <%s>`' % (units, units)
+    if units:
+        return ( ' {units=%s}' % units )
+    return ''
 
 def getDocFromNode(ns, node, retval=None):
     docnodes = node.xpath('nx:doc', namespaces=ns)
@@ -36,7 +44,7 @@ def getDocFromNode(ns, node, retval=None):
         return retval
     if len(docnodes) > 1:
         things = (node.sourceline, os.path.split(node.base)[1])
-        raise Exception, "Too many doc elements: line %d, %s" % things
+        raise Exception, 'Too many doc elements: line %d, %s' % things
     
     # be sure to grab _all_ content in the documentation
     # it might look like XML
@@ -61,22 +69,19 @@ def getDocFromNode(ns, node, retval=None):
             text = lines[0][indent:]
         for line in lines[1:]:
             if not len(line[:indent].strip()) == 0:
-                msg = "Something wrong with indentation on this line:\n" + line
+                msg = 'Something wrong with indentation on this line:\n' + line
                 raise Exception, msg
             text += '\n' + line[indent:]
     return text.lstrip()
 
 def printAttribute( ns, node, indent ):
-    units = node.get('units', '')
-    if units.startswith('NX_'):
-        units = ':ref:`%s <%s>`' % (units, units)
     doc = getDocFromNode(ns, node, retval='')
     doc = doc.strip()
     doc = re.sub( '\n', ' ', doc )
-    print( "%s**%s**: %s\n%s  %s" %
-           (indent, 
-            '@' + node.get('name'),
-            getTyp(node), indent, doc ) )
+    print( '%s**%s**: %s%s' % (
+        indent, '@'+node.get('name'), fmtTyp(node), fmtUnits(node) ) )
+    print( '%s  %s\n' % ( indent, doc ) )
+
     
 
 def printFullTree(ns, parent, name, indent):
@@ -91,13 +96,8 @@ def printFullTree(ns, parent, name, indent):
 
     for node in parent.xpath('nx:field', namespaces=ns):
         name = node.get('name')
-        units = node.get('units', '')
-        if units.startswith('NX_'):
-            units = ':ref:`%s <%s>`' % (units, units)
-        units_out = ""
-        if units:
-            units_out = " {units=" + units + "}"
-        print( '%s**%s**: %s%s\n' % ( indent, name, getTyp(node), units_out ) )
+        print( '%s**%s**: %s %s\n' % (
+            indent, name, fmtTyp(node), fmtUnits(node) ) )
 
         doc = getDocFromNode(ns, node, retval='')
         node_list = node.xpath('nx:enumeration', namespaces=ns)
@@ -108,12 +108,12 @@ def printFullTree(ns, parent, name, indent):
             doc += ' -:- ' + getDimensionsDescription(ns, node_list[0])
         doc = doc.strip()
         doc = re.sub( '\n', ' ', doc )
-        print( '%s  %s' % ( indent, doc ) )
+        print( '%s  %s\n' % ( indent, doc ) )
 
         # TODO: look for "deprecated" element, add to doc
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, subnode, indent+"  " )
+            printAttribute( ns, subnode, indent+'  ' )
     
     for node in parent.xpath('nx:group', namespaces=ns):
         name = node.get('name', '')
@@ -127,13 +127,13 @@ def printFullTree(ns, parent, name, indent):
         doc = getDocFromNode(ns, node, retval='')
         doc = doc.strip()
         doc = re.sub( '\n', ' ', doc )
-        print( '%s  %s' % ( indent, doc ) )
+        print( '%s  %s\n' % ( indent, doc ) )
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, subnode, indent+"  " )
+            printAttribute( ns, subnode, indent+'  ' )
 
         nodename = '%s/%s' % (name, node.get('type'))
-        printFullTree(ns, node, nodename, indent+"  ")
+        printFullTree(ns, node, nodename, indent+'  ')
 
     for node in parent.xpath('nx:link', namespaces=ns):
         print( '%s**%s** --> %s\n' % (
@@ -141,7 +141,7 @@ def printFullTree(ns, parent, name, indent):
         doc = getDocFromNode(ns, node, retval='')
         doc = doc.strip()
         doc = re.sub( '\n', ' ', doc )
-        print( '%s  %s' % ( indent, doc ) )
+        print( '%s  %s\n' % ( indent, doc ) )
 
 def getDimensionsDescription(ns, parent):
     desc = ''
@@ -200,13 +200,13 @@ if __name__ == '__main__':
     else:
         # get input file from command line
         if len(sys.argv) != 2:
-            print "usage: %s someclass.nxdl.xml" % sys.argv[0]
+            print 'usage: %s someclass.nxdl.xml' % sys.argv[0]
             exit()
         NXDL_SCHEMA_FILE = sys.argv[1]
 
     # parse input file into tree
     if not os.path.exists(NXDL_SCHEMA_FILE):
-        print "Cannot find %s" % NXDL_SCHEMA_FILE
+        print 'Cannot find %s' % NXDL_SCHEMA_FILE
         exit()
     tree = lxml.etree.parse(NXDL_SCHEMA_FILE)
 
@@ -249,7 +249,7 @@ if __name__ == '__main__':
     print '**Description**:'
     doc = getDocFromNode(ns, root)
     if doc is None:
-        raise Exception, "No documentation for: " + name
+        raise Exception, 'No documentation for: ' + name
     doc = doc.strip()
     doc = re.sub( '\n', ' ', doc )
     print '  %s\n' % doc
@@ -270,7 +270,7 @@ if __name__ == '__main__':
         
     # print experimental full tree
     print '**Structure**:\n'
-    printFullTree(ns, root, name, "  ")
+    printFullTree(ns, root, name, '  ')
 
     # print symbol list
     node_list = root.xpath('nx:symbols', namespaces=ns)
