@@ -32,11 +32,11 @@ def fmtTyp( node ):
 
 def fmtUnits( node ):
     units = node.get('units', '')
+    if not units:
+        return ''
     if units.startswith('NX_'):
-        units = ' :ref:`%s <%s>`' % (units, units)
-    if units:
-        return ( ' {units=%s}' % units )
-    return ''
+        units = '\ :ref:`%s <%s>`' % (units, units)
+    return ' {units=%s}' % units
 
 def getDocFromNode(ns, node, retval=None):
     docnodes = node.xpath('nx:doc', namespaces=ns)
@@ -96,7 +96,7 @@ def printFullTree(ns, parent, name, indent):
 
     for node in parent.xpath('nx:field', namespaces=ns):
         name = node.get('name')
-        print( '%s**%s**: %s %s\n' % (
+        print( '%s**%s**: %s%s\n' % (
             indent, name, fmtTyp(node), fmtUnits(node) ) )
 
         doc = getDocFromNode(ns, node, retval='')
