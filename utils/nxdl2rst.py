@@ -69,18 +69,20 @@ def getDocLine( ns, node ):
                          node.get('name') )
     return blocks[0]
 
-def printDimensions( indent, ns, parent ):
-    desc = ''
-    rank = parent.get('rank')
-    node_list = parent.xpath('nx:dim', namespaces=ns)
-    if len(node_list) > 0:
-        desc += '\nDimensions:'
-        if rank is not None:
-            desc += ' (rank=%s)' % rank
-        desc += '\n'*2
-    for node in node_list:
-        desc += '\n* %s: ``%s``' % (node.get('index'), node.get('value'))
-    print( '%s%s\n' % ( indent, desc ) )
+def analyzeDimensions( ns, parent ):
+    node_list = parent.xpath('nx:dimensions', namespaces=ns)
+    if len(node_list) != 1:
+        return ''
+    node = node_list[0]
+    # rank = node.get('rank') # ignore this
+    node_list = node.xpath('nx:dim', namespaces=ns)
+    dims = []
+    for subnode in node_list:
+        value = subnode.get('value')
+        if not value:
+            value = 'ref(%s)' % subnode.get('ref')
+        dims.append( value )
+    return '[%s]' % ( ', '.join(dims) )
 
 def printEnumeration( indent, ns, parent ):
     node_list = parent.xpath('nx:item', namespaces=ns)
@@ -136,17 +138,15 @@ def printFullTree(ns, parent, name, indent):
 
     for node in parent.xpath('nx:field', namespaces=ns):
         name = node.get('name')
-        print( '%s**%s**: %s%s\n' % (
-            indent, name, fmtTyp(node), fmtUnits(node) ) )
+        dims = analyzeDimensions(ns, node)
+        print( '%s**%s%s**: %s%s\n' % (
+            indent, name, dims, fmtTyp(node), fmtUnits(node) ) )
 
         printDoc(indent+'  ', ns, node)
 
         node_list = node.xpath('nx:enumeration', namespaces=ns)
         if len(node_list) == 1:
             printEnumeration( indent+'  ', ns, node_list[0] )
-        node_list = node.xpath('nx:dimensions', namespaces=ns)
-        if len(node_list) == 1:
-            printDimensions( indent+'  ', ns, node_list[0] )
 
         # TODO: look for "deprecated" element, add to doc
 
