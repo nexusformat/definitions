@@ -21,8 +21,6 @@ except:
 
 # find the directory of this python file
 BASEDIR = os.path.split(os.path.abspath(__file__))[0]
-NEXT_TABLE_NUMBER = 1
-SUBTABLES = []
 
 def fmtTyp( node ):
     typ = node.get('type', 'untyped (:ref:`NX_CHAR <NX_CHAR>`)')
@@ -38,10 +36,10 @@ def fmtUnits( node ):
         units = '\ :ref:`%s <%s>`' % (units, units)
     return ' {units=%s}' % units
 
-def getDocFromNode(ns, node, retval=None):
+def getDocBlocks( ns, node ):
     docnodes = node.xpath('nx:doc', namespaces=ns)
     if docnodes is None or len(docnodes)==0:
-        return retval
+        return ''
     if len(docnodes) > 1:
         things = (node.sourceline, os.path.split(node.base)[1])
         raise Exception, 'Too many doc elements: line %d, %s' % things
@@ -52,37 +50,73 @@ def getDocFromNode(ns, node, retval=None):
     p1 = s.find('>')+1
     p2 = s.rfind('</')
     text = s[p1:p2].lstrip('\n')    # cut off the enclosing tag
-    
-    lines = text.splitlines()
-    if len(lines) > 1:
-        indent0 = len(lines[0]) - len(lines[0].lstrip())
-        indent1 = len(lines[1]) - len(lines[1].lstrip())
-        if len(lines) > 2:
-            indent2 = len(lines[2]) - len(lines[2].lstrip())
+    # Remove indentation; remove single \n; \n\n become \n
+    blocks = re.split( '\n\s*\n', text )
+    blocks = [ re.sub( '\s*\n\s*', ' ', block ) for block in blocks ]
+    return blocks
+
+def getDocLine( ns, node ):
+    blocks = getDocBlocks( ns, node )
+    if len(blocks)==0:
+        return ''
+    if len(blocks)>1:
+        raise Exception, 'Unexpected multi-paragraph doc at ' % node.get('name')
+    return blocks[0]
+
+def fmtDimensions(ns, parent):
+    desc = ''
+    rank = parent.get('rank')
+    node_list = parent.xpath('nx:dim', namespaces=ns)
+    if len(node_list) > 0:
+        desc += '\nDimensions:'
+        if rank is not None:
+            desc += ' (rank=%s)' % rank
+        desc += '\n'*2
+    for node in node_list:
+        desc += '\n* %s: ``%s``' % (node.get('index'), node.get('value'))
+    return desc
+
+def fmtEnumeration(ns, parent):
+    node_list = parent.xpath('nx:item', namespaces=ns)
+    if len(node_list) == 0:
+        return ''
+    if len(node_list) == 1:
+        ret = 'This value: '
+    else:
+        ret = 'Any of these values: '
+    for item in node_list:
+        name = item.get('value')
+        doc = getDocLine(ns, item)
+        if doc is not None:
+            if len(node_list) == 1:
+                row = '``%s``' % name
+            else:
+                row = '* ``%s``:' % name
+            for line in doc.splitlines():
+                row += '\n  ' + line
         else:
-            indent2 = 0
-        if indent0 == 0:
-            indent = max(indent1, indent2)
-            text = lines[0]
-        else:
-            indent = indent0
-            text = lines[0][indent:]
-        for line in lines[1:]:
-            if not len(line[:indent].strip()) == 0:
-                msg = 'Something wrong with indentation on this line:\n' + line
-                raise Exception, msg
-            text += '\n' + line[indent:]
-    return text.lstrip()
+            if len(node_list) == 1:
+                row = '``%s``' % name
+            else:
+                row = '* ``%s``:' % name
+        ret += row + '\n'
+    return ret
+
+def printDoc( indent, ns, node, required=False):
+    blocks = getDocBlocks(ns, node)
+    if len(blocks)==0:
+        if required:
+            raise Exception, 'No documentation for: ' + node.get('name')
+        print('')
+    else:
+        for block in blocks:
+            print( '%s%s\n' % ( indent, block ) )
 
 def printAttribute( ns, node, indent ):
-    doc = getDocFromNode(ns, node, retval='')
-    doc = doc.strip()
-    doc = re.sub( '\n', ' ', doc )
     print( '%s**%s**: %s%s' % (
         indent, '@'+node.get('name'), fmtTyp(node), fmtUnits(node) ) )
-    print( '%s  %s\n' % ( indent, doc ) )
+    printDoc(indent+'  ', ns, node)
 
-    
 
 def printFullTree(ns, parent, name, indent):
     '''
@@ -99,16 +133,14 @@ def printFullTree(ns, parent, name, indent):
         print( '%s**%s**: %s%s\n' % (
             indent, name, fmtTyp(node), fmtUnits(node) ) )
 
-        doc = getDocFromNode(ns, node, retval='')
+        printDoc(indent+'  ', ns, node)
+
         node_list = node.xpath('nx:enumeration', namespaces=ns)
         if len(node_list) == 1:
-            doc += ' -:- ' + getEnumerationDescription(ns, node_list[0])
+            print( '%s  %s\n' % ( indent, fmtEnumeration(ns, node_list[0]) ) )
         node_list = node.xpath('nx:dimensions', namespaces=ns)
         if len(node_list) == 1:
-            doc += ' -:- ' + getDimensionsDescription(ns, node_list[0])
-        doc = doc.strip()
-        doc = re.sub( '\n', ' ', doc )
-        print( '%s  %s\n' % ( indent, doc ) )
+            print( '%s  %s\n' % ( indent, fmtDimensions(ns, node_list[0]) ) )
 
         # TODO: look for "deprecated" element, add to doc
 
@@ -124,10 +156,7 @@ def printFullTree(ns, parent, name, indent):
             typ = ':ref:`%s`' % typ
         print( '%s**%s**: %s' % (indent, name, typ ) )
 
-        doc = getDocFromNode(ns, node, retval='')
-        doc = doc.strip()
-        doc = re.sub( '\n', ' ', doc )
-        print( '%s  %s\n' % ( indent, doc ) )
+        printDoc(indent+'  ', ns, node)
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
             printAttribute( ns, subnode, indent+'  ' )
@@ -138,50 +167,8 @@ def printFullTree(ns, parent, name, indent):
     for node in parent.xpath('nx:link', namespaces=ns):
         print( '%s**%s** --> %s\n' % (
             indent, node.get('name'), node.get('target') ) )
-        doc = getDocFromNode(ns, node, retval='')
-        doc = doc.strip()
-        doc = re.sub( '\n', ' ', doc )
-        print( '%s  %s\n' % ( indent, doc ) )
+        printDoc(indent+'  ', ns, node)
 
-def getDimensionsDescription(ns, parent):
-    desc = ''
-    rank = parent.get('rank')
-    node_list = parent.xpath('nx:dim', namespaces=ns)
-    if len(node_list) > 0:
-        desc += '\nDimensions:'
-        if rank is not None:
-            desc += ' (rank=%s)' % rank
-        desc += '\n'*2
-    for node in node_list:
-        desc += '\n* %s: ``%s``' % (node.get('index'), node.get('value'))
-    return desc
-
-
-def getEnumerationDescription(ns, parent):
-    desc = ''
-    node_list = parent.xpath('nx:item', namespaces=ns)
-    if len(node_list) > 0:
-        if len(node_list) == 1:
-            desc += '\nThis value: '
-        else:
-            desc += '\nAny of these value(s):\n\n'
-        for item in node_list:
-            name = item.get('value')
-            doc = getDocFromNode(ns, item, retval=None)
-            if doc is not None:
-                if len(node_list) == 1:
-                    row = '``%s``' % name
-                else:
-                    row = '* ``%s``:' % name
-                for line in doc.splitlines():
-                    row += '\n  ' + line
-            else:
-                if len(node_list) == 1:
-                    row = '``%s``' % name
-                else:
-                    row = '* ``%s``:' % name
-            desc += row + '\n'
-    return desc
 
 if __name__ == '__main__':
 
@@ -247,13 +234,7 @@ if __name__ == '__main__':
     # print official description of this class
     print
     print '**Description**:'
-    doc = getDocFromNode(ns, root)
-    if doc is None:
-        raise Exception, 'No documentation for: ' + name
-    doc = doc.strip()
-    doc = re.sub( '\n', ' ', doc )
-    print '  %s\n' % doc
-    print
+    printDoc('  ', ns, root, required=True)
 
     # print category
     extends = root.get('extends')
@@ -263,7 +244,7 @@ if __name__ == '__main__':
         extends = ''
     print
     print '**Extends**:'
-    print '  %s.' % ( extends )
+    print '  %s.\n' % ( extends )
 
     # TODO: change instances of \t to proper indentation
     html_root = 'https://github.com/nexusformat/definitions/blob/master'
@@ -276,24 +257,24 @@ if __name__ == '__main__':
     node_list = root.xpath('nx:symbols', namespaces=ns)
     print '**Symbols**:\n'
     if len(node_list) == 0:
-        print '  No symbol table.'
+        print( '  No symbol table.\n' )
     elif len(node_list) > 1:
-        print '  Invalid symbol table.'
+        raise Exception, 'Invalid symbol table in ' % root.get('name')
     else:
-        doc = getDocFromNode(ns, node_list[0])
+        doc = getDocLine(ns, node_list[0])
         if doc is not None:
             for line in doc.splitlines():
                 print '  %s' % line
             print
         for node in node_list[0].xpath('nx:symbol', namespaces=ns):
-            doc = getDocFromNode(ns, node)
+            doc = getDocLine(ns, node)
             print '  :%s:' % node.get('name')
             for line in doc.splitlines():
                 print '    %s' % line
             print
 
     # print group references
-    print '**Groups cited**:\n'
+    print( '**Groups cited**:' )
     node_list = root.xpath('//nx:group', namespaces=ns)
     groups = []
     for node in node_list:
@@ -304,13 +285,14 @@ if __name__ == '__main__':
     txt = 'none'
     if len(groups) > 0:
         txt = ', '.join(sorted(groups))
-    print '  %s.' % ( txt )
+    print( '  %s.\n' % ( txt ) )
 
     # print history (currently, only a version number is available)
-    print '**History**:\n'
-    print '  Introduced in NeXus version %s.' % ( root.get('version').strip() )
+    print( '**History**:' )
+    print( '  Introduced in NeXus version %s.\n' %
+           ( root.get('version').strip() ) )
 
     # print NXDL source location
-    print '**Source**:\n'
-    print '  Automatically generated from %s/%s/%s.nxdl.xml.' % (
-        html_root, subdir, name)
+    print( '**Source**:' )
+    print( '  Automatically generated from %s/%s/%s.nxdl.xml.' % (
+        html_root, subdir, name) )
