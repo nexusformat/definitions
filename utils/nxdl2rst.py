@@ -153,7 +153,7 @@ def printDoc( indent, ns, node, required=False):
             print()
 
 def printAttribute( ns, node, indent ):
-    print( '%s**%s**: %s%s' % (
+    print( '%s**%s**: %s%s\n' % (
         indent, '@'+node.get('name'), fmtTyp(node), fmtUnits(node) ) )
     printDoc(indent+'  ', ns, node)
 
@@ -271,7 +271,7 @@ if __name__ == '__main__':
 
     # print official description of this class
     print('')
-    print( '**Description**:' )
+    print( '**Description**:\n' )
     printDoc('  ', ns, root, required=True)
 
     # print category
