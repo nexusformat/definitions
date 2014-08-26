@@ -257,6 +257,8 @@ if __name__ == '__main__':
         
     # print experimental full tree
     print( '**Structure**:\n' )
+    for subnode in root.xpath('nx:attribute', namespaces=ns):
+        printAttribute( ns, subnode, '  ' )
     printFullTree(ns, root, name, '  ')
 
     # print symbol list
