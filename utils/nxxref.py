@@ -10,14 +10,6 @@ Created on Feb 15, 2011
 @author: jemian
 '''
 
-########### SVN repository information ###################
-# $Date$
-# $Author$
-# $Revision$
-# $URL$
-# $Id$
-########### SVN repository information ###################
-
 
 import os
 import lxml.etree

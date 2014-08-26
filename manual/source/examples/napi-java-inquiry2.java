@@ -1,4 +1,3 @@
-	// $Id$
 	Hashtable h = nf.attrdir();
 	Enumeration e = h.keys();
 	while(e.hasMoreElements())

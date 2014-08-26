@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: ! class definition -- Base Classes
 
 .. _base.class.definitions:

@@ -11,14 +11,6 @@
      
      Modify <xsl:template match="nx:definition">...</xsl:template> 
      for each directory.
-     
-     ########### SVN repository information ###################
-     # $Date$
-     # $Author$
-     # $Revision$
-     # $HeadURL$
-     # $Id$
-     ########### SVN repository information ###################
 
 Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
 

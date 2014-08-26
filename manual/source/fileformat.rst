@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index::
 	NeXus; low-level file formats
 	NAPI; bypassing

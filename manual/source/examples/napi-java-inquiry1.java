@@ -1,4 +1,3 @@
-	// $Id$
 	nf.opengroup(group,nxclass);
 	h = nf.groupdir();
 	e = h.keys();

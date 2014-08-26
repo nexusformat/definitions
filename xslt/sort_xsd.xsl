@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    ########### SVN repository information ###################
-    # $Date$
-    # $Author$
-    # $Revision$
-    # $HeadURL$
-    # $Id$
-    ########### SVN repository information ###################
-    
     Purpose:
     This stylesheet is used to translate the NeXus Definition Language
     specifications into XML Schema (.xsd) files for use in

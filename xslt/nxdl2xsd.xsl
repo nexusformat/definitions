@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-########### SVN repository information ###################
-# $Date$
-# $Author$
-# $Revision$
-# $HeadURL$
-# $Id$
-########### SVN repository information ###################
-
 Purpose:
 	This stylesheet is used to translate the NeXus Definition Language
 	specifications into XML Schema (.xsd) files for use in
@@ -63,7 +55,6 @@ Usage:
 
         <xsl:element name="xs:schema">
             <xsl:attribute name="nxdl:xslt_name">nxdl2xsd.xsl</xsl:attribute>
-            <xsl:attribute name="nxdl:xslt_id">$Id$</xsl:attribute>
             <!-- XSLT v2.0 feature: <xsl:attribute name="nxdl:xsd_created"><xsl:value-of select="fn:current-dateTime()" /></xsl:attribute>-->
             <xsl:attribute name="targetNamespace">http://definition.nexusformat.org/schema/3.1</xsl:attribute>
             <xsl:attribute name="elementFormDefault">qualified</xsl:attribute>

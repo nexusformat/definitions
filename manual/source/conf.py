@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 #
-# $Id$
-#
 # NeXus: User Guide and Reference Documentation build configuration file, created by
 # sphinx-quickstart on Wed May 18 12:57:35 2011.
 #

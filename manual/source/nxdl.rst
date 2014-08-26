@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index::
     ! NXDL
     ! NeXus Definition Language

@@ -10,14 +10,6 @@ to build Python Objects from NeXus classes
 .. note::  This is a tool for maintenance of the NXDL repository.
 '''
 
-########### SVN repository information ###################
-# $Date$
-# $Author$
-# $Revision$
-# $URL$
-# $Id$
-########### SVN repository information ###################
-
 
 from lxml import etree
 import copy

@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-########### SVN repository information ###################
-# $Date$
-# $Author$
-# $Revision$
-# $HeadURL$
-# $Id$
-########### SVN repository information ###################
-
 Purpose:
 	This stylesheet is used to extract the specifications of 
 	valid types categories from the NeXus Definition Language

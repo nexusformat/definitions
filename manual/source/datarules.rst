@@ -1,5 +1,3 @@
-.. $Id$
-
 .. _DataRules:
 
 ===========================================
@@ -31,7 +29,7 @@ described by the following :index:`rules <rules; naming>`:
 * For the class names [#]_ of NeXus *group* items,
   the prefix *NX* is reserved. 
   Thus all NeXus class names start with NX.
-  The chapter titled :ref:`nexus-class-definitions` lists the 
+  The chapter titled :ref:`ReferenceDocumentation` lists the 
   available NeXus class names as either *base classes*, 
   *application definitions*, or *contributed definitions*.
 

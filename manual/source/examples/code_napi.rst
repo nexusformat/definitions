@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: NAPI; examples
 
 .. _NAPI-Examples:

@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: rules; NeXus
 
 .. _Rules:

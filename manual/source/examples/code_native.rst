@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: HDF5; examples
 
 .. _native-HDF5-Examples:

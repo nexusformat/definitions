@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index::
 	!NIAC
 	!NeXus International Advisory Committee

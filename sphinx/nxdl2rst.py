@@ -62,7 +62,6 @@ class Describe:
         t.rows.append( ['NXDL class', "*%s*" % self.nxdlName, ] )
         t.rows.append( ['URL', "%s" % URL, ] )
         t.rows.append( ['version', root.get('version', 'unknown'), ] )
-        t.rows.append( ['SVN Id', "`" + root.get('svnid', 'none') + "`", ] )
         t.rows.append( ['extends class', extends, ] )
         t.rows.append( ['included classes', self.groups_list(root), ] )
         rest += t.reST(fmt='simple')

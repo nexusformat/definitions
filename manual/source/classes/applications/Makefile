@@ -20,14 +20,6 @@
 #
 # For further information, see http://www.nexusformat.org
 
-########### SVN repository information ###################
-# $Date$
-# $Author$
-# $Revision$
-# $HeadURL$
-# $Id$
-########### SVN repository information ###################
-
 ROOTDIR = ../../../..
 NXDL2RST = $(ROOTDIR)/utils/nxdl2rst.py
 NXDL_SUFFIX = nxdl.xml

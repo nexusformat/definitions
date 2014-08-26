@@ -1,5 +1,3 @@
-/* $Id$ */
-
 #include "napi.h"
 
 int main()

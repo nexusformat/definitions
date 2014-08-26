@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: ! class definition -- Application Definitions
 
 .. _application.definitions:

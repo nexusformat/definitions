@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: NAPI; java
 
 .. _NAPI-java:
