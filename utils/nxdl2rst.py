@@ -128,15 +128,15 @@ def printEnumeration( indent, ns, parent ):
         docs[name] = getDocLine(ns, item)
 
     if any( doc for doc in docs.values() ):
-        # since there are some explanations, print one item per line
-        print('')
+        # since there are some doc entries, print one item per line
+        print('\n')
         for name, doc in docs.items():
             printf( '%s  %s' % ( indent, name ) )
             if doc:
                 printf( ': %s' % ( doc ) )
             print('\n')
     else:
-        # since there are no explanations, print all items in one line
+        # since there are no doc entries, print all items in one line
         print(' %s.' % ( ' | '.join( docs.keys() ) ) )
     print('')
 
