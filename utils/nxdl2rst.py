@@ -46,19 +46,47 @@ def getDocBlocks( ns, node ):
     if docnodes is None or len(docnodes)==0:
         return ''
     if len(docnodes) > 1:
-        things = (node.sourceline, os.path.split(node.base)[1])
-        raise Exception( 'Too many doc elements: line %d, %s' % things )
-    
+        raise Exception( 'Too many doc elements: line %d, %s' % 
+                         (node.sourceline, os.path.split(node.base)[1]) )
+    docnode = docnodes[0]
+
     # be sure to grab _all_ content in the documentation
     # it might look like XML
-    s = lxml.etree.tostring(docnodes[0], pretty_print=True)
+    s = lxml.etree.tostring(docnode, pretty_print=True)
     p1 = s.find('>')+1
     p2 = s.rfind('</')
-    text = s[p1:p2]
-    # Remove indentation; remove single \n; \n\n become \n
+    text = s[p1:p2].lstrip('\n') # cut off the enclosing tag
+
+    # Blocks are separated by whitelines
     blocks = re.split( '\n\s*\n', text )
-    blocks = [ re.sub( '\s*\n\s*', ' ', block ).lstrip().rstrip() for block in blocks ]
-    return blocks
+    if len(blocks)==1 and len(blocks[0].splitlines())==1:
+        return [ blocks[0].rstrip().lstrip() ]
+
+    # Indentation must be given by first line
+    m = re.match(r'(\s*)(\S+)', blocks[0])
+    if not m:
+        return [ '' ]
+    indent = m.group(1)
+
+    # Remove common indentation as determined from first line
+    if indent=="":
+        raise Exception( 'Missing initial indentation in <doc> of %s [%s]' %
+                         ( node.get('name'), blocks[0] ) )
+
+    out_blocks = []
+    for block in blocks:
+        lines = block.rstrip().splitlines()
+        out_lines = []
+        for line in lines:
+            if line[:len(indent)]!=indent:
+                raise Exception( 'Bad indentation in <doc> of %s [%s]: expected "%s" found "%s".' %
+                                 ( node.get('name'), block,
+                                   re.sub(r'\t',"\\\\t", indent ),
+                                   re.sub(r'\t',"\\\\t", line ),
+                            ) )
+            out_lines.append( line[len(indent):] )
+        out_blocks.append( "\n".join(out_lines) )
+    return out_blocks
 
 def getDocLine( ns, node ):
     blocks = getDocBlocks( ns, node )
@@ -67,7 +95,7 @@ def getDocLine( ns, node ):
     if len(blocks)>1:
         raise Exception( 'Unexpected multi-paragraph doc at ' %
                          node.get('name') )
-    return blocks[0]
+    return re.sub(r'\n', " ", blocks[0])
 
 def analyzeDimensions( ns, parent ):
     node_list = parent.xpath('nx:dimensions', namespaces=ns)
@@ -100,6 +128,7 @@ def printEnumeration( indent, ns, parent ):
         docs[name] = getDocLine(ns, item)
 
     if any( doc for doc in docs.values() ):
+        # since there are some explanations, print one item per line
         print('')
         for name, doc in docs.items():
             printf( '%s  %s' % ( indent, name ) )
@@ -107,7 +136,8 @@ def printEnumeration( indent, ns, parent ):
                 printf( ': %s' % ( doc ) )
             print('\n')
     else:
-        print(' %s' % ( ' | '.join( docs.keys() ) ) )
+        # since there are no explanations, print all items in one line
+        print(' %s.' % ( ' | '.join( docs.keys() ) ) )
     print('')
 
 def printDoc( indent, ns, node, required=False):
@@ -118,7 +148,9 @@ def printDoc( indent, ns, node, required=False):
         print('')
     else:
         for block in blocks:
-            print( '%s%s\n' % ( indent, block ) )
+            for line in block.splitlines():
+                print( '%s%s' % ( indent, line ) )
+            print()
 
 def printAttribute( ns, node, indent ):
     print( '%s**%s**: %s%s' % (
