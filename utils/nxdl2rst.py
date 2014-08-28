@@ -16,10 +16,6 @@ from __future__ import print_function
 import os, sys, re
 from collections import OrderedDict
 import lxml.etree
-try:
-    from pyRestTable import rest_table
-except:
-    import rst_table as rest_table 
 
 # find the directory of this python file
 BASEDIR = os.path.split(os.path.abspath(__file__))[0]
