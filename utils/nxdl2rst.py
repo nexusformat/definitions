@@ -313,7 +313,7 @@ if __name__ == '__main__':
         printDoc( '  ', ns, node_list[0] )
         for node in node_list[0].xpath('nx:symbol', namespaces=ns):
             doc = getDocLine(ns, node)
-            printf( '  %s' % node.get('name') )
+            printf( '  **%s**' % node.get('name') )
             if doc:
                 printf( ': %s' % doc )
             print('\n')
