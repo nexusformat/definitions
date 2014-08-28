@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 '''
 Read the the NeXus NXDL class specification and describe it.  
@@ -49,10 +49,11 @@ def getDocBlocks( ns, node ):
     # be sure to grab _all_ content in the documentation
     # it might look like XML
     s = lxml.etree.tostring(docnode, pretty_print=True,
-                            method='c14n', with_comments=False)
-    p1 = s.find('>')+1
-    p2 = s.rfind('</')
-    text = s[p1:p2].lstrip('\n') # cut off the enclosing tag
+                            method='c14n', with_comments=False).decode('utf-8')
+    m = re.fullmatch(r'<doc[^>]*>\n?(.*)\n?</doc>', s, re.DOTALL )
+    if not m:
+        raise Exception( 'unexepcted docstring [%s] ' % s )
+    text = m.group(1)
 
     # Blocks are separated by whitelines
     blocks = re.split( '\n\s*\n', text )
