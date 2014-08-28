@@ -128,9 +128,10 @@ def printEnumeration( indent, ns, parent ):
         name = item.get('value')
         docs[name] = getDocLine(ns, item)
 
+    ENUMERATION_INLINE_LENGTH = 60
     oneliner = ' | '.join( docs.keys() )
     if ( any( doc for doc in docs.values() ) or
-         len( oneliner )>60 ):
+         len( oneliner ) > ENUMERATION_INLINE_LENGTH ):
         # print one item per line
         print('\n')
         for name, doc in docs.items():
@@ -295,15 +296,6 @@ if __name__ == '__main__':
     printDoc('  ', ns, root, required=True)
 
 
-    # TODO: change instances of \t to proper indentation
-    html_root = 'https://github.com/nexusformat/definitions/blob/master'
-        
-    # print experimental full tree
-    print( '**Structure**:\n' )
-    for subnode in root.xpath('nx:attribute', namespaces=ns):
-        printAttribute( ns, subnode, '  ' )
-    printFullTree(ns, root, name, '  ')
-
     # print symbol list
     node_list = root.xpath('nx:symbols', namespaces=ns)
     print( '**Symbols**:\n' )
@@ -333,6 +325,15 @@ if __name__ == '__main__':
     if len(groups) > 0:
         txt = ', '.join(sorted(groups))
     print( '  %s\n' % ( txt ) )
+
+    # TODO: change instances of \t to proper indentation
+    html_root = 'https://github.com/nexusformat/definitions/blob/master'
+        
+    # print experimental full tree
+    print( '**Structure**:\n' )
+    for subnode in root.xpath('nx:attribute', namespaces=ns):
+        printAttribute( ns, subnode, '  ' )
+    printFullTree(ns, root, name, '  ')
 
     # print NXDL source location
     print( '**Source**:' )
