@@ -138,7 +138,7 @@ def printEnumeration( indent, ns, parent ):
             print('\n')
     else:
         # since there are no doc entries, print all items in one line
-        print(' %s.' % ( ' | '.join( docs.keys() ) ) )
+        print(' %s' % ( ' | '.join( docs.keys() ) ) )
     print('')
 
 def printDoc( indent, ns, node, required=False):
@@ -276,7 +276,7 @@ if __name__ == '__main__':
     # print category
     print('')
     print( '**Category**:' )
-    print( '  %s.' % ( category_for_listing.strip() ) )
+    print( '  %s' % ( category_for_listing.strip() ) )
 
     # print official description of this class
     print('')
@@ -291,7 +291,7 @@ if __name__ == '__main__':
         extends = ''
     print('')
     print( '**Extends**:' )
-    print( '  %s.\n' % ( extends ) )
+    print( '  %s\n' % ( extends ) )
 
     # TODO: change instances of \t to proper indentation
     html_root = 'https://github.com/nexusformat/definitions/blob/master'
@@ -306,7 +306,7 @@ if __name__ == '__main__':
     node_list = root.xpath('nx:symbols', namespaces=ns)
     print( '**Symbols**:\n' )
     if len(node_list) == 0:
-        print( '  No symbol table.\n' )
+        print( '  No symbol table\n' )
     elif len(node_list) > 1:
         raise Exception( 'Invalid symbol table in ' % root.get('name') )
     else:
@@ -330,14 +330,14 @@ if __name__ == '__main__':
     txt = 'none'
     if len(groups) > 0:
         txt = ', '.join(sorted(groups))
-    print( '  %s.\n' % ( txt ) )
+    print( '  %s\n' % ( txt ) )
 
     # print history (currently, only a version number is available)
     print( '**History**:' )
-    print( '  Introduced in NeXus version %s.\n' %
+    print( '  Introduced in NeXus version %s\n' %
            ( root.get('version').strip() ) )
 
     # print NXDL source location
     print( '**Source**:' )
-    print( '  Automatically generated from %s/%s/%s.nxdl.xml.' % (
+    print( '  Automatically generated from %s/%s/%s.nxdl.xml' % (
         html_root, subdir, name) )
