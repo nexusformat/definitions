@@ -128,17 +128,19 @@ def printEnumeration( indent, ns, parent ):
         name = item.get('value')
         docs[name] = getDocLine(ns, item)
 
-    if any( doc for doc in docs.values() ):
-        # since there are some doc entries, print one item per line
+    oneliner = ' | '.join( docs.keys() )
+    if ( any( doc for doc in docs.values() ) or
+         len( oneliner )>60 ):
+        # print one item per line
         print('\n')
         for name, doc in docs.items():
-            printf( '%s  %s' % ( indent, name ) )
+            printf( '%s  * %s' % ( indent, name ) )
             if doc:
                 printf( ': %s' % ( doc ) )
             print('\n')
     else:
-        # since there are no doc entries, print all items in one line
-        print(' %s' % ( ' | '.join( docs.keys() ) ) )
+        # print all items in one line
+        print(' %s' % ( oneliner ) )
     print('')
 
 def printDoc( indent, ns, node, required=False):
