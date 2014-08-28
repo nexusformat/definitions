@@ -52,7 +52,8 @@ def getDocBlocks( ns, node ):
 
     # be sure to grab _all_ content in the documentation
     # it might look like XML
-    s = lxml.etree.tostring(docnode, pretty_print=True)
+    s = lxml.etree.tostring(docnode, pretty_print=True,
+                            method='c14n', with_comments=False)
     p1 = s.find('>')+1
     p2 = s.rfind('</')
     text = s[p1:p2].lstrip('\n') # cut off the enclosing tag
