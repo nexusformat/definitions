@@ -273,25 +273,25 @@ if __name__ == '__main__':
     print( title )
     print( '='*len(title) )
 
-    # print category
+    # print category, version, parent class
+    extends = root.get('extends')
+    if extends is None:
+        extends = 'none'
+    else:
+        extends = ':ref:`%s`' % extends
+
     print('')
-    print( '**Category**:' )
-    print( '  %s' % ( category_for_listing.strip() ) )
+    print( '**Status**:\n' )
+    print( '  %s, extends %s, version %s' %
+           ( category_for_listing.strip(),
+             extends,
+             root.get('version').strip() ) )
 
     # print official description of this class
     print('')
     print( '**Description**:\n' )
     printDoc('  ', ns, root, required=True)
 
-    # print category
-    extends = root.get('extends')
-    if extends is not None:
-        extends = ':ref:`%s`' % extends
-    else:
-        extends = ''
-    print('')
-    print( '**Extends**:' )
-    print( '  %s\n' % ( extends ) )
 
     # TODO: change instances of \t to proper indentation
     html_root = 'https://github.com/nexusformat/definitions/blob/master'
@@ -331,11 +331,6 @@ if __name__ == '__main__':
     if len(groups) > 0:
         txt = ', '.join(sorted(groups))
     print( '  %s\n' % ( txt ) )
-
-    # print history (currently, only a version number is available)
-    print( '**History**:' )
-    print( '  Introduced in NeXus version %s\n' %
-           ( root.get('version').strip() ) )
 
     # print NXDL source location
     print( '**Source**:' )
