@@ -28,7 +28,7 @@ def printf(str, *args):
     print(str % args, end='')
 
 def fmtTyp( node ):
-    typ = node.get('type', 'untyped (:ref:`NX_CHAR <NX_CHAR>`)')
+    typ = node.get('type', ':ref:`NX_CHAR <NX_CHAR>`') # per default
     if typ.startswith('NX_'):
         typ = ':ref:`%s <%s>`' % (typ, typ)
     return typ
