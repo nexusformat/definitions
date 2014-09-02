@@ -40,13 +40,13 @@ Three parallel developments have led to NeXus:
    community while working at the ISIS pulsed neutron facility.
 
 #. *August 1994*:
-   :index:`Jon Tischler <single: Tischler, Jon>` and
-   :index:`Mitch Nelson <single: Nelson, Mitch>` (Oak Ridge National Laboratory, USA)
+   :index:`Jon Tischler <single: Tischler, Jonathan>` and
+   :index:`Mitch Nelson <single: Nelson, Mitchell>` (Oak Ridge National Laboratory, USA)
    proposed an HDF-based format as a standard for data storage at the
    Advanced Photon Source (Argonne National Laboratory, USA).
 
 #. *October 1996*:
-   :index:`Przemek Klosowski <single: Klosowski, Przemek>`
+   :index:`Przemek Klosowski <single: Klosowski, Przemysław>`
    (National Institute of Standards and Technology, USA)
    produced a first draft of the NeXus proposal drawing on ideas
    from both sources.

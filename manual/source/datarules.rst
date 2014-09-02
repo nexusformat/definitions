@@ -515,9 +515,7 @@ where a monitor value per scan point is expected or
 time-of-flight monitors.
 
 .. index::
-	automatic plotting
-	NeXus basic motivation; default plot
-	! plottable data; how to find it
+	plotting; how to find data
 
 .. _Find-Plottable-Data:
 

@@ -118,7 +118,7 @@ links.
 
 :ref:`Design-Links`
     Links are used to reference the 
-    :index:`plottable data <NeXus basic motivation; default plot>`
+    :index:`plottable data <plotting>`
     from ``NXdata``
     when the data is provided in other groups
     such as ``NXmonitor`` :index:`or <link>` ``NXdetector``.
@@ -188,7 +188,7 @@ complete list can be found in the :ref:`Design` chapter.
     class ``NXdata``. 
     These groups contain the experimental results
     in a self-contained way, i.e., it should be possible to
-    generate a sensible :index:`plot <NeXus basic motivation; default plot>`
+    generate a sensible :index:`plot <plotting>`
     of the data from the information
     contained in each ``NXdata`` group. That means it
     should contain the axis labels and titles as well as the
