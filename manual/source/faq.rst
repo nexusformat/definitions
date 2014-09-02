@@ -81,13 +81,14 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     If you encounter any problems because the classes are not
     sufficient to describe your configuration, please contact the
-    :index:`NIAC <NeXus International Advisory Committee>`
+    :index:`NIAC`
     Executive Secretary explaining the problem, and post a suggestion
     at the relevant class wiki page. Or raise the problem in one of the
     `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
     The NIAC is always willing to consider new proposals.
 
-#. I want to produce an application definition. How do I go about it?
+#. I want to :index:`contribute` an application definition.
+    How do I go about it?
 
     Read the :index:`NXDL` Tutorial in :ref:`NXDL_Tutorial-CreatingNxdlSpec`
     and have a try. You can ask for help on the `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.

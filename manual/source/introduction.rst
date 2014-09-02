@@ -36,7 +36,7 @@ storing analyzed data should agree on simple interchange
 What is NeXus?
 ##############
 
-The  :index:`NeXus <!NeXus>` data format has four components:
+The NeXus data format has four components:
 
 :ref:`A set of design principles <Introduction-DesignPrinciples>`
     to help people understand what is in the data files.
@@ -83,8 +83,9 @@ NeXus data files is provided in the :ref:`Utilities` chapter.
 A Set of Design Principles
 ==========================
 
-NeXus :index:`data files <NeXus; Design Principles>`
-contain four types of entity:
+.. index:: design principles
+
+NeXus data files contain four types of entity:
 data groups,
 data fields,
 attributes, and
@@ -134,8 +135,12 @@ to navigate a NeXus file.
 Example of a NeXus File
 -----------------------
 
+.. index::
+   see: tree structure; hierarchy
+   single: examples; NeXus file
+
 The following diagram shows an example of a NeXus data file represented as a
-tree :index:`structure <hierarchy; example NeXus file>`.
+tree structure.
 
 	.. compound::
 	
@@ -229,6 +234,9 @@ complete list can be found in the :ref:`Design` chapter.
 
 Simple Example
 --------------
+
+.. index::
+   single: examples; NeXus file; minimal
 
 NeXus data files do not need to be complicated.
 In fact, the following
@@ -391,10 +399,11 @@ provides the scientific data, advice, and continued involvement
 with the NeXus standard. NeXus provides a forum for the scientific
 community to exchange ideas in data storage through the NeXus wiki.
 
-The NeXus International Advisory Committee supervises the
+The :ref:`NeXus International Advisory Committee <NIAC>` (NIAC)
+supervises the
 development and maintenance of the NeXus common data
 format for neutron, X-ray, and muon science.
-The :ref:`NIAC` supervises a technical committee to oversee the
+The NIAC supervises a technical committee to oversee the
 :ref:`NAPI` and the :ref:`ClassDefinitions`.
 
 

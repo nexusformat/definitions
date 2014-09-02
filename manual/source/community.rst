@@ -15,9 +15,7 @@ provides the scientific data, advice, and continued involvement
 with the NeXus standard. NeXus provides a forum for the scientific
 community to exchange ideas in data storage through the NeXus wiki.
 
-.. index:: NeXus International Advisory Committee
-
-The NeXus International Advisory Committee (NIAC) supervises the
+The NeXus International Advisory Committee (:index:`NIAC`) supervises the
 development and maintenance of the NeXus common data
 format for neutron, X-ray, and muon science.
 The NIAC supervises a technical committee to oversee the

@@ -83,7 +83,7 @@ Two things to note about the development and history of NeXus:
 :October 2003:
     In 2003, NeXus had arrived at a stage where informal gatherings of a group of
     people were no longer good enough to oversee the development of NeXus. This lead
-    to the formation of the :index:`NeXus International Advisory Committee` (NIAC) which
+    to the formation of the NeXus International Advisory Committee (:index:`NIAC`) which
     strives to include representatives of all major stake holders in NeXus. A first
     meeting was held at CalTech. Since 2003, the NIAC meets every year to discuss
     all matters NeXus.

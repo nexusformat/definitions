@@ -536,7 +536,7 @@ Processed Data
 
 Data reduction and analysis programs are encouraged to store their results in
 NeXus data files. As far as the necessary, the normal NeXus 
-:index:`hierarchy <hierarchy; NeXus>`
+:index:`hierarchy <hierarchy>`
 is to be implemented. In addition, processed data files
 must contain a :ref:`NXprocess`
 group. This group, that documents and preserves data provenance,
