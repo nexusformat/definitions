@@ -4,9 +4,13 @@
 NeXus Introduction
 ==================
 
+.. index:
+   introduction
+   motivation
+
 In recent years, a community of scientists and computer programmers working in neutron
 and synchrotron facilities around the world came to the conclusion that a 
-:index:`common data format <NeXus basic motivation; unified format>`
+common data format
 would fulfill a valuable function in the scattering community. As
 instrumentation becomes more complex and data visualization become more challenging,
 individual scientists, or even institutions, have found it difficult to keep up with new
@@ -101,10 +105,9 @@ links.
     
     .. index::
       single: HDF; Scientific Data Sets
-      pair:   SDS; Scientific Data Sets
-      see:    data objects, fields; Scientific Data Sets
+      see:    SDS; Scientific Data Sets
+      single: data objects, fields; Scientific Data Sets
       see:    data objects, fields; HDF
-      see:    data objects, fields; SDS
 
 :ref:`Design-Attributes`
     Extra information required to
@@ -166,9 +169,10 @@ complete list can be found in the :ref:`Design` chapter.
           amount of information in a valid NeXus data file.
 
 :ref:`NXentry`
+    .. index:: NXentry (base class)
     *Required:*
     The top level of any NeXus file contains one or more groups with the 
-    :index:`class <class definition -- Base Classes; NXentry>` ``NXentry``. 
+    class ``NXentry``. 
     These contain all the data that is required to
     describe an experimental run or scan. Each
     ``NXentry`` typically contains a number of
@@ -178,9 +182,10 @@ complete list can be found in the :ref:`Design` chapter.
     ``NXmonitor``).
 
 :ref:`NXdata`
+    .. index:: NXdata (base class)
     *Required:*
     Each ``NXentry`` group contains one or more groups with 
-    :index:`class <class definition -- Base Classes; NXdata>` ``NXdata``. 
+    class ``NXdata``. 
     These groups contain the experimental results
     in a self-contained way, i.e., it should be possible to
     generate a sensible :index:`plot <NeXus basic motivation; default plot>`
@@ -190,17 +195,18 @@ complete list can be found in the :ref:`Design` chapter.
     data.
 
 :ref:`NXsample`
+    .. index:: NXsample (base class)
     A ``NXentry`` group will often contain a group with 
-    :index:`class <class definition -- Base Classes; NXsample>` ``NXsample``. 
+    class ``NXsample``. 
     This group contains information pertaining to
     the sample, such as its chemical composition, mass, and
     environment variables (temperature, pressure, magnetic
     field, etc.).
 
 :ref:`NXinstrument`
+    .. index:: NXinstrument (base class)
     There might also be a group with 
-    :index:`class <class definition -- Base Classes; NXinstrument>`
-    ``NXinstrument``. This is designed to encapsulate all the
+    class ``NXinstrument``. This is designed to encapsulate all the
     instrumental information that might be relevant to a
     measurement, such as flight paths, collimation, chopper
     frequencies, etc.

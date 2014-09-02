@@ -4,6 +4,9 @@
 Authors
 ===========
 
+.. index:: ! authors
+.. index:: ! documentation editor
+
 **Pete R. Jemian, Documentation Editor**:
 	``<jemian@anl.gov>``, Advanced Photon Source, Argonne National Laboratory, Argonne, IL, USA,
 

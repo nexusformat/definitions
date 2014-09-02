@@ -1,4 +1,6 @@
-.. index:: ! class definition -- Contributed Definitions
+.. index::
+     ! see: class definitions; contributed definition
+     ! contributed definition
 
 .. _contributed.definitions:
 

@@ -1,6 +1,6 @@
 .. index::
-	!NIAC
-	!NeXus International Advisory Committee
+	see: NIAC; NeXus International Advisory Committee
+	! NeXus International Advisory Committee
 
 .. _NIAC:
 

@@ -1,4 +1,6 @@
-.. index:: ! class definition -- Base Classes
+.. index::
+     ! see: class definitions; base class
+     ! base class
 
 .. _base.class.definitions:
 

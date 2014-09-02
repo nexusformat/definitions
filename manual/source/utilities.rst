@@ -20,27 +20,31 @@ HDF5, or XML).
 Utilities supplied with NeXus
 #############################
 
+.. index:: utilities
+.. index:: programs
+.. index:: software
+
 Most of these utility programs are run from the command line. It will be noted if a
 program provides a graphical user interface (GUI). Short descriptions are provided here with
 links to further information, as available.
 
 .. index:: 
-	utility, NeXus; nxbrowse
-	nxbrowse
+        browser
+	nxbrowse (utility)
 
 **nxbrowse**
     NeXus Browser
 
 .. index:: 
-	utility, NeXus; nxconvert
-	nxconvert
+        conversion
+	nxconvert (utility)
 
 **nxconvert**
     Utility to convert a NeXus file into HDF4/HDF5/XML/...
 
-.. index:: 
-	utility, NeXus; nxdir
-	nxdir
+.. index::
+        inspection
+	nxdir (utility)
 
 **nxdir**
     ``nxdir`` is a utility for querying 
@@ -51,9 +55,9 @@ links to further information, as available.
     
         nxdir -h
 
-.. index:: 
-	utility, NeXus; nxingest
-	nxingest
+.. index::
+        ingestion
+	nxingest (utility)
 
 **nxingest**
     ``nxingest`` extracts the metadata from a NeXus file to create an
@@ -65,8 +69,7 @@ links to further information, as available.
 	can be read.
 
 .. index:: 
-	utility, NeXus; nxsummary
-	nxsummary
+	nxsummary 
 
 **nxsummary**
     Use ``nxsummary`` to generate summary of a NeXus file.
@@ -78,9 +81,8 @@ links to further information, as available.
     operations to be performed on the data before printing out the result.
     See the source code documentation for more details.
 
-.. index:: 
-	utility, NeXus; nxtranslate
-	nxtranslate
+.. index::
+	nxtranslate (utility)
 
 **nxtranslate**
     ``nxtranslate`` is
@@ -97,9 +99,10 @@ links to further information, as available.
     All of these concepts are discussed in detail in the documentation
     provided with the source code.
 
-.. index:: 
-	utility, NeXus; nxvalidate
-	nxvalidate
+.. index::
+        validation
+	file; validate
+	nxvalidate (utility)
 
 **nxvalidate**
     From the source code documentation: 
@@ -110,22 +113,8 @@ links to further information, as available.
     different than the newer Java GUI program: ``NXvalidate``.
 
 .. index:: 
-	utility, NeXus; NXvalidate
-	NXvalidate
-	
-.. _NXvalidate-java:
-
-**NXvalidate**
-    Java program (in development in 2010) to check
-    any NeXus data file for conformance with the NeXus
-    NXDL-based standard. Note: This Java GUI is different than the command-line
-    tool: ``nxvalidate``.
-
-
-.. index:: 
-	utility, NeXus; NXplot
-	NXplot
-	NeXus basic motivation; default plot
+        plotting
+	NXplot (utility)
 
 **NXplot**
     An extendable utility for plotting any NeXus file.  ``NXplot`` is
@@ -134,6 +123,10 @@ links to further information, as available.
 
 .. _Utilities-DataAnalysis:
 
+.. index::
+        single: software
+	single: data analysis software
+
 Data Analysis
 #############
 
@@ -141,8 +134,7 @@ The list of applications below are some of the utilities that have been develope
 as a data format.  It is not intended to be a complete list of all available packages.
 
 .. index:: 
-	utility; DAVE
-	DAVE
+	DAVE (data analysis software)
 
 **DAVE** (http://www.ncnr.nist.gov/dave/)
     DAVE is an integrated environment for the reduction, visualization and
@@ -150,8 +142,7 @@ as a data format.  It is not intended to be a complete list of all available pac
     Language) from ITT Visual Information Solutions.
 
 .. index:: 
-	utility; GDA
-	GDA
+	GDA (data analysis software)
 
 **GDA** (http://www.opengda.org)
     The GDA project is an open-source framework for creating customised 
@@ -159,8 +150,7 @@ as a data format.  It is not intended to be a complete list of all available pac
     as neutron and X-ray sources.
 
 .. index:: 
-	utility; Gumtree
-	Gumtree
+	Gumtree (data analysis software)
 
 **Gumtree** (http://docs.codehaus.org/display/GUMTREE)
     Gumtree  is an open source project, providing a graphical user 
@@ -168,8 +158,23 @@ as a data format.  It is not intended to be a complete list of all available pac
     and data reduction.
 
 .. index:: 
-	utility; ISAW
-	ISAW
+	IDL (data analysis software)
+
+**IDL** (http://www.ittvis.com/)
+    IDL is a high-level technical computing language and interactive 
+    environment for algorithm development, data visualization, 
+    data analysis, and numeric computation.
+
+.. index:: 
+	IGOR Pro (data analysis software)
+
+**IgorPro** (http://www.wavemetrics.com/)
+    IGOR Pro is an extraordinarily powerful and extensible scientific 
+    graphing, data analysis, image processing and programming software 
+    tool for scientists and engineers.
+
+.. index:: 
+	ISAW (data analysis software)
 
 **ISAW** (ftp://ftp.sns.gov/ISAW/)
     The Integrated Spectral Analysis Workbench software project (ISAW) 
@@ -179,8 +184,7 @@ as a data format.  It is not intended to be a complete list of all available pac
     and can merge and sort data from separate measurements.
 
 .. index:: 
-	utility; LAMP
-	LAMP
+	LAMP (data analysis software)
 
 **LAMP** (http://www.ill.eu/data_treat/lamp/>)
     LAMP (Large Array Manipulation Program)  is designed for the treatment of 
@@ -189,8 +193,7 @@ as a data format.  It is not intended to be a complete list of all available pac
     a GUI-laboratory for data analysis based on the IDL language.
 
 .. index:: 
-	utility; Mantid
-	Mantid
+	Mantid (data analysis software)
 
 **Mantid** (http://www.mantidproject.org/)
     The Mantid project 
@@ -199,8 +202,15 @@ as a data format.  It is not intended to be a complete list of all available pac
     Rutherford Appleton Laboratory and Oak Ridge National Laboratory.
 
 .. index:: 
-	utility; NeXpy
-	NeXpy
+	MATLAB
+
+**MATLAB** (http://www.mathworks.com/)
+    MATLAB is a high-level technical computing language and interactive 
+    environment for algorithm development, data visualization, 
+    data analysis, and numeric computation.
+
+.. index:: 
+	NeXpy (data analysis software)
 
 **NeXpy** (http://nexpy.github.io/nexpy/)
     The goal of NeXpy is to provide a simple graphical environment,
@@ -210,16 +220,14 @@ as a data format.  It is not intended to be a complete list of all available pac
     would be adopted in the future by NeXus and be part of the distribution)
 
 .. index:: 
-	utility; OpenGENIE
-	OpenGENIE
+	OpenGENIE (data analysis software)
 
 **OpenGENIE** (http://www.opengenie.org/)
     A general purpose data analysis and visualisation package primarily
     developed at the ISIS Facility, Rutherford Appleton Laboratory.
 
 .. index:: 
-	utility; PyMCA
-	PyMCA
+	PyMCA (data analysis software)
 
 **PyMCA** (http://pymca.sourceforge.net/)
     PyMca is a ready-to-use, and in many aspects state-of-the-art, 
@@ -240,8 +248,7 @@ APIs for many programming languages that will allow
 low level programmatic access to the data structures.
 
 .. index:: 
-	HDF tools; HDF Group command line tools
-	HDF Group command line tools
+	HDF tools
 
 **HDF Group command line tools** (http://www.hdfgroup.org/products/hdf5_tools/#h5dist/)
     There are various command line tools that are available from the HDF
@@ -249,7 +256,6 @@ low level programmatic access to the data structures.
     download separately.
 
 .. index:: 
-	HDF tools; HDFexplorer
 	HDFexplorer
 
 **HDFexplorer** (http://www.space-research.org/)
@@ -257,38 +263,10 @@ low level programmatic access to the data structures.
     files (HDF, HDF-EOS and HDF5) and also netCDF data files.
 
 .. index:: 
-	HDF tools; HDFview
 	HDFview
 
 **HDFview** (http://www.hdfgroup.org)
     A Java based GUI for browsing (and some basic plotting) of HDF files.
-
-.. index:: 
-	HDF tools; IDL
-	IDL
-
-**IDL** (http://www.ittvis.com/)
-    IDL is a high-level technical computing language and interactive 
-    environment for algorithm development, data visualization, 
-    data analysis, and numeric computation.
-
-.. index:: 
-	HDF tools; IGOR Pro
-	IGOR Pro
-
-**IgorPro** (http://www.wavemetrics.com/)
-    IGOR Pro is an extraordinarily powerful and extensible scientific 
-    graphing, data analysis, image processing and programming software 
-    tool for scientists and engineers.
-
-.. index:: 
-	HDF tools; MATLAB
-	MATLAB
-
-**MATLAB** (http://www.mathworks.com/)
-    MATLAB is a high-level technical computing language and interactive 
-    environment for algorithm development, data visualization, 
-    data analysis, and numeric computation.
 
 Language APIs
 -------------

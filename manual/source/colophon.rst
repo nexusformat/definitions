@@ -2,9 +2,9 @@
 Colophon
 ========
 
-These docs (manual and reference) were produced using Sphinx
+These docs (manual and reference) were produced using :index:`Sphinx <Sphinx (documentation generator)>`
 (http://sphinx.pocoo.org).
-The source for the manual shows many examples of the structures
+The :index:`source for the manual <manual source>` shows many examples of the structures
 used to create the manual.  If you have any questions about 
 how to contribute to this manual, please contact the NeXus
 Documentation Editor (Pete Jemian <jemian@anl.gov>).

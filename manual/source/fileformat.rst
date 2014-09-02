@@ -1,5 +1,5 @@
 .. index::
-	NeXus; low-level file formats
+	low-level file formats
 	NAPI; bypassing
 
 .. _Fileformat:
@@ -17,7 +17,6 @@ using the NeXus-API.
 
 .. index:
 	HDF
-	HDF; API
 
 Choice of HDF as Underlying File Format
 #######################################

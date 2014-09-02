@@ -1,5 +1,8 @@
 .. _MotivationsForNeXus:
 
+.. index:
+   ! motivation
+
 ==============================================================
 Motivations for the NeXus standard in the Scientific Community
 ==============================================================
@@ -32,17 +35,19 @@ the documentation of each generation of data format is often lacking.
 Three parallel developments have led to NeXus:
 
 #. *June 1994*:
-   Mark Könnecke (Paul Scherer Institute, Switzerland) made a
+   :index:`Mark Könnecke <single: Könnecke, Mark>` (Paul Scherer Institute, Switzerland) made a
    proposal using netCDF for the European neutron scattering
    community while working at the ISIS pulsed neutron facility.
 
 #. *August 1994*:
-   Jon Tischler and Mitch Nelson (Oak Ridge National Laboratory, USA)
+   :index:`Jon Tischler <single: Tischler, Jon>` and
+   :index:`Mitch Nelson <single: Nelson, Mitch>` (Oak Ridge National Laboratory, USA)
    proposed an HDF-based format as a standard for data storage at the
    Advanced Photon Source (Argonne National Laboratory, USA).
 
 #. *October 1996*:
-   Przemek Klosowski (National Institute of Standards and Technology, USA)
+   :index:`Przemek Klosowski <single: Klosowski, Przemek>`
+   (National Institute of Standards and Technology, USA)
    produced a first draft of the NeXus proposal drawing on ideas
    from both sources.
 
@@ -57,8 +62,7 @@ and *SoftNeSS'96* (Argonne Oct. 1996),
 attended by representatives
 of a range of neutron and X-ray facilities.
 The NeXus API was released in late 1997.
-:index:`Basic motivations <!NeXus basic motivation>`
-for this standard were:
+Basic motivations for this standard were:
 
 #. :ref:`SimplePlotting`
 
@@ -71,8 +75,10 @@ for this standard were:
 Simple plotting
 ###############
 
-An important motivation for the design of NeXus was to simplify the creation of a
-default :index:`plot <NeXus basic motivation; default plot>` view.
+.. index: plotting
+
+An important motivation for the design of NeXus was to simplify the creation
+of a default plot view.
 While the best representation of a set of observations will vary,
 depending on various conditions, a good suggestion is often known *a
 priori*. This suggestion is described in the ``NXdata``
@@ -87,8 +93,8 @@ Unified format for reduction and analysis
 Another important motivation for NeXus, indeed the *raison
 d'etre*, was the community need to analyze data from different user
 facilities. A single data format that is in use at a variety of facilities
-would provide a major benefit to the scientific community.  This 
-:index:`unified format <NeXus basic motivation; unified format>` should
+would provide a major benefit to the scientific community. 
+This  should
 be capable of describing any type of data from the scientific experiments,
 at any step of the process from data acquisition to data reduction and analysis.
 This unified format also needs to allow data to be written to storage
@@ -148,6 +154,8 @@ between HDF and XML.
 NeXus as a Common Data Exchange Format
 ======================================
 
+.. index: exchange format
+
 By the late 1980s, it had become common practice for a scientific instrument
 or facility to define its own data format, often at the convenience of the local
 computer system. Data from these facilities were not easily interchanged due to various
@@ -192,9 +200,10 @@ and thereby reduce the number of data conversion routines from
 Defined dictionary of terms
 ###########################
 
+.. index: dictionary of terms, lexicography
+
 A necessary feature of a standard for the interchange of scientific data is 
-:index:`a <NeXus basic motivation; defined dictionary>` *defined dictionary*
-(or *lexicography*) of
+a ` *defined dictionary* (or *lexicography*) of
 terms. This dictionary declares the expected spelling and meaning of terms when they are
 present so that it is not necessary to search for all the variant forms of
 *energy* when it is used to describe data (e.g., ``E``, ``e``, ``keV``, ``eV``, ``nrg``, ...).

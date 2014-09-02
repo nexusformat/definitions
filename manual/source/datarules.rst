@@ -206,12 +206,20 @@ numbers.  A number follows that indicates the number of bits in the word.
 The table above shows the regular expressions that
 matches the data type specifier.
 
+.. index::
+    ! integers
+    see: numbers; integers
+
 **integers**
     ``NX_INT8``,
     ``NX_INT16``,
     ``NX_INT32``,
     or
     ``NX_INT64``
+
+.. index::
+    ! floating-point numbers
+    see: numbers; floating-point numbers
 
 **floating-point numbers**
     ``NX_FLOAT32``
@@ -226,6 +234,8 @@ matches the data type specifier.
     ISO-8601 standard definitions.
     Refer to :ref:`Design-Dates-Times`.
 
+.. index:: ! strings
+
 **strings**
     All strings are to be encoded in UTF-8. Since most strings in a
     NeXus file are restricted to a small set of characters and the first 128 characters are standard across encodings,
@@ -236,8 +246,12 @@ matches the data type specifier.
     current operating systems handle character encoding, it is practically impossible to test the encoding used. Hence,
     ``nxvalidate`` provides no messages relating to character encoding.
 
+.. index:: binary data
+
 **binary data**
     Binary data is to be written as ``UINT8``.
+
+.. index:: images
 
 **images**
     Binary image data is to be written using ``UINT8``, the same as binary data, but with an accompanying image mime-type.
@@ -251,6 +265,8 @@ matches the data type specifier.
 
 NeXus dates and times
 =====================
+
+.. index:: date and time
 
 NeXus  :index:`dates and times <date and time>`
 should be stored using the `ISO 8601`_ [#]_  format,
@@ -355,7 +371,7 @@ Linking by name using the ``axes`` attribute
 ============================================
 
 The preferred method is to define an attribute of the data itself
-:index:`called <axes>` *axes*.
+:index:`called <axes (attribute)>` *axes*.
 The ``axes`` attribute contains the names of
 each :index:`dimension scale <dimension; dimension scales>`
 as a colon (or comma) separated list in the order they appear in C.
@@ -410,8 +426,7 @@ the three components of an
 handle this case, we have defined another attribute
 of type integer called
 ``primary`` whose value determines the order
-in which the scale is expected to be chosen for 
-:index:`plotting <NeXus basic motivation; default plot>`, i.e.
+in which the scale is expected to be chosen for :index:`plotting`, i.e.
 
 + 1st choice: ``primary=1``
 

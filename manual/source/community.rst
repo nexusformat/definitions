@@ -10,13 +10,12 @@ NeXus began as a group of scientists with the goal of defining a
 common data storage format to exchange experimental results
 and to exchange ideas about how to analyze them.
 
-The :index:`NeXus Scientific Community <NeXus; Community>`
+The :index:`NeXus Scientific Community <community>`
 provides the scientific data, advice, and continued involvement
 with the NeXus standard. NeXus provides a forum for the scientific
 community to exchange ideas in data storage through the NeXus wiki.
 
-.. index::
-	pair: NeXus International Advisory Committee; NIAC
+.. index:: NeXus International Advisory Committee
 
 The NeXus International Advisory Committee (NIAC) supervises the
 development and maintenance of the NeXus common data
@@ -28,7 +27,9 @@ NeXus class definitions.
 There are several mechanisms in place in order to coordinate the 
 development of NeXus with the larger community.
 
-.. index:: ! NeXus wiki
+.. index::
+   ! NeXus wiki
+   wiki
 
 .. _NeXus.wiki:
 
@@ -43,7 +44,7 @@ Code Camps, proposed designs for consideration by NeXus, the NeXus logo,
 as well as some
 legacy documentation that we have not quite managed to move into the manual.
 
-.. index:: Contributed Definitions
+.. index:: contributed definition
 
 .. _community.Contributed.Definitions:
 

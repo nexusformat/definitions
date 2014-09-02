@@ -4,6 +4,10 @@
 NAPI: The NeXus Application Programming Interface
 =================================================
 
+.. index::
+   see: API; NAPI
+   file; read and write
+
 The :index:`NeXus API <! NAPI>` consists of routines to read and
 write NeXus data files.
 It was written to provide a simple to use and consistent common interface for
@@ -32,7 +36,7 @@ you should not start by reading that.
 How do I write a NeXus file?
 ============================
 
-.. index:: file; write
+.. index:: write file
 
 The NeXus Application Program Interface :index:`(NAPI) <NAPI>`
 provides a set of subroutines that make it easy to read and write
@@ -83,7 +87,7 @@ we walk through a schematic of NeXus program written in C
         ``NXmakegroup()`` and then
         open it for access using ``NXopengroup()``. [#]_
     #. line 9:
-        The :index:`plottable data <NeXus basic motivation; default plot>`
+        The :index:`plottable data <plotting>`
         is contained within an :ref:`NXdata`
         group, which must also be created and opened.
     #. line 12:
@@ -118,7 +122,8 @@ we walk through a schematic of NeXus program written in C
 How do I read a NeXus file?
 ===========================
 
-.. index:: file; read
+.. index::
+   read file
 
 Reading a NeXus file works in the same way by traversing the tree with the handle.
 
@@ -142,13 +147,14 @@ created in the :ref:`example above <fig.ex-c-write>`.
 How do I browse a NeXus file?
 =============================
 
-.. index:: file; browse
+.. index::
+   browser
 
 NeXus files can also be viewed by a command-line browser,
 ``nxbrowse``, which is included as a helper tool in the
 :ref:`NeXus API <Introduction-NAPI>`
 distribution. The :ref:`following <fig.nxbrowse>` 
-is an example session of :index:`using <utility; nxbrowse>` 
+is an example session of :index:`nxbrowse` 
 ``nxbrowse`` to view a data file.
 
 .. compound::

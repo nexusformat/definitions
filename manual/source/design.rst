@@ -126,7 +126,7 @@ are extra (meta-)information that are associated with particular
 fields. They are used to annotate the data, e.g. with physical 
 :index:`units` or calibration offsets, and may be scalar numbers or character
 strings. In addition, NeXus uses attributes to identify 
-:index:`plottable data <NeXus basic motivation; default plot>`
+:index:`plottable data <plotting>`
 and their axes, etc. A description of some of the many possible 
 attributes can be found in the next table:
 	
@@ -141,12 +141,12 @@ attributes can be found in the next table:
 		
 		``signal`` (*NX_POSINT*)
 			Defines which data set contains the signal
-			to be :index:`plotted <NeXus basic motivation; default plot>`,
+			to be :index:`plotted <plotting>`,
 			use ``signal=1`` for main signal, ``signal=2`` for a second
 			item to plot, and so on.
 		
 		``axes`` (*NX_CHAR*)
-			:index:`axes <axes>` defines the names of the 
+			:index:`axes <axes (attribute)>` defines the names of the 
 			:index:`dimension scales <dimension scale>`
 			for this data set
 			as a colon-delimited list.  Note that some legacy data files
@@ -165,7 +165,7 @@ attributes can be found in the next table:
 		
 		``axis`` (*NX_POSINT*)
 			The original way of designating data for 
-			:index:`plotting <NeXus basic motivation; default plot>`,
+			:index:`plotting <plotting>`,
 			now superceded by the ``axes`` attribute.
 			This defines the :index:`rank <rank>`
 			of the signal data for which this data set is a
@@ -229,11 +229,9 @@ All attributes are identified by their names, which must be unique within each f
 			if the external name has been changed
 		
 		.. index::
-		    single: ISO 8601
-		    single: time
-		    single: date and time; time
+		    see: ISO 8601; date and time
+		    see: time; date and time
 		    single: date and time
-		    see: date and time; ISO 8601
 		
 		``file_time`` (*ISO 8601*)
 			Date and time of file creation
@@ -330,7 +328,7 @@ start with ``NX``.
 
 Not all classes define physical objects. Some refer to logical groupings of
 experimental information, such as 
-:index:`plottable data <NeXus basic motivation; default plot>`,
+:index:`plottable data <plotting>`,
 sample environment logs, beam profiles, etc.
 There can be multiple instances of each class. On
 the other hand, a typical NeXus file will only contain a small subset of the
@@ -356,7 +354,7 @@ But there are some base classes which have special uses which need to be mention
 
 :ref:`NXdata`
     ``NXdata`` is used to identify the default 
-    :index:`plottable data <NeXus basic motivation; default plot>`.
+    :index:`plottable data <plotting>`.
     The notion of a default plot of data is a basic motivation of NeXus.
 
 :ref:`NXlog`
@@ -382,10 +380,11 @@ annotate or in a ``NXcollection``. All of the base classes are documented in the
 -----------------------------------------
 
 .. index::
-    pair: NeXus basic motivation; default plot
-    single: automatic plotting
-    single: NeXus basic motivation, default plot; automatic plotting
-    single: dimension scale
+   single: !plotting
+   single: motivation
+   see: automatic plotting; plotting
+   see: default plot; plotting
+   single: dimension scale
 
 The most notable special base class (or *group* in NeXus) is ``NXdata``.
 ``NXdata`` is the answer to a basic motivation of NeXus to facilitate 
@@ -830,7 +829,7 @@ This is also a nice example of the application of transformation matrices:
     ============================
     
     .. index::
-    	NeXus basic motivation; defined dictionary
+    	dictionary
     
     Many instrument components define
     variables to specify their size.

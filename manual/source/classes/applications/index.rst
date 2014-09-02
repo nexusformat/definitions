@@ -1,4 +1,6 @@
-.. index:: ! class definition -- Application Definitions
+.. index::
+     ! see: class definitions; application definition
+     ! application definition
 
 .. _application.definitions:
 
