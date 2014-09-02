@@ -1,4 +1,6 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+
+# Tested under both python2 and python3.
 
 '''
 Read the the NeXus NXDL class specification and describe it.  
@@ -50,7 +52,7 @@ def getDocBlocks( ns, node ):
     # it might look like XML
     s = lxml.etree.tostring(docnode, pretty_print=True,
                             method='c14n', with_comments=False).decode('utf-8')
-    m = re.fullmatch(r'<doc[^>]*>\n?(.*)\n?</doc>', s, re.DOTALL )
+    m = re.search(r'^<doc[^>]*>\n?(.*)\n?</doc>$', s, re.DOTALL )
     if not m:
         raise Exception( 'unexepcted docstring [%s] ' % s )
     text = m.group(1)
