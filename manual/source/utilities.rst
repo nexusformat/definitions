@@ -61,12 +61,12 @@ links to further information, as available.
 
 **nxingest**
     ``nxingest`` extracts the metadata from a NeXus file to create an
-	XML file according to a mapping file.  The mapping file defines the structure 
-	:index:`(names and hierarchy) <hierarchy>` and content (from either the 
-	NeXus file, the mapping file or the current time) of the output file. See
-	the man page for a description of the mapping file.  This tool uses the  
-	:index:`NAPI`.  Thus, any of the supported formats (HDF4, HDF5 and XML)
-	can be read.
+    XML file according to a mapping file.  The mapping file defines the structure 
+    :index:`(names and hierarchy) <hierarchy>` and content (from either the 
+    NeXus file, the mapping file or the current time) of the output file. See
+    the man page for a description of the mapping file.  This tool uses the  
+    :index:`NAPI`.  Thus, any of the supported formats (HDF4, HDF5 and XML)
+    can be read.
 
 .. index:: 
 	nxsummary 

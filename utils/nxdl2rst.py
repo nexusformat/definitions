@@ -93,8 +93,8 @@ def getDocLine( ns, node ):
     if len(blocks)==0:
         return ''
     if len(blocks)>1:
-        raise Exception( 'Unexpected multi-paragraph doc at ' %
-                         node.get('name') )
+        raise Exception( 'Unexpected multi-paragraph doc [%s]' %
+                         '|'.join(blocks) )
     return re.sub(r'\n', " ", blocks[0])
 
 def analyzeDimensions( ns, parent ):
