@@ -3,7 +3,7 @@
 # Tested under both python2 and python3.
 
 '''
-Read the the NeXus NXDL class specification and describe it.  
+Read the NeXus NXDL class specification and describe it.  
 Write a restructured text (.rst) document for use in the NeXus manual in 
 the NeXus NXDL Classes chapter.
 '''
@@ -328,7 +328,7 @@ if __name__ == '__main__':
     # TODO: change instances of \t to proper indentation
     html_root = 'https://github.com/nexusformat/definitions/blob/master'
         
-    # print experimental full tree
+    # print full tree
     print( '**Structure**:\n' )
     for subnode in root.xpath('nx:attribute', namespaces=ns):
         printAttribute( ns, subnode, '  ' )
