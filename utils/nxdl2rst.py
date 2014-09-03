@@ -156,8 +156,9 @@ def printDoc( indent, ns, node, required=False):
             print()
 
 def printAttribute( ns, node, indent ):
-    print( '%s**%s**: %s%s\n' % (
-        indent, '@'+node.get('name'), fmtTyp(node), fmtUnits(node) ) )
+    print( '%s.. index:: %s (attribute)\n' % ( indent, node.get('name') ) )
+    print( '%s**@%s**: %s%s\n' % (
+        indent, node.get('name'), fmtTyp(node), fmtUnits(node) ) )
     printDoc(indent+'  ', ns, node)
 
 
@@ -174,6 +175,7 @@ def printFullTree(ns, parent, name, indent):
     for node in parent.xpath('nx:field', namespaces=ns):
         name = node.get('name')
         dims = analyzeDimensions(ns, node)
+        print( '%s.. index:: %s (data field)\n' % ( indent, node.get('name') ) )
         print( '%s**%s%s**: %s%s\n' % (
             indent, name, dims, fmtTyp(node), fmtUnits(node) ) )
 
