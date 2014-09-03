@@ -1,11 +1,17 @@
 .. _MotivationsForNeXus:
 
-.. index:
-   ! motivation
-
 ==============================================================
 Motivations for the NeXus standard in the Scientific Community
 ==============================================================
+
+.. index::
+   ! motivation
+   single: why NeXus?
+   see: why NeXus?; motivation
+   seealso: motivation; plotting
+   seealso: motivation; exchange format
+   seealso: motivation; format unification
+   seealso: motivation; dictionary of terms
 
 ..  Today:
     * Lots of different data formats
@@ -75,7 +81,7 @@ Basic motivations for this standard were:
 Simple plotting
 ###############
 
-.. index: plotting
+.. index:: plotting
 
 An important motivation for the design of NeXus was to simplify the creation
 of a default plot view.
@@ -89,6 +95,8 @@ element so that any program that is used to browse NeXus data files can provide 
 
 Unified format for reduction and analysis
 #########################################
+
+.. index:: format unification
 
 Another important motivation for NeXus, indeed the *raison
 d'etre*, was the community need to analyze data from different user
@@ -154,7 +162,7 @@ between HDF and XML.
 NeXus as a Common Data Exchange Format
 ======================================
 
-.. index: exchange format
+.. index:: exchange format
 
 By the late 1980s, it had become common practice for a scientific instrument
 or facility to define its own data format, often at the convenience of the local
@@ -200,7 +208,7 @@ and thereby reduce the number of data conversion routines from
 Defined dictionary of terms
 ###########################
 
-.. index: dictionary of terms, lexicography
+.. index:: dictionary of terms, lexicography
 
 A necessary feature of a standard for the interchange of scientific data is 
 a ` *defined dictionary* (or *lexicography*) of
