@@ -380,7 +380,7 @@ annotate or in a ``NXcollection``. All of the base classes are documented in the
 -----------------------------------------
 
 .. index::
-   single: !plotting
+   ! single: plotting
    single: motivation
    see: automatic plotting; plotting
    see: default plot; plotting
