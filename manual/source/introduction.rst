@@ -4,7 +4,7 @@
 NeXus Introduction
 ==================
 
-.. index:
+.. index::
    introduction
    motivation
 
