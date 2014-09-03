@@ -19,6 +19,9 @@ with any of these data types.
 ..  Generated from ../nxdlTypes.xsd via a custom Python tool
     ../../utils/types2rst.py ../../nxdlTypes.xsd > types.table
 
+.. index::
+   seealso: binary data; NX_BINARY
+
 .. include:: types.table
 
 
