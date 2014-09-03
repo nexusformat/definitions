@@ -17,7 +17,7 @@ using the NeXus-API.
 
 .. _Fileformat-HDF-Choice:
 
-.. index:
+.. index::
    pair: HDF; file format
 
 Choice of HDF as Underlying File Format

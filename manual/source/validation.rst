@@ -156,7 +156,7 @@ data file.
 
 .. _Verification-Techniques:
 
-.. index:  validation
+.. index::  validation
 
 Validation techniques
 #####################
