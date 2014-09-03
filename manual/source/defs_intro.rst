@@ -113,7 +113,7 @@ The columns in the table are described as follows:
 		Or, as a regular expression:    [_a-zA-Z][_a-zA-Z0-9]*
 		equivalent regular expression:  [_a-zA-Z][\w_]*
 
-    :index:`Attributes <!attributes>`,
+    :index:`Attributes <! attribute>`,
     identified with a leading "at" symbol (``@``)
     and belong with the preceding field or group,
     are additional metadata used to define this field or group.

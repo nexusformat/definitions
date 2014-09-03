@@ -110,19 +110,28 @@ links.
       single: data objects, fields; Scientific Data Sets
       see:    data objects, fields; HDF
 
+.. index::
+   pair: units; attribute
+   attribute
+   see: data attribute; attribute
+
 :ref:`Design-Attributes`
     Extra information required to
     describe a particular group or field,
-    such as the data 
-    :index:`units <units>`,
-    can be stored as a :index:`data attribute <pair: attributes; data>`.
+    such as the data units,
+    can be stored as a data attribute.
 
+.. index::
+   link
+   plotting
+   NXdata (base class); plotting
+   NXmonitor (base class); plotting
+   NXdetector (base class); plotting
+   
 :ref:`Design-Links`
-    Links are used to reference the 
-    :index:`plottable data <plotting>`
-    from ``NXdata``
+    Links are used to reference the plottable data from ``NXdata``
     when the data is provided in other groups
-    such as ``NXmonitor`` :index:`or <link>` ``NXdetector``.
+    such as ``NXmonitor`` or ``NXdetector``.
 
 In fact, a NeXus file can be viewed as a computer file system. Just as files
 are stored in folders (or subdirectories) to make them easy to locate, so NeXus
@@ -173,8 +182,9 @@ complete list can be found in the :ref:`Design` chapter.
           are the only two classes necessary to store the minimum
           amount of information in a valid NeXus data file.
 
+.. index:: NXentry (base class)
+
 :ref:`NXentry`
-    .. index:: NXentry (base class)
     *Required:*
     The top level of any NeXus file contains one or more groups with the 
     class ``NXentry``. 
@@ -186,8 +196,9 @@ complete list can be found in the :ref:`Design` chapter.
     ``NXinstrument``), and monitor counts (class
     ``NXmonitor``).
 
+.. index:: NXdata (base class)
+
 :ref:`NXdata`
-    .. index:: NXdata (base class)
     *Required:*
     Each ``NXentry`` group contains one or more groups with 
     class ``NXdata``. 
@@ -199,8 +210,9 @@ complete list can be found in the :ref:`Design` chapter.
     should contain the axis labels and titles as well as the
     data.
 
+.. index:: NXsample (base class)
+
 :ref:`NXsample`
-    .. index:: NXsample (base class)
     A ``NXentry`` group will often contain a group with 
     class ``NXsample``. 
     This group contains information pertaining to
@@ -208,8 +220,9 @@ complete list can be found in the :ref:`Design` chapter.
     environment variables (temperature, pressure, magnetic
     field, etc.).
 
+.. index:: NXinstrument (base class)
+
 :ref:`NXinstrument`
-    .. index:: NXinstrument (base class)
     There might also be a group with 
     class ``NXinstrument``. This is designed to encapsulate all the
     instrumental information that might be relevant to a

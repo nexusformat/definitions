@@ -12,9 +12,11 @@ Naming Conventions
 ##################
 
 .. index:: 
-   naming convention
-   name rules
-   NX; used as NX class prefix 
+   single: naming convention
+   single: name rules
+   single: NX; used as NX class prefix 
+   single: attribute; NXclass
+   single: NXclass (attribute)
 
 Group and field Names used within NeXus follow a naming convention
 described by the following :index:`rules <rules; naming>`:

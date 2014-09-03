@@ -1,6 +1,6 @@
 .. index::
 	! single: NAPI
-	seealso: NeXus Application Programming Interface; NAPI
+	see: NeXus Application Programming Interface; NAPI
 
 .. _NAPI:
 

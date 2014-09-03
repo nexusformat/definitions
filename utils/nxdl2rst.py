@@ -327,7 +327,7 @@ if __name__ == '__main__':
         out = [ (':ref:`%s`' % g) for g in groups ]
         txt = ', '.join(sorted(out))
         print( '  %s\n' % ( txt ) )
-        out = [ ('%s (base class)' % g) for g in groups ]
+        out = [ ('%s (base class); used in %s' % (g, category_for_listing)) for g in groups ]
         txt = ', '.join(out)
         print( '.. index:: %s\n' % ( txt ) )
 

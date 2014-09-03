@@ -121,8 +121,11 @@ an array of several dimensions.
 Data Attributes
 ===============
 
-:index:`Attributes <!data objects; attributes>`
-are extra (meta-)information that are associated with particular
+.. index::
+   ! data objects; attributes
+   attribute; data field
+
+Attributes are extra (meta-)information that are associated with particular
 fields. They are used to annotate the data, e.g. with physical 
 :index:`units` or calibration offsets, and may be scalar numbers or character
 strings. In addition, NeXus uses attributes to identify 
@@ -212,8 +215,15 @@ attributes can be found in the next table:
 			* ``image`` (2-D data)
 			* ``vertex`` (3-D data)
 
+.. index::
+   ! file; attributes
+   ! attribute; file-level (NXroot)
+   ! NXroot (base class); attributes
+
+.. TODO: link this with NXroot; reduce duplication [JWu sep14]
+
 Finally, NeXus files themselves have global attributes which are listed
-in the next :index:`table <data objects, attributes; global>`.
+in the next table.
 These attributes identify the NeXus version, file creation time, etc.
 All attributes are identified by their names, which must be unique within each field.
 	
@@ -718,21 +728,45 @@ In order to use coordinate transformations, several morsels of information need 
 
 NeXus chooses to encode this information in the following way:
 
+    .. index::
+       single: transformation type (attribute)
+       single: translation
+       single: rotation
+       single: type; transformation_type (attribute)
+       single: attribute; transformation_type
+
     **Type**
     	Through a data set attribute **transformation_type**. 
 	This can take the value of either *translation*
     	or *rotation*.
+
+    .. index::
+       single: attribute; vector
+       single: vector (attribute)
+       single: direction; vector (attribute)
 
     **Direction**
     	Through a data set attribute **vector**. This is a set of three values
     	describing either the components of the rotation axis
     	or the direction along which the translation happens.
 
+    .. index::
+       single: attribute; value
+       single: value (attribute)
+       single: attribute; offset
+       single: offset (attribute)
+    
     **Value**
     	This is represented in the actual data of the data set. In addition, there is the
     	**offset** attribute which has three components describing a translation to apply before
     	applying the operation of the real axis. Without the offset attribute additional virtual
     	translations would need to be introduced in order to encode mechanical offsets in the axis.
+
+    .. index::
+       single: attribute; order
+       single: order (attribute)
+       single: attribute; depends_on
+       single: depends_on (attribute)
 
     **Order**
     	The order is encoded through the **depends_on** attribute on a data set. The value of the

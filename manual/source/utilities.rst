@@ -248,7 +248,7 @@ APIs for many programming languages that will allow
 low level programmatic access to the data structures.
 
 .. index:: 
-	HDF tools
+	HDF; tools
 
 **HDF Group command line tools** (http://www.hdfgroup.org/products/hdf5_tools/#h5dist/)
     There are various command line tools that are available from the HDF

@@ -99,7 +99,7 @@ we walk through a schematic of NeXus program written in C
         Write the data using ``NXputdata()``.
     #. line 15:
         With the field still open, we can also add some data 
-        :index:`attributes <attributes; data>`,
+        :index:`attributes <attribute; data field>`,
         such as the :index:`data units <units>`, [#]_ [#]_
         which are specified as a character string (``type="NX_CHAR"`` [#]_)
         that is 7 bytes long.

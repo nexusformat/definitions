@@ -1,6 +1,8 @@
 .. index::
-	low-level file formats
-	NAPI; bypassing
+   see: physical file format; file format
+   file format
+   see: low-level file format; file format
+   NAPI; bypassing
 
 .. _Fileformat:
 
@@ -16,7 +18,7 @@ using the NeXus-API.
 .. _Fileformat-HDF-Choice:
 
 .. index:
-	HDF
+   pair: HDF; file format
 
 Choice of HDF as Underlying File Format
 #######################################
@@ -48,7 +50,7 @@ NeXus data structures map directly to HDF structures.
 NeXus *groups* are HDF4 *vgroups* or HDF5 *groups*, 
 NeXus data sets (or *fields*) are HDF4 *SDS (scientific data sets)* 
 or HDF5 *datasets*.  Attributes map directly to HDF group or dataset 
-:index:`attributes`.
+:index:`attributes <attribute>`.
 
 The only special case is the NeXus class name. HDF4 supports a group class
 which is set with the ``Vsetclass()`` call
@@ -163,10 +165,16 @@ chapter for examples that use the native HDF5 calls to write NeXus data files.
 Mapping NeXus into XML
 ######################
 
+.. index::
+   pair: file format; XML
+   file; attributes
+   attribute; file-level (NXroot)
+   NXroot (base class); attributes
+
 This takes a bit more work than HDF.
 At the root of NeXus XML file
 is a XML element with the name ``NXroot``.
-Further :index:`XML attributes <attributes>` to
+Further XML attributes to
 ``NXroot`` define the NeXus file level attributes.
 An example NeXus XML data file is provided in the
 :ref:`Introduction` chapter as
@@ -204,6 +212,9 @@ stored as ``PCDATA`` [#PCDATA]_ in the element. Another example:
         :linenos:
         :language: guess
 
+.. index::
+   attribute; XML
+
 Data are printed in appropriate formats and in C storage order.
 The codes understood for ``NAPItype`` are
 all the NeXus data type names. The 
@@ -211,7 +222,7 @@ all the NeXus data type names. The
 are given in square brackets as a comma
 separated list. No dimensions need to be given if
 the data is just a single value.
-Data attributes are represented as XML :index:`attributes`.
+Data attributes are represented as XML attributes.
 If the attribute is not a text string, then the
 attribute is given in the form: *type:value*, for example:
 ``signal="NX_POSINT:1"``.
@@ -236,16 +247,24 @@ amounts of numbers.
 Special Attributes
 ##################
 
-NeXus makes use of some :index:`special attributes <attributes>` for its internal purposes.
+.. index::
+   attribute; internal
+
+NeXus makes use of some special attributes for its internal purposes.
 These attributes are stored as normal group or data set attributes
 in the respective file format. These are:
 
-.. index:: link 
+.. index::
+   single: link; target 
+   pair: attribute; target
 
 **target**
     This attribute is automatically created when items get linked.
     The target attribute contains a text string with
     the path to the source of the item linked.
+
+.. index::
+   pair: attribute; napimount
 
 **napimount**
     The ``napimount`` attribute is used to implement
@@ -261,7 +280,8 @@ in the respective file format. These are:
     This is a NeXus file in the file system at *path-to-file*
     and the group *path-infile* in that NeXus file.
 
-.. index::NAPIlink
+.. index::
+   pair: attribute; NAPIlink
 
 **NAPIlink**
     NeXus supports linking items in another group under another name.
