@@ -4,9 +4,6 @@
 Brief history of NeXus
 ======================
 
-The NeXus format
-----------------
-
 Two things to note about the development and history of NeXus:
 
 - All efforts on NeXus have been voluntary except for one year when we had one
