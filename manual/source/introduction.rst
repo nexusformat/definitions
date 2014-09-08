@@ -287,18 +287,19 @@ read this simple example.)
 This illustrates the fact that the structure of NeXus files is
 extremely flexible. It can accommodate very complex instrumental
 information, if required, but it can also be used to store very simple data
-sets. In the next example, a NeXus data file is shown as XML:
+sets. Here is the structure of a very simple NeXus data file
+(:download:`examples/verysimple.nx5`):
 
 	.. compound::
 	
-		.. _fig.simple-data-file-xml:
+		.. _fig.simple-data-file-structure:
 	
-	    .. rubric:: A very simple NeXus Data file (in XML)
+	    .. rubric:: Structure of a very simple NeXus Data file
 	
-	    .. literalinclude:: examples/verysimple.xml
+	    .. literalinclude:: examples/verysimple.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: xml
+	        :language: guess
 
 .. index:: 
 	NeXpy
