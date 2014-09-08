@@ -246,6 +246,9 @@ as a data format.  It is not intended to be a complete list of all available pac
     X-ray fluorescence data.  
     Reads, browses, and plots data from NeXus HDF5 files.
 
+.. index:: 
+	spec2nexus
+
 **spec2nexus** (http://spec2nexus.readthedocs.org/)
     (Python code) Converts SPEC data files and scans into NeXus HDF5 files.
     Provides h5toText utility program to inspect HDF5 file content.
