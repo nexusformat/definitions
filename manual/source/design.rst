@@ -121,12 +121,15 @@ an array of several dimensions.
 Data Attributes
 ===============
 
-:index:`Attributes <!data objects; attributes>`
-are extra (meta-)information that are associated with particular
+.. index::
+   ! data objects; attributes
+   attribute; data field
+
+Attributes are extra (meta-)information that are associated with particular
 fields. They are used to annotate the data, e.g. with physical 
 :index:`units` or calibration offsets, and may be scalar numbers or character
 strings. In addition, NeXus uses attributes to identify 
-:index:`plottable data <NeXus basic motivation; default plot>`
+:index:`plottable data <plotting>`
 and their axes, etc. A description of some of the many possible 
 attributes can be found in the next table:
 	
@@ -141,12 +144,12 @@ attributes can be found in the next table:
 		
 		``signal`` (*NX_POSINT*)
 			Defines which data set contains the signal
-			to be :index:`plotted <NeXus basic motivation; default plot>`,
+			to be :index:`plotted <plotting>`,
 			use ``signal=1`` for main signal, ``signal=2`` for a second
 			item to plot, and so on.
 		
 		``axes`` (*NX_CHAR*)
-			:index:`axes <axes>` defines the names of the 
+			:index:`axes <axes (attribute)>` defines the names of the 
 			:index:`dimension scales <dimension scale>`
 			for this data set
 			as a colon-delimited list.  Note that some legacy data files
@@ -165,7 +168,7 @@ attributes can be found in the next table:
 		
 		``axis`` (*NX_POSINT*)
 			The original way of designating data for 
-			:index:`plotting <NeXus basic motivation; default plot>`,
+			:index:`plotting <plotting>`,
 			now superceded by the ``axes`` attribute.
 			This defines the :index:`rank <rank>`
 			of the signal data for which this data set is a
@@ -212,8 +215,15 @@ attributes can be found in the next table:
 			* ``image`` (2-D data)
 			* ``vertex`` (3-D data)
 
+.. index::
+   ! file; attributes
+   ! attribute; file-level (NXroot)
+   ! NXroot (base class); attributes
+
+.. TODO: link this with NXroot; reduce duplication [JWu sep14]
+
 Finally, NeXus files themselves have global attributes which are listed
-in the next :index:`table <data objects, attributes; global>`.
+in the next table.
 These attributes identify the NeXus version, file creation time, etc.
 All attributes are identified by their names, which must be unique within each field.
 	
@@ -229,11 +239,9 @@ All attributes are identified by their names, which must be unique within each f
 			if the external name has been changed
 		
 		.. index::
-		    single: ISO 8601
-		    single: time
-		    single: date and time; time
+		    see: ISO 8601; date and time
+		    see: time; date and time
 		    single: date and time
-		    see: date and time; ISO 8601
 		
 		``file_time`` (*ISO 8601*)
 			Date and time of file creation
@@ -330,7 +338,7 @@ start with ``NX``.
 
 Not all classes define physical objects. Some refer to logical groupings of
 experimental information, such as 
-:index:`plottable data <NeXus basic motivation; default plot>`,
+:index:`plottable data <plotting>`,
 sample environment logs, beam profiles, etc.
 There can be multiple instances of each class. On
 the other hand, a typical NeXus file will only contain a small subset of the
@@ -356,7 +364,7 @@ But there are some base classes which have special uses which need to be mention
 
 :ref:`NXdata`
     ``NXdata`` is used to identify the default 
-    :index:`plottable data <NeXus basic motivation; default plot>`.
+    :index:`plottable data <plotting>`.
     The notion of a default plot of data is a basic motivation of NeXus.
 
 :ref:`NXlog`
@@ -382,10 +390,11 @@ annotate or in a ``NXcollection``. All of the base classes are documented in the
 -----------------------------------------
 
 .. index::
-    pair: NeXus basic motivation; default plot
-    single: automatic plotting
-    single: NeXus basic motivation, default plot; automatic plotting
-    single: dimension scale
+   ! single: plotting
+   single: motivation
+   see: automatic plotting; plotting
+   see: default plot; plotting
+   single: dimension scale
 
 The most notable special base class (or *group* in NeXus) is ``NXdata``.
 ``NXdata`` is the answer to a basic motivation of NeXus to facilitate 
@@ -719,21 +728,45 @@ In order to use coordinate transformations, several morsels of information need 
 
 NeXus chooses to encode this information in the following way:
 
+    .. index::
+       single: transformation type (attribute)
+       single: translation
+       single: rotation
+       single: type; transformation_type (attribute)
+       single: attribute; transformation_type
+
     **Type**
     	Through a data set attribute **transformation_type**. 
 	This can take the value of either *translation*
     	or *rotation*.
+
+    .. index::
+       single: attribute; vector
+       single: vector (attribute)
+       single: direction; vector (attribute)
 
     **Direction**
     	Through a data set attribute **vector**. This is a set of three values
     	describing either the components of the rotation axis
     	or the direction along which the translation happens.
 
+    .. index::
+       single: attribute; value
+       single: value (attribute)
+       single: attribute; offset
+       single: offset (attribute)
+    
     **Value**
     	This is represented in the actual data of the data set. In addition, there is the
     	**offset** attribute which has three components describing a translation to apply before
     	applying the operation of the real axis. Without the offset attribute additional virtual
     	translations would need to be introduced in order to encode mechanical offsets in the axis.
+
+    .. index::
+       single: attribute; order
+       single: order (attribute)
+       single: attribute; depends_on
+       single: depends_on (attribute)
 
     **Order**
     	The order is encoded through the **depends_on** attribute on a data set. The value of the
@@ -830,7 +863,7 @@ This is also a nice example of the application of transformation matrices:
     ============================
     
     .. index::
-    	NeXus basic motivation; defined dictionary
+    	dictionary
     
     Many instrument components define
     variables to specify their size.

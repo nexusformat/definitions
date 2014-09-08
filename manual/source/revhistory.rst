@@ -2,12 +2,15 @@
 Revision History
 ================
 
+.. index:: ! revision history
+
 .. tabularcolumns:: |l|l|L|l|
 
 +-------------+---------------+-----------------------------------------------------------------------------------+----------+
 | date        | release       | description                                                                       | initials |
 +=============+===============+===================================================================================+==========+
-| 2014-08     | ..            | Fewer toc levels. Updates, clarifications, removal of legacy ballast              | JWu      |
+| 2014-08     | ..            | Fewer toc levels. Updates, clarifications, removal of legacy ballast.             | JWu      |
+|             |               | Reformatted class structure trees. Revised index.                                 |          |
 +-------------+---------------+-----------------------------------------------------------------------------------+----------+
 | 2012-09     | ..            | Documentation converted from DocBook to Sphinx.  Manual back to a single volume.  | PRJ      |
 +-------------+---------------+-----------------------------------------------------------------------------------+----------+

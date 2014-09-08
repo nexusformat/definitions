@@ -389,6 +389,10 @@ file. As always, the start is an empty template file. This looks like the XML co
         :linenos:
         :language: guess
 
+.. index::
+   single: name (attribute)
+   single: attribute; name
+
 For example, copy and rename the file to ``NXwoni.nxdl.xml``.
 Then, locate the XML root element ``definition`` and change the
 ``name attribute`` (the XML shorthand for this attribute is
@@ -417,6 +421,14 @@ looks similar to this:
 	:tab-width: 4
 	:linenos:
 	:language: xml
+
+.. index::
+   single: attribute; dim
+   single: dimension; attribute (dim)
+   single: attribute; value
+   single: value (attribute)
+   single: attribute; index
+   single: index (attribute)
 
 The meaning of the ``name`` attribute is intuitive, the ``type`` can be looked 
 up in the relevant base class definition. A ``field`` definition can optionally
@@ -536,7 +548,7 @@ Processed Data
 
 Data reduction and analysis programs are encouraged to store their results in
 NeXus data files. As far as the necessary, the normal NeXus 
-:index:`hierarchy <hierarchy; NeXus>`
+:index:`hierarchy <hierarchy>`
 is to be implemented. In addition, processed data files
 must contain a :ref:`NXprocess`
 group. This group, that documents and preserves data provenance,

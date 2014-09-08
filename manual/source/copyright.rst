@@ -6,12 +6,14 @@ Copyright and Licenses
 
 |today|
 
+.. index:: licence, copyright
+
 Published 2011 by NeXus International Advisory Committee, 
 http://www.nexusformat.org
 
 Copyright (c) 1996-2014, NeXus International Advisory Committee
 
-.. index:: license; FDL
+.. index:: FDL
 
 The NeXus manual is licensed under the terms of the
 GNU Free Documentation License version 1.3.  
@@ -23,7 +25,7 @@ GNU Free Documentation License version 1.3.
 
 
 
-.. index:: license; LGPL
+.. index:: LGPL
 
 The code examples in the NeXus manual are licensed under the terms of the
 GNU Lesser General Public License version 3.  

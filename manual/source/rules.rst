@@ -174,7 +174,7 @@ points.
   tabular representation of a scan.
 
 - Datasets in an ``NXdata`` group must contain the proper attributes
-  to enable the :index:`default plotting <NeXus basic motivation; default plot>`,
+  to enable the :index:`default plotting <plotting>`,
   as described in the section titled 
   :ref:`NXdata Facilitates Automatic Plotting <NXdata-facilitates-TheDefaultPlot>`.
 

@@ -80,13 +80,15 @@ This is a list of commonly asked questions concerning the NeXus data format.
     effort. Seriously.
 
     If you encounter any problems because the classes are not
-    sufficient to describe your configuration, please contact the :index:`NIAC`
+    sufficient to describe your configuration, please contact the
+    :index:`NIAC`
     Executive Secretary explaining the problem, and post a suggestion
     at the relevant class wiki page. Or raise the problem in one of the
     `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
     The NIAC is always willing to consider new proposals.
 
-#. I want to produce an application definition. How do I go about it?
+#. I want to :index:`contribute` an application definition.
+    How do I go about it?
 
     Read the :index:`NXDL` Tutorial in :ref:`NXDL_Tutorial-CreatingNxdlSpec`
     and have a try. You can ask for help on the `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
@@ -104,7 +106,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 #. What is the purpose of ``NXdata``?
 
     ``NXdata`` contains links to the data stored elsewhere in the ``NXentry``. 
-    It identifies the :index:`default plottable data <NeXus basic motivation; default plot>`. 
+    It identifies the :index:`default plottable data <plotting>`. 
     This is one of the basic motivations (see :ref:`SimplePlotting`) for the NeXus standard. 
     The choice of the name ``NXdata`` is historic and does not really reflect its function.
 
@@ -145,10 +147,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     This should be possible as there is nothing in the NeXus
     specifications to prevent this but it is not implemented in :index:`NAPI`.
-    You would need to implement it for yourself. You would be wise to
-    consult the algorithms in the Java version of
-    ``NXvalidate``
-    (see the :ref:`Java-version of NXvalidate <NXvalidate-java>`) for more details.
+    You would need to implement it for yourself.
 
 #. Why do I need to specify the ``NAPItype``? My programming language does not need that information and I don't care about C and colleagues.  Can I leave it out?
 

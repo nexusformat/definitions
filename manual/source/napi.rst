@@ -1,14 +1,12 @@
-.. index:: 
-	single: ! NAPI
-	seealso: NeXus Application Programming Interface; NAPI
+.. index::
+	! single: NAPI
+	see: NeXus Application Programming Interface; NAPI
 
 .. _NAPI:
 
 =====================================================
 NAPI: NeXus Application Programmer Interface (frozen)
 =====================================================
-
-.. index:: NAPI
 
 Status
 ======

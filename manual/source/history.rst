@@ -15,15 +15,15 @@ Two things to note about the development and history of NeXus:
 - The NIAC has already discussed many matters related to the format.
 
 :June 1994:
-    Mark Könnecke (then ISIS, now PSI) made a proposal using netCDF [#]_
+    :index:`Mark Könnecke <single: Könnecke, Mark>` (then ISIS, now PSI) made a proposal using netCDF [#]_
     for the European neutron scattering community while working at ISIS
 
 :August 1994:
-    Jonathan Tischler (ORNL) proposed an HDF-based format [#]_
+    :index:`Jonathan Tischler <single: Tischler, Jonathan>` (ORNL) proposed an HDF-based format [#]_
     as a standard for data storage at APS
 
 :October 1994:
-    Ray Osborn convened a series of three workshops called
+    :index:`Ray Osborn <single: Osborn, Raymond>` convened a series of three workshops called
     *SoftNeSS*. [#]_
     In the first meeting,
     Mark Könnecke and Jon Tischler were invited to meet with representatives
@@ -36,7 +36,7 @@ Two things to note about the development and history of NeXus:
 :September 1995:
     At *SoftNeSS 1995* (at NIST),
     three individual data format proposals by
-    Przemek Klosowski (NIST),
+    :index:`Przemek Klosowski <single: Klosowski, Przemysław>` (NIST),
     Mark Könnecke (then ISIS),
     and Jonathan Tischler (ORNL and APS/ANL)
     were joined to form the basis of the current NeXus format.
@@ -50,7 +50,7 @@ Two things to note about the development and history of NeXus:
 :October 1996:
     At *SoftNeSS 1996* (at ANL),
     after reviewing the different scientific data formats discussed,
-    it was decided to use HDF-4
+    it was decided to use :index:`HDF4`
     as it provided the best grouping support.
     The basic structure of a NeXus file was agreed upon.
     the various data format proposals were combined into a single document by
@@ -67,13 +67,14 @@ Two things to note about the development and history of NeXus:
 
 :September 2002:
     NeXus API version 2.0.0 is released. This version brought support for the new
-    version of HDF, HDF-5, released by the HDF group. HDF-4 imposed limits on file
+    version of HDF, :index:`HDF5`, released by the HDF group. HDF4 imposed limits on file
     sizes and the number of objects in a file. These issues were resolved with
-    HDF-5. The NeXus API abstracted the difference between the two physical file
+    HDF5. The NeXus API abstracted the difference between the two physical file
     formats away form the user.
 
 :June 2003:
-    Przemek Klosowski, Ray Osborn, and Richard Riedel received the only known
+    Przemek Klosowski, Ray Osborn, and :index:`Richard Riedel <single: Riedel, Richard>`
+    received the only known
     grant explicitly for working on NeXus from  the Systems Integration for Manufacturing
     Applications (SIMA) program of the National Institute of Standards and Technology
     (NIST). The grant funded a person for one year to work on community wide infrastructure
@@ -82,7 +83,7 @@ Two things to note about the development and history of NeXus:
 :October 2003:
     In 2003, NeXus had arrived at a stage where informal gatherings of a group of
     people were no longer good enough to oversee the development of NeXus. This lead
-    to the formation of the NeXus International Advisory Committee (NIAC) which
+    to the formation of the NeXus International Advisory Committee (:index:`NIAC`) which
     strives to include representatives of all major stake holders in NeXus. A first
     meeting was held at CalTech. Since 2003, the NIAC meets every year to discuss
     all matters NeXus.
@@ -90,7 +91,7 @@ Two things to note about the development and history of NeXus:
 :July 2005:
     The community asked the NeXus team to provide an ASCII based physical file
     format which allows them to edit their scientific results in emacs. This lead to
-    the development of a XML NeXus physical format. This was released with NeXus API
+    the development of a :index:`XML` NeXus physical format. This was released with NeXus API
     version 3.0.0.
 
 :May 2007:
@@ -111,6 +112,8 @@ Two things to note about the development and history of NeXus:
 :April 2009:
     NeXus API version 4.2.0 is released with additional
     C++, IDL, and python/numpy interfaces.
+
+.. index:: NXsas (base class)
 
 :September 2009:
     NXDL and draft ``NXsas`` presented to canSAS at

@@ -1,6 +1,6 @@
 .. index::
     ! NXDL
-    ! NeXus Definition Language
+    see: NeXus Definition Language; NXDL
 
 .. _NXDL:
 
