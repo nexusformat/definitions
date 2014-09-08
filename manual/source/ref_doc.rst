@@ -16,4 +16,3 @@ NeXus: Reference Documentation
     classes/base_classes/index
     classes/applications/index
     classes/contributed_definitions/index
-    examples/index

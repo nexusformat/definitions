@@ -12,6 +12,7 @@ http://www.nexusformat.org/
     :numbered: 4
 
     user_manual
+    examples/index
     ref_doc
     napi
     community
