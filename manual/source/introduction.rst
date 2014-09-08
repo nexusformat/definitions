@@ -6,14 +6,28 @@ NeXus Introduction
 
 .. index::
    introduction
+   preface
    motivation
+
+NeXus is an effort by an international group of scientists to define 
+a common data exchange format for neutron, X-ray, and muon experiments.  
+NeXus is built on top of the scientific data format HDF5 and adds 
+domain-specific rules for organizing data within HDF5 files in addition 
+to a dictionary of well-defined domain-specific field names. The NeXus 
+data format has two purposes.  First, NeXus defines a format that can 
+serve as a container for all relevant data associated with a scientific 
+instrument or beamline. 
+This is a very important use case.  Second, NeXus defines standards in 
+the form of *application definitions* for the exchange of data 
+between applications.  NeXus provides structures for raw experimental 
+data as well as for processed data.  
 
 In recent years, a community of scientists and computer programmers working in neutron
 and synchrotron facilities around the world came to the conclusion that a 
 common data format
 would fulfill a valuable function in the scattering community. As
-instrumentation becomes more complex and data visualization become more challenging,
-individual scientists, or even institutions, have found it difficult to keep up with new
+instrumentation becomes more complex and data visualization becomes more challenging,
+individual scientists, or even institutions, find it difficult to keep up with new
 developments. A common data format makes it easier, both to exchange experimental results
 and to exchange ideas about how to analyze them. It promotes greater cooperation in software
 development and stimulates the design of more sophisticated visualization tools.

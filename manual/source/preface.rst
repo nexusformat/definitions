@@ -1,36 +1,37 @@
 ..  _PrefaceChapter:
 
-=======
-Preface
-=======
+.. Is this needed now?  Most of this content (commented out here) is presented elsewhere.
+	=======
+	Preface
+	=======
 
-..
-	.. image:: img/NeXus.png
+	..
+		.. image:: img/NeXus.png
 
-With revision 3.1 of the manual, NeXus introduced a complete version
-of the documentation of the NeXus standard.  The content from the wiki
-was converted, augmented (in some parts significantly), clarified,
-and indexed.  The NeXus Definition Language (NXDL) was introduced 
-to define base classes and application definitions.
-NXDL established a method to define NeXus classes according to one of three classifications:
+	With revision 3.1 of the manual, NeXus introduced a complete version
+	of the documentation of the NeXus standard.  The content from the wiki
+	was converted, augmented (in some parts significantly), clarified,
+	and indexed.  The NeXus Definition Language (NXDL) was introduced 
+	to define base classes and application definitions.
+	NXDL established a method to define NeXus classes according to one of three classifications:
 
-#. *base classes* (that represent the components used
-   to build a NeXus data file)
+	#. *base classes* (that represent the components used
+	   to build a NeXus data file)
 
-#. *application definitions* (used to define a minimum
-   set of data for a specific purpose such as scientific data processing
-   or an instrument definition)
+	#. *application definitions* (used to define a minimum
+	   set of data for a specific purpose such as scientific data processing
+	   or an instrument definition)
 
-#. *contributed definitions* (definitions and specifications
-   that are in an incubation status before ratification by the NIAC).
+	#. *contributed definitions* (definitions and specifications
+	   that are in an incubation status before ratification by the NIAC).
 
-Additional examples have been added to respond to
-inquiries from the users of the NeXus standard about implementation
-and usage.  
+	Additional examples have been added to respond to
+	inquiries from the users of the NeXus standard about implementation
+	and usage.  
 
-Hopefully, this improved documentation, with
-more examples and the new NXDL, will reduce
-the learning barriers incurred by those new to NeXus.
+	Hopefully, this improved documentation, with
+	more examples and the new NXDL, will reduce
+	the learning barriers incurred by those new to NeXus.
 
 Representation of data examples
 ###############################

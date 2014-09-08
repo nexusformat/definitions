@@ -11,7 +11,6 @@ NeXus: User Manual
    :maxdepth: 1
    :glob:
    
-   preface
    introduction
    design
    applying-nexus
