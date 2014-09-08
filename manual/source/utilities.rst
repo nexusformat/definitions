@@ -142,12 +142,21 @@ as a data format.  It is not intended to be a complete list of all available pac
     Language) from ITT Visual Information Solutions.
 
 .. index:: 
-	GDA (data analysis software)
+	DAWN (data analysis software)
+
+**DAWN** (http://www.dawnsci.org)
+    The Data Analysis WorkbeNch (DAWN) project is an eclipse based workbench
+    for doing scientific data anaylsis. It offers generic visualisation, 
+    and domain specific processing.
+
+.. index:: 
+	GDA (data acquisition software)
 
 **GDA** (http://www.opengda.org)
     The GDA project is an open-source framework for creating customised 
-    data acquisition and analysis software for science facilities such 
-    as neutron and X-ray sources.
+    data acquisition software for science facilities such 
+    as neutron and X-ray sources. It has elements of the DAWN analysis 
+    workbench built in.
 
 .. index:: 
 	Gumtree (data analysis software)
