@@ -38,7 +38,7 @@ This manual built |today|.
    A very brief overview is also available (separate from the manual).
    
    :HTML:
-      http://htmlpreview.github.com/?https://github.com/nexusformat/definitions/blob/master/misc/impatient/_build/html/index.html
+      http://htmlpreview.github.io/?https://github.com/nexusformat/communications/blob/master/impatient/_build/html/index.html
 
 ..  Suggestions for adding to this manual:
 
