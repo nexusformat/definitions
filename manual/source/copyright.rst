@@ -4,11 +4,9 @@
 Copyright and Licenses
 ======================
 
-|today|
+.. index:: license, copyright
 
-.. index:: licence, copyright
-
-Published 2011 by NeXus International Advisory Committee, 
+Published by NeXus International Advisory Committee, 
 http://www.nexusformat.org
 
 Copyright (c) 1996-2014, NeXus International Advisory Committee
