@@ -1,5 +1,5 @@
-:NeXus: http://www.nexusformat.org/
-:documentation: http://download.nexusformat.org/doc/html/index.html
+* NeXus: http://www.nexusformat.org/
+* documentation: http://download.nexusformat.org/doc/html/index.html
 
 
 These are the components that define the structure of NeXus data files in the development directory.
