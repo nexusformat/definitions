@@ -2,7 +2,9 @@
 NXDL: Data Types and Units
 ===================================
 
-.. index:: ! NXDL data type 
+.. index::
+    see: type; data type
+    ! single: data type
 
 .. _nxdl-types:
 		
@@ -26,7 +28,8 @@ with any of these data types.
 
 
 
-.. index:: ! NXDL units type 
+.. index::
+   ! single: unit category
 
 .. _nxdl-units:
 

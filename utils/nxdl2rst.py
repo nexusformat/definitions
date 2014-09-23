@@ -155,10 +155,13 @@ def printDoc( indent, ns, node, required=False):
                 print( '%s%s' % ( indent, line ) )
             print()
 
-def printAttribute( ns, node, indent ):
-    print( '%s.. index:: %s (attribute)\n' % ( indent, node.get('name') ) )
+def printAttribute( ns, kind, node, indent ):
+    name = node.get('name')
+    index_name = re.sub( r'_', ' ', name )
+    print( '%s.. index:: %s (%s attribute)\n' %
+           ( indent, index_name, kind ) )
     print( '%s**@%s**: %s%s\n' % (
-        indent, node.get('name'), fmtTyp(node), fmtUnits(node) ) )
+        indent, name, fmtTyp(node), fmtUnits(node) ) )
     printDoc(indent+'  ', ns, node)
 
 
@@ -174,8 +177,10 @@ def printFullTree(ns, parent, name, indent):
 
     for node in parent.xpath('nx:field', namespaces=ns):
         name = node.get('name')
+        index_name = re.sub( r'_', ' ', name )
         dims = analyzeDimensions(ns, node)
-        print( '%s.. index:: %s (data field)\n' % ( indent, node.get('name') ) )
+        print( '%s.. index:: %s (data field)\n' %
+               ( indent, index_name ) )
         print( '%s**%s%s**: %s%s\n' % (
             indent, name, dims, fmtTyp(node), fmtUnits(node) ) )
 
@@ -188,7 +193,7 @@ def printFullTree(ns, parent, name, indent):
         # TODO: look for "deprecated" element, add to doc
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, subnode, indent+'  ' )
+            printAttribute( ns, 'data field', subnode, indent+'  ' )
     
     for node in parent.xpath('nx:group', namespaces=ns):
         name = node.get('name', '')
@@ -202,7 +207,7 @@ def printFullTree(ns, parent, name, indent):
         printDoc(indent+'  ', ns, node)
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, subnode, indent+'  ' )
+            printAttribute( ns, 'group', subnode, indent+'  ' )
 
         nodename = '%s/%s' % (name, node.get('type'))
         printFullTree(ns, node, nodename, indent+'  ')
@@ -340,7 +345,7 @@ if __name__ == '__main__':
     # print full tree
     print( '**Structure**:\n' )
     for subnode in root.xpath('nx:attribute', namespaces=ns):
-        printAttribute( ns, subnode, '  ' )
+        printAttribute( ns, 'file', subnode, '  ' )
     printFullTree(ns, root, name, '  ')
 
     # print NXDL source location

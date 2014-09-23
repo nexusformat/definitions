@@ -13,8 +13,7 @@ simple data sets, such as a single data array and its axes, and also of highly c
 data, such as the simulation results or an entire multi-component instrument. This flexibility
 is a necessity as NeXus strives to capture data from a wild variety of applications in X-ray, muSR and
 neutron scattering. The flexibility is achieved through a :index:`hierarchical <hierarchy>`
-structure, with :index:`related <data objects; fields>`
-*fields*  collected together into *groups*,
+structure, with related *data fields* collected together into *groups*,
 making NeXus files easy to navigate, even without any
 documentation. NeXus files are self-describing, and should be easy to understand, at
 least by those familiar with the experimental technique.
@@ -41,7 +40,10 @@ used by NeXus. These are:
     Multidimensional arrays and scalars representing the actual data to be stored
 
 :ref:`Design-Attributes`
-    Additional metadata which can be assigned to groups or data fields
+    Attributes containing additional metadata can be assigned to groups or data fields
+
+:ref:`Design-FileAttributes`
+    Attributes are also allowed at file level.
 
 :ref:`Design-Links`
     Elements which point to data stored in another place in the file hierarchy
@@ -55,12 +57,17 @@ used by NeXus. These are:
 In the following sections these elements of NeXus files will be defined in more detail.
 
 
+.. index::
+   ! single: group
+   see: data group; group
+   see: folder; group
+
 .. _Design-Groups:
 
-Data Groups
-===========
+Groups
+======
 
-NeXus files consist of :index:`data groups <!data objects; groups>`,
+NeXus files consist of data groups,
 which contain fields and/or other
 groups to form a :index:`hierarchical structure <hierarchy>`.
 This hierarchy is designed to make it
@@ -72,9 +79,14 @@ but they must have different names (based on the :index:`HDF rules <rules; HDF>`
 For the class names used with NeXus data groups the prefix NX is reserved. Thus all NeXus class
 names start with NX.
 
-.. index::
-	!data objects; fields
-	!data objects; data items
+    .. index::
+      ! single: data field
+      see:    SDS (Scientific Data Sets); data field
+      see:    Scientific Data Sets; data field
+      see:    field; data field
+      see:    data item; data field
+      see:    data object; data field
+      see:    data set; data field
 
 .. _Design-Fields:
 
@@ -116,14 +128,16 @@ an array of several dimensions.
 			Data values from the detector, ``units="NX_ANY"``
 
 
+.. index::
+   ! single: data field attribute
+   ! single: group attribute
+   see: attribute; data field attribute
+   see: attribute; group attribute
+
 .. _Design-Attributes:
 
-Data Attributes
-===============
-
-.. index::
-   ! data objects; attributes
-   attribute; data field
+Group attributes, data field attributes
+=======================================
 
 Attributes are extra (meta-)information that are associated with particular
 fields. They are used to annotate the data, e.g. with physical 
@@ -216,44 +230,17 @@ attributes can be found in the next table:
 			* ``vertex`` (3-D data)
 
 .. index::
-   ! file; attributes
-   ! attribute; file-level (NXroot)
+   ! single: file attribute
+   see: attribute; file attribute
    ! NXroot (base class); attributes
 
-.. TODO: link this with NXroot; reduce duplication [JWu sep14]
+.. _Design-FileAttributes:
 
-Finally, NeXus files themselves have global attributes which are listed
-in the next table.
-These attributes identify the NeXus version, file creation time, etc.
-All attributes are identified by their names, which must be unique within each field.
-	
-	.. compound::
+File attributes
+===============
 
-		.. changed from table since sphinx PDF table columns were not sized correctly
-		
-		.. rubric::  Examples of global attributes
-		
-		``file_name`` (*NX_CHAR*)
-			File name of original NeXus file
-			to assist in identification
-			if the external name has been changed
-		
-		.. index::
-		    see: ISO 8601; date and time
-		    see: time; date and time
-		    single: date and time
-		
-		``file_time`` (*ISO 8601*)
-			Date and time of file creation
-		
-		``file_update_time`` (*ISO 8601*)
-			Date and time of last file change at close
-		
-		``NeXus_version`` (*NX_CHAR*)
-			Version of NeXus API used in writing the file
-		
-		``creator`` (*NX_CHAR*)
-			Facility or program where the file originated
+Finally, some attributes are defined at file level.
+They are specified in the base class :ref:`NXroot`.
 
 
 .. _Design-Links:
@@ -262,7 +249,7 @@ Links
 =====
 
 .. index::
-    pair: link; target
+   ! single: link target (internal attribute)
 
 Links are pointers to existing data somewhere else.
 The concept is very much like
@@ -729,32 +716,27 @@ In order to use coordinate transformations, several morsels of information need 
 NeXus chooses to encode this information in the following way:
 
     .. index::
-       single: transformation type (attribute)
+       single: transformation type (data field attribute)
        single: translation
        single: rotation
-       single: type; transformation_type (attribute)
-       single: attribute; transformation_type
 
     **Type**
-    	Through a data set attribute **transformation_type**. 
+    	Through a data field attribute **transformation_type**. 
 	This can take the value of either *translation*
     	or *rotation*.
 
     .. index::
-       single: attribute; vector
-       single: vector (attribute)
-       single: direction; vector (attribute)
+       single: vector (data field attribute)
+       see: direction; vector (data field attribute)
 
     **Direction**
-    	Through a data set attribute **vector**. This is a set of three values
+    	Through a data field attribute **vector**. This is a set of three values
     	describing either the components of the rotation axis
     	or the direction along which the translation happens.
 
     .. index::
-       single: attribute; value
-       single: value (attribute)
-       single: attribute; offset
-       single: offset (attribute)
+       ! single: value (transformation matrix)
+       ! single: offset (data field attribute)
     
     **Value**
     	This is represented in the actual data of the data set. In addition, there is the
@@ -763,10 +745,8 @@ NeXus chooses to encode this information in the following way:
     	translations would need to be introduced in order to encode mechanical offsets in the axis.
 
     .. index::
-       single: attribute; order
-       single: order (attribute)
-       single: attribute; depends_on
-       single: depends_on (attribute)
+       see: order (transformation); depends on (data field attribute)
+       ! single: depends on (data field attribute)
 
     **Order**
     	The order is encoded through the **depends_on** attribute on a data set. The value of the

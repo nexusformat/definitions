@@ -13,7 +13,6 @@ Naming Conventions
 
 .. index:: 
    single: naming convention
-   single: name rules
    single: NX; used as NX class prefix 
    single: attribute; NXclass
    single: NXclass (attribute)
@@ -402,7 +401,7 @@ That is, if the array being stored is data with elements
 ``data[j][i]`` in C and
 ``data(i,j)`` in Fortran, where ``i`` is the
 time-of-flight index and ``j`` is
-the polar angle index, the ``NXdata``  :index:`group <NXdata>`
+the polar angle index, the ``NXdata`` :index:`group <NXdata (base class)>`
 would contain:
 
 .. compound::
@@ -420,8 +419,7 @@ The ``primary`` attribute is unique to this method of linking.
 
 There are limited circumstances in which more
 than one :index:`dimension scale <dimension; dimension scales>`
-for the same data dimension can be included in the same
-``NXdata`` :index:`group <NXdata>`.
+for the same data dimension can be included in the same ``NXdata`` group.
 The most common is when the dimension scales are
 the three components of an
 *(hkl)* scan. In order to
