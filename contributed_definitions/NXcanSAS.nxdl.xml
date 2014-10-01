@@ -266,12 +266,12 @@
     </group>
 
     <!-- optional items -->
-    <field name="title" type="NX_CHAR" minOccurs="1" maxOccurs="unbounded">
+    <field name="title" minOccurs="1" maxOccurs="unbounded">
       <doc>
         Title of this *SASentry*.
       </doc>
     </field>
-    <field name="run" type="NX_CHAR" minOccurs="1" maxOccurs="unbounded">
+    <field name="run" minOccurs="1" maxOccurs="unbounded">
       <doc>
         Run identification for this *SASentry*. 
         For many facilities, this is an integer. 
@@ -292,7 +292,16 @@
           <item value="SASinstrument" />
         </enumeration>
       </attribute>
-
+      
+      <group type="NXcollimator" minOccurs="0">       <!-- TODO: confirm how SAScollimation maps onto NXcollimator -->
+        <attribute name="canSAS_class">
+          <doc>Official canSAS_class group to which this group conforms.</doc>
+          <enumeration>
+            <item value="SAScollimation" />
+          </enumeration>
+        </attribute>
+      </group>
+      
       <group type="NXdetector" minOccurs="0">
         <attribute name="canSAS_class">
           <doc>Official canSAS_class group to which this group conforms.</doc>
@@ -309,7 +318,88 @@
             <item value="SASsource" />
           </enumeration>
         </attribute>
+        <doc>Description of the radiation source</doc>
+        
+        <field name="radiation" maxOccurs="1" type="NX_CHAR">
+          <doc>
+            Name of the radiation used.
+            Note that this is **not** the name of the facility!
+          </doc>
+          <enumeration>
+            <!-- enumeration values from NXsource/type and NXsource/probe -->
+            <item value="Spallation Neutron Source" />
+            <item value="Pulsed Reactor Neutron Source" />
+            <item value="Reactor Neutron Source" />
+            <item value="Synchrotron X-ray Source" />
+            <item value="Pulsed Muon Source" />
+            <item value="Rotating Anode X-ray" />
+            <item value="Fixed Tube X-ray" />
+            <item value="UV Laser" />
+            <item value="Free-Electron Laser" />
+            <item value="Optical Laser" />
+            <item value="Ion Source" />
+            <item value="UV Plasma Source" />
+            <item value="neutron" />
+            <item value="x-ray" />
+            <item value="muon" />
+            <item value="electron" />
+            <item value="ultraviolet" />
+            <item value="visible light" />
+            <item value="positron" />
+            <item value="proton" />
+          </enumeration>
+        </field>
+        <field name="beam_shape" minOccurs="0">
+          <doc>Text description of the shape of the beam (incident on the sample).</doc>
+        </field>
+        <field name="wavelength" minOccurs="0" type="NX_NUMBER" units="NX_WAVELENGTH">
+          <doc>wavelength (:math:`\lambda`) of radiation incident on the sample</doc>
+        </field>
+        <field name="wavelength_min" minOccurs="0" type="NX_NUMBER" units="NX_WAVELENGTH">
+          <doc>
+            Some facilities specify wavelength using a range. 
+            This is the lowest wavelength in such a range.
+          </doc>
+        </field>
+        <field name="wavelength_max" minOccurs="0" type="NX_NUMBER" units="NX_WAVELENGTH">
+          <doc>
+            Some facilities specify wavelength using a range. 
+            This is the highest wavelength in such a range.
+          </doc>
+        </field>
+        <field name="wavelength_spread" minOccurs="0" type="NX_NUMBER" units="NX_WAVELENGTH">
+          <doc>
+            Some facilities specify wavelength using a range. 
+            This is the width of such a range.
+          </doc>
+        </field>
+
+        <group name="beam_size" type="NXparameters" minOccurs="0">
+          <attribute name="canSAS_class">
+            <doc>*ad hoc* canSAS_class.</doc>
+            <enumeration>
+              <item value="dimension" />
+            </enumeration>
+          </attribute>
+          <doc>
+            Physical dimension of the beam (incident on the sample). 
+            If beam is round, just use :math:`x`.
+          </doc>
+          <field name="x" type="NX_NUMBER" />
+          <field name="y" type="NX_NUMBER" minOccurs="0"/>
+          <field name="z" type="NX_NUMBER" minOccurs="0">
+            <doc>
+              While :math:`z` is allowed by the canSAS standard, 
+              it may not make sense to use it in some situations. 
+              Use of :math:`z` in such situations may be ignored by processing software.
+            </doc>
+          </field>
+        </group>
+
+        <!-- SASsource -->
       </group>
+      
+      <!-- SASinstrument -->
     </group>
 
     <group type="NXsample" minOccurs="0">
@@ -320,7 +410,7 @@
         </enumeration>
       </attribute>
       
-      <field name="ID" type="NX_CHAR" maxOccurs="1">
+      <field name="ID" maxOccurs="1">
         <doc>Text string that identifies this sample.</doc>
       </field>
       <field name="thickness" type="NX_FLOAT" minOccurs="0" maxOccurs="1" units="NX_LENGTH">
@@ -335,7 +425,7 @@
       <field name="temperature" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_TEMPERATURE">
         <doc>Temperature of this sample.</doc>
       </field>
-      <field name="details" type="NX_CHAR" minOccurs="0" maxOccurs="unbounded">
+      <field name="details" minOccurs="0" maxOccurs="unbounded">
         <doc>Any additional sample details.</doc>
       </field>
 
@@ -373,8 +463,7 @@
     <doc>
       This describes certain data obtained from a variable-wavelength source
       such as pulsed-neutron source.
-      <!-- requested in the 1D format by ISIS -->
-      SAStransmission_spectrum element has a name attribute to identify what type of spectrum is being described. 
+      <!-- requested to be in the 1D format by ISIS -->
     </doc>
     <attribute name="canSAS_class">
       <doc>Official canSAS_class group to which this group conforms.</doc>
