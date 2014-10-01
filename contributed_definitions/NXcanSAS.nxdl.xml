@@ -137,7 +137,7 @@
         </doc>
       </attribute>
 
-      <field name="Q" type="NX_NUMBER">
+      <field name="Q" type="NX_NUMBER">     <!-- TODO: should specify units attribute here? -->
         <doc>
           <!-- http://www.cansas.org/formats/canSAS2012/1.0/doc/basics.html#definition-of -->
           :math:`Q` may be represented either 
@@ -173,7 +173,7 @@
           </doc>
         </attribute>
       </field>
-      <field name="I" type="NX_NUMBER">
+      <field name="I" type="NX_NUMBER">     <!-- TODO: should specify units attribute here? -->
         <doc>
           <!-- http://www.cansas.org/formats/canSAS2012/1.0/doc/basics.html#definition-of-intensity -->
           The intensity may be represented in one of these forms:
@@ -235,14 +235,14 @@
         
       </field>
 
-      <field name="Qmean" minOccurs="0">
+      <field name="Qmean" minOccurs="0">     <!-- TODO: should specify units attribute here? -->
         <doc>
           Mean value of :math:`Q` for this data point. 
           Useful when describing data that has been binned from higher-resolution data. 
           It is unexpected for :math:`Q` and :math:`Qmean` to have different units.
         </doc>
       </field>
-      <field name="ShadowFactor" minOccurs="0">
+      <field name="ShadowFactor" minOccurs="0" units="NX_DIMENSIONLESS">
         <doc>
           A numerical factor applied to pixels affected by the beam stop penumbra. 
           Used in data files from NIST/NCNR instruments.
@@ -323,19 +323,17 @@
       <field name="ID" type="NX_CHAR" maxOccurs="1">
         <doc>Text string that identifies this sample.</doc>
       </field>
-      <field name="thickness" type="NX_FLOAT" minOccurs="0" maxOccurs="1">
+      <field name="thickness" type="NX_FLOAT" minOccurs="0" maxOccurs="1" units="NX_LENGTH">
         <doc>Thickness of this sample</doc>
-        <attribute name="units" type="NX_CHAR" />
       </field>
-      <field name="transmission" type="NX_FLOAT" minOccurs="0" maxOccurs="1">
+      <field name="transmission" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_DIMENSIONLESS">
         <doc>
           Transmission (:math:`I/I_0`) of this sample. 
           Note that there is no *units* attribute as this number is dimensionless.
         </doc>
       </field>
-      <field name="temperature" type="NX_FLOAT" minOccurs="0" maxOccurs="1">
+      <field name="temperature" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_TEMPERATURE">
         <doc>Temperature of this sample.</doc>
-        <attribute name="units" type="NX_CHAR" />
       </field>
       <field name="details" type="NX_CHAR" minOccurs="0" maxOccurs="unbounded">
         <doc>Any additional sample details.</doc>
@@ -369,6 +367,55 @@
       </enumeration>
     </attribute>
     <doc>Free form description of anything not covered by other elements.</doc>
+  </group>
+  
+  <group type="NXdata" minOccurs="0">
+    <doc>
+      This describes certain data obtained from a variable-wavelength source
+      such as pulsed-neutron source.
+      <!-- requested in the 1D format by ISIS -->
+      SAStransmission_spectrum element has a name attribute to identify what type of spectrum is being described. 
+    </doc>
+    <attribute name="canSAS_class">
+      <doc>Official canSAS_class group to which this group conforms.</doc>
+      <enumeration>
+        <item value="SAStransmission_spectrum" />
+      </enumeration>
+    </attribute>
+    <attribute name="name">
+      <doc>
+        Identify what type of spectrum is being described.
+        It is expected that this value will take either of these two values:
+        
+        ======  ==============================================
+        value   meaning
+        ======  ==============================================
+        sample  measurement with the sample and container
+        can     measurement with just the container
+        ======  ==============================================
+      </doc>
+    </attribute>
+    <attribute name="timestamp" type="NX_DATE_TIME" />
+    
+    <field name="lambda" type="NX_NUMBER" units="NX_WAVELENGTH">
+      <doc>Wavelength of the radiation.</doc>
+    </field>
+    <field name="T" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+      <doc>Transmission value (:math:`I/I_0`)</doc>
+      <attribute name="signal">
+        <enumeration>
+          <item value="1"><doc>the default data to plot in this group</doc></item>
+        </enumeration>
+      </attribute>
+      <attribute name="axes">
+        <enumeration>
+          <item value="T"><doc>the wavelengths field corresponding to this transmission</doc></item>
+        </enumeration>
+      </attribute>
+      <attribute name="uncertainty">
+        <doc>Estimate of the uncertainty of each "math:`T`.</doc>
+      </attribute>
+    </field>
   </group>
   
 </definition>
