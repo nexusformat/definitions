@@ -112,7 +112,7 @@ def printEnumeration( indent, ns, parent ):
         return ''
 
     if len(node_list) == 1:
-        printf( '%sObligatory value:' % ( indent ) )
+        printf( '%sObligatory value: ' % ( indent ) )
     else:
         printf( '%sAny of these values:' % ( indent ) )
 
@@ -122,13 +122,15 @@ def printEnumeration( indent, ns, parent ):
         docs[name] = getDocLine(ns, item)
 
     ENUMERATION_INLINE_LENGTH = 60
-    oneliner = ' | '.join( docs.keys() )
+    def show_as_typed_text(msg):
+        return '``%s``' % msg
+    oneliner = ' | '.join( map(show_as_typed_text, docs.keys()) )
     if ( any( doc for doc in docs.values() ) or
          len( oneliner ) > ENUMERATION_INLINE_LENGTH ):
         # print one item per line
         print('\n')
         for name, doc in docs.items():
-            printf( '%s  * %s' % ( indent, name ) )
+            printf( '%s  * %s' % ( indent, show_as_typed_text(name) ) )
             if doc:
                 printf( ': %s' % ( doc ) )
             print('\n')
@@ -154,6 +156,9 @@ def printAttribute( ns, node, indent ):
     print( '%s**@%s**: %s%s\n' % (
         indent, node.get('name'), fmtTyp(node), fmtUnits(node) ) )
     printDoc(indent+'  ', ns, node)
+    node_list = node.xpath('nx:enumeration', namespaces=ns)
+    if len(node_list) == 1:
+        printEnumeration( indent+'  ', ns, node_list[0] )
 
 
 def printFullTree(ns, parent, name, indent):
