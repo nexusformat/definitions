@@ -8,19 +8,13 @@ Write a restructured text (.rst) document for use in the NeXus manual in
 the NeXus NXDL Classes chapter.
 '''
 
-# testing:
-# cd /tmp
-# mkdir out
-# /G/nx-def/utils/nxdl2rst.py /G/nx-def/applications/NXsas.nxdl.xml > nxsas.rst && sphinx-build . out
-# then point browser to file:///tmp/out/nxsas.html
+# testing:  see file dev_nxdl2rst.py
 
 from __future__ import print_function
 import os, sys, re
 from collections import OrderedDict
 import lxml.etree
 
-# find the directory of this python file
-BASEDIR = os.path.split(os.path.abspath(__file__))[0]
 
 def printf(str, *args):
     print(str % args, end='')
@@ -213,32 +207,20 @@ def printFullTree(ns, parent, name, indent):
         printDoc(indent+'  ', ns, node)
 
 
-if __name__ == '__main__':
-
-    # get NXDL_SCHEMA_FILE
-    developermode = True
-    developermode = False
-    if developermode and len(sys.argv) != 2:
-        # use default input file
-        NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'applications', 'NXarchive.nxdl.xml')
-        NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'applications', 'NXsas.nxdl.xml')
-        #NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'base_classes', 'NXcrystal.nxdl.xml')
-        #NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'base_classes', 'NXobject.nxdl.xml')
-        #NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXarpes.nxdl.xml')
-        #NXDL_SCHEMA_FILE = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXmagnetic_kicker.nxdl.xml')
-        
-    else:
-        # get input file from command line
-        if len(sys.argv) != 2:
-            print( 'usage: %s someclass.nxdl.xml' % sys.argv[0] )
-            exit()
-        NXDL_SCHEMA_FILE = sys.argv[1]
+def main():
+    '''
+    standard command-line processing
+    '''
+    if len(sys.argv) != 2:
+        print( 'usage: %s someclass.nxdl.xml' % sys.argv[0] )
+        exit()
+    nxdl_file = sys.argv[1]
 
     # parse input file into tree
-    if not os.path.exists(NXDL_SCHEMA_FILE):
-        print( 'Cannot find %s' % NXDL_SCHEMA_FILE )
+    if not os.path.exists(nxdl_file):
+        print( 'Cannot find %s' % nxdl_file )
         exit()
-    tree = lxml.etree.parse(NXDL_SCHEMA_FILE)
+    tree = lxml.etree.parse(nxdl_file)
 
     # The following URL is outdated, but that doesn't matter;
     # it won't be accessed; it's just an arbitrary namespace name.
@@ -347,3 +329,7 @@ if __name__ == '__main__':
     print( '**Source**:' )
     print( '  Automatically generated from %s/%s/%s.nxdl.xml' % (
         html_root, subdir, name) )
+
+
+if __name__ == '__main__':
+    main()
