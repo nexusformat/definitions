@@ -112,6 +112,24 @@ links to further information, as available.
     Note: this command-line tool is
     different than the newer Java GUI program: ``NXvalidate``.
 
+.. _NXvalidate-java:
+
+.. index:: 
+        NXvalidate (Java GUI)
+
+**NXvalidate**
+    From the source code documentation: 
+    
+    	"NXvalidate is a tool that allows the validation of NeXus files for 
+    	their correctness with respect to content for a given data model.
+    	
+    	"NXvalidate can validate single data files or multiple data files, 
+    	the results are displayed in a friendly way and errors found in the 
+    	file are highlighted to the user."
+    	
+    Note: this Java GUI program is different than the
+    command-line tool ``nxvalidate``.
+
 .. index:: 
         plotting
 	NXplot (utility)
