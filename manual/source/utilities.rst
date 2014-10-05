@@ -118,6 +118,9 @@ links to further information, as available.
         NXvalidate (Java GUI)
 
 **NXvalidate**
+    NXvalidate will validate a NeXus file against an application definition. 
+    It relies on ``nxconvert`` being installed. 
+
     From the source code documentation: 
     
     	"NXvalidate is a tool that allows the validation of NeXus files for 
