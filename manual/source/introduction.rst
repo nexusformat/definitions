@@ -6,7 +6,6 @@ NeXus Introduction
 
 .. index::
    introduction
-   preface
    motivation
 
 NeXus is an effort by an international group of scientists to define 
@@ -439,5 +438,6 @@ The NIAC supervises a technical committee to oversee the
    :maxdepth: 2
    :glob:
    
+   preface
    motivations
    introduction-napi
