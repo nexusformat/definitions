@@ -95,7 +95,7 @@ Name                Type                                                      Un
 The columns in the table are described as follows:
 
 :Name (and attributes):
-    Name of the data field.
+    Name of the field.
     Since ``name`` needs to be restricted to valid
     program variable names,
     no "``-``" characters can be allowed.
@@ -152,7 +152,7 @@ The columns in the table are described as follows:
     See the :ref:`NeXus units <Design-Units>` section for details.
 
 :Description (and Occurrences):
-    A simple text description of the data field. No markup or formatting
+    A simple text description of the field. No markup or formatting
     is allowed.
     The absence of *Occurrences* in the item
     description signifies that

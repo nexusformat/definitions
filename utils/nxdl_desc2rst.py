@@ -96,8 +96,7 @@ For more details, see:
                 
                 'link': '''
 .. index:: 
-    see: link; target
-    link
+    single: link target
 
 A ``link`` element can *only* be a child of a 
 ``field`` or ``group`` element.
@@ -151,9 +150,9 @@ and  *validNXClassName*.
     Can this be streamlined with some common methods?
     Also, there is probably too much documentation in nxdl.xsd.  Obscures the function.
 
-
-
-.. index:: ! NXDL element
+.. index::
+    see: attribute; NXDL attribute
+    ! single: NXDL elements
 
 .. _NXDL.elements:
 
@@ -238,6 +237,7 @@ def generalHandler(ns, parent=None, indentLevel=0):
         name = '@' + name
     
     if indentLevel == 0 and not simple_tag in ('attribute'):
+        print '.. index:: ! %s (NXDL data type)\n' % name
         print '\n.. _%s:\n' % ('NXDL.data.type.'+name)
 
     printTitle(name, indentLevel)
@@ -416,8 +416,7 @@ def main(tree, ns):
 
     for name in sorted(ELEMENT_DICT):
         print
-        print '.. index:: ! NXDL element; %s\n' % name
-        #print '.. _%s:\n' % ('NXDL.element.'+name)
+        print '.. index:: ! %s (NXDL element)\n' % name
         print '.. _%s:\n' % name
         printTitle(name, indentLevel=0)
         print '\n'

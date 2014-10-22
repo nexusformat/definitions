@@ -98,8 +98,8 @@ we walk through a schematic of NeXus program written in C
     #. line 14:
         Write the data using ``NXputdata()``.
     #. line 15:
-        With the field still open, we can also add some data 
-        :index:`attributes <attribute; data field>`,
+        With the field still open, we can also add some field
+        :index:`attributes <field attribute>`,
         such as the :index:`data units <units>`, [#]_ [#]_
         which are specified as a character string (``type="NX_CHAR"`` [#]_)
         that is 7 bytes long.

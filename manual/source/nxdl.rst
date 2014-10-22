@@ -1,5 +1,5 @@
 .. index::
-    ! NXDL
+    ! single: NXDL
     see: NeXus Definition Language; NXDL
 
 .. _NXDL:
