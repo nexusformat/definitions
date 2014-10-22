@@ -179,7 +179,7 @@ def printFullTree(ns, parent, name, indent):
         name = node.get('name')
         index_name = re.sub( r'_', ' ', name )
         dims = analyzeDimensions(ns, node)
-        print( '%s.. index:: %s (data field)\n' %
+        print( '%s.. index:: %s (field)\n' %
                ( indent, index_name ) )
         print( '%s**%s%s**: %s%s\n' % (
             indent, name, dims, fmtTyp(node), fmtUnits(node) ) )
