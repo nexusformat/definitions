@@ -193,7 +193,7 @@ def printFullTree(ns, parent, name, indent):
         # TODO: look for "deprecated" element, add to doc
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, 'data field', subnode, indent+'  ' )
+            printAttribute( ns, 'field', subnode, indent+'  ' )
     
     for node in parent.xpath('nx:group', namespaces=ns):
         name = node.get('name', '')
