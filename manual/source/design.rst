@@ -13,16 +13,10 @@ simple data sets, such as a single data array and its axes, and also of highly c
 data, such as the simulation results or an entire multi-component instrument. This flexibility
 is a necessity as NeXus strives to capture data from a wild variety of applications in X-ray, muSR and
 neutron scattering. The flexibility is achieved through a :index:`hierarchical <hierarchy>`
-structure, with related *data fields* collected together into *groups*,
+structure, with related *fields* collected together into *groups*,
 making NeXus files easy to navigate, even without any
 documentation. NeXus files are self-describing, and should be easy to understand, at
 least by those familiar with the experimental technique.
-
-	.. note::
-	    In this manual, we use the terms *field*, *data field*, and
-	    *data item* synonymously to be consistent
-	    with their meaning between NeXus data file instances and
-	    NXDL specification files.
 
 
 .. _Design-Objects:
@@ -34,13 +28,13 @@ Before discussing the design of NeXus in greater detail it is necessary to defin
 used by NeXus. These are:
 
 :ref:`Design-Groups`
-    Group data fields and other groups together. Groups represent levels in the NeXus hierarchy
+    Levels in the NeXus hierarchy. May contain fields and other groups.
 
 :ref:`Design-Fields`
     Multidimensional arrays and scalars representing the actual data to be stored
 
 :ref:`Design-Attributes`
-    Attributes containing additional metadata can be assigned to groups or data fields
+    Attributes containing additional metadata can be assigned to groups or fields
 
 :ref:`Design-FileAttributes`
     Attributes are also allowed at file level.
@@ -80,25 +74,26 @@ For the class names used with NeXus data groups the prefix NX is reserved. Thus 
 names start with NX.
 
     .. index::
-      ! single: data field
-      see:    SDS (Scientific Data Sets); data field
-      see:    Scientific Data Sets; data field
-      see:    field; data field
-      see:    data item; data field
-      see:    data object; data field
-      see:    data set; data field
+      ! single: field
+      see:    SDS (Scientific Data Sets); field
+      see:    Scientific Data Sets; field
+      see:    data field; field
+      see:    data item; field
+      see:    data object; field
+      see:    data set; field
 
 .. _Design-Fields:
 
-Data Fields
-===========
+Fields
+======
 
-Data fields contain the essential information stored in a NeXus file. They can
+Fields (also called data fields, data items or data sets)
+contain the essential information stored in a NeXus file. They can
 be scalar values or multidimensional arrays of a variety of sizes (1-byte,
 2-byte, 4-byte, 8-byte) and types (integers, floats, characters). The fields may
 store both experimental results (counts, detector angles, etc), and other
 information associated with the experiment (start and end times, user names,
-etc). Data fields are identified by their names, which must be unique within the
+etc). Fields are identified by their names, which must be unique within the
 group in which they are stored.  Some fields have engineering units to be specified.  
 In some cases, such in ``NXdetector/data``, a field is expected to have be
 an array of several dimensions.
@@ -107,7 +102,7 @@ an array of several dimensions.
 
 		.. changed from table since sphinx PDF table columns were not sized correctly
 		
-		.. rubric::  Examples of data fields
+		.. rubric::  Examples of fields
 		
 		``variable`` (*NX_NUMBER*)
 			Dimension scale defining an axis of the data.
@@ -129,15 +124,15 @@ an array of several dimensions.
 
 
 .. index::
-   ! single: data field attribute
+   ! single: field attribute
    ! single: group attribute
-   see: attribute; data field attribute
+   see: attribute; field attribute
    see: attribute; group attribute
 
 .. _Design-Attributes:
 
-Group attributes, data field attributes
-=======================================
+Group and field attributes
+==========================
 
 Attributes are extra (meta-)information that are associated with particular
 fields. They are used to annotate the data, e.g. with physical 
@@ -307,7 +302,7 @@ NeXus Base Classes
 .. index:: rules; NX prefix
 
 Data groups often describe objects in the experiment (monitors, detectors,
-monochromators, etc.), so that the contents (both data fields and/or other data
+monochromators, etc.), so that the contents (both fields and/or other
 groups) comprise the properties of that object. NeXus has defined a set of standard
 objects, or :ref:`base classes <base.class.definitions>`, 
 out of which a NeXus file can be constructed. This is each data group
@@ -716,27 +711,27 @@ In order to use coordinate transformations, several morsels of information need 
 NeXus chooses to encode this information in the following way:
 
     .. index::
-       single: transformation type (data field attribute)
+       single: transformation type (field attribute)
        single: translation
        single: rotation
 
     **Type**
-    	Through a data field attribute **transformation_type**. 
+    	Through a field attribute **transformation_type**. 
 	This can take the value of either *translation*
     	or *rotation*.
 
     .. index::
-       single: vector (data field attribute)
-       see: direction; vector (data field attribute)
+       single: vector (field attribute)
+       see: direction; vector (field attribute)
 
     **Direction**
-    	Through a data field attribute **vector**. This is a set of three values
+    	Through a field attribute **vector**. This is a set of three values
     	describing either the components of the rotation axis
     	or the direction along which the translation happens.
 
     .. index::
        ! single: value (transformation matrix)
-       ! single: offset (data field attribute)
+       ! single: offset (field attribute)
     
     **Value**
     	This is represented in the actual data of the data set. In addition, there is the
@@ -745,8 +740,8 @@ NeXus chooses to encode this information in the following way:
     	translations would need to be introduced in order to encode mechanical offsets in the axis.
 
     .. index::
-       see: order (transformation); depends on (data field attribute)
-       ! single: depends on (data field attribute)
+       see: order (transformation); depends on (field attribute)
+       ! single: depends on (field attribute)
 
     **Order**
     	The order is encoded through the **depends_on** attribute on a data set. The value of the

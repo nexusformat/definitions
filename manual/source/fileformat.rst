@@ -47,7 +47,7 @@ Mapping NeXus into HDF
 ######################
 
 .. index::
-   single: data field; HDF
+   single: field; HDF
    single: group; HDF
    single: attribute; HDF
 

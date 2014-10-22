@@ -4,7 +4,7 @@
 Rules for Storing Data Items in NeXus Files
 ===========================================
 
-This section describes the rules which apply for storing single data fields in data files.
+This section describes the rules which apply for storing single data items.
 
 .. _Design-Naming:
 
@@ -17,7 +17,7 @@ Naming Conventions
    single: attribute; NXclass
    single: NXclass (attribute)
 
-Group and field Names used within NeXus follow a naming convention
+Group and field names used within NeXus follow a naming convention
 described by the following :index:`rules <rules; naming>`:
 
 * The names of NeXus *group* and *field* items
@@ -84,7 +84,7 @@ described by the following :index:`rules <rules; naming>`:
 .. rubric:: Use of underscore in descriptive names
 
 Sometimes it is necessary to combine words in order to build a
-descriptive name for a data field or a group.
+descriptive name for a field or a group.
 In such cases lowercase words are connected by underscores.
 
 .. code-block:: guess
@@ -92,8 +92,8 @@ In such cases lowercase words are connected by underscores.
 
     number_of_lenses
 
-For all data fields, only names from the NeXus base class dictionaries should be used.
-If a data field name or even a complete component is missing,
+For all fields, only names from the NeXus base class dictionaries should be used.
+If a field name or even a complete component is missing,
 please suggest the addition to the :ref:`NIAC`. The addition will usually be
 accepted provided it is not a duplication of an existing field and
 adequately documented.
@@ -311,7 +311,7 @@ NeXus Data Units
 
 Given the plethora of possible applications of NeXus, it is difficult to
 define units to use. Therefore, the general rule is that you are free to
-store data in any unit you find fit. However, any data field must have a
+store data in any unit you find fit. However, any field must have a
 units attribute which describes the units, Wherever possible, SI units are
 preferred. NeXus units are written as a string attribute (``NX_CHAR``)
 and describe the engineering units. The string
@@ -362,7 +362,7 @@ to specify the names of each
 The original method uses the ``axis`` attribute to identify
 with an integer the axis whose value is the number of the dimension.
 After describing each of these methods, the two methods will be compared.
-A prerequisite for both methods is that the data fields describing the axis
+A prerequisite for both methods is that the fields describing the axis
 are stored together with the multi dimensional data set whose axes need to be defined
 in the same NeXus group. If this leads to data duplication, use links.
 

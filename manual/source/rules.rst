@@ -199,7 +199,7 @@ Then we have:
 	  + ``NXentry/NXinstrument/NXdetector/data``
 	  + ``NXentry/NXsample/rotation_angle``
 	
-	- All other data fields have their normal dimensions.
+	- All other fields have their normal dimensions.
 	
 	.. compound::
 	
@@ -283,7 +283,7 @@ varied during the scan. We then have:
   The datasets in ``NXdata`` must have the
   appropriate attributes as described in the axis location section.
 
-- All other data fields have their normal dimensions.
+- All other fields have their normal dimensions.
 
 .. compound::
 

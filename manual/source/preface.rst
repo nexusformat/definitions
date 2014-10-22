@@ -60,7 +60,7 @@ Some words on the  notation:
 - The combination ``name:NXclass`` denotes a NeXus group with name ``name``
   and class ``NXclass``.
 
-- A simple name (no following class) denotes a data field.
+- A simple name (no following class) denotes a field.
   An equal sign is used to show the value, where this is important to the example.
 
 - Sometimes, a data type is specified and possibly a set of dimensions.

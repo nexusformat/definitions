@@ -438,7 +438,6 @@ looks similar to this:
    single: doc (NXDL element)
    single: dim (NXDL element)
    single: dimensions (NXDL element)
-   see: data field (NXDL); field (NXDL element)
    single: field (NXDL element)
    single: index (NXDL attribute)
    single: name (NXDL attribute)
