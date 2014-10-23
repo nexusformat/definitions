@@ -122,9 +122,8 @@ links.
 :ref:`Design-Fields`
     Fields can be scalar values or multidimensional arrays of a
     variety of sizes (1-byte, 2-byte, 4-byte, 8-byte) and types
-    (characters, integers, floats).  In HDF, fields are
-    represented as HDF *Scientific Data Sets*
-    (also known as SDS).
+    (characters, integers, floats).  Fields are
+    represented as HDF5 *datasets*.
     
 .. index::
    single: field attribute
@@ -134,7 +133,8 @@ links.
     Extra information required to
     describe a particular group or field,
     such as the data units,
-    can be stored as a data attribute.
+    can be stored as a data attribute.  Attributes can also 
+    be given at the file level of an HDF5 file.
 
 .. index::
    link
