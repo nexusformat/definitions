@@ -184,7 +184,7 @@ the red circle only maps to one other format.
 
     .. figure:: img/data-pre-nexus.jpg
         :alt: fig.data-pre-nexus
-        :width: 50%
+        :width: 35%
 
         *N* separate file formats
 
@@ -199,7 +199,7 @@ and thereby reduce the number of data conversion routines from
 
     .. figure:: img/data-post-nexus.jpg
         :alt: fig.data-post-nexus
-        :width: 50%
+        :width: 35%
 
         *N* separate file formats joined by a common NeXus converter
 
@@ -217,7 +217,7 @@ present so that it is not necessary to search for all the variant forms of
 *energy* when it is used to describe data (e.g., ``E``, ``e``, ``keV``, ``eV``, ``nrg``, ...).
 
 NeXus recognized that each scientific specialty has developed a unique dictionary and
-needs to categorize data using those terms. The NeXus Application Definitions provide
+needs to categorize data using those terms.  NeXus Application Definitions provide
 the means to document the lexicography for use in data files of that scientific
 specialty.
 
