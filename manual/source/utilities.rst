@@ -314,8 +314,7 @@ low level programmatic access to the data structures.
 Language APIs
 -------------
 
-:h5py:
-	(http://code.google.com/p/h5py/)
+**h5py** (http://docs.h5py.org/)
 	HDF5 for Python (h5py) is a general-purpose Python interface to HDF5.
 
 .. TODO: list more APIs
