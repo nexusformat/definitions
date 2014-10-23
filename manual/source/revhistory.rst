@@ -5,7 +5,7 @@ Revision History
 .. index:: ! revision history
 
 Browse the most recent Issues on the GitHub repository:
-https://github.com/nexusformat/definitions/pulse/weekly
+https://github.com/nexusformat/definitions/pulse/monthly
 
 ..
 	.. tabularcolumns:: |l|l|L|l|
