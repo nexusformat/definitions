@@ -13,13 +13,18 @@ a common data exchange format for neutron, X-ray, and muon experiments.
 NeXus is built on top of the scientific data format HDF5 and adds 
 domain-specific rules for organizing data within HDF5 files in addition 
 to a dictionary of well-defined domain-specific field names. The NeXus 
-data format has two purposes.  First, NeXus defines a format that can 
-serve as a container for all relevant data associated with a scientific 
-instrument or beamline. 
-This is a very important use case.  Second, NeXus defines standards in 
-the form of *application definitions* for the exchange of data 
-between applications.  NeXus provides structures for raw experimental 
-data as well as for processed data.  
+data format has two purposes:
+
+#. *raw data*:
+   NeXus defines a format that can 
+   serve as a container for all relevant data associated with a scientific 
+   instrument or beamline. 
+   This is a very important use case.
+#. *processed data*:
+   NeXus defines standards in 
+   the form of *application definitions* for the exchange of data 
+   between applications.  NeXus provides structures for raw experimental 
+   data as well as for processed data.  
 
 In recent years, a community of scientists and computer programmers working in neutron
 and synchrotron facilities around the world came to the conclusion that a 
