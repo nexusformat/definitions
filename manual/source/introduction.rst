@@ -99,34 +99,31 @@ A Set of Design Principles
 .. index:: design principles
 
 NeXus data files contain four types of entity:
-data groups,
-data fields,
+groups,
+fields,
 attributes, and
 links.
 
+.. index::
+   single: group
+
 :ref:`Design-Groups`
-    Data :index:`groups <data objects; groups>`
-    are like folders that can contain a number of fields
+    Groups are like folders that can contain a number of fields
     and/or other groups.
 
+    .. index::
+      single: field
+
 :ref:`Design-Fields`
-    Data :index:`fields <data objects; fields>`
-    can be scalar values or multidimensional arrays of a
+    Fields can be scalar values or multidimensional arrays of a
     variety of sizes (1-byte, 2-byte, 4-byte, 8-byte) and types
     (characters, integers, floats).  In HDF, fields are
     represented as HDF *Scientific Data Sets*
     (also known as SDS).
     
-    .. index::
-      single: HDF; Scientific Data Sets
-      see:    SDS; Scientific Data Sets
-      single: data objects, fields; Scientific Data Sets
-      see:    data objects, fields; HDF
-
 .. index::
-   pair: units; attribute
-   attribute
-   see: data attribute; attribute
+   single: field attribute
+   single: group attribute
 
 :ref:`Design-Attributes`
     Extra information required to
@@ -346,7 +343,7 @@ to the community.
 
 These instrument definitions are formalized as XML files, using NXDL,
 (as described in the :ref:`NXDL <NXDL>` chapter)
-to specify the names of data fields, and other NeXus data objects.
+to specify the names of fields, and other NeXus data objects.
 The following is an example of such a file for
 the simple NeXus file shown above.
 

@@ -13,7 +13,7 @@ Installation
 .. index::
    single: NAPI; installation; download location
    see: download location; NAPI installation
-   see repository; NAPI installation
+   see: repository; NAPI installation
 
 This section describes how to install the NeXus API and details the requirements. The NeXus API is distributed under the terms of the `GNU Lesser General Public License version 3 <http://www.gnu.org/licenses/lgpl-3.0.txt>`_.
 
