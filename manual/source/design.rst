@@ -34,8 +34,7 @@ used by NeXus. These are:
     Multidimensional arrays and scalars representing the actual data to be stored
 
 :ref:`Design-Attributes`
-    Attributes containing additional metadata can be assigned to groups, fields,
-	or :ref:`Design-FileAttributes`.
+    Attributes containing additional metadata can be assigned to groups, fields, or :ref:`Design-FileAttributes`.
 
 :ref:`Design-Links`
     Elements which point to data stored in another place in the file hierarchy
