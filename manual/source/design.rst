@@ -34,10 +34,8 @@ used by NeXus. These are:
     Multidimensional arrays and scalars representing the actual data to be stored
 
 :ref:`Design-Attributes`
-    Attributes containing additional metadata can be assigned to groups or fields
-
-:ref:`Design-FileAttributes`
-    Attributes are also allowed at file level.
+    Attributes containing additional metadata can be assigned to groups, fields,
+	or :ref:`Design-FileAttributes`.
 
 :ref:`Design-Links`
     Elements which point to data stored in another place in the file hierarchy
@@ -131,11 +129,11 @@ an array of several dimensions.
 
 .. _Design-Attributes:
 
-Group and field attributes
+Attributes
 ==========================
 
 Attributes are extra (meta-)information that are associated with particular
-fields. They are used to annotate the data, e.g. with physical 
+groups or fields. They are used to annotate the data, e.g. with physical 
 :index:`units` or calibration offsets, and may be scalar numbers or character
 strings. In addition, NeXus uses attributes to identify 
 :index:`plottable data <plotting>`
