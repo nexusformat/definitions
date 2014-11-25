@@ -1,17 +1,37 @@
-.. $Id$
-
 .. _Introduction:
 
 ==================
 NeXus Introduction
 ==================
 
+.. index::
+   introduction
+   motivation
+
+NeXus is an effort by an international group of scientists to define 
+a common data exchange format for neutron, X-ray, and muon experiments.  
+NeXus is built on top of the scientific data format HDF5 and adds 
+domain-specific rules for organizing data within HDF5 files in addition 
+to a dictionary of well-defined domain-specific field names. The NeXus 
+data format has two purposes:
+
+#. *raw data*:
+   NeXus defines a format that can 
+   serve as a container for all relevant data associated with a scientific 
+   instrument or beamline. 
+   This is a very important use case.
+#. *processed data*:
+   NeXus defines standards in 
+   the form of *application definitions* for the exchange of data 
+   between applications.  NeXus provides structures for raw experimental 
+   data as well as for processed data.  
+
 In recent years, a community of scientists and computer programmers working in neutron
 and synchrotron facilities around the world came to the conclusion that a 
-:index:`common data format <NeXus basic motivation; unified format>`
+common data format
 would fulfill a valuable function in the scattering community. As
-instrumentation becomes more complex and data visualization become more challenging,
-individual scientists, or even institutions, have found it difficult to keep up with new
+instrumentation becomes more complex and data visualization becomes more challenging,
+individual scientists, or even institutions, find it difficult to keep up with new
 developments. A common data format makes it easier, both to exchange experimental results
 and to exchange ideas about how to analyze them. It promotes greater cooperation in software
 development and stimulates the design of more sophisticated visualization tools.
@@ -34,7 +54,7 @@ storing analyzed data should agree on simple interchange
 What is NeXus?
 ##############
 
-The  :index:`NeXus <!NeXus>` data format has four components:
+The NeXus data format has four components:
 
 :ref:`A set of design principles <Introduction-DesignPrinciples>`
     to help people understand what is in the data files.
@@ -81,46 +101,52 @@ NeXus data files is provided in the :ref:`Utilities` chapter.
 A Set of Design Principles
 ==========================
 
-NeXus :index:`data files <NeXus; Design Principles>`
-contain four types of entity:
-data groups,
-data fields,
+.. index:: design principles
+
+NeXus data files contain four types of entity:
+groups,
+fields,
 attributes, and
 links.
 
+.. index::
+   single: group
+
 :ref:`Design-Groups`
-    Data :index:`groups <data objects; groups>`
-    are like folders that can contain a number of fields
+    Groups are like folders that can contain a number of fields
     and/or other groups.
 
-:ref:`Design-Fields`
-    Data :index:`fields <data objects; fields>`
-    can be scalar values or multidimensional arrays of a
-    variety of sizes (1-byte, 2-byte, 4-byte, 8-byte) and types
-    (characters, integers, floats).  In HDF, fields are
-    represented as HDF *Scientific Data Sets*
-    (also known as SDS).
-    
     .. index::
-      single: HDF; Scientific Data Sets
-      pair:   SDS; Scientific Data Sets
-      see:    data objects, fields; Scientific Data Sets
-      see:    data objects, fields; HDF
-      see:    data objects, fields; SDS
+      single: field
+
+:ref:`Design-Fields`
+    Fields can be scalar values or multidimensional arrays of a
+    variety of sizes (1-byte, 2-byte, 4-byte, 8-byte) and types
+    (characters, integers, floats).  Fields are
+    represented as HDF5 *datasets*.
+    
+.. index::
+   single: field attribute
+   single: group attribute
 
 :ref:`Design-Attributes`
     Extra information required to
     describe a particular group or field,
-    such as the data 
-    :index:`units <units>`,
-    can be stored as a :index:`data attribute <pair: attributes; data>`.
+    such as the data units,
+    can be stored as a data attribute.  Attributes can also 
+    be given at the file level of an HDF5 file.
 
+.. index::
+   link
+   plotting
+   NXdata (base class); plotting
+   NXmonitor (base class); plotting
+   NXdetector (base class); plotting
+   
 :ref:`Design-Links`
-    Links are used to reference the 
-    :index:`plottable data <NeXus basic motivation; default plot>`
-    from ``NXdata``
+    Links are used to reference the plottable data from ``NXdata``
     when the data is provided in other groups
-    such as ``NXmonitor`` :index:`or <link>` ``NXdetector``.
+    such as ``NXmonitor`` or ``NXdetector``.
 
 In fact, a NeXus file can be viewed as a computer file system. Just as files
 are stored in folders (or subdirectories) to make them easy to locate, so NeXus
@@ -133,8 +159,12 @@ to navigate a NeXus file.
 Example of a NeXus File
 -----------------------
 
+.. index::
+   see: tree structure; hierarchy
+   single: examples; NeXus file
+
 The following diagram shows an example of a NeXus data file represented as a
-tree :index:`structure <hierarchy; example NeXus file>`.
+tree structure.
 
 	.. compound::
 	
@@ -167,10 +197,12 @@ complete list can be found in the :ref:`Design` chapter.
           are the only two classes necessary to store the minimum
           amount of information in a valid NeXus data file.
 
+.. index:: NXentry (base class)
+
 :ref:`NXentry`
     *Required:*
     The top level of any NeXus file contains one or more groups with the 
-    :index:`class <class definition -- Base Classes; NXentry>` ``NXentry``. 
+    class ``NXentry``. 
     These contain all the data that is required to
     describe an experimental run or scan. Each
     ``NXentry`` typically contains a number of
@@ -179,30 +211,35 @@ complete list can be found in the :ref:`Design` chapter.
     ``NXinstrument``), and monitor counts (class
     ``NXmonitor``).
 
+.. index:: NXdata (base class)
+
 :ref:`NXdata`
     *Required:*
     Each ``NXentry`` group contains one or more groups with 
-    :index:`class <class definition -- Base Classes; NXdata>` ``NXdata``. 
+    class ``NXdata``. 
     These groups contain the experimental results
     in a self-contained way, i.e., it should be possible to
-    generate a sensible :index:`plot <NeXus basic motivation; default plot>`
+    generate a sensible :index:`plot <plotting>`
     of the data from the information
     contained in each ``NXdata`` group. That means it
     should contain the axis labels and titles as well as the
     data.
 
+.. index:: NXsample (base class)
+
 :ref:`NXsample`
     A ``NXentry`` group will often contain a group with 
-    :index:`class <class definition -- Base Classes; NXsample>` ``NXsample``. 
+    class ``NXsample``. 
     This group contains information pertaining to
     the sample, such as its chemical composition, mass, and
     environment variables (temperature, pressure, magnetic
     field, etc.).
 
+.. index:: NXinstrument (base class)
+
 :ref:`NXinstrument`
     There might also be a group with 
-    :index:`class <class definition -- Base Classes; NXinstrument>`
-    ``NXinstrument``. This is designed to encapsulate all the
+    class ``NXinstrument``. This is designed to encapsulate all the
     instrumental information that might be relevant to a
     measurement, such as flight paths, collimation, chopper
     frequencies, etc.
@@ -226,6 +263,9 @@ complete list can be found in the :ref:`Design` chapter.
 Simple Example
 --------------
 
+.. index::
+   single: examples; NeXus file; minimal
+
 NeXus data files do not need to be complicated.
 In fact, the following
 diagram shows an extremely simple NeXus file
@@ -248,18 +288,19 @@ read this simple example.)
 This illustrates the fact that the structure of NeXus files is
 extremely flexible. It can accommodate very complex instrumental
 information, if required, but it can also be used to store very simple data
-sets. In the next example, a NeXus data file is shown as XML:
+sets. Here is the structure of a very simple NeXus data file
+(:download:`examples/verysimple.nx5`):
 
 	.. compound::
 	
-		.. _fig.simple-data-file-xml:
+		.. _fig.simple-data-file-structure:
 	
-	    .. rubric:: A very simple NeXus Data file (in XML)
+	    .. rubric:: Structure of a very simple NeXus Data file
 	
-	    .. literalinclude:: examples/verysimple.xml
+	    .. literalinclude:: examples/verysimple.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: xml
+	        :language: guess
 
 .. index:: 
 	NeXpy
@@ -307,7 +348,7 @@ to the community.
 
 These instrument definitions are formalized as XML files, using NXDL,
 (as described in the :ref:`NXDL <NXDL>` chapter)
-to specify the names of data fields, and other NeXus data objects.
+to specify the names of fields, and other NeXus data objects.
 The following is an example of such a file for
 the simple NeXus file shown above.
 
@@ -387,10 +428,11 @@ provides the scientific data, advice, and continued involvement
 with the NeXus standard. NeXus provides a forum for the scientific
 community to exchange ideas in data storage through the NeXus wiki.
 
-The NeXus International Advisory Committee supervises the
+The :ref:`NeXus International Advisory Committee <NIAC>` (NIAC)
+supervises the
 development and maintenance of the NeXus common data
 format for neutron, X-ray, and muon science.
-The :ref:`NIAC` supervises a technical committee to oversee the
+The NIAC supervises a technical committee to oversee the
 :ref:`NAPI` and the :ref:`ClassDefinitions`.
 
 
@@ -398,5 +440,6 @@ The :ref:`NIAC` supervises a technical committee to oversee the
    :maxdepth: 2
    :glob:
    
+   preface
    motivations
    introduction-napi

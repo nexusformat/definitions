@@ -1,4 +1,3 @@
-	// $Id$
 	try{
 		NexusFile nf = new NexusFile(filename, NexusFile.NXACC_READ);
 		nf.opengroup("entry1","NXentry");

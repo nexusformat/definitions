@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-########### SVN repository information ###################
-# $Date$
-# $Author$
-# $Revision$
-# $HeadURL$
-# $Id$
-########### SVN repository information ###################
-
 Purpose:
 	This stylesheet is used to translate the NeXus Definition Language
 	specifications into DocBook (.xml) files for use in
@@ -61,8 +53,6 @@ Usage:
 ######	 This XML file was auto-generated from      ######
 ######	 an NXDL file by an XSLT transformation.    ######
 ######	 Do NOT edit this DocBook XML file.         ######
-##########################################################
-##### $Id$
 ##########################################################
 </xsl:comment>
 
@@ -519,15 +509,6 @@ Usage:
                 <term>version</term>
                 <listitem>
                     <para><xsl:value-of select="@version"/></para>
-                </listitem>
-            </varlistentry>
-            <varlistentry><!-- show the SVN Id of the NXDL instance -->
-                <term>SVN Id</term>
-                <listitem>
-                    <para>
-                        <!-- strip the $ signs so SVN does not change the SVN Id in the target DocBook XML file -->
-                        <xsl:value-of select="substring-before(substring-after(@svnid,'$'),'$')"/>
-                    </para>
                 </listitem>
             </varlistentry>
             <varlistentry><!-- show what this class extends -->

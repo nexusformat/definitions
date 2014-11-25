@@ -1,5 +1,3 @@
-.. $Id$
-
 .. _ReferenceDocumentation:
 
 ==============================
@@ -13,7 +11,8 @@ NeXus: Reference Documentation
     :maxdepth: 1
     :glob:
    
-    napi
+    defs_intro
     nxdl
-    classes/index
-    examples/index
+    classes/base_classes/index
+    classes/applications/index
+    classes/contributed_definitions/index

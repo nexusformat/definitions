@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 #
-# $Id$
-#
 # NeXus: User Guide and Reference Documentation build configuration file, created by
 # sphinx-quickstart on Wed May 18 12:57:35 2011.
 #
@@ -278,6 +276,8 @@ latex_preamble = '''
 % 2012-09-25,PRJ: #240  temporary diagnostic
 \\listfiles
 % when done, remove referencing from index.rst and cp from Makefile: latexpdf
+\usepackage{enumitem}
+\setlistdepth{9}
 '''
 
 # Documents to append as an appendix to all manuals.

@@ -1,12 +1,10 @@
-.. $Id$
-
 .. _DataRules:
 
 ===========================================
 Rules for Storing Data Items in NeXus Files
 ===========================================
 
-This section describes the rules which apply for storing single data fields in data files.
+This section describes the rules which apply for storing single data items.
 
 .. _Design-Naming:
 
@@ -14,11 +12,12 @@ Naming Conventions
 ##################
 
 .. index:: 
-   naming convention
-   name rules
-   NX; used as NX class prefix 
+   single: naming convention
+   single: NX; used as NX class prefix 
+   single: attribute; NXclass
+   single: NXclass (attribute)
 
-Group and field Names used within NeXus follow a naming convention
+Group and field names used within NeXus follow a naming convention
 described by the following :index:`rules <rules; naming>`:
 
 * The names of NeXus *group* and *field* items
@@ -31,7 +30,7 @@ described by the following :index:`rules <rules; naming>`:
 * For the class names [#]_ of NeXus *group* items,
   the prefix *NX* is reserved. 
   Thus all NeXus class names start with NX.
-  The chapter titled :ref:`nexus-class-definitions` lists the 
+  The chapter titled :ref:`ReferenceDocumentation` lists the 
   available NeXus class names as either *base classes*, 
   *application definitions*, or *contributed definitions*.
 
@@ -85,7 +84,7 @@ described by the following :index:`rules <rules; naming>`:
 .. rubric:: Use of underscore in descriptive names
 
 Sometimes it is necessary to combine words in order to build a
-descriptive name for a data field or a group.
+descriptive name for a field or a group.
 In such cases lowercase words are connected by underscores.
 
 .. code-block:: guess
@@ -93,8 +92,8 @@ In such cases lowercase words are connected by underscores.
 
     number_of_lenses
 
-For all data fields, only names from the NeXus base class dictionaries should be used.
-If a data field name or even a complete component is missing,
+For all fields, only names from the NeXus base class dictionaries should be used.
+If a field name or even a complete component is missing,
 please suggest the addition to the :ref:`NIAC`. The addition will usually be
 accepted provided it is not a duplication of an existing field and
 adequately documented.
@@ -208,12 +207,20 @@ numbers.  A number follows that indicates the number of bits in the word.
 The table above shows the regular expressions that
 matches the data type specifier.
 
+.. index::
+    ! integers
+    see: numbers; integers
+
 **integers**
     ``NX_INT8``,
     ``NX_INT16``,
     ``NX_INT32``,
     or
     ``NX_INT64``
+
+.. index::
+    ! floating-point numbers
+    see: numbers; floating-point numbers
 
 **floating-point numbers**
     ``NX_FLOAT32``
@@ -228,6 +235,8 @@ matches the data type specifier.
     ISO-8601 standard definitions.
     Refer to :ref:`Design-Dates-Times`.
 
+.. index:: ! strings
+
 **strings**
     All strings are to be encoded in UTF-8. Since most strings in a
     NeXus file are restricted to a small set of characters and the first 128 characters are standard across encodings,
@@ -238,8 +247,12 @@ matches the data type specifier.
     current operating systems handle character encoding, it is practically impossible to test the encoding used. Hence,
     ``nxvalidate`` provides no messages relating to character encoding.
 
+.. index:: binary data
+
 **binary data**
     Binary data is to be written as ``UINT8``.
+
+.. index:: images
 
 **images**
     Binary image data is to be written using ``UINT8``, the same as binary data, but with an accompanying image mime-type.
@@ -253,6 +266,8 @@ matches the data type specifier.
 
 NeXus dates and times
 =====================
+
+.. index:: date and time
 
 NeXus  :index:`dates and times <date and time>`
 should be stored using the `ISO 8601`_ [#]_  format,
@@ -296,7 +311,7 @@ NeXus Data Units
 
 Given the plethora of possible applications of NeXus, it is difficult to
 define units to use. Therefore, the general rule is that you are free to
-store data in any unit you find fit. However, any data field must have a
+store data in any unit you find fit. However, any field must have a
 units attribute which describes the units, Wherever possible, SI units are
 preferred. NeXus units are written as a string attribute (``NX_CHAR``)
 and describe the engineering units. The string
@@ -347,7 +362,7 @@ to specify the names of each
 The original method uses the ``axis`` attribute to identify
 with an integer the axis whose value is the number of the dimension.
 After describing each of these methods, the two methods will be compared.
-A prerequisite for both methods is that the data fields describing the axis
+A prerequisite for both methods is that the fields describing the axis
 are stored together with the multi dimensional data set whose axes need to be defined
 in the same NeXus group. If this leads to data duplication, use links.
 
@@ -357,7 +372,7 @@ Linking by name using the ``axes`` attribute
 ============================================
 
 The preferred method is to define an attribute of the data itself
-:index:`called <axes>` *axes*.
+:index:`called <axes (attribute)>` *axes*.
 The ``axes`` attribute contains the names of
 each :index:`dimension scale <dimension; dimension scales>`
 as a colon (or comma) separated list in the order they appear in C.
@@ -386,7 +401,7 @@ That is, if the array being stored is data with elements
 ``data[j][i]`` in C and
 ``data(i,j)`` in Fortran, where ``i`` is the
 time-of-flight index and ``j`` is
-the polar angle index, the ``NXdata``  :index:`group <NXdata>`
+the polar angle index, the ``NXdata`` :index:`group <NXdata (base class)>`
 would contain:
 
 .. compound::
@@ -404,16 +419,14 @@ The ``primary`` attribute is unique to this method of linking.
 
 There are limited circumstances in which more
 than one :index:`dimension scale <dimension; dimension scales>`
-for the same data dimension can be included in the same
-``NXdata`` :index:`group <NXdata>`.
+for the same data dimension can be included in the same ``NXdata`` group.
 The most common is when the dimension scales are
 the three components of an
 *(hkl)* scan. In order to
 handle this case, we have defined another attribute
 of type integer called
 ``primary`` whose value determines the order
-in which the scale is expected to be chosen for 
-:index:`plotting <NeXus basic motivation; default plot>`, i.e.
+in which the scale is expected to be chosen for :index:`plotting`, i.e.
 
 + 1st choice: ``primary=1``
 
@@ -502,9 +515,7 @@ where a monitor value per scan point is expected or
 time-of-flight monitors.
 
 .. index::
-	automatic plotting
-	NeXus basic motivation; default plot
-	! plottable data; how to find it
+	plotting; how to find data
 
 .. _Find-Plottable-Data:
 

@@ -1,24 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-     Stylesheet to provide a condensed view of a NeXus NXDL specification.
-     (see https://github.com/nexusformat/definitions/issues/181)
+Stylesheet to provide a condensed view of a NeXus NXDL specification.
+(see https://github.com/nexusformat/definitions/issues/181)
 
-     The nxdlformat.xsl stylesheets differ between the directories 
-     because of the rule regarding either /definition/NXentry or
-     /definition/NXsubentry for application and contributed definitions.
-     (see https://github.com/nexusformat/definitions/issues/179)
-     
-     Modify <xsl:template match="nx:definition">...</xsl:template> 
-     for each directory.
-     
-     ########### SVN repository information ###################
-     # $Date$
-     # $Author$
-     # $Revision$
-     # $HeadURL$
-     # $Id$
-     ########### SVN repository information ###################
+The nxdlformat.xsl stylesheets differ between the directories 
+because of the rule regarding either /definition/NXentry or
+/definition/NXsubentry for application and contributed definitions.
+(see https://github.com/nexusformat/definitions/issues/179)
+
+Modify <xsl:template match="nx:definition">...</xsl:template> 
+for each directory.
 
 Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
 

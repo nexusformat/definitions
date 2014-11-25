@@ -1,5 +1,3 @@
-.. $Id$
-
 .. _NXDL_Tutorial:
 
 ====================================================
@@ -391,6 +389,18 @@ file. As always, the start is an empty template file. This looks like the XML co
         :linenos:
         :language: guess
 
+.. index::
+   ! single: NXDL template file
+   see: template; NXDL template file
+   single: definition (NXDL element)
+   single: category (NXDL attribute)
+   single: name (NXDL attribute)
+   single: extends (NXDL attribute)
+   single: type (NXDL attribute)
+   single: version (NXDL attribute)
+   single: xmlns (NXDL attribute)
+   single: xsi:schemaLocation (NXDL attribute)
+
 For example, copy and rename the file to ``NXwoni.nxdl.xml``.
 Then, locate the XML root element ``definition`` and change the
 ``name attribute`` (the XML shorthand for this attribute is
@@ -407,6 +417,10 @@ A group is defined by some XML, as in this example:
     :linenos:
     :language: xml
 
+.. index::
+   single: group (NXDL element)
+   single: type (NXDL attribute)
+
 The type is the actual NeXus base class this group belongs to. Optionally a
 ``name`` attribute may be given (default is ``data``).
 
@@ -420,11 +434,23 @@ looks similar to this:
 	:linenos:
 	:language: xml
 
+.. index::
+   single: doc (NXDL element)
+   single: dim (NXDL element)
+   single: dimensions (NXDL element)
+   single: field (NXDL element)
+   single: index (NXDL attribute)
+   single: name (NXDL attribute)
+   single: rank (NXDL attribute)
+   single: type (NXDL attribute)
+   single: units (NXDL attribute)
+   single: value (NXDL attribute)
+
 The meaning of the ``name`` attribute is intuitive, the ``type`` can be looked 
 up in the relevant base class definition. A ``field`` definition can optionally
 contain a ``doc`` element which contains a description of the data item. The 
-``dimensions`` entry specifies the :index:`dimensions <dimension; data set>`
-of the data set. The ``size`` attribute in the dimensions
+``dimensions`` entry specifies the dimensions of the data set.
+The ``size`` attribute in the dimensions
 tag sets the :index:`rank <rank>`
 of the data, in this example: ``rank="1"``. In the ``dimensions`` group there
 must be *rank* ``dim`` fields. Each ``dim`` tag holds two attributes:
@@ -538,7 +564,7 @@ Processed Data
 
 Data reduction and analysis programs are encouraged to store their results in
 NeXus data files. As far as the necessary, the normal NeXus 
-:index:`hierarchy <hierarchy; NeXus>`
+:index:`hierarchy <hierarchy>`
 is to be implemented. In addition, processed data files
 must contain a :ref:`NXprocess`
 group. This group, that documents and preserves data provenance,

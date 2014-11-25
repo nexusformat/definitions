@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index::
 	!validation
 	!verification
@@ -158,7 +156,7 @@ data file.
 
 .. _Verification-Techniques:
 
-.. index:  validation
+.. index::  validation
 
 Validation techniques
 #####################

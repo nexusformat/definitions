@@ -1,5 +1,3 @@
-.. $Id$
-
 .. _UserManual:
 
 ==================
@@ -13,9 +11,9 @@ NeXus: User Manual
    :maxdepth: 1
    :glob:
    
-   preface
    introduction
    design
    applying-nexus
    strategies
    validation
+   faq

@@ -61,6 +61,11 @@ if test -n "$2"; then
     NXDL="$2"
 fi
 echo Validating $1 against $NXDL
+# convert NeXus file to XML using nxconvert. The "-d" option is a special definition mode of the XML conversion,
+# which removes some of the data items (for file size reasons) while retaining the structure and field names.
+# The master index of all NeXus NXDL definitions (all.nxdl.xml) which is generated during the definitions build
+# process is then converted to schematron format and used to validate the XML document.
+# Shematron validation is actually performed using xslt, so the .sch files are converted into a .xsl file
 nxconvert -d $1 ${XML_DOCUMENT}
 ${XSLT} -xsl:${NXDL2SCH} -s:${NXDL} > ${TMPBASE}.sch
 ${XSLT} -xsl:${SCH}/iso_dsdl_include.xsl -s:${TMPBASE}.sch > ${TMPBASE}.1.sch

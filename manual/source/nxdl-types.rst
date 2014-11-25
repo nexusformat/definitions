@@ -1,10 +1,10 @@
-.. $Id$
-
 ===================================
 NXDL: Data Types and Units
 ===================================
 
-.. index:: ! NXDL data type 
+.. index::
+    see: type; data type
+    ! single: data type
 
 .. _nxdl-types:
 		
@@ -21,11 +21,15 @@ with any of these data types.
 ..  Generated from ../nxdlTypes.xsd via a custom Python tool
     ../../utils/types2rst.py ../../nxdlTypes.xsd > types.table
 
+.. index::
+   seealso: binary data; NX_BINARY
+
 .. include:: types.table
 
 
 
-.. index:: ! NXDL units type 
+.. index::
+   ! single: unit category
 
 .. _nxdl-units:
 

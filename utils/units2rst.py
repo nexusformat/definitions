@@ -47,7 +47,7 @@ def worker(nodeMatchString, section = 'units'):
     # this list is too long to make this a table in latex
     # for two columns, a Sphinx fieldlist will do just as well
     for key in sorted(db):
-        print '.. index:: ! NXDL %s type; %s\n' % (section, key)       # index entry
+        print '.. index:: ! %s (%s type)\n' % (key, section)       # index entry
         print '.. _%s:\n' % key       # cross-reference point
         print ':%s:' % key
         for line in db[key].splitlines():

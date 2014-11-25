@@ -1,5 +1,3 @@
-.. $Id$
-
 .. image:: img/NeXus.png
 	:width: 40%
 
@@ -14,21 +12,14 @@ http://www.nexusformat.org/
     :numbered: 4
 
     user_manual
+    examples/index
     ref_doc
-
-.. toctree::
-    :maxdepth: 1
-
-    authorgroup
+    napi
     community
-    releases
     installation
     utilities
-    faq
     history
-    revhistory
-    copyright
-    about
+    docs_about
 
 -----------
 
@@ -48,17 +39,13 @@ This manual built |today|.
    A very brief overview is also available (separate from the manual).
    
    :HTML:
-      http://htmlpreview.github.com/?https://github.com/nexusformat/definitions/blob/master/misc/impatient/_build/html/index.html
+      http://htmlpreview.github.io/?https://github.com/nexusformat/communications/blob/master/impatient/_build/html/index.html
 
 ..  Suggestions for adding to this manual:
 
     Look for some other "section" such as "introduction.rst" and act similarly.
     Any examples go as text files in the examples/ subdirectory and are pulled into 
     Sphinx inside a :directive:`literalcode` directive.  Look for the pattern
-    or wing it.  If you are game for it, add index entries.  Many examples of the
-    constructs you might use are already in the manual.  Please apply these subversion
-    properties to the source code files (example shown with hypothetical file 
-    ``thing.rst``)::
-
-	    svn propset svn:keywords Id thing.rst
-	    svn propset svn:eol-style native thing.rst
+    or wing it.  If you are ambitious, add index entries.  Many examples of the
+    constructs you might use are already in the manual.
+    

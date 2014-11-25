@@ -1,10 +1,8 @@
-.. $Id$
-
 .. _History:
 
-=================================
-Brief history of the NeXus format
-=================================
+======================
+Brief history of NeXus
+======================
 
 Two things to note about the development and history of NeXus:
 
@@ -14,15 +12,15 @@ Two things to note about the development and history of NeXus:
 - The NIAC has already discussed many matters related to the format.
 
 :June 1994:
-    Mark Könnecke (then ISIS, now PSI) made a proposal using netCDF [#]_
+    :index:`Mark Könnecke <single: Könnecke, Mark>` (then ISIS, now PSI) made a proposal using netCDF [#]_
     for the European neutron scattering community while working at ISIS
 
 :August 1994:
-    Jonathan Tischler (ORNL) proposed an HDF-based format [#]_
+    :index:`Jonathan Tischler <single: Tischler, Jonathan>` (ORNL) proposed an HDF-based format [#]_
     as a standard for data storage at APS
 
 :October 1994:
-    Ray Osborn convened a series of three workshops called
+    :index:`Ray Osborn <single: Osborn, Raymond>` convened a series of three workshops called
     *SoftNeSS*. [#]_
     In the first meeting,
     Mark Könnecke and Jon Tischler were invited to meet with representatives
@@ -35,21 +33,21 @@ Two things to note about the development and history of NeXus:
 :September 1995:
     At *SoftNeSS 1995* (at NIST),
     three individual data format proposals by
-    Przemek Klosowski (NIST),
+    :index:`Przemek Klosowski <single: Klosowski, Przemysław>` (NIST),
     Mark Könnecke (then ISIS),
     and Jonathan Tischler (ORNL and APS/ANL)
     were joined to form the basis of the current NeXus format.
     At this workshop, the name *NeXus* was chosen.
 
 :August 1996:
-    The HDF-4 API is quite complex. Thus a NeXus Abstract Programmer Interface (NAPI)
-    :index:`EDIT_ME <NAPI>`
+    The HDF-4 API is quite complex. Thus a NeXus Abstract Programmer Interface
+    :index:`NAPI`
     was released which simplified reading and writing NeXus files.
 
 :October 1996:
     At *SoftNeSS 1996* (at ANL),
     after reviewing the different scientific data formats discussed,
-    it was decided to use HDF-4
+    it was decided to use :index:`HDF4`
     as it provided the best grouping support.
     The basic structure of a NeXus file was agreed upon.
     the various data format proposals were combined into a single document by
@@ -66,13 +64,14 @@ Two things to note about the development and history of NeXus:
 
 :September 2002:
     NeXus API version 2.0.0 is released. This version brought support for the new
-    version of HDF, HDF-5, released by the HDF group. HDF-4 imposed limits on file
+    version of HDF, :index:`HDF5`, released by the HDF group. HDF4 imposed limits on file
     sizes and the number of objects in a file. These issues were resolved with
-    HDF-5. The NeXus API abstracted the difference between the two physical file
+    HDF5. The NeXus API abstracted the difference between the two physical file
     formats away form the user.
 
 :June 2003:
-    Przemek Klosowski, Ray Osborn, and Richard Riedel received the only known
+    Przemek Klosowski, Ray Osborn, and :index:`Richard Riedel <single: Riedel, Richard>`
+    received the only known
     grant explicitly for working on NeXus from  the Systems Integration for Manufacturing
     Applications (SIMA) program of the National Institute of Standards and Technology
     (NIST). The grant funded a person for one year to work on community wide infrastructure
@@ -81,7 +80,7 @@ Two things to note about the development and history of NeXus:
 :October 2003:
     In 2003, NeXus had arrived at a stage where informal gatherings of a group of
     people were no longer good enough to oversee the development of NeXus. This lead
-    to the formation of the NeXus International Advisory Committee (NIAC) which
+    to the formation of the NeXus International Advisory Committee (:index:`NIAC`) which
     strives to include representatives of all major stake holders in NeXus. A first
     meeting was held at CalTech. Since 2003, the NIAC meets every year to discuss
     all matters NeXus.
@@ -89,7 +88,7 @@ Two things to note about the development and history of NeXus:
 :July 2005:
     The community asked the NeXus team to provide an ASCII based physical file
     format which allows them to edit their scientific results in emacs. This lead to
-    the development of a XML NeXus physical format. This was released with NeXus API
+    the development of a :index:`XML` NeXus physical format. This was released with NeXus API
     version 3.0.0.
 
 :May 2007:
@@ -110,6 +109,8 @@ Two things to note about the development and history of NeXus:
 :April 2009:
     NeXus API version 4.2.0 is released with additional
     C++, IDL, and python/numpy interfaces.
+
+.. index:: NXsas (base class)
 
 :September 2009:
     NXDL and draft ``NXsas`` presented to canSAS at
@@ -132,84 +133,85 @@ Two things to note about the development and history of NeXus:
 
 
 
-.. index::
-    NXDL
-    NeXus Definition Language
+.. 2014-08-19,PRJ: removing from published manual by comment
+   .. index::
+       NXDL
+       NeXus Definition Language
 
-Historical notes about the Development of NXDL
-##############################################
+   The NeXus Definition Language NXDL
+   -----------------------------
 
-..  This might be just so much dirty laundry.  Consider removing it.
+   ..  This might be just so much dirty laundry.  Consider removing it.
 
-This section contains a few brief notes about the history of NXDL
-and the motivations for its creation.
+   This section contains a few brief notes about the history of NXDL
+   and the motivations for its creation.
 
-Previously, the structure of NeXus data files was described using
-*Meta-DTD*, an XML format that provided a compact
-description. The terse format was not obvious to all and was difficult to
-machine-process. NXDL was conceived to be a simpler syntax than Meta-DTD.
-The switch to NXDL was not intended to change what was in the data files, just
-to provide an easier (and more generic) way of describing data files.
+   Previously, the structure of NeXus data files was described using
+   *Meta-DTD*, an XML format that provided a compact
+   description. The terse format was not obvious to all and was difficult to
+   machine-process. NXDL was conceived to be a simpler syntax than Meta-DTD.
+   The switch to NXDL was not intended to change what was in the data files, just
+   to provide an easier (and more generic) way of describing data files.
 
-The NeXus Design page lists the group classes from which a NeXus file is
-constructed. They provide the glossary of items that could, in principle, be stored
-in a standard-conforming NeXus file (other items may be inserted into the file if
-the author wishes, but they won't be part of the standard).
-When planning to include a particular piece of 
-:index:`metadata`, consult the class definitions
-to find out what to call it. However, to assist those writing data analysis
-software, it is useful to provide more than a glossary; it is important to define
-the required contents of NeXus files that contain data from particular classes of
-neutron, x-ray, or muon instrument.
+   The NeXus Design page lists the group classes from which a NeXus file is
+   constructed. They provide the glossary of items that could, in principle, be stored
+   in a standard-conforming NeXus file (other items may be inserted into the file if
+   the author wishes, but they won't be part of the standard).
+   When planning to include a particular piece of
+   :index:`metadata`, consult the class definitions
+   to find out what to call it. However, to assist those writing data analysis
+   software, it is useful to provide more than a glossary; it is important to define
+   the required contents of NeXus files that contain data from particular classes of
+   neutron, x-ray, or muon instrument.
 
-As part of the NeXus standard, the NIAC identified a number of generic instruments
-that describe an appreciable number of existing instruments around the world.
-Although not identical in every detail, they share many common characteristics,
-and more importantly, they require sufficiently similar modes of data analysis,
-enough to make a standard description useful.
-Many of the application definitions were built from these instrument definitions
-using the NeXus Definition Language 
-(:index:`NXDL`) format.
+   As part of the NeXus standard, the NIAC identified a number of generic instruments
+   that describe an appreciable number of existing instruments around the world.
+   Although not identical in every detail, they share many common characteristics,
+   and more importantly, they require sufficiently similar modes of data analysis,
+   enough to make a standard description useful.
+   Many of the application definitions were built from these instrument definitions
+   using the NeXus Definition Language
+   (:index:`NXDL`) format.
 
-Class definitions in NeXus prior to 2008 had been in the form of base classes and
-instrument definitions. All of these were in the same category. As the development
-of NeXus had been led mostly by scientists from neutron sources, this represented
-their typical situations.
+   Class definitions in NeXus prior to 2008 had been in the form of base classes and
+   instrument definitions. All of these were in the same category. As the development
+   of NeXus had been led mostly by scientists from neutron sources, this represented
+   their typical situations.
 
-Both those new to NeXus and also those familiar saw the previous emphasis on
-instrument definitions as a deficiency that limited flexibility and possibly usage.
-The point was made that NeXus should attempt to describe better reduced data and
-also data for analysis since synchrotron instruments are rarely adhering to a fixed
-definition.
+   Both those new to NeXus and also those familiar saw the previous emphasis on
+   instrument definitions as a deficiency that limited flexibility and possibly usage.
+   The point was made that NeXus should attempt to describe better reduced data and
+   also data for analysis since synchrotron instruments are rarely adhering to a fixed
+   definition.
 
-The design of NeXus is moving towards an object-oriented approach where the base
-classes will be the objects and the application definitions will use the objects
-to specify the required components as fits some application. Here,
-*application* is
-very loosely defined to include:
+   The design of NeXus is moving towards an object-oriented approach where the base
+   classes will be the objects and the application definitions will use the objects
+   to specify the required components as fits some application. Here,
+   *application* is
+   very loosely defined to include:
 
-- specification of a scientific instrument (example: TOF-USANS at SNS)
+   - specification of a scientific instrument (example: TOF-USANS at SNS)
 
-- specification of what is expected for a scientific technique (example:
-  small-angle scattering data for common analysis programs)
+   - specification of what is expected for a scientific technique (example:
+     small-angle scattering data for common analysis programs)
 
-- specification of generic data acquisition stream (example: TOFRAW - raw
-  time-of-flight data from a pulsed neutron source)
+   - specification of generic data acquisition stream (example: TOFRAW - raw
+     time-of-flight data from a pulsed neutron source)
 
-- specification of input or output of a specific software program
+   - specification of input or output of a specific software program
 
-..  The term *the sky is the limit* seems to apply.
+   ..  The term *the sky is the limit* seems to apply.
 
-The point of the
-*NeXus Application Definition*
-is that all of these start with ``NX`` and all have
-been approved by the NIAC.
+   The point of the
+   *NeXus Application Definition*
+   is that all of these start with ``NX`` and all have
+   been approved by the NIAC.
 
-Those NXDL specifications not yet approved by the NIAC fall into the category of
-*NeXus contributed definitions*
-for which NeXus has a place in the repository.
-Consider the NXDL files in the ``contributed`` directory
-as *in incubation*.
-This category is the place to put an NXDL (a
-candidate for a base class or application definition) for the NIAC to consider
-approving.
+   Those NXDL specifications not yet approved by the NIAC fall into the category of
+   *NeXus contributed definitions*
+   for which NeXus has a place in the repository.
+   Consider the NXDL files in the ``contributed`` directory
+   as *in incubation*.
+   This category is the place to put an NXDL (a
+   candidate for a base class or application definition) for the NIAC to consider
+   approving.

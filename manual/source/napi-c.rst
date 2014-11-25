@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: 
 	NAPI; c
 	NAPI; c++

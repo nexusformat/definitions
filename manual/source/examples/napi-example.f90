@@ -1,5 +1,3 @@
-! $Id: napi-example.f90 552 2010-04-19 22:24:42Z Pete Jemian $
-
 program WRITEDATA
       
    use NXUmodule

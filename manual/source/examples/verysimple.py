@@ -1,4 +1,4 @@
-#
+#!/usr/bin/env python
 # This example uses NeXpy to build the verysimple.nx5 data file.
 
 from nexpy.api import nexus
@@ -15,8 +15,4 @@ two_theta = nexus.SDS(angle, name="two_theta",
 	       long_name="two_theta (degrees)")
 counts = nexus.SDS(diode, name="counts", long_name="photodiode counts")
 data = nexus.NXdata(counts,[two_theta])
-data.nxsave("verysimple.nx5")
-
-# The verysimple.xml file was built with this command:
-#	nxconvert -x verysimple.nx5 verysimple.xml
-# and then hand-edited (line breaks) for display.
+data.save("verysimple.nx5")

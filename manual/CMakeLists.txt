@@ -1,5 +1,4 @@
 ## Process this file with cmake
-# $Id: CMakeLists.txt 1082 2012-05-07 10:19:23Z Freddie Akeroyd $
 #====================================================================
 #  NeXus - A common data format for neutron, x-ray and muon science.
 #  

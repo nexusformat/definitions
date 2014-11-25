@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: repository
 .. index:: git
 

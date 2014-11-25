@@ -1,6 +1,8 @@
-.. $Id$
-
-.. index:: !installation
+.. index::
+   ! single: NAPI; installation
+   see: installation; NAPI installation
+   see: precompiled executable; NAPI installation
+   see: binary executable; NAPI installation
 
 .. _Installation:
 
@@ -8,8 +10,12 @@
 Installation
 ============
 
-This section describes how to install the NeXus API and details the requirements. The NeXus
-API is distributed under the terms of the :ref:`LGPL`.
+.. index::
+   single: NAPI; installation; download location
+   see: download location; NAPI installation
+   see: repository; NAPI installation
+
+This section describes how to install the NeXus API and details the requirements. The NeXus API is distributed under the terms of the `GNU Lesser General Public License version 3 <http://www.gnu.org/licenses/lgpl-3.0.txt>`_.
 
 The source code and binary versions for some popular platforms can be found on
 http://download.nexusformat.org/kits/. Up to date instructions can be found on 
@@ -29,7 +35,10 @@ Prerequisites
 
 .. _Installation-Prerequisites-HDF:
 
-.. index:: HDF
+.. index::
+    see: binary format; file format
+    file format; HDF
+    HDF
 
 HDF5/HDF4
 ---------
@@ -50,7 +59,9 @@ hdf5-devel) and Ubuntu/Debian (libhdf4g, libhdf5).
 
 .. _Installation-Prerequisites-XML:
 
-.. index:: !XML
+.. index::
+    file format; XML
+    !XML; file format
 
 XML
 ---
@@ -72,6 +83,10 @@ Packages for MXML are available for both Fedora (mxml, mxml-devel) and Ubuntu/De
 
 Linux RPM Distribution Kits
 ===========================
+
+.. index::
+   NAPI; installation; RPM
+   see: RPM; NAPI installation
 
 An installation kit (source or binary) can be downloaded from:
 http://download.nexusformat.org/kits/
@@ -116,6 +131,11 @@ If you are using Fedora, then you can install all the dependencies by typing
 Microsoft Windows Installation Kit
 ==================================
 
+.. index::
+   NAPI; installation; Windows
+   see: Microsoft Windows; NAPI installation
+   see: Windows; NAPI installation
+
 A Windows MSI based installation kit is available and can be downloaded from: 
 http://download.nexusformat.org/kits/windows/
 
@@ -123,6 +143,11 @@ http://download.nexusformat.org/kits/windows/
 
 Mac OS X Installation Kit
 =========================
+
+.. index::
+   NAPI; installation; Mac OS X
+   see: Mac OS X; NAPI installation
+
 
 An installation disk image (.dmg) can be downloaded from: 
 http://download.nexusformat.org/kits/macosx/
@@ -136,6 +161,10 @@ Source Installation
 
 NeXus Source Code Distribution
 ==============================
+
+.. index::
+   NAPI; installation; source distribution
+   see: source distribution; NAPI installation
 
 The build uses ``autoconf`` (so autools are required)
 to determine what features will be available by your system.
@@ -185,6 +214,11 @@ See the README file for further instructions.
 
 Cygwin Kits
 ===========
+
+.. index::
+   NAPI; installation; Cygwin
+   see: Cygwin; NAPI installation
+
 
 HDF4 is not supported under CYGWIN - both HDF5 and MXML are supported and can be
 downloaded and built as usual. When configuring HDF5 you should explicitly pass a prefix to

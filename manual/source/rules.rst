@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: rules; NeXus
 
 .. _Rules:
@@ -176,7 +174,7 @@ points.
   tabular representation of a scan.
 
 - Datasets in an ``NXdata`` group must contain the proper attributes
-  to enable the :index:`default plotting <NeXus basic motivation; default plot>`,
+  to enable the :index:`default plotting <plotting>`,
   as described in the section titled 
   :ref:`NXdata Facilitates Automatic Plotting <NXdata-facilitates-TheDefaultPlot>`.
 
@@ -201,7 +199,7 @@ Then we have:
 	  + ``NXentry/NXinstrument/NXdetector/data``
 	  + ``NXentry/NXsample/rotation_angle``
 	
-	- All other data fields have their normal dimensions.
+	- All other fields have their normal dimensions.
 	
 	.. compound::
 	
@@ -285,7 +283,7 @@ varied during the scan. We then have:
   The datasets in ``NXdata`` must have the
   appropriate attributes as described in the axis location section.
 
-- All other data fields have their normal dimensions.
+- All other fields have their normal dimensions.
 
 .. compound::
 
@@ -362,7 +360,7 @@ or ``NXsample`` hierarchy, such as the intent to record
 *all* motor positions on a synchrotron beamline.
 Thus, ``NXcollection`` serves as a quick point of access
 to data for an instrument scientist or another expert. NXcollection is 
-also a feature for those who are t0o lazy to build up the complete NeXus 
+also a feature for those who are too lazy to build up the complete NeXus 
 hierarchy.  An example usage case is documented in figure
 :ref:`NXcollection example <table.NXcollection>`.
 

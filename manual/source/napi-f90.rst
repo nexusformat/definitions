@@ -1,5 +1,3 @@
-.. $Id$
-
 .. index:: NAPI; f90
 
 .. _NAPI-Core-f90:

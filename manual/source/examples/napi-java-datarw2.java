@@ -1,4 +1,3 @@
-	// $Id$
 	String ame = "Alle meine Entchen";
 	nf.makedata("string_data",NexusFile.NX_CHAR,
 			1,ame.length()+2);
