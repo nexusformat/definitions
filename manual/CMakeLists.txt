@@ -39,6 +39,8 @@ set(PAPEROPT_a4 -D latex_paper_size=a4)
 set(PAPEROPT_letter -D latex_paper_size=letter)
 set(ALLSPHINXOPTS  -d ${BUILDDIR}/doctrees -c ${BUILDDIR} ${PAPEROPT_${PAPER}} ${SPHINXOPTS} ${SOURCEDIR})
 
+add_subdirectory(source)
+
 #	@echo "Please use \`make <target>' where <target> is one of"
 #	@echo "  html       to make standalone HTML files"
 #	@echo "  dirhtml    to make HTML files named index.html in directories"
@@ -88,21 +90,30 @@ foreach(VAL html dirhtml singlehtml pickle json htmlhelp qthelp epub latex text 
         OUTPUT ${BUILDDIR}/${VAL}
         COMMAND ${SPHINX_EXECUTABLE}
         ARGS -b ${VAL} ${ALLSPHINXOPTS} ${BUILDDIR}/${VAL}
-        DEPENDS ${SOURCEDIR}
+        DEPENDS manual-source
         COMMENT   "${${VAL}_comment}"
     ) 
-    add_custom_target(${VAL}-man DEPENDS "${BUILDDIR}/${VAL}")
-    set_target_properties(${VAL}-man PROPERTIES OUTPUT_NAME ${VAL})
+    add_custom_target(${VAL}-manual DEPENDS manual-source "${BUILDDIR}/${VAL}")
+    set_target_properties(${VAL}-manual PROPERTIES OUTPUT_NAME ${VAL})
 endforeach(VAL)
+
+SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${BUILDDIR}/doctrees;${BUILDDIR}/latex")
+
 
 # subset of above targets to build by default
-add_custom_target(mandefault ALL)
+add_custom_target(default-manual ALL)
 foreach(VAL html latex)
-    add_dependencies(mandefault ${VAL}-man)
+    add_dependencies(default-manual ${VAL}-manual)
 endforeach(VAL)
 
-add_custom_target(complete-man COMMAND cp -f ${BUILDDIR}/latex/*.pdf ${BUILDDIR}/html DEPENDS html latexpdf COMMENT "Build finished. The HTML and PDF pages are in ${BUILDDIR}/html.")
-set_target_properties(complete-man PROPERTIES OUTPUT_NAME complete)
+add_custom_target(realclean-manual COMMAND ${CMAKE_COMMAND} -E remove_directory $(BUILDDIR))
+set_target_properties(realclean-manual PROPERTIES OUTPUT_NAME realclean)
 
-add_custom_target(latexpdf-man COMMAND make -C ${BUILDDIR}/latex all-pdf DEPENDS latex COMMENT "Running latex through pdflatex")
-set_target_properties(latexpdf-man PROPERTIES OUTPUT_NAME latexpdf)
+add_custom_target(rebuild-manual DEPENDS realclean complete)
+set_target_properties(rebuild-manual PROPERTIES OUTPUT_NAME rebuild)
+
+add_custom_target(complete-manual COMMAND ${CMAKE_COMMAND} -E copy ${BUILDDIR}/latex/*.pdf ${BUILDDIR}/html DEPENDS html latexpdf COMMENT "Build finished. The HTML and PDF pages are in ${BUILDDIR}/html.")
+set_target_properties(complete-manual PROPERTIES OUTPUT_NAME complete)
+
+add_custom_target(latexpdf-manual COMMAND make -C ${BUILDDIR}/latex all-pdf DEPENDS latex COMMENT "Running latex through pdflatex")
+set_target_properties(latexpdf-manual PROPERTIES OUTPUT_NAME latexpdf)
