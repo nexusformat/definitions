@@ -117,3 +117,6 @@ set_target_properties(complete-manual PROPERTIES OUTPUT_NAME complete)
 
 add_custom_target(latexpdf-manual COMMAND make -C ${BUILDDIR}/latex all-pdf DEPENDS latex COMMENT "Running latex through pdflatex")
 set_target_properties(latexpdf-manual PROPERTIES OUTPUT_NAME latexpdf)
+
+install(DIRECTORY ${BUILDDIR}/html DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
+install(DIRECTORY ${BUILDDIR}/latex/ DESTINATION ${NEXUS_MANUAL}/pdf COMPONENT manual FILES_MATCHING PATTERN "*.pdf")
