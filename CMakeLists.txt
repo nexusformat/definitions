@@ -42,6 +42,8 @@ project(NeXusDefinitions)
 # include NXDL release number information
 include(cmake_include/nxdl_release.cmake)
 
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_include)
+
 function(configure_release TARGET INFILE OUTFILE)
 	get_filename_component(F ${INFILE} NAME)
 	add_custom_command(OUTPUT "${OUTFILE}" COMMAND ${CMAKE_COMMAND} -DINPUT_FILE="${INFILE}" -DOUTPUT_FILE="${OUTFILE}" -DMATCH_STRING="\@NXDL_RELEASE\@" -DREPLACE_STRING="${NXDL_RELEASE}" -P "${CMAKE_SOURCE_DIR}/cmake_include/replace.cmake" DEPENDS "${INFILE}" "${CMAKE_BINARY_DIR}/CMakeCache.txt" COMMENT "Rebuilding ${F}")
@@ -72,8 +74,7 @@ foreach(F ${XSD_FILES})
     configure_release("DoXSD" ${CMAKE_SOURCE_DIR}/${F} ${CMAKE_BINARY_DIR}/dist/${F})
 endforeach()
 
-# 2012-02-18,PRJ: sphinx directory is not ready for cmake yet
-#option (BUILD_SPHINX "Build documentation using sphinx" OFF)
+option (BUILD_SPHINX "Build documentation using sphinx" ON)
 
 # CMAKE_INSTALL_PREFIX is only used if CMAKE_SET_DESTDIR is true,
 # so it will not be used in zip and tgz packages
@@ -121,18 +122,18 @@ else()
 	find_package(LATEX)
 	find_program(DBLATEX dblatex)
 endif()
+
 # Recurse into the subdirectories.
 #add_subdirectory (tutorial)
 add_subdirectory (base_classes)
 add_subdirectory (contributed_definitions)
 add_subdirectory (applications)
 add_subdirectory (schema)
-#add_subdirectory (manual)
+add_subdirectory (manual)
 add_subdirectory (validate_cmdline)
-# 2012-02-18,PRJ: sphinx directory is not ready for cmake yet
-#if(BUILD_SPHINX)
-#    add_subdirectory (sphinx)
-#endif(BUILD_SPHINX)
+if(BUILD_SPHINX)
+    add_subdirectory (sphinx)
+endif(BUILD_SPHINX)
 
 foreach(F ${XSD_FILES})
     INSTALL(FILES ${CMAKE_BINARY_DIR}/dist/${F} DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
