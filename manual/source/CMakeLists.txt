@@ -28,6 +28,8 @@
 
 add_subdirectory(classes)
 
+file(COPY "${CMAKE_SOURCE_DIR}/LGPL.txt" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+
 add_custom_target(manual-source ALL)
 add_dependencies(manual-source manual-classes types.table-manual-source units.table-manual-source nxdl_desc.rst-manual-source)
 

@@ -32,12 +32,12 @@ find_package(Sphinx REQUIRED)
 set(SPHINXOPTS)
 set(PAPER a4)
 set(BUILDDIR "${CMAKE_BINARY_DIR}/manual/build")
-set(SOURCEDIR "${CMAKE_SOURCE_DIR}/manual/source")
+set(SOURCEDIR "${CMAKE_BINARY_DIR}/manual/source")
 
 # Internal variables.
 set(PAPEROPT_a4 -D latex_paper_size=a4)
 set(PAPEROPT_letter -D latex_paper_size=letter)
-set(ALLSPHINXOPTS  -d ${BUILDDIR}/doctrees -c ${BUILDDIR} ${PAPEROPT_${PAPER}} ${SPHINXOPTS} ${SOURCEDIR})
+set(ALLSPHINXOPTS  -d ${BUILDDIR}/doctrees ${PAPEROPT_${PAPER}} ${SPHINXOPTS} ${SOURCEDIR})
 
 add_subdirectory(source)
 
@@ -78,10 +78,14 @@ To view the help file:
 ")
 set(latex_comment "Build finished; the LaTeX files are in $(BUILDDIR)/latex. Run 'make' in that directory to run these through (pdf)latex (use 'make latexpdf' here to do that automatically).")
 
+# make copy of source tree, this is because we generate some files and need all in same place
+if (NOT (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR}))
+    file(COPY source/ DESTINATION source)
+endif()
 # create conf.py after substituting various CMake @MACRO@ values
 configure_file(
-    "${SOURCEDIR}/conf.py.in"
-    "${BUILDDIR}/conf.py"
+    "source/conf.py.in"
+    "source/conf.py"
     @ONLY)
 
 # all possible build targets
