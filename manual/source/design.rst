@@ -223,9 +223,9 @@ attributes can be found in the next table:
 			* ``scaler`` (0-D data)
 			* ``spectrum`` (1-D data)
 			* ``image`` (2-D data)
-			* ``rgba`` (3-D data)
-			* ``hsla`` (3-D data)
-			* ``cmyk`` (3-D data)
+			* ``rgba-image`` (3-D data)
+			* ``hsla-image`` (3-D data)
+			* ``cmyk-image`` (3-D data)
 			* ``vertex`` (3-D data)
 
 .. index::
