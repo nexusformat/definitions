@@ -214,11 +214,18 @@ attributes can be found in the next table:
 		
 		``interpretation`` (*NX_CHAR*)
 			Describes how to display the data.  
+			``rgba``, ``hsla`` and ``cmyk`` are (4 x n x m) arrays, where the
+			4 channels are the colour channels appropriately. If the image data
+			does not contain an alpha channel, then the array should simply be
+			(3 x n x m). 
 			Allowed values include:
 			
 			* ``scaler`` (0-D data)
 			* ``spectrum`` (1-D data)
 			* ``image`` (2-D data)
+			* ``rgba-image`` (3-D data)
+			* ``hsla-image`` (3-D data)
+			* ``cmyk-image`` (3-D data)
 			* ``vertex`` (3-D data)
 
 .. index::
