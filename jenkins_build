@@ -1,0 +1,33 @@
+#!/bin/sh
+set -o errexit
+
+# jenkins job name
+job_name="$1"
+
+export PATH=/usr/local/bin:$PATH
+
+if test -d build; then 
+    rm -fr build
+fi
+mkdir build
+cd build
+cmake ..
+make
+
+cd ..
+
+cd manual
+make rebuild
+
+# publish
+if test "${job_name}" = "master branch"; then
+    cd source
+    cp -fr examples /isis/www/nexus/doc
+    cd ..
+
+    cd build
+    cp -fr html /isis/www/nexus/doc
+    cp -f latex/nexus.pdf /isis/www/nexus/doc/NeXusManual.pdf
+    cd ..
+fi
+
