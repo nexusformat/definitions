@@ -106,7 +106,7 @@ SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES "${BUILDDIR}/doc
 
 # subset of above targets to build by default
 add_custom_target(default-manual ALL)
-foreach(VAL html latex)
+foreach(VAL complete)
     add_dependencies(default-manual ${VAL}-manual)
 endforeach(VAL)
 
@@ -116,10 +116,10 @@ set_target_properties(realclean-manual PROPERTIES OUTPUT_NAME realclean)
 add_custom_target(rebuild-manual DEPENDS realclean complete)
 set_target_properties(rebuild-manual PROPERTIES OUTPUT_NAME rebuild)
 
-add_custom_target(complete-manual COMMAND ${CMAKE_COMMAND} -E copy ${BUILDDIR}/latex/*.pdf ${BUILDDIR}/html DEPENDS html latexpdf COMMENT "Build finished. The HTML and PDF pages are in ${BUILDDIR}/html.")
+add_custom_target(complete-manual COMMAND ${CMAKE_COMMAND} -E copy ${BUILDDIR}/latex/*.pdf ${BUILDDIR}/html DEPENDS html-manual latexpdf-manual COMMENT "Build finished. The HTML and PDF pages are in ${BUILDDIR}/html.")
 set_target_properties(complete-manual PROPERTIES OUTPUT_NAME complete)
 
-add_custom_target(latexpdf-manual COMMAND make -C ${BUILDDIR}/latex all-pdf DEPENDS latex COMMENT "Running latex through pdflatex")
+add_custom_target(latexpdf-manual COMMAND make -C ${BUILDDIR}/latex all-pdf DEPENDS latex-manual COMMENT "Running latex through pdflatex")
 set_target_properties(latexpdf-manual PROPERTIES OUTPUT_NAME latexpdf)
 
 install(DIRECTORY ${BUILDDIR}/html DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
