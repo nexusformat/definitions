@@ -62,7 +62,7 @@ add_subdirectory(source)
 set(linkcheck_comment "Link check complete; look for any errors in the above output or in ${BUILDDIR}/linkcheck/output.txt.")
 set(changes_comment "The overview file is in ${BUILDDIR}/changes.")
 set(doctest_comment "Testing of doctests in the sources finished, look at the results in ${BUILDDIRR}/doctest/output.txt.")
-set(htmlhelp_comment "Build finished; now you can run HTML Help Workshop with the .hhp project file in $(BUILDDIR)/htmlhelp.")
+set(htmlhelp_comment "Build finished; now you can run HTML Help Workshop with the .hhp project file in ${BUILDDIR}/htmlhelp.")
 set(qthelp_comment "
 Build finished; now you can run \"qcollectiongenerator\" with the .qhcp project file in ${BUILDDIR}/qthelp, like this:
 # qcollectiongenerator ${BUILDDIR}/qthelp/NeXusacommondataformatforneutronx-rayandmuonscience.qhcp
@@ -76,7 +76,7 @@ To view the help file:
 # ln -s ${BUILDDIR}/devhelp $$HOME/.local/share/devhelp/NeXusacommondataformatforneutronx-rayandmuonscience
 # devhelp
 ")
-set(latex_comment "Build finished; the LaTeX files are in $(BUILDDIR)/latex. Run 'make' in that directory to run these through (pdf)latex (use 'make latexpdf' here to do that automatically).")
+set(latex_comment "Build finished; the LaTeX files are in ${BUILDDIR}/latex. Run 'make' in that directory to run these through (pdf)latex (use 'make latexpdf' here to do that automatically).")
 
 # make copy of source tree, this is because we generate some files and need all in same place
 if (NOT (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR}))
@@ -110,7 +110,7 @@ foreach(VAL complete)
     add_dependencies(default-manual ${VAL}-manual)
 endforeach(VAL)
 
-add_custom_target(realclean-manual COMMAND ${CMAKE_COMMAND} -E remove_directory $(BUILDDIR))
+add_custom_target(realclean-manual COMMAND ${CMAKE_COMMAND} -E remove_directory ${BUILDDIR})
 set_target_properties(realclean-manual PROPERTIES OUTPUT_NAME realclean)
 
 add_custom_target(rebuild-manual DEPENDS realclean complete)
