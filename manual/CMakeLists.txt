@@ -116,11 +116,26 @@ set_target_properties(realclean-manual PROPERTIES OUTPUT_NAME realclean)
 add_custom_target(rebuild-manual DEPENDS realclean complete)
 set_target_properties(rebuild-manual PROPERTIES OUTPUT_NAME rebuild)
 
-add_custom_target(complete-manual COMMAND ${CMAKE_COMMAND} -E copy ${BUILDDIR}/latex/*.pdf ${BUILDDIR}/html DEPENDS html-manual latexpdf-manual COMMENT "Build finished. The HTML and PDF pages are in ${BUILDDIR}/html.")
+add_custom_target(complete-manual
+    DEPENDS html-manual latexpdf-manual
+    COMMENT "Build finished. The HTML and PDF pages are in ${BUILDDIR}/html."
+)
 set_target_properties(complete-manual PROPERTIES OUTPUT_NAME complete)
 
-add_custom_target(latexpdf-manual COMMAND make -C ${BUILDDIR}/latex all-pdf DEPENDS latex-manual COMMENT "Running latex through pdflatex")
+add_custom_target(latexpdf-manual
+    COMMAND make -C ${BUILDDIR}/latex all-pdf
+    DEPENDS latex-manual
+    COMMENT "Running latex through pdflatex"
+)
 set_target_properties(latexpdf-manual PROPERTIES OUTPUT_NAME latexpdf)
+
+add_custom_command(
+    TARGET latexpdf-manual
+    POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy ${BUILDDIR}/latex/nexus.pdf ${SOURCEDIR}/nexus.pdf
+    DEPENDS latexpdf-manual ${BUILDDIR}/latex/nexus.pdf
+    COMMENT "Copy PDF to ${SOURCEDIR}/"
+)
 
 install(DIRECTORY ${BUILDDIR}/html DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
 install(DIRECTORY ${BUILDDIR}/latex/ DESTINATION ${NEXUS_MANUAL}/pdf COMPONENT manual FILES_MATCHING PATTERN "*.pdf")
