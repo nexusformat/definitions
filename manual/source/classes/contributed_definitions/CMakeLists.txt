@@ -4,7 +4,7 @@
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
-#  Copyright (C) 2011-2012 Freddie Akeroyd
+# Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
 #  
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -26,29 +26,26 @@
 #
 #====================================================================
 
-set(CONTRIBUTED_FILES 
-    NXarpes.nxdl.xml
-    NXcanSAS.nxdl.xml
-    NXelectrostatic_kicker.nxdl.xml
-    NXfresnel_zone_plate.nxdl.xml
-    NXgrating.nxdl.xml
-    NXmagnetic_kicker.nxdl.xml
-    NXquadrupole_magnet.nxdl.xml
-    NXseparator.nxdl.xml
-    NXsnsevent.nxdl.xml
-    NXsnshisto.nxdl.xml
-    NXsolenoid_magnet.nxdl.xml
-    NXspin_rotator.nxdl.xml
-    NXstxm.nxdl.xml
-)
+add_custom_target(manual-contributed ALL)
 
-set(CONTRIBUTED_SOURCE ${CMAKE_SOURCE_DIR}/contributed_definitions)
+set(NXDL2RST ${CMAKE_SOURCE_DIR}/utils/nxdl2rst.py)
+set(NXDL_SUFFIX nxdl.xml)
+set(SRCDIR ${CMAKE_SOURCE_DIR}/contributed_definitions)
 
-set(CONTRIBUTED_DIST ${CMAKE_BINARY_DIR}/dist/contributed_definitions)
+FILE(GLOB SRCs RELATIVE "${SRCDIR}" "${SRCDIR}/NX*.${NXDL_SUFFIX}")
 
-add_custom_target(CheckContributedClasses ALL COMMENT "Checking contributed classes")
-configure_nxdl(CheckContributedClasses "${CONTRIBUTED_SOURCE}" "${CONTRIBUTED_DIST}" "${CONTRIBUTED_FILES}")
+FILE(COPY "${SRCDIR}/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
 
-foreach(F ${CONTRIBUTED_FILES})
-    install(FILES ${CONTRIBUTED_DIST}/${F} DESTINATION ${NEXUS_DEFINITIONS}/contributed_definitions  COMPONENT definitions)
-endforeach()
+foreach(VAR ${SRCs})
+    string(REPLACE ${NXDL_SUFFIX} rst RST ${VAR})
+    set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${RST})
+    add_dependencies(manual-contributed contributed-${RST})
+    add_custom_command(
+        OUTPUT ${RST} 
+	    COMMAND ${PYTHON} 
+	    ARGS ${NXDL2RST} ${SRCDIR}/${VAR} > ${RST} 
+	    DEPENDS ${SRCDIR}/${VAR} ${NXDL2RST}
+	)
+    add_custom_target(contributed-${RST} DEPENDS ${RST})
+endforeach(VAR)
+

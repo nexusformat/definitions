@@ -165,137 +165,139 @@ chapter for examples that use the native HDF5 calls to write NeXus data files.
         :linenos:
         :language: guess
 
-.. _Fileformat-Mapping-XML:
 
-Mapping NeXus into XML
-######################
+..	XML is no longer a supported backend file format
+	.. _Fileformat-Mapping-XML:
 
-.. index::
-   pair: file format; XML
-   file attribute
-   NXroot (base class); attributes
+	Mapping NeXus into XML
+	######################
 
-This takes a bit more work than HDF.
-At the root of NeXus XML file
-is a XML element with the name ``NXroot``.
-Further XML attributes to
-``NXroot`` define the NeXus file level attributes.
-An example NeXus XML data file is provided in the
-:ref:`Introduction` chapter as
-Example :ref:`A very simple NeXus Data file (in XML) <fig.simple-data-file-xml>`.
+	.. index::
+	   pair: file format; XML
+	   file attribute
+	   NXroot (base class); attributes
 
-NeXus groups are encoded into XML as elements with the
-name of the NeXus class and an XML attribute ``name`` which defines the
-NeXus name of the group. Further group attributes become XML attributes. An example:
+	This takes a bit more work than HDF.
+	At the root of NeXus XML file
+	is a XML element with the name ``NXroot``.
+	Further XML attributes to
+	``NXroot`` define the NeXus file level attributes.
+	An example NeXus XML data file is provided in the
+	:ref:`Introduction` chapter as
+	Example :ref:`A very simple NeXus Data file (in XML) <fig.simple-data-file-xml>`.
 
-.. compound::
+	NeXus groups are encoded into XML as elements with the
+	name of the NeXus class and an XML attribute ``name`` which defines the
+	NeXus name of the group. Further group attributes become XML attributes. An example:
 
-    .. rubric:: NeXus group element in XML
+	.. compound::
 
-    .. literalinclude:: examples/mapping1.xml.txt
-        :tab-width: 4
-        :linenos:
-        :language: guess
+		.. rubric:: NeXus group element in XML
 
-NeXus data sets are encoded as XML elements with
-the name of the data. An attribute ``NAPItype`` defines the type and
-:index:`dimensions <dimension>`
-of the data. The actual data is
-stored as ``PCDATA`` [#PCDATA]_ in the element. Another example:
+		.. literalinclude:: examples/mapping1.xml.txt
+			:tab-width: 4
+			:linenos:
+			:language: guess
 
-.. [#PCDATA]
-    ``PCDATA`` is the XML term for
-    *parsed character data* (see: http://www.w3schools.com/xml/xml_cdata.asp).
+	NeXus data sets are encoded as XML elements with
+	the name of the data. An attribute ``NAPItype`` defines the type and
+	:index:`dimensions <dimension>`
+	of the data. The actual data is
+	stored as ``PCDATA`` [#PCDATA]_ in the element. Another example:
 
-.. compound::
+	.. [#PCDATA]
+		``PCDATA`` is the XML term for
+		*parsed character data* (see: http://www.w3schools.com/xml/xml_cdata.asp).
 
-    .. rubric:: NeXus data elements
+	.. compound::
 
-    .. literalinclude:: examples/mapping2.xml.txt
-        :tab-width: 4
-        :linenos:
-        :language: guess
+		.. rubric:: NeXus data elements
 
-.. index::
-   attribute; XML
+		.. literalinclude:: examples/mapping2.xml.txt
+			:tab-width: 4
+			:linenos:
+			:language: guess
 
-Data are printed in appropriate formats and in C storage order.
-The codes understood for ``NAPItype`` are
-all the NeXus data type names. The 
-:index:`dimensions <dimension>`
-are given in square brackets as a comma
-separated list. No dimensions need to be given if
-the data is just a single value.
-Data attributes are represented as XML attributes.
-If the attribute is not a text string, then the
-attribute is given in the form: *type:value*, for example:
-``signal="NX_POSINT:1"``.
+	.. index::
+	   attribute; XML
+
+	Data are printed in appropriate formats and in C storage order.
+	The codes understood for ``NAPItype`` are
+	all the NeXus data type names. The 
+	:index:`dimensions <dimension>`
+	are given in square brackets as a comma
+	separated list. No dimensions need to be given if
+	the data is just a single value.
+	Data attributes are represented as XML attributes.
+	If the attribute is not a text string, then the
+	attribute is given in the form: *type:value*, for example:
+	``signal="NX_POSINT:1"``.
 
 
-:index:`NeXus links <link>` are stored in XML as XML elements
-with the :index:`name <NAPIlink>`  ``NAPIlink``
-and a XML attribute ``target`` which stores the path to the linked
-entity in the file.  If the item is linked under
-a different name, then this name is specified as a XML attribute name to
-the element ``NAPIlink``.
+	:index:`NeXus links <link>` are stored in XML as XML elements
+	with the :index:`name <NAPIlink>`  ``NAPIlink``
+	and a XML attribute ``target`` which stores the path to the linked
+	entity in the file.  If the item is linked under
+	a different name, then this name is specified as a XML attribute name to
+	the element ``NAPIlink``.
 
-The authors of the NeXus API worked with the author of the miniXML XML library to
-create a reasonably efficient way of handling numeric data with XML. Using the NeXus API handling
-something like 400 detectors versus 2000 time channels in XML is not a problem. But you may
-hit limits with XML as the file format when data becomes to large or you try to process NeXus
-XML files with general XML tools. General XML tools are normally ill prepared to process large
-amounts of numbers.
+	The authors of the NeXus API worked with the author of the miniXML XML library to
+	create a reasonably efficient way of handling numeric data with XML. Using the NeXus API handling
+	something like 400 detectors versus 2000 time channels in XML is not a problem. But you may
+	hit limits with XML as the file format when data becomes to large or you try to process NeXus
+	XML files with general XML tools. General XML tools are normally ill prepared to process large
+	amounts of numbers.
 
-.. _Fileformat-SpecialAttributes:
+	.. _Fileformat-SpecialAttributes:
 
-Special Attributes
-##################
+	Special Attributes
+	##################
 
-.. index::
-   see: attribute; internal attribute
-   ! single: internal attribute
+	.. index::
+	   see: attribute; internal attribute
+	   ! single: internal attribute
 
-NeXus makes use of some special attributes for its internal purposes.
-These attributes are stored as normal group or data set attributes
-in the respective file format. These are:
+	NeXus makes use of some special attributes for its internal purposes.
+	These attributes are stored as normal group or data set attributes
+	in the respective file format. These are:
 
-.. index::
-   see: target; link target (internal attribute)
-   ! single: link target (internal attribute)
+	.. index::
+	   see: target; link target (internal attribute)
+	   ! single: link target (internal attribute)
 
-**target**
-    This attribute is automatically created when items get linked.
-    The target attribute contains a text string with
-    the path to the source of the item linked.
+	**target**
+		This attribute is automatically created when items get linked.
+		The target attribute contains a text string with
+		the path to the source of the item linked.
 
-.. index::
-   ! single: napimount (internal attribute)
-   see: linking (external); napimount (internal attribute)
+	.. index::
+	   ! single: napimount (internal attribute)
+	   see: linking (external); napimount (internal attribute)
 
-**napimount**
-    The ``napimount`` attribute is used to implement
-    external linking in NeXus.
-    The string is a URL to the file and group in the
-    external file to link too. The system is meant to be extended.
-    But as of now, the only format supported is:
-    
-    .. code-block:: text
-    
-    	nxfile://path-to-file#path-infile
+	**napimount**
+		The ``napimount`` attribute is used to implement
+		external linking in NeXus.
+		The string is a URL to the file and group in the
+		external file to link too. The system is meant to be extended.
+		But as of now, the only format supported is:
+		
+		.. code-block:: text
+		
+			nxfile://path-to-file#path-infile
 
-    This is a NeXus file in the file system at *path-to-file*
-    and the group *path-infile* in that NeXus file.
+		This is a NeXus file in the file system at *path-to-file*
+		and the group *path-infile* in that NeXus file.
 
-.. index::
-   ! single: NAPIlink (internal attribute)
-   see: linking (internal); NAPIlink (internal attribute)
+	.. index::
+	   ! single: NAPIlink (internal attribute)
+	   see: linking (internal); NAPIlink (internal attribute)
 
-**NAPIlink**
-    NeXus supports linking items in another group under another name.
-    This is only supported natively in HDF5.
-    For HDF-4 and XML a crutch is needed.
-    This crutch is a special class name or attribute
-    ``NAPIlink`` combined with the
-    target attribute. For groups, ``NAPILink``
-    is the group class, for data items a special attribute
-    with the name ``NAPIlink``.
+	**NAPIlink**
+		NeXus supports linking items in another group under another name.
+		This is only supported natively in HDF5.
+		For HDF-4 and XML a crutch is needed.
+		This crutch is a special class name or attribute
+		``NAPIlink`` combined with the
+		target attribute. For groups, ``NAPILink``
+		is the group class, for data items a special attribute
+		with the name ``NAPIlink``.

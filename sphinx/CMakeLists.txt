@@ -26,17 +26,18 @@
 #
 #====================================================================
 
-find_program(SPHINXBUILD sphinx-build)
+find_package(Sphinx REQUIRED)
 
 # You can set these variables from the command line.
 set(SPHINXOPTS)
 set(PAPER a4)
 set(BUILDDIR "${CMAKE_BINARY_DIR}/sphinx/build")
+set(SOURCEDIR "${CMAKE_SOURCE_DIR}/sphinx/source")
 
 # Internal variables.
 set(PAPEROPT_a4 -D latex_paper_size=a4)
 set(PAPEROPT_letter -D latex_paper_size=letter)
-set(ALLSPHINXOPTS  -d ${BUILDDIR}/doctrees ${PAPEROPT_${PAPER}} ${SPHINXOPTS} ${CMAKE_SOURCE_DIR}/sphinx/source)
+set(ALLSPHINXOPTS  -d ${BUILDDIR}/doctrees -c ${BUILDDIR} ${PAPEROPT_${PAPER}} ${SPHINXOPTS} ${SOURCEDIR})
 
 #	@echo "Please use \`make <target>' where <target> is one of"
 #	@echo "  html       to make standalone HTML files"
@@ -75,17 +76,29 @@ To view the help file:
 ")
 set(latex_comment "Build finished; the LaTeX files are in $(BUILDDIR)/latex. Run 'make' in that directory to run these through (pdf)latex (use 'make latexpdf' here to do that automatically).")
 
+# create conf.py after substituting various CMake @MACRO@ values
+configure_file(
+    "${SOURCEDIR}/conf.py.in"
+    "${BUILDDIR}/conf.py"
+    @ONLY)
+
+# all possible build targets
 foreach(VAL html dirhtml singlehtml pickle json htmlhelp qthelp epub latex text man changes linkcheck doctest)
     add_custom_command(
         OUTPUT ${BUILDDIR}/${VAL}
-        COMMAND ${SPHINXBUILD}
+        COMMAND ${SPHINX_EXECUTABLE}
         ARGS -b ${VAL} ${ALLSPHINXOPTS} ${BUILDDIR}/${VAL}
-        DEPENDS ${CMAKE_SOURCE_DIR}/sphinx/source
+        DEPENDS ${SOURCEDIR}
         COMMENT   "${${VAL}_comment}"
     ) 
-    add_custom_target(${VAL} ALL DEPENDS "${BUILDDIR}/${VAL}")
+    add_custom_target(${VAL} DEPENDS "${BUILDDIR}/${VAL}")
 endforeach(VAL)
 
+# subset of above targets to build by default
+add_custom_target(sphinxdefault ALL)
+foreach(VAL html latex)
+    add_dependencies(sphinxdefault ${VAL})
+endforeach(VAL)
 
 add_custom_target(complete COMMAND cp -f ${BUILDDIR}/latex/*.pdf ${BUILDDIR}/html DEPENDS html latexpdf COMMENT "Build finished. The HTML and PDF pages are in ${BUILDDIR}/html.")
 

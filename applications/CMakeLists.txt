@@ -28,36 +28,37 @@
 
 
 set(APPLICATION_FILES 
-	NXarchive.nxdl.xml 
-	NXdirecttof.nxdl.xml 
-	NXfluo.nxdl.xml 
-	NXindirecttof.nxdl.xml 
-	NXiqproc.nxdl.xml 
-	NXlauetof.nxdl.xml 
-	NXmonopd.nxdl.xml 
-	NXrefscan.nxdl.xml 
-	NXreftof.nxdl.xml 
-	NXsas.nxdl.xml 
-	NXsastof.nxdl.xml 
-	NXscan.nxdl.xml 
-	NXspe.nxdl.xml 
-	NXsqom.nxdl.xml 
-	NXtas.nxdl.xml 
-	NXtofnpd.nxdl.xml 
-	NXtofraw.nxdl.xml 
-	NXtofsingle.nxdl.xml 
-	NXtomo.nxdl.xml 
-	NXtomophase.nxdl.xml 
-	NXtomoproc.nxdl.xml 
-	NXxas.nxdl.xml 
-	NXxasproc.nxdl.xml 
-	NXxbase.nxdl.xml 
-	NXxeuler.nxdl.xml 
-	NXxkappa.nxdl.xml 
-	NXxlaue.nxdl.xml 
-	NXxlaueplate.nxdl.xml 
-	NXxnb.nxdl.xml 
-	NXxrot.nxdl.xml 
+    NXarchive.nxdl.xml
+    NXdirecttof.nxdl.xml
+    NXfluo.nxdl.xml
+    NXindirecttof.nxdl.xml
+    NXiqproc.nxdl.xml
+    NXlauetof.nxdl.xml
+    NXmonopd.nxdl.xml
+    NXmx.nxdl.xml
+    NXrefscan.nxdl.xml
+    NXreftof.nxdl.xml
+    NXsas.nxdl.xml
+    NXsastof.nxdl.xml
+    NXscan.nxdl.xml
+    NXspe.nxdl.xml
+    NXsqom.nxdl.xml
+    NXtas.nxdl.xml
+    NXtofnpd.nxdl.xml
+    NXtofraw.nxdl.xml
+    NXtofsingle.nxdl.xml
+    NXtomo.nxdl.xml
+    NXtomophase.nxdl.xml
+    NXtomoproc.nxdl.xml
+    NXxas.nxdl.xml
+    NXxasproc.nxdl.xml
+    NXxbase.nxdl.xml
+    NXxeuler.nxdl.xml
+    NXxkappa.nxdl.xml
+    NXxlaue.nxdl.xml
+    NXxlaueplate.nxdl.xml
+    NXxnb.nxdl.xml
+    NXxrot.nxdl.xml
 )
 
 set(APPLICATION_SOURCE ${CMAKE_SOURCE_DIR}/applications)
