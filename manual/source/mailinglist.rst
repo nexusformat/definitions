@@ -1,11 +1,9 @@
 .. index:: ! mailing lists
 
-.. _MailingLists:
-
 .. _NeXus.mailinglist.main:
 
 NeXus Mailing List
-=======================
+==================
 
 We invite anyone who is associated with neutron and/or X-ray
 synchrotron science and who wishes to be involved in the
@@ -21,7 +19,7 @@ design and operation of the NeXus format.
 .. _NeXus.mailinglist.niac:
 
 NeXus International Advisory Committee (NIAC) Mailing List
-===============================================================
+==========================================================
 
 This list contains discussions of the :ref:`NIAC`,
 which oversees the development of the NeXus data format.
@@ -37,7 +35,7 @@ are limited to the committee members, but the archives are public.
 .. _NeXus.mailinglist.Developers:
 
 NeXus Developers Mailing List (retired)
-========================================
+=======================================
 
 This mailing list was for discussions concerning the technical
 development of NeXus (the Definitions, NXDL, and
