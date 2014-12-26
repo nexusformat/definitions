@@ -1,7 +1,6 @@
 * NeXus: http://www.nexusformat.org/
 * documentation: http://download.nexusformat.org/doc/html/index.html
 
-
 These are the components that define the structure of NeXus data files in the development directory.
 
         BASE.xsd                    used to validate NeXus data files, defines NXroot
