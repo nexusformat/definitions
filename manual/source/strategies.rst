@@ -86,8 +86,6 @@ which also allows "energy" to be specified if one is so inclined.
 	and the NeXus symbolic class path.
 
 
-	.. _Strategies-next:
-	
 Strategies: The next case
 #########################
 	
