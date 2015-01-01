@@ -14,6 +14,7 @@ from __future__ import print_function
 import os, sys, re
 from collections import OrderedDict
 import lxml.etree
+import HTMLParser
 
 
 def printf(str, *args):
@@ -48,8 +49,13 @@ def getDocBlocks( ns, node ):
                             method='c14n', with_comments=False).decode('utf-8')
     m = re.search(r'^<doc[^>]*>\n?(.*)\n?</doc>$', s, re.DOTALL )
     if not m:
-        raise Exception( 'unexepcted docstring [%s] ' % s )
+        raise Exception( 'unexpected docstring [%s] ' % s )
     text = m.group(1)
+    
+    # substitute HTML entities in markup: "<" for "&lt;" 
+    # thanks: http://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
+    htmlparser = HTMLParser.HTMLParser()
+    text = htmlparser.unescape(text)
 
     # Blocks are separated by whitelines
     blocks = re.split( '\n\s*\n', text )
