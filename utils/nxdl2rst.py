@@ -17,14 +17,19 @@ import lxml.etree
 import HTMLParser
 
 
+INDENTATION_UNIT = '  '
+
+
 def printf(str, *args):
     print(str % args, end='')
+
 
 def fmtTyp( node ):
     typ = node.get('type', ':ref:`NX_CHAR <NX_CHAR>`') # per default
     if typ.startswith('NX_'):
         typ = ':ref:`%s <%s>`' % (typ, typ)
     return typ
+
 
 def fmtUnits( node ):
     units = node.get('units', '')
@@ -33,6 +38,7 @@ def fmtUnits( node ):
     if units.startswith('NX_'):
         units = '\ :ref:`%s <%s>`' % (units, units)
     return ' {units=%s}' % units
+
 
 def getDocBlocks( ns, node ):
     docnodes = node.xpath('nx:doc', namespaces=ns)
@@ -88,6 +94,7 @@ def getDocBlocks( ns, node ):
         out_blocks.append( "\n".join(out_lines) )
     return out_blocks
 
+
 def getDocLine( ns, node ):
     blocks = getDocBlocks( ns, node )
     if len(blocks)==0:
@@ -96,6 +103,7 @@ def getDocLine( ns, node ):
         raise Exception( 'Unexpected multi-paragraph doc [%s]' %
                          '|'.join(blocks) )
     return re.sub(r'\n', " ", blocks[0])
+
 
 def analyzeDimensions( ns, parent ):
     node_list = parent.xpath('nx:dimensions', namespaces=ns)
@@ -111,6 +119,7 @@ def analyzeDimensions( ns, parent ):
             value = 'ref(%s)' % subnode.get('ref')
         dims.append( value )
     return '[%s]' % ( ', '.join(dims) )
+
 
 def printEnumeration( indent, ns, parent ):
     node_list = parent.xpath('nx:item', namespaces=ns)
@@ -145,6 +154,7 @@ def printEnumeration( indent, ns, parent ):
         print(' %s' % ( oneliner ) )
     print('')
 
+
 def printDoc( indent, ns, node, required=False):
     blocks = getDocBlocks(ns, node)
     if len(blocks)==0:
@@ -157,6 +167,7 @@ def printDoc( indent, ns, node, required=False):
                 print( '%s%s' % ( indent, line ) )
             print()
 
+
 def printAttribute( ns, kind, node, indent ):
     name = node.get('name')
     index_name = re.sub( r'_', ' ', name )
@@ -164,10 +175,18 @@ def printAttribute( ns, kind, node, indent ):
            ( indent, index_name, kind ) )
     print( '%s**@%s**: %s%s\n' % (
         indent, name, fmtTyp(node), fmtUnits(node) ) )
-    printDoc(indent+'  ', ns, node)
+    printDoc(indent+INDENTATION_UNIT, ns, node)
     node_list = node.xpath('nx:enumeration', namespaces=ns)
     if len(node_list) == 1:
-        printEnumeration( indent+'  ', ns, node_list[0] )
+        printEnumeration( indent+INDENTATION_UNIT, ns, node_list[0] )
+
+
+def printIfDeprecated( ns, node, indent ):
+    deprecated = node.get('deprecated', None)
+    if deprecated is not None:
+        print( '%s.. index:: deprecated\n' % indent)
+        fmt = '\n%s**DEPRECATED**: %s\n'
+        print( fmt % (indent, deprecated ) )
 
 
 def printFullTree(ns, parent, name, indent):
@@ -189,16 +208,15 @@ def printFullTree(ns, parent, name, indent):
         print( '%s**%s%s**: %s%s\n' % (
             indent, name, dims, fmtTyp(node), fmtUnits(node) ) )
 
-        printDoc(indent+'  ', ns, node)
+        printIfDeprecated( ns, node, indent+INDENTATION_UNIT )
+        printDoc(indent+INDENTATION_UNIT, ns, node)
 
         node_list = node.xpath('nx:enumeration', namespaces=ns)
         if len(node_list) == 1:
-            printEnumeration( indent+'  ', ns, node_list[0] )
-
-        # TODO: look for "deprecated" element, add to doc
+            printEnumeration( indent+INDENTATION_UNIT, ns, node_list[0] )
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, 'field', subnode, indent+'  ' )
+            printAttribute( ns, 'field', subnode, indent+INDENTATION_UNIT )
     
     for node in parent.xpath('nx:group', namespaces=ns):
         name = node.get('name', '')
@@ -209,18 +227,19 @@ def printFullTree(ns, parent, name, indent):
             typ = ':ref:`%s`' % typ
         print( '%s**%s**: %s\n' % (indent, name, typ ) )
 
-        printDoc(indent+'  ', ns, node)
+        printIfDeprecated(ns, node, indent+INDENTATION_UNIT)
+        printDoc(indent+INDENTATION_UNIT, ns, node)
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, 'group', subnode, indent+'  ' )
+            printAttribute( ns, 'group', subnode, indent+INDENTATION_UNIT )
 
         nodename = '%s/%s' % (name, node.get('type'))
-        printFullTree(ns, node, nodename, indent+'  ')
+        printFullTree(ns, node, nodename, indent+INDENTATION_UNIT)
 
     for node in parent.xpath('nx:link', namespaces=ns):
         print( '%s**%s** --> %s\n' % (
             indent, node.get('name'), node.get('target') ) )
-        printDoc(indent+'  ', ns, node)
+        printDoc(indent+INDENTATION_UNIT, ns, node)
 
 
 def main():
@@ -291,10 +310,12 @@ def main():
              extends,
              root.get('version').strip() ) )
 
+    printIfDeprecated(ns, root, '')
+
     # print official description of this class
     print('')
     print( '**Description**:\n' )
-    printDoc('  ', ns, root, required=True)
+    printDoc(INDENTATION_UNIT, ns, root, required=True)
 
 
     # print symbol list
@@ -305,7 +326,7 @@ def main():
     elif len(node_list) > 1:
         raise Exception( 'Invalid symbol table in ' % root.get('name') )
     else:
-        printDoc( '  ', ns, node_list[0] )
+        printDoc( INDENTATION_UNIT, ns, node_list[0] )
         for node in node_list[0].xpath('nx:symbol', namespaces=ns):
             doc = getDocLine(ns, node)
             printf( '  **%s**' % node.get('name') )
@@ -338,8 +359,8 @@ def main():
     # print full tree
     print( '**Structure**:\n' )
     for subnode in root.xpath('nx:attribute', namespaces=ns):
-        printAttribute( ns, 'file', subnode, '  ' )
-    printFullTree(ns, root, name, '  ')
+        printAttribute( ns, 'file', subnode, INDENTATION_UNIT )
+    printFullTree(ns, root, name, INDENTATION_UNIT)
 
     # print NXDL source location
     print( '**Source**:' )
