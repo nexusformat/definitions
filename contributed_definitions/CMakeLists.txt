@@ -27,7 +27,6 @@
 #====================================================================
 
 set(CONTRIBUTED_FILES 
-    NXarpes.nxdl.xml
     NXcanSAS.nxdl.xml
     NXelectrostatic_kicker.nxdl.xml
     NXfresnel_zone_plate.nxdl.xml

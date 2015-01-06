@@ -28,6 +28,7 @@
 
 
 set(APPLICATION_FILES 
+    NXarpes.nxdl.xml
     NXarchive.nxdl.xml
     NXdirecttof.nxdl.xml
     NXfluo.nxdl.xml
