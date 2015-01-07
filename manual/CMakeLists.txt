@@ -80,8 +80,18 @@ set(latex_comment "Build finished; the LaTeX files are in ${BUILDDIR}/latex. Run
 
 # make copy of source tree, this is because we generate some files and need all in same place
 if (NOT (${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR}))
-    file(COPY source/ DESTINATION source)
+  file(GLOB_RECURSE COPY_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} source/*)
+  add_custom_target(copy ALL COMMENT "Synching source tree")
+  foreach(FILENAME ${COPY_FILES})
+    set(SRC "${CMAKE_CURRENT_SOURCE_DIR}/${FILENAME}")
+    set(DST "${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}")
+    add_custom_command(
+      TARGET copy
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+      )
+  endforeach(FILENAME)
 endif()
+
 # create conf.py after substituting various CMake @MACRO@ values
 configure_file(
     "source/conf.py.in"
