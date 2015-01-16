@@ -4,7 +4,7 @@
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
-#  Copyright (C) 2011-2012 Freddie Akeroyd
+# Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
 #  
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -26,28 +26,8 @@
 #
 #====================================================================
 
-set(CONTRIBUTED_FILES 
-    NXcanSAS.nxdl.xml
-    NXelectrostatic_kicker.nxdl.xml
-    NXfresnel_zone_plate.nxdl.xml
-    NXgrating.nxdl.xml
-    NXmagnetic_kicker.nxdl.xml
-    NXquadrupole_magnet.nxdl.xml
-    NXseparator.nxdl.xml
-    NXsnsevent.nxdl.xml
-    NXsnshisto.nxdl.xml
-    NXsolenoid_magnet.nxdl.xml
-    NXspin_rotator.nxdl.xml
-    NXstxm.nxdl.xml
-)
+add_subdirectory(base_classes)
+add_subdirectory(applications)
+add_subdirectory(contributed_definitions)
 
-set(CONTRIBUTED_SOURCE ${CMAKE_SOURCE_DIR}/contributed_definitions)
-
-set(CONTRIBUTED_DIST ${CMAKE_BINARY_DIR}/dist/contributed_definitions)
-
-add_custom_target(CheckContributedClasses ALL COMMENT "Checking contributed classes")
-configure_nxdl(CheckContributedClasses "${CONTRIBUTED_SOURCE}" "${CONTRIBUTED_DIST}" "${CONTRIBUTED_FILES}")
-
-foreach(F ${CONTRIBUTED_FILES})
-    install(FILES ${CONTRIBUTED_DIST}/${F} DESTINATION ${NEXUS_DEFINITIONS}/contributed_definitions  COMPONENT definitions)
-endforeach()
+add_custom_target(manual-classes DEPENDS manual-base manual-applications manual-contributed)

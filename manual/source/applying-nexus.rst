@@ -495,7 +495,7 @@ Full listing of the WONI Application Definition
 
 .. FIXME: can we drop the font size for this example?
 
-.. literalinclude:: ../../applications/NXmonopd.nxdl.xml
+.. literalinclude:: classes/applications/NXmonopd.nxdl.xml
     :tab-width: 4
     :linenos:
     :language: xml

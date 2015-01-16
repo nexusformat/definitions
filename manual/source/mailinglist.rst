@@ -1,11 +1,9 @@
 .. index:: ! mailing lists
 
-.. _MailingLists:
-
 .. _NeXus.mailinglist.main:
 
 NeXus Mailing List
-=======================
+==================
 
 We invite anyone who is associated with neutron and/or X-ray
 synchrotron science and who wishes to be involved in the
@@ -17,11 +15,10 @@ design and operation of the NeXus format.
 + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus
 + Archive: http://lists.nexusformat.org/pipermail/nexus
 
-
 .. _NeXus.mailinglist.niac:
 
 NeXus International Advisory Committee (NIAC) Mailing List
-===============================================================
+==========================================================
 
 This list contains discussions of the :ref:`NIAC`,
 which oversees the development of the NeXus data format.
@@ -33,11 +30,23 @@ are limited to the committee members, but the archives are public.
 + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-committee
 + Archive: http://lists.nexusformat.org/pipermail/nexus-committee
 
+.. _NeXus.mailinglist.niac:
+
+NeXus Video Conference Announcements
+====================================
+
+There are video conferences on NeXus roughly every other week. 
+Agenda and joining details are posted on the wiki: http://wiki.nexusformat.org/NeXus_Teleconferences
+In addition calender invites are sent to this list.
+NeXus-Tech used to be used for discussions as well, but that has been deprecated. 
+
++ List Address: nexus-tech@nexusformat.org
++ Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-tech
 
 .. _NeXus.mailinglist.Developers:
 
 NeXus Developers Mailing List (retired)
-========================================
+=======================================
 
 This mailing list was for discussions concerning the technical
 development of NeXus (the Definitions, NXDL, and
@@ -50,4 +59,3 @@ closed in October 2012, but the archive of previous posting is still available.
 	+ Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-developers
 
 + Archive: http://lists.nexusformat.org/pipermail/nexus-developers
-
