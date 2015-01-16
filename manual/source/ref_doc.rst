@@ -13,6 +13,4 @@ NeXus: Reference Documentation
    
     defs_intro
     nxdl
-    classes/base_classes/index
-    classes/applications/index
-    classes/contributed_definitions/index
+    classes/index
