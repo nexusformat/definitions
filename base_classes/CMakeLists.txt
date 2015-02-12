@@ -49,7 +49,9 @@ set(BASE_FILES
     NXfermi_chopper.nxdl.xml
     NXfilter.nxdl.xml
     NXflipper.nxdl.xml
+    NXfresnel_zone_plate.nxdl.xml
     NXgeometry.nxdl.xml
+    NXgrating.nxdl.xml
     NXguide.nxdl.xml
     NXinsertion_device.nxdl.xml
     NXinstrument.nxdl.xml

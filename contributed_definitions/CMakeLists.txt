@@ -27,11 +27,8 @@
 #====================================================================
 
 set(CONTRIBUTED_FILES 
-    NXarpes.nxdl.xml
     NXcanSAS.nxdl.xml
     NXelectrostatic_kicker.nxdl.xml
-    NXfresnel_zone_plate.nxdl.xml
-    NXgrating.nxdl.xml
     NXmagnetic_kicker.nxdl.xml
     NXquadrupole_magnet.nxdl.xml
     NXseparator.nxdl.xml
@@ -39,7 +36,6 @@ set(CONTRIBUTED_FILES
     NXsnshisto.nxdl.xml
     NXsolenoid_magnet.nxdl.xml
     NXspin_rotator.nxdl.xml
-    NXstxm.nxdl.xml
 )
 
 set(CONTRIBUTED_SOURCE ${CMAKE_SOURCE_DIR}/contributed_definitions)

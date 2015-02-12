@@ -28,6 +28,7 @@
 
 
 set(APPLICATION_FILES 
+    NXarpes.nxdl.xml
     NXarchive.nxdl.xml
     NXdirecttof.nxdl.xml
     NXfluo.nxdl.xml
@@ -43,6 +44,7 @@ set(APPLICATION_FILES
     NXscan.nxdl.xml
     NXspe.nxdl.xml
     NXsqom.nxdl.xml
+    NXstxm.nxdl.xml
     NXtas.nxdl.xml
     NXtofnpd.nxdl.xml
     NXtofraw.nxdl.xml
