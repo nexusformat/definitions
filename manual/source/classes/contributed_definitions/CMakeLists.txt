@@ -26,16 +26,24 @@
 #
 #====================================================================
 
-add_custom_target(manual-contributed ALL)
+add_custom_target(manual-contributed ALL DEPENDS copy-contributed)
 
 set(NXDL2RST ${CMAKE_SOURCE_DIR}/utils/nxdl2rst.py)
 set(NXDL_SUFFIX nxdl.xml)
 set(SRCDIR ${CMAKE_SOURCE_DIR}/contributed_definitions)
 
+FILE(GLOB_RECURSE COPY_FILES RELATIVE ${SRCDIR} ${SRCDIR}/*)
+add_custom_target(copy-contributed COMMENT "Synching contributed tree")
+foreach(FILENAME ${COPY_FILES})
+    set(SRC "${SRCDIR}/${FILENAME}")
+    set(DST "${CMAKE_CURRENT_BINARY_DIR}/${FILENAME}")
+    add_custom_command(
+      TARGET copy-contributed
+      COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SRC} ${DST}
+    )
+endforeach(FILENAME)
+
 FILE(GLOB SRCs RELATIVE "${SRCDIR}" "${SRCDIR}/NX*.${NXDL_SUFFIX}")
-
-FILE(COPY "${SRCDIR}/" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
-
 foreach(VAR ${SRCs})
     string(REPLACE ${NXDL_SUFFIX} rst RST ${VAR})
     set_property(DIRECTORY APPEND PROPERTY ADDITIONAL_MAKE_CLEAN_FILES ${RST})
