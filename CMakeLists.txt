@@ -101,7 +101,7 @@ endforeach()
 #-----------------------------------------------------------------------------
 add_subdirectory (xslt)
 add_subdirectory (base_classes)
-#add_subdirectory (contributed_definitions)
+add_subdirectory (contributed_definitions)
 #add_subdirectory (applications)
 #add_subdirectory (schema)
 #add_subdirectory (manual)

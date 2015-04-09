@@ -1,10 +1,9 @@
-## Process this file with cmake
 #=============================================================================
 #  NeXus - Neutron & X-ray Common Data Format
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
-#  Copyright (C) 2011-2012 Freddie Akeroyd
+#  Copyright (C) 2015 Eugen Wintersberger
 #  
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -26,24 +25,18 @@
 #
 #=============================================================================
 
-set(CONTRIBUTED_FILES 
-    NXcanSAS.nxdl.xml
-    NXelectrostatic_kicker.nxdl.xml
-    NXmagnetic_kicker.nxdl.xml
-    NXquadrupole_magnet.nxdl.xml
-    NXseparator.nxdl.xml
-    NXsnsevent.nxdl.xml
-    NXsnshisto.nxdl.xml
-    NXsolenoid_magnet.nxdl.xml
-    NXspin_rotator.nxdl.xml
-)
+set(FILES minimum.png
+          Q-geometry.jpg
+          SAScollimation.png
+          SASdata.png
+          SASdetector.png
+          SASinstrument.png
+          SASprocess.png
+          SASroot.png
+          SASsample.png
+          SASsource.png
+          SAStransmission_spectrum.png)
 
-add_subdirectory(canSAS)
-
-foreach(F ${CONTRIBUTED_FILES})
-    configure_file(${F} ${F} @ONLY)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${F}
-            DESTINATION ${NEXUS_DEFINITIONS}/contributed_definitions
-            COMPONENT definitions)
+foreach(F ${FILES})
+    configure_file(${F} ${F} COPYONLY)
 endforeach()
-
