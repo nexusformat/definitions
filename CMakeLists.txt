@@ -43,11 +43,15 @@ endif()
 
 project(NeXusDefinitions)
 
+#set cmake module path
+set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_include)
+
 #-----------------------------------------------------------------------------
 # Search for required packages
 #-----------------------------------------------------------------------------
 find_package(LATEX)
 find_package(PythonInterp)
+find_package(Sphinx REQUIRED)
 
 #-----------------------------------------------------------------------------
 # Search for required programs
@@ -68,8 +72,6 @@ endif()
 #-----------------------------------------------------------------------------
 include(cmake_include/nxdl_release.cmake)
 
-#set cmake module path
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_include)
 
 option (BUILD_SPHINX "Build documentation using sphinx" ON)
 
@@ -77,6 +79,10 @@ include(GNUInstallDirs)
 
 set(NEXUS_DEFINITIONS "${CMAKE_INSTALL_DATADIR}/nexus/definitions")
 set(NEXUS_MANUAL "${CMAKE_INSTALL_DATADIR}/doc/nexus-reference")
+
+set(TYPES2RST "${CMAKE_SOURCE_DIR}/utils/types2rst.py")
+set(UNITS2RST "${CMAKE_SOURCE_DIR}/utils/units2rst.py")
+set(NXDLDESC2RST  "${CMAKE_SOURCE_DIR}/utils/nxdl_desc2rst.py")
 
 
 #==============================================================================
@@ -95,6 +101,29 @@ foreach(F ${XSD_FILES})
             COMPONENT definitions)
 endforeach()
 
+#we need to generate some files from the xsd files which will be used in the 
+#documentation
+add_custom_command(OUTPUT manual/source/types.table
+    COMMAND python ${TYPES2RST} nxdlTypes.xsd > manual/source/types.table
+     DEPENDS nxdlTypes.xsd ${TYPES2RST}
+     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+add_custom_command(OUTPUT manual/source/units.table
+    COMMAND python ${UNITS2RST} nxdlTypes.xsd > manual/source/units.table
+    DEPENDS nxdlTypes.xsd ${UNITS2RST}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+add_custom_command(OUTPUT manual/source/nxdl_desc.rst
+    COMMAND python ${NXDLDESC2RST} nxdl.xsd > manual/source/nxdl_desc.rst
+    DEPENDS nxdl.xsd ${NXDLDESC2RST}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+
+ add_custom_target(xds-manual-source ALL
+                   DEPENDS manual/source/types.table
+                           manual/source/units.table
+                           manual/source/nxdl_desc.rst)
+
 
 #-----------------------------------------------------------------------------
 # Recurse into the subdirectories.
@@ -103,8 +132,8 @@ add_subdirectory (xslt)
 add_subdirectory (base_classes)
 add_subdirectory (contributed_definitions)
 add_subdirectory (applications)
-add_subdirectory (schema)
-#add_subdirectory (manual)
+#add_subdirectory (schema)
+add_subdirectory (manual)
 #add_subdirectory (validate_cmdline)
 
 #-----------------------------------------------------------------------------

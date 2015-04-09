@@ -3,7 +3,7 @@
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
-# Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
 #  
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -25,55 +25,32 @@
 #
 #==============================================================================
 
-add_subdirectory(img)
-add_subdirectory(_static)
-add_subdirectory(_templates)
+set(FILES Coordinates.png
+          data-linking.png
+          data-post-nexus.jpg
+          data-pre-nexus.jpg
+          ex_writer_1_3.png
+          ex_writer_2_1.png
+          Hierarchy.png
+          mcstascoord.png
+          mcstas.png
+          missing.jpg
+          NeXus-logo.png
+          NeXus.png
+          NXinstrument.png
+          NXtechnical_data_nexpy.jpg
+          NXtechnical_data_nxdl.jpg
+          nxvalidate.png
+          polplane.png
+          rssfeed.jpg
+          Simple.png
+          translation-orientation-geometry-2.jpg
+          translation-orientation-geometry.jpg
+          woni-powderimage.png
+          woni-schematic.png)
 
-set(FILES applying-nexus.rst
-          authorgroup.rst
-          colophon.rst
-          community.rst
-          copyright.rst
-          datarules.rst
-          defs_intro.rst
-          design.rst
-          docs_about.rst
-          faq.rst
-          fileformat.rst
-          github.rst
-          history.rst
-          index.rst
-          installation.rst
-          introduction-napi.rst
-          introduction.rst
-          issues.rst
-          mailinglist.rst
-          motivations.rst
-          napi-c.rst
-          napi-f77.rst
-          napi-f90.rst
-          napi-idl.rst
-          napi-java.rst
-          napi-python.rst
-          napi.rst
-          nexuslogo.png
-          niac.rst
-          nxdl.rst
-          nxdl-types.rst
-          preface.rst
-          ref_doc.rst
-          revhistory.rst
-          rules.rst
-          strategies.rst
-          user_manual.rst
-          utilities.rst
-          validation.rst)
+add_subdirectory(nxdl)
 
 foreach(F ${FILES})
     configure_file(${F} ${F} COPYONLY)
 endforeach()
-
-configure_file(conf.py.in conf.py @ONLY)
-
-
-

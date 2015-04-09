@@ -3,7 +3,7 @@
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
-# Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
 #  
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -25,55 +25,8 @@
 #
 #==============================================================================
 
-add_subdirectory(img)
-add_subdirectory(_static)
-add_subdirectory(_templates)
-
-set(FILES applying-nexus.rst
-          authorgroup.rst
-          colophon.rst
-          community.rst
-          copyright.rst
-          datarules.rst
-          defs_intro.rst
-          design.rst
-          docs_about.rst
-          faq.rst
-          fileformat.rst
-          github.rst
-          history.rst
-          index.rst
-          installation.rst
-          introduction-napi.rst
-          introduction.rst
-          issues.rst
-          mailinglist.rst
-          motivations.rst
-          napi-c.rst
-          napi-f77.rst
-          napi-f90.rst
-          napi-idl.rst
-          napi-java.rst
-          napi-python.rst
-          napi.rst
-          nexuslogo.png
-          niac.rst
-          nxdl.rst
-          nxdl-types.rst
-          preface.rst
-          ref_doc.rst
-          revhistory.rst
-          rules.rst
-          strategies.rst
-          user_manual.rst
-          utilities.rst
-          validation.rst)
+set(FILES layout.html)
 
 foreach(F ${FILES})
     configure_file(${F} ${F} COPYONLY)
 endforeach()
-
-configure_file(conf.py.in conf.py @ONLY)
-
-
-
