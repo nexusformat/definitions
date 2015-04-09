@@ -26,20 +26,33 @@
 #
 #=============================================================================
 
+#=============================================================================
+#                   BUILD CONFIGURATION
+#=============================================================================
+
 # we need 2.8.8 for correct component install with CPACK for archives
 if(WIN32)
     cmake_minimum_required (VERSION 2.8.8)
 else()
     cmake_minimum_required (VERSION 2.8.0)
     if (${CMAKE_VERSION} VERSION_LESS 2.8.4)
-        set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove this line when CMake >= 2.8.4 is required
+        # Remove this line when CMake >= 2.8.4 is required
+        set(CMAKE_LEGACY_CYGWIN_WIN32 0) 
     endif()
 endif()
 
 project(NeXusDefinitions)
 
+#-----------------------------------------------------------------------------
+# Search for required packages
+#-----------------------------------------------------------------------------
+find_package(LATEX)
 find_package(PythonInterp)
 
+#-----------------------------------------------------------------------------
+# Search for required programs
+#-----------------------------------------------------------------------------
+find_program(DBLATEX dblatex)
 if (WIN32)
     find_program(XSLTPROC xsltproc PATHS "${CMAKE_SOURCE_DIR}/utils/win32")
 else(WIN32)
@@ -58,95 +71,49 @@ include(cmake_include/nxdl_release.cmake)
 #set cmake module path
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_include)
 
+option (BUILD_SPHINX "Build documentation using sphinx" ON)
+
+include(GNUInstallDirs)
+
+set(NEXUS_DEFINITIONS "${CMAKE_INSTALL_DATADIR}/nexus/definitions")
+set(NEXUS_MANUAL "${CMAKE_INSTALL_DATADIR}/doc/nexus-reference")
+
+
+#==============================================================================
+#              DEALING WITH FILES IN THE ROOT DIRECTORY
+#==============================================================================
+
+#------------------------------------------------------------------------------
+# configure and install xsd files
+#------------------------------------------------------------------------------
 set(XSD_FILES NeXus.xsd nxdl.xsd nxdlTypes.xsd BASE.xsd)
 add_custom_target("DoXSD" ALL)
 foreach(F ${XSD_FILES})
-    configure_release("DoXSD" ${CMAKE_SOURCE_DIR}/${F} ${CMAKE_BINARY_DIR}/dist/${F})
+    configure_file(${F} ${F} @ONLY)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${F} 
+            DESTINATION ${NEXUS_DEFINITIONS}
+            COMPONENT definitions)
 endforeach()
 
-option (BUILD_SPHINX "Build documentation using sphinx" ON)
 
-# CMAKE_INSTALL_PREFIX is only used if CMAKE_SET_DESTDIR is true,
-# so it will not be used in zip and tgz packages
-if(UNIX)
-    set(CMAKE_INSTALL_PREFIX "/usr/share/nexus/" CACHE PATH "")
-endif()
-set(NEXUS_DEFINITIONS "definitions")
-set(NEXUS_MANUAL "manual")
-
-
-
-# needed for windows NSIS installer
-file(TO_NATIVE_PATH ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_NATIVE) 
-file(TO_NATIVE_PATH ${CMAKE_BINARY_DIR} CMAKE_BINARY_DIR_NATIVE) 
-string(REPLACE "\\" "\\\\" CMAKE_SOURCE_DIR_NATIVE_D ${CMAKE_SOURCE_DIR_NATIVE})
-string(REPLACE "\\" "\\\\" CMAKE_BINARY_DIR_NATIVE_D ${CMAKE_BINARY_DIR_NATIVE})
-
-#configure_file("${PROJECT_SOURCE_DIR}/utils/win32/dblatex_win.bat.in"
-#                                "${PROJECT_BINARY_DIR}/dblatex_win.bat"
-#                                @ONLY)
-
-
-if(WIN32)
-# we use cygwin on windows for dblatex etc
-	find_program(CYGPATH_EXECUTABLE cygpath PATHS "c:/cygwin" PATH_SUFFIXES "bin" DOC "CYGWIN cygpath program") 
-	get_filename_component(CYGPATHDIR "${CYGPATH_EXECUTABLE}" PATH) 
-	get_filename_component(CYGDIR "${CYGPATHDIR}/.." ABSOLUTE)
-	file(TO_NATIVE_PATH ${CYGDIR} CYGDIR_NATIVE)
-	configure_file("${PROJECT_SOURCE_DIR}/utils/win32/dblatex_cygwin.bat.in"
-                                "${PROJECT_BINARY_DIR}/dblatex_cygwin.bat"
-                                @ONLY)
-	if(IS_DIRECTORY "${CYGDIR}" AND EXISTS "${CYGDIR}/bin/dblatex")
-		set(DBLATEX "${PROJECT_BINARY_DIR}/dblatex_cygwin.bat")
-	else()
-		message(WARNING "CYGWIN dblatex NOT FOUND - no PDF documentation")
-	endif()
-else()
-	find_package(LATEX)
-	find_program(DBLATEX dblatex)
-endif()
-
+#-----------------------------------------------------------------------------
 # Recurse into the subdirectories.
-#add_subdirectory (tutorial)
+#-----------------------------------------------------------------------------
+add_subdirectory (xslt)
 add_subdirectory (base_classes)
-add_subdirectory (contributed_definitions)
-add_subdirectory (applications)
-add_subdirectory (schema)
-add_subdirectory (manual)
-add_subdirectory (validate_cmdline)
+#add_subdirectory (contributed_definitions)
+#add_subdirectory (applications)
+#add_subdirectory (schema)
+#add_subdirectory (manual)
+#add_subdirectory (validate_cmdline)
 
-foreach(F ${XSD_FILES})
-    INSTALL(FILES ${CMAKE_BINARY_DIR}/dist/${F} DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
-endforeach()
+#-----------------------------------------------------------------------------
+# install license for definitions and manual
+#-----------------------------------------------------------------------------
+install(FILES LGPL.txt 
+        DESTINATION ${NEXUS_DEFINITIONS} 
+        COMPONENT definitions)
+install(FILES LGPL.txt 
+        DESTINATION ${NEXUS_MANUAL} 
+        COMPONENT manual)
 
-FILE(GLOB XSLT_FILES "xslt/*.xsl")
-INSTALL(FILES ${XSLT_FILES} DESTINATION ${NEXUS_DEFINITIONS}/xslt COMPONENT definitions)
-
-INSTALL(FILES LGPL.txt DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
-INSTALL(FILES LGPL.txt DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
-
-#
-# set CPack packaging options
-#
-configure_file("${PROJECT_SOURCE_DIR}/nexus_definitions.spec.in"
-                                "${PROJECT_BINARY_DIR}/nexus_definitions.spec"
-                                @ONLY)
-configure_file("${PROJECT_SOURCE_DIR}/CPackOptions.cmake.in"
-                                "${PROJECT_BINARY_DIR}/CPackOptions.cmake"
-                                @ONLY)
-set (CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CPackOptions.cmake")
-set (CPACK_GENERATOR TGZ) # not use ZIP on UNIX as problem with symlinks
-set (CPACK_SOURCE_GENERATOR TGZ) # not use ZIP on UNIX as problem with symlinks
-if(WIN32)
-    set (CPACK_GENERATOR ${CPACK_GENERATOR};ZIP;NSIS)
-    set (CPACK_SOURCE_GENERATOR ${CPACK_SOURCE_GENERATOR};ZIP) 
-elseif(APPLE)
-    set (CPACK_GENERATOR ${CPACK_GENERATOR};PackageMaker)
-elseif(CYGWIN)
-    set (CPACK_GENERATOR ${CPACK_GENERATOR};CygwinBinary)
-#    set (CPACK_SOURCE_GENERATOR ${CPACK_SOURCE_GENERATOR};CygwinSource) 
-elseif(UNIX)
-    set (CPACK_GENERATOR ${CPACK_GENERATOR};DEB;RPM)
-endif()
-# Include of CPack must always be last
-include(CPack)
