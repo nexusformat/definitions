@@ -1,5 +1,5 @@
 ## Process this file with cmake
-#=============================================================================
+#====================================================================
 #  NeXus - A common data format for neutron, x-ray and muon science.
 #  
 #  CMakeLists for building the NeXus library and applications.
@@ -24,7 +24,7 @@
 #  For further information, see <http://www.nexusformat.org>
 #
 #
-#=============================================================================
+#====================================================================
 
 # we need 2.8.8 for correct component install with CPACK for archives
 if(WIN32)
@@ -38,25 +38,34 @@ endif()
 
 project(NeXusDefinitions)
 
-find_package(PythonInterp)
-
-if (WIN32)
-    find_program(XSLTPROC xsltproc PATHS "${CMAKE_SOURCE_DIR}/utils/win32")
-else(WIN32)
-    find_program(XSLTPROC xsltproc )
-endif()
-
-#-----------------------------------------------------------------------------
 # include NXDL release number information
-# This file provides three variables: 
-# -> NXDL_MAJOR_RELEASE
-# -> NXDL_MINOR_RELEASE
-# -> NXDL_RELEASE
-#-----------------------------------------------------------------------------
 include(cmake_include/nxdl_release.cmake)
 
-#set cmake module path
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_include)
+
+function(configure_release TARGET INFILE OUTFILE)
+	get_filename_component(F ${INFILE} NAME)
+	add_custom_command(OUTPUT "${OUTFILE}" COMMAND ${CMAKE_COMMAND} -DINPUT_FILE="${INFILE}" -DOUTPUT_FILE="${OUTFILE}" -DMATCH_STRING="\@NXDL_RELEASE\@" -DREPLACE_STRING="${NXDL_RELEASE}" -P "${CMAKE_SOURCE_DIR}/cmake_include/replace.cmake" DEPENDS "${INFILE}" "${CMAKE_BINARY_DIR}/CMakeCache.txt" COMMENT "Rebuilding ${F}")
+	add_custom_target(${TARGET}-${F} DEPENDS "${OUTFILE}")
+	add_dependencies(${TARGET} ${TARGET}-${F})
+endfunction()
+
+function(configure_nxdl TARGET NXDL_DIR DIST_DIR NXDL_FILES)
+    foreach(F ${NXDL_FILES})
+		set(NXDL ${NXDL_DIR}/${F})
+		configure_release(${TARGET} ${NXDL} ${DIST_DIR}/${F})
+    endforeach()
+    configure_release(${TARGET} ${NXDL_DIR}/nxdlformat.xsl ${DIST_DIR}/nxdlformat.xsl)
+endfunction()
+
+#
+# convert a native windows path to its equivalent cygwin path
+#
+function(to_cygwin_path PATH RESULT)
+    file(TO_CMAKE_PATH ${PATH} CP)								# changes \ to / on windows
+    string(REGEX REPLACE "^([a-zA-Z]):/" "/\\1/" CP2 ${CP})   	# c:/ -> /c/
+	set(${RESULT} "/cygdrive${CP2}" PARENT_SCOPE) 				# /c/ -> /cygdrive/c/
+endfunction()
 
 set(XSD_FILES NeXus.xsd nxdl.xsd nxdlTypes.xsd BASE.xsd)
 add_custom_target("DoXSD" ALL)
@@ -74,7 +83,14 @@ endif()
 set(NEXUS_DEFINITIONS "definitions")
 set(NEXUS_MANUAL "manual")
 
+find_package(PythonInterp)
 
+if (WIN32)
+    find_program(XSLTPROC xsltproc PATHS "${CMAKE_SOURCE_DIR}/utils/win32")
+else(WIN32)
+    find_program(XSLTPROC xsltproc )
+endif()
+find_program(SVNVERSION svnversion)
 
 # needed for windows NSIS installer
 file(TO_NATIVE_PATH ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_NATIVE) 
