@@ -1,9 +1,9 @@
 #=============================================================================
-#  NeXus - Neutron & X-ray Common Data Format
+#  NeXus - A common data format for neutron, x-ray and muon science.
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
-# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2014 NeXus International Advisory Committee (NIAC)
 #  
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -23,10 +23,17 @@
 #  For further information, see <http://www.nexusformat.org>
 #
 #
-#============================================================================
+#=============================================================================
 
-add_subdirectory(base_classes)
-add_subdirectory(applications)
-add_subdirectory(contributed_definitions)
+set(FILES dev_nxdl2rst.py
+          nxdl2rst.py
+          nxdl_desc2rst.py
+          nxxref.py
+          showtree.py
+          types2rst.py
+          units2rst.py)
 
-configure_file(index.rst index.rst COPYONLY)
+foreach(F ${FILES})
+    configure_file(${F} ${F} @ONLY)
+endforeach()
+

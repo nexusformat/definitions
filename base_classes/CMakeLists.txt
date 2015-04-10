@@ -82,12 +82,35 @@ set(BASE_FILES
     NXxraylens.nxdl.xml
 )
 
+set(BASE_CLASS_RST_FILES)
+set(BASE_CLASS_RST_DIR "${CMAKE_BINARY_DIR}/manual/source/classes/base_classes")
+
 foreach(F ${BASE_FILES})
+    # copy the file to the binary directory
     configure_file(${F} ${F} @ONLY)
+
+    #assemble the name of the base class file
+    string(REPLACE ".nxdl.xml" ".rst" BASE_CLASS_RST_FILE ${F})
+    set(BASE_CLASS_RST_FILE "${BASE_CLASS_RST_DIR}/${BASE_CLASS_RST_FILE}")
+    list(APPEND BASE_CLASS_RST_FILES ${BASE_CLASS_RST_FILE})
+    message(${BASE_CLASS_RST_FILE})
+
+    # build the RST file from the NXDL file
+    add_custom_command(
+        OUTPUT ${BASE_CLASS_RST_FILE}
+        COMMAND python ${NXDL2RST} ${F} > ${BASE_CLASS_RST_FILE}
+        DEPENDS ${F} ${NXDL2RST}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+
+    #install the XML file
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${F}
             DESTINATION ${NEXUS_DEFINITIONS}/base_classes
             COMPONENT definitions)
 endforeach()
+
+add_custom_target(base-class-manual-sources
+                  DEPENDS ${BASE_CLASS_RST_FILES})
 
 
 #-----------------------------------------------------------------------------

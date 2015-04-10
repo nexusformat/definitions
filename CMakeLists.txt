@@ -80,9 +80,10 @@ include(GNUInstallDirs)
 set(NEXUS_DEFINITIONS "${CMAKE_INSTALL_DATADIR}/nexus/definitions")
 set(NEXUS_MANUAL "${CMAKE_INSTALL_DATADIR}/doc/nexus-reference")
 
-set(TYPES2RST "${CMAKE_SOURCE_DIR}/utils/types2rst.py")
-set(UNITS2RST "${CMAKE_SOURCE_DIR}/utils/units2rst.py")
-set(NXDLDESC2RST  "${CMAKE_SOURCE_DIR}/utils/nxdl_desc2rst.py")
+set(TYPES2RST    "${CMAKE_BINARY_DIR}/utils/types2rst.py")
+set(UNITS2RST    "${CMAKE_BINARY_DIR}/utils/units2rst.py")
+set(NXDLDESC2RST "${CMAKE_BINARY_DIR}/utils/nxdl_desc2rst.py")
+set(NXDL2RST     "${CMAKE_BINARY_DIR}/utils/nxdl2rst.py")
 
 
 #==============================================================================
@@ -129,6 +130,7 @@ add_custom_command(OUTPUT manual/source/nxdl_desc.rst
 # Recurse into the subdirectories.
 #-----------------------------------------------------------------------------
 add_subdirectory (xslt)
+add_subdirectory (utils)
 add_subdirectory (base_classes)
 add_subdirectory (contributed_definitions)
 add_subdirectory (applications)

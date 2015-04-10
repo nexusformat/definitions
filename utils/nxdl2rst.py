@@ -276,9 +276,9 @@ def main():
     subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
     # TODO: check for consistency with root.get('category')
     category_for_listing = {
-                 'base_classes': 'base class',
-                 'applications': 'application definition',
-                 'contributed_definitions': 'contributed definition',
+                 'base': 'base class',
+                 'application': 'application definition',
+                 'contributed': 'contributed definition',
                  }[subdir]
 
     # print ReST comments and section header
