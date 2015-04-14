@@ -273,7 +273,8 @@ def main():
     lexical_name = re.sub( r'_', ' ', lexical_name )
     
     # retrieve category from directory
-    subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
+    #subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
+    subdir = root.attrib["category"]
     # TODO: check for consistency with root.get('category')
     category_for_listing = {
                  'base': 'base class',
