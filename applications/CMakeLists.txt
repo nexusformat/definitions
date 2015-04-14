@@ -63,9 +63,29 @@ set(APPLICATION_FILES
     NXxrot.nxdl.xml
 )
 
+set(APPLICATIONS_RST_FILES)
+set(APPLICATIONS_RST_DIR "${CMAKE_BINARY_DIR}/manual/source/classes/applications")
+
 foreach(F ${APPLICATION_FILES})
     configure_file(${F} ${F} @ONLY)
+    
+    #assemble the name of the base class file
+    string(REPLACE ".nxdl.xml" ".rst" APPLICATION_RST_FILE ${F})
+    set(APPLICATION_RST_FILE "${APPLICATIONS_RST_DIR}/${APPLICATION_RST_FILE}")
+    list(APPEND APPLICATIONS_RST_FILES ${APPLICATION_RST_FILE})
+    
+    # build the RST file from the NXDL file
+    add_custom_command(
+        OUTPUT ${APPLICATION_RST_FILE}
+        COMMAND python ${NXDL2RST} ${F} > ${APPLICATION_RST_FILE}
+        DEPENDS ${F} ${NXDL2RST}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${F} 
             DESTINATION ${NEXUS_DEFINITIONS}/applications 
             COMPONENT definitions)
+
 endforeach()
+        
+add_custom_target(applications-manual-sources DEPENDS ${APPLICATIONS_RST_FILES})
+

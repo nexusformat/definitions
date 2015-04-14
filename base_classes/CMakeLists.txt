@@ -93,7 +93,6 @@ foreach(F ${BASE_FILES})
     string(REPLACE ".nxdl.xml" ".rst" BASE_CLASS_RST_FILE ${F})
     set(BASE_CLASS_RST_FILE "${BASE_CLASS_RST_DIR}/${BASE_CLASS_RST_FILE}")
     list(APPEND BASE_CLASS_RST_FILES ${BASE_CLASS_RST_FILE})
-    message(${BASE_CLASS_RST_FILE})
 
     # build the RST file from the NXDL file
     add_custom_command(

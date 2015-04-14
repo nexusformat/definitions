@@ -30,6 +30,7 @@ add_subdirectory(source)
 add_custom_target(htmldoc ALL 
     COMMAND sphinx-build -b html source html 
     DEPENDS xds-manual-source base-class-manual-sources
+    applications-manual-sources contributed-manual-sources
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 
