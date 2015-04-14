@@ -33,5 +33,8 @@ add_custom_target(htmldoc ALL
     applications-manual-sources contributed-manual-sources
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
+install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
+        DESTINATION ${NEXUS_MANUAL})
+
 
 
