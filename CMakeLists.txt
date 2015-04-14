@@ -141,6 +141,7 @@ add_subdirectory (manual)
 #-----------------------------------------------------------------------------
 # install license for definitions and manual
 #-----------------------------------------------------------------------------
+configure_file(LGPL.txt manual/source/LGPL.txt COPYONLY)
 install(FILES LGPL.txt 
         DESTINATION ${NEXUS_DEFINITIONS} 
         COMPONENT definitions)

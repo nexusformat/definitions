@@ -69,7 +69,10 @@ set(FILES applying-nexus.rst
           strategies.rst
           user_manual.rst
           utilities.rst
-          validation.rst)
+          validation.rst
+          FDL
+          NeXusIntern.pdf
+          )
 
 foreach(F ${FILES})
     configure_file(${F} ${F} COPYONLY)

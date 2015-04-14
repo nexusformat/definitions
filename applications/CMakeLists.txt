@@ -63,9 +63,17 @@ set(APPLICATION_FILES
     NXxrot.nxdl.xml
 )
 
+
 set(APPLICATIONS_RST_FILES)
 set(APPLICATIONS_RST_DIR "${CMAKE_BINARY_DIR}/manual/source/classes/applications")
 
+#need to copy this file as it is required by the documentation
+configure_file(NXmonopd.nxdl.xml 
+               ${APPLICATIONS_RST_DIR}/NXmonopd.nxdl.xml COPYONLY)
+
+#-----------------------------------------------------------------------------
+# process the application definition files
+#-----------------------------------------------------------------------------
 foreach(F ${APPLICATION_FILES})
     configure_file(${F} ${F} @ONLY)
     
@@ -86,6 +94,9 @@ foreach(F ${APPLICATION_FILES})
             COMPONENT definitions)
 
 endforeach()
-        
-add_custom_target(applications-manual-sources DEPENDS ${APPLICATIONS_RST_FILES})
+
+#this target ensures that the application RST files are created before 
+#the documentation is built
+add_custom_target(applications-manual-sources 
+                  DEPENDS ${APPLICATIONS_RST_FILES})
 

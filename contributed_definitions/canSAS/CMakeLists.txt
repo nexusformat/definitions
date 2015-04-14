@@ -37,6 +37,8 @@ set(FILES minimum.png
           SASsource.png
           SAStransmission_spectrum.png)
 
+set(IMGPATH "${CMAKE_BINARY_DIR}/manual/source/classes/contributed_definitions/canSAS")
+
 foreach(F ${FILES})
-    configure_file(${F} ${F} COPYONLY)
+    configure_file(${F} ${IMGPATH}/${F} COPYONLY)
 endforeach()
