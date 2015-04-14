@@ -29,6 +29,7 @@ add_subdirectory(img)
 add_subdirectory(_static)
 add_subdirectory(_templates)
 add_subdirectory(classes)
+add_subdirectory(examples)
 
 set(FILES applying-nexus.rst
           authorgroup.rst

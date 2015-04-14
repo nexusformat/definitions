@@ -65,8 +65,9 @@ The NeXus data format has four components:
     to allow the development of portable analysis software.
 
 :ref:`A set of subroutines <Introduction-SetOfSubroutines>`
-    :ref:`Utilities <Utilities>` and :ref:`examples <Examples>` to make it easy
-    to read and write NeXus data files.
+    (:ref:`Utilities <Utilities>` 
+    and :ref:`examples <Examples>`) 
+    to make it easy to read and write NeXus data files.
 
 :ref:`A Scientific Community <Introduction-Community>`
     to provide the scientific data, advice, and continued involvement
