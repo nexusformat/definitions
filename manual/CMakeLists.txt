@@ -27,14 +27,38 @@
 
 add_subdirectory(source)
 
+#-----------------------------------------------------------------------------
+# list of targets which have to be available before anything else can be 
+# built
+#-----------------------------------------------------------------------------
+set(RST_TARGETS xds-manual-source 
+                base-class-manual-sources
+                applications-manual-sources 
+                contributed-manual-sources
+                )
+
+#-----------------------------------------------------------------------------
+# Build and install the HTML documentation
+#-----------------------------------------------------------------------------
 add_custom_target(htmldoc ALL 
     COMMAND sphinx-build -b html source html 
-    DEPENDS xds-manual-source base-class-manual-sources
-    applications-manual-sources contributed-manual-sources
+    DEPENDS  ${RST_TARGETS}   
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
         DESTINATION ${NEXUS_MANUAL})
 
+#-----------------------------------------------------------------------------
+# Build PDF documentation
+#-----------------------------------------------------------------------------
+add_custom_target(latexdoc 
+    COMMAND sphinx-build -b latex source pdf
+    DEPENDS  ${RST_TARGETS}   
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+add_custom_target(pdfdoc  
+    COMMAND make
+    DEPENDS  ${RST_TARGETS} latexdoc
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/pdf)
 
 
