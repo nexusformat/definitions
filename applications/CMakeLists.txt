@@ -125,3 +125,4 @@ add_custom_target(applications-manual-sources
 add_custom_target(applications-schema-sources
                   DEPENDS ${APPLICATIONS_SCH_PART_FILES})
 
+              

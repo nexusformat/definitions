@@ -28,8 +28,10 @@
 
 add_subdirectory(applications)
 add_subdirectory(base_classes)
-add_subdirectory(contributed)
+add_subdirectory(contributed_definitions)
 
 add_custom_target(nxdl_schema ALL
-                  DEPENDS applications-schema-sources)
+                  DEPENDS applications-schema-sources
+                          base-class-schema-sources
+                          contributed-schema-sources)
 
