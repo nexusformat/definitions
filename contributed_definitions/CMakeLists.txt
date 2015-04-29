@@ -41,8 +41,10 @@ set(CONTRIBUTED_FILES
 add_subdirectory(canSAS)
 
 set(CONTRIBUTED_RST_FILES)
+set(CONTRIBUTED_SCH_PART_FILES)
 set(CONTRIBUTED_RST_DIR
     "${CMAKE_BINARY_DIR}/manual/source/classes/contributed_definitions")
+set(CONTRIBUTED_SCH_DIR "${CMAKE_BINARY_DIR}/schema/contributed_definitions")
 
 foreach(F ${CONTRIBUTED_FILES})
     configure_file(${F} ${F} @ONLY)
@@ -59,6 +61,21 @@ foreach(F ${CONTRIBUTED_FILES})
         COMMAND python ${NXDL2RST} ${F} > ${CONTRIBUTED_RST_FILE}
         DEPENDS ${F} ${NXDL2RST}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    
+    #-------------------------------------------------------------------------
+    # build the part file for the schema files
+    #-------------------------------------------------------------------------
+    string(REPLACE ".nxdl.xml" ".nxdl.part" CONTRIBUTED_SCH_PART_FILE ${F})
+    set(CONTRIBUTED_SCH_PART_FILE
+        "${CONTRIBUTED_SCH_DIR}/${CONTRIBUTED_SCH_PART_FILE}")
+    list(APPEND CONTRIBUTED_SCH_PART_FILES ${CONTRIBUTED_SCH_PART_FILE})
+
+    add_custom_command(
+        OUTPUT ${CONTRIBUTED_SCH_PART_FILE}
+        COMMAND python ${XMLSTRIP} ${F} > ${CONTRIBUTED_SCH_PART_FILE}
+        DEPENDS ${F} ${XMLSTRIP}
+        WORKING_DIRECTORY ${MAKE_CURRENT_BINARY_DIR})
+
 
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${F}
             DESTINATION ${NEXUS_DEFINITIONS}/contributed_definitions
@@ -66,3 +83,7 @@ foreach(F ${CONTRIBUTED_FILES})
 endforeach()
 
 add_custom_target(contributed-manual-sources DEPENDS ${CONTRIBUTED_RST_FILES})
+
+add_custom_target(contributed-schema-sources
+                  DEPENDS ${CONTRIBUTED_SCH_PART_FILES})
+

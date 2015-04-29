@@ -65,7 +65,9 @@ set(APPLICATION_FILES
 
 
 set(APPLICATIONS_RST_FILES)
+set(APPLICATIONS_SCH_PART_FILES)
 set(APPLICATIONS_RST_DIR "${CMAKE_BINARY_DIR}/manual/source/classes/applications")
+set(APPLICATIONS_SCH_DIR "${CMAKE_BINARY_DIR}/schema/applications")
 
 #need to copy this file as it is required by the documentation
 configure_file(NXmonopd.nxdl.xml 
@@ -76,7 +78,10 @@ configure_file(NXmonopd.nxdl.xml
 #-----------------------------------------------------------------------------
 foreach(F ${APPLICATION_FILES})
     configure_file(${F} ${F} @ONLY)
-    
+   
+    #-------------------------------------------------------------------------
+    # build the RST files for the documentation
+    #-------------------------------------------------------------------------
     #assemble the name of the base class file
     string(REPLACE ".nxdl.xml" ".rst" APPLICATION_RST_FILE ${F})
     set(APPLICATION_RST_FILE "${APPLICATIONS_RST_DIR}/${APPLICATION_RST_FILE}")
@@ -89,6 +94,23 @@ foreach(F ${APPLICATION_FILES})
         DEPENDS ${F} ${NXDL2RST}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
+    #-------------------------------------------------------------------------
+    # build the part file for the schema files
+    #-------------------------------------------------------------------------
+    string(REPLACE ".nxdl.xml" ".nxdl.part" APPLICATION_SCH_PART_FILE ${F})
+    set(APPLICATION_SCH_PART_FILE
+        "${APPLICATIONS_SCH_DIR}/${APPLICATION_SCH_PART_FILE}")
+    list(APPEND APPLICATIONS_SCH_PART_FILES ${APPLICATION_SCH_PART_FILE})
+
+    add_custom_command(
+        OUTPUT ${APPLICATION_SCH_PART_FILE}
+        COMMAND python ${XMLSTRIP} ${F} > ${APPLICATION_SCH_PART_FILE}
+        DEPENDS ${F} ${XMLSTRIP}
+        WORKING_DIRECTORY ${MAKE_CURRENT_BINARY_DIR})
+
+    #-------------------------------------------------------------------------
+    # install the nxdl files
+    #-------------------------------------------------------------------------
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${F} 
             DESTINATION ${NEXUS_DEFINITIONS}/applications 
             COMPONENT definitions)
@@ -100,3 +122,7 @@ endforeach()
 add_custom_target(applications-manual-sources 
                   DEPENDS ${APPLICATIONS_RST_FILES})
 
+add_custom_target(applications-schema-sources
+                  DEPENDS ${APPLICATIONS_SCH_PART_FILES})
+
+              

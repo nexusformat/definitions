@@ -31,6 +31,8 @@ set(FILES dev_nxdl2rst.py
           nxxref.py
           showtree.py
           types2rst.py
+          xmlstrip.py
+          partmerge.py
           units2rst.py)
 
 foreach(F ${FILES})

@@ -84,6 +84,7 @@ set(TYPES2RST    "${CMAKE_BINARY_DIR}/utils/types2rst.py")
 set(UNITS2RST    "${CMAKE_BINARY_DIR}/utils/units2rst.py")
 set(NXDLDESC2RST "${CMAKE_BINARY_DIR}/utils/nxdl_desc2rst.py")
 set(NXDL2RST     "${CMAKE_BINARY_DIR}/utils/nxdl2rst.py")
+set(XMLSTRIP     "${CMAKE_BINARY_DIR}/utils/xmlstrip.py")
 
 
 #==============================================================================
@@ -134,7 +135,7 @@ add_subdirectory (utils)
 add_subdirectory (base_classes)
 add_subdirectory (contributed_definitions)
 add_subdirectory (applications)
-#add_subdirectory (schema)
+add_subdirectory (schema)
 add_subdirectory (manual)
 #add_subdirectory (validate_cmdline)
 
