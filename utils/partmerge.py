@@ -23,7 +23,7 @@ def print_file(filename):
 
 
 #print header of output
-print("<?xml version\"1.0\" encoding=\"UTF-8\"?>")
+print("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
 print("<definitions>")
 
 for directory in sys.argv[1:]:

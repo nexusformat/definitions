@@ -26,12 +26,67 @@
 #
 #====================================================================
 
+
 add_subdirectory(applications)
 add_subdirectory(base_classes)
 add_subdirectory(contributed_definitions)
 
+add_custom_command(
+    OUTPUT all_base.nxdl.xml
+    COMMAND python ${XMLMERGE} base_classes > all_base.nxdl.xml
+    DEPENDS base-class-schema-sources
+    COMMENT "Generating all_base.nxdl.xml")
+
+add_custom_target(all-base-nxdl DEPENDS all_base.nxdl.xml)
+
+add_custom_command(
+    OUTPUT all.nxdl.xml
+    COMMAND python ${XMLMERGE} base_classes applications contributed_definitions
+    > all.nxdl.xml
+    DEPENDS applications-schema-sources 
+            base-class-schema-sources
+            contributed-schema-sources
+    COMMENT "Generating all.nxdl.xml")
+
+add_custom_target(all-nxdl DEPENDS all.nxdl.xml)
+
+add_custom_command(
+    OUTPUT all_unsorted.xsd
+    COMMAND ${XSLTPROC} -o all_unsorted.xsd ${XSLTPATH}/nxdl2xsd.xsl
+    all.nxdl.xml
+    DEPENDS all-nxdl
+    COMMENT "Building all_unsorted.xsd"
+    )
+
+add_custom_command(
+    OUTPUT all.xsd
+    COMMAND ${XSLTPROC} -o all.xsd ${XSLTPATH}/sort_xsd.xsl all.nxdl.xml
+    DEPENDS all-nxdl
+    COMMENT "Building all.xsd"
+    )
+
+add_custom_command(
+    OUTPUT all_base.sch
+    COMMAND ${XSLTPROC} -o all_base.sch ${XSLTPATH}/nxdl2sch.xsl
+    all_base.nxdl.xml
+    DEPENDS all-base-nxdl
+    COMMENT "Building all_base.sch"
+    )
+
+add_custom_command(
+    OUTPUT all.sch
+    COMMAND ${XSLTPROC} -o all.sch ${XSLTPATH}/nxdl2sch.xsl all.nxdl.xml
+    DEPENDS all-nxdl
+    COMMENT "Building all.sch"
+    )
+
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/all.xsd 
+              ${CMAKE_CURRENT_BINARY_DIR}/all_unsorted.xsd 
+              ${CMAKE_CURRENT_BINARY_DIR}/all_base.sch 
+              ${CMAKE_CURRENT_BINARY_DIR}/all.sch
+        DESTINATION ${NEXUS_DEFINITIONS}/schema)
+
 add_custom_target(nxdl_schema ALL
-                  DEPENDS applications-schema-sources
-                          base-class-schema-sources
-                          contributed-schema-sources)
+                  DEPENDS all.xsd all_unsorted.xsd all_base.sch all.sch)
 

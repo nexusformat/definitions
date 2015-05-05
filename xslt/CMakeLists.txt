@@ -5,6 +5,10 @@ set(FILES nxdl2nx.xsl
           nxdl_desc2rst.xsl
           sort_xsd.xsl)
 
+foreach(F ${FILES})
+    configure_file(${F} ${F} COPYONLY)
+endforeach()
+
 
 install(FILES ${FILES} 
         DESTINATION ${NEXUS_DEFINITIONS}/xslt 
