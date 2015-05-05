@@ -29,7 +29,6 @@ set(FILES dev_nxdl2rst.py
           nxdl2rst.py
           nxdl_desc2rst.py
           nxxref.py
-          showtree.py
           types2rst.py
           xmlstrip.py
           partmerge.py
