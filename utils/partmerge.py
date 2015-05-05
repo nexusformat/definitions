@@ -18,8 +18,7 @@ def get_part_files(directory):
 def print_file(filename):
 
     with open(filename,"r") as in_file:
-        for line in in_file:
-            print(line)
+        print(in_file.read(), end='')   # no need to parse by lines
 
 
 #print header of output
