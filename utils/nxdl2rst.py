@@ -184,7 +184,7 @@ def printAttribute( ns, kind, node, indent ):
 def printIfDeprecated( ns, node, indent ):
     deprecated = node.get('deprecated', None)
     if deprecated is not None:
-        print( '%s.. index:: deprecated\n' % indent)
+        print( '\n%s.. index:: deprecated\n' % indent)
         fmt = '\n%s**DEPRECATED**: %s\n'
         print( fmt % (indent, deprecated ) )
 
