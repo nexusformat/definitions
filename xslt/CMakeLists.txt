@@ -3,7 +3,7 @@ set(FILES nxdl2nx.xsl
           nxdl2sch.xsl
           nxdl2xsd.xsl
           nxdl_desc2rst.xsl
-          sort_xsd.xsl)
+          sort_nxdl.xsl)
 
 foreach(F ${FILES})
     configure_file(${F} ${F} COPYONLY)

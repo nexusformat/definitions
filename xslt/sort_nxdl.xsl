@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
     Purpose:
-    This stylesheet is used to translate the NeXus Definition Language
-    specifications into XML Schema (.xsd) files for use in
+    This stylesheet is used to sort the NeXus Definition Language
+    specifications and remove XML comments.  The output is also a single XML file.
+    into a single file for use in
     validating candidate NeXus data files and also in preparing
     additional application definitions and XML schemas for use by NeXus.
     
     Usage:
-    xsltproc nxdl2xsd.xsl $(NX_CLASS).nxdl > $(NX_CLASS).xsd
+    xsltproc sort_nxdl.xsl all.nxdl.xml > all.xml
 -->
 <xsl:stylesheet version="1.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
@@ -36,24 +37,4 @@
         </xsl:copy>
     </xsl:template>
     
-    <!--
-    <xsl:template match="text()">
-        <xsl:value-of select="normalize-space()"/>
-    </xsl:template>
-    -->
-    
-    <!-- if we are a sequence, copy in a sorted way - use name attribute from xs:element -->
-
-    <!--
-    <xsl:template match="xs:sequence">
-        <xsl:copy>
-            <xsl:copy-of select="@*"/>
-            <xsl:for-each select="*">
-                <xsl:sort select="@name"/>
-                <xsl:apply-templates/>
-            </xsl:for-each>
-        </xsl:copy>
-    </xsl:template>
-    -->
-            
 </xsl:stylesheet>

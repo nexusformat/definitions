@@ -59,10 +59,10 @@ add_custom_command(
     )
 
 add_custom_command(
-    OUTPUT all.xsd
-    COMMAND ${XSLTPROC} -o all.xsd ${XSLTPATH}/sort_xsd.xsl all.nxdl.xml
+    OUTPUT all.xml
+    COMMAND ${XSLTPROC} -o all.xml ${XSLTPATH}/sort_nxdl.xsl all.nxdl.xml
     DEPENDS all-nxdl
-    COMMENT "Building all.xsd"
+    COMMENT "Building all.xml"
     )
 
 add_custom_command(
@@ -81,12 +81,12 @@ add_custom_command(
     )
 
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/all.xsd 
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/all.xml
               ${CMAKE_CURRENT_BINARY_DIR}/all_unsorted.xsd 
               ${CMAKE_CURRENT_BINARY_DIR}/all_base.sch 
               ${CMAKE_CURRENT_BINARY_DIR}/all.sch
         DESTINATION ${NEXUS_DEFINITIONS}/schema)
 
 add_custom_target(nxdl_schema ALL
-                  DEPENDS all.xsd all_unsorted.xsd all_base.sch all.sch)
+                  DEPENDS all.xml all_unsorted.xsd all_base.sch all.sch)
 
