@@ -57,11 +57,7 @@ find_package(Sphinx REQUIRED)
 # Search for required programs
 #-----------------------------------------------------------------------------
 find_program(DBLATEX dblatex)
-if (WIN32)
-    find_program(XSLTPROC xsltproc PATHS "${CMAKE_SOURCE_DIR}/utils/win32")
-else(WIN32)
-    find_program(XSLTPROC xsltproc )
-endif()
+find_program(XSLTPROC xsltproc )
 
 #-----------------------------------------------------------------------------
 # include NXDL release number information
@@ -132,7 +128,6 @@ add_custom_command(OUTPUT manual/source/nxdl_desc.rst
 #-----------------------------------------------------------------------------
 # Recurse into the subdirectories.
 #-----------------------------------------------------------------------------
-add_subdirectory (xslt)
 add_subdirectory (utils)
 add_subdirectory (base_classes)
 add_subdirectory (contributed_definitions)
