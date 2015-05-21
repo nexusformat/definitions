@@ -96,7 +96,7 @@ set(XMLMERGE     "${CMAKE_BINARY_DIR}/utils/partmerge.py")
 #------------------------------------------------------------------------------
 # configure and install xsd files
 #------------------------------------------------------------------------------
-set(XSD_FILES NeXus.xsd nxdl.xsd nxdlTypes.xsd BASE.xsd)
+set(XSD_FILES nxdl.xsd nxdlTypes.xsd)
 add_custom_target("DoXSD" ALL)
 foreach(F ${XSD_FILES})
     configure_file(${F} ${F} @ONLY)
