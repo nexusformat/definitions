@@ -137,7 +137,6 @@ add_subdirectory (utils)
 add_subdirectory (base_classes)
 add_subdirectory (contributed_definitions)
 add_subdirectory (applications)
-add_subdirectory (schema)
 add_subdirectory (manual)
 
 #-----------------------------------------------------------------------------

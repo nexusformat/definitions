@@ -83,9 +83,7 @@ set(BASE_FILES
 )
 
 set(BASE_CLASS_RST_FILES)
-set(BASE_CLASS_SCH_PART_FILES)
 set(BASE_CLASS_RST_DIR "${CMAKE_BINARY_DIR}/manual/source/classes/base_classes")
-set(BASE_CLASS_SCH_DIR "${CMAKE_BINARY_DIR}/schema/base_classes")
 
 
 foreach(F ${BASE_FILES})
@@ -103,21 +101,6 @@ foreach(F ${BASE_FILES})
         COMMAND python ${NXDL2RST} ${F} > ${BASE_CLASS_RST_FILE}
         DEPENDS ${F} ${NXDL2RST}
         WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-    
-    #-------------------------------------------------------------------------
-    # build the part file for the schema files
-    #-------------------------------------------------------------------------
-    string(REPLACE ".nxdl.xml" ".nxdl.part" BASE_CLASS_SCH_PART_FILE ${F})
-    set(BASE_CLASS_SCH_PART_FILE
-        "${BASE_CLASS_SCH_DIR}/${BASE_CLASS_SCH_PART_FILE}")
-    list(APPEND BASE_CLASS_SCH_PART_FILES ${BASE_CLASS_SCH_PART_FILE})
-
-    add_custom_command(
-        OUTPUT ${BASE_CLASS_SCH_PART_FILE}
-        COMMAND python ${XMLSTRIP} ${F} > ${BASE_CLASS_SCH_PART_FILE}
-        DEPENDS ${F} ${XMLSTRIP}
-        WORKING_DIRECTORY ${MAKE_CURRENT_BINARY_DIR})
-
 
     #install the XML file
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${F}
@@ -127,9 +110,6 @@ endforeach()
 
 add_custom_target(base-class-manual-sources
                   DEPENDS ${BASE_CLASS_RST_FILES})
-
-add_custom_target(base-class-schema-sources
-                  DEPENDS ${BASE_CLASS_SCH_PART_FILES})
 
 #-----------------------------------------------------------------------------
 # configure and install the nxdlformat.xsl file
