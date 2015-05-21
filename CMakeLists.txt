@@ -139,7 +139,6 @@ add_subdirectory (contributed_definitions)
 add_subdirectory (applications)
 add_subdirectory (schema)
 add_subdirectory (manual)
-#add_subdirectory (validate_cmdline)
 
 #-----------------------------------------------------------------------------
 # install license for definitions and manual
