@@ -56,7 +56,7 @@ add_custom_target(latexdoc
     DEPENDS  ${RST_TARGETS}   
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
-add_custom_target(pdfdoc  
+add_custom_target(pdfdoc 
     COMMAND make
     DEPENDS  ${RST_TARGETS} latexdoc
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/pdf)

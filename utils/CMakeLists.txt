@@ -30,8 +30,6 @@ set(FILES dev_nxdl2rst.py
           nxdl_desc2rst.py
           nxxref.py
           types2rst.py
-          xmlstrip.py
-          partmerge.py
           units2rst.py)
 
 foreach(F ${FILES})
