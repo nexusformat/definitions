@@ -49,14 +49,6 @@ install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html
         DESTINATION ${NEXUS_MANUAL})
 
 #-----------------------------------------------------------------------------
-# Build the epub target - maybe there is not to much need to install this
-#-----------------------------------------------------------------------------
-add_custom_target(epubdoc ALL 
-    COMMAND sphinx-build -b epub source epub 
-    DEPENDS  ${RST_TARGETS}   
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
-
-#-----------------------------------------------------------------------------
 # Build PDF documentation
 #-----------------------------------------------------------------------------
 add_custom_target(latexdoc 
