@@ -184,7 +184,7 @@ def printAttribute( ns, kind, node, indent ):
 def printIfDeprecated( ns, node, indent ):
     deprecated = node.get('deprecated', None)
     if deprecated is not None:
-        print( '%s.. index:: deprecated\n' % indent)
+        print( '\n%s.. index:: deprecated\n' % indent)
         fmt = '\n%s**DEPRECATED**: %s\n'
         print( fmt % (indent, deprecated ) )
 
@@ -273,12 +273,13 @@ def main():
     lexical_name = re.sub( r'_', ' ', lexical_name )
     
     # retrieve category from directory
-    subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
+    #subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
+    subdir = root.attrib["category"]
     # TODO: check for consistency with root.get('category')
     category_for_listing = {
-                 'base_classes': 'base class',
-                 'applications': 'application definition',
-                 'contributed_definitions': 'contributed definition',
+                 'base': 'base class',
+                 'application': 'application definition',
+                 'contributed': 'contributed definition',
                  }[subdir]
 
     # print ReST comments and section header

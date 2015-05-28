@@ -1,5 +1,5 @@
 ## Process this file with cmake
-#====================================================================
+#=============================================================================
 #  NeXus - Neutron & X-ray Common Data Format
 #  
 #  CMakeLists for building the NeXus library and applications.
@@ -24,7 +24,7 @@
 #  For further information, see <http://www.nexusformat.org>
 #
 #
-#====================================================================
+#=============================================================================
 
 
 set(APPLICATION_FILES 
@@ -63,14 +63,45 @@ set(APPLICATION_FILES
     NXxrot.nxdl.xml
 )
 
-set(APPLICATION_SOURCE ${CMAKE_SOURCE_DIR}/applications)
 
-set(APPLICATION_DIST ${CMAKE_BINARY_DIR}/dist/applications)
+set(APPLICATIONS_RST_FILES)
+set(APPLICATIONS_RST_DIR "${CMAKE_BINARY_DIR}/manual/source/classes/applications")
 
-add_custom_target(CheckApplicationClasses ALL COMMENT "Checking application classes")
+#need to copy this file as it is required by the documentation
+configure_file(NXmonopd.nxdl.xml 
+               ${APPLICATIONS_RST_DIR}/NXmonopd.nxdl.xml COPYONLY)
 
-configure_nxdl(CheckApplicationClasses "${APPLICATION_SOURCE}" "${APPLICATION_DIST}" "${APPLICATION_FILES}")
-
+#-----------------------------------------------------------------------------
+# process the application definition files
+#-----------------------------------------------------------------------------
 foreach(F ${APPLICATION_FILES})
-    install(FILES ${APPLICATION_DIST}/${F} DESTINATION ${NEXUS_DEFINITIONS}/applications COMPONENT definitions)
+    configure_file(${F} ${F} @ONLY)
+   
+    #-------------------------------------------------------------------------
+    # build the RST files for the documentation
+    #-------------------------------------------------------------------------
+    #assemble the name of the base class file
+    string(REPLACE ".nxdl.xml" ".rst" APPLICATION_RST_FILE ${F})
+    set(APPLICATION_RST_FILE "${APPLICATIONS_RST_DIR}/${APPLICATION_RST_FILE}")
+    list(APPEND APPLICATIONS_RST_FILES ${APPLICATION_RST_FILE})
+    
+    # build the RST file from the NXDL file
+    add_custom_command(
+        OUTPUT ${APPLICATION_RST_FILE}
+        COMMAND python ${NXDL2RST} ${F} > ${APPLICATION_RST_FILE}
+        DEPENDS ${F} ${NXDL2RST}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+    #-------------------------------------------------------------------------
+    # install the nxdl files
+    #-------------------------------------------------------------------------
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${F} 
+            DESTINATION ${NEXUS_DEFINITIONS}/applications 
+            COMPONENT definitions)
+
 endforeach()
+
+#this target ensures that the application RST files are created before 
+#the documentation is built
+add_custom_target(applications-manual-sources 
+                  DEPENDS ${APPLICATIONS_RST_FILES})

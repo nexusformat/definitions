@@ -1,10 +1,9 @@
-## Process this file with cmake
-#====================================================================
+#=============================================================================
 #  NeXus - Neutron & X-ray Common Data Format
 #  
 #  CMakeLists for building the NeXus library and applications.
 #
-# Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
 #  
 #  This library is free software; you can redistribute it and/or
 #  modify it under the terms of the GNU Lesser General Public
@@ -24,10 +23,10 @@
 #  For further information, see <http://www.nexusformat.org>
 #
 #
-#====================================================================
+#============================================================================
 
 add_subdirectory(base_classes)
 add_subdirectory(applications)
 add_subdirectory(contributed_definitions)
 
-add_custom_target(manual-classes DEPENDS manual-base manual-applications manual-contributed)
+configure_file(index.rst index.rst COPYONLY)

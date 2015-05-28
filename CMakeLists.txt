@@ -1,5 +1,5 @@
 ## Process this file with cmake
-#====================================================================
+#=============================================================================
 #  NeXus - A common data format for neutron, x-ray and muon science.
 #  
 #  CMakeLists for building the NeXus library and applications.
@@ -24,7 +24,11 @@
 #  For further information, see <http://www.nexusformat.org>
 #
 #
-#====================================================================
+#=============================================================================
+
+#=============================================================================
+#                   BUILD CONFIGURATION
+#=============================================================================
 
 # we need 2.8.8 for correct component install with CPACK for archives
 if(WIN32)
@@ -32,137 +36,108 @@ if(WIN32)
 else()
     cmake_minimum_required (VERSION 2.8.0)
     if (${CMAKE_VERSION} VERSION_LESS 2.8.4)
-        set(CMAKE_LEGACY_CYGWIN_WIN32 0) # Remove this line when CMake >= 2.8.4 is required
+        # Remove this line when CMake >= 2.8.4 is required
+        set(CMAKE_LEGACY_CYGWIN_WIN32 0) 
     endif()
 endif()
 
-project(NeXusDefinitions)
+project(NeXusDefinitions LANGUAGES NONE)
 
-# include NXDL release number information
-include(cmake_include/nxdl_release.cmake)
-
+#set cmake module path
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_include)
 
-function(configure_release TARGET INFILE OUTFILE)
-	get_filename_component(F ${INFILE} NAME)
-	add_custom_command(OUTPUT "${OUTFILE}" COMMAND ${CMAKE_COMMAND} -DINPUT_FILE="${INFILE}" -DOUTPUT_FILE="${OUTFILE}" -DMATCH_STRING="\@NXDL_RELEASE\@" -DREPLACE_STRING="${NXDL_RELEASE}" -P "${CMAKE_SOURCE_DIR}/cmake_include/replace.cmake" DEPENDS "${INFILE}" "${CMAKE_BINARY_DIR}/CMakeCache.txt" COMMENT "Rebuilding ${F}")
-	add_custom_target(${TARGET}-${F} DEPENDS "${OUTFILE}")
-	add_dependencies(${TARGET} ${TARGET}-${F})
-endfunction()
+#-----------------------------------------------------------------------------
+# Search for required packages
+#-----------------------------------------------------------------------------
+find_package(LATEX)
+find_package(PythonInterp)
+find_package(Sphinx REQUIRED)
 
-function(configure_nxdl TARGET NXDL_DIR DIST_DIR NXDL_FILES)
-    foreach(F ${NXDL_FILES})
-		set(NXDL ${NXDL_DIR}/${F})
-		configure_release(${TARGET} ${NXDL} ${DIST_DIR}/${F})
-    endforeach()
-    configure_release(${TARGET} ${NXDL_DIR}/nxdlformat.xsl ${DIST_DIR}/nxdlformat.xsl)
-endfunction()
+#-----------------------------------------------------------------------------
+# Search for required programs
+#-----------------------------------------------------------------------------
+find_program(DBLATEX dblatex)
+find_program(XSLTPROC xsltproc )
 
-#
-# convert a native windows path to its equivalent cygwin path
-#
-function(to_cygwin_path PATH RESULT)
-    file(TO_CMAKE_PATH ${PATH} CP)								# changes \ to / on windows
-    string(REGEX REPLACE "^([a-zA-Z]):/" "/\\1/" CP2 ${CP})   	# c:/ -> /c/
-	set(${RESULT} "/cygdrive${CP2}" PARENT_SCOPE) 				# /c/ -> /cygdrive/c/
-endfunction()
+#-----------------------------------------------------------------------------
+# include NXDL release number information
+# This file provides three variables: 
+# -> NXDL_MAJOR_RELEASE
+# -> NXDL_MINOR_RELEASE
+# -> NXDL_RELEASE
+#-----------------------------------------------------------------------------
+include(cmake_include/nxdl_release.cmake)
 
-set(XSD_FILES NeXus.xsd nxdl.xsd nxdlTypes.xsd BASE.xsd)
-add_custom_target("DoXSD" ALL)
-foreach(F ${XSD_FILES})
-    configure_release("DoXSD" ${CMAKE_SOURCE_DIR}/${F} ${CMAKE_BINARY_DIR}/dist/${F})
-endforeach()
 
 option (BUILD_SPHINX "Build documentation using sphinx" ON)
 
-# CMAKE_INSTALL_PREFIX is only used if CMAKE_SET_DESTDIR is true,
-# so it will not be used in zip and tgz packages
-if(UNIX)
-    set(CMAKE_INSTALL_PREFIX "/usr/share/nexus/" CACHE PATH "")
-endif()
-set(NEXUS_DEFINITIONS "definitions")
-set(NEXUS_MANUAL "manual")
+include(GNUInstallDirs)
 
-find_package(PythonInterp)
+set(NEXUS_DEFINITIONS "${CMAKE_INSTALL_DATADIR}/nexus/definitions")
+set(NEXUS_MANUAL "${CMAKE_INSTALL_DATADIR}/doc/nexus-reference")
 
-if (WIN32)
-    find_program(XSLTPROC xsltproc PATHS "${CMAKE_SOURCE_DIR}/utils/win32")
-else(WIN32)
-    find_program(XSLTPROC xsltproc )
-endif()
-find_program(SVNVERSION svnversion)
+set(TYPES2RST    "${CMAKE_BINARY_DIR}/utils/types2rst.py")
+set(UNITS2RST    "${CMAKE_BINARY_DIR}/utils/units2rst.py")
+set(NXDLDESC2RST "${CMAKE_BINARY_DIR}/utils/nxdl_desc2rst.py")
+set(NXDL2RST     "${CMAKE_BINARY_DIR}/utils/nxdl2rst.py")
 
-# needed for windows NSIS installer
-file(TO_NATIVE_PATH ${CMAKE_SOURCE_DIR} CMAKE_SOURCE_DIR_NATIVE) 
-file(TO_NATIVE_PATH ${CMAKE_BINARY_DIR} CMAKE_BINARY_DIR_NATIVE) 
-string(REPLACE "\\" "\\\\" CMAKE_SOURCE_DIR_NATIVE_D ${CMAKE_SOURCE_DIR_NATIVE})
-string(REPLACE "\\" "\\\\" CMAKE_BINARY_DIR_NATIVE_D ${CMAKE_BINARY_DIR_NATIVE})
+#==============================================================================
+#              DEALING WITH FILES IN THE ROOT DIRECTORY
+#==============================================================================
 
-#configure_file("${PROJECT_SOURCE_DIR}/utils/win32/dblatex_win.bat.in"
-#                                "${PROJECT_BINARY_DIR}/dblatex_win.bat"
-#                                @ONLY)
+#------------------------------------------------------------------------------
+# configure and install xsd files
+#------------------------------------------------------------------------------
+set(XSD_FILES nxdl.xsd nxdlTypes.xsd)
+add_custom_target("DoXSD" ALL)
+foreach(F ${XSD_FILES})
+    configure_file(${F} ${F} @ONLY)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${F} 
+            DESTINATION ${NEXUS_DEFINITIONS}
+            COMPONENT definitions)
+endforeach()
+
+#we need to generate some files from the xsd files which will be used in the 
+#documentation
+add_custom_command(OUTPUT manual/source/types.table
+    COMMAND python ${TYPES2RST} nxdlTypes.xsd > manual/source/types.table
+     DEPENDS nxdlTypes.xsd ${TYPES2RST}
+     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+add_custom_command(OUTPUT manual/source/units.table
+    COMMAND python ${UNITS2RST} nxdlTypes.xsd > manual/source/units.table
+    DEPENDS nxdlTypes.xsd ${UNITS2RST}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+
+add_custom_command(OUTPUT manual/source/nxdl_desc.rst
+    COMMAND python ${NXDLDESC2RST} nxdl.xsd > manual/source/nxdl_desc.rst
+    DEPENDS nxdl.xsd ${NXDLDESC2RST}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
 
 
-if(WIN32)
-# we use cygwin on windows for dblatex etc
-	find_program(CYGPATH_EXECUTABLE cygpath PATHS "c:/cygwin" PATH_SUFFIXES "bin" DOC "CYGWIN cygpath program") 
-	get_filename_component(CYGPATHDIR "${CYGPATH_EXECUTABLE}" PATH) 
-	get_filename_component(CYGDIR "${CYGPATHDIR}/.." ABSOLUTE)
-	file(TO_NATIVE_PATH ${CYGDIR} CYGDIR_NATIVE)
-	configure_file("${PROJECT_SOURCE_DIR}/utils/win32/dblatex_cygwin.bat.in"
-                                "${PROJECT_BINARY_DIR}/dblatex_cygwin.bat"
-                                @ONLY)
-	if(IS_DIRECTORY "${CYGDIR}" AND EXISTS "${CYGDIR}/bin/dblatex")
-		set(DBLATEX "${PROJECT_BINARY_DIR}/dblatex_cygwin.bat")
-	else()
-		message(WARNING "CYGWIN dblatex NOT FOUND - no PDF documentation")
-	endif()
-else()
-	find_package(LATEX)
-	find_program(DBLATEX dblatex)
-endif()
+ add_custom_target(xds-manual-source ALL
+                   DEPENDS manual/source/types.table
+                           manual/source/units.table
+                           manual/source/nxdl_desc.rst)
 
+
+#-----------------------------------------------------------------------------
 # Recurse into the subdirectories.
-#add_subdirectory (tutorial)
+#-----------------------------------------------------------------------------
+add_subdirectory (utils)
 add_subdirectory (base_classes)
 add_subdirectory (contributed_definitions)
 add_subdirectory (applications)
-add_subdirectory (schema)
 add_subdirectory (manual)
-add_subdirectory (validate_cmdline)
 
-foreach(F ${XSD_FILES})
-    INSTALL(FILES ${CMAKE_BINARY_DIR}/dist/${F} DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
-endforeach()
+#-----------------------------------------------------------------------------
+# install license for definitions and manual
+#-----------------------------------------------------------------------------
+configure_file(LGPL.txt manual/source/LGPL.txt COPYONLY)
+install(FILES LGPL.txt 
+        DESTINATION ${NEXUS_DEFINITIONS} 
+        COMPONENT definitions)
+install(FILES LGPL.txt 
+        DESTINATION ${NEXUS_MANUAL} 
+        COMPONENT manual)
 
-FILE(GLOB XSLT_FILES "xslt/*.xsl")
-INSTALL(FILES ${XSLT_FILES} DESTINATION ${NEXUS_DEFINITIONS}/xslt COMPONENT definitions)
-
-INSTALL(FILES LGPL.txt DESTINATION ${NEXUS_DEFINITIONS} COMPONENT definitions)
-INSTALL(FILES LGPL.txt DESTINATION ${NEXUS_MANUAL} COMPONENT manual)
-
-#
-# set CPack packaging options
-#
-configure_file("${PROJECT_SOURCE_DIR}/nexus_definitions.spec.in"
-                                "${PROJECT_BINARY_DIR}/nexus_definitions.spec"
-                                @ONLY)
-configure_file("${PROJECT_SOURCE_DIR}/CPackOptions.cmake.in"
-                                "${PROJECT_BINARY_DIR}/CPackOptions.cmake"
-                                @ONLY)
-set (CPACK_PROJECT_CONFIG_FILE "${PROJECT_BINARY_DIR}/CPackOptions.cmake")
-set (CPACK_GENERATOR TGZ) # not use ZIP on UNIX as problem with symlinks
-set (CPACK_SOURCE_GENERATOR TGZ) # not use ZIP on UNIX as problem with symlinks
-if(WIN32)
-    set (CPACK_GENERATOR ${CPACK_GENERATOR};ZIP;NSIS)
-    set (CPACK_SOURCE_GENERATOR ${CPACK_SOURCE_GENERATOR};ZIP) 
-elseif(APPLE)
-    set (CPACK_GENERATOR ${CPACK_GENERATOR};PackageMaker)
-elseif(CYGWIN)
-    set (CPACK_GENERATOR ${CPACK_GENERATOR};CygwinBinary)
-#    set (CPACK_SOURCE_GENERATOR ${CPACK_SOURCE_GENERATOR};CygwinSource) 
-elseif(UNIX)
-    set (CPACK_GENERATOR ${CPACK_GENERATOR};DEB;RPM)
-endif()
-# Include of CPack must always be last
-include(CPack)

@@ -1,5 +1,5 @@
 ## Process this file with cmake
-#====================================================================
+#=============================================================================
 #  NeXus - Neutron & X-ray Common Data Format
 #  
 #  CMakeLists for building the NeXus library and applications.
@@ -24,7 +24,7 @@
 #  For further information, see <http://www.nexusformat.org>
 #
 #
-#====================================================================
+#=============================================================================
 
 set(CONTRIBUTED_FILES 
     NXcanSAS.nxdl.xml
@@ -38,13 +38,33 @@ set(CONTRIBUTED_FILES
     NXspin_rotator.nxdl.xml
 )
 
-set(CONTRIBUTED_SOURCE ${CMAKE_SOURCE_DIR}/contributed_definitions)
+add_subdirectory(canSAS)
 
-set(CONTRIBUTED_DIST ${CMAKE_BINARY_DIR}/dist/contributed_definitions)
-
-add_custom_target(CheckContributedClasses ALL COMMENT "Checking contributed classes")
-configure_nxdl(CheckContributedClasses "${CONTRIBUTED_SOURCE}" "${CONTRIBUTED_DIST}" "${CONTRIBUTED_FILES}")
+set(CONTRIBUTED_RST_FILES)
+set(CONTRIBUTED_RST_DIR
+    "${CMAKE_BINARY_DIR}/manual/source/classes/contributed_definitions")
 
 foreach(F ${CONTRIBUTED_FILES})
-    install(FILES ${CONTRIBUTED_DIST}/${F} DESTINATION ${NEXUS_DEFINITIONS}/contributed_definitions  COMPONENT definitions)
+    configure_file(${F} ${F} @ONLY)
+    
+    #assemble the name of the constributed class file
+    string(REPLACE ".nxdl.xml" ".rst" CONTRIBUTED_RST_FILE ${F})
+    set(CONTRIBUTED_RST_FILE "${CONTRIBUTED_RST_DIR}/${CONTRIBUTED_RST_FILE}")
+    list(APPEND CONTRIBUTED_RST_FILES ${CONTRIBUTED_RST_FILE})
+
+
+    # build the RST file from the NXDL file
+    add_custom_command(
+        OUTPUT ${CONTRIBUTED_RST_FILE}
+        COMMAND python ${NXDL2RST} ${F} > ${CONTRIBUTED_RST_FILE}
+        DEPENDS ${F} ${NXDL2RST}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+    
+
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${F}
+            DESTINATION ${NEXUS_DEFINITIONS}/contributed_definitions
+            COMPONENT definitions)
 endforeach()
+
+add_custom_target(contributed-manual-sources DEPENDS ${CONTRIBUTED_RST_FILES})
+

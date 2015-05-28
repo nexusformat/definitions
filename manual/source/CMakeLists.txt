@@ -1,5 +1,4 @@
-## Process this file with cmake
-#====================================================================
+#=============================================================================
 #  NeXus - Neutron & X-ray Common Data Format
 #  
 #  CMakeLists for building the NeXus library and applications.
@@ -24,40 +23,62 @@
 #  For further information, see <http://www.nexusformat.org>
 #
 #
-#====================================================================
+#==============================================================================
 
+add_subdirectory(img)
+add_subdirectory(_static)
+add_subdirectory(_templates)
 add_subdirectory(classes)
+add_subdirectory(examples)
 
-file(COPY "${CMAKE_SOURCE_DIR}/LGPL.txt" DESTINATION "${CMAKE_CURRENT_BINARY_DIR}")
+set(FILES applying-nexus.rst
+          authorgroup.rst
+          colophon.rst
+          community.rst
+          copyright.rst
+          datarules.rst
+          defs_intro.rst
+          design.rst
+          docs_about.rst
+          faq.rst
+          fileformat.rst
+          github.rst
+          history.rst
+          index.rst
+          installation.rst
+          introduction-napi.rst
+          introduction.rst
+          issues.rst
+          mailinglist.rst
+          motivations.rst
+          napi-c.rst
+          napi-f77.rst
+          napi-f90.rst
+          napi-idl.rst
+          napi-java.rst
+          napi-python.rst
+          napi.rst
+          nexuslogo.png
+          niac.rst
+          nxdl.rst
+          nxdl-types.rst
+          preface.rst
+          ref_doc.rst
+          revhistory.rst
+          rules.rst
+          strategies.rst
+          user_manual.rst
+          utilities.rst
+          validation.rst
+          FDL
+          NeXusIntern.pdf
+          )
 
-add_custom_target(manual-source ALL)
-add_dependencies(manual-source manual-classes types.table-manual-source units.table-manual-source nxdl_desc.rst-manual-source)
+foreach(F ${FILES})
+    configure_file(${F} ${F} COPYONLY)
+endforeach()
 
-add_custom_command(
-    OUTPUT types.table 
-	COMMAND ${PYTHON} 
-	ARGS ${CMAKE_SOURCE_DIR}/utils/types2rst.py ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd > types.table 
-	DEPENDS ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd ${CMAKE_SOURCE_DIR}/utils/types2rst.py
-)
-add_custom_target(types.table-manual-source DEPENDS types.table)
-set_target_properties(types.table-manual-source PROPERTIES OUTPUT_NAME types.table)
+configure_file(conf.py.in conf.py @ONLY)
 
-add_custom_command(
-    OUTPUT units.table 
-	COMMAND ${PYTHON} 
-	ARGS ${CMAKE_SOURCE_DIR}/utils/units2rst.py ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd > units.table 
-	DEPENDS ${CMAKE_SOURCE_DIR}/nxdlTypes.xsd ${CMAKE_SOURCE_DIR}/utils/units2rst.py
-)
-add_custom_target(units.table-manual-source DEPENDS units.table)
-set_target_properties(units.table-manual-source PROPERTIES OUTPUT_NAME units.table)
 
-add_custom_command(
-    OUTPUT nxdl_desc.rst 
-	COMMAND ${PYTHON} 
-	ARGS ${CMAKE_SOURCE_DIR}/utils/nxdl_desc2rst.py ${CMAKE_SOURCE_DIR}/nxdl.xsd > nxdl_desc.rst 
-	DEPENDS ${CMAKE_SOURCE_DIR}/nxdl.xsd ${CMAKE_SOURCE_DIR}/utils/nxdl_desc2rst.py
-)
-add_custom_target(nxdl_desc.rst-manual-source DEPENDS nxdl_desc.rst)
-set_target_properties(nxdl_desc.rst-manual-source PROPERTIES OUTPUT_NAME nxdl_desc.rst)
 
-SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES types.table;units.table;nxdl_desc.rst)
