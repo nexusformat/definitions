@@ -41,7 +41,7 @@ else()
     endif()
 endif()
 
-project(NeXusDefinitions LANGUAGES NONE)
+project(NeXusDefinitions  NONE)
 
 #set cmake module path
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake_include)
