@@ -25,8 +25,8 @@
 #
 #==============================================================================
 
-set(FILES layout.html)
-
-foreach(F ${FILES})
-    configure_file(${F} ${F} COPYONLY)
-endforeach()
+# set(FILES layout.html)
+#
+# foreach(F ${FILES})
+#     configure_file(${F} ${F} COPYONLY)
+# endforeach()
