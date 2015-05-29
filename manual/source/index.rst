@@ -33,6 +33,7 @@ This manual built |today|.
    
    :online HTML:
    	http://download.nexusformat.org/doc/html/index.html
+
    ..  2015-05-29,prj: PDF available separately
       :PDF:
          :download:`nexus.pdf` (available via online HTML link above)
