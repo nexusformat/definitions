@@ -30,7 +30,7 @@ are limited to the committee members, but the archives are public.
 + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-committee
 + Archive: http://lists.nexusformat.org/pipermail/nexus-committee
 
-.. _NeXus.mailinglist.niac:
+.. _NeXus.teleconference.niac:
 
 NeXus Video Conference Announcements
 ====================================
