@@ -34,7 +34,7 @@ h5link(filename,'/entry/instrument/detector/counts','/entry/data/counts');
 h5writeatt(filename,'/','file_name',filename);
 h5writeatt(filename,'/','file_time',timestamp);
 h5writeatt(filename,'/','instrument','APS USAXS at 32ID-B');
-h5writeatt(filename,'/','creator','$Id: basic_writer.m 670 2010-10-27 03:49:23Z Pete Jemian $');
+h5writeatt(filename,'/','creator','writer_2_1.m');
 h5writeatt(filename,'/','NeXus_version','4.3.0');
 h5writeatt(filename,'/','HDF5_Version','1.6'); % no 1.8 features used in this example
 h5writeatt(filename,'/entry','NX_class','NXentry');
