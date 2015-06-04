@@ -9,6 +9,8 @@ from the top source directory:
     cd build
     cmake ..
     make
+    # -or-
+    cmake --build . --target htmldoc
     make install  #  or   make install DESTDIR=/some/where    for testing
     make package  #  build install kit
 
