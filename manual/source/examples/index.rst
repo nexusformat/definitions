@@ -39,4 +39,5 @@ supported by NeXus (HDF4, HDF5, or XML).
 
 	code_native
 	h5py/index
+	matlab/index
 	lrmecs/index
