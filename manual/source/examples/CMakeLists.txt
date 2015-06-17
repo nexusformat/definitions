@@ -98,6 +98,7 @@ set(FILES  abbreviated-nexus-file.xml.txt
           )
 
 add_subdirectory(lrmecs)
+add_subdirectory(matlab)
 add_subdirectory(h5py)
 
 foreach(F ${FILES})
