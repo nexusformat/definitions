@@ -189,7 +189,7 @@ the red circle only maps to one other format.
 
 One early idea has been for NeXus to become the common data exchange format,
 and thereby reduce the number of data conversion routines from
-*N * N-1* down to *2N*, as shown in
+*N * (N-1)* down to *2N*, as shown in
 :ref:`fig.data-post-nexus`.
 
 .. compound::
