@@ -171,9 +171,8 @@ differences in computer systems and the compression schemes of binary data. It w
 necessary to contact the facility to obtain a description so that one could write an
 import routine in software. Experience with facilities closing (and subsequent lack of
 access to information describing the facility data format) revealed a significant
-limitation with this common practice.  Further, there existed a
-*N * N* number of conversion routines necessary to convert
-data between various formats.
+limitation with this common practice.  Further, a large number of conversion routines 
+was necessary to convert data between various formats.
 In :ref:`fig.data-pre-nexus`, circles represent different
 data file formats while arrows represent conversion routines.  Note that
 the red circle only maps to one other format.
@@ -190,14 +189,14 @@ the red circle only maps to one other format.
 
 One early idea has been for NeXus to become the common data exchange format,
 and thereby reduce the number of data conversion routines from
-*N * N* down to *2N*, as show in
+*N * N-1* down to *2N*, as shown in
 :ref:`fig.data-post-nexus`.
 
 .. compound::
 
     .. _fig.data-post-nexus:
 
-    .. figure:: img/data-post-nexus.jpg
+	    .. figure:: img/data-post-nexus.jpg
         :alt: fig.data-post-nexus
         :width: 35%
 
