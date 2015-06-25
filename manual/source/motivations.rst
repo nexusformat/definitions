@@ -196,7 +196,7 @@ and thereby reduce the number of data conversion routines from
 
     .. _fig.data-post-nexus:
 
-	    .. figure:: img/data-post-nexus.jpg
+    .. figure:: img/data-post-nexus.jpg
         :alt: fig.data-post-nexus
         :width: 35%
 
