@@ -72,6 +72,7 @@ set(FILES applying-nexus.rst
           validation.rst
           FDL
           NeXusIntern.pdf
+          detectors.txt
           )
 
 foreach(F ${FILES})

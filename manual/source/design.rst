@@ -835,6 +835,8 @@ This is also a nice example of the application of transformation matrices:
 #. This also moves the direction of the *z* vector.
    Along which you translate the component to place by distance.
 
+.. include:: detectors.txt
+
 ..  
     .. _Size-Shape:
     
@@ -872,6 +874,7 @@ This is also a nice example of the application of transformation matrices:
     specified then the reference point would be elsewhere in the object, with its
     distance from the cylinder edges along the various axes given by elements of the
     ``size[6]`` array.
+
 
 
 

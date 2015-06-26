@@ -47,6 +47,8 @@ set(FILES Coordinates.png
           translation-orientation-geometry-2.jpg
           translation-orientation-geometry.jpg
           woni-powderimage.png
+          detector_origin.png
+          detector_axes.png
           woni-schematic.png)
 
 add_subdirectory(nxdl)
