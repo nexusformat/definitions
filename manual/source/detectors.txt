@@ -26,7 +26,7 @@ detectors local coordinate frame. As this area is typically of circular shape
 the ``diameter`` field of ``NXdetector`` can be used to describe all required
 geometrical properties of such a detector. 
 
-Strip (:math:`1` dimensional) detector require slightly more work. The origin 
+Strip (1 dimensional) detector require slightly more work. The origin 
 of such a detector lies in the first pixel of the data stream and the 
 :math:`x`-axis's positive direction point along the read out direction. 
 
@@ -50,7 +50,7 @@ compute with
 where :math:`i` is running from :math:`0\dots N-1` for a detector with :math:`N`
 pixels.
 
-For area (:math:`2` dimensional) detectors the origin of the detectors local 
+For area (2 dimensional) detectors the origin of the detectors local 
 coordinate frame is (as for strip detectors) the first pixel in the data stream. 
 
     .. figure:: img/2d_detector_coordinate_frame.png
@@ -58,7 +58,7 @@ coordinate frame is (as for strip detectors) the first pixel in the data stream.
        :scale: 40%
 
        The red pixel denotes the origin of the coordinate frame of this 
-       area detector. Which is the first pixel in the detectors data stream (the
+       area detector, which is the first pixel in the detectors data stream (the
        green line in this figure denotes the read-out direction of the detector). 
        The positive x-direction of the detectors local coordinate frame is 
        determined by the direction of the slower dimension while the
@@ -82,9 +82,60 @@ It follows from the definition of the coordinate directions that pixel
 positions always reside within the positive quadrant of the detectors 
 local Cartesian coordinate frame.
 
+Finally, for a 3 dimensional detector 
+
+    .. figure:: img/3d_detector_coordinate_frame.png
+       :align: center
+       :scale: 40%
+
+       As for all other detectors the origin of the detector local coordinate
+       frame is determined by the position of the first pixel in the data 
+       data stream of the detector (here denoted by the red pixel at the left
+       bottom). The fastest dimension is the z-axis and its direction is
+       determined by the read-out direction of the detector. The y- and 
+       the x-direction are the fast and the slowest direction 
+       respectively.
+
+As a general rule of thumb for all detectors one can say that every dimension
+added becomes the fastest. The order in which directions are asociated with
+theses directions are :math:`x`, :math:`y`, and :math:`z`. For a 1D detector the
+fastest direction is :math:`x`, for a 2D detector :math:`y`, and for a 3D
+detector :math:`z`. 
+
+Multimodule detectors
+=====================
+
+In many cases the image recorded during an experiment is not recorded 
+by a single chip in a detector but by an array of individual chips (modules). 
+There are basically two possibilities how to handle such setups
+ - every detector module can be considered as an individual detector and is
+   stored in its own instance of `NXdetector` or even in a separate file.
+ - the detector hardware delivers a single image frame where all modules 
+   are collated in a single data array. 
+
+`NXdetector_module` provides the means to handle the latter case where the
+detector hardware delivers a single array containing the data content 
+of every module. Currently `NXdetector` module can only deal with 
+planar module configurations.  
+
+As a matter of fact, every instance of `NXdetector` except for 0D point
+detectors, must contain at least one instance of `NXdetector_module` as every
+detector contains at least one module.
+
 
 Coordinate transformations
 ==========================
+
+It follows immediately from the above text that the coordinate of a pixel 
+in the detectors local frame can be easily derived from the pixels index. 
+Howver, for most applications the position of a pixel in the laboratory 
+frame is required. The information required to carry out this 
+transformation is scattered over three classes 
+ - fields in ``NXdetector``
+For most applications it is necessary to tranform the position of a pixel 
+from the detectors local frame to the laboratory frame of the experiment. 
+The axes involved in such a transformation are provided by a local 
+instance of ``NXtransformation`` within ``NXdetector``.
 
 The local coordinate frame allows the computation of the coordinates of each
 pixel in the local frame of the detector. However, in most applications the 

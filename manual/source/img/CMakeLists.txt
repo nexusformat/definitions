@@ -48,6 +48,7 @@ set(FILES Coordinates.png
           translation-orientation-geometry.jpg
           woni-powderimage.png
           2d_detector_coordinate_frame.png
+          3d_detector_coordinate_frame.png
           1d_detector_coordinate_frame.png
           woni-schematic.png)
 
