@@ -1,29 +1,99 @@
 Working with detectors
 ######################
 
-The detector coorindate frame
-=============================
-The origin of a detectors coordinate frame is located in the first pixel of
-in the data stream of the detector.
+Nexus supports a wide variety of different detector types which are all covered
+by the ``NXdetector`` class. However, most detectors can be reduced to one of
+the following four types
 
-    .. figure:: img/detector_origin.png
+    * :math:`0`-dimensional point detectors
+    * :math:`1`-dimensional strip detectors
+    * :math:`2`-dimensional area detectors
+    * :math:`3`-dimensional whatever you call this mess
+
+The ``layout`` field of ``NXdetector`` determines to which of theses four basic 
+types a detector belongs too. Currently on the first three are supported (with 
+``layout`` set to ``point``, ``linear``, or ``area``).
+
+The detector coordinate frame
+=============================
+Every detector is associated with a local coordinate frame. The definition of
+the directions of this frame depends on what kind of detector we are dealing
+with. 
+
+For a point detector the situation is simple. The sensitive area of the detector 
+can be considered as a single pixel whose center denotes the origin of the
+detectors local coordinate frame. As this area is typically of circular shape 
+the ``diameter`` field of ``NXdetector`` can be used to describe all required
+geometrical properties of such a detector. 
+
+Strip (:math:`1` dimensional) detector require slightly more work. The origin 
+of such a detector lies in the first pixel of the data stream and the 
+:math:`x`-axis's positive direction point along the read out direction. 
+
+    .. figure:: img/1d_detector_coordinate_frame.png
        :align: center
+       :scale: 40%
+
+       The red pixel is the first in the detectors data stream and thus 
+       denotes the origin of the local coordinate frame. The positive
+       :math:`x`-direction runs along the pixels of the strip detector. 
+
+Let :math:`\Delta_x` and :math:`\Delta_y` be the size of each pixel in
+:math:`x`- and :math:`y`-direction and :math:`i` denote the pixel index along
+the :math:`x`-direction the position :math:`p_i` of each pixel center can be 
+compute with 
+
+    .. math::
+        
+        p_i = i\Delta_x
+
+where :math:`i` is running from :math:`0\dots N-1` for a detector with :math:`N`
+pixels.
+
+For area (:math:`2` dimensional) detectors the origin of the detectors local 
+coordinate frame is (as for strip detectors) the first pixel in the data stream. 
+
+    .. figure:: img/2d_detector_coordinate_frame.png
+       :align: center
+       :scale: 40%
 
        The red pixel denotes the origin of the coordinate frame of this 
-       area detector.
+       area detector. Which is the first pixel in the detectors data stream (the
+       green line in this figure denotes the read-out direction of the detector). 
+       The positive x-direction of the detectors local coordinate frame is 
+       determined by the direction of the slower dimension while the
+       y-direction by the fastest.  
 
-The situation is simple for a point detector (0 dimensional) which has only one
-pixel which is also the center of its local coordinate frame. 
+The positive directions of the :math:`x`- and :math:`y`-axis are determined by
+the direction of the slow and fast dimension of the detector respectively. Let
+:math:`\Delta_x` and :math:`\Delta_y` be the pixel size in :math:`x` and
+:math:`y` direction and :math:`i` and :math:`j` denote the pixel index in
+:math:`x` and :math:`y` direction respectively. With :math:`i\in\left{0\dots
+N-1\right}` and :math:`j\in\left{0\dots M-1\right}` for a detector of
+:math:`N\times M` pixels we can compute the spatial position :math:`p_{ij}` of
+every pixel within the local coordinate frame of the detector with
 
-After defining the origin of the detector frame also the other axes have to be
-defined.
+.. math::
+    
+    p_{i,j}=\left(i\Delta_x,j\Delta_y\right)
 
-    .. figure:: img/detector_axes.png
-       :align: center
 
-       The axes directions of the detector coordinate frame follow the same 
-       rules as the global coordinate frame. The z-axis is determined by the 
-       direction of the primary beam.
+It follows from the definition of the coordinate directions that pixel 
+positions always reside within the positive quadrant of the detectors 
+local Cartesian coordinate frame.
+
+
+Coordinate transformations
+==========================
+
+The local coordinate frame allows the computation of the coordinates of each
+pixel in the local frame of the detector. However, in most applications the 
+position of a pixel in the global coordinate frame relative to the sample is 
+required. In the case of a point detector this is fairly simple. A single 
+instance of ``NXtransformation`` within the detectors ``NXdetector`` instance 
+would provide us with sufficient information. 
+For all higher dimensional detectors more additional information is required 
+which maps the 
 
 
 Multimodule detectors
