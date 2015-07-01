@@ -113,39 +113,112 @@ There are basically two possibilities how to handle such setups
  - the detector hardware delivers a single image frame where all modules 
    are collated in a single data array. 
 
-`NXdetector_module` provides the means to handle the latter case where the
+``NXdetector_module`` provides the means to handle the latter case where the
 detector hardware delivers a single array containing the data content 
-of every module. Currently `NXdetector` module can only deal with 
+of every module. Currently ``NXdetector`` module can only deal with 
 planar module configurations.  
+The best way to understanding of ``NXdetector_module` is by means of an 
+example.
 
-As a matter of fact, every instance of `NXdetector` except for 0D point
-detectors, must contain at least one instance of `NXdetector_module` as every
-detector contains at least one module.
+    .. figure:: img/detector_module_1.png
+       :align: center
+       :scale: 40%
+
+       A simple multi module detector. The individual modules have a 
+       different size but are only shifted within the same plane 
+       with respect to each other. We assume here that the pixel size is 
+       :math:`1\times 1` in arbitrary units (do not use this for real 
+       data). The blue squares define the first pixel in each modules 
+       data stream. 
+
+The `NXdetector` instance for the above example would look like this
+    .. code-block:: xml
+       :linenos:
+
+       detector:NXdetector
+            module_1:NXdetector_module
+                data_origin:[0,0]
+                data_size:[6,16]
+
+                module_offset:0
+                    @transformation_type:translation
+                    @vector:[0,0,0]
+
+                fast_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[0,1,0]
+
+                slow_pixel_direction:1
+                    @transformation_type::translation
+                    @vector:[-1,0,0]
+
+            module_2:NXdetector_module
+                data_origin:[6,8]
+                data_size:[14,8]
+
+                module_offset:10
+                    @transformation_type:translation
+                    @vector:[0.6,0.8,0]
+
+                fast_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[0,1,0]
+
+                slow_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[-1,0,0]
+
+            module_3:NXdetector_module
+                data_origin:[6,0]
+                data_size:[14,8]
+                module_offset:6
+                    @transformation_type:translation
+                    @vector:[1,0,0]
+                
+                fast_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[0,1,0]
+
+                slow_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[-1,0,0]
+
+            module_4:NXdetector_module
+                data_origin:[20,0]
+                data_size:[6,16]
+                module_offset:20
+                    @transformation_type:translation
+                    @vector:[1,0,0]
+                
+                fast_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[0,1,0]
+
+                slow_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[-1,0,0]
+
+In this example we assume that the detector consists of 4 modules which are
+seamlessly connected together (there are no gaps between the module - which is
+very unlikely but ok for an example). The readout system provides a single image
+array comprising the content of each of the individual modules.  Each of the 
+modules is represented by its own instance of ``NXdetector_module``. 
+The ``data_origin`` and ``data_size`` determine the region in the array where to 
+find the data from a particular module while the ``module_offset`` describes the 
+physical offset between the modules. ``module_offset`` is given in terms of the 
+detector local coordinate frame. 
+
+The ``fast_pixel_direction`` and ``slow_pixel_direction`` provide the step width 
+between each of the pixels along a particular dimension. If there are no 
+gaps between the pixels (like in the above example) this number would be equal 
+to the pixel size. Be aware that the ``vector`` attribute of the 
+``slow_pixel_direction`` and ``fast_pixel_direction`` field is given in terms of
+the laboratory frame. These fields are thus not only useful to determine the
+step width between the pixels but, in addition, also determine along which axis
+the fast and slow pixel dimensions run in the laboratory frame.
 
 
-Coordinate transformations
-==========================
 
-It follows immediately from the above text that the coordinate of a pixel 
-in the detectors local frame can be easily derived from the pixels index. 
-Howver, for most applications the position of a pixel in the laboratory 
-frame is required. The information required to carry out this 
-transformation is scattered over three classes 
- - fields in ``NXdetector``
-For most applications it is necessary to tranform the position of a pixel 
-from the detectors local frame to the laboratory frame of the experiment. 
-The axes involved in such a transformation are provided by a local 
-instance of ``NXtransformation`` within ``NXdetector``.
+The ``module_offset`` field describes the physical offset between the different 
+modules (or chips) in the detector.
 
-The local coordinate frame allows the computation of the coordinates of each
-pixel in the local frame of the detector. However, in most applications the 
-position of a pixel in the global coordinate frame relative to the sample is 
-required. In the case of a point detector this is fairly simple. A single 
-instance of ``NXtransformation`` within the detectors ``NXdetector`` instance 
-would provide us with sufficient information. 
-For all higher dimensional detectors more additional information is required 
-which maps the 
-
-
-Multimodule detectors
-=====================

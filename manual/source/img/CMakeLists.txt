@@ -50,6 +50,7 @@ set(FILES Coordinates.png
           2d_detector_coordinate_frame.png
           3d_detector_coordinate_frame.png
           1d_detector_coordinate_frame.png
+          detector_module_1.png
           woni-schematic.png)
 
 add_subdirectory(nxdl)
