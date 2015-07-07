@@ -129,7 +129,7 @@ an array of several dimensions.
 .. _Design-Attributes:
 
 Attributes
-==========================
+==========
 
 Attributes are extra (meta-)information that are associated with particular
 groups or fields. They are used to annotate the data, e.g. with physical 
@@ -250,6 +250,15 @@ Links
 .. index::
    ! single: link target (internal attribute)
 
+.. sidebar:: Python h5py code to make NeXus links
+
+   The section titled :ref:`h5py-example-helpers` provides example
+   python code to create links (both internal and external)
+   in NeXus data files.  See the routines:
+   
+   * **makeLink()**
+   * **makeExternalLink()**
+
 Links are pointers to existing data somewhere else.
 The concept is very much like
 symbolic links in a unix filesystem.
@@ -271,6 +280,64 @@ a more descriptive representation of the concept of linking.
         :width: 60%
 
         Linking in a NeXus file
+
+NeXus links are HDF5 hard links with an additional ``target`` attribute.
+The ``target`` attribute is added to for NeXus distinguish the HDF5 path to the 
+*original* dataset.  (In truth, HDF5 makes no distinction which is 
+the original dataset.  But, when the file is viewed with a tool 
+such as *h5dump*, confusion often occurs over which dataset is 
+original and which is a link to the original.  Actually, both HDF5 paths
+point to the exact same dataset which exists at a specific offset in the HDF5 file.)
+
+Another example, the canonical location to store wavelength 
+(see :ref:`Strategies-wavelength`) has been::
+
+    /NXentry/NXinstrument/NXcrystal/wavelength
+
+Another location for this field that makes sense to many::
+
+    /NXentry/NXinstrument/NXmonochromator/wavelength
+
+These two fields might be hard linked together in a NeXus data file 
+(using named paths such ``/entry/instrument``)::
+
+    entry:NXentry
+        ...
+        instrument:NXinstrument
+        ...
+        crystal:NXcrystal
+            ...
+            wavelength:double = 154.
+                @target="/entry/instrument/crystal/wavelength"
+                @units="pm"
+        ...
+        monochromator:NXmonochromator
+            ...
+            wavelength --> "/entry/instrument/crystal/wavelength"
+
+It is possible that the linked field or group has a 
+different name than the original.  One obvious use of this capability 
+is to adapt to a specific requirement of an application definition.  
+For example, suppose some application definition required the 
+specification of wavelength as a field named *lambda* in the entry group.
+This requirement can be satisifed easily::
+
+    entry:NXentry
+        ...
+        instrument:NXinstrument
+        ...
+        crystal:NXcrystal
+            ...
+            wavelength:double = 154.
+                @target="/entry/instrument/crystal/wavelength"
+                @units="pm"
+        ...
+        monochromator:NXmonochromator
+            ...
+            wavelength --> "/entry/instrument/crystal/wavelength"
+        ...
+        lambda --> "/entry/instrument/crystal/wavelength"
+                
 
 .. index:: link; external file
 
@@ -507,7 +574,7 @@ that it is always possible to add more data to a file without breaking its compl
 .. _Design-CoordinateSystem:
 
 NeXus Coordinate Systems
-####################################################
+########################
 
 .. index::
     single: geometry
@@ -577,7 +644,7 @@ to be deprecated. For new projects, rather use the CIF approach.
 .. _Design-Coordinate-NXgeometry:
 
 McStas and ``NXgeometry`` System
-============================================================
+================================
 
 .. index::
     geometry
@@ -631,7 +698,7 @@ system described below.
 .. _Design-Coordinate-Spherical:
 
 Simple (Spherical Polar) Coordinate System
-======================================================================
+==========================================
 
 .. index::
     geometry
@@ -876,7 +943,7 @@ This is also a nice example of the application of transformation matrices:
 
 
 Rules and Underlying File Formats
-###################################
+#################################
 
 .. toctree::
 	:maxdepth: 1
