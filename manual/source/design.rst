@@ -423,18 +423,34 @@ But there are some base classes which have special uses which need to be mention
     The notion of a default plot of data is a basic motivation of NeXus.
 
 :ref:`NXlog`
-    ``NXlog`` is used to store time stamped data like the log of a temperature controller. Basically you give a start time,
+    ``NXlog`` is used to store time stamped data like the log of a temperature controller. 
+    Basically you give a start time,
     and arrays with a difference in seconds to the start time and the values read.
 
-:ref:`NXnote`
-    This group provides a place to store general notes, images, video or whatever. A mime type is stored together
-    with a binary blob of data. Please use this only for auxiliary information, for example an image of your sample,
-    or a photo of your boss.
+:ref:`NXcollection`
+   ``NXcollection`` is used to gather together any set of terms.
+   Anything (groups, fields, or attributes) placed in
+   an ``NXcollection`` group will not be validated.
+   One use is to use this as a container class for the various 
+   control system variables from a beamline or instrument.
 
-:ref:`NXgeometry`
+:ref:`NXnote`
+   This group provides a place to store general notes, images, video or 
+   whatever.  A mime type is stored together with a binary blob of data. 
+   Please use this only for auxiliary information, for example an image 
+   of your sample, or a photo of your boss.
+
+:ref:`NXtransformations`
+    ``NXtransformations`` is used to gather together any set of movable or fixed 
+      elements positioning the device described by the class that contains this.
+      Supercedes ``NXgeometry``.
+
+:ref:`NXgeometry` (superceded by :ref:`NXtransformations`, [#]_)
     ``NXgeometry`` and its subgroups ``NXtranslation``,
     ``NXorientation``, ``NXshape`` are  used to store absolute positions in the
     laboratory coordinate system or to define shapes.
+    
+   .. [#] see: https://github.com/nexusformat/definitions/issues/397
     
 These groups can appear anywhere in the NeXus hierarchy, where needed. Preferably close to the component they
 annotate or in a ``NXcollection``. All of the base classes are documented in the reference manual.
