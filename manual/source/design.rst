@@ -282,26 +282,32 @@ a more descriptive representation of the concept of linking.
         Linking in a NeXus file
 
 NeXus links are HDF5 hard links with an additional ``target`` attribute.
-The ``target`` attribute is added to for NeXus distinguish the HDF5 path to the 
-*original* dataset.  (In truth, HDF5 makes no distinction which is 
-the original dataset.  But, when the file is viewed with a tool 
+The ``target`` attribute is added for NeXus to distinguish the HDF5 path to the 
+*original* [#]_ dataset.  The value of the ``target`` attribute is the HDF5 path
+to the *original* dataset.
+
+.. [#] The notion of an *original* dataset with regard to links is 
+a NeXus abstraction.  In truth, HDF5 makes no distinction which is 
+the *original* dataset.  But, when the file is viewed with a tool 
 such as *h5dump*, confusion often occurs over which dataset is 
 original and which is a link to the original.  Actually, both HDF5 paths
 point to the exact same dataset which exists at a specific offset in the HDF5 file.
-See the :ref:`FAQ` entry titled *I'm using links to place data in two places. 
-Which one should be the data and which one is the link?*.)
+See the :ref:`FAQ` question: **I'm using links to place data in two places. 
+Which one should be the data and which one is the link?**
 
-Another example, the canonical location to store wavelength 
+NeXus links are best understood with an example.
+The canonical location (expressed as a NeXus class path) to store wavelength 
 (see :ref:`Strategies-wavelength`) has been::
 
     /NXentry/NXinstrument/NXcrystal/wavelength
 
-Another location for this field that makes sense to many::
+An alternative location for this field makes sense to many, 
+especially those not using a crystal to create monochromatic radiation::
 
     /NXentry/NXinstrument/NXmonochromator/wavelength
 
 These two fields might be hard linked together in a NeXus data file 
-(using named paths such ``/entry/instrument``)::
+(using HDF5 paths such ``/entry/instrument``)::
 
     entry:NXentry
         ...
