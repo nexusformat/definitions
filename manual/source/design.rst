@@ -306,16 +306,16 @@ These two fields might be hard linked together in a NeXus data file
     entry:NXentry
         ...
         instrument:NXinstrument
-        ...
-        crystal:NXcrystal
             ...
-            wavelength:double = 154.
-                @target="/entry/instrument/crystal/wavelength"
-                @units="pm"
-        ...
-        monochromator:NXmonochromator
+            crystal:NXcrystal
+                ...
+                wavelength:double = 154.
+                    @target="/entry/instrument/crystal/wavelength"
+                    @units="pm"
             ...
-            wavelength --> "/entry/instrument/crystal/wavelength"
+            monochromator:NXmonochromator
+                ...
+                wavelength --> "/entry/instrument/crystal/wavelength"
 
 It is possible that the linked field or group has a 
 different name than the original.  One obvious use of this capability 
@@ -327,16 +327,16 @@ This requirement can be satisifed easily::
     entry:NXentry
         ...
         instrument:NXinstrument
-        ...
-        crystal:NXcrystal
             ...
-            wavelength:double = 154.
-                @target="/entry/instrument/crystal/wavelength"
-                @units="pm"
-        ...
-        monochromator:NXmonochromator
+            crystal:NXcrystal
+                ...
+                wavelength:double = 154.
+                    @target="/entry/instrument/crystal/wavelength"
+                    @units="pm"
             ...
-            wavelength --> "/entry/instrument/crystal/wavelength"
+            monochromator:NXmonochromator
+                ...
+                wavelength --> "/entry/instrument/crystal/wavelength"
         ...
         lambda --> "/entry/instrument/crystal/wavelength"
                 
