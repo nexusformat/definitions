@@ -287,7 +287,9 @@ The ``target`` attribute is added to for NeXus distinguish the HDF5 path to the
 the original dataset.  But, when the file is viewed with a tool 
 such as *h5dump*, confusion often occurs over which dataset is 
 original and which is a link to the original.  Actually, both HDF5 paths
-point to the exact same dataset which exists at a specific offset in the HDF5 file.)
+point to the exact same dataset which exists at a specific offset in the HDF5 file.
+See the :ref:`FAQ` entry titled *I'm using links to place data in two places. 
+Which one should be the data and which one is the link?*.)
 
 Another example, the canonical location to store wavelength 
 (see :ref:`Strategies-wavelength`) has been::
