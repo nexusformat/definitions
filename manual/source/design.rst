@@ -537,12 +537,12 @@ group.  If the group is to be validated for content,
 then there are several possibilities, as shown in the next table:
 
 ==========================  ===========================================
-base class		    intent
+base class                  intent
 ==========================  ===========================================
-:ref:`NXnote`		    to store additional information
-:ref:`NXlog`		    information that is time-stamped
-:ref:`NXparameters`	    parameters for processing or analysis
-:ref:`NXcharacterization`   do not use this, as it may be removed later
+:ref:`NXnote`               to store additional information
+:ref:`NXlog`                information that is time-stamped
+:ref:`NXparameters`         parameters for processing or analysis
+:ref:`NXcollection`         to store *any* unvalidated content
 ==========================  ===========================================
 
 If the content of the metadata group is to be excluded from validation,
