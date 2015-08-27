@@ -355,16 +355,18 @@ corresponding data items in ``/NXentry/NXinstrument/NXdetector``.
 
 In this step problems might occur. The first is that the base class definitions
 contain a bewildering number of parameters. This is on purpose: the base
-classes serve as dictionaries which define names for everything which possibly
+classes serve as dictionaries which define names for most things which possibly
 can occur. You do not have to give all that information.
-The key question is, as already said, 
-*What is required for typical data analysis for this type of application?* 
-You might also be unsure how to correctly store a particular data item. In such a
-case, contact the NIAC for help. Another problem which can occur is that you
-require to store information for which there is no name in one of the existing
-base classes or you have a new instrument component for which there is no base
-class alltogether. In such a case, please feel free to contact the NIAC with a
-suggestion for an extension of the base classes in question.
+Keep it simple and  only require data that is needed for typical data analysis 
+for this type of application.
+
+Another problem which can occur is that you require to store information for which 
+there is no name in one of the existing base classes or you have a new instrument 
+component for which there is no base class altogether. New fields and base classes 
+can be introduced if necessary.
+
+In any case please feel free to contact the NIAC via the mailing list with
+questions or suggestions.
 
 .. _NXDL_Tutorial-Step3:
 
