@@ -8,8 +8,7 @@ Base Class Definitions
 #########################
 
 A description of each NeXus base class definition is given.
-NeXus base class definitions define the *complete*
-set of terms that
+NeXus base class definitions define the set of terms that
 *might* be used in an instance of that class.
 Consider the base classes as a set of *components*
 that are used to construct a data file.
