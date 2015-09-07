@@ -26,10 +26,9 @@ data format has two purposes:
    between applications.  NeXus provides structures for raw experimental 
    data as well as for processed data.  
 
-In recent years, a community of scientists and computer programmers working in neutron
+A community of scientists and computer programmers working in neutron
 and synchrotron facilities around the world came to the conclusion that a 
-common data format
-would fulfill a valuable function in the scattering community. As
+common data format would fulfill a valuable function in the scattering community. As
 instrumentation becomes more complex and data visualization becomes more challenging,
 individual scientists, or even institutions, find it difficult to keep up with new
 developments. A common data format makes it easier, both to exchange experimental results
