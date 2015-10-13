@@ -10,13 +10,12 @@ NeXus: Interfaces Reference Documentation (Experimental)
 .. toctree::
     :maxdepth: 1
     :glob:
-   
-EXPERIMENTAL
-################
 
-This section is **experimental and is NOT an accepted part of the NeXus standard**. 
-It shows how NeXus base classes can be improved by introducing NeXus 
-interfaces. 
+
+.. caution:: EXPERIMENTAL
+   This section is **experimental and is NOT an accepted part of the NeXus standard**. 
+   It shows how NeXus base classes can be improved by introducing NeXus 
+   interfaces. 
 
 
 Introduction
