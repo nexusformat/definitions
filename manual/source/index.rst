@@ -20,6 +20,7 @@ http://www.nexusformat.org/
     utilities
     history
     docs_about
+    ifref_doc
 
 -----------
 

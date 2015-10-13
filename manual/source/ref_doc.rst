@@ -14,3 +14,4 @@ NeXus: Reference Documentation
     defs_intro
     nxdl
     classes/index
+    classes/ifindex

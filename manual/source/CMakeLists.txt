@@ -64,6 +64,7 @@ set(FILES applying-nexus.rst
           nxdl-types.rst
           preface.rst
           ref_doc.rst
+          ifref_doc.rst
           revhistory.rst
           rules.rst
           strategies.rst

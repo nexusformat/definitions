@@ -33,6 +33,8 @@ add_subdirectory(source)
 #-----------------------------------------------------------------------------
 set(RST_TARGETS xds-manual-source 
                 base-class-manual-sources
+                ifbase-class-manual-sources
+                interfaces-class-manual-sources
                 applications-manual-sources 
                 contributed-manual-sources
                 )

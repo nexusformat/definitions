@@ -126,8 +126,10 @@ add_custom_command(OUTPUT manual/source/nxdl_desc.rst
 #-----------------------------------------------------------------------------
 add_subdirectory (utils)
 add_subdirectory (base_classes)
+add_subdirectory (ifbase_classes)
 add_subdirectory (contributed_definitions)
 add_subdirectory (applications)
+add_subdirectory (interfaces)
 add_subdirectory (manual)
 
 #-----------------------------------------------------------------------------

@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+
+########### SVN repository information ###################
+# $Date: 2012-09-27 05:57:58 +0200 (Thu, 27 Sep 2012) $
+# $Author: Pete Jemian $
+# $Revision: 1162 $
+# $HeadURL: https://svn.nexusformat.org/definitions/branches/interfaces/base_classes/NXaperture.nxdl.xml $
+# $Id: NXaperture.nxdl.xml 1162 2012-09-27 03:57:58Z Pete Jemian $
+########### SVN repository information ###################
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/@NXDL_RELEASE@" category="base"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://definition.nexusformat.org/nxdl/@NXDL_RELEASE@ ../nxdl.xsd"
+    name="NXIFphoton_counter" 
+    version="1.0"
+    type="group" extends="NXobject">
+    <doc>
+		This is an interface defining the additional fields necessary to descrive  single photon 
+		counting detector like the DECTRIS detectors. Please note that this interface is additional 
+		to the appropriate area_detector interfaces and has to be used together with one of them. 
+    </doc>
+  <field name="angular_calibration_applied" type="NX_BOOLEAN" >
+    <doc>
+		True when the angular calibration has been applied in the 
+		electronics, false otherwise.
+    </doc>
+  </field>
+  <field name="angular_calibration" type="NX_FLOAT" >
+    <doc>Angular calibration data.</doc>
+    <dimensions rank="2">
+       <dim index="1" value="i"/>
+       <dim index="2" value="j"/>
+    </dimensions>
+  </field>
+  <field name="flatfield_applied" type="NX_BOOLEAN" >
+    <doc>
+	    True when the flat field correction has been applied in the 
+	    electronics, false otherwise.
+    </doc>
+  </field>
+  <field name="flatfield" type="NX_FLOAT" >
+    <doc>Flat field correction data.</doc>
+    <dimensions rank="2">
+       <dim index="1" value="i"/>
+       <dim index="2" value="j"/>
+    </dimensions>
+  </field>
+  <field name="flatfield_error" type="NX_FLOAT" >
+    <doc>Errors of the flat field correction data.</doc>
+    <dimensions rank="2">
+       <dim index="1" value="i"/>
+       <dim index="2" value="j"/>
+    </dimensions>
+  </field>
+  <field name="pixel_mask_applied" type="NX_BOOLEAN" >
+    <doc>
+	    True when the pixel mask correction has been applied in the 
+	    electronics, false otherwise.
+    </doc>
+  </field>
+  <field name="pixel_mask" type="NX_INT" >
+    <doc>
+      The 32-bit pixel mask for the detector. 
+      Contains a bit field for each pixel to signal dead, 
+      blind or high or otherwise unwanted or undesirable pixels.
+      They have the following meaning:
+      
+      .. can't make a table here, a bullet list will have to do for now
+
+      * bit 0: gap (pixel with no sensor)
+      * bit 1: dead
+      * bit 2: under responding
+      * bit 3: over responding
+      * bit 4: noisy
+      * bit 5: -undefined-
+      * bit 6: pixel is part of a cluster of problematic pixels (bit set in addition to others)
+      * bit 7: -undefined-
+      * bit 8: user defined mask (e.g. around beamstop
+      * bits 9-30: -undefined-
+      * bit 31: virtual pixel (corner pixel with interpolated value)
+      
+      The normal data analysis software would not take pixels into account when a bit in (mask &amp; 0x00FF) is set.
+      Tag bit in the upper two bytes would indicate special pixel properties that normally would not be a sole reason to
+      reject the intensity value (unless lower bits are set as well of course).
+    </doc>
+    <dimensions rank="2">
+       <dim index="1" value="i"/>
+       <dim index="2" value="j"/>
+    </dimensions>
+  </field>
+  <field name="countrate_correction__applied" type="NX_BOOLEAN" >
+    <doc>
+	    True when a count-rate correction has already been applied in the
+	    electronics, false otherwise.
+    </doc>
+  </field>
+  <field name="bit_depth_readout" type="NX_INT">
+    <doc>
+	    How many bits the electronics reads per pixel. 
+	    With CCD's and single photon counting detectors, 
+	    this must not align with traditional integer sizes. 
+	    This can be 4, 8, 12, 14, 16, ... 
+    </doc>
+  </field>
+  <field name="detector_readout_time" type="NX_FLOAT" units="NX_TIME">
+    <doc>
+	    Time it takes to read the detector (typically milliseconds). 
+	    This is important to know for time resolved experiments.
+    </doc>
+  </field>
+  <field name="trigger_delay_time" type="NX_FLOAT" units="NX_TIME">
+    <doc>
+      Time it takes to start exposure after a trigger signal has been received. 
+      This is important to know for time resolved experiments.
+    </doc>
+  </field>
+  <field name="trigger_dead_time" type="NX_FLOAT" units="NX_TIME">
+    <doc>
+      Time during which no new trigger signal can be accepted. Typically this is the 
+      trigger_delay_time + exposure_time + readout_time. 
+      This is important to know for time resolved experiments.
+    </doc>
+  </field>
+  <field name="frame_time" type="NX_FLOAT" units="NX_TIME">
+   <doc>
+      This is time for each frame. This is exposure_time + readout time. 
+   </doc>
+   <dimensions rank="1">
+      <dim index="1" value="NP" />
+    </dimensions>
+  </field>
+  <field name="gain_setting" type="NX_CHAR">
+    <doc>The gain setting of the detector. This influences background etc.</doc>
+    <enumeration>
+      <item value="high"/>
+      <item value="standard"/>
+      <item value="fast"/>
+      <item value="auto"/>
+    </enumeration>
+  </field>
+  <field name="saturation_value" type="NX_INT">
+    <doc>
+		The value at which the detector goes into saturation. 
+		Especially common to CCD detectors, the data is known to be invalid above this value.
+    </doc>
+  </field>
+  <field name="number_of_cycles" type="NX_INT">
+    <doc>
+      CCD images are sometimes constructed by summing together multiple short exposures in the 
+      electronics. This reduces background etc. This is the number of short exposures used to sum 
+      images for an image.
+    </doc>
+  </field>
+  <field name="sensor_material" type="NX_CHAR">
+    <doc>
+       At times, radiation is not directly sensed by the detector.  
+       Rather, the detector might sense the output from some 
+       converter like a scintillator. 
+       This is the name of this converter material.
+    </doc>
+  </field>
+  <field name="sensor_thickness" type="NX_FLOAT" units="NX_LENGTH">
+    <doc>
+       At times, radiation is not directly sensed by the detector.  
+       Rather, the detector might sense the output from some 
+       converter like a scintillator. 
+       This is the thickness of this converter material.
+    </doc>
+  </field>
+  <field name="threshold_energy" type="NX_FLOAT" units="NX_ENERGY">
+    <doc>
+      Single photon counter detectors can be adjusted for a certain energy range in which they 
+      work optimally. This is the energy setting for this. 
+    </doc>
+  </field>
+</definition>
