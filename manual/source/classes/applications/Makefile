@@ -2,7 +2,7 @@
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -24,7 +24,7 @@ ROOTDIR = ../../../..
 NXDL2RST = $(ROOTDIR)/utils/nxdl2rst.py
 NXDL_SUFFIX = nxdl.xml
 
-SRCDIR = $(ROOTDIR)/contributed_definitions
+SRCDIR = $(ROOTDIR)/applications
 
 SRCs = $(wildcard $(SRCDIR)/NX*.$(NXDL_SUFFIX) )
 RSTs := $(SRCs:.$(NXDL_SUFFIX)=.rst)
