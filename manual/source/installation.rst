@@ -15,10 +15,13 @@ Installation
    see: download location; NAPI installation
    see: repository; NAPI installation
 
-This section describes how to install the NeXus API and details the requirements. The NeXus API is distributed under the terms of the `GNU Lesser General Public License version 3 <http://www.gnu.org/licenses/lgpl-3.0.txt>`_.
+This section describes how to install the NeXus API and details the
+requirements. The NeXus API is distributed under the terms of the 
+`GNU Lesser General Public License version 3 <http://www.gnu.org/licenses/lgpl-3.0.txt>`_.
 
-The source code and binary versions for some popular platforms can be found on
-http://download.nexusformat.org/kits/. Up to date instructions can be found on 
+The source code distribution of the NAPI can be downloaded from its associated
+GitHub project release site (https://github.com/nexusformat/code/releases).
+ Up to date instructions can be found on 
 the :ref:`NeXus.wiki` Download page (http://www.nexusformat.org/Download).
 In case you need help, feel free to contact the 
 NeXus mailing list: http://lists.nexusformat.org/mailman/listinfo/nexus
