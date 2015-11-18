@@ -125,13 +125,13 @@ code.  To clone the definitions repository use
 
 .. code-block:: bash
 
-    $git clone https://github.com/nexusformat/definitions.git definitions
+   $ git clone https://github.com/nexusformat/definitions.git definitions
 
 or for the NAPI
 
 .. code-block:: bash
 
-    $git clone https://github.com/nexusformat/code.git code
+   $ git clone https://github.com/nexusformat/code.git code
 
 For release tarballs go to the release page for the 
 `NAPI <https://github.com/nexusformat/code/releases>`_ or the 
