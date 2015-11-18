@@ -19,10 +19,10 @@ This section describes how to install the NeXus API and details the
 requirements. The NeXus API is distributed under the terms of the 
 `GNU Lesser General Public License version 3 <http://www.gnu.org/licenses/lgpl-3.0.txt>`_.
 
-The source code distribution of the NAPI can be downloaded from its associated
-GitHub project release site (https://github.com/nexusformat/code/releases).
- Up to date instructions can be found on 
-the :ref:`NeXus.wiki` Download page (http://www.nexusformat.org/Download).
+The source distribution of NAPI can be downloaded from the 
+`release page of the associated GitHub project <https://github.com/nexusformat/code/releases>`_.
+Instructions how to build the code can be found in the `INSTALL.rst` file
+shipped with the source distribution.
 In case you need help, feel free to contact the 
 NeXus mailing list: http://lists.nexusformat.org/mailman/listinfo/nexus
 
@@ -31,56 +31,6 @@ NeXus mailing list: http://lists.nexusformat.org/mailman/listinfo/nexus
 Precompiled Binary Installation
 ###############################
 
-.. _Installation-Prerequisites:
-
-Prerequisites
-=============
-
-.. _Installation-Prerequisites-HDF:
-
-.. index::
-    see: binary format; file format
-    file format; HDF
-    HDF
-
-HDF5/HDF4
----------
-
-.. note:: HDF5 is the preferred format to use for NeXus.
-
-NeXus uses HDF5 as the main underlying binary format.  
-(HDF4 is supported as a legacy underlying binary format
-but is not recommended for new use.)
-It is necessary first to
-install the HDF subroutine libraries and include files before compiling the NeXus API. It
-is not usually necessary to download the HDF source code since precompiled object libraries
-exist for a variety of operating systems including Windows, Mac OS X, Linux, and various
-other flavors of Unix. Check the HDF web pages for more information: http://www.hdfgroup.org/
-
-Packages for HDF4 and HDF5 are available for both Fedora (hdf, hdf5, hdf-devel,
-hdf5-devel) and Ubuntu/Debian (libhdf4g, libhdf5).
-
-.. _Installation-Prerequisites-XML:
-
-.. index::
-    file format; XML
-    !XML; file format
-
-XML
----
-
-.. note:: XML is not the preferred format to use for NeXus.
-
-The NeXus API also supports
-using XML as a legacy underlying on-disk format. 
-This uses the Mini-XML library, developed by
-Michael Sweet, which is also available as a precompiled 
-binary library for several operating
-systems. Check the Mini-XML web pages
-for more information: http://www.minixml.org/
-
-Packages for MXML are available for both Fedora (mxml, mxml-devel) and Ubuntu/Debian
-(libmxml1).
 
 .. _Installation-Linux:
 
@@ -169,16 +119,30 @@ NeXus Source Code Distribution
    NAPI; installation; source distribution
    see: source distribution; NAPI installation
 
-The build uses ``autoconf`` (so autools are required)
-to determine what features will be available by your system.
-You must have the *development* libraries installed
-for all the file backends you want support for (see above).
-If you intend to build more than the C language
-bindings, you need to have the respective build support in a place where autoconf will pick them up
-(i.e. python development files, a Java Development Kit, etc.).
+The source code distribution can be obtained from GitHub. One can either
+checkout the git repositories to get access to the most recent development
+code.  To clone the definitions repository use 
 
-For more information see the
-README in the toplevel of the source distribution.
+.. code-block:: bash
+
+    $git clone https://github.com/nexusformat/definitions.git definitions
+
+or for the NAPI
+
+.. code-block:: bash
+
+    $git clone https://github.com/nexusformat/code.git code
+
+For release tarballs go to the release page for the 
+`NAPI <https://github.com/nexusformat/code/releases>`_ or the 
+`definitions <https://github.com/nexusformat/definitions/releases>`_.
+For the definitions it is currently recommended to work directly with the 
+Git repository as the actual release is rather outdated.
+
+Instructions how to build the NAPI code can be found either on the 
+GitHub project website or in the `README.rst` file shipped with the source
+distribution.
+
 In case you need help, feel free to contact the 
 :ref:`NeXus.mailinglist.main`: 
 
@@ -187,50 +151,3 @@ In case you need help, feel free to contact the
 :email:
    nexus@nexusformat.org
 
-Download the appropriate gzipped tar file, unpack it, and run the standard configure
-procedure from the resulting nexus directory. For example, for version 4.2.1;
-
-.. code-block:: guess
-
-	$ tar zxvf nexus-4.2.1.tar.gz
-	$ cd nexus-4.2.1
-	$ ./configure
-
-To find out how to customize the installation, e.g., to choose different installation
-directories, type
-
-.. code-block:: guess
-
-	$ ./configure --help
-
-Carefully check the final output of the ``configure`` run. Make sure all features requested
-are actually enabled.
-
-.. code-block:: guess
-
-	$ make
-	$ make install
-
-See the README file for further instructions.
-
-.. _Installation-Source-Cygwin:
-
-Cygwin Kits
-===========
-
-.. index::
-   NAPI; installation; Cygwin
-   see: Cygwin; NAPI installation
-
-
-HDF4 is not supported under CYGWIN - both HDF5 and MXML are supported and can be
-downloaded and built as usual. When configuring HDF5 you should explicitly pass a prefix to
-the configure script to make sure the libraries are installed in a "usual" location
-i.e.
-
-.. code-block:: guess
-
-	./configure --prefix=/usr/local/hdf5
-
-Otherwise you will have to use the ``--with-hdf5=/path/to/hdf5`` option later when configuring NeXus to tell it where to look for hdf5.
-After building hdf5, configure and build NeXus using the instructions for source code distribution above.
