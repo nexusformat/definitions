@@ -3,8 +3,8 @@
 # Tested under both python2 and python3.
 
 '''
-Read the NeXus NXDL class specification and describe it.  
-Write a restructured text (.rst) document for use in the NeXus manual in 
+Read the NeXus NXDL class specification and describe it.
+Write a restructured text (.rst) document for use in the NeXus manual in
 the NeXus NXDL Classes chapter.
 '''
 
@@ -45,7 +45,7 @@ def getDocBlocks( ns, node ):
     if docnodes is None or len(docnodes)==0:
         return ''
     if len(docnodes) > 1:
-        raise Exception( 'Too many doc elements: line %d, %s' % 
+        raise Exception( 'Too many doc elements: line %d, %s' %
                          (node.sourceline, os.path.split(node.base)[1]) )
     docnode = docnodes[0]
 
@@ -57,8 +57,8 @@ def getDocBlocks( ns, node ):
     if not m:
         raise Exception( 'unexpected docstring [%s] ' % s )
     text = m.group(1)
-    
-    # substitute HTML entities in markup: "<" for "&lt;" 
+
+    # substitute HTML entities in markup: "<" for "&lt;"
     # thanks: http://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
     htmlparser = HTMLParser.HTMLParser()
     text = htmlparser.unescape(text)
@@ -192,7 +192,7 @@ def printIfDeprecated( ns, node, indent ):
 def printFullTree(ns, parent, name, indent):
     '''
     recursively print the full tree structure
-    
+
     :param dict ns: dictionary of namespaces for use in XPath expressions
     :param lxml_element_node parent: parent node to be documented
     :param str name: name of elements, such as NXentry/NXuser
@@ -217,7 +217,7 @@ def printFullTree(ns, parent, name, indent):
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
             printAttribute( ns, 'field', subnode, indent+INDENTATION_UNIT )
-    
+
     for node in parent.xpath('nx:group', namespaces=ns):
         name = node.get('name', '')
         typ = node.get('type', 'untyped (this is an error; please report)')
@@ -242,19 +242,11 @@ def printFullTree(ns, parent, name, indent):
         printDoc(indent+INDENTATION_UNIT, ns, node)
 
 
-def main():
+def print_rst_from_nxdl(nxdl_file):
     '''
-    standard command-line processing
+    print restructured text from the named .nxdl.xml file
     '''
-    if len(sys.argv) != 2:
-        print( 'usage: %s someclass.nxdl.xml' % sys.argv[0] )
-        exit()
-    nxdl_file = sys.argv[1]
-
     # parse input file into tree
-    if not os.path.exists(nxdl_file):
-        print( 'Cannot find %s' % nxdl_file )
-        exit()
     tree = lxml.etree.parse(nxdl_file)
 
     # The following URL is outdated, but that doesn't matter;
@@ -262,7 +254,7 @@ def main():
     # It only needs to match the xmlns attribute in the NXDL files.
     NAMESPACE = 'http://definition.nexusformat.org/nxdl/@NXDL_RELEASE@'
     ns = {'nx': NAMESPACE}
-    
+
     root = tree.getroot()
     name = root.get('name')
     title = name
@@ -271,7 +263,7 @@ def main():
                          ( name ) )
     lexical_name = name[2:] # without padding 'NX', for indexing
     lexical_name = re.sub( r'_', ' ', lexical_name )
-    
+
     # retrieve category from directory
     #subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
     subdir = root.attrib["category"]
@@ -356,7 +348,7 @@ def main():
 
     # TODO: change instances of \t to proper indentation
     html_root = 'https://github.com/nexusformat/definitions/blob/master'
-        
+
     # print full tree
     print( '**Structure**:\n' )
     for subnode in root.xpath('nx:attribute', namespaces=ns):
@@ -367,6 +359,26 @@ def main():
     print( '**Source**:' )
     print( '  Automatically generated from %s/%s/%s.nxdl.xml' % (
         html_root, subdir, name) )
+
+
+def main():
+    '''
+    standard command-line processing
+    '''
+
+    def mtime(file_object):
+        return os.stat(file_object)[stat.ST_MTIME]
+
+    if len(sys.argv) != 2:
+        print( 'usage: %s someclass.nxdl.xml' % sys.argv[0] )
+        exit()
+    nxdl_file = sys.argv[1]
+
+    if not os.path.exists(nxdl_file):
+        print( 'Cannot find %s' % nxdl_file )
+        exit()
+
+    print_rst_from_nxdl(nxdl_file)
 
 
 if __name__ == '__main__':
