@@ -91,31 +91,31 @@ be scalar values or multidimensional arrays of a variety of sizes (1-byte,
 store both experimental results (counts, detector angles, etc), and other
 information associated with the experiment (start and end times, user names,
 etc). Fields are identified by their names, which must be unique within the
-group in which they are stored.  Some fields have engineering units to be specified.  
+group in which they are stored.  Some fields have engineering units to be specified.
 In some cases, such in ``NXdetector/data``, a field is expected to have be
 an array of several dimensions.
-	
+
 	.. compound::
 
 		.. changed from table since sphinx PDF table columns were not sized correctly
-		
+
 		.. rubric::  Examples of fields
-		
+
 		``variable`` (*NX_NUMBER*)
 			Dimension scale defining an axis of the data.
-		
+
 		``variable_errors`` (*NX_NUMBER*)
 			Errors (uncertainties) associated with axis ``variable``.
-		
+
 		``wavelength`` (*NX_FLOAT*)
 			wavelength of radiation, ``units="NX_FLOAT"``
-		
+
 		``chemical_formula`` (*NX_CHAR*)
 			The chemical formula specified using CIF conventions.
-		
+
 		``name`` (*NX_CHAR*)
 			Name of user responsible for this entry.
-		
+
 		``data`` (*NX_NUMBER*)
 			Data values from the detector, ``units="NX_ANY"``
 
@@ -132,35 +132,35 @@ Attributes
 ==========
 
 Attributes are extra (meta-)information that are associated with particular
-groups or fields. They are used to annotate the data, e.g. with physical 
+groups or fields. They are used to annotate the data, e.g. with physical
 :index:`units` or calibration offsets, and may be scalar numbers or character
-strings. In addition, NeXus uses attributes to identify 
+strings. In addition, NeXus uses attributes to identify
 :index:`plottable data <plotting>`
-and their axes, etc. A description of some of the many possible 
+and their axes, etc. A description of some of the many possible
 attributes can be found in the next table:
-	
+
 	.. compound::
-	
+
 		.. rubric::  Examples of data attributes
-	
+
 		``units`` (*NX_CHAR*)
 			:index:`Data units <units>` given as character strings,
 			must conform to the NeXus units standard.   See the
 			:ref:`Design-Units` section for details.
-		
+
 		``signal`` (*NX_POSINT*)
 			Defines which data set contains the signal
 			to be :index:`plotted <plotting>`,
 			use ``signal=1`` for main signal, ``signal=2`` for a second
 			item to plot, and so on.
-		
+
 		``axes`` (*NX_CHAR*)
-			:index:`axes <axes (attribute)>` defines the names of the 
+			:index:`axes <axes (attribute)>` defines the names of the
 			:index:`dimension scales <dimension scale>`
 			for this data set
 			as a colon-delimited list.  Note that some legacy data files
 			may use a comma as delimiter.
-			
+
 			For example, suppose ``data`` is an array with
 			elements ``data[j][i]`` (C) or ``data(i,j)``
 			(Fortran), with dimension scales ``time_of_flight[i]``
@@ -168,12 +168,12 @@ attributes can be found in the next table:
 			then ``data`` would have an
 			attribute ``axes="polar_angle:time_of_flight"``
 			in addition to an attribute ``signal=1``.
-		
+
 		.. index::
 			axis
-		
+
 		``axis`` (*NX_POSINT*)
-			The original way of designating data for 
+			The original way of designating data for
 			:index:`plotting <plotting>`,
 			now superceded by the ``axes`` attribute.
 			This defines the :index:`rank <rank>`
@@ -186,40 +186,36 @@ attributes can be found in the next table:
 			Fortran, ``axis`` would have the following values:
 			ith dimension (``axis=1``),
 			jth dimension (``axis=2``), etc.
-		
+
 		``primary`` (*NX_POSINT*)
-			Defines the order of preference 
+			Defines the order of preference
 			for :index:`dimension scales <dimension scale>`
 			which apply to the same :index:`rank <rank>`
 			of signal data.  Use ``primary=1`` to indicate preferred
 			dimension scale
-		
+
 		``long_name`` (*NX_CHAR*)
 			Defines title of signal data or axis label of dimension scale
-		
+
 		``calibration_status`` (*NX_CHAR*)
 			Defines	status of data value - set to ``Nominal`` or ``Measured``
-		
-		``offset`` (*NX_INT*)
-			Rank values of offsets to use for each 
+
+		``data_offset`` (*NX_INT*)
+			Rank values of offsets to use for each
 			:index:`dimension <dimension>`
 			if the data is not in C storage order
-		
+
 		``stride`` (*NX_INT*)
 			Rank values of steps to use when incrementing the dimension
-		
-		``vector`` (*NX_FLOAT*)
-			3 values describing the axis of rotation 
-			or the direction of translation
-		
+
 		``interpretation`` (*NX_CHAR*)
-			Describes how to display the data.  
+			Describes how to display the data.
 			``rgba``, ``hsla`` and ``cmyk`` are (4 x n x m) arrays, where the
 			4 channels are the colour channels appropriately. If the image data
 			does not contain an alpha channel, then the array should simply be
-			(3 x n x m). 
+			(3 x n x m).
 			Allowed values include:
-			
+
 			* ``scaler`` (0-D data)
 			* ``spectrum`` (1-D data)
 			* ``image`` (2-D data)
@@ -255,7 +251,7 @@ Links
    The section titled :ref:`h5py-example-helpers` provides example
    python code to create links (both internal and external)
    in NeXus data files.  See the routines:
-   
+
    * **makeLink()**
    * **makeExternalLink()**
 
@@ -282,31 +278,31 @@ a more descriptive representation of the concept of linking.
         Linking in a NeXus file
 
 NeXus links are HDF5 hard links with an additional ``target`` attribute.
-The ``target`` attribute is added for NeXus to distinguish the HDF5 path to the 
+The ``target`` attribute is added for NeXus to distinguish the HDF5 path to the
 *original* [#]_ dataset.  The value of the ``target`` attribute is the HDF5 path
 to the *original* dataset.
 
-   .. [#] The notion of an *original* dataset with regard to links is 
-      a NeXus abstraction.  In truth, HDF5 makes no distinction which is 
-      the *original* dataset.  But, when the file is viewed with a tool 
-      such as *h5dump*, confusion often occurs over which dataset is 
+   .. [#] The notion of an *original* dataset with regard to links is
+      a NeXus abstraction.  In truth, HDF5 makes no distinction which is
+      the *original* dataset.  But, when the file is viewed with a tool
+      such as *h5dump*, confusion often occurs over which dataset is
       original and which is a link to the original.  Actually, both HDF5 paths
       point to the exact same dataset which exists at a specific offset in the HDF5 file.
-      See the :ref:`FAQ` question: **I'm using links to place data in two places. 
+      See the :ref:`FAQ` question: **I'm using links to place data in two places.
       Which one should be the data and which one is the link?**
 
 NeXus links are best understood with an example.
-The canonical location (expressed as a NeXus class path) to store wavelength 
+The canonical location (expressed as a NeXus class path) to store wavelength
 (see :ref:`Strategies-wavelength`) has been::
 
     /NXentry/NXinstrument/NXcrystal/wavelength
 
-An alternative location for this field makes sense to many, 
+An alternative location for this field makes sense to many,
 especially those not using a crystal to create monochromatic radiation::
 
     /NXentry/NXinstrument/NXmonochromator/wavelength
 
-These two fields might be hard linked together in a NeXus data file 
+These two fields might be hard linked together in a NeXus data file
 (using HDF5 paths such ``/entry/instrument``)::
 
     entry:NXentry
@@ -323,10 +319,10 @@ These two fields might be hard linked together in a NeXus data file
                 ...
                 wavelength --> "/entry/instrument/crystal/wavelength"
 
-It is possible that the linked field or group has a 
-different name than the original.  One obvious use of this capability 
-is to adapt to a specific requirement of an application definition.  
-For example, suppose some application definition required the 
+It is possible that the linked field or group has a
+different name than the original.  One obvious use of this capability
+is to adapt to a specific requirement of an application definition.
+For example, suppose some application definition required the
 specification of wavelength as a field named *lambda* in the entry group.
 This requirement can be satisifed easily::
 
@@ -345,27 +341,27 @@ This requirement can be satisifed easily::
                 wavelength --> "/entry/instrument/crystal/wavelength"
         ...
         lambda --> "/entry/instrument/crystal/wavelength"
-                
+
 
 .. index:: link; external file
 
 NeXus also allows for links to external files.
-Consider the case where an instrument uses a detector with 
+Consider the case where an instrument uses a detector with
 a closed-system software support provided by a commercial vendor.
 This system writes its images into a NeXus HDF5 file.
 The instrument's data acquisition system writes instrument metadata
 into another NeXus HDF5 file.  In this case, the instrument metadata file
 might link to the data in the detector image file.
-Here is an example (from Diamond Light Source) 
+Here is an example (from Diamond Light Source)
 showing an external file link in HDF5:
 
 	.. compound::
-	
+
 		.. rubric:: Example of linking to data in an external HDF5 file
-		
+
 		.. code-block:: guess
 			:linenos:
-			
+
 			 EXTERNAL_LINK "data" {
 				TARGETFILE "/dls/i22/data/2012/sm7594-1/i22-69201-Pilatus2M.h5"
 				TARGETPATH "entry/instrument/detector/data"
@@ -383,12 +379,12 @@ NeXus Base Classes
 Data groups often describe objects in the experiment (monitors, detectors,
 monochromators, etc.), so that the contents (both fields and/or other
 groups) comprise the properties of that object. NeXus has defined a set of standard
-objects, or :ref:`base classes <base.class.definitions>`, 
+objects, or :ref:`base classes <base.class.definitions>`,
 out of which a NeXus file can be constructed. This is each data group
 is identified by a name and a class. The group class, defines the type of object
 and the properties that it can contain, whereas the group name defines a unique instance
 of that class. These classes are
-defined in XML using the NeXus Definition Language 
+defined in XML using the NeXus Definition Language
 :index:`(NXDL) <NXDL>` format. All NeXus class types adopted by the NIAC *must*
 begin :index:`with <rules; naming>` ``NX``.
 Classes not adopted by the NIAC *must not*
@@ -398,16 +394,16 @@ start with ``NX``.
           NeXus data structure.
 
 Not all classes define physical objects. Some refer to logical groupings of
-experimental information, such as 
+experimental information, such as
 :index:`plottable data <plotting>`,
 sample environment logs, beam profiles, etc.
 There can be multiple instances of each class. On
 the other hand, a typical NeXus file will only contain a small subset of the
 possible classes.
 
-.. note:: 
+.. note::
 	The groups, fields, links, and attributes of a base class
-	definition are all **optional**, with a few particular exceptions in 
+	definition are all **optional**, with a few particular exceptions in
 	``NXentry`` and ``NXdata``.  They are named in the specification
 	to describe the exact spelling and usage of the term when it appears.
 
@@ -424,12 +420,12 @@ file (``NXentry``, ``NXcollection``, ``NXinstrument``, ``NXprocess``, ``NXparame
 But there are some base classes which have special uses which need to be mentioned here:
 
 :ref:`NXdata`
-    ``NXdata`` is used to identify the default 
+    ``NXdata`` is used to identify the default
     :index:`plottable data <plotting>`.
     The notion of a default plot of data is a basic motivation of NeXus.
 
 :ref:`NXlog`
-    ``NXlog`` is used to store time stamped data like the log of a temperature controller. 
+    ``NXlog`` is used to store time stamped data like the log of a temperature controller.
     Basically you give a start time,
     and arrays with a difference in seconds to the start time and the values read.
 
@@ -437,17 +433,17 @@ But there are some base classes which have special uses which need to be mention
    ``NXcollection`` is used to gather together any set of terms.
    Anything (groups, fields, or attributes) placed in
    an ``NXcollection`` group will not be validated.
-   One use is to use this as a container class for the various 
+   One use is to use this as a container class for the various
    control system variables from a beamline or instrument.
 
 :ref:`NXnote`
-   This group provides a place to store general notes, images, video or 
-   whatever.  A mime type is stored together with a binary blob of data. 
-   Please use this only for auxiliary information, for example an image 
+   This group provides a place to store general notes, images, video or
+   whatever.  A mime type is stored together with a binary blob of data.
+   Please use this only for auxiliary information, for example an image
    of your sample, or a photo of your boss.
 
 :ref:`NXtransformations`
-    ``NXtransformations`` is used to gather together any set of movable or fixed 
+    ``NXtransformations`` is used to gather together any set of movable or fixed
       elements positioning the device described by the class that contains this.
       Supercedes ``NXgeometry``.
 
@@ -455,9 +451,9 @@ But there are some base classes which have special uses which need to be mention
     ``NXgeometry`` and its subgroups ``NXtranslation``,
     ``NXorientation``, ``NXshape`` are  used to store absolute positions in the
     laboratory coordinate system or to define shapes.
-    
+
    .. [#] see: https://github.com/nexusformat/definitions/issues/397
-    
+
 These groups can appear anywhere in the NeXus hierarchy, where needed. Preferably close to the component they
 annotate or in a ``NXcollection``. All of the base classes are documented in the reference manual.
 
@@ -474,15 +470,15 @@ annotate or in a ``NXcollection``. All of the base classes are documented in the
    single: dimension scale
 
 The most notable special base class (or *group* in NeXus) is ``NXdata``.
-``NXdata`` is the answer to a basic motivation of NeXus to facilitate 
+``NXdata`` is the answer to a basic motivation of NeXus to facilitate
 automatic plotting of data.
-``NXdata`` is designed to contain the main dataset and its associated 
-dimension scales (axes) of a NeXus data file. 
-The usage scenario is that an automatic data plotting program just 
+``NXdata`` is designed to contain the main dataset and its associated
+dimension scales (axes) of a NeXus data file.
+The usage scenario is that an automatic data plotting program just
 opens a ``NXentry`` and then continues to search for any ``NXdata``
 groups. These ``NXdata`` groups represent the plottable data.
 An algorithm for identifying the default plottable data
-is :ref:`presented <Find-Plottable-Data>` in the 
+is :ref:`presented <Find-Plottable-Data>` in the
 chapter titled :ref:`DataRules`.
 
 
@@ -505,11 +501,11 @@ chapter titled :ref:`DataRules`.
 
 	   #. Try to read the ``axes`` attribute of the main dataset, if it exists.
 
-		  #. The value of ``axes`` is a colon- or comma-separated list of the datasets describing the 
+		  #. The value of ``axes`` is a colon- or comma-separated list of the datasets describing the
 			 :index:`dimension scales <dimension scale>`
 			 (such as ``axes="polar_angle:time_of_flight"``).
 
-		  #. Parse ``axes`` and open the datasets to describe your 
+		  #. Parse ``axes`` and open the datasets to describe your
 			 :index:`dimension scales <dimension scale>`
 
 	   #. If ``axes`` does not exist:
@@ -521,7 +517,7 @@ chapter titled :ref:`DataRules`.
 
 		  #. Open the datasets to describe your dimension scales.
 
-	#. Having found the default plottable data and 
+	#. Having found the default plottable data and
 	   its :index:`dimension scales <dimension scale>`:
 	   make the plot.
 
@@ -620,15 +616,15 @@ Note that it is the same as that used by *McStas* (http://mcstas.risoe.dk).
 		|       :alt: fig.coord.source.view                        |        :alt: fig.coord.detector.view                     |
 		|       :width: 48%                                        |        :width: 48%                                       |
 		+----------------------------------------------------------+----------------------------------------------------------+
-	
+
 	.. figure:: img/translation-orientation-geometry-2.jpg
 	      :alt: fig.coord.detector.view
 	      :width: 48%
-	      
+
 	      NeXus coordinate system, as viewed from detector
 
 .. note:: The NeXus definition of *+z* is opposite to that
-          in the :index:`IUCr <coordinate systems; IUCr>` 
+          in the :index:`IUCr <coordinate systems; IUCr>`
           International Tables for Crystallography, volume G,
           and consequently, *+x* is also reversed.
 
@@ -648,22 +644,22 @@ approached the NeXus team and asked for a means
 to store absolute coordinates. This was implemented through
 the use of the *NXgeometry* class on top of the
 *McStas* :index:`system <coordinate systems; McStas>`.
-We soon learned that all the things we do can be expressed through the 
-McStas coordinate system. So it became the reference coordinate system 
+We soon learned that all the things we do can be expressed through the
+McStas coordinate system. So it became the reference coordinate system
 for NeXus. ``NXgeometry`` was expanded to allow the description of shapes
-when the demand came up. Later, members of the 
+when the demand came up. Later, members of the
 :index:`CIF <coordinate systems; CIF>` team
 convinced the NeXus team of the beauty of transformation matrices and
-NeXus was enhanced to store the necessary information to fully map CIF 
+NeXus was enhanced to store the necessary information to fully map CIF
 concepts. Not much had to be changed though as we
-choose to document the existing angles in CIF terms. The CIF system 
+choose to document the existing angles in CIF terms. The CIF system
 allows to store arbitrary operations and nevertheless calculate
-absolute coordinates in the laboratory coordinate system. It also 
+absolute coordinates in the laboratory coordinate system. It also
 allows to convert from local, for example detector
 coordinate systems, to absolute coordinates in the laboratory system.
 
-Please note that NXgeometry and the polar coordinate system are suggested 
-to be deprecated. For new projects, rather use the CIF approach. 
+Please note that NXgeometry and the polar coordinate system are suggested
+to be deprecated. For new projects, rather use the CIF approach.
 
 .. _Design-Coordinate-NXgeometry:
 
@@ -698,11 +694,11 @@ illustrated in the next figure:
 
         The McStas Coordinate System
 
-The NeXus NXgeometry class directly uses the 
+The NeXus NXgeometry class directly uses the
 :index:`McStas coordinate system <coordinate systems; McStas>`.
 ``NXgeometry`` classes can appear in any
-component in order to specify its position. 
-The suggested name to use is geometry. 
+component in order to specify its position.
+The suggested name to use is geometry.
 In ``NXgeometry`` the ``NXtranslation/values``
 field defines the absolute position of the component in the McStas coordinate system. The ``NXorientation/value`` field describes
 the orientation of the component as a vector of in the McStas coordinate system.
@@ -711,13 +707,13 @@ the orientation of the component as a vector of in the McStas coordinate system.
     it introduces too many levels of hierarchy. I would rather like to have:
     - an absolute_position[n,3] field at component level. This makes the absolute position easy to see and the ``n`` opens up
     easily for those components which consist of many subcomponents like a many pixel detector.
-    - an ``absolute_orientation[n?,3]`` field to define the orientation at component level. 
+    - an ``absolute_orientation[n?,3]`` field to define the orientation at component level.
     Maybe we need an ``n`` here too for multi-pixel components.
     - I would love to pull down the NXshape group to component level too.
     Perhaps we can allow that and mark NXgeometry deprecated?
 
 Please note that it is planned to deprecate NXgeometry in favour of the transformation based
-system described below. 
+system described below.
 
 .. _Design-Coordinate-Spherical:
 
@@ -764,8 +760,8 @@ from the motor responsible for rotating the component. This situation is shown i
 
         NeXus Simple (Spherical Polar) Coordinate System
 
-Please note that it is planned to deprecate this polar system in favour of the transformation based 
- system described below. 
+Please note that it is planned to deprecate this polar system in favour of the transformation based
+ system described below.
 
 
 .. _CoordinateTransformations:
@@ -811,7 +807,7 @@ NeXus chooses to encode this information in the following way:
        single: rotation
 
     **Type**
-    	Through a field attribute **transformation_type**. 
+    	Through a field attribute **transformation_type**.
 	This can take the value of either *translation*
     	or *rotation*.
 
@@ -827,7 +823,7 @@ NeXus chooses to encode this information in the following way:
     .. index::
        ! single: value (transformation matrix)
        ! single: offset (field attribute)
-    
+
     **Value**
     	This is represented in the actual data of the data set. In addition, there is the
     	**offset** attribute which has three components describing a translation to apply before
@@ -844,16 +840,19 @@ NeXus chooses to encode this information in the following way:
     	If the axis sits in the same group it is just a name,
     	if it is in another group it is a path to the dependent axis.
     	In addition, for each beamline component, there is a **depends_on** field which points to the data set at the
-    	head of the axis dependency chain. Take as an example an :index:`eulerian cradle` as used on a 
-    	:index:`four-circle diffractometer`. Such a cradle has a dependency chain of ``phi:chi:rotation_angle``. Then 
-    	the ``depends_on`` field in :ref:`NXsample` would have the value ``phi``. 
+    	head of the axis dependency chain. Take as an example an :index:`eulerian cradle` as used on a
+    	:index:`four-circle diffractometer`. Such a cradle has a dependency chain of ``phi:chi:rotation_angle``. Then
+    	the ``depends_on`` field in :ref:`NXsample` would have the value ``phi``.
+
+
+
 
     	.. compound::
 
     	    .. rubric:: NeXus Transformation encoding
 
     	    .. _table.EulerCIF:
-			
+
     	    Transformation encoding for an eulerian cradle on a four-circle diffractometer
 
     	    .. literalinclude:: examples/euler-cif.txt
@@ -908,11 +907,11 @@ also allows to store and use arbitrarily named axes in a NeXus file.
 For the NeXus spherical coordinate system, the order is implicit and is given in the next example.
 
 	.. compound::
-	
+
 	    .. rubric:: implicit order of NeXus spherical coordinate system
-	    
+
 	    .. code-block:: text
-	
+
 		    azimuthal_angle:polar_angle:distance
 
 This is also a nice example of the application of transformation matrices:
@@ -926,15 +925,19 @@ This is also a nice example of the application of transformation matrices:
 #. This also moves the direction of the *z* vector.
    Along which you translate the component to place by distance.
 
-..  
+..
     .. _Size-Shape:
-    
+
+
+
+
+
     Size and Shape (``NXshape``)
     ============================
-    
+
     .. index::
     	dictionary
-    
+
     Many instrument components define
     variables to specify their size.
     For example, *radius* might be used to specify a circular object
@@ -949,7 +952,7 @@ This is also a nice example of the application of transformation matrices:
     local *(+-x,+-y,+-z*) axes; specifying ``size[6]`` would give the extent along
     *(+x,+y,+z,-x,-y,-z)* and allow for e.g. asymmetric jaws where the reference point
     may not be the centre of the rectangle.
-    
+
     For example take
     ``shape="cylinder"``: the :ref:`NXtranslation` ``position`` field
     would define the location of the reference point for the origin of the local
@@ -964,6 +967,30 @@ This is also a nice example of the application of transformation matrices:
     distance from the cylinder edges along the various axes given by elements of the
     ``size[6]`` array.
 
+Coordinate Transformation Attributes
+--------------------------------------
+
+The coordinate transformation attributes are:
+
+  **vector** (*NX_FLOAT*)
+      3 values describing the axis of rotation or the direction of translation
+  **offset** (*NX_FLOAT*)
+      3 values describing a translation of the axis before applying the
+      actual operation.
+  **transformation_type**
+      Is either rotation or translation and describes the kind of operation performed
+  **depends_on**
+      States the dataset which is next in the dependency chain. Allowed
+      values for depends_on are:
+
+      **.**
+        A dot ends the depends_on chain
+      **name**
+        The name of a dataset within the enclosing group
+      **dir/name**
+        The name of a dataset further along the path
+      **/dir/dir/name**
+        An absolute path to a dataset in another group
 
 
 Rules and Underlying File Formats
@@ -972,7 +999,7 @@ Rules and Underlying File Formats
 .. toctree::
 	:maxdepth: 1
 	:glob:
-   
+
 	rules
 	datarules
 	fileformat
