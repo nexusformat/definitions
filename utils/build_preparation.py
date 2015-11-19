@@ -16,11 +16,12 @@ this tool must be multiplatform.  If only for Linux
   ...
 
 Here, we identify and copy all resources to build.
-The target directory is assumed to be the present working directory.
+The target directory is assumed to be the current directory.
 
 '''
 
 # TODO: make target resources dependent on changes in relevant source resources 
+# for now, re-run this code to bring in any changed files, forces a complete rebuild
 
 from __future__ import print_function
 import os, sys, re
@@ -28,33 +29,41 @@ import local_utilities
 import shutil
 
 
+ROOT_DIR_EXPECTED_RESOURCES = {
+    'files': '''COPYING LGPL.txt Makefile 
+                nxdl.xsd nxdlTypes.xsd README.md
+             '''.split(),
+    'subdirs': '''applications base_classes contributed_definitions manual
+                 package utils www
+               '''.split(),
+}
+REPLICATED_RESOURCES = '''
+    LGPL.txt  Makefile  nxdl.xsd  nxdlTypes.xsd
+    base_classes  applications  contributed_definitions 
+    manual  utils
+'''.split()
+
+
 def is_definitions_directory(basedir):
     '''test if ``basedir`` is a NeXus definitions directory'''
-    # look for the expected files in the root directory
-    files = 'COPYING LGPL.txt Makefile nxdl.xsd nxdlTypes.xsd README.md'.split()
-    for item in files:
-        if not os.path.exists(os.path.join(basedir, item)):
-            return False
-    # look for the expected subdirectories in the root directory
-    subdirs = '''applications base_classes contributed_definitions manual
-                 package utils www
-              '''.split()
-    for item in files:
-        if not os.path.exists(os.path.join(basedir, item)):
-            return False
+    # look for the expected files and subdirectories in the root directory
+    for item_list in ROOT_DIR_EXPECTED_RESOURCES.values():
+        for item in item_list:
+            if not os.path.exists(os.path.join(basedir, item)):
+                return False
     return True
 
 
 def qualify_inputs(source_dir, target_dir):
     '''raise error if this program cannot continue, based on the inputs'''
     if not os.path.exists(source_dir):
-        raise RuntimeError('Cannot find %s' % source_dir)
+        raise RuntimeError('Cannot find ' + source_dir)
 
     if not os.path.isdir(source_dir):
-        raise RuntimeError('Not a directory %s' % source_dir)
+        raise RuntimeError('Not a directory: ' + source_dir)
 
     if not is_definitions_directory(source_dir):
-        msg = 'Not a NeXus definitions root directory %s' % source_dir
+        msg = 'Not a NeXus definitions root directory ' + source_dir
         raise RuntimeError(msg)
     
     if source_dir == target_dir:
@@ -69,11 +78,11 @@ def command_args():
     parser = argparse.ArgumentParser(prog=sys.argv[0], description=doc)
     parser.add_argument('defs_dir',
                         action='store', 
-                        help="path to a NeXus definitions root directory")
+                        help="path to NeXus definitions root directory")
     parser.add_argument('build_dir',
                         action='store', 
                         default=None,
-                        help="path to a NeXus definitions root directory")
+                        help="path to target directory (default: current directory)")
     return parser.parse_args()
 
 
@@ -89,12 +98,7 @@ def main():
     target_dir = cli.build_dir or os.path.abspath(os.getcwd())
     qualify_inputs(defs_base_directory, target_dir)
     
-    resources = '''
-      LGPL.txt  Makefile  nxdl.xsd  nxdlTypes.xsd
-      base_classes  applications  contributed_definitions 
-      manual  utils
-    '''.split()
-    for resource_name in sorted(resources):
+    for resource_name in sorted(REPLICATED_RESOURCES):
         source = os.path.join(defs_base_directory, resource_name)
         target = os.path.join(target_dir, resource_name)
         local_utilities.printf('cp %s %s\n', source, target)
@@ -110,11 +114,11 @@ def __developer_build_setup__():
         shutil.rmtree('build')
     os.mkdir('build')
     os.chdir('build')
+    sys.argv.append('..')
 
 
 if __name__ == '__main__':
     # __developer_build_setup__()
-    # sys.argv.append('..')
     main()
 
 
