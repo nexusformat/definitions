@@ -29,19 +29,24 @@ SRCDIR = $(ROOTDIR)/contributed_definitions
 SRCs = $(wildcard $(SRCDIR)/NX*.$(NXDL_SUFFIX) )
 RSTs := $(SRCs:.$(NXDL_SUFFIX)=.rst)
 RSTs := $(patsubst $(SRCDIR)/%, ./%, $(RSTs) )
+TARGET_NXDLs = $(patsubst $(SRCDIR)/%, ./%, $(SRCs) )
 
-vpath %.$(NXDL_SUFFIX) $(SRCDIR)
+#vpath %.$(NXDL_SUFFIX) $(SRCDIR)
 
 .PHONY: all clean test
 
-all :: $(RSTs)
+all :: $(RSTs) $(TARGET_NXDLs)
+
+%.nxdl.xml : $(SRCDIR)/%.$(NXDL_SUFFIX)  Makefile
+	cp $(SRCDIR)/$@   ./$@
 
 %.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
 	$(NXDL2RST) $< > $@
 
 clean ::
-	$(RM) NX*.rst
+	$(RM) NX*.rst NX*.nxdl.xml
 
 test ::
 	# $(SRCs)
+	# -----------
 	# $(RSTs)
