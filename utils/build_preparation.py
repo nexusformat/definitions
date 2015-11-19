@@ -84,8 +84,6 @@ def main():
     defs_base_directory = os.path.abspath(cli.defs_dir)
     target_dir = os.path.abspath(os.getcwd())
     qualify_inputs(defs_base_directory, target_dir)
-
-    print(defs_base_directory)
     
     resources = '''
       LGPL.txt  Makefile  nxdl.xsd  nxdlTypes.xsd
@@ -95,10 +93,12 @@ def main():
     for resource_name in sorted(resources):
         source = os.path.join(defs_base_directory, resource_name)
         target = os.path.join(target_dir, resource_name)
+        local_utilities.printf('cp %s %s', (source, target))
         local_utilities.replicate(source, target)
 
 
-def __build_setup__():
+def __developer_build_setup__():
+    '''for use with source-code debugger ONLY'''
     import shutil
     # sys.argv.append('-h')
     os.chdir('../')
@@ -109,6 +109,6 @@ def __build_setup__():
 
 
 if __name__ == '__main__':
-    __build_setup__()
-    sys.argv.append('..')
+    # __developer_build_setup__()
+    # sys.argv.append('..')
     main()
