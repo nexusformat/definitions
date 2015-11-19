@@ -54,10 +54,12 @@ def replicate_tree(source, target):
     :param str source: path to source resource (a directory)
     :param str target: path to target location (a directory)
     '''
-    if os.path.exists(target):
-        shutil.rmtree(target)
     if os.path.exists(source):
+        if os.path.exists(target):
+            shutil.rmtree(target, ignore_errors=True)
         shutil.copytree(source, target)
+    else:
+        raise RuntimeError('Directory not found: ' + source)
 
 
 # NeXus - Neutron and X-ray Common Data Format
