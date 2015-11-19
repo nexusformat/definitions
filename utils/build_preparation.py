@@ -82,6 +82,7 @@ def command_args():
     parser.add_argument('build_dir',
                         action='store', 
                         default=None,
+                        nargs='?',
                         help="path to target directory (default: current directory)")
     return parser.parse_args()
 

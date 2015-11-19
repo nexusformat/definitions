@@ -1,4 +1,30 @@
-#   File: Makefile
+# File: Makefile
+
+# purpose:
+#	build resources in NeXus definitions tree
+
+# ref: http://www/gnu.org/software/make/manual/make.html
+
+SUBDIRS = manual
+
+.PHONY: subdirs $(SUBDIRS) builddir
+
+subdirs: $(SUBDIRS)
+
+#$(SUBDIRS):
+#	$(MAKE) -C $@
+
+manual ::
+	$(MAKE) html -C $@
+
+clean:
+	$(MAKE) clean -C $(SUBDIRS)
+
+builddir ::
+	$(RM) -r build
+	mkdir build
+	python utils/build_preparation.py . build
+
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
@@ -19,32 +45,3 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # For further information, see http://www.nexusformat.org
-
-# purpose:
-#	build resources in NeXus definitions tree
-
-# ref: http://www/gnu.org/software/make/manual/make.html
-
-SUBDIRS = manual
-
-.PHONY: subdirs $(SUBDIRS)
-
-subdirs: $(SUBDIRS)
-
-#$(SUBDIRS):
-#	$(MAKE) -C $@
-
-manual ::
-	$(MAKE) html -C $@
-
-clean:
-	$(MAKE) clean -C $(SUBDIRS)
-
-builddir ::
-	$(RM) -r build
-	mkdir build
-	python utils/build_preparation.py . build
-
-# What about rules for "clean" and other things?
-# For the future, this will also build the
-# release version distribution kits of the definitions.

@@ -8,6 +8,7 @@ These are the components that define the structure of NeXus data files in the de
         LGPL.txt                    one proposed license model
         NeXus.xsd                   used to validate NeXus data files
         README.txt                  README file
+        README.make.txt             advice on how to build HTML documentation
         applications/               NXDL files for applications and instrument defs
         base_classes/               NXDL files for components
         contributed_definitions/    NXDL files from the community
