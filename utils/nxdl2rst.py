@@ -15,14 +15,10 @@ import os, sys, re
 from collections import OrderedDict
 import lxml.etree
 import HTMLParser
-from local_utilities import printf
+from local_utilities import printf, replicate
 
 
 INDENTATION_UNIT = '  '
-
-
-def printf(str, *args):
-    print(str % args, end='')
 
 
 def fmtTyp( node ):
@@ -357,9 +353,14 @@ def print_rst_from_nxdl(nxdl_file):
     printFullTree(ns, root, name, INDENTATION_UNIT)
 
     # print NXDL source location
+    subdir_map = {
+                  'base': 'base_classes',
+                  'application': 'applications',
+                  'contributed': 'contributed_definitions',
+                  }
     print( '**Source**:' )
     print( '  Automatically generated from %s/%s/%s.nxdl.xml' % (
-        html_root, subdir, name) )
+        html_root, subdir_map[subdir], name) )
 
 
 def main():
@@ -385,11 +386,9 @@ def main():
     basename = os.path.basename(nxdl_file)
     corename = basename[2:].split('.')[0]
     source = os.path.join(path, corename)
-    target = os.path.join('.', corename)
-    if os.path.exists(target):
-        shutil.rmtree(target)
     if os.path.exists(source):
-        shutil.copytree(source, target)
+        target = os.path.join('.', corename)
+        replicate(source, target)
 
 
 if __name__ == '__main__':
