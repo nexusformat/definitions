@@ -93,7 +93,7 @@ def main():
     for resource_name in sorted(resources):
         source = os.path.join(defs_base_directory, resource_name)
         target = os.path.join(target_dir, resource_name)
-        local_utilities.printf('cp %s %s', (source, target))
+        local_utilities.printf('cp %s %s\n', source, target)
         local_utilities.replicate(source, target)
 
 
