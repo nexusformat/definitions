@@ -15,6 +15,7 @@ import os, sys, re
 from collections import OrderedDict
 import lxml.etree
 import HTMLParser
+import shutil
 
 
 INDENTATION_UNIT = '  '
@@ -379,6 +380,20 @@ def main():
         exit()
 
     print_rst_from_nxdl(nxdl_file)
+
+    # if the NXDL has a subdirectory,
+    # copy that subdirectory (quietly) to the pwd, such as:
+    #  contributed/NXcanSAS.nxdl.xml: cp -a contributed/canSAS ./
+    category = os.path.basename(os.getcwd())
+    path = os.path.join('../../../../', category)
+    basename = os.path.basename(nxdl_file)
+    corename = basename[2:].split('.')[0]
+    source = os.path.join(path, corename)
+    target = os.path.join('.', corename)
+    if os.path.exists(target):
+        shutil.rmtree(target)
+    if os.path.exists(source):
+        shutil.copytree(source, target)
 
 
 if __name__ == '__main__':
