@@ -40,6 +40,11 @@ manual ::
 clean:
 	$(MAKE) clean -C $(SUBDIRS)
 
+builddir ::
+	$(RM) -r build
+	mkdir build
+	python utils/build_preparation.py . build
+
 # What about rules for "clean" and other things?
 # For the future, this will also build the
 # release version distribution kits of the definitions.
