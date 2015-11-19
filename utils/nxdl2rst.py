@@ -15,7 +15,7 @@ import os, sys, re
 from collections import OrderedDict
 import lxml.etree
 import HTMLParser
-import shutil
+from local_utilities import printf
 
 
 INDENTATION_UNIT = '  '
@@ -366,10 +366,6 @@ def main():
     '''
     standard command-line processing
     '''
-
-    def mtime(file_object):
-        return os.stat(file_object)[stat.ST_MTIME]
-
     if len(sys.argv) != 2:
         print( 'usage: %s someclass.nxdl.xml' % sys.argv[0] )
         exit()
