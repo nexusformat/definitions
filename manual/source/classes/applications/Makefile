@@ -41,7 +41,7 @@ all :: $(RSTs) $(TARGET_NXDLs)
 	cp $(SRCDIR)/$@   ./$@
 
 %.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
-	$(NXDL2RST) $< > $@
+	python $(NXDL2RST) $< > $@
 
 clean ::
 	$(RM) NX*.rst NX*.nxdl.xml
