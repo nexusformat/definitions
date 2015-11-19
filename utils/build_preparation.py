@@ -70,6 +70,10 @@ def command_args():
     parser.add_argument('defs_dir',
                         action='store', 
                         help="path to a NeXus definitions root directory")
+    parser.add_argument('build_dir',
+                        action='store', 
+                        default=None,
+                        help="path to a NeXus definitions root directory")
     return parser.parse_args()
 
 
@@ -78,11 +82,11 @@ def main():
     standard command-line processing
     
     source directory (NeXus definitions dir) named as command line argument
-    target directory is present working directory
+    target directory is specified (or defaults to present working directory)
     '''
     cli = command_args()
     defs_base_directory = os.path.abspath(cli.defs_dir)
-    target_dir = os.path.abspath(os.getcwd())
+    target_dir = cli.build_dir or os.path.abspath(os.getcwd())
     qualify_inputs(defs_base_directory, target_dir)
     
     resources = '''
