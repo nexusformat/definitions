@@ -54,7 +54,7 @@ copyright = u'2015, http://nexusformat.org'
 # built documents.
 #
 
-nxdl_version = '@NDXL_VERSION@'
+nxdl_version = open('../../NXDL_VERSION').read().strip()
 if nxdl_version is not None:
     version = nxdl_version.split('.')[0]
     release = nxdl_version

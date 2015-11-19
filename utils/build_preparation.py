@@ -30,7 +30,7 @@ import shutil
 
 
 ROOT_DIR_EXPECTED_RESOURCES = {
-    'files': '''COPYING LGPL.txt Makefile 
+    'files': '''COPYING LGPL.txt Makefile NXDL_VERSION
                 nxdl.xsd nxdlTypes.xsd README.md
              '''.split(),
     'subdirs': '''applications base_classes contributed_definitions manual
@@ -38,7 +38,7 @@ ROOT_DIR_EXPECTED_RESOURCES = {
                '''.split(),
 }
 REPLICATED_RESOURCES = '''
-    LGPL.txt  Makefile  nxdl.xsd  nxdlTypes.xsd
+    LGPL.txt  Makefile  nxdl.xsd  nxdlTypes.xsd  NXDL_VERSION
     base_classes  applications  contributed_definitions 
     manual  utils
 '''.split()
