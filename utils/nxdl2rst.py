@@ -358,8 +358,8 @@ def print_rst_from_nxdl(nxdl_file):
                   'application': 'applications',
                   'contributed': 'contributed_definitions',
                   }
-    print( '**Source**:' )
-    print( '  Automatically generated from %s/%s/%s.nxdl.xml' % (
+    print( '**NXDL Source**:' )
+    print( '  %s/%s/%s.nxdl.xml' % (
         html_root, subdir_map[subdir], name) )
 
 
