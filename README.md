@@ -16,10 +16,11 @@ These are the components that define the structure of NeXus data files in the de
         nxdl.xsd                    XML Schema for NXDL files
         nxdlTypes.xsd               called by nxdl.xsd
         schema/                     schema files created from NXDL sources
-        sphinx/                     remnant Sphinx source files for the manual (pre-release development)
+        package/                    directory for packaging this content
         test/                       data and examples
         utils/                      various tools used in the definitions tree
         www/                        launch (home) page of NeXus WWW site
         xslt/                       various XML stylesheet transformations
+        _sphinx/                    remnant Sphinx source files for the manual (pre-release development)
 
 See README.cmake.txt for building instructions
