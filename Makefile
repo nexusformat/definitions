@@ -7,7 +7,7 @@
 
 SUBDIRS = manual
 
-.PHONY: subdirs $(SUBDIRS) builddir
+.PHONY: subdirs $(SUBDIRS) builddir pdfdoc
 
 subdirs: $(SUBDIRS)
 
@@ -16,6 +16,9 @@ subdirs: $(SUBDIRS)
 
 manual ::
 	$(MAKE) html -C $@
+
+#pdfdoc ::
+#	$(MAKE) latexpdf -C $(SUBDIRS)
 
 clean:
 	$(MAKE) clean -C $(SUBDIRS)
