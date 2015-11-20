@@ -249,7 +249,7 @@ def print_rst_from_nxdl(nxdl_file):
     # The following URL is outdated, but that doesn't matter;
     # it won't be accessed; it's just an arbitrary namespace name.
     # It only needs to match the xmlns attribute in the NXDL files.
-    NAMESPACE = 'http://definition.nexusformat.org/nxdl/@NXDL_RELEASE@'
+    NAMESPACE = 'http://definition.nexusformat.org/nxdl/3.1'
     ns = {'nx': NAMESPACE}
 
     root = tree.getroot()
