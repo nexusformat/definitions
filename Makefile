@@ -1,8 +1,37 @@
-# Makefile for NeXus manual custom pages
+# File: Makefile
+
+# purpose:
+#	build resources in NeXus definitions tree
+
+# ref: http://www/gnu.org/software/make/manual/make.html
+
+SUBDIRS = manual
+
+.PHONY: subdirs $(SUBDIRS) builddir pdfdoc
+
+subdirs: $(SUBDIRS)
+
+#$(SUBDIRS):
+#	$(MAKE) -C $@
+
+manual ::
+	$(MAKE) html -C $@
+
+#pdfdoc ::
+#	$(MAKE) latexpdf -C $(SUBDIRS)
+
+clean:
+	$(MAKE) clean -C $(SUBDIRS)
+
+builddir ::
+	$(RM) -r build
+	mkdir build
+	python utils/build_preparation.py . build
+
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -19,29 +48,3 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 #
 # For further information, see http://www.nexusformat.org
-
-ROOTDIR = ../../../..
-NXDL2RST = $(ROOTDIR)/utils/nxdl2rst.py
-NXDL_SUFFIX = nxdl.xml
-
-SRCDIR = $(ROOTDIR)/base_classes
-
-SRCs = $(wildcard $(SRCDIR)/NX*.$(NXDL_SUFFIX) )
-RSTs := $(SRCs:.$(NXDL_SUFFIX)=.rst)
-RSTs := $(patsubst $(SRCDIR)/%, ./%, $(RSTs) )
-
-vpath %.$(NXDL_SUFFIX) $(SRCDIR)
-
-.PHONY: all clean test
-
-all :: $(RSTs)
-
-%.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
-	$(NXDL2RST) $< > $@
-
-clean ::
-	$(RM) NX*.rst
-
-test ::
-	# $(SRCs)
-	# $(RSTs)

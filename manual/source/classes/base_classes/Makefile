@@ -2,7 +2,7 @@
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -20,14 +20,33 @@
 #
 # For further information, see http://www.nexusformat.org
 
-SUBDIRS = base_classes applications contributed_definitions
+ROOTDIR = ../../../..
+NXDL2RST = $(ROOTDIR)/utils/nxdl2rst.py
+NXDL_SUFFIX = nxdl.xml
 
-.PHONY: subdirs $(SUBDIRS) clean
+SRCDIR = $(ROOTDIR)/base_classes
 
-subdirs: $(SUBDIRS)
+SRCs = $(wildcard $(SRCDIR)/NX*.$(NXDL_SUFFIX) )
+RSTs := $(SRCs:.$(NXDL_SUFFIX)=.rst)
+RSTs := $(patsubst $(SRCDIR)/%, ./%, $(RSTs) )
+TARGET_NXDLs = $(patsubst $(SRCDIR)/%, ./%, $(SRCs) )
 
-$(SUBDIRS):
-	$(MAKE) -C $@
+#vpath %.$(NXDL_SUFFIX) $(SRCDIR)
+
+.PHONY: all clean test
+
+all :: $(RSTs) $(TARGET_NXDLs)
+
+%.nxdl.xml : $(SRCDIR)/%.$(NXDL_SUFFIX)  Makefile
+	cp $(SRCDIR)/$@   ./$@
+
+%.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
+	python $(NXDL2RST) $< > $@
 
 clean ::
-#	$(MAKE) clean -C $(SUBDIRS)
+	$(RM) NX*.rst NX*.nxdl.xml
+
+test ::
+	# $(SRCs)
+	# -----------
+	# $(RSTs)

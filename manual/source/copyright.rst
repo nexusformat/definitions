@@ -28,6 +28,6 @@ The code examples in the NeXus manual are licensed under the terms of the
 GNU Lesser General Public License version 3.  
 
 :download:
-    :download:`LGPL <LGPL.txt>`
+    :download:`LGPL <../../LGPL.txt>`
 :GNU:
     http://www.gnu.org/licenses/lgpl-3.0.txt

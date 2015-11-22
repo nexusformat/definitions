@@ -1,8 +1,8 @@
-#   File: Makefile
+# Makefile for NeXus manual custom pages
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -20,24 +20,33 @@
 #
 # For further information, see http://www.nexusformat.org
 
-# purpose:
-#	build resources in NeXus definitions tree
+ROOTDIR = ../../../..
+NXDL2RST = $(ROOTDIR)/utils/nxdl2rst.py
+NXDL_SUFFIX = nxdl.xml
 
-# ref: http://www/gnu.org/software/make/manual/make.html
+SRCDIR = $(ROOTDIR)/applications
 
-SUBDIRS = schema manual
+SRCs = $(wildcard $(SRCDIR)/NX*.$(NXDL_SUFFIX) )
+RSTs := $(SRCs:.$(NXDL_SUFFIX)=.rst)
+RSTs := $(patsubst $(SRCDIR)/%, ./%, $(RSTs) )
+TARGET_NXDLs = $(patsubst $(SRCDIR)/%, ./%, $(SRCs) )
 
-.PHONY: subdirs $(SUBDIRS)
+#vpath %.$(NXDL_SUFFIX) $(SRCDIR)
 
-subdirs: $(SUBDIRS)
+.PHONY: all clean test
 
-$(SUBDIRS):
-	$(MAKE) -C $@
+all :: $(RSTs) $(TARGET_NXDLs)
 
-manual: schema
+%.nxdl.xml : $(SRCDIR)/%.$(NXDL_SUFFIX)  Makefile
+	cp $(SRCDIR)/$@   ./$@
 
+%.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
+	python $(NXDL2RST) $< > $@
 
-# What about rules for "clean" and other things?
-# For the future, this will also build the
-# release version distribution kits of the definitions.
+clean ::
+	$(RM) NX*.rst NX*.nxdl.xml
 
+test ::
+	# $(SRCs)
+	# -----------
+	# $(RSTs)
