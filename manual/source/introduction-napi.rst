@@ -216,4 +216,4 @@ API <Introduction-NAPI>` may also be useful to study.
 
 .. [#] see :ref:`nxdl-types`
 
-.. [#] https://svn.nexusformat.org/code/trunk/applications/NXbrowse/NXbrowse.c
+.. [#] https://github.com/nexusformat/code/blob/master/applications/NXbrowse/NXbrowse.c

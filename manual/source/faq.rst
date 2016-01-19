@@ -27,7 +27,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     NeXus files are not per se binary. If you use the XML backend the
     data are stored in a relatively human readable form (see
-    `this example <http://trac.nexusformat.org/definitions/browser/exampledata/code/xml/NXtest.xml.txt>`_).
+    `this example <https://github.com/nexusformat/code/blob/master/bindings/idl/NXtest.xml>`_).
     This backend however is only recommended for very small data sets. With
     the multidimensional data that is routinely recorded on many modern
     instruments it is very difficult anyway to retrieve useful
@@ -134,14 +134,6 @@ This is a list of commonly asked questions concerning the NeXus data format.
     groups. It is assumed that the sample and monitor information would
     be more likely to change from run to run, and so should be stored
     at the top level.
-
-#. Specifications are complicated and often provide too much information for what I need.  Where can I find some good example data files?
-
-    There are a few checked into the
-    `definitions repository <http://trac.nexusformat.org/definitions/browser/exampledata>`_.
-    At the moment the selection is quite limited and not very representative.
-    This repository will be edited as more example files become available.
-
 
 #. Can I use a NXDL specification to parse a NeXus data file?
 

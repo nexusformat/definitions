@@ -39,10 +39,9 @@ Programming Interface for the various language backends is available on-line
 from http://download.nexusformat.org.
 
 The  NeXusIntern.pdf document 
-(http://svn.nexusformat.org/code/trunk/doc/api/NeXusIntern.pdf) describes the 
+(https://github.com/nexusformat/code/blob/master/doc/api/NeXusIntern.pdf) describes the 
 internal workings of the NeXus-API. You are very welcome to read it, but it 
-will not be of much use if all you want is to read and write files using the 
-NAPI. 
+will not be of much use if all you want is to read and write files using the NAPI. 
 
 
 The NeXus Application Program Interface 
