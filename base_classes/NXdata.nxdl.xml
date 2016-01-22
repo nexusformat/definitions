@@ -50,13 +50,54 @@
 		<symbol name="nz"><doc>length of the ``z`` field</doc></symbol>
 	</symbols>
 	
-	<attribute name="axes"><doc></doc></attribute>
+	<attribute name="axes">
+		<!-- http://wiki.nexusformat.org/2014_axes_and_uncertainties -->
+		<doc>
+			.. index:: plotting
+			
+			String array that defines the independent data fields used in 
+			the default plot for all of the dimensions of the *signal* field. 
+			One entry is provided for every dimension in the *signal* field.
+			
+			The field(s) named as values (known as "axes") of this attribute 
+			*must* exist. An axis slice is specified using a field named 
+			``{axisname}_indices`` as described below.
+			
+			When no default axis is available for a particular dimension 
+			of the plottable data, use a "." in that position. 
+			
+			See examples provided on the NeXus wiki:
+			http://wiki.nexusformat.org/2014_axes_and_uncertainties
+			
+			If there are no axes at all (such as with a stack of images), 
+			the axes attribute can be omitted.
+			
+			:``{axisname}_indices``: 
+				Integer array that defines the indices of the *signal* field 
+				(that field will be a multidimensional array)
+				which need to be used in the ``{axisname}`` dataset in 
+				order to reference the corresponding axis value.
+				
+				This attribute is to be provided in all situations. 
+				However, if the indices attributes are missing 
+				(such as for data files written before this specification), 
+				file readers are encouraged to make their best efforts 
+				to plot the data. 
+				
+				Thus the implementation of the 
+				``{axis name}_indices`` attribute is based on the model of 
+				"strict writer, liberal reader". 
+
+		</doc>
+	</attribute>
 	<attribute name="signal">
 		<doc>
 			.. index:: plotting
 			
 			Declares which dataset is the default. 
 			The value is the name of the dataset to be plotted.
+			A field of this name *must* exist (either as dataset 
+			or as a link to a dataset).
 			
 			It is recommended (as of NIAC2014) to use this attribute
 			rather than adding a signal attribute to the dataset.
@@ -138,18 +179,20 @@
 		</attribute>
         <attribute name="first_good" type="NX_INT"><doc>Index of first good value</doc></attribute>
 		<attribute name="last_good" type="NX_INT"><doc>Index of last good value</doc></attribute>
-		<attribute name="axis" type="NX_POSINT">
+		<attribute name="axis" type="NX_POSINT"
+			deprecated="Use the group ``axes`` attribute   (NIAC2014)">
 			<doc>
 				Index (positive integer) identifying this specific set of numbers.
+				
 				N.B. The ``axis`` attribute is the old way of designating a link.  
 				Do not use the ``axes`` attribute with the ``axis`` attribute.
-				The ``axes`` attribute is now preferred.
+				The ``axes`` *group* attribute is now preferred.
 			</doc>
 		</attribute>
 	</field>
 	<field name="variable_errors" type="NX_NUMBER">
 		<doc>
-			Errors (uncertainties) associated with axis ``variable``
+			Errors (uncertainties) associated with axis ``variable``.
 			Client is responsible for defining the dimensions of the data.
 			The name of this field may be changed to fit the circumstances 
 			but is matched with the *variable*
@@ -193,7 +236,8 @@
 				Do not use the ``signal`` attribute with the ``axis`` attribute.
 			</doc>
 		</attribute>
-		<attribute name="axes">
+		<attribute name="axes"
+			deprecated="Use the group ``axes`` attribute   (NIAC2014)">
 			<doc>
 				Defines the names of the dimension scales
 				(independent axes) for this data set
@@ -204,6 +248,11 @@
 			</doc>
 		</attribute>
 		<attribute name="uncertainties">
+			<!-- 
+				see http://wiki.nexusformat.org/2014_axes_and_uncertainties
+				not accepted at NIAC2014
+				"NIAC will see a proposal when experience has been gained with all variations."
+			-->
 			<doc>
 				Specify the names of the errors (uncertainties) 
 				of the dependent axes as plottable data.
