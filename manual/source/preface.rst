@@ -83,7 +83,7 @@ which means it conforms to the specification of the ``NXentry``
 NeXus base class.  Using the HDF5 nomenclature, we would refer to this
 as the ``/entry`` group.
 
-Lines 2, 10, and 12:
+Lines 2, 8, and 10:
 The ``/entry`` group contains three subgroups:
 ``instrument``, ``sample``, and ``data``.
 These groups are of type ``NXinstrument``, ``NXsample``,
@@ -95,24 +95,33 @@ Line 4: The data of this example is stored in the
 The indication of ``data:\[]`` says that ``data`` is an
 array of unspecified dimension(s).
 
-Lines 5-7:
-There are three attributes of ``/entry/instrument/detector/data``:
-``axes``, ``long_name``, and ``signal``.
+Line 5:
+There is one attribute of ``/entry/instrument/detector/data``:
+``long_name``.  This attribute *might* be used by a
+plotting program as the axis title.
 
-Line 8 (reading ``bins:\[0, 1, 2, ... 1023]``) shows that
+Line 6 (reading ``bins:\[0, 1, 2, ... 1023]``) shows that
 ``bins`` is a 1-D array of length presumably 1024.  A small,
 representative selection of values are shown.
 
-Line 9: an attribute that shows a descriptive name of
+Line 7: an attribute that shows a descriptive name of
 ``/entry/instrument/detector/bins``.  This attribute
 might be used by a NeXus client while plotting the data.
 
-Line 11 (reading ``name = "zeolite"``) shows
+Line 9 (reading ``name = "zeolite"``) shows
 how a string value is represented.
 
-Lines 13-14:
+Line 11 says that the default data to be plotted is called ``data``.
+
+Line 12 says that each axis *dimension scale* of ``data`` is described
+by the field called ``bins``.
+
+Line 13 says that ``bins`` will be used for axis 0 and axis 1 of ``data``.
+
+Lines 14-15:
 The ``/entry/data``) group has two datasets that are actually
-linked as shown.  (As you will see later, the ``NXdata`` group
+linked as shown to data sets in a different group.  
+(As you will see later, the ``NXdata`` group
 is required and enables NeXus clients to easily determine what to
 offer for display on a default plot.)
 
