@@ -41,7 +41,7 @@ chapter except that the names will be different, as shown below:
 	.. literalinclude:: data-model.txt
 	    :tab-width: 4
 	    :linenos:
-	    :language: guess
+	    :language: text
 	
 	.. _Example-H5py-Plot:
 	
@@ -107,13 +107,19 @@ support library must create and set the ``NX_class`` attribute on each group.
 
 .. note:: We want to create the desired structure of
           ``/entry:NXentry/mr_scan:NXdata/``. 
-          First, our support library calls 
-          ``nxentry = f.create_group("entry")`` 
-          to create the ``NXentry`` group called
-          ``entry`` at the root level. Then, it calls 
-          ``nxdata = nxentry.create_group("mr_scan")`` 
-          to create the ``NXentry`` group called
-          ``entry`` as a child of the ``NXentry`` group.
+          
+	  #. First, our support library calls 
+             ``f = my_lib.makeFile()`` 
+             to create the file and root level 
+	     NeXus structure.
+	  #. Then, it calls 
+             ``nxentry = f.create_group("entry")`` 
+             to create the ``NXentry`` group called
+             ``entry`` at the root level. 
+	  #. Then, it calls 
+             ``nxdata = nxentry.create_group("mr_scan")`` 
+             to create the ``NXentry`` group called
+             ``entry`` as a child of the ``NXentry`` group.
 
 Next, we create a dataset called ``title`` to hold a title string that can
 appear on the default plot.
@@ -122,9 +128,9 @@ Next, we create datasets for ``mr`` and ``I00`` using our support library.
 The data type of each, as represented in ``numpy``, will be recognized by
 ``h5py`` and automatically converted to the proper HDF5 type in the file.
 A Python dictionary of attributes is given, specifying the engineering units and other
-values needed by NeXus to provide a default plot of this data.  By setting ``signal=1``
-as an attribute on ``I00``, NeXus recognizes ``I00`` as the default
-*y* axis for the plot.  The ``axes="mr"`` connects the dataset
+values needed by NeXus to provide a default plot of this data.  By setting ``signal="I00"``
+as an attribute on the group, NeXus recognizes ``I00`` as the default
+*y* axis for the plot.  The ``axes="mr"`` attribute on the group connects the dataset
 to be used as the *x* axis.
 
 Finally, we *must* remember to call ``f.close()`` or we might
@@ -275,11 +281,11 @@ a simple HDF5 data file that contains just the ``two_theta``
 angles in an HDF5 dataset at the root level of the file.
 Although this is a valid HDF5 data file, it is not a valid NeXus data file:
 
-.. code-block:: guess
+.. code-block:: text
     :linenos:
 
-	angles:float64[31] = [17.926079999999999, '...', 17.92108]
-	  @units = degrees
+    angles:float64[31] = [17.926079999999999, '...', 17.92108]
+      @units = degrees
 
 file: external_counts.hdf5
 =================================
@@ -287,19 +293,23 @@ file: external_counts.hdf5
 The data in the file ``external_angles.hdf5`` might be referenced from
 another HDF5 file (such as :download:`external_counts.hdf5`) 
 by an HDF5 external link. [#]_  
-Here is an example of the structure
+Here is an example of the structure:
 
-.. code-block:: guess
+.. code-block:: text
     :linenos:
 
-	entry:NXentry
-	  instrument:NXinstrument
-	    detector:NXdetector
-	      counts:NX_INT32[31] = [1037, '...', 1321]
-	        @units = counts
-	        @signal = 1
-	        @axes = two_theta
+    entry:NXentry
+      instrument:NXinstrument
+    	detector:NXdetector
+    	  counts:NX_INT32[31] = [1037, '...', 1321]
+    	    @units = counts
+    	    @signal = 1
+    	    @axes = two_theta
 	      two_theta --> file="external_angles.hdf5", path="/angles"
+
+The ``signal=1`` attribute on the ``counts`` data set is a legacy NeXus
+method to identify the default data.  It is not necessary now, but does
+not create any problems for NeXus.
 
 .. note:: The file ``external_counts.hdf5`` is not a complete NeXus file since it does not 
    contain an NXdata group containing a dataset with ``signal=1`` attribute.
@@ -319,21 +329,31 @@ without making a copy of the data files themselves.
    these files to be located together in the same directory for the HDF5 external file 
    links to work properly.`  
 
-To be a valid NeXus file, it must contain a :ref:`NXentry` group containing a 
-:ref:`NXdata` group containing only one dataset with the aatribute ``signal=1``.
+To be a valid NeXus file, it must contain a :ref:`NXentry` group containing 
+a :ref:`NXdata` group containing a dataset that is named as the value of the 
+group attribute ``signal={dataset_name}``.
 For the files above, it is simple to make a master file that links to
-the data we desire, from structure that we create.  In ``external_counts.hdf5`` above,
-see that the required attribute ``signal=1`` is already present.
-Here is :download:`external_master.hdf5`, an example:
+the data we desire, from structure that we create.  We then add the
+group attributes that describe the default plottable data:
 
-.. code-block:: guess
+.. code-block:: text
+
+    data:NXdata
+      @signal = counts
+      @axes = two_theta
+
+Here is (the basic structure of) :download:`external_master.hdf5`, an example:
+
+.. code-block:: text
     :linenos:
 
-	entry:NXentry
-	  instrument --> file="external_counts.hdf5", path="/entry/instrument"
-	  data:NXdata
-	    counts --> file="external_counts.hdf5", path="/entry/instrument/detector/counts"
-	    two_theta --> file="external_angles.hdf5", path="/angles"
+    entry:NXentry
+      instrument --> file="external_counts.hdf5", path="/entry/instrument"
+      data:NXdata
+ 	@signal = counts
+ 	@axes = two_theta
+    	counts --> file="external_counts.hdf5", path="/entry/instrument/detector/counts"
+    	two_theta --> file="external_angles.hdf5", path="/angles"
 
 source code: externalExample.py
 =================================
@@ -348,9 +368,9 @@ to write a NeXus-compliant HDF5 file with links to data in other HDF5 files.
     .. _Example-H5py-externalExample:
 
     .. literalinclude:: externalExample.py
-	    :tab-width: 4
-	    :linenos:
-	    :language: guess
+       :tab-width: 4
+       :linenos:
+       :language: guess
 
 
 

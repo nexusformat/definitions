@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 '''
-Writes the simplest NeXus HDF5 file using h5py
+Writes the simplest NeXus HDF5 file using h5py 
+
+Uses method accepted at 2014NIAC
 according to the example from Figure 1.3 
 in the Introduction chapter
 '''
@@ -23,13 +25,13 @@ nxentry.attrs["NX_class"] = 'NXentry'
 
 nxdata = nxentry.create_group('data')
 nxdata.attrs["NX_class"] = 'NXdata'
+nxdata.attrs['signal'] = "counts"
+nxdata.attrs['axes'] = "two_theta"
 
 tth = nxdata.create_dataset("two_theta", data=tthData)
 tth.attrs['units'] = "degrees"
 
 counts = nxdata.create_dataset("counts", data=countsData)
 counts.attrs['units'] = "counts"
-counts.attrs['signal'] = 1
-counts.attrs['axes'] = "two_theta"
 
 f.close()	# be CERTAIN to close the file

@@ -48,8 +48,15 @@ class H5toText(object):
         test if the selected HDF5 file is a NeXus file
         
         At this time, the code only tests for the existence of
-        the NXentry group.  The tests should be extended to require
-        a NXdata group and a single dataset containing signal=1 attribute.
+        the NXentry group.  The tests should be extended 
+        to require this structure be found::
+	
+          root
+            NXentry
+              NXdata
+                @signal={dataset_name}
+        	{dataset_name}:NX_numbers[]
+	
         '''
         result = False
         try:
@@ -68,9 +75,7 @@ class H5toText(object):
                 if str(type(v)) not in possible_types:
                     continue
                 if str(v) == str('NXentry'):
-                    # TODO: apply more tests
-                    #    for group NXdata 
-                    #    and signal=1 attribute on only one dataset
+                    # TODO: apply more tests for required structure
                     result = True
                     break
             f.close()

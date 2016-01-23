@@ -36,14 +36,19 @@ my_lib.makeExternalLink(f, FILE_HDF5_ANGLES,
 f.close()
 
 # create a master NeXus HDF5 file
-f = my_lib.makeFile(FILE_HDF5_MASTER)
-nxentry = my_lib.makeGroup(f, 'entry', 'NXentry')
+f = my_lib.makeFile(FILE_HDF5_MASTER, default='entry')
+nxentry = my_lib.makeGroup(f, 'entry', 'NXentry', default='data')
 nxdata = my_lib.makeGroup(nxentry, 'data', 'NXdata')
-my_lib.makeExternalLink(f, FILE_HDF5_ANGLES, 
-                        '/angles', nxdata.name+'/two_theta')
-my_lib.makeExternalLink(f, FILE_HDF5_COUNTS, 
+
+ds = my_lib.makeExternalLink(f, FILE_HDF5_COUNTS, 
                         '/entry/instrument/detector/counts', 
                         nxdata.name+'/counts')
+nxdata.attrs["signal"] = 'counts'
+
+ds = my_lib.makeExternalLink(f, FILE_HDF5_ANGLES, 
+                        '/angles', nxdata.name+'/two_theta')
+nxdata.attrs["axes"] = 'two_theta'
+
 my_lib.makeExternalLink(f, FILE_HDF5_COUNTS, 
                         '/entry/instrument', 
                         nxentry.name+'/instrument')

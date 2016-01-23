@@ -16,24 +16,37 @@ i00_arr = numpy.asarray(data[1],'int32')
 
 # create the HDF5 NeXus file
 f = my_lib.makeFile(fileName, file_name=fileName,
-        file_time=timestamp,
-        instrument="APS USAXS at 32ID-B",
-        creator="BasicWriter.py",
-        NeXus_version="4.3.0",
-        HDF5_Version=h5py.version.hdf5_version,
-        h5py_version=h5py.version.version)
+      file_time=timestamp,
+      instrument="APS USAXS at 32ID-B",
+      creator="BasicWriter.py",
+      NeXus_version="4.3.0",
+      HDF5_Version=h5py.version.hdf5_version,
+      h5py_version=h5py.version.version,
+      default='entry',)
 
-nxentry = my_lib.makeGroup(f, "entry", "NXentry")
+nxentry = my_lib.makeGroup(f, 
+      "entry", 
+      "NXentry",
+      default='mr_scan',)
 my_lib.makeDataset(nxentry, 'title', data='1-D scan of I00 v. mr')
 
-nxdata = my_lib.makeGroup(nxentry, "mr_scan", "NXdata")
+nxdata = my_lib.makeGroup(nxentry, 
+      "mr_scan",
+      "NXdata",
+      signal='I00',   # Y axis of default plot
+      axes='mr',      # name "mr" as X axis
+      )
 
-my_lib.makeDataset(nxdata,  "mr",  mr_arr, units='degrees', 
-                   long_name='USAXS mr (degrees)')
+my_lib.makeDataset(nxdata,  
+      "mr",  
+      mr_arr, 
+      units='degrees', 
+      long_name='USAXS mr (degrees)')
 
-my_lib.makeDataset(nxdata,  "I00",  i00_arr, units='counts',
-      signal=1,          # Y axis of default plot
-      axes='mr',	     # name "mr" as X axis
+my_lib.makeDataset(nxdata,  
+      "I00",  
+      i00_arr, 
+      units='counts',
       long_name='USAXS I00 (counts)')
 
 f.close()	# be CERTAIN to close the file

@@ -69,23 +69,23 @@ if __name__ == '__main__':
     f.attrs['h5py_version'] = h5py.version.version
     f.attrs['file_time'] = timestamp
     f.attrs['file_update_time'] = timestamp
+    f.attrs['default'] = 'entry'    # identify default NXentry group
 
     nxentry = f.create_group("entry")
     nxentry.attrs["NX_class"] = "NXentry"   # identify NeXus base class
+    nxentry.attrs["default"] = "mr_scan"    # identify default NXdata group
 
     # store the scan data
     nxdata = nxentry.create_group("mr_scan")
     nxdata.attrs["NX_class"] = "NXdata"   # identify NeXus base class
+    nxdata.attrs["signal"] = "I00"        # identify default data to plot
+    nxdata.attrs["axes"] = "mr"           # identify default dimension scale to plot
 
     mr = nxdata.create_dataset("mr", data=data['mr'])
     mr.attrs['units'] = "degrees"
-    # tell NeXus this is first independent axis for plotting
-    mr.attrs['primary'] = "1"   
 
     i00 = nxdata.create_dataset("I00", data=data['I00'])
     i00.attrs['units'] = "counts"
-    # tell NeXus this is primary data for plotting
-    i00.attrs['signal'] = 1   
 
     # fill in some optional metadata
     nxentry.create_dataset("title", data="APS USAXS instrument MR (alignment) scan")
