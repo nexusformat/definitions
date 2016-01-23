@@ -114,14 +114,15 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     See the section: :ref:`Find-Plottable-Data`.
 
-#. How can I specify reasonable axes for my data?
-
-    ..  Is there a better answer for this?
-    	FIXME: This link leads to the naming rules, not axes specification.  Change it.
-
-    See the section: :ref:`multi-dimensional-data`.
-    
-    .. :ref:`DataRules`.
+.. TODO:  What is the intent of this next question?  What defines "reasonable" in this context?
+   #. How can I specify reasonable axes for my data?
+   
+       ..  Is there a better answer for this?
+       	FIXME: This link leads to the naming rules, not axes specification.  Change it.
+   
+       See the section: :ref:`multi-dimensional-data`.
+       
+       .. :ref:`DataRules`.
 
 #. Why aren't ``NXsample`` and ``NXmonitor`` groups stored in the ``NXinstrument`` group?
 
