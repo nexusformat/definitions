@@ -241,11 +241,8 @@ matches the data type specifier.
     All strings are to be encoded in UTF-8. Since most strings in a
     NeXus file are restricted to a small set of characters and the first 128 characters are standard across encodings,
     the encoding of most of the strings in a NeXus file will be a moot point.
-    Where encoding in UTF-8 will be important is when recording peoples names in ``NXuser``
+    Where encoding in UTF-8 will be important is when recording people's names in ``NXuser``
     and text notes in ``NXnotes``.
-    Because the few places where encoding is important also have unpredictable content, as well as the way in which
-    current operating systems handle character encoding, it is practically impossible to test the encoding used. Hence,
-    ``nxvalidate`` provides no messages relating to character encoding.
 
 .. index:: binary data
 
