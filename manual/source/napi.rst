@@ -193,22 +193,6 @@ Currently, the F90 utility API will only write character strings,
 integer sizes into four-byte integers, but does not differentiate 
 between signed and unsigned integers. 
 
-.. Where they?
-	Here are two example programs 
-	which make heavy use of the Utility API.
-
-.. Time to remove this example.  
-	The source file is not available, nor
-	are the required IPNS run-file modules.
-	
-	``NXlrcs.f90`` (http://www.nexusformat.org/NXlrcs.f90)
-	is a program for converting IPNS data from the LRMECS chopper 
-	spectrometer into NeXus format. It cannot be run without linking 
-	to the IPNS run-file modules (not provided).
-	It has been provided here as an example of how to write such programs. 
-    
-
-
 
 
 .. _NAPI-Building:
@@ -255,4 +239,4 @@ Reporting Bugs in the NeXus API
 
 If you encounter any bugs in the installation or running of the NeXus API, 
 please report them online using our Issue Reporting system. 
-(http://www.nexusformat.org/IssueReporting)
+(http://wiki.nexusformat.org/IssueReporting)

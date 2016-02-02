@@ -6,8 +6,6 @@
 NAPI Java Interface
 ===================
 
-..  http://www.nexusformat.org/Java_API
-
 This section includes installation notes,
 instructions for running NeXus for Java programs and a brief
 introduction to the API.
