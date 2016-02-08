@@ -56,11 +56,6 @@ NAPI Python Simple 3-D Write Example
 
 A single code example is provided in this section that writes 3-D data
 to a NeXus HDF5 file in the Python language using the NAPI.
-The data file may be retrieved from the repository of NeXus data
-file examples: 
-
-:data:
-	http://svn.nexusformat.org/definitions/exampledata/simple3D.h5
 
 The data to be written to the file is a simple three-dimensional array (2 x 3 x 4)
 of integers.  The single dataset is intended to demonstrate the order in
