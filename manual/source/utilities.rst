@@ -6,10 +6,8 @@ NeXus Utilities
 
 There are many utilities available to read, browse, write, and use NeXus data files. Some
 are provided by the NeXus technical group while others are provided by the community. Still,
-other tools listed here can read or write one of the low-level file formats used by NeXus (HDF4,
-HDF5, or XML).
-
-..  see: http://www.nexusformat.org/Utilities
+other tools listed here can read or write one of the low-level file formats used by NeXus (HDF5,
+HDF4, or XML).
 
 ..  =============================
     section: Utilities from NeXus
@@ -107,31 +105,9 @@ links to further information, as available.
 **nxvalidate**
     From the source code documentation: 
     
-    	"Utility to convert a NeXus file into HDF4/HDF5/XML/..." 
+    	"This is the first version of nxvalidate written in C. Its dependencies are libxml2 and the HDF5 libraries, version 1.8.9 or better. Its purpose is to validate HDF5 files against NeXus application definitions."
     
-    Note: this command-line tool is
-    different than the newer Java GUI program: ``NXvalidate``.
-
-.. _NXvalidate-java:
-
-.. index:: 
-        NXvalidate (Java GUI)
-
-**NXvalidate**
-    NXvalidate will validate a NeXus file against an application definition. 
-    It relies on ``nxconvert`` being installed. 
-
-    From the source code documentation: 
-    
-    	"NXvalidate is a tool that allows the validation of NeXus files for 
-    	their correctness with respect to content for a given data model.
-    	
-    	"NXvalidate can validate single data files or multiple data files, 
-    	the results are displayed in a friendly way and errors found in the 
-    	file are highlighted to the user."
-    	
-    Note: this Java GUI program is different than the
-    command-line tool ``nxvalidate``.
+    Note: this tool is lives in its own GitHub repository **cnxvalidate**.
 
 .. index:: 
         plotting

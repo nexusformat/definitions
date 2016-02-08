@@ -300,7 +300,7 @@ sets. Here is the structure of a very simple NeXus data file
 	    .. literalinclude:: examples/verysimple.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 .. index:: 
 	NeXpy

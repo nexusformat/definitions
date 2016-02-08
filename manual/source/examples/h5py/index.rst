@@ -187,47 +187,6 @@ Output from ``BasicReader.py`` is shown next.
 	    :linenos:
 	    :language: text
 
-.. _Example-H5py-Validation:
-
-Validating the HDF5 file
-========================
-
-Now we have an HDF5 file that contains our data.  What makes
-this different from a NeXus data file?  A NeXus file
-has a specific arrangement of groups and datasets
-in an HDF5 file.
-
-To test that our HDF5 file conforms to the NeXus standard,
-we use the :ref:`Java-version of NXvalidate <NXvalidate-java>`.  
-Referring to the next figure,
-we compare our HDF5 file with the rules for
-generic [#]_ data files (``all.nxdl.xml``).  The only items that have
-been flagged are the "non-standard field names" *mr* and
-*I00*.  Neither of these two names is
-specifically named in the NeXus NXDL definition for
-the ``NXdata`` base class.  As we'll see shortly,
-this is not a problem.
-
-.. [#]
-    generic NeXus data files: NeXus data
-    files for which no application-specific NXDL
-    applies
-
-.. compound::
-
-    .. _fig-Example-H5py-Validation:
-
-    .. figure:: nxvalidate.png
-        :alt: fig-Example-H5py-Validation
-        :width: 80%
-
-        NeXus validation of our HDF5 file
-
-.. note:: Note that ``NXvalidate`` shows
-          only the first data field for *mr* and
-          *I00*.
-
-
 .. _Example-H5py-Plotting:
 
 Plotting the HDF5 file
