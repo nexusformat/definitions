@@ -17,7 +17,7 @@ Code Examples in Various Languages
 ##################################
 
 Each example in this section demonstrates reading and or writing of compliant NeXus files in
-one of the supported storage comatiners (HDF4, HDF5, or XML).
+one of the supported storage containers (HDF4, HDF5, or XML).
 Please be aware that not all exmples are up to date with the latest format recommendations.
 
 .. toctree::
