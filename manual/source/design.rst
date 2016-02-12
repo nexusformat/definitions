@@ -132,7 +132,7 @@ Attributes
 ==========
 
 Attributes are extra (meta-)information that are associated with particular
-groups or fields. They are used to annotate the data, e.g. with physical
+groups or fields. They are used to annotate data, e.g. with physical
 :index:`units` or calibration offsets, and may be scalar numbers or character
 strings. In addition, NeXus uses attributes to identify
 :index:`plottable data <plotting>`
@@ -141,58 +141,18 @@ attributes can be found in the next table:
 
 	.. compound::
 
-		.. rubric::  Examples of data attributes
+		.. rubric::  Examples of attributes
 
 		``units`` (*NX_CHAR*)
 			:index:`Data units <units>` given as character strings,
 			must conform to the NeXus units standard.   See the
 			:ref:`Design-Units` section for details.
 
-		``signal`` (*NX_POSINT*)
+		``signal`` (*NX_CHAR*)
 			Defines which data set contains the signal
-			to be :index:`plotted <plotting>`,
-			use ``signal=1`` for main signal, ``signal=2`` for a second
-			item to plot, and so on.
-
-		``axes`` (*NX_CHAR*)
-			:index:`axes <axes (attribute)>` defines the names of the
-			:index:`dimension scales <dimension scale>`
-			for this data set
-			as a colon-delimited list.  Note that some legacy data files
-			may use a comma as delimiter.
-
-			For example, suppose ``data`` is an array with
-			elements ``data[j][i]`` (C) or ``data(i,j)``
-			(Fortran), with dimension scales ``time_of_flight[i]``
-			and ``polar_angle[j]``,
-			then ``data`` would have an
-			attribute ``axes="polar_angle:time_of_flight"``
-			in addition to an attribute ``signal=1``.
-
-		.. index::
-			axis
-
-		``axis`` (*NX_POSINT*)
-			The original way of designating data for
-			:index:`plotting <plotting>`,
-			now superceded by the ``axes`` attribute.
-			This defines the :index:`rank <rank>`
-			of the signal data for which this data set is a
-			:index:`dimension scale <dimension scale>`
-			in order of the fastest varying index (see a
-			longer discussion in the section on ``NXdata`` structure), i.e. if
-			the array being stored is ``data``, with elements
-			``data[j][i]`` in C and ``data(i,j)`` in
-			Fortran, ``axis`` would have the following values:
-			ith dimension (``axis=1``),
-			jth dimension (``axis=2``), etc.
-
-		``primary`` (*NX_POSINT*)
-			Defines the order of preference
-			for :index:`dimension scales <dimension scale>`
-			which apply to the same :index:`rank <rank>`
-			of signal data.  Use ``primary=1`` to indicate preferred
-			dimension scale
+			to be :index:`plotted <plotting>`.
+			Use ``signal="{dataset_name}"`` where ``{dataset_name}``
+			is the name of a field (or link to a field) in the :ref:`NXdata` group.
 
 		``long_name`` (*NX_CHAR*)
 			Defines title of signal data or axis label of dimension scale
@@ -205,8 +165,11 @@ attributes can be found in the next table:
 			:index:`dimension <dimension>`
 			if the data is not in C storage order
 
-		``stride`` (*NX_INT*)
-			Rank values of steps to use when incrementing the dimension
+ 		``{axisname}_indices`` (*NX_INT*)
+ 		   Integer array that defines the indices of the *signal* field
+ 		   (that field will be a multidimensional array)
+ 		   which need to be used in the ``{axisname}`` dataset in
+ 		   order to reference the corresponding axis value.
 
 		``interpretation`` (*NX_CHAR*)
 			Describes how to display the data.
@@ -223,6 +186,7 @@ attributes can be found in the next table:
 			* ``hsla-image`` (3-D data)
 			* ``cmyk-image`` (3-D data)
 			* ``vertex`` (3-D data)
+
 
 .. index::
    ! single: file attribute
@@ -968,7 +932,7 @@ This is also a nice example of the application of transformation matrices:
     ``size[6]`` array.
 
 Coordinate Transformation Attributes
---------------------------------------
+------------------------------------
 
 The coordinate transformation attributes are:
 

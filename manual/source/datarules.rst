@@ -344,31 +344,173 @@ To this purpose a means is needed to locate appropriate data arrays which descri
 what each dimension of a multi dimensional data set actually corresponds too.
 There is a standard HDF facility to do this: it is called 
 :index:`dimension scales <dimension; dimension scales>`.
-Unfortunately, at a time, there was only one global namespace for dimension scales.
-Thus NeXus had to come up with its own scheme for locating axis data which is described
+Unfortunately, when NeXus was first designed, 
+there was only one global namespace for dimension scales.
+Thus NeXus had to devise its own scheme for locating axis data which is described
 here. A side effect of the NeXus scheme is that it is possible to have multiple
-mappings of a given dimension to physical data. For example a TOF data set can have the TOF
+mappings of a given dimension to physical data. For example, a TOF data set can have the TOF
 dimension as raw TOF or as energy.
 
-There are two methods of 
-:index:`linking <link>`
+There are now three methods of :index:`associating <link>`
 each data dimension to its respective dimension scale.
-The preferred method uses the ``axes`` attribute
+Only the first method is recommended now, the other two (oder methods) are now discouraged.
+
+#. :ref:`Design-Linking-NIAC2014`
+#. :ref:`Design-Linking-ByName`
+#. :ref:`Design-LinkingByDimNumber`
+
+The recommended method uses the ``axes`` attribute applied to the :ref:`NXdata` group
 to specify the names of each 
 :index:`dimension scale <dimension; dimension scales>`.
-The original method uses the ``axis`` attribute to identify
-with an integer the axis whose value is the number of the dimension.
-After describing each of these methods, the two methods will be compared.
-A prerequisite for both methods is that the fields describing the axis
-are stored together with the multi dimensional data set whose axes need to be defined
-in the same NeXus group. If this leads to data duplication, use links.
+A prerequisite is that the fields describing the axes of the plottable data
+are stored together with the plottable data in the same NeXus group. 
+If this leads to data duplication, use links.
+
+.. _Design-Linking-NIAC2014:
+
+Linking using attributes applied to the :ref:`NXdata` group
+===========================================================
+
+.. tip:: Recommended
+   This is the method recommended for all new NeXus data files.
+
+The default data to be plotted (and any associated axes)
+is specified using attributes attached to the :ref:`NXdata` group.
+
+:``signal``: 
+   Defines the name of the default dataset *in the NXdata group*. 
+   A field of this name *must* exist (either as dataset or link to dataset).
+         
+   It is recommended to use this attribute
+   rather than adding a signal attribute to the dataset.  [#]_
+   
+   The procedure to identify the default data to be plotted is quite simple. 
+   Given any NeXus data file, any NXentry, or any NXdata. 
+   Follow the chain as it is described from that point. 
+   Specifically:
+   
+   *  The root of the NeXus file will have a ``default`` 
+      attribute that names the default :ref:`NXentry` group.
+      This attribute may be omitted if there is only one NXentry group.
+      If a second NXentry group is later added, the ``default`` attribute 
+      must be added then.
+   *  Every :ref:`NXentry` group will have a ``default`` 
+      attribute that names the default :ref:`NXdata` group.
+      This attribute may be omitted if there is only one NXdata group.
+      If a second NXdata group is later added, the ``default`` attribute 
+      must be added then.
+   *  Every :ref:`NXdata` group will have a ``signal`` 
+      attribute that names the field name to be plotted by default.
+      This attribute is required.
+
+
+:``axes``: 
+
+   String array [#aa]_ that defines the independent data fields used in 
+   the default plot for all of the dimensions of the *signal* field. 
+   One entry is provided for every dimension in the *signal* field.
+   
+   The field(s) named as values (known as "axes") of this attribute 
+   *must* exist. An axis slice is specified using a field named 
+   ``{axisname}_indices`` as described below (where the text shown here
+   as ``{axisname}`` is to be replaced by the actual field name).
+   
+   When no default axis is available for a particular dimension 
+   of the plottable data, use a "." in that position. 
+   
+   See examples provided on the NeXus wiki ([#axes]_).
+   
+   If there are no axes at all (such as with a stack of images), 
+   the axes attribute can be omitted.
+         
+:``{axisname}_indices``: 
+   Integer array [#aa]_ that defines the indices of the *signal* field 
+   (that field will be a multidimensional array)
+   which need to be used in the ``{axisname}`` dataset in 
+   order to reference the corresponding axis value.
+   
+   This attribute is to be provided in all situations. 
+   However, if the indices attributes are missing 
+   (such as for data files written before this specification), 
+   file readers are encouraged to make their best efforts 
+   to plot the data. 
+   
+   Thus the implementation of the 
+   ``{axis name}_indices`` attribute is based on the model of 
+   "strict writer, liberal reader". 
+
+.. [#] Summary of the discussion at NIAC2014 to revise how to find default data: 
+       http://wiki.nexusformat.org/2014_How_to_find_default_data
+.. [#aa]  Note on array attributes:
+          Attributes potentially containing multiple values 
+          (axes and _indices) are to be written as string or integer arrays, 
+          to avoid string parsing in reading applications.
+.. [#axes] NIAC2014 proposition: http://wiki.nexusformat.org/2014_axes_and_uncertainties
+
+
+Examples
+++++++++
+
+Several examples are provided to illustrate this method.
+More examples are available in the NeXus wiki ([#axes]_).
+
+.. compound::
+
+   .. rubric:: simple 1-D data example showing how to identify the default data (*counts* vs. *mr*)
+   
+   In the first example, storage of a 1-D data set  (*counts* vs. *mr*) is described.
+
+   .. code-block:: guess
+         :linenos:
+      
+         datafile.hdf5:NeXus data file
+           @default="entry"
+           entry:NXentry
+             @default="data"
+             data:NXdata
+               @signal="counts"
+               @axes="mr"
+               @mr_indices=0
+               counts: float[100]  --> the default dependent data
+               mr: float[100]      --> the default independent data
+
+.. compound::
+
+   .. rubric:: 2-D data example showing how to identify the default data and associated dimension scales
+
+   A 2-D data set, *data* as a function of *time* and *pressure* is described.
+   An additional array of data, *temperature*, is described as a substitute
+   for *pressure*.  By default as indicated by the ``axes`` attribute, 
+   *pressure* is to be used.
+   
+   .. code-block:: guess
+         :linenos:
+      
+         datafile.hdf5:NeXus data file
+           @default="entry"
+           entry:NXentry
+             @default="data_2d"
+             data_2d:NXdata
+               @signal="data"
+               @axes="time","pressure"
+               @pressure_indices=1
+               @temperature_indices=1
+               @time_indices=0
+               data: float[1000,20]
+               pressure: float[20]
+               temperature: float[20]
+               time: float[1000]
+
 
 .. _Design-Linking-ByName:
 
 Linking by name using the ``axes`` attribute
 ============================================
 
-The preferred method is to define an attribute of the data itself
+.. tip:: Discouraged: 
+   This method was superceded by :ref:`Design-Linking-NIAC2014`.
+
+This method is to define an attribute of the data itself
 :index:`called <axes (attribute)>` *axes*.
 The ``axes`` attribute contains the names of
 each :index:`dimension scale <dimension; dimension scales>`
@@ -377,7 +519,7 @@ For example:
 
 .. compound::
 
-    .. rubric:: Preferred way of denoting axes
+    .. rubric:: denoting axes by name
 
     .. literalinclude:: examples/axes-preferred.xml.txt
         :tab-width: 4
@@ -388,6 +530,9 @@ For example:
 
 Linking by dimension number using the ``axis`` attribute
 ========================================================
+
+.. tip:: Discouraged
+   This method was superceded by :ref:`Design-Linking-ByName`
 
 The original method is to define an attribute of each dimension
 scale :index:`called <axis>` *axis*.
@@ -403,7 +548,7 @@ would contain:
 
 .. compound::
 
-    .. rubric:: Original way of denoting axes
+    .. rubric:: denoting axes by integer number
 
     .. literalinclude:: examples/axes-old.xml.txt
         :tab-width: 4
@@ -443,29 +588,33 @@ attribute for the other scales is optional.
 	          and dimensions called ``errors``
 	          containing the standard deviations of the data.
 
-.. _Design-Linking-Discussion:
-
-Discussion of the two linking methods
-=====================================
-
-In general the method using the ``axes`` attribute on the multi dimensional
-data set should be preferred. This leaves the actual axis describing data sets
-unannotated and allows them to be used as an axis for other multi dimensional
-data.  This is especially a concern as an axis describing a data set may be linked
-into another group where it may describe a 
-:index:`completely different dimension <dimension; data set>`
-of another data set.
-
-Only when alternative axes definitions are needed, the ``axis`` method
-should be used to specify an axis of a data set.  This is shown in the example above for
-the ``some_other_angle`` field where ``axis=1``
-denotes another possible primary axis for plotting.  The default
-axis for plotting carries the ``primary=1`` attribute.
-
-Both methods of linking data axes will be supported in NeXus
-utilities that identify 
-:index:`dimension scales <dimension; dimension scales>`,
-such as ``NXUfindaxis()``.
+.. 2016-01-23,PRJ: not necessary
+   Perhaps substitute with the discussion from NIAC2014?
+   http://wiki.nexusformat.org/2014_axes_and_uncertainties
+   
+   .. _Design-Linking-Discussion:
+   
+   Discussion of the two linking methods
+   =====================================
+   
+   In general the method using the ``axes`` attribute on the multi dimensional
+   data set should be preferred. This leaves the actual axis describing data sets
+   unannotated and allows them to be used as an axis for other multi dimensional
+   data.  This is especially a concern as an axis describing a data set may be linked
+   into another group where it may describe a 
+   :index:`completely different dimension <dimension; data set>`
+   of another data set.
+   
+   Only when alternative axes definitions are needed, the ``axis`` method
+   should be used to specify an axis of a data set.  This is shown in the example above for
+   the ``some_other_angle`` field where ``axis=1``
+   denotes another possible primary axis for plotting.  The default
+   axis for plotting carries the ``primary=1`` attribute.
+   
+   Both methods of linking data axes will be supported in NeXus
+   utilities that identify 
+   :index:`dimension scales <dimension; dimension scales>`,
+   such as ``NXUfindaxis()``.
 
 .. _Rules-StoringDetectors:
 
