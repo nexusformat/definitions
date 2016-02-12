@@ -16,8 +16,9 @@ showing how to write a NeXus data file without using the NAPI.
 Code Examples in Various Languages
 ##################################
 
-Each example in this section demonstrates reading and or writing of compliant NeXus files in
-one of the supported storage comatiners (HDF4, HDF5, or XML).
+Each example in this section demonstrates either reading NeXus files in
+one of the supported storage containers (HDF5 or one of the legacy container formats: HDF4 or XML)
+or writing compliant NeXus files in the HDF5 storage containers.
 Please be aware that not all exmples are up to date with the latest format recommendations.
 
 .. toctree::
