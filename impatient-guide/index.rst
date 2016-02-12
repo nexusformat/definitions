@@ -13,12 +13,12 @@ Why NeXus?
 .. seealso:: 
 
    This document is available in different formats:
-   `HTML (online) <http://htmlpreview.github.com/?https://github.com/nexusformat/definitions/blob/master/misc/impatient/_build/html/index.html>`_
+   `HTML (online) <http://download.nexusformat.org/doc/impatient/>`_
    or
-   :download:`PDF <NXImpatient.pdf>`.
+   :download:`PDF <http://download.nexusformat.org/doc/NXImpatient.pdf>`.
    
    ..
-      http://htmlpreview.github.com/?https://github.com/nexusformat/definitions/blob/master/misc/impatient/_build/html/index.html
+      http://download.nexusformat.org/doc/impatient/
 
 The NeXus data format [#NeXus]_ is a tool which has been designed to
 solve the problems of travelling scientists, 
