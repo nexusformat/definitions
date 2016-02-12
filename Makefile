@@ -23,10 +23,18 @@ manual ::
 clean:
 	$(MAKE) clean -C $(SUBDIRS)
 
-builddir ::
-	$(RM) -r build
+builddir :: rmbuilddir
 	mkdir build
 	python utils/build_preparation.py . build
+
+makebuilddir :: builddir
+	$(MAKE) -C build
+
+cleanbuilddir ::
+	$(MAKE) -C build clean
+
+rmbuilddir ::
+	$(RM) -r build
 
 
 # NeXus - Neutron and X-ray Common Data Format

@@ -74,6 +74,12 @@ has the *builddir* rule::
     make clean
     make
 
+This is all done with one make command::
+
+    export SOURCE_DIR=/path/to/nexus/definitions
+    cd $(SOURCE_DIR)
+    make makebuilddir
+
 The HTML documentation is located in this folder::
 
     $(SOURCE_DIR)/build/manual/build/html/
