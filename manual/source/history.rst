@@ -122,6 +122,14 @@ Two things to note about the development and history of NeXus:
 :May 2012:
     first release (3.1.0) of NXDL (NeXus Definition Language)
 
+:December 2014:
+    The NIAC approves a new method to identify the default data to be plotted,
+    applying attributes at the group level to the root of the HDF5 tree,
+    and the NXentry and NXdata groups. 
+    See the description in :ref:`Design-Linking-NIAC2014`
+    and the proposal:
+    http://wiki.nexusformat.org/2014_How_to_find_default_data
+
 
 .. [#] http://wiki.nexusformat.org/images/b/b8/European-Formats.pdf
 

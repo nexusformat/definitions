@@ -27,6 +27,7 @@ nxdata = nxentry.create_group('data')
 nxdata.attrs["NX_class"] = 'NXdata'
 nxdata.attrs['signal'] = "counts"
 nxdata.attrs['axes'] = "two_theta"
+nxdata.attrs['two_theta_indices'] = [0,]
 
 tth = nxdata.create_dataset("two_theta", data=tthData)
 tth.attrs['units'] = "degrees"

@@ -57,7 +57,7 @@ described by the following :index:`rules <rules; naming>`:
    This is the regular expression used to check 
    this recommendation.
     
-   .. code-block:: guess
+   .. code-block:: text
        :linenos:
    
        [a-z_][a-z\d_]*
@@ -73,7 +73,7 @@ described by the following :index:`rules <rules; naming>`:
    pass the regular expression above but pass this
    expression:
    
-   .. code-block:: guess
+   .. code-block:: text
        :linenos:
    
        [A-Za-z_][\w_]*
@@ -87,7 +87,7 @@ Sometimes it is necessary to combine words in order to build a
 descriptive name for a field or a group.
 In such cases lowercase words are connected by underscores.
 
-.. code-block:: guess
+.. code-block:: text
     :linenos:
 
     number_of_lenses
@@ -147,7 +147,7 @@ make when incrementing the dimension. This is best explained by some examples.
     .. literalinclude:: examples/offset-stride-1d.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 .. compound::
 
@@ -156,7 +156,7 @@ make when incrementing the dimension. This is best explained by some examples.
     .. literalinclude:: examples/offset-stride-2d.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 .. compound::
 
@@ -165,7 +165,7 @@ make when incrementing the dimension. This is best explained by some examples.
     .. literalinclude:: examples/offset-stride-3d.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 ..  TODO: 2011-10-22,PRJ:
     It is too early to include a section about Data Value Transformations and ``NXformula``.
@@ -282,7 +282,7 @@ and is appropriate for machine sorting.
 
     .. rubric:: strftime() format specifiers for ISO-8601 time
 
-    .. code-block:: guess
+    .. code-block:: text
     
     	%Y-%m-%dT%H:%M:%S%z
 
@@ -333,10 +333,11 @@ using :index:`an <enumeration>` ``enumeration``.
 
 .. _multi-dimensional-data:
 
-Linking Multi Dimensional Data with Axis Data
-#############################################
+Associating Multi Dimensional Data with Axis Data
+#################################################
 
-NeXus allows to store multi dimensional arrays of data.  In most cases
+NeXus allows to store multi dimensional arrays of data and it is this
+data that presents the most challenge for description.  In most cases
 it is not sufficient to just have the indices into the array as a label for
 the dimensions of the data. Usually the information which physical value
 corresponds to an index into a dimension of the multi dimensional data set.
@@ -353,7 +354,7 @@ dimension as raw TOF or as energy.
 
 There are now three methods of :index:`associating <link>`
 each data dimension to its respective dimension scale.
-Only the first method is recommended now, the other two (oder methods) are now discouraged.
+Only the first method is recommended now, the other two (older methods) are now discouraged.
 
 #. :ref:`Design-Linking-NIAC2014`
 #. :ref:`Design-Linking-ByName`
@@ -364,15 +365,15 @@ to specify the names of each
 :index:`dimension scale <dimension; dimension scales>`.
 A prerequisite is that the fields describing the axes of the plottable data
 are stored together with the plottable data in the same NeXus group. 
-If this leads to data duplication, use links.
+If this leads to data duplication, use :ref:`links <Design-Links>`.
 
 .. _Design-Linking-NIAC2014:
 
-Linking using attributes applied to the :ref:`NXdata` group
-===========================================================
+Associating plottable data using attributes applied to the :ref:`NXdata` group
+==============================================================================
 
-.. tip:: Recommended
-   This is the method recommended for all new NeXus data files.
+.. tip:: Recommended:
+   This is the "*NIAC2014*" method recommended for all new NeXus data files.
 
 The default data to be plotted (and any associated axes)
 is specified using attributes attached to the :ref:`NXdata` group.
@@ -383,7 +384,7 @@ is specified using attributes attached to the :ref:`NXdata` group.
          
    It is recommended to use this attribute
    rather than adding a signal attribute to the dataset.  [#]_
-   
+   flow
    The procedure to identify the default data to be plotted is quite simple. 
    Given any NeXus data file, any NXentry, or any NXdata. 
    Follow the chain as it is described from that point. 
@@ -429,6 +430,8 @@ is specified using attributes attached to the :ref:`NXdata` group.
    which need to be used in the ``{axisname}`` dataset in 
    order to reference the corresponding axis value.
    
+   The first index of an array is ``0``.
+   
    This attribute is to be provided in all situations. 
    However, if the indices attributes are missing 
    (such as for data files written before this specification), 
@@ -460,7 +463,7 @@ More examples are available in the NeXus wiki ([#axes]_).
    
    In the first example, storage of a 1-D data set  (*counts* vs. *mr*) is described.
 
-   .. code-block:: guess
+   .. code-block:: text
          :linenos:
       
          datafile.hdf5:NeXus data file
@@ -483,7 +486,7 @@ More examples are available in the NeXus wiki ([#axes]_).
    for *pressure*.  By default as indicated by the ``axes`` attribute, 
    *pressure* is to be used.
    
-   .. code-block:: guess
+   .. code-block:: text
          :linenos:
       
          datafile.hdf5:NeXus data file
@@ -504,8 +507,8 @@ More examples are available in the NeXus wiki ([#axes]_).
 
 .. _Design-Linking-ByName:
 
-Linking by name using the ``axes`` attribute
-============================================
+Associating plottable data by name using the ``axes`` attribute
+===============================================================
 
 .. tip:: Discouraged: 
    This method was superceded by :ref:`Design-Linking-NIAC2014`.
@@ -521,17 +524,17 @@ For example:
 
     .. rubric:: denoting axes by name
 
-    .. literalinclude:: examples/axes-preferred.xml.txt
+    .. literalinclude:: examples/axes-byname.xml.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 .. _Design-LinkingByDimNumber:
 
-Linking by dimension number using the ``axis`` attribute
-========================================================
+Associating plottable data by dimension number using the ``axis`` attribute
+===========================================================================
 
-.. tip:: Discouraged
+.. tip:: Discouraged:
    This method was superceded by :ref:`Design-Linking-ByName`
 
 The original method is to define an attribute of each dimension
@@ -550,14 +553,14 @@ would contain:
 
     .. rubric:: denoting axes by integer number
 
-    .. literalinclude:: examples/axes-old.xml.txt
+    .. literalinclude:: examples/axes-bydimnumber.xml.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 The ``axis`` attribute must
 be defined for each dimension scale.
-The ``primary`` attribute is unique to this method of linking.
+The ``primary`` attribute is unique to this method.
 
 There are limited circumstances in which more
 than one :index:`dimension scale <dimension; dimension scales>`
@@ -581,7 +584,8 @@ of them must have set ``primary=1``. Defining the ``primary``
 attribute for the other scales is optional.
 
 	.. note:: The ``primary`` attribute can only be
-	          used with the first method of defining  :index:`dimension scales <dimension; dimension scales>`
+	          used with the first method of defining  
+             :index:`dimension scales <dimension; dimension scales>`
 	          discussed above. In addition to
 	          the ``signal`` data, this
 	          group could contain a data set of the same  :index:`rank <rank>`
@@ -667,6 +671,9 @@ time-of-flight monitors.
 
 Find the plottable data
 #######################
+
+.. TODO: This is the best place for the flowchart proposed in issue #443
+   Start with a flow chart for each method above, here goes the combined.
 
 Any program whose aim is to identify the default plottable data 
 should use the following procedure:

@@ -35,8 +35,9 @@ An example raw data hierarchy is
 shown in figure :ref:`Raw Data <table.RawData>`
 (only showing the relevant parts of the data hierarchy).
 In the example shown, the ``data`` field in the ``NXdata`` group
-is linked to the 2-D detector data (a 512x512 array of 32-bit integers)
-which has the attribute ``signal=1``.
+is linked to the 2-D detector data (a 512x512 array of 32-bit integers).
+The attribute ``signal = data`` on the NXdata group marks this
+field as the default plottable data of the ``data:NXdata`` group.
 Note that ``[,]`` represents a 2D array.
 
 	.. compound::
@@ -48,7 +49,7 @@ Note that ``[,]`` represents a 2D array.
 	    .. literalinclude:: examples/hierarchy-raw.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 An ``NXentry`` describing raw data contains at least a ``NXsample``,
 one ``NXmonitor``,
@@ -87,7 +88,7 @@ data analysis program. Note that ``[]`` represents a 1D array.
 	    .. literalinclude:: examples/hierarchy-processed.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 NeXus stores such data in a simplified
 ``NXentry`` structure. A processed data ``NXentry``
@@ -142,7 +143,7 @@ Note that ``[,]`` represents a 2D array.
 	    .. literalinclude:: examples/hierarchy-subentry.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 .. _Rules-SpecialCases:
 
@@ -210,7 +211,7 @@ Then we have:
 	    .. literalinclude:: examples/simplescan.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 Simple scan with area detector
 ------------------------------
@@ -229,12 +230,12 @@ times ``ysize`` pixels. The only thing which changes is that
 	    .. literalinclude:: examples/simplescanarea.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 Complex *hkl* scan
 ------------------
 
-The next example involves a complex movement along an axis in reciprocal
+The next example involves a complex movement along the :math:`h` axis in reciprocal
 space which requires mutiple motors of a :index:`four-circle diffractometer` to be
 varied during the scan. We then have:
 
@@ -258,15 +259,15 @@ varied during the scan. We then have:
   the positions of phi at the various steps of the scan.
 
 - A dataset at ``NXentry/NXsample/h`` of length ``NP`` containing
-  the positions of the reciprocal coordinate ``h`` at the
+  the positions of the reciprocal coordinate :math:`h` at the
   various steps of the scan.
 
 - A dataset at ``NXentry/NXsample/k`` of length ``NP`` containing
-  the positions of the reciprocal coordinate ``k`` at the
+  the positions of the reciprocal coordinate :math:`k` at the
   various steps of the scan.
 
 - A dataset at ``NXentry/NXsample/l`` of length ``NP`` containing
-  the positions of the reciprocal coordinate ``l`` at the
+  the positions of the reciprocal coordinate :math:`l` at the
   various steps of the scan.
 
 - ``NXdata`` contains links to:
@@ -280,8 +281,8 @@ varied during the scan. We then have:
   + ``NXentry/NXsample/k``
   + ``NXentry/NXsample/l``
   
-  The datasets in ``NXdata`` must have the
-  appropriate attributes as described in the axis location section.
+  The ``NXdata`` also contains appropriate attributes 
+  as described in :ref:`Design-Linking-NIAC2014`.
 
 - All other fields have their normal dimensions.
 
@@ -294,7 +295,7 @@ varied during the scan. We then have:
     .. literalinclude:: examples/complex-hkl-scan.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 Multi-parameter scan: XAS
 -------------------------
@@ -323,7 +324,7 @@ the length of the 1-D temperature array is ``NT``
 	    .. literalinclude:: examples/xas.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 .. _Rules-SpecialCases-Rastering:
 
@@ -373,4 +374,4 @@ hierarchy.  An example usage case is documented in figure
 	    .. literalinclude:: examples/nxcollection.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text

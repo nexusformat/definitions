@@ -17,13 +17,16 @@ f = my_lib.makeFile(HDF5_FILE)  # create the HDF5 NeXus file
 
 nxentry = my_lib.makeGroup(f, 'entry', 'NXentry')
 nxinstrument = my_lib.makeGroup(nxentry, 'instrument', 'NXinstrument')
-nxdetector = my_lib.makeGroup(nxinstrument, 'detector', 'NXdetector',
-    signal='counts', axes='two_theta')
+nxdetector = my_lib.makeGroup(nxinstrument, 'detector', 'NXdetector')
 
 tth = my_lib.makeDataset(nxdetector, "two_theta", tthData, units='degrees')
 counts = my_lib.makeDataset(nxdetector, "counts", countsData, units='counts')
 
-nxdata = my_lib.makeGroup(nxentry, 'data', 'NXdata')
+nxdata = my_lib.makeGroup(nxentry, 'data', 'NXdata',
+                          signal='counts', 
+                          axes='two_theta',
+                          two_theta_indices = [0,],
+                          )
 my_lib.makeLink(nxdetector, tth, nxdata.name+'/two_theta')
 my_lib.makeLink(nxdetector, counts, nxdata.name+'/counts')
 

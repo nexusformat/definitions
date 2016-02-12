@@ -28,8 +28,7 @@ f = my_lib.makeFile(FILE_HDF5_COUNTS)
 nxentry = my_lib.makeGroup(f, 'entry', 'NXentry')
 nxinstrument = my_lib.makeGroup(nxentry, 'instrument', 'NXinstrument')
 nxdetector = my_lib.makeGroup(nxinstrument, 'detector', 'NXdetector')
-counts = my_lib.makeDataset(nxdetector, "counts", countsData, 
-                   units='counts', signal=1, axes='two_theta')
+counts = my_lib.makeDataset(nxdetector, "counts", countsData, units='counts')
 # make a link since "two_theta" has not been stored here
 my_lib.makeExternalLink(f, FILE_HDF5_ANGLES, 
                         '/angles', nxdetector.name+'/two_theta')
@@ -45,9 +44,12 @@ ds = my_lib.makeExternalLink(f, FILE_HDF5_COUNTS,
                         nxdata.name+'/counts')
 nxdata.attrs["signal"] = 'counts'
 
-ds = my_lib.makeExternalLink(f, FILE_HDF5_ANGLES, 
-                        '/angles', nxdata.name+'/two_theta')
+ds = my_lib.makeExternalLink(f, 
+                             FILE_HDF5_ANGLES, 
+                             '/angles', 
+                             nxdata.name+'/two_theta')
 nxdata.attrs["axes"] = 'two_theta'
+nxdata.attrs["two_theta_indices"] = [0,]
 
 my_lib.makeExternalLink(f, FILE_HDF5_COUNTS, 
                         '/entry/instrument', 
