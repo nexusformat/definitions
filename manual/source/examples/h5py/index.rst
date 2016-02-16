@@ -83,7 +83,8 @@ Complete ``h5py`` example writing and reading a NeXus data file
 Writing the HDF5 file using **h5py**
 ====================================
 
-In the main code section of :ref:`BasicWriter.py <Example-H5py-BasicWriter>`, a current time stamp
+In the main code section of :ref:`BasicWriter.py <Example-H5py-BasicWriter>`, 
+a current time stamp
 is written in the format of *ISO 8601* (``yyyy-mm-ddTHH:MM:SS``).
 For simplicity of this code example, we use a text string for the time, rather than
 computing it directly from Python support library calls.  It is easier this way to
@@ -231,6 +232,17 @@ This can be used to advantage to refer to data in existing HDF5 files
 and create NeXus-compliant data files.  Here, we show such an example, 
 using the same ``counts`` v. ``two_theta`` data from the examples above.
 
+We use the *HDF5 external file* links with NeXus data files.
+
+::
+
+  f[local_addr] = h5py.ExternalLink(external_file_name, external_addr)
+
+where ``f`` is an open ``h5py.File()`` object in which we will create the new link,
+``local_addr`` is an HDF5 path address, ``external_file_name`` is the name 
+(relative or absolute) of an existing HDF5 file, and ``external_addr`` is the
+HDF5 path address of the existing data in the ``external_file_name`` to be linked.
+
 file: external_angles.hdf5
 ==========================
 
@@ -261,16 +273,10 @@ Here is an example of the structure:
     	detector:NXdetector
     	  counts:NX_INT32[31] = [1037, '...', 1321]
     	    @units = counts
-    	    @signal = 1
-    	    @axes = two_theta
 	      two_theta --> file="external_angles.hdf5", path="/angles"
 
-The ``signal=1`` attribute on the ``counts`` data set is a legacy NeXus
-method to identify the default data.  It is not necessary now, but does
-not create any problems for NeXus.
-
 .. note:: The file ``external_counts.hdf5`` is not a complete NeXus file since it does not 
-   contain an NXdata group containing a dataset with ``signal=1`` attribute.
+   contain an NXdata group containing a dataset named by the NXdata group ``signal`` attributed.
 
 .. [#] see these URLs for further guidance on HDF5 external links:
    http://www.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateExternal, 
@@ -299,6 +305,7 @@ group attributes that describe the default plottable data:
     data:NXdata
       @signal = counts
       @axes = two_theta
+      @two_theta = 0
 
 Here is (the basic structure of) :download:`external_master.hdf5`, an example:
 
@@ -306,12 +313,14 @@ Here is (the basic structure of) :download:`external_master.hdf5`, an example:
     :linenos:
 
     entry:NXentry
+    @default = data
       instrument --> file="external_counts.hdf5", path="/entry/instrument"
       data:NXdata
- 	@signal = counts
- 	@axes = two_theta
-    	counts --> file="external_counts.hdf5", path="/entry/instrument/detector/counts"
-    	two_theta --> file="external_angles.hdf5", path="/angles"
+      	@signal = counts
+      	@axes = two_theta
+         @two_theta = 0
+       	counts --> file="external_counts.hdf5", path="/entry/instrument/detector/counts"
+       	two_theta --> file="external_angles.hdf5", path="/angles"
 
 source code: externalExample.py
 ===============================

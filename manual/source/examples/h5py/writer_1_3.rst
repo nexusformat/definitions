@@ -43,23 +43,6 @@ When the next Python program (``writer_1_3_h5py.py``) is run from the
 command line (and there are no problems), the ``writer_1_3_h5py.hdf5``
 file is generated.
 
-.. literalinclude:: writer_1_3_h5py.py
-    :tab-width: 4
-    :linenos:
-    :language: python
-
-We wish to make things a bit simpler for ourselves when creating the common
-structures we use in our data files.  To help, we gather together some of the
-common concepts such as *create a file*,
-*create a NeXus group*,
-*create a dataset* and start to build a helper library.
-(See :ref:`h5py-example-my_lib` for more details.)
-Here, we call it ``my_lib``.  Applying it to the simple example above, our
-code only becomes a couple lines shorter!  (Let's hope the library starts to help in larger or
-more complicated projects.)  Here's the revision that replaces direct calls to ``numpy``
-and ``h5py`` with calls to our library.  It generates the file
-``writer_1_3.hdf5``.
-
 .. literalinclude:: writer_1_3.py
     :tab-width: 4
     :linenos:
