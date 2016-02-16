@@ -10,14 +10,11 @@ in the Introduction chapter
 import h5py
 import numpy
 
-INPUT_FILE = 'input.dat'
-HDF5_FILE = 'writer_1_3_h5py.hdf5'
+buffer = numpy.loadtxt('input.dat').T
+tthData = buffer[0]                             # float[]
+countsData = numpy.asarray(buffer[1],'int32')   # int[]
 
-#---------------------------
-
-tthData, countsData = numpy.loadtxt(INPUT_FILE).T
-
-f = h5py.File(HDF5_FILE, "w")  # create the HDF5 NeXus file
+f = h5py.File('writer_1_3.hdf5', "w")  # create the HDF5 NeXus file
 # since this is a simple example, no attributes are used at this point
 
 nxentry = f.create_group('Scan')
