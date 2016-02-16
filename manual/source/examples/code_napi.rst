@@ -101,10 +101,12 @@ View a NeXus HDF5 file using *h5toText.py*
 
 The output of ``h5dump`` contains a lot of structural information
 about the HDF5 file that can distract us from the actual content we added to the file.
-Next, we show the output from a custom Python tool (``h5toText.py``)
-that we describe in a later section (:ref:`h5py-example-h5toText`)
-of this chapter.  This tool was developed to show the actual data content of an
+Next, we show the output from a custom Python tool (``h5toText.py``) built for
+this documentation and later moved into the **spec2nexus** package. [#]_
+This tool was developed to show the actual data content of an
 HDF5 file that we create.
+
+.. [#]: **spec2nexus** : http://spec2nexus.readthedocs.org
 
 NAPI Python Example: ``h5toText`` output of NeXus HDF5 file
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++

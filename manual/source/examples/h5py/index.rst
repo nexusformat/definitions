@@ -81,14 +81,14 @@ Complete ``h5py`` example writing and reading a NeXus data file
 .. _Example-H5py-Writing:
 
 Writing the HDF5 file using **h5py**
-==========================================
+====================================
 
 In the main code section of :ref:`BasicWriter.py <Example-H5py-BasicWriter>`, a current time stamp
-is written in the format of *ISO 8601*.
+is written in the format of *ISO 8601* (``yyyy-mm-ddTHH:MM:SS``).
 For simplicity of this code example, we use a text string for the time, rather than
 computing it directly from Python support library calls.  It is easier this way to
 see the exact type of string formatting for the time.  When using the Python
-``datatime`` package, one way to write the time stamp is:
+``datetime`` package, one way to write the time stamp is:
 
 .. code-block:: python
     :linenos:
@@ -96,8 +96,8 @@ see the exact type of string formatting for the time.  When using the Python
     timestamp = "T".join( str( datetime.datetime.now() ).split() )
 
 The data (``mr`` is similar to "two_theta" and
-``I00`` is similar to "counts") is collated into two Python lists. We use our ``my_lib``
-support to read the file and parse the two-column format.
+``I00`` is similar to "counts") is collated into two Python lists. We use the
+**numpy** package to read the file and parse the two-column format.
 
 The new HDF5 file is opened (and created if not already existing) for writing,
 setting common NeXus attributes in the same command from our support library.
@@ -109,9 +109,8 @@ support library must create and set the ``NX_class`` attribute on each group.
           ``/entry:NXentry/mr_scan:NXdata/``. 
           
 	  #. First, our support library calls 
-             ``f = my_lib.makeFile()`` 
-             to create the file and root level 
-	     NeXus structure.
+             ``f = h5py.File()`` 
+             to create the file and root level NeXus structure.
 	  #. Then, it calls 
              ``nxentry = f.create_group("entry")`` 
              to create the ``NXentry`` group called
@@ -130,8 +129,8 @@ The data type of each, as represented in ``numpy``, will be recognized by
 A Python dictionary of attributes is given, specifying the engineering units and other
 values needed by NeXus to provide a default plot of this data.  By setting ``signal="I00"``
 as an attribute on the group, NeXus recognizes ``I00`` as the default
-*y* axis for the plot.  The ``axes="mr"`` attribute on the group connects the dataset
-to be used as the *x* axis.
+*y* axis for the plot.  The ``axes="mr"`` attribute on the :ref:`NXdata` 
+group connects the dataset to be used as the *x* axis.
 
 Finally, we *must* remember to call ``f.close()`` or we might
 corrupt the file when the program quits.
@@ -150,7 +149,7 @@ corrupt the file when the program quits.
 .. _Example-H5py-Reading:
 
 Reading the HDF5 file using **h5py**
-==========================================
+====================================
 
 The file reader, :ref:`BasicReader.py <Example-H5py-Reader>`,
 is very simple since the bulk of the work is done by ``h5py``.
@@ -233,7 +232,7 @@ and create NeXus-compliant data files.  Here, we show such an example,
 using the same ``counts`` v. ``two_theta`` data from the examples above.
 
 file: external_angles.hdf5
-=================================
+==========================
 
 Take for example, the structure of :download:`external_angles.hdf5`, 
 a simple HDF5 data file that contains just the ``two_theta``
@@ -247,7 +246,7 @@ Although this is a valid HDF5 data file, it is not a valid NeXus data file:
       @units = degrees
 
 file: external_counts.hdf5
-=================================
+==========================
 
 The data in the file ``external_angles.hdf5`` might be referenced from
 another HDF5 file (such as :download:`external_counts.hdf5`) 
@@ -278,7 +277,7 @@ not create any problems for NeXus.
    http://www.h5py.org/docs-1.3/guide/group.html#external-links
 
 file: external_master.hdf5
-=================================
+==========================
 
 A valid NeXus data file could be created that refers to the data in these files
 without making a copy of the data files themselves.  
@@ -315,7 +314,7 @@ Here is (the basic structure of) :download:`external_master.hdf5`, an example:
     	two_theta --> file="external_angles.hdf5", path="/angles"
 
 source code: externalExample.py
-=================================
+===============================
 
 Here is the complete code of a Python program, using ``h5py``
 to write a NeXus-compliant HDF5 file with links to data in other HDF5 files.
@@ -330,51 +329,3 @@ to write a NeXus-compliant HDF5 file with links to data in other HDF5 files.
        :tab-width: 4
        :linenos:
        :language: guess
-
-
-
-.. _h5py-example-helpers:
-
-Python Helper Modules for ``h5py`` Examples
-###########################################
-
-Two additional Python modules were used to describe these ``h5py`` examples.
-The source code for each is given here.  The first is a library we wrote that helps us
-create standard NeXus components using ``h5py``.  The second is a tool that helps
-us inspect the content and structure of HDF5 files.
-
-.. _h5py-example-my_lib:
-
-``mylib`` support module
-========================
-
-The examples in this section make use of
-a small helper library that calls ``h5py`` to create the
-various NeXus data components of
-:ref:`Design-Groups`,
-:ref:`Design-Fields`,
-:ref:`Design-Attributes`, and
-:ref:`Design-Links`.
-In a smaller sense, this subroutine library (``my_lib``) fills the role of the NAPI for writing
-the data using h5py.
-
-.. literalinclude:: my_lib.py
-    :tab-width: 4
-    :linenos:
-    :language: python
-
-.. _h5py-example-h5toText:
-
-``h5toText`` support module
-===========================
-
-The module ``h5toText`` reads an HDF5 data file and prints out the
-structure of the groups, datasets, attributes, and links in that file.
-There is a command-line option to print out more or less of the data
-in the dataset arrays.
-
-.. literalinclude:: h5toText.py
-    :tab-width: 4
-    :linenos:
-    :language: python
-
