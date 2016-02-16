@@ -212,12 +212,12 @@ Links
 
 .. sidebar:: Python h5py code to make NeXus links
 
-   The section titled :ref:`h5py-example-helpers` provides example
+   The section titled :ref:`Example-H5py` provides example
    python code to create links (both internal and external)
    in NeXus data files.  See the routines:
 
-   * **makeLink()**
-   * **makeExternalLink()**
+   * **{hdf5_object}._id.link()**
+   * **h5py.ExternalLink()**
 
 Links are pointers to existing data somewhere else.
 The concept is very much like

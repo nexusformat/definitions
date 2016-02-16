@@ -96,6 +96,10 @@ see the exact type of string formatting for the time.  When using the Python
 
     timestamp = "T".join( str( datetime.datetime.now() ).split() )
 
+.. 2016-02-16,PRJ:
+   ISO8601 now allows the "T" to be replaced by " " which is more readable
+   We won't change now.  Shows a pedantic case, for sure.
+
 The data (``mr`` is similar to "two_theta" and
 ``I00`` is similar to "counts") is collated into two Python lists. We use the
 **numpy** package to read the file and parse the two-column format.
@@ -270,10 +274,10 @@ Here is an example of the structure:
 
     entry:NXentry
       instrument:NXinstrument
-    	detector:NXdetector
-    	  counts:NX_INT32[31] = [1037, '...', 1321]
-    	    @units = counts
-	      two_theta --> file="external_angles.hdf5", path="/angles"
+      detector:NXdetector
+        counts:NX_INT32[31] = [1037, '...', 1321]
+          @units = counts
+        two_theta --> file="external_angles.hdf5", path="/angles"
 
 .. note:: The file ``external_counts.hdf5`` is not a complete NeXus file since it does not 
    contain an NXdata group containing a dataset named by the NXdata group ``signal`` attributed.
@@ -305,7 +309,7 @@ group attributes that describe the default plottable data:
     data:NXdata
       @signal = counts
       @axes = two_theta
-      @two_theta = 0
+      @two_theta_indices = 0
 
 Here is (the basic structure of) :download:`external_master.hdf5`, an example:
 
@@ -338,3 +342,30 @@ to write a NeXus-compliant HDF5 file with links to data in other HDF5 files.
        :tab-width: 4
        :linenos:
        :language: guess
+
+       
+downloads
+=========
+
+The Python code and files related to this section may be downloaded from the following table.
+
+===========================================  =============================================
+file                                         description
+===========================================  =============================================
+:download:`input.dat`                        2-column ASCII data used in this section
+:download:`BasicReader.py`                   python code to read example *prj_test.nexus.hdf5*
+:download:`BasicWriter.py`                   python code to write example *prj_test.nexus.hdf5*
+:download:`external_angles_h5dump.txt`       *h5dump* analysis of *external_angles.hdf5*
+:download:`external_angles.hdf5`             HDF5 file written by *externalExample*
+:download:`external_angles_structure.txt`    *h5toText* analysis of *external_angles.hdf5*
+:download:`external_counts_h5dump.txt`       *h5dump* analysis of *external_counts.hdf5*
+:download:`external_counts.hdf5`             HDF5 file written by *externalExample*
+:download:`external_counts_structure.txt`    *h5toText* analysis of *external_counts.hdf5*
+:download:`externalExample.py`               python code to write external linking examples
+:download:`external_master_h5dump.txt`       *h5dump* analysis of *external_master.hdf5*
+:download:`external_master.hdf5`             NeXus file written by *externalExample*
+:download:`external_master_structure.txt`    *h5toText* analysis of *external_master.hdf5*
+:download:`prj_test.nexus_h5dump.txt`        *h5dump* analysis of the NeXus file
+:download:`prj_test.nexus.hdf5`              NeXus file written by *BasicWriter*
+:download:`prj_test.nexus_structure.txt`     *h5toText* analysis of the NeXus file
+===========================================  =============================================

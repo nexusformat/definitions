@@ -106,7 +106,7 @@ this documentation and later moved into the **spec2nexus** package. [#]_
 This tool was developed to show the actual data content of an
 HDF5 file that we create.
 
-.. [#]: **spec2nexus** : http://spec2nexus.readthedocs.org
+.. [#] **spec2nexus** : http://spec2nexus.readthedocs.org
 
 NAPI Python Example: ``h5toText`` output of NeXus HDF5 file
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
