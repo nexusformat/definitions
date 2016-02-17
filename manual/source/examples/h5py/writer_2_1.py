@@ -42,7 +42,7 @@ nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)
 
 source_addr = '/entry/instrument/detector/counts'       # existing data
 target_addr = 'counts'                                  # new location
-ds_tth.attrs['target'] = source_addr                    # a NeXus API convention for links
+ds_counts.attrs['target'] = source_addr                 # a NeXus API convention for links
 nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)
 
 f.close()	# be CERTAIN to close the file
