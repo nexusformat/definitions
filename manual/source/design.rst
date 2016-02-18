@@ -165,12 +165,6 @@ attributes can be found in the next table:
 			:index:`dimension <dimension>`
 			if the data is not in C storage order
 
- 		``{axisname}_indices`` (*NX_INT*)
- 		   Integer array that defines the indices of the *signal* field
- 		   (that field will be a multidimensional array)
- 		   which need to be used in the ``{axisname}`` dataset in
- 		   order to reference the corresponding axis value.
-
 		``interpretation`` (*NX_CHAR*)
 			Describes how to display the data.
 			``rgba``, ``hsla`` and ``cmyk`` are (4 x n x m) arrays, where the
