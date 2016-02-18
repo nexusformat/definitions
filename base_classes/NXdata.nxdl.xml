@@ -56,13 +56,15 @@
 			.. index:: plotting
 			
 			String array that defines the independent data fields used in 
-			the default plot for all of the dimensions of the *signal* field. 
+			the default plot for all of the dimensions of the *signal* field
+			(the *signal* field is the field in this group that is named by
+			the ``signal`` attribute of this group). 
 			One entry is provided for every dimension in the *signal* field.
 			
 			The field(s) named as values (known as "axes") of this attribute 
 			*must* exist. An axis slice is specified using a field named 
-			``{axisname}_indices`` as described below (where the text shown here
-			as ``{axisname}`` is to be replaced by the actual field name).
+			``AXISNAME_indices`` as described below (where the text shown here
+			as ``AXISNAME`` is to be replaced by the actual field name).
 			
 			When no default axis is available for a particular dimension 
 			of the plottable data, use a "." in that position. 
@@ -72,27 +74,6 @@
 			
 			If there are no axes at all (such as with a stack of images), 
 			the axes attribute can be omitted.
-			
-			:``{axisname}_indices``: 
-			  Integer array that defines the indices of the *signal* field 
-			  (that field will be a multidimensional array)
-			  which need to be used in the ``{axisname}`` dataset in 
-			  order to reference the corresponding axis value.
-			
-			  This attribute is to be provided in all situations. 
-			  However, if the indices attributes are missing 
-			  (such as for data files written before this specification), 
-			  file readers are encouraged to make their best efforts 
-			  to plot the data. 
-			
-			  Thus the implementation of the 
-			  ``{axis name}_indices`` attribute is based on the model of 
-			  "strict writer, liberal reader". 
-			
-			.. note::  Attributes potentially containing multiple values 
-			   (axes and _indices) are to be written as string or integer arrays, 
-			   to avoid string parsing in reading applications.
-
 		</doc>
 	</attribute>
 	<attribute name="signal">
@@ -108,6 +89,41 @@
 			rather than adding a signal attribute to the dataset.
 			See http://wiki.nexusformat.org/2014_How_to_find_default_data
 			for a summary of the discussion.
+		</doc>
+	</attribute>
+	<attribute name="AXISNAME_indices">
+		<!-- the nxdl.xsd rules do not allow us to show this as a variable name - we'll use ALL CAPS -->
+		<doc>
+			Integer array that defines the indices of the *signal* field 
+			(that field will be a multidimensional array)
+			which need to be used in the *AXISNAME* dataset in 
+			order to reference the corresponding axis value.
+			
+			Here, *AXISNAME* is to be replaced by the name of each 
+			field described in the ``axes`` attribute.  
+			An example with 2-D data, :math:`d(t,P)`, will illustrate::
+			
+			  data_2d:NXdata
+				@signal="data"
+				@axes="time","pressure"
+				@time_indices=0
+				@pressure_indices=1
+				data: float[1000,20]
+				time: float[1000]
+				pressure: float[20]
+			
+			This attribute is to be provided in all situations. 
+			However, if the indices attributes are missing 
+			(such as for data files written before this specification), 
+			file readers are encouraged to make their best efforts 
+			to plot the data. 	
+			Thus the implementation of the 
+			``AXISNAME_indices`` attribute is based on the model of 
+			"strict writer, liberal reader". 
+			
+			.. note::  Attributes potentially containing multiple values 
+			   (axes and _indices) are to be written as string or integer arrays, 
+			   to avoid string parsing in reading applications.
 		</doc>
 	</attribute>
 	
@@ -171,7 +187,7 @@
 
 		  data_2d:NXdata
 		    @signal="data"
-		    @axes=["time","pressure"]
+		    @axes="time","pressure"
 		    @pressure_indices=1
 		    @temperature_indices=1
 		    @time_indices=0
