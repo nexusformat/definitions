@@ -26,8 +26,8 @@ NAPI C Example: write simple NeXus file
 +++++++++++++++++++++++++++++++++++++++
 
 .. note:: This example uses the signal/axes attributes applied to the
-   data field, as described in :ref:`Design-Linking-ByName`.
-   New code should use the method described in :ref:`Design-Linking-NIAC2014`.
+   data field, as described in :ref:`Design-FindPlottable-ByName`.
+   New code should use the method described in :ref:`Design-FindPlottable-NIAC2014`.
 
 .. literalinclude:: napi-example.c
     :tab-width: 4
@@ -48,8 +48,8 @@ NAPI F90 Example: write simple NeXus file
 +++++++++++++++++++++++++++++++++++++++++
 
 .. note:: This example uses the signal/axes attributes applied to the
-   data field, as described in :ref:`Design-Linking-ByName`.
-   New code should use the method described in :ref:`Design-Linking-NIAC2014`.
+   data field, as described in :ref:`Design-FindPlottable-ByName`.
+   New code should use the method described in :ref:`Design-FindPlottable-NIAC2014`.
 
 .. literalinclude:: napi-example.f90
     :tab-width: 4

@@ -282,7 +282,7 @@ varied during the scan. We then have:
   + ``NXentry/NXsample/l``
   
   The ``NXdata`` also contains appropriate attributes 
-  as described in :ref:`Design-Linking-NIAC2014`.
+  as described in :ref:`Design-FindPlottable-NIAC2014`.
 
 - All other fields have their normal dimensions.
 

@@ -356,9 +356,9 @@ There are now three methods of :index:`associating <link>`
 each data dimension to its respective dimension scale.
 Only the first method is recommended now, the other two (older methods) are now discouraged.
 
-#. :ref:`Design-Linking-NIAC2014`
-#. :ref:`Design-Linking-ByName`
-#. :ref:`Design-LinkingByDimNumber`
+#. :ref:`Design-FindPlottable-NIAC2014`
+#. :ref:`Design-FindPlottable-ByName`
+#. :ref:`Design-FindPlottable-ByDimNumber`
 
 The recommended method uses the ``axes`` attribute applied to the :ref:`NXdata` group
 to specify the names of each 
@@ -367,7 +367,7 @@ A prerequisite is that the fields describing the axes of the plottable data
 are stored together with the plottable data in the same NeXus group. 
 If this leads to data duplication, use :ref:`links <Design-Links>`.
 
-.. _Design-Linking-NIAC2014:
+.. _Design-FindPlottable-NIAC2014:
 
 Associating plottable data using attributes applied to the :ref:`NXdata` group
 ==============================================================================
@@ -507,13 +507,13 @@ More examples are available in the NeXus wiki ([#axes]_).
                time: float[1000]
 
 
-.. _Design-Linking-ByName:
+.. _Design-FindPlottable-ByName:
 
 Associating plottable data by name using the ``axes`` attribute
 ===============================================================
 
-.. tip:: Discouraged: 
-   This method was superceded by :ref:`Design-Linking-NIAC2014`.
+.. warning:: Discouraged:
+   See this method: :ref:`Design-FindPlottable-NIAC2014`.
 
 This method is to define an attribute of the data itself
 :index:`called <axes (attribute)>` *axes*.
@@ -531,13 +531,13 @@ For example:
         :linenos:
         :language: text
 
-.. _Design-LinkingByDimNumber:
+.. _Design-FindPlottable-ByDimNumber:
 
 Associating plottable data by dimension number using the ``axis`` attribute
 ===========================================================================
 
-.. tip:: Discouraged:
-   This method was superceded by :ref:`Design-Linking-ByName`
+.. warning:: Discouraged:
+   See this method: :ref:`Design-FindPlottable-ByName`
 
 The original method is to define an attribute of each dimension
 scale :index:`called <axis>` *axis*.
