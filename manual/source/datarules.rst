@@ -336,7 +336,7 @@ using :index:`an <enumeration>` ``enumeration``.
 Associating Multi Dimensional Data with Axis Data
 #################################################
 
-NeXus allows to store multi dimensional arrays of data and it is this
+NeXus allows for storage of multi dimensional arrays of data.  It is this
 data that presents the most challenge for description.  In most cases
 it is not sufficient to just have the indices into the array as a label for
 the dimensions of the data. Usually the information which physical value
@@ -413,8 +413,8 @@ is specified using attributes attached to the :ref:`NXdata` group.
    
    The field(s) named as values (known as "axes") of this attribute 
    *must* exist. An axis slice is specified using a field named 
-   ``{axisname}_indices`` as described below (where the text shown here
-   as ``{axisname}`` is to be replaced by the actual field name).
+   ``AXISNAME_indices`` as described below (where the text shown here
+   as ``AXISNAME`` is to be replaced by the actual field name).
    
    When no default axis is available for a particular dimension 
    of the plottable data, use a "." in that position. 
@@ -424,10 +424,10 @@ is specified using attributes attached to the :ref:`NXdata` group.
    If there are no axes at all (such as with a stack of images), 
    the axes attribute can be omitted.
          
-:``{axisname}_indices``: 
+:``AXISNAME_indices``: 
    Integer array [#aa]_ that defines the indices of the *signal* field 
    (that field will be a multidimensional array)
-   which need to be used in the ``{axisname}`` dataset in 
+   which need to be used in the ``AXISNAME`` dataset in 
    order to reference the corresponding axis value.
    
    The first index of an array is ``0``.
@@ -439,7 +439,7 @@ is specified using attributes attached to the :ref:`NXdata` group.
    to plot the data. 
    
    Thus the implementation of the 
-   ``{axis name}_indices`` attribute is based on the model of 
+   ``AXISNAME_indices`` attribute is based on the model of 
    "strict writer, liberal reader". 
 
 .. [#] Summary of the discussion at NIAC2014 to revise how to find default data: 
@@ -482,9 +482,11 @@ More examples are available in the NeXus wiki ([#axes]_).
    .. rubric:: 2-D data example showing how to identify the default data and associated dimension scales
 
    A 2-D data set, *data* as a function of *time* and *pressure* is described.
-   An additional array of data, *temperature*, is described as a substitute
-   for *pressure*.  By default as indicated by the ``axes`` attribute, 
+   By default as indicated by the ``axes`` attribute, 
    *pressure* is to be used.
+   The *temperature* array is described as a substitute for *pressure* 
+   (so it replaces dimension ``1`` of ``data`` as indicated by the 
+   ``temperature_indices`` attribute).  
    
    .. code-block:: text
          :linenos:
