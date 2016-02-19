@@ -303,7 +303,19 @@ sets. Here is the structure of a very simple NeXus data file
 	        :language: text
 
 .. index:: 
-	NeXpy
+   NeXpy
+
+NeXus files are easy to visualize.  Here, this data is plotted using *NeXPy* simply
+by opening the NeXus data file and double-clicking the file name in the list:
+
+   .. compound::
+   
+      .. _fig.verysimple-png:
+   
+       .. rubric:: Plot of a very simple NeXus HDF5 Data file
+   
+       .. image:: img/verysimple.png
+           :width: 60%
 
 NeXus files are easy to create.  This example NeXus file was created using
 a short Python program and the *h5py* package:
