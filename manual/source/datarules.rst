@@ -327,6 +327,148 @@ using :index:`an <enumeration>` ``enumeration``.
 
     ..  thus backwards compatible
 
+.. _Rules-StoringDetectors:
+
+Storing Detectors
+#################
+
+There are very different types of detectors out there. Storing their data
+can be a challenge. As a general guide line: if the detector has some
+well defined form, this should be reflected in the data file. A linear
+detector becomes a linear array, a rectangular detector becomes an
+array of size ``xsize`` times ``ysize``.
+Some detectors are so irregular that this
+does not work. Then the detector data is stored as a linear array, with the
+index being detector number till ``ndet``. Such detectors must be accompanied
+by further arrays of length ``ndet`` which give
+``azimuthal_angle, polar_angle and distance`` for each detector.
+
+If data from a time of flight (TOF) instrument must be described, then the
+TOF dimension becomes the last dimension, for example an area detector of
+``xsize`` *vs.* ``ysize``
+is stored with TOF as an array with dimensions
+``xsize, ysize,
+ntof``.
+
+.. _Rules-StoringData-Monitors:
+
+Monitors are Special
+####################
+
+
+:index:`Monitors <monitor>`, detectors that measure the properties
+of the experimental probe rather than the probe's interaction with the
+sample, have a special place in NeXus files. Monitors are crucial to normalize data.
+To emphasize their role, monitors are not stored in the
+``NXinstrument`` hierarchy but on ``NXentry`` level
+in their own groups as there might be multiple monitors. Of special
+importance is the monitor in a group called ``control``.
+This is the main monitor against which the data has to be normalized.
+This group also contains the counting control information,
+i.e. counting mode, times, etc.
+
+Monitor data may be multidimensional. Good examples are scan monitors
+where a monitor value per scan point is expected or
+time-of-flight monitors.
+
+.. index::
+   plotting; how to find data
+
+.. _Find-Plottable-Data:
+
+Find the plottable data
+#######################
+
+.. TODO: This is the best place for the flowchart proposed in issue #443
+   Start with a flow chart for each method above, here goes the combined.
+
+Any program whose aim is to identify the default plottable data 
+should use the following procedure:
+
+#. Start at the top level of the NeXus data file.
+
+#. Loop through the groups with class ``NXentry`` 
+   until the next step succeeds.
+
+#. Open the NXentry group and loop through the subgroups 
+   with class ``NXdata`` until the next step succeeds.
+
+#. Open the NXdata group and loop through the fields for the one field 
+   with attribute ``signal="1"``.
+   Note: There should be *only one* field that matches.
+
+   This is the default plottable data.
+
+   #. If this field has an attribute ``axes``:
+
+      #. The ``axes`` attribute value contains a colon (or comma)
+         delimited list (in the C-order of the data array) with 
+         the names of the 
+         :index:`dimension scales <dimension scale>`
+         associated with the plottable data.
+         Such as:  ``axes="polar_angle:time_of_flight"``
+
+      #. Parse ``axes`` and open the datasets to describe your 
+         :index:`dimension scales <dimension scale>`
+
+   #. If this field has no attribute ``axes``:
+
+      #. Search for datasets with attributes ``axis=1``, ``axis=2``, etc.
+
+      #. These are the fields describing your axis. There may be
+         several fields for any axis, i.e. there may be multiple 
+         fields with the attribute ``axis=1``. Among them the 
+         field with the attribute ``primary=1`` is the preferred one. 
+         All others are alternative :index:`dimension scales <dimension scale>`.
+
+#. Having found the default plottable data and its dimension scales: 
+   make the plot.
+
+.. the previous description
+
+   #. Open the first top level NeXus group with class
+      ``NXentry``.
+
+   #. Open the first NeXus group with class
+      ``NXdata``.
+
+   #. Loop through NeXus fields in this group searching for the item
+      with attribute
+      ``signal="1"``
+      indicating this field has the plottable data.
+
+   #. Check to see if this field has an attribute called
+      ``axes``. If so, the attribute value contains a colon (or comma)
+      delimited list (in the C-order of the data array) with the names
+      of the 
+      :index:`dimension scales <dimension scale>`
+      associated with the plottable data. And
+      then you can skip the next two steps.
+
+   #. If the ``axes`` attribute is not defined, search for the 
+      one-dimensional NeXus fields with attribute ``primary=1``.
+
+   #. These are the dimension scales to label 
+      the axes of each dimension of the data.
+
+   #. Link each dimension scale
+      to the respective data dimension by
+      the ``axis`` attribute (``axis=1``, ``axis=2``, 
+      ... up to the  :index:`rank <rank>` of the data).
+
+   #. If necessary, close the
+      ``NXdata``
+      group, open the next one and repeat steps 3 to 6.
+
+   #. If necessary, close the
+      ``NXentry``
+      group, open the next one and repeat steps 2 to 7.
+
+Consult the :ref:`NeXus API <Introduction-NAPI>`
+section, which describes the routines available to program these
+operations. In the course of time, generic NeXus browsers will
+provide this functionality automatically.
+
 .. index:: dimension
 	!multi-dimensional data
 	data; multi-dimensional
@@ -384,10 +526,9 @@ is specified using attributes attached to the :ref:`NXdata` group.
          
    It is recommended to use this attribute
    rather than adding a signal attribute to the dataset.  [#]_
-   flow
    The procedure to identify the default data to be plotted is quite simple. 
-   Given any NeXus data file, any NXentry, or any NXdata. 
-   Follow the chain as it is described from that point. 
+   Given any NeXus data file, any ``NXentry``, or any ``NXdata``, 
+   follow the chain as it is described from that point. 
    Specifically:
    
    *  The root of the NeXus file will have a ``default`` 
@@ -515,7 +656,7 @@ Associating plottable data by name using the ``axes`` attribute
 .. warning:: Discouraged:
    See this method: :ref:`Design-FindPlottable-NIAC2014`.
 
-This method is to define an attribute of the data itself
+This method defines an attribute of the data field
 :index:`called <axes (attribute)>` *axes*.
 The ``axes`` attribute contains the names of
 each :index:`dimension scale <dimension; dimension scales>`
@@ -539,8 +680,8 @@ Associating plottable data by dimension number using the ``axis`` attribute
 .. warning:: Discouraged:
    See this method: :ref:`Design-FindPlottable-ByName`
 
-The original method is to define an attribute of each dimension
-scale :index:`called <axis>` *axis*.
+The original method defines an attribute of each dimension
+scale field :index:`called <axis>` *axis*.
 It is an integer whose value is the number of
 the dimension, in order of 
 :index:`fastest varying dimension <dimension; fastest varying>`.
@@ -621,145 +762,3 @@ attribute for the other scales is optional.
    utilities that identify 
    :index:`dimension scales <dimension; dimension scales>`,
    such as ``NXUfindaxis()``.
-
-.. _Rules-StoringDetectors:
-
-Storing Detectors
-#################
-
-There are very different types of detectors out there. Storing their data
-can be a challenge. As a general guide line: if the detector has some
-well defined form, this should be reflected in the data file. A linear
-detector becomes a linear array, a rectangular detector becomes an
-array of size ``xsize`` times ``ysize``.
-Some detectors are so irregular that this
-does not work. Then the detector data is stored as a linear array, with the
-index being detector number till ``ndet``. Such detectors must be accompanied
-by further arrays of length ``ndet`` which give
-``azimuthal_angle, polar_angle and distance`` for each detector.
-
-If data from a time of flight (TOF) instrument must be described, then the
-TOF dimension becomes the last dimension, for example an area detector of
-``xsize`` *vs.* ``ysize``
-is stored with TOF as an array with dimensions
-``xsize, ysize,
-ntof``.
-
-.. _Rules-StoringData-Monitors:
-
-Monitors are Special
-####################
-
-
-:index:`Monitors <monitor>`, detectors that measure the properties
-of the experimental probe rather than the
-sample, have a special place in NeXus files. Monitors are crucial to normalize data.
-To emphasize their role, monitors are not stored in the
-``NXinstrument`` hierarchy but on ``NXentry`` level
-in their own groups as there might be multiple monitors. Of special
-importance is the monitor in a group called ``control``.
-This is the main monitor against which the data has to be normalized.
-This group also contains the counting control information,
-i.e. counting mode, times, etc.
-
-Monitor data may be multidimensional. Good examples are scan monitors
-where a monitor value per scan point is expected or
-time-of-flight monitors.
-
-.. index::
-	plotting; how to find data
-
-.. _Find-Plottable-Data:
-
-Find the plottable data
-#######################
-
-.. TODO: This is the best place for the flowchart proposed in issue #443
-   Start with a flow chart for each method above, here goes the combined.
-
-Any program whose aim is to identify the default plottable data 
-should use the following procedure:
-
-#. Start at the top level of the NeXus data file.
-
-#. Loop through the groups with class ``NXentry`` 
-   until the next step succeeds.
-
-#. Open the NXentry group and loop through the subgroups 
-   with class ``NXdata`` until the next step succeeds.
-
-#. Open the NXdata group and loop through the fields for the one field 
-   with attribute ``signal="1"``.
-   Note: There should be *only one* field that matches.
-
-   This is the default plottable data.
-
-   #. If this field has an attribute ``axes``:
-
-      #. The ``axes`` attribute value contains a colon (or comma)
-         delimited list (in the C-order of the data array) with 
-         the names of the 
-         :index:`dimension scales <dimension scale>`
-         associated with the plottable data.
-         Such as:  ``axes="polar_angle:time_of_flight"``
-
-      #. Parse ``axes`` and open the datasets to describe your 
-         :index:`dimension scales <dimension scale>`
-
-   #. If this field has no attribute ``axes``:
-
-      #. Search for datasets with attributes ``axis=1``, ``axis=2``, etc.
-
-      #. These are the fields describing your axis. There may be
-         several fields for any axis, i.e. there may be multiple 
-         fields with the attribute ``axis=1``. Among them the 
-         field with the attribute ``primary=1`` is the preferred one. 
-         All others are alternative :index:`dimension scales <dimension scale>`.
-
-#. Having found the default plottable data and its dimension scales: 
-   make the plot.
-
-.. the previous description
-
-	#. Open the first top level NeXus group with class
-	   ``NXentry``.
-
-	#. Open the first NeXus group with class
-	   ``NXdata``.
-
-	#. Loop through NeXus fields in this group searching for the item
-	   with attribute
-	   ``signal="1"``
-	   indicating this field has the plottable data.
-
-	#. Check to see if this field has an attribute called
-	   ``axes``. If so, the attribute value contains a colon (or comma)
-	   delimited list (in the C-order of the data array) with the names
-	   of the 
-	   :index:`dimension scales <dimension scale>`
-	   associated with the plottable data. And
-	   then you can skip the next two steps.
-
-	#. If the ``axes`` attribute is not defined, search for the 
-	   one-dimensional NeXus fields with attribute ``primary=1``.
-
-	#. These are the dimension scales to label 
-	   the axes of each dimension of the data.
-
-	#. Link each dimension scale
-	   to the respective data dimension by
-	   the ``axis`` attribute (``axis=1``, ``axis=2``, 
-	   ... up to the  :index:`rank <rank>` of the data).
-
-	#. If necessary, close the
-	   ``NXdata``
-	   group, open the next one and repeat steps 3 to 6.
-
-	#. If necessary, close the
-	   ``NXentry``
-	   group, open the next one and repeat steps 2 to 7.
-
-Consult the :ref:`NeXus API <Introduction-NAPI>`
-section, which describes the routines available to program these
-operations. In the course of time, generic NeXus browsers will
-provide this functionality automatically.
