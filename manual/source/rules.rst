@@ -36,8 +36,11 @@ shown in figure :ref:`Raw Data <table.RawData>`
 (only showing the relevant parts of the data hierarchy).
 In the example shown, the ``data`` field in the ``NXdata`` group
 is linked to the 2-D detector data (a 512x512 array of 32-bit integers).
-The attribute ``signal = data`` on the NXdata group marks this
+The attribute ``signal = data`` on the :ref:`NXdata` group marks this
 field as the default plottable data of the ``data:NXdata`` group.
+The NXdata group attribute ``axes = . .`` declares that both dimensions of
+the ``data`` field do not have associated dimension scales (plotting
+routines should use integer scaling for each axis).
 Note that ``[,]`` represents a 2D array.
 
 	.. compound::
@@ -130,6 +133,12 @@ easily resolved. In order to solve this issue, the following scheme was implemen
   like a ``NXentry`` group.
   It contains links to all those data items required to fulfill
   the application definition for the particular method it represents.
+
+- Each ``NXsubentry`` group contains a ``NXdata`` group describing
+  the default plottable data for that experimental method.  
+  To satisfy the NeXus requirement of finding the default
+  plottable data from a ``NXentry`` group, the ``NXdata`` group
+  from one of these ``NXsubentry`` groups (the fluoresence data) was linked.
 
 See figure :ref:`NeXus Multi Method Hierarchy <table.NXsubentry>` for an example hierarchy.
 Note that ``[,]`` represents a 2D array.
@@ -231,6 +240,11 @@ times ``ysize`` pixels. The only thing which changes is that
 	        :tab-width: 4
 	        :linenos:
 	        :language: text
+
+The ``NXdata`` group attribute ``axes = rotation_angle . .`` declares that only the first
+dimension of the plottable ``data`` has a dimension scale (by name, ``rotation_angle``).  
+The other two dimensions have no associated dimension scales and should be plotted against
+integer bin numbers.
 
 Complex *hkl* scan
 ------------------
