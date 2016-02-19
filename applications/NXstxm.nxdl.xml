@@ -50,6 +50,11 @@
           as single images have reduced E dimensions compared to image 'stacks'.
     </doc>
     <group type="NXentry">
+        <attribute name="default">
+          <enumeration>
+            <item value="NXdata_group" />
+          </enumeration>
+        </attribute>
         <field name="title"/>
         <field name="start_time" type="NX_DATE_TIME"/>
         <field name="end_time" type="NX_DATE_TIME"/>
@@ -115,6 +120,36 @@
             <field name="rotation_angle" type="NX_FLOAT" />
         </group> 
         <group type="NXdata">
+	        <attribute name="signal">
+	          <enumeration>
+	            <item value="data" />
+	          </enumeration>
+	        </attribute>
+	        <attribute name="axes">
+	          <doc>
+              Note that 'Line scans' and focus type scans measure along one spatial dimension
+              but are not restricted to being parallel to the X or Y axes. Such scans 
+              should therefore use a single dimension for the positions along the spatial
+              line. 
+              
+              The axes attribute will describe to which dimension of ``data`` 
+              the ``sample_x`` and ``sample_y`` fields should be applied.
+	          </doc>
+	          <enumeration>			<!-- TODO: This needs review -->
+	            <item value="sample_x" />
+	            <item value="sample_y" />
+	          </enumeration>
+	        </attribute>
+          <attribute name="sample_x_indices">
+            <enumeration>
+              <item value="0" />
+            </enumeration>
+          </attribute>
+          <attribute name="sample_y_indices">
+            <enumeration>
+              <item value="0" />
+            </enumeration>
+          </attribute>
             <field name="stxm_scan_type" minOccurs="1" maxOccurs="1">
                 <doc> Label for typical scan types as a convenience for humans. 
                 Each label corresponds to a specific set of axes being scanned 
@@ -129,7 +164,7 @@
                 * osa focus: (zoneplate_z, osa_y/osa_x)
                 * detector image: (detector_y, detector_x)
                 
-                The "generic scan" string is to be used when none of the 
+                The ``generic scan`` string is to be used when none of the 
                 other choices are appropriate.
                 </doc>
                 <enumeration>
@@ -144,33 +179,41 @@
                     <item value="generic scan"/>
                 </enumeration>
             </field>
-            <field name="data" type="NX_NUMBER" signal="1">
-              <doc> Detectors that provide more than one value per scan point should be summarised
+            <field name="data" type="NX_NUMBER">
+              <doc>
+              Detectors that provide more than one value per scan point should be summarised
               to a single value per scan point for this array in order to simplify plotting.
-              
-              Note that 'Line scans' and focus type scans measure along one spatial dimension
-              but are not restricted to being parallel to the X or Y axes. Such scans 
-              should therefore use a single dimension for the positions along the spatial
-              line. The 'sample_x' and 'sample_y' fields should then contain lists of the
-              x- and y-positions and should both have the 'axis' attribute pointing to the same dimension.</doc>
+              </doc>
             </field>
             <field name="energy" type="NX_FLOAT" minOccurs="1" maxOccurs="1">
-              <doc> List of photon energies of the X-ray beam. If scanned through multiple values,
-              then an 'axis' attribute will be required to link the field to the appropriate data array dimension.</doc>
+    	      <doc>
+                List of photon energies of the X-ray beam. 
+                If scanned through multiple values,
+                then associate this field to the appropriate data array dimension
+                by setting the correct value of the 'energy_indices' attribute (0-based numbering).
+    	      </doc>
               <dimensions rank="1">
                 <dim index="1" value="NumE" />
               </dimensions>
             </field>
             <field name="sample_y" type="NX_FLOAT" minOccurs="1" maxOccurs="1">
-              <doc> List of Y positions on the sample. If scanned through multiple values,
-              then an 'axis' attribute will be required to link the field to the appropriate data array dimension.</doc>
+              <doc>
+                List of Y positions on the sample.
+                If scanned through multiple values,
+                then associate this field to the appropriate data array dimension
+                by setting the correct value of the 'sample_y_indices' attribute (0-based numbering).
+              </doc>
               <dimensions rank="1">
                 <dim index="1" value="NumY" />
               </dimensions>
             </field>
             <field name="sample_x" type="NX_FLOAT" minOccurs="1" maxOccurs="1">
-              <doc> List of X positions on the sample. If scanned through multiple values,
-              then an 'axis' attribute will be required to link the field to the appropriate data array dimension.</doc>
+     	      <doc>
+     	        List of X positions on the sample. 
+     	        If scanned through multiple values,
+     	        then associate this field to the appropriate data array dimension
+     	        by setting the correct value of the 'sample_x_indices' attribute (0-based numbering).
+     	      </doc>
               <dimensions rank="1">
                 <dim index="1" value="NumX" />
               </dimensions>
@@ -178,9 +221,11 @@
         </group>
         <group type="NXmonitor" name="control" minOccurs="0" maxOccurs="1">
             <field name="data" type="NX_FLOAT">
-              <doc> Values to use to normalise for time-variations in photon flux. Typically, the synchrotron storage ring
-              electron beam current is used as a proxy for the X-ray beam intensity. Array must have same shape as the
-              NXdata groups.</doc>
+     	      <doc>
+         	      Values to use to normalise for time-variations in photon flux. Typically, the synchrotron storage ring
+         	      electron beam current is used as a proxy for the X-ray beam intensity. Array must have same shape as the
+         	      NXdata groups.
+     	      </doc>
             </field>
         </group>
     </group>
