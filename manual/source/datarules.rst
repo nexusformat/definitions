@@ -379,11 +379,141 @@ time-of-flight monitors.
 Find the plottable data
 #######################
 
-.. TODO: This is the best place for the flowchart proposed in issue #443
-   Start with a flow chart for each method above, here goes the combined.
+:ref:`SimplePlotting` is one of the motivations for the NeXus standard.
+To implement *simple plotting*, a mechanism must exist to identify
+the default data for visualization (plotting) in any NeXus data file.
+Over its history the NIAC has agreed upon a method of applying metadata
+to identify the default plottable data.  This metadata has always been
+specified as HDF attributes.  With the evolution of the underlying file
+formats and the NeXus data standard, the method to identify the default 
+plottable data has evolved, undergoing three distinct versions.
 
-Any program whose aim is to identify the default plottable data 
-should use the following procedure:
+:version 1: :ref:`Design-FindPlottable-ByDimNumber`
+:version 2: :ref:`Design-FindPlottable-ByName`
+:version 3: :ref:`Design-FindPlottable-NIAC2014`
+
+Consult the :ref:`NeXus API <Introduction-NAPI>`
+section, which describes the routines available to program these
+operations. In the course of time, generic NeXus browsers will
+provide this functionality automatically.
+
+For programmers who may encounter NeXus data files written using 
+any of these methods, we present the algorithm for each method 
+to find the default plottable data.  It is recommended to start 
+with the most recent method, :ref:`Find-Plottable-Data-v3`, first.
+
+.. _Find-Plottable-Data-v3:
+
+Version 3
+=========
+
+The third (current) method to identify the default 
+plottable data is as follows:
+
+#. Start at the top level of the NeXus data file
+   (the *root* of the HDF5 hierarchy).
+
+#. Pick the default :ref:`NXentry` group.
+
+   If the *root* has an attribute ``default``, then its value
+   is the name of the ``NXentry`` group to be used.  Otherwise,
+   pick any ``NXentry`` group.  This is trivial if there is only one 
+   ``NXentry`` group.
+
+   .. compound::
+   
+       .. _fig.flowchart-NXroot-default:
+   
+       .. figure:: img/flowchart-NXroot-default.png
+           :alt: fig.flowchart-NXroot-default
+           :width: 60%
+   
+           Find plottable data: select the ``NXentry`` group
+
+#. Pick the default :ref:`NXdata` group.
+
+   Open the ``NXentry`` group selected above.
+   If it has an attribute ``default``, then its value
+   is the name of the ``NXdata`` group to be used.  Otherwise,
+   pick any ``NXdata`` group.  This is trivial if there is only one 
+   ``NXdata`` group.
+
+   .. compound::
+   
+       .. _fig.flowchart-NXentry-default:
+   
+       .. figure:: img/flowchart-NXentry-default.png
+           :alt: fig.flowchart-NXentry-default
+           :width: 60%
+   
+           Find plottable data: select the ``NXdata`` group
+
+#. Pick the default plottable field (the *signal* data).
+
+   Open the ``NXdata`` group selected above.
+   If it has an attribute ``signal``, then its value
+   is the name of the field (dataset) to be plotted.
+   If no ``signal`` attribute is not present on the 
+   ``NXdata`` group, then proceed to try an 
+   :ref:`older NeXus method<Find-Plottable-Data-v2>` 
+   to find the default plottable data.
+
+   .. compound::
+   
+       .. _fig.flowchart-NXdata-signal:
+   
+       .. figure:: img/flowchart-NXdata-signal.png
+           :alt: fig.flowchart-NXdata-signal
+           :width: 90%
+   
+           Find plottable data: select the *signal* data
+   
+   #. Pick the fields with the dimension scales (the *axes*).
+   
+      If the same ``NXdata`` group has an attribute ``axes``, 
+      then its value is a string (*signal* data is 1-D) or 
+      string array (*signal* data is 2-D or higher rank) 
+      naming the field **in this group** to be used as 
+      dimension scales of the default plottable data.  
+      The number of values given must be equal to the 
+      *rank* of the *signal* data.  These are the *abcissae*
+      of the plottable *signal* data.
+      
+      *If* no field is available to provide a dimension scale
+      for a given dimension, then a "``.``" will be used in that position. 
+      In such cases, programmers are expected to use an integer 
+      sequence starting from 0 for each position along that dimension.
+      
+   #. Connect the dimension scales with each dimension.
+   
+      For each field (its name is *AXISNAME*) in ``axes`` that 
+      provides a dimension scale, there will be
+      an ``NXdata`` group attribute ``AXISNAME_indices`` which
+      value is an integer or integer array with value of the 
+      dimensions of the *signal* data to which this dimension scale applies.
+      
+      If no ``AXISNAME_indices`` attribute is provided, a programmer is encouraged 
+      to make best efforts assuming the intent of this ``NXdata`` group
+      to provide a default plot.
+      
+      It is possible there may be more than one ``AXISNAME_indices`` attribute
+      with the same value or values.  This indicates the possibilty of using
+      alternate abcissae along this (these) dimension(s).  The
+      field named in the ``axes`` attribute indicates the intention of
+      the data file writer as to which field should be used by default.
+
+#. Plot the *signal* data, given *axes* and *AXISNAME_indices*.
+
+
+.. _Find-Plottable-Data-v2:
+
+Version 2
+=========
+
+.. tip:: Try this method for older NeXus data files.
+
+The second method to identify the default 
+plottable data is as follows:
 
 #. Start at the top level of the NeXus data file.
 
@@ -398,6 +528,11 @@ should use the following procedure:
    Note: There should be *only one* field that matches.
 
    This is the default plottable data.
+   
+   If there is no such ``signal="1"`` field,
+   proceed to try an 
+   :ref:`older NeXus method<Find-Plottable-Data-v1>` 
+   to find the default plottable data.
 
    #. If this field has an attribute ``axes``:
 
@@ -424,50 +559,55 @@ should use the following procedure:
 #. Having found the default plottable data and its dimension scales: 
    make the plot.
 
-.. the previous description
 
-   #. Open the first top level NeXus group with class
-      ``NXentry``.
+.. _Find-Plottable-Data-v1:
 
-   #. Open the first NeXus group with class
-      ``NXdata``.
+Version 1
+=========
 
-   #. Loop through NeXus fields in this group searching for the item
-      with attribute
-      ``signal="1"``
-      indicating this field has the plottable data.
+.. tip:: Try this method for older NeXus data files.
 
-   #. Check to see if this field has an attribute called
-      ``axes``. If so, the attribute value contains a colon (or comma)
-      delimited list (in the C-order of the data array) with the names
-      of the 
-      :index:`dimension scales <dimension scale>`
-      associated with the plottable data. And
-      then you can skip the next two steps.
+The first method to identify the default 
+plottable data is as follows:
 
-   #. If the ``axes`` attribute is not defined, search for the 
-      one-dimensional NeXus fields with attribute ``primary=1``.
+#. Open the first top level NeXus group with class
+   ``NXentry``.
 
-   #. These are the dimension scales to label 
-      the axes of each dimension of the data.
+#. Open the first NeXus group with class
+   ``NXdata``.
 
-   #. Link each dimension scale
-      to the respective data dimension by
-      the ``axis`` attribute (``axis=1``, ``axis=2``, 
-      ... up to the  :index:`rank <rank>` of the data).
+#. Loop through NeXus fields in this group searching for the item
+   with attribute
+   ``signal="1"``
+   indicating this field has the plottable data.
 
-   #. If necessary, close the
-      ``NXdata``
-      group, open the next one and repeat steps 3 to 6.
+#. Check to see if this field has an attribute called
+   ``axes``. If so, the attribute value contains a colon (or comma)
+   delimited list (in the C-order of the data array) with the names
+   of the 
+   :index:`dimension scales <dimension scale>`
+   associated with the plottable data. And
+   then you can skip the next two steps.
 
-   #. If necessary, close the
-      ``NXentry``
-      group, open the next one and repeat steps 2 to 7.
+#. If the ``axes`` attribute is not defined, search for the 
+   one-dimensional NeXus fields with attribute ``primary=1``.
 
-Consult the :ref:`NeXus API <Introduction-NAPI>`
-section, which describes the routines available to program these
-operations. In the course of time, generic NeXus browsers will
-provide this functionality automatically.
+#. These are the dimension scales to label 
+   the axes of each dimension of the data.
+
+#. Link each dimension scale
+   to the respective data dimension by
+   the ``axis`` attribute (``axis=1``, ``axis=2``, 
+   ... up to the  :index:`rank <rank>` of the data).
+
+#. If necessary, close the
+   ``NXdata``
+   group, open the next one and repeat steps 3 to 6.
+
+#. If necessary, close the
+   ``NXentry``
+   group, open the next one and repeat steps 2 to 7.
+
 
 .. index:: dimension
 	!multi-dimensional data
