@@ -25,10 +25,8 @@ Two things to note about the development and history of NeXus:
 :2010-01:
     NXDL presented to ESRF HDF5 workshop on hyperspectral data
 
-.. index:: NXsas (base class)
-
 :2009-09:
-    NXDL and draft ``NXsas`` presented to canSAS at
+    NXDL and draft :index:`NXsas` (base class) presented to canSAS at
     SAS2009 conference
 
 :2009-04:

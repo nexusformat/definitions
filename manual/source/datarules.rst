@@ -509,6 +509,8 @@ A prerequisite is that the fields describing the axes of the plottable data
 are stored together with the plottable data in the same NeXus group. 
 If this leads to data duplication, use :ref:`links <Design-Links>`.
 
+-----------
+
 .. _Design-FindPlottable-NIAC2014:
 
 Associating plottable data using attributes applied to the :ref:`NXdata` group
@@ -647,6 +649,8 @@ More examples are available in the NeXus wiki ([#axes]_).
                temperature: float[20]
                time: float[1000]
 
+-----------
+
 
 .. _Design-FindPlottable-ByName:
 
@@ -671,6 +675,8 @@ For example:
         :tab-width: 4
         :linenos:
         :language: text
+
+-----------
 
 .. _Design-FindPlottable-ByDimNumber:
 
