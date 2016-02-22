@@ -484,12 +484,14 @@ plottable data is as follows:
       In such cases, programmers are expected to use an integer 
       sequence starting from 0 for each position along that dimension.
       
-   #. Connect the dimension scales with each dimension.
+   #. Associate the dimension scales with each dimension of the plottable data.
    
       For each field (its name is *AXISNAME*) in ``axes`` that 
       provides a dimension scale, there will be
       an ``NXdata`` group attribute ``AXISNAME_indices`` which
-      value is an integer or integer array with value of the 
+      value is an 
+      .. integer or 
+      integer array with value of the 
       dimensions of the *signal* data to which this dimension scale applies.
       
       If no ``AXISNAME_indices`` attribute is provided, a programmer is encouraged 
@@ -706,21 +708,40 @@ is specified using attributes attached to the :ref:`NXdata` group.
    
    If there are no axes at all (such as with a stack of images), 
    the axes attribute can be omitted.
-         
+
+.. AXISNAME_indices documentation will be repeated in NXdata/@AXISNAME_indices
+
 :``AXISNAME_indices``: 
+   Each ``AXISNAME_indices`` attribute indicates the dependency
+   relationship of the ``AXISNAME`` field (where ``AXISNAME`` 
+   is the name of a field that exists in this ``NXdata`` group) 
+   with one or more dimensions of the plottable data.
+   
    Integer array [#aa]_ that defines the indices of the *signal* field 
    (that field will be a multidimensional array)
    which need to be used in the ``AXISNAME`` dataset in 
    order to reference the corresponding axis value.
    
-   The first index of an array is ``0``.
+   The first index of an array is ``0`` (zero).
+
+   Here, *AXISNAME* is to be replaced by the name of each 
+   field described in the ``axes`` attribute.  
+   An example with 2-D data, :math:`d(t,P)`, will illustrate::
    
+      data_2d:NXdata
+          @signal="data"
+          @axes="time","pressure"
+          @time_indices=0
+          @pressure_indices=1
+          data: float[1000,20]
+          time: float[1000]
+          pressure: float[20]
+
    This attribute is to be provided in all situations. 
    However, if the indices attributes are missing 
    (such as for data files written before this specification), 
    file readers are encouraged to make their best efforts 
    to plot the data. 
-   
    Thus the implementation of the 
    ``AXISNAME_indices`` attribute is based on the model of 
    "strict writer, liberal reader". 
