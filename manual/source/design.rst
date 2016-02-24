@@ -34,7 +34,8 @@ used by NeXus. These are:
     Multidimensional arrays and scalars representing the actual data to be stored
 
 :ref:`Design-Attributes`
-    Attributes containing additional metadata can be assigned to groups, fields, or :ref:`Design-FileAttributes`.
+    Attributes containing additional metadata can be assigned to groups, fields, 
+    or :ref:`files <Design-FileAttributes>`.
 
 :ref:`Design-Links`
     Elements which point to data stored in another place in the file hierarchy
@@ -165,12 +166,6 @@ attributes can be found in the next table:
 			:index:`dimension <dimension>`
 			if the data is not in C storage order
 
- 		``{axisname}_indices`` (*NX_INT*)
- 		   Integer array that defines the indices of the *signal* field
- 		   (that field will be a multidimensional array)
- 		   which need to be used in the ``{axisname}`` dataset in
- 		   order to reference the corresponding axis value.
-
 		``interpretation`` (*NX_CHAR*)
 			Describes how to display the data.
 			``rgba``, ``hsla`` and ``cmyk`` are (4 x n x m) arrays, where the
@@ -212,12 +207,12 @@ Links
 
 .. sidebar:: Python h5py code to make NeXus links
 
-   The section titled :ref:`h5py-example-helpers` provides example
+   The section titled :ref:`Example-H5py` provides example
    python code to create links (both internal and external)
    in NeXus data files.  See the routines:
 
-   * **makeLink()**
-   * **makeExternalLink()**
+   * **{hdf5_object}._id.link()**
+   * **h5py.ExternalLink()**
 
 Links are pointers to existing data somewhere else.
 The concept is very much like

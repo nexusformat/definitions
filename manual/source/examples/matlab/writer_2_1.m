@@ -21,14 +21,17 @@ h5create(filename,'/entry/instrument/detector/counts',[length(counts)],'DataType
 h5write(filename,'/entry/instrument/detector/counts',counts);
 h5writeatt(filename,'/entry/instrument/detector/counts','units','counts');
 
-% indicate that we are plotting y vs. x
-h5writeatt(filename,'/entry/instrument/detector/counts','signal',int32(1));
-h5writeatt(filename,'/entry/instrument/detector/counts','axes','two_theta');
-
 % create group NXdata with links to detector
 % note: requires the additional file h5link.m
 h5link(filename,'/entry/instrument/detector/two_theta','/entry/data/two_theta');
 h5link(filename,'/entry/instrument/detector/counts','/entry/data/counts');
+
+% indicate that we are plotting y vs. x
+h5writeatt(filename,'/','default','entry');
+h5writeatt(filename,'/entry','default','data');
+h5writeatt(filename,'/entry/data','signal','counts');
+h5writeatt(filename,'/entry/data','axes','two_theta');
+h5writeatt(filename,'/entry/data','two_theta_indices',int32(0));
 
 % add NeXus metadata
 h5writeatt(filename,'/','file_name',filename);

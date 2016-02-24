@@ -1,8 +1,7 @@
 .. _Example-writer_1_3:
 
-=====================================================
 ``h5py`` example writing the simplest NeXus data file
-=====================================================
+#####################################################
 
 In this example, the 1-D scan data will be written into the simplest
 possible NeXus HDF5 data file, containing only the required NeXus components.
@@ -43,23 +42,6 @@ When the next Python program (``writer_1_3_h5py.py``) is run from the
 command line (and there are no problems), the ``writer_1_3_h5py.hdf5``
 file is generated.
 
-.. literalinclude:: writer_1_3_h5py.py
-    :tab-width: 4
-    :linenos:
-    :language: python
-
-We wish to make things a bit simpler for ourselves when creating the common
-structures we use in our data files.  To help, we gather together some of the
-common concepts such as *create a file*,
-*create a NeXus group*,
-*create a dataset* and start to build a helper library.
-(See :ref:`h5py-example-my_lib` for more details.)
-Here, we call it ``my_lib``.  Applying it to the simple example above, our
-code only becomes a couple lines shorter!  (Let's hope the library starts to help in larger or
-more complicated projects.)  Here's the revision that replaces direct calls to ``numpy``
-and ``h5py`` with calls to our library.  It generates the file
-``writer_1_3.hdf5``.
-
 .. literalinclude:: writer_1_3.py
     :tab-width: 4
     :linenos:
@@ -79,17 +61,16 @@ decided by the ``h5py`` support package.
           level of the file that tells the original file name, time it was written, and some version information
           about the software involved.
 
-.. literalinclude:: writer_1_3_h5dump.txt
-    :tab-width: 4
-    :linenos:
-    :language: guess
+.. leave this out
+   .. literalinclude:: writer_1_3_h5dump.txt
+       :tab-width: 4
+       :linenos:
+       :language: guess
 
-Since the output of ``h5dump`` is verbose, a tool
-(see :ref:`h5py-example-h5toText`)
-was created to
+Since the output of ``h5dump`` is verbose (see the *Downloads* section below), 
+the *h5toText* tool [#]_ was used to
 print out the structure of HDF5 data files.  This tool provides a simplified view
-of the NeXus file.  It is run with a command like this:
-``python h5toText.py h5dump writer_1_3.hdf5``.  Here is the output:
+of the NeXus file.  Here is the output:
 
 .. literalinclude:: writer_1_3_structure.txt
     :tab-width: 4
@@ -97,4 +78,20 @@ of the NeXus file.  It is run with a command like this:
     :language: guess
 
 As the data files in these examples become more complex, you will appreciate
-the information density provided by the ``h5toText.py`` tool.
+the information density provided by *h5toText*.
+
+.. [#] *h5toText* : http://spec2nexus.readthedocs.org/en/latest/h5toText.html
+
+downloads
+*********
+
+The Python code and files related to this section may be downloaded from the following table.
+
+=====================================  =============================================
+file                                   description
+=====================================  =============================================
+:download:`writer_1_3.py`              python code to write example *writer_1_3*
+:download:`writer_1_3.hdf5`            NeXus file written by this code
+:download:`writer_1_3_h5dump.txt`      *h5dump* analysis of the NeXus file
+:download:`writer_1_3_structure.txt`   *h5toText* analysis of the NeXus file
+=====================================  =============================================
