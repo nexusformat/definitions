@@ -817,7 +817,7 @@ NeXus chooses to encode this information in the following way:
     	    .. literalinclude:: examples/euler-cif.txt
     	        :tab-width: 4
     	        :linenos:
-    	        :language: guess
+    	        :language: text
 
 The type and direction of the NeXus standard operations is documented below
 in the table: :ref:`Actions of standard NeXus fields<tb.table-transform>`.

@@ -65,7 +65,7 @@ decided by the ``h5py`` support package.
    .. literalinclude:: writer_1_3_h5dump.txt
        :tab-width: 4
        :linenos:
-       :language: guess
+       :language: text
 
 Since the output of ``h5dump`` is verbose (see the *Downloads* section below), 
 the *h5toText* tool [#]_ was used to
@@ -75,7 +75,7 @@ of the NeXus file.  Here is the output:
 .. literalinclude:: writer_1_3_structure.txt
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: text
 
 As the data files in these examples become more complex, you will appreciate
 the information density provided by *h5toText*.

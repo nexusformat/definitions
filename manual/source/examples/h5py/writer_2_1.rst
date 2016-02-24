@@ -49,7 +49,7 @@ See the *downloads* section below.
    .. literalinclude:: writer_2_1_h5dump.txt
        :tab-width: 4
        :linenos:
-       :language: guess
+       :language: text
 
 Look carefully!  It *appears* in the output of
 ``h5dump`` that the actual data for ``two_theta``
@@ -80,7 +80,7 @@ location, in the ``NXdetector`` group.
 .. literalinclude:: writer_2_1_structure.txt
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: text
 
 downloads
 *********
