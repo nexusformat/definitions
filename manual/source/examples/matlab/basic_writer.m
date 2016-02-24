@@ -30,8 +30,11 @@ h5writeatt(filename,'/entry/mr_scan/I00','units','counts');
 h5writeatt(filename,'/entry/mr_scan/I00','long_name','USAXS I00 (counts)');
 
 % indicate that we are plotting y vs. x
-h5writeatt(filename,'/entry/mr_scan/I00','signal',int32(1));
-h5writeatt(filename,'/entry/mr_scan/I00','axes','mr');
+h5writeatt(filename,'/','default','entry');
+h5writeatt(filename,'/entry','default','mr_scan');
+h5writeatt(filename,'/entry/mr_scan','signal','I00');
+h5writeatt(filename,'/entry/mr_scan','axes','mr_scan');
+h5writeatt(filename,'/entry/mr_scan','mr_scan_indices', int32(0));
 
 % add NeXus metadata
 h5writeatt(filename,'/','file_name',filename);

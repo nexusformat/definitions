@@ -10,9 +10,12 @@ diode = [1193, 4474, 53220, 274310, 515430, 827880,
          1227100, 1434640, 1330280, 1037070, 598720, 
          316460, 56677, 1000, 1000]
 
-two_theta = nexus.SDS(angle, name="two_theta", 
-               units="degrees", 
-	       long_name="two_theta (degrees)")
-counts = nexus.SDS(diode, name="counts", long_name="photodiode counts")
+two_theta = nexus.SDS(angle, 
+                      name="two_theta", 
+                      units="degrees", 
+                      long_name="two_theta (degrees)")
+counts = nexus.SDS(diode, 
+                   name="counts", 
+                   long_name="photodiode counts")
 data = nexus.NXdata(counts,[two_theta])
 data.save("verysimple.nx5")

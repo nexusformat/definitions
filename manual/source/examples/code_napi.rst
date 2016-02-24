@@ -23,7 +23,11 @@ The same code is provided in C, F77, and F90 versions.
 Compare these code examples with :ref:`native-HDF5-Examples`.
 
 NAPI C Example: write simple NeXus file
-+++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++
+
+.. note:: This example uses the signal/axes attributes applied to the
+   data field, as described in :ref:`Design-FindPlottable-ByName`.
+   New code should use the method described in :ref:`Design-FindPlottable-NIAC2014`.
 
 .. literalinclude:: napi-example.c
     :tab-width: 4
@@ -31,7 +35,7 @@ NAPI C Example: write simple NeXus file
     :language: guess
 
 NAPI F77 Example: write simple NeXus file
-++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++
 
 .. note:: The F77 interface is no longer being developed.
 
@@ -41,7 +45,11 @@ NAPI F77 Example: write simple NeXus file
     :language: guess
 
 NAPI F90 Example: write simple NeXus file
-++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++
+
+.. note:: This example uses the signal/axes attributes applied to the
+   data field, as described in :ref:`Design-FindPlottable-ByName`.
+   New code should use the method described in :ref:`Design-FindPlottable-NIAC2014`.
 
 .. literalinclude:: napi-example.f90
     :tab-width: 4
@@ -52,7 +60,7 @@ NAPI F90 Example: write simple NeXus file
 .. _example.napi.simple.3d.write.python:
 
 NAPI Python Simple 3-D Write Example
-######################################
+####################################
 
 A single code example is provided in this section that writes 3-D data
 to a NeXus HDF5 file in the Python language using the NAPI.
@@ -62,7 +70,7 @@ of integers.  The single dataset is intended to demonstrate the order in
 which each value of the array is stored in a NeXus HDF5 data file.
 
 NAPI Python Example: write simple NeXus file
-++++++++++++++++++++++++++++++++++++++++++++++++
+++++++++++++++++++++++++++++++++++++++++++++
 
 .. literalinclude:: simple3D.py
     :tab-width: 4
@@ -70,7 +78,7 @@ NAPI Python Example: write simple NeXus file
     :language: guess
 
 View a NeXus HDF5 file using *h5dump*
-######################################
+#####################################
 
 For the purposes of an example, it is instructive to view the content of the
 NeXus HDF5 file produced by the above program.  Since HDF5 is a binary file
@@ -80,7 +88,7 @@ the ``h5dump`` tool provided as part of the HDF5 tool kit:
 ``h5dump simple3D.h5``
 
 NAPI Python Example: ``h5dump`` output of NeXus HDF5 file
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. literalinclude:: simple3D.h5dump.txt
     :tab-width: 4
@@ -89,17 +97,19 @@ NAPI Python Example: ``h5dump`` output of NeXus HDF5 file
 
 
 View a NeXus HDF5 file using *h5toText.py*
-######################################################
+##########################################
 
 The output of ``h5dump`` contains a lot of structural information
 about the HDF5 file that can distract us from the actual content we added to the file.
-Next, we show the output from a custom Python tool (``h5toText.py``)
-that we describe in a later section (:ref:`h5py-example-h5toText`)
-of this chapter.  This tool was developed to show the actual data content of an
+Next, we show the output from a custom Python tool (``h5toText.py``) built for
+this documentation and later moved into the **spec2nexus** package. [#]_
+This tool was developed to show the actual data content of an
 HDF5 file that we create.
 
+.. [#] **spec2nexus** : http://spec2nexus.readthedocs.org
+
 NAPI Python Example: ``h5toText`` output of NeXus HDF5 file
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. literalinclude:: simple3D.xture.txt
     :tab-width: 4

@@ -231,7 +231,7 @@ chapter for examples that use the native HDF5 calls to write NeXus data files.
 	Data attributes are represented as XML attributes.
 	If the attribute is not a text string, then the
 	attribute is given in the form: *type:value*, for example:
-	``signal="NX_POSINT:1"``.
+	``tth_indices="NX_POSINT:1"``.
 
 
 	:index:`NeXus links <link>` are stored in XML as XML elements
