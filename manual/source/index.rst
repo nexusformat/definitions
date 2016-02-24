@@ -29,7 +29,7 @@ This manual built |today|.
 
 .. seealso:: 
 
-   This document is available in different formats:
+   This document is available in these formats:
    
    :online HTML:
    	http://download.nexusformat.org/doc/html/index.html
