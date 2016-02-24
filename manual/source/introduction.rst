@@ -293,7 +293,7 @@ sets. Here is the structure of a very simple NeXus data file
 
 	.. compound::
 	
-		.. _fig.simple-data-file-structure:
+		.. _fig.verysimple-structure:
 	
 	    .. rubric:: Structure of a very simple NeXus Data file
 	
@@ -303,16 +303,28 @@ sets. Here is the structure of a very simple NeXus data file
 	        :language: text
 
 .. index:: 
-	NeXpy
+   NeXpy
+
+NeXus files are easy to visualize.  Here, this data is plotted using *NeXPy* simply
+by opening the NeXus data file and double-clicking the file name in the list:
+
+   .. compound::
+   
+      .. _fig.verysimple-png:
+   
+       .. rubric:: Plot of a very simple NeXus HDF5 Data file
+   
+       .. image:: img/verysimple.png
+           :width: 60%
 
 NeXus files are easy to create.  This example NeXus file was created using
-a short Python program and NeXpy:
+a short Python program and the *h5py* package:
 
 	.. compound::
 	
-		.. _fig.simple-data-file-hdf5-nexpy:
+		.. _fig.verysimple-py:
 	
-	    .. rubric:: Using NeXpy to write a very simple NeXus HDF5 Data file
+	    .. rubric:: Using Python to write a very simple NeXus HDF5 Data file
 	
 	    .. literalinclude:: examples/verysimple.py
 	        :tab-width: 4
@@ -346,8 +358,8 @@ The contributed definitions have been submitted by the scientific community
 for incubation before they are adopted by the NIAC or for availability
 to the community.
 
-These instrument definitions are formalized as XML files, using NXDL,
-(as described in the :ref:`NXDL <NXDL>` chapter)
+These instrument definitions are formalized as XML files, using 
+:ref:`NXDL <NXDL>`,
 to specify the names of fields, and other NeXus data objects.
 The following is an example of such a file for
 the simple NeXus file shown above.
