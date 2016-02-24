@@ -50,9 +50,9 @@ Consider this prototype example:
     .. literalinclude:: examples/examples-prototype.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
-Some words on the  notation:
+Some words on the notation:
 
 - Hierarchy is represented by indentation. Objects on the same indentation level
   are in the same group
