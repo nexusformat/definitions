@@ -166,14 +166,14 @@ Example of a NeXus File
 The following diagram shows an example of a NeXus data file represented as a
 tree structure.
 
-	.. compound::
-	
-		.. _Figure.Example_NeXus_file:
-	
-	    .. rubric:: Example of a NeXus Data File
-	
-	    .. image:: img/Hierarchy.png
-	        :width: 80%
+.. compound::
+   
+   .. _Figure.Example_NeXus_file:
+   
+   .. rubric:: Example of a NeXus Data File
+   
+   .. image:: img/Hierarchy.png
+      :width: 80%
 
 
 Note that each field is identified by a name, such as ``counts``,
@@ -238,25 +238,25 @@ complete list can be found in the :ref:`Design` chapter.
 .. index:: NXinstrument (base class)
 
 :ref:`NXinstrument`
-    There might also be a group with 
-    class ``NXinstrument``. This is designed to encapsulate all the
-    instrumental information that might be relevant to a
-    measurement, such as flight paths, collimation, chopper
-    frequencies, etc.
-
-	.. compound::
-	
-		.. _Figure.NXinstrument_excerpt:
-	
-	    .. rubric:: ``NXinstrument`` excerpt
-	
-	    .. image:: img/NXinstrument.png
-	        :width: 50%
-
-	Since an instrument can include several beamline components each
-	defined by several parameters, the components are each specified by a separate group.
-	This hides the complexity from generic file browsers, but makes the
-	information available in an intuitively obvious way if it is required.
+   There might also be a group with 
+   class ``NXinstrument``. This is designed to encapsulate all the
+   instrumental information that might be relevant to a
+   measurement, such as flight paths, collimation, chopper
+   frequencies, etc.
+       
+   .. compound::
+   	
+      .. _Figure.NXinstrument_excerpt:
+      
+      .. rubric:: ``NXinstrument`` excerpt
+      
+      .. image:: img/NXinstrument.png
+         :width: 50%
+   
+   Since an instrument can include several beamline components each
+   defined by several parameters, the components are each specified by a separate group.
+   This hides the complexity from generic file browsers, but makes the
+   information available in an intuitively obvious way if it is required.
 
 .. _Introduction-SimpleExample:
 
@@ -275,14 +275,14 @@ that could be used to transfer
 data between programs. (Later in this section, we show how to write and
 read this simple example.)
 
-	.. compound::
-	
-		.. _fig.simple-example:
-	
-	    .. rubric:: Example structure of a simple data file
-	
-	    .. image:: img/Simple.png
-	        :width: 60%
+.. compound::
+
+	.. _fig.simple-example:
+
+   .. rubric:: Example structure of a simple data file
+
+   .. image:: img/Simple.png
+      :width: 60%
 
 
 This illustrates the fact that the structure of NeXus files is
@@ -291,16 +291,16 @@ information, if required, but it can also be used to store very simple data
 sets. Here is the structure of a very simple NeXus data file
 (:download:`examples/verysimple.nx5`):
 
-	.. compound::
-	
-		.. _fig.verysimple-structure:
-	
-	    .. rubric:: Structure of a very simple NeXus Data file
-	
-	    .. literalinclude:: examples/verysimple.txt
-	        :tab-width: 4
-	        :linenos:
-	        :language: text
+.. compound::
+
+	.. _fig.verysimple-structure:
+
+   .. rubric:: Structure of a very simple NeXus Data file
+
+   .. literalinclude:: examples/verysimple.txt
+      :tab-width: 4
+      :linenos:
+      :language: text
 
 .. index:: 
    NeXpy
@@ -308,28 +308,28 @@ sets. Here is the structure of a very simple NeXus data file
 NeXus files are easy to visualize.  Here, this data is plotted using *NeXPy* simply
 by opening the NeXus data file and double-clicking the file name in the list:
 
-   .. compound::
+.. compound::
+
+   .. _fig.verysimple-png:
    
-      .. _fig.verysimple-png:
+   .. rubric:: Plot of a very simple NeXus HDF5 Data file
    
-       .. rubric:: Plot of a very simple NeXus HDF5 Data file
-   
-       .. image:: img/verysimple.png
-           :width: 60%
+   .. image:: img/verysimple.png
+      :width: 60%
 
 NeXus files are easy to create.  This example NeXus file was created using
 a short Python program and the *h5py* package:
 
-	.. compound::
-	
-		.. _fig.verysimple-py:
-	
-	    .. rubric:: Using Python to write a very simple NeXus HDF5 Data file
-	
-	    .. literalinclude:: examples/verysimple.py
-	        :tab-width: 4
-	        :linenos:
-	        :language: guess
+.. compound::
+
+   .. _fig.verysimple-py:
+   
+   .. rubric:: Using Python to write a very simple NeXus HDF5 Data file
+   
+   .. literalinclude:: examples/verysimple.py
+      :tab-width: 4
+      :linenos:
+      :language: guess
 
 .. _Introduction-DataStorageObjects:
 
@@ -366,14 +366,14 @@ the simple NeXus file shown above.
 
 .. compound::
 	
-	.. _fig.verysimple.nxdl.xml:
-
-    .. rubric:: A very simple NeXus Definition Language (NXDL) file
-
-    .. literalinclude:: examples/verysimple.nxdl.xml
-        :tab-width: 4
-        :linenos:
-        :language: guess
+   .. _fig.verysimple.nxdl.xml:
+   
+   .. rubric:: A very simple NeXus Definition Language (NXDL) file
+   
+   .. literalinclude:: examples/verysimple.nxdl.xml
+      :tab-width: 4
+      :linenos:
+      :language: guess
 
 Complete examples of reading and writing NeXus data files are 
 provided :ref:`later <Examples>`.
@@ -407,14 +407,14 @@ would contain lines similar to the following:
 
 .. compound::
 	
-	.. _fig.ex-simple.c:
-
-    .. rubric:: Simple example of reading data using the NeXus API
-
-    .. literalinclude:: examples/ex-simple.c
-        :tab-width: 4
-        :linenos:
-        :language: guess
+   .. _fig.ex-simple.c:
+   
+   .. rubric:: Simple example of reading data using the NeXus API
+   
+   .. literalinclude:: examples/ex-simple.c
+      :tab-width: 4
+      :linenos:
+      :language: guess
 
 In this example, the program requests the value of the data that has
 the label ``wavelength``, storing the result in the variable lambda.
