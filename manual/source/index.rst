@@ -31,7 +31,7 @@ This manual built |today|.
 
    This document is available in these formats online:
    
-   :online HTML:
+   :HTML:
    	http://download.nexusformat.org/doc/html/index.html
 
    :PDF:
@@ -40,7 +40,10 @@ This manual built |today|.
    A very brief overview is also available (separate from the manual).
    
    :HTML:
-      http://download.nexusformat.org/doc/impatient/
+      http://download.nexusformat.org/doc/impatient
+
+   :PDF:
+      http://download.nexusformat.org/doc/NXImpatient.pdf
 
 ..  Suggestions for adding to this manual:
 
