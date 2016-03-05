@@ -587,7 +587,7 @@ plottable data is as follows:
    
        .. figure:: img/flowchart-v2-NXdata-signal.png
            :alt: fig.flowchart-v2-NXdata-signal
-           :width: 90%
+           :width: 98%
    
            Find plottable data: select the *signal* data
 
@@ -605,23 +605,35 @@ plottable data is as follows:
 #. Open the first top level NeXus group with class
    ``NXentry``.
 
+   .. compound::
+   
+       .. _fig.flowchart-v1-NXroot-default:
+   
+       .. figure:: img/flowchart-v1-NXroot-default.png
+           :alt: fig.flowchart-v1-NXroot-default
+           :width: 60%
+   
+           Find plottable data: pick the first ``NXentry`` group
+
 #. Open the first NeXus group with class
    ``NXdata``.
+
+   .. compound::
+   
+       .. _fig.flowchart-v1-NXentry-default:
+   
+       .. figure:: img/flowchart-v1-NXentry-default.png
+           :alt: fig.flowchart-v1-NXentry-default
+           :width: 60%
+   
+           Find plottable data: pick the first ``NXdata`` group
 
 #. Loop through NeXus fields in this group searching for the item
    with attribute
    ``signal="1"``
    indicating this field has the plottable data.
 
-#. Check to see if this field has an attribute called
-   ``axes``. If so, the attribute value contains a colon (or comma)
-   delimited list (in the C-order of the data array) with the names
-   of the 
-   :index:`dimension scales <dimension scale>`
-   associated with the plottable data. And
-   then you can skip the next two steps.
-
-#. If the ``axes`` attribute is not defined, search for the 
+#. Search for the 
    one-dimensional NeXus fields with attribute ``primary=1``.
 
 #. These are the dimension scales to label 
@@ -632,13 +644,23 @@ plottable data is as follows:
    the ``axis`` attribute (``axis=1``, ``axis=2``, 
    ... up to the  :index:`rank <rank>` of the data).
 
-#. If necessary, close the
+   .. compound::
+   
+       .. _fig.flowchart-v1-NXdata-signal:
+   
+       .. figure:: img/flowchart-v1-NXdata-signal.png
+           :alt: fig.flowchart-v1-NXdata-signal
+           :width: 98%
+   
+           Find plottable data: select the *signal* data
+
+#. If necessary, close this
    ``NXdata``
-   group, open the next one and repeat steps 3 to 6.
+   group, search the next ``NXdata`` group, repeating steps 3 to 6.
 
 #. If necessary, close the
    ``NXentry``
-   group, open the next one and repeat steps 2 to 7.
+   group, search the next ``NXentry`` group, repeating steps 2 to 7.
 
 
 .. index:: dimension
