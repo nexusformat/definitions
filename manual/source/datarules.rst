@@ -522,8 +522,28 @@ plottable data is as follows:
 #. Loop through the groups with class ``NXentry`` 
    until the next step succeeds.
 
+   .. compound::
+   
+       .. _fig.flowchart-v2-NXroot-default:
+   
+       .. figure:: img/flowchart-v2-NXroot-default.png
+           :alt: fig.flowchart-v2-NXroot-default
+           :width: 60%
+   
+           Find plottable data: pick a ``NXentry`` group
+
 #. Open the NXentry group and loop through the subgroups 
    with class ``NXdata`` until the next step succeeds.
+
+   .. compound::
+   
+       .. _fig.flowchart-v2-NXentry-default:
+   
+       .. figure:: img/flowchart-v2-NXentry-default.png
+           :alt: fig.flowchart-v2-NXentry-default
+           :width: 60%
+   
+           Find plottable data: pick a ``NXdata`` group
 
 #. Open the NXdata group and loop through the fields for the one field 
    with attribute ``signal="1"``.
@@ -560,6 +580,16 @@ plottable data is as follows:
 
 #. Having found the default plottable data and its dimension scales: 
    make the plot.
+
+   .. compound::
+   
+       .. _fig.flowchart-v2-NXdata-signal:
+   
+       .. figure:: img/flowchart-v2-NXdata-signal.png
+           :alt: fig.flowchart-v2-NXdata-signal
+           :width: 90%
+   
+           Find plottable data: select the *signal* data
 
 
 .. _Find-Plottable-Data-v1:
