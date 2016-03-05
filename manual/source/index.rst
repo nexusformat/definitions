@@ -29,14 +29,13 @@ This manual built |today|.
 
 .. seealso:: 
 
-   This document is available in these formats:
+   This document is available in these formats online:
    
    :online HTML:
    	http://download.nexusformat.org/doc/html/index.html
 
-   ..  2015-05-29,prj: PDF available separately
-      :PDF:
-         :download:`nexus.pdf` (available via online HTML link above)
+   :PDF:
+      http://download.nexusformat.org/doc/NeXusManual.pdf
 
    A very brief overview is also available (separate from the manual).
    
