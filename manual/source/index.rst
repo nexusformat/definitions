@@ -37,7 +37,8 @@ This manual built |today|.
    :PDF:
       http://download.nexusformat.org/doc/NeXusManual.pdf
 
-   A very brief overview is also available (separate from the manual).
+   A very brief overview (title: *NeXus for the Impatient*) 
+   is also available (separate from the manual).
    
    :HTML:
       http://download.nexusformat.org/doc/impatient
