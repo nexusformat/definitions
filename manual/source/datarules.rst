@@ -635,8 +635,7 @@ plottable data is as follows:
 
 #. Search for the 
    one-dimensional NeXus fields with attribute ``primary=1``.
-
-#. These are the dimension scales to label 
+   These are the dimension scales to label 
    the axes of each dimension of the data.
 
 #. Link each dimension scale
@@ -656,11 +655,11 @@ plottable data is as follows:
 
 #. If necessary, close this
    ``NXdata``
-   group, search the next ``NXdata`` group, repeating steps 3 to 6.
+   group, search the next ``NXdata`` group, repeating steps 3 to 5.
 
 #. If necessary, close the
    ``NXentry``
-   group, search the next ``NXentry`` group, repeating steps 2 to 7.
+   group, search the next ``NXentry`` group, repeating steps 2 to 6.
 
 
 .. index:: dimension
