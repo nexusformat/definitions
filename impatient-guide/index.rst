@@ -65,14 +65,14 @@ NeXus Concepts
 NeXus uses `HDF-5 <http://www.hdfgroup.org/HDF5/>`_ 
 [#HDF5]_
 files as container files. HDF-5 is a popular scientific
-data format which has been developed by the National Center for Supercomputing
-Applications (NCSA), University of Illinois Urbana-Champaign  and is currently
-being maintained by the HDF Group. There is built-in support for HDF-5 in many scientific
+data format developed by the National Center for Supercomputing
+Applications (NCSA), University of Illinois Urbana-Champaign  and currently
+maintained by *The HDF Group*. There is built-in support for HDF-5 in many scientific
 packages. Other users of HDF-5 include NASA, Boeing, meteorological offices around
 the world and many more. NeXus is thus able to inherit many desirable properties
 for free from HDF-5, such as: extendable, self-describing, platform independent,
 public domain, and efficient. For historical reasons, NeXus supports two further
-container file formats: HDF-4 and XML. The use of these formats is now deprecated.
+container file formats: HDF-4 and XML. The NeXus use of these formats is now deprecated.
 
 To understand NeXus, it is important to know about some of the objects
 encountered in an HDF-5 file:
@@ -92,7 +92,7 @@ links
    like symbolic links in a UNIX file system.
 
 HDF-5 does not, however, know anything about the application domain of neutron, muon or
-x-ray scattering. In order to remedy this, NeXus adds the following:
+X-ray scattering. In order to remedy this, NeXus adds the following:
 
 A group hierarchy in the HDF-5 file
   A group hierarchy in the files helps with a couple of issues. If a full beamline
@@ -132,7 +132,7 @@ NeXus defines two main group hierarchy types:
 #. :ref:`processed_data_hierarchy`
 
 There are additional hierarchy variations for multi-method instruments and for a
-general purpose dump structure. Documentation for these hierarchy types and be
+general purpose dump structure. Documentation for these hierarchy types can be
 found in the NeXus manual.
 
 
@@ -147,17 +147,17 @@ This hierarchy is applicable to raw data files as written by some facility instr
    :linenos:
 
    entry:NXentry
-       @default = data
-       data:NXdata
-   		@signal = data
-   	   data --> /entry/instrument/detector/data
-       instrument:NXinstrument
-   	   source:NXsource
-   	   ....
-   	   detector:NXdetector
-   	       data:NX_INT32[512,512]
-       sample:NXsample
-       control:NXmonitor
+      @default = data
+      data:NXdata
+         @signal = data
+         data --> /entry/instrument/detector/data
+      instrument:NXinstrument
+         source:NXsource
+         ....
+         detector:NXdetector
+            data:NX_INT32[512,512]
+      sample:NXsample
+      control:NXmonitor
 
 
 
@@ -430,13 +430,15 @@ Any program whose aim is to identify plottable data should use the following pro
 #. Start at the top level of the NeXus data file
    (the *root* of the HDF5 hierarchy).
 
-#. Pick the default ``NXentry`` group, as designated by the `default`` attribute.
+#. Pick the default ``NXentry`` group, as designated by the ``default`` attribute.
 
-#. Pick the default ``NXdata`` group, as designated by the `default`` attribute.
+#. Pick the default ``NXdata`` group, as designated by the ``default`` attribute.
 
-#. Pick the default plottable field (the *signal* data).
+#. Pick the default plottable field, as designated by the ``signal`` attribute.
    
-   #. Pick the fields with the dimension scales (the *axes*).
+   #. Pick the fields with the dimension scales (the ``axes`` attribute).
+   
+   #. Associate dimension scales with plottable data dimensions (the ``AXISNAME_indices`` attributes).
       
    #. Associate the dimension scales with each dimension of the plottable data.
 
