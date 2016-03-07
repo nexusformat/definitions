@@ -20,15 +20,15 @@ The target directory is assumed to be the current directory.
 
 '''
 
-# TODO: make target resources dependent on changes in relevant source resources 
-# for now, re-run this code to bring in any changed files, forces a complete rebuild
+# Re-run this code to bring in any changed files (for incremental build)
+# Be sure to properly specify the source and target directories.
 
 from __future__ import print_function
-import os, sys, re
+import os, sys
 import local_utilities
-import shutil
 
 
+MTIME_TOLERANCE = 0.001   # ignore mtime differences <= 1 ms
 ROOT_DIR_EXPECTED_RESOURCES = {
     'files': '''COPYING LGPL.txt Makefile NXDL_VERSION
                 nxdl.xsd nxdlTypes.xsd README.md
@@ -44,6 +44,41 @@ REPLICATED_RESOURCES = '''
 '''.split()
 
 
+def mtime_size(filename):
+    '''get the modification time and size of the given item'''
+    file_status = os.stat(filename)
+    return file_status.st_mtime, file_status.st_size
+
+
+def standardize_name(path, resource_name):
+    '''always use the absolute path to the filesystem resource'''
+    return os.path.abspath(os.path.join(path, resource_name))
+
+
+def identical(source, target):
+    '''compare if the resource is the same on both paths'''
+    if not os.path.exists(target):
+        return False
+    s_mtime, s_size = mtime_size(source)
+    t_mtime, t_size = mtime_size(target)
+    return abs(s_mtime - t_mtime) <= MTIME_TOLERANCE and s_size == t_size
+
+
+def get_source_items(resources, source_path):
+    '''walk the source_path directories accumulating files to be checked'''
+    file_list = []
+    path_list = []
+    for path in sorted(resources):
+        source = standardize_name(source_path, path)
+        if os.path.isfile(source):
+            file_list.append(source)
+        else:
+            for root, dirs, files in os.walk(source):
+                path_list.append(root)
+                file_list = file_list + [os.path.join(root, _) for _ in files]
+    return path_list, file_list
+
+
 def is_definitions_directory(basedir):
     '''test if ``basedir`` is a NeXus definitions directory'''
     # look for the expected files and subdirectories in the root directory
@@ -54,7 +89,7 @@ def is_definitions_directory(basedir):
     return True
 
 
-def qualify_inputs(source_dir, target_dir):
+def qualify_inputs(source_dir, target_path):
     '''raise error if this program cannot continue, based on the inputs'''
     if not os.path.exists(source_dir):
         raise RuntimeError('Cannot find ' + source_dir)
@@ -66,7 +101,7 @@ def qualify_inputs(source_dir, target_dir):
         msg = 'Not a NeXus definitions root directory ' + source_dir
         raise RuntimeError(msg)
     
-    if source_dir == target_dir:
+    if source_dir == target_path:
         msg = 'Source and target directories cannot be the same'
         raise RuntimeError(msg)
 
@@ -87,6 +122,37 @@ def command_args():
     return parser.parse_args()
 
 
+def update(source_path, target_path):
+    '''
+    duplicate directory from source_path to target_path
+    
+    :param source_path str: source directory (NeXus definitions dir)
+    :param target_path str: target directory is specified for build product
+    '''
+    # TODO: what about file items in target_path that are not in source_path?
+    source_path = os.path.abspath(source_path)
+    target_path = os.path.abspath(target_path)
+    qualify_inputs(source_path, target_path)
+    
+    paths, files = get_source_items(REPLICATED_RESOURCES, source_path)
+    local_utilities.printf('source has  %d directories   and   %d files\n', len(paths), len(files))
+    
+    # create all the directories / subdirectories
+    for source in sorted(paths):
+        relative_name = source[len(source_path):].lstrip(os.sep)
+        target = standardize_name(target_path, relative_name)
+        if not os.path.exists(target):
+            local_utilities.printf('create directory %s\n', target)
+            os.mkdir(target, os.stat(source_path).st_mode)
+    # check if the files need to be updated
+    for source in sorted(files):
+        relative_name = source[len(source_path):].lstrip(os.sep)
+        target = standardize_name(target_path, relative_name)
+        if not identical(source, target):
+            local_utilities.printf('update file %s\n', target)
+            local_utilities.replicate(source, target)
+
+
 def main():
     '''
     standard command-line processing
@@ -95,13 +161,17 @@ def main():
     target directory is specified (or defaults to present working directory)
     '''
     cli = command_args()
-    defs_base_directory = os.path.abspath(cli.defs_dir)
-    target_dir = cli.build_dir or os.path.abspath(os.getcwd())
-    qualify_inputs(defs_base_directory, target_dir)
+    source_path = os.path.abspath(cli.defs_dir)
+    target_path = cli.build_dir or os.path.abspath(os.getcwd())
+    update(source_path, target_path)
     
+
+
+def theOldWay(source_path, target_path):
+    qualify_inputs(source_path, target_path)
     for resource_name in sorted(REPLICATED_RESOURCES):
-        source = os.path.join(defs_base_directory, resource_name)
-        target = os.path.join(target_dir, resource_name)
+        source = os.path.join(source_path, resource_name)
+        target = os.path.join(target_path, resource_name)
         local_utilities.printf('cp %s %s\n', source, target)
         local_utilities.replicate(source, target)
 
@@ -111,9 +181,6 @@ def __developer_build_setup__():
     import shutil
     # sys.argv.append('-h')
     os.chdir('../')
-    if os.path.exists('build'):
-        shutil.rmtree('build')
-    os.mkdir('build')
     os.chdir('build')
     sys.argv.append('..')
 

@@ -26,8 +26,8 @@ impatient-guide ::
 clean:
 	$(MAKE) clean -C $(SUBDIRS)
 
-builddir :: rmbuilddir
-	mkdir build
+builddir :: 
+	mkdir -p build
 	python utils/build_preparation.py . build
 
 makebuilddir :: builddir
