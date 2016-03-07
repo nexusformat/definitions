@@ -5,7 +5,7 @@
 
 # ref: http://www/gnu.org/software/make/manual/make.html
 
-SUBDIRS = manual
+SUBDIRS = manual impatient-guide
 
 .PHONY: subdirs $(SUBDIRS) builddir pdfdoc
 
@@ -15,6 +15,9 @@ subdirs: $(SUBDIRS)
 #	$(MAKE) -C $@
 
 manual ::
+	$(MAKE) html -C $@
+
+impatient-guide ::
 	$(MAKE) html -C $@
 
 #pdfdoc ::
