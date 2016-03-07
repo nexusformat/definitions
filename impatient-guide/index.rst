@@ -7,18 +7,16 @@
 NeXus for the Impatient
 #######################
 
-Why NeXus? 
-===========
+Why NeXus?
+==========
 
 .. seealso:: 
 
-   This document is available in different formats:
-   `HTML (online) <http://download.nexusformat.org/doc/impatient/>`_
-   or
-   :download:`PDF <http://download.nexusformat.org/doc/NXImpatient.pdf>`.
-   
-   ..
-      http://download.nexusformat.org/doc/impatient/
+   This document is available online in 
+   `HTML <http://download.nexusformat.org/doc/impatient>`_
+   and
+   `PDF <http://download.nexusformat.org/doc/NXImpatient.pdf>`_
+   formats.
 
 The NeXus data format [#NeXus]_ is a tool which has been designed to
 solve the problems of travelling scientists, 
@@ -62,22 +60,22 @@ flexible
 
 
 NeXus Concepts
-===============
+==============
 
 NeXus uses `HDF-5 <http://www.hdfgroup.org/HDF5/>`_ 
 [#HDF5]_
 files as container files. HDF-5 is a popular scientific
-data format which has been developed by the National Center for Supercomputing
-Applications (NCSA), University of Illinois Urbana-Champaign  and is currently
-being maintained by the HDF Group. There is built-in support for HDF-5 in many scientific
+data format developed by the National Center for Supercomputing
+Applications (NCSA), University of Illinois Urbana-Champaign  and currently
+maintained by *The HDF Group*. There is built-in support for HDF-5 in many scientific
 packages. Other users of HDF-5 include NASA, Boeing, meteorological offices around
 the world and many more. NeXus is thus able to inherit many desirable properties
 for free from HDF-5, such as: extendable, self-describing, platform independent,
 public domain, and efficient. For historical reasons, NeXus supports two further
-container file formats: HDF-4 and XML. The use of these formats is now deprecated.
+container file formats: HDF-4 and XML. The NeXus use of these formats is now deprecated.
 
-In order to understand NeXus it is important to know about some of the objects
-which live in an HDF-5 file:
+To understand NeXus, it is important to know about some of the objects
+encountered in an HDF-5 file:
 
 groups
    Allow structuring of information in a file. Groups work pretty much like
@@ -94,7 +92,7 @@ links
    like symbolic links in a UNIX file system.
 
 HDF-5 does not, however, know anything about the application domain of neutron, muon or
-x-ray scattering. In order to remedy this, NeXus adds the following:
+X-ray scattering. In order to remedy this, NeXus adds the following:
 
 A group hierarchy in the HDF-5 file
   A group hierarchy in the files helps with a couple of issues. If a full beamline
@@ -126,7 +124,7 @@ Tools
 
 
 The NeXus File Hierarchy
--------------------------
+------------------------
 
 NeXus defines two main group hierarchy types:
 
@@ -134,14 +132,14 @@ NeXus defines two main group hierarchy types:
 #. :ref:`processed_data_hierarchy`
 
 There are additional hierarchy variations for multi-method instruments and for a
-general purpose dump structure. Documentation for these hierarchy types and be
+general purpose dump structure. Documentation for these hierarchy types can be
 found in the NeXus manual.
 
 
 .. _raw_file_hierarchy:
 
 The NeXus Raw Data File Hierarchy
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This hierarchy is applicable to raw data files as written by some facility instrument:
 
@@ -149,16 +147,17 @@ This hierarchy is applicable to raw data files as written by some facility instr
    :linenos:
 
    entry:NXentry
-       data:NXdata
-   	   data --> /entry/instrument/detector/data
-       instrument:NXinstrument
-   	   source:NXsource
-   	   ....
-   	   detector:NXdetector
-   	       data:NX_INT32[512,512]
-   		   @signal = 1
-       sample:NXsample
-       control:NXmonitor
+      @default = data
+      data:NXdata
+         @signal = data
+         data --> /entry/instrument/detector/data
+      instrument:NXinstrument
+         source:NXsource
+         ....
+         detector:NXdetector
+            data:NX_INT32[512,512]
+      sample:NXsample
+      control:NXmonitor
 
 
 
@@ -194,7 +193,7 @@ The following two groups are required for all NeXus data files:
     Therefore the data is linked here from the specific 
     detector entry recording the data which is described below. 
     Axis information is usually included here as well, the 
-    details of which are covered in the full manual.
+    details of which are covered in the NeXus manual.
 
 The following additional groups are present in many NeXus data files:
 
@@ -228,16 +227,20 @@ The following additional groups are present in many NeXus data files:
        This describes a dataset with a given numeric type and dimensions.  In this
        example, the detector data is a 512 x 512 array of 32-bit integers.
    ``@name=value``
-       This describes an attribute name and value.  The attribute signal=1 indicates
-       to NeXus that this is the dependent data to be plotted.
+       This describes an attribute name and value.  
+       Both groups and fields can have attributes.
+       The attribute ``signal=data`` indicates
+       to NeXus that the field in this group named ``data`` is the dependent data to be plotted.
    ``name -->  path``
        Describes a link from one location to another.  This allows us to gather
        the most important data together in an ``NXdata`` group while leaving
        detailed metadata in the individual component definitions.
+       NeXus uses HDF5 hard links for pointing to other objects in the same file
+       and external links when pointing to objects in other HDF5 files.
 
 
 What goes into a NeXus File?
-------------------------------
+----------------------------
 
 Before starting to describe how to decide what goes into a NeXus file,
 some more details about NeXus groups and base classes need to be
@@ -319,7 +322,7 @@ and begin with a letter.
 .. _processed_data_hierarchy:
 
 The NeXus Processed Data Hierarchy
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 This is a simplified hierarchy style applicable to the results of data
 reduction or data analysis applications. Such results can consist of
@@ -330,22 +333,27 @@ for storing such data:
    :linenos:
 
    entry:NXentry
-       reduction:NXprocess
-   	   program_name = "pyDataProc2010"
-   	   version = "1.0a"
-   	   input:NXparameter
-   	       filename = "sn2013287.nxs"
-       sample:NXsample
-       data:NXdata
-   	   data
-   	       @signal = 1
+      @entry = data
+      reduction:NXprocess
+         program_name = "pyDataProc2010"
+         version = "1.0a"
+         input:NXparameter
+            filename = "sn2013287.nxs"
+      sample:NXsample
+      data:NXdata
+         @signal = data
+         data
 
 
-Here the NXentry contains:
+Here the ``NXentry`` contains:
 
+``@entry = data``
+    Attribute on the ``NXentry`` group pointing to the default ``NXdata``
+    group to be plotted.
 ``data:NXdata``
     Contains the result of the data reduction directly, together with
-    the axes required to use the data.
+    the axes required to use the data.  The attribute ``@signal = data``
+    indicates that the field named ``data`` is the default plottable data.
 ``sample:NXsample``
     Contains the sample information.  This may be a link to the
     sample information within a measurement entry elsewhere in the file.
@@ -364,7 +372,7 @@ in order to describe the instrument if this matters at this stage.
 
 
 Scans in NeXus
----------------
+--------------
 
 Scanning means to vary some variable in a certain, defined way and collect
 data as the variable progresses. Scans are a versatile experimental technique and are
@@ -388,43 +396,61 @@ sample is rotated and data is collected in an area detector:
    :linenos:
 
    entry:NXentry
-       instrument:NXinstrument
-   	   detector:NXdetector
-   	       data:[NP,xsize,ysize]
-   		   @signal = 1
-       sample:NXsample
-   	   rotation_angle[NP]
-   	       @axis = 1
-       control:NXmonitor
-   	   data[NP]
-       data:NXdata
-   	   data --> /entry/instrument/detector/data
-   	   rotation_angle --> /entry/sample/rotation_angle
+      @entry = data
+      instrument:NXinstrument
+         detector:NXdetector
+            data:[NP,xsize,ysize]
+      sample:NXsample
+         rotation_angle[NP]
+      control:NXmonitor
+         data[NP]
+      data:NXdata
+         @signal = 1
+         @axes = rotation_angle . .
+         @rotation_angle_indices = 0
+         data --> /entry/instrument/detector/data
+         rotation_angle --> /entry/sample/rotation_angle
+
+The default data to be plotted has more dimensions and requires
+additional description.  The attribute ``@axes = rotation_angle . .``
+implies that the "signal data" (``data``) has three dimensions.
+The first dimension is provided by the ``rotation_angle`` field, 
+while the ``.`` for the other two dimensions indicates they each
+should be plotted as index number (starting from zero).
+The attribute ``@rotation_angle_indices = 0`` declares that ``rotation_angle``
+is used as the first dimension of ``data``.  The ``AXISNAME_indices`` 
+attribute becomes more useful when both the "signal data" and the dimension
+scales are multi-dimensional.
 
 Finding the plottable data
 --------------------------
 
 Any program whose aim is to identify plottable data should use the following procedure:
 
-#. Open the first top level NeXus group with class NXentry.
-#. Open the first NeXus group with class NXdata.
-#. Loop through NeXus fields in this group searching for the item with 
-   attribute ``signal=1`` indicating this field has the plottable data.
-#. Check to see if this field has an attribute called axes. If so, the 
-   attribute value contains a colon (or comma) delimited list (in the 
-   C-language order of the data array) with the names of the dimension 
-   scales associated with the plottable data. 
-   And then you can skip the next two steps.
-#. If the axes attribute is not defined, search for the 
-   one-dimensional NeXus fields with attribute ``primary=1``.
-#. These are the dimension scales to label the axes of each dimension of the data.
-#. Link each dimension scale to the respective data dimension by the axis 
-   attribute (``axis=1``, ``axis=2``, ... up to the rank of the data).
-#. If necessary, close the NXdata group, open the next one and repeat steps 3 to 6.
-#. If necessary, close the NXentry group, open the next one and repeat steps 2 to 7.
+#. Start at the top level of the NeXus data file
+   (the *root* of the HDF5 hierarchy).
+
+#. Pick the default ``NXentry`` group, as designated by the ``default`` attribute.
+
+#. Pick the default ``NXdata`` group, as designated by the ``default`` attribute.
+
+#. Pick the default plottable field, as designated by the ``signal`` attribute.
+   
+   #. Pick the fields with the dimension scales (the ``axes`` attribute).
+   
+   #. Associate dimension scales with plottable data dimensions (the ``AXISNAME_indices`` attributes).
+      
+   #. Associate the dimension scales with each dimension of the plottable data.
+
+#. Plot the *signal* data, given *axes* and *AXISNAME_indices*.
+
+For details of this process, consult this 
+`section <http://download.nexusformat.org/doc/html/datarules.html#version-3>`_ 
+of the NeXus manual. [#v3]_
+
 
 NeXus Benefits
-================
+==============
 
 When trying to establish a data standard, we encounter a few challenges,
 some of which can slow effort:
@@ -470,7 +496,7 @@ Application definitions
 
 
 Reading NeXus Files
-====================
+===================
 
 The simplest way to read and plot a NeXus file is through the Python *PyTree* API:
 
@@ -594,11 +620,26 @@ Reading the file using the HDF-5 C API is a little more involved:
 
    }
 
+.. note:: To keep these examples short, we already learned the HDF addresses 
+   of the "signal data" (such as ``/entry1/data1/counts``)
+   and its associated dimension scales (such as ``/entry1/data1/two_theta``)
+   for each example data file.  
+   The examples above use those addresses directly, rather than using the 
+   described method to find the plottable data.  
+   
+   If you are writing specific
+   code to process a set of NeXus files where you already know the HDF5 addresses
+   of the items you need, feel welcome to use that knowledge, as you have seen above.
+   
+   If you are writing code to handle any NeXus data file, then you are advised
+   to implement the methods to find the plottable data,
+   as described in the manual.  [#v3]_
+
 More examples of reading NeXus data files can be found in 
 the *Examples* chapter of the NeXus Reference Documentation. [#RefDoc]_
 
 Writing NeXus Files
-====================
+===================
 
 You can obviously skip this section if you only wish to read NeXus files. 
 
@@ -618,35 +659,37 @@ two_theta:
 
    #include "napi.h"
 
-    int main()
-    {
-       NXhandle fileID;
-       NXopen ("NXfile.nxs", NXACC_CREATE, &fileID);
-  	 NXmakegroup (fileID, "Scan", "NXentry");
-  	 NXopengroup (fileID, "Scan", "NXentry");
-  	   NXmakegroup (fileID, "data", "NXdata");
-  	   NXopengroup (fileID, "data", "NXdata");
-  	   /* somehow, we already have arrays tth and counts, each length n*/
-  	     NXmakedata (fileID, "two_theta", NX_FLOAT32, 1, &n);
-  	     NXopendata (fileID, "two_theta");
-  	       NXputdata (fileID, tth);
-  	       NXputattr (fileID, "units", "degrees", 7, NX_CHAR);
-  	     NXclosedata (fileID);  /* two_theta */
-  	     NXmakedata (fileID, "counts", NX_FLOAT32, 1, &n);
-  	     NXopendata (fileID, "counts");
-  	       NXputdata (fileID, counts);
-  	     NXclosedata (fileID);  /* counts */
-  	   NXclosegroup (fileID);  /* data */
-  	 NXclosegroup (fileID);  /* Scan */
-       NXclose (&fileID);
-       return;
+   int writer(float *tth, float *counts, int n)
+   {
+      /* we receive two arrays: tth and counts, each length n*/
+      NXhandle fileID;
+      NXopen ("NXfile.nxs", NXACC_CREATE, &fileID);
+         NXmakegroup (fileID, "Scan", "NXentry");
+         NXopengroup (fileID, "Scan", "NXentry");
+            NXmakegroup (fileID, "data", "NXdata");
+            NXopengroup (fileID, "data", "NXdata");
+               NXputattr (fileID, "signal", "counts", 6, NX_CHAR);
+               NXputattr (fileID, "axes", "two_theta", 9, NX_CHAR);
+               NXmakedata (fileID, "two_theta", NX_FLOAT32, 1, &n);
+               NXopendata (fileID, "two_theta");
+                  NXputdata (fileID, tth);
+                  NXputattr (fileID, "units", "degrees", 7, NX_CHAR);
+               NXclosedata (fileID);  /* two_theta */
+               NXmakedata (fileID, "counts", NX_FLOAT32, 1, &n);
+               NXopendata (fileID, "counts");
+                  NXputdata (fileID, counts);
+               NXclosedata (fileID);  /* counts */
+            NXclosegroup (fileID);  /* data */
+         NXclosegroup (fileID);  /* Scan */
+      NXclose (&fileID);
+      return;
    }
 
 More examples of writing NeXus data files can be found in 
 the *Examples* chapter of the NeXus Reference Documentation. [#RefDoc]_
 
 More Information
-=================
+================
 
 Did we get you interested? Here is where you can get more information.
 Our main entry point is the NeXus WWW-site at http://www.nexusformat.org
@@ -663,7 +706,7 @@ to lend us a hand, you are more welcome to contact us via nexus-committee@nexusf
 
 
 Who is behind NeXus?
----------------------
+--------------------
 
 NeXus was developed from three independent proposals from Jonathan Tischler,
 APS, Przemek Klosowski, NIST and Mark Koennecke, ISIS (now PSI) by an
@@ -690,3 +733,6 @@ find on the NeXus WWW site.
 
 .. [#RefDoc] NeXus Reference Documentation:
    http://download.nexusformat.org/doc/html/ReferenceDocumentation.html
+
+.. [#v3] Finding the plottable data:
+   http://download.nexusformat.org/doc/html/datarules.html#version-3
