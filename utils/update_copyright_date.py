@@ -9,6 +9,7 @@ This is the bash command to find all matching lines::
 
   grep -iR copyright | grep -i "(c)" | grep -i nexus
 
+See copyright text at bottom of this file for example.
 '''
 
 from __future__ import print_function
@@ -19,6 +20,8 @@ from build_preparation import ROOT_DIR_EXPECTED_RESOURCES
 import datetime
 
 YEAR = datetime.datetime.now().year
+LEFT_SIDE_TEXT_MATCH = 'Copyright (C) '
+RIGHT_SIDE_TEXT_MATCH = ' NeXus International Advisory Committee (NIAC)'
 
 
 def update(filename):
@@ -32,26 +35,41 @@ def update(filename):
         
     if not os.path.exists(filename):
         return
-    changed = False
-    key_text = 'Copyright (C) '
+    changes = []
     buf = open(filename).readlines()
     for number, line in enumerate(buf):
-        pos = position(line, key_text)
+        pos = position(line, LEFT_SIDE_TEXT_MATCH)
         if pos is None:
-            continue
-        print(line)     # TODO: this is the line for the replacement
-        #  Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
-        pos += len(key_text)
-        left_side = line[:pos]
+            continue    # no match
+
+        pos += len(LEFT_SIDE_TEXT_MATCH)
+        text_l = line[:pos]
 
         text = line[pos:]
-        pos = text.find(' NeXus International Advisory Committee (NIAC)')
-        right_side = text[pos:]
-        text = text[:pos].split('-')
-        print(text, len(text))
+        pos = text.find(RIGHT_SIDE_TEXT_MATCH)
+        text_r = text[pos:]
+
+        try:
+            years = map(int, text[:pos].split('-'))
+            if len(years) in (1, 2):
+                if len(years) == 1:
+                    years.append(YEAR)
+                elif len(years) == 2:
+                    years[1] = YEAR
+                line_new = text_l + '-'.join(map(str, years)) + text_r
+                changes.append(list((number, line_new)))
+        except Exception, _exc:
+            print(number, filename, str(_exc))
+    for number, line in changes:
+        buf[number] = line
+    if len(changes) > 0:
+        print('Update: ', filename)
+        fp = open(filename, 'w')
+        fp.writelines(buf)
+        fp.close()
 
 
-def get_source_items(path):
+def find_source_files(path):
     '''walk the source_path directories accumulating files to be checked'''
     file_list = []
     for root, dirs, files in os.walk(path):
@@ -74,7 +92,13 @@ def sift_file_list(file_list):
     for fn in file_list:
         _fn = os.path.split(fn)[-1]
         mime = mimetypes.guess_type(fn)[0]
-        if fn.find('/.git') >= 0 or fn.find('/.settings') >= 0 or fn.find('/kits') >= 0:
+        if fn.find('/.git') >= 0:
+            continue
+        if fn.find('/.settings') >= 0:
+            continue
+        if fn.find('/kits') >= 0:
+            continue
+        if fn.find('/build') >= 0:
             continue
         if os.path.splitext(fn)[-1] in ignore_extensions:
             continue
@@ -128,7 +152,7 @@ def main():
     root_dir = os.path.abspath(cli.defs_dir)
     qualify_inputs(root_dir)
     
-    file_list = sift_file_list(get_source_items(root_dir))
+    file_list = sift_file_list(find_source_files(root_dir))
     for fn in file_list:
         update(fn)
 
