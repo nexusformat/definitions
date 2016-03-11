@@ -12,8 +12,6 @@
      Modify <xsl:template match="nx:definition">...</xsl:template> 
      for each directory.
 
-Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
-
 line breaks are VERY TRICKY here, be careful how you edit!
 -->
 
