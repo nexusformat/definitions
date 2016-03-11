@@ -35,11 +35,20 @@ def update(filename):
     changed = False
     key_text = 'Copyright (C) '
     buf = open(filename).readlines()
-    for line in buf:
+    for number, line in enumerate(buf):
         pos = position(line, key_text)
         if pos is None:
             continue
         print(line)     # TODO: this is the line for the replacement
+        #  Copyright (C) 2008-2012 NeXus International Advisory Committee (NIAC)
+        pos += len(key_text)
+        left_side = line[:pos]
+
+        text = line[pos:]
+        pos = text.find(' NeXus International Advisory Committee (NIAC)')
+        right_side = text[pos:]
+        text = text[:pos].split('-')
+        print(text, len(text))
 
 
 def get_source_items(path):
