@@ -165,7 +165,7 @@ def __developer_build_setup__():
 
 
 if __name__ == '__main__':
-    __developer_build_setup__()
+    #__developer_build_setup__()
     main()
 
 
