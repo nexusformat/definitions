@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'NeXus: Manual'
-copyright = u'1996-2015, http://nexusformat.org'
+copyright = u'1996-2016, http://nexusformat.org'
 # Copyright (C) 1996-2016 NeXus International Advisory Committee (NIAC)
 
 # The version info for the project you're documenting, acts as replacement for
