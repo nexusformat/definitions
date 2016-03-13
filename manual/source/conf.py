@@ -47,7 +47,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'NeXus: Manual'
-copyright = u'2015, http://nexusformat.org'
+copyright = u'1996-2016, http://nexusformat.org'
+# Copyright (C) 1996-2016 NeXus International Advisory Committee (NIAC)
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -245,7 +246,7 @@ man_pages = [
 epub_title = u'NeXus: User Guide and Reference Documentation'
 epub_author = u'http://nexusformat.org'
 epub_publisher = u'http://nexusformat.org'
-epub_copyright = u'2015, http://nexusformat.org'
+epub_copyright = unicode(copyright)
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.

@@ -64,7 +64,7 @@ def replicate_tree(source, target):
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2016 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
