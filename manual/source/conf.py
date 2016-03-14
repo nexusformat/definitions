@@ -11,7 +11,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys, os, datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -47,8 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'NeXus: Manual'
-copyright = u'1996-2016, http://nexusformat.org'
-# Copyright (C) 1996-2016 NeXus International Advisory Committee (NIAC)
+copyright = u'1996-%d, http://nexusformat.org' % datetime.datetime.now().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
