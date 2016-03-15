@@ -23,14 +23,22 @@ First, the scientist or user of the data must be certain that the information
 in a file can be located reliably. The instrument staff or software developer must be
 confident the information they have written to the file has been located and formatted
 properly. At some time, the content of the NeXus file may contribute to a larger body of
-work such as a metadata catalog for a scientific instrument, a laboratory, or even an entire user facility.
+work such as a metadata catalog for a scientific instrument, 
+a laboratory, or even an entire user facility.
+
+.. index::
+   nxvalidate
+
+.. _nxvalidate:
 
 nxvalidate
 ##########
 
-The new nxvalidate utility is freshly available for testing from https://github.com/nexusformat/cnxvalidate
-For the moment most of the information will be fresh in the above GitHub location. 
+The :ref:`cnxvalidate <cnxvalidate>` utility [#]_, new in 2016, is available for testing. 
+For the moment, the most recent documentation is served from the GitHub web site. 
 
-This utility only works on HDF5 files and is aimed to be faster, simpler, more portable and robust than 
+This utility only works on HDF5 files and is aimed 
+to be faster, simpler, more portable and robust than 
 previous programmes for NeXus file validation.
 
+.. [#] :ref:`cnxvalidate <cnxvalidate>`: from https://github.com/nexusformat/cnxvalidate

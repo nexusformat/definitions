@@ -98,19 +98,31 @@ links to further information, as available.
     provided with the source code.
 
 .. index::
-        validation
-	file; validate
-	nxvalidate (utility)
+   validation
+   file; validate
+   nxvalidate (utility)
+   cnxvalidate
+   see: cnxvalidate; nxvalidate (utility)
+
+.. _cnxvalidate:
 
 **nxvalidate**
-    From the source code documentation: 
-    
-    	"This is the first version of nxvalidate written in C. Its dependencies are libxml2 and the HDF5 libraries, version 1.8.9 or better. Its purpose is to validate HDF5 files against NeXus application definitions."
-    
-    Note: this tool is lives in its own GitHub repository **cnxvalidate**.
+   The **nxvalidate** code has been re-written entirely in C,
+   to rely on the NXDL class files (base classes and application definitions).
+   The new code is called **cnxvalidate**.
+
+   From the :ref:`nxvalidate` source code documentation: 
+   
+      "This is the first version of **nxvalidate** written in C. 
+      Its dependencies are libxml2 and the HDF5 libraries, version 1.8.9 or better. 
+      Its purpose is to validate HDF5 files against NeXus application definitions."
+   
+   Note: this tool is lives in its own GitHub repository: [#]_ **cnxvalidate**.
+   
+   .. [#] **cnxvalidate**: https://github.com/nexusformat/cnxvalidate
 
 .. index:: 
-        plotting
+   plotting
 	NXplot (utility)
 
 **NXplot**
@@ -121,8 +133,8 @@ links to further information, as available.
 .. _Utilities-DataAnalysis:
 
 .. index::
-        single: software
-	single: data analysis software
+   single: software
+   single: data analysis software
 
 Data Analysis
 #############
