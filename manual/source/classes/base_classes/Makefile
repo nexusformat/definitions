@@ -40,6 +40,9 @@ all :: $(RSTs) $(TARGET_NXDLs)
 %.nxdl.xml : $(SRCDIR)/%.$(NXDL_SUFFIX)  Makefile
 	cp $(SRCDIR)/$@   ./$@
 
+index.rst: $(ROOTDIR)/utils/nxdl_summary.py $(SRCDIR)/*.nxdl.xml
+	python $(ROOTDIR)/utils/nxdl_summary.py base_classes
+
 %.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
 	python $(NXDL2RST) $< > $@
 
