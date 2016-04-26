@@ -46,6 +46,11 @@ that are used to construct a data file.
 
 
 def getSummary(nxdl_file):
+    '''
+    get the summary line from each NXDL definition doc
+    
+    That's the first physical line of the doc string.
+    '''
     tree = lxml.etree.parse(nxdl_file)
     root = tree.getroot()
     nodes = root.xpath('nx:doc', namespaces=NS)
@@ -106,6 +111,5 @@ def main(section):
 
 
 if __name__ == '__main__':
-    sys.argv.append('base_classes')
     cli = command_args()
     main(cli.section)
