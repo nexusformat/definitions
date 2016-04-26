@@ -164,16 +164,6 @@ def main():
     source_path = os.path.abspath(cli.defs_dir)
     target_path = cli.build_dir or os.path.abspath(os.getcwd())
     update(source_path, target_path)
-    
-
-
-def theOldWay(source_path, target_path):
-    qualify_inputs(source_path, target_path)
-    for resource_name in sorted(REPLICATED_RESOURCES):
-        source = os.path.join(source_path, resource_name)
-        target = os.path.join(target_path, resource_name)
-        local_utilities.printf('cp %s %s\n', source, target)
-        local_utilities.replicate(source, target)
 
 
 def __developer_build_setup__():
