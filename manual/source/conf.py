@@ -192,8 +192,8 @@ latex_font_size = '10pt'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'nexus.tex', u'NeXus: a common data format for neutron, x-ray, and muon science',
-   u'http://nexusformat.org', 'manual'),
+  ('index', 'nexus.tex', u'NeXus: A Common Data Format for Neutron, X-ray, and Muon Science',
+   'NeXus International Advisory Committee\\\\\hfill{}nexus@nexusformat.org\\\\\hfill{}http://nexusformat.org', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -227,7 +227,6 @@ latex_preamble = '''
 
 # If false, no module index is generated.
 #latex_domain_indices = True
-
 
 # -- Options for manual page output --------------------------------------------
 
