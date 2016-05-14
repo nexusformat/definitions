@@ -41,7 +41,7 @@ all :: index.rst $(RSTs) $(TARGET_NXDLs)
 %.nxdl.xml : $(SRCDIR)/%.$(NXDL_SUFFIX)  Makefile
 	cp $(SRCDIR)/$@   ./$@
 
-index.rst:: 
+index.rst :: 
 	echo "Adding summaries to base_classes/index.rst"
 	python $(NXDLSUMMARY) base_classes
 

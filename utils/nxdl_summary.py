@@ -37,10 +37,51 @@ Consider the base classes as a set of *components*
 that are used to construct a data file.
     ''',
 
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
     'applications': '''
+.. index::
+     ! see: class definitions; application definition
+     ! application definition
+
+.. _application.definitions:
+
+Application Definitions
+#########################
+
+A description of each NeXus application definition is given.
+NeXus application definitions define the *minimum*
+set of terms that
+*must* be used in an instance of that class.
+Application definitions also may define terms that
+are optional in the NeXus data file.  The definition, in this case,
+reserves the exact term by declaring its spelling and description.
+Consider an application definitions as a *contract*
+between a data provider (such as the beam line control system) and a 
+data consumer (such as a data analysis program for a scientific technique)
+that describes the information is certain to be available in a data file.
     ''',
+
+    # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     
     'contributed_definitions': '''
+.. index::
+     ! see: class definitions; contributed definition
+     ! contributed definition
+
+.. _contributed.definitions:
+
+Contributed Definitions
+#########################
+
+A description of each NeXus contributed definition is given.
+NXDL files in the NeXus contributed definitions include propositions from
+the community for NeXus base classes or application definitions, as well
+as other NXDL files for long-term archival by NeXus.  Consider the contributed
+definitions as either in *incubation* or a special
+case not for general use.  The :ref:`NIAC` is charged to review any new contributed 
+definitions and provide feedback to the authors before ratification
+and acceptance as either a base class or application definition.
     ''',
 }
 
