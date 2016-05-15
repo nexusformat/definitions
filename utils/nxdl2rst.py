@@ -200,10 +200,15 @@ def printFullTree(ns, parent, name, indent):
         name = node.get('name')
         index_name = re.sub( r'_', ' ', name )
         dims = analyzeDimensions(ns, node)
+        minOccurs = node.get('minOccurs', None)
+        if minOccurs is not None and minOccurs in ('0',):
+            optional_text = '(optional) '
+        else:
+            optional_text = ''
         print( '%s.. index:: %s (field)\n' %
                ( indent, index_name ) )
-        print( '%s**%s%s**: %s%s\n' % (
-            indent, name, dims, fmtTyp(node), fmtUnits(node) ) )
+        print( '%s**%s%s**: %s%s%s\n' % (
+            indent, name, dims, optional_text, fmtTyp(node), fmtUnits(node) ) )
 
         printIfDeprecated( ns, node, indent+INDENTATION_UNIT )
         printDoc(indent+INDENTATION_UNIT, ns, node)
@@ -218,11 +223,16 @@ def printFullTree(ns, parent, name, indent):
     for node in parent.xpath('nx:group', namespaces=ns):
         name = node.get('name', '')
         typ = node.get('type', 'untyped (this is an error; please report)')
+        minOccurs = node.get('minOccurs', None)
+        if minOccurs is not None and minOccurs in ('0',):
+            optional_text = '(optional) '
+        else:
+            optional_text = ''
         if typ.startswith('NX'):
             if name is '':
                 name = '(%s)' % typ.lstrip('NX')
             typ = ':ref:`%s`' % typ
-        print( '%s**%s**: %s\n' % (indent, name, typ ) )
+        print( '%s**%s**: %s%s\n' % (indent, name, optional_text, typ ) )
 
         printIfDeprecated(ns, node, indent+INDENTATION_UNIT)
         printDoc(indent+INDENTATION_UNIT, ns, node)
