@@ -196,13 +196,14 @@ def printFullTree(ns, parent, name, indent):
     :param str name: name of elements, such as NXentry/NXuser
     :param indent: to keep track of indentation level
     '''
+    global listing_category
 
     for node in parent.xpath('nx:field', namespaces=ns):
         name = node.get('name')
         index_name = re.sub( r'_', ' ', name )
         dims = analyzeDimensions(ns, node)
         minOccurs = node.get('minOccurs', None)
-        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application', 'contributed'):
+        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application definition', 'contributed definition'):
             optional_text = '(optional) '
         else:
             optional_text = ''
@@ -225,7 +226,7 @@ def printFullTree(ns, parent, name, indent):
         name = node.get('name', '')
         typ = node.get('type', 'untyped (this is an error; please report)')
         minOccurs = node.get('minOccurs', None)
-        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application', 'contributed'):
+        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application definition', 'contributed definition'):
             optional_text = '(optional) '
         else:
             optional_text = ''
