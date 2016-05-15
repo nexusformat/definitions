@@ -56,7 +56,7 @@ set of terms that
 Application definitions also may define terms that
 are optional in the NeXus data file.  The definition, in this case,
 reserves the exact term by declaring its spelling and description.
-Consider an application definitions as a *contract*
+Consider an application definition as a *contract*
 between a data provider (such as the beam line control system) and a 
 data consumer (such as a data analysis program for a scientific technique)
 that describes the information is certain to be available in a data file.
