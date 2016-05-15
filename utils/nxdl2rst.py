@@ -19,6 +19,7 @@ from local_utilities import printf, replicate
 
 
 INDENTATION_UNIT = '  '
+listing_category = None
 
 
 def fmtTyp( node ):
@@ -201,7 +202,7 @@ def printFullTree(ns, parent, name, indent):
         index_name = re.sub( r'_', ' ', name )
         dims = analyzeDimensions(ns, node)
         minOccurs = node.get('minOccurs', None)
-        if minOccurs is not None and minOccurs in ('0',):
+        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application', 'contributed'):
             optional_text = '(optional) '
         else:
             optional_text = ''
@@ -224,7 +225,7 @@ def printFullTree(ns, parent, name, indent):
         name = node.get('name', '')
         typ = node.get('type', 'untyped (this is an error; please report)')
         minOccurs = node.get('minOccurs', None)
-        if minOccurs is not None and minOccurs in ('0',):
+        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application', 'contributed'):
             optional_text = '(optional) '
         else:
             optional_text = ''
@@ -253,6 +254,7 @@ def print_rst_from_nxdl(nxdl_file):
     '''
     print restructured text from the named .nxdl.xml file
     '''
+    global listing_category
     # parse input file into tree
     tree = lxml.etree.parse(nxdl_file)
 
@@ -275,7 +277,7 @@ def print_rst_from_nxdl(nxdl_file):
     #subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
     subdir = root.attrib["category"]
     # TODO: check for consistency with root.get('category')
-    category_for_listing = {
+    listing_category = {
                  'base': 'base class',
                  'application': 'application definition',
                  'contributed': 'contributed definition',
@@ -286,10 +288,10 @@ def print_rst_from_nxdl(nxdl_file):
            (sys.argv[0], sys.argv[1]) )
     print('')
     print( '.. index::' )
-    print( '    ! %s (%s)' % (name,category_for_listing) )
-    print( '    ! %s (%s)' % (lexical_name,category_for_listing) )
+    print( '    ! %s (%s)' % (name,listing_category) )
+    print( '    ! %s (%s)' % (lexical_name,listing_category) )
     print( '    see: %s (%s); %s' %
-           (lexical_name,category_for_listing, name) )
+           (lexical_name,listing_category, name) )
     print('')
     print( '.. _%s:\n' % name )
     print( '='*len(title) )
@@ -306,7 +308,7 @@ def print_rst_from_nxdl(nxdl_file):
     print('')
     print( '**Status**:\n' )
     print( '  %s, extends %s, version %s' %
-           ( category_for_listing.strip(),
+           ( listing_category.strip(),
              extends,
              root.get('version').strip() ) )
 
@@ -348,7 +350,7 @@ def print_rst_from_nxdl(nxdl_file):
         out = [ (':ref:`%s`' % g) for g in groups ]
         txt = ', '.join(sorted(out))
         print( '  %s\n' % ( txt ) )
-        out = [ ('%s (base class); used in %s' % (g, category_for_listing)) for g in groups ]
+        out = [ ('%s (base class); used in %s' % (g, listing_category)) for g in groups ]
         txt = ', '.join(out)
         print( '.. index:: %s\n' % ( txt ) )
 
