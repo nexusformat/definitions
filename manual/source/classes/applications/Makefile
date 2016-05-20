@@ -22,6 +22,7 @@
 
 ROOTDIR = ../../../..
 NXDL2RST = $(ROOTDIR)/utils/nxdl2rst.py
+NXDLSUMMARY= $(ROOTDIR)/utils/nxdl_summary.py
 NXDL_SUFFIX = nxdl.xml
 
 SRCDIR = $(ROOTDIR)/applications
@@ -35,10 +36,14 @@ TARGET_NXDLs = $(patsubst $(SRCDIR)/%, ./%, $(SRCs) )
 
 .PHONY: all clean test
 
-all :: $(RSTs) $(TARGET_NXDLs)
+all :: index.rst $(RSTs) $(TARGET_NXDLs)
 
 %.nxdl.xml : $(SRCDIR)/%.$(NXDL_SUFFIX)  Makefile
 	cp $(SRCDIR)/$@   ./$@
+
+index.rst :: 
+	echo "Adding summaries to applications/index.rst"
+	python $(NXDLSUMMARY) applications
 
 %.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
 	python $(NXDL2RST) $< > $@
