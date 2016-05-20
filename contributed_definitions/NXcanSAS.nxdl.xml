@@ -62,9 +62,47 @@
 		   The minimum requirements for *reduced* small-angle scattering data.
 		   (:download:`full image &lt;canSAS/minimum.png&gt;`)
 
+		.. rubric::  Implementation of canSAS standard in NeXus
+		
+		This application definition is an implementation of the canSAS
+		standard for storing both one-dimensional and multi-dimensional data.
+		
+		The canSAS data format has a structure similar to NeXus, not identical.
+		To allow canSAS data to be expressed in NeXus, yet identifiable
+		by the canSAS standard, an additional group attribute ``canSAS_class``
+		was introduced.  Here is the mapping of some common groups.
+		
+		===============  ============  ==========================
+		group (*)        NX_class      canSAS_class
+		===============  ============  ==========================
+		sasentry         NXentry       SASentry
+		sasdata          NXdata        SASdata
+		sasinstrument    NXinstrument  SASinstrument
+		sasprocess       NXprocess     SASprocess
+		sastransmission  NXdata        SAStransmission_spectrum
+		sasdetector      NXdetector    SASdetector
+		sassource        NXsource      SASsource
+		sasnote          NXnote        SASnote
+		===============  ============  ==========================
+		
+		(*) The name of each group is a suggestion,
+		not a fixed requirement and is chosen as fits each data file.  
+		See the section on defining
+		:ref:`NXDL group and field names &lt;RegExpName&gt;`.
+
 	</doc>
 
   <group type="NXentry">
+	<attribute name="default">
+		<doc>
+			.. index:: plotting
+			
+			Declares which :ref:`NXdata` group 
+			contains the data to be shown by default.
+			It is needed to resolve ambiguity when more than one :ref:`NXdata` group exists. 
+			The value is the name of the default :ref:`NXdata` group.
+		</doc>
+	</attribute>
     <doc>
       .. index:: NXcanSAS (contributed definition); SASentry
       
@@ -180,14 +218,14 @@
         </doc>
       </attribute>
       
-      <attribute name="Q_indices">
+      <attribute name="Q_indices" type="NX_INT">
         <doc>
-          Array that describes which indices 
+          Integer or integer array that describes which indices 
           (of the :math:`I` data object) are used to 
           reference the ``Q`` data object. The items in this array 
           use zero-based indexing.  Such as::
           
-          @Q_indices=1,3,4
+              @Q_indices=1,3,4
           
           which indicates that ``Q`` requires three indices
           from the :math:`I` data object: one for time and
@@ -211,12 +249,12 @@
       </attribute>
       <attribute name="Mask_indices">
         <doc>
-          Array that describes which indices
+          Integer or integer array that describes which indices
           (of the :math:`I` data object) are used to 
           reference the ``Mask`` data object.  The items in this
           array use zero-based indexing.  Such as::
           
-          @Mask_indices=3,4
+              @Mask_indices=3,4
           
           which indicates that Q requires two indices
           from the :math:`I` data object for Q position.
@@ -416,9 +454,18 @@
         <field name="name">
           <doc>Identifies the name of this detector</doc>
         </field>
-        <field name="distance" type="NX_NUMBER" units="NX_LENGTH" minOccurs="0">
+        <field name="SDD" type="NX_NUMBER" units="NX_LENGTH" minOccurs="0">
           <doc>
-            **SDD**: Distance between sample and detector.
+            Distance between sample and detector.
+            
+            Note: In NXdetector, the ``distance`` field records the 
+            distance to the previous component ... most often the sample.
+            This use is the same as ``SDD`` for most SAS 
+            instruments but not all.  For example, Bonse-Hart cameras 
+            have one or more crystals between the sample and detector.
+              
+            We define here the field ``SDD`` to document without
+            ambiguity the distance between sample and detector.
           </doc>
         </field>
         <field name="slit_length" type="NX_NUMBER" units="NX_PER_LENGTH" minOccurs="0">

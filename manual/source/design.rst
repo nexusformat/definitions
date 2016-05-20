@@ -522,7 +522,9 @@ certain applications of NeXus, too. The tool which NeXus uses for the expression
 :ref:`Application Definition <application.definitions>`.
 A NeXus Application Definition describes which groups and data items have to be present in
 a file in order to properly describe an application of NeXus. For example for describing  a powder diffraction
-experiment. Typically an application definition will contain only a small subset of the many groups and fields
+experiment. 
+An application definition may also declare terms which are optional in the data file.
+Typically an application definition will contain only a small subset of the many groups and fields
 defined in NeXus. NeXus application definitions are also expressed in the NeXus Definition Language (NXDL). A tool exists
 which allows one to validate a NeXus file against a given application definition.
 

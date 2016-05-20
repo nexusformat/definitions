@@ -27,7 +27,7 @@ clean:
 	$(MAKE) clean -C $(SUBDIRS)
 
 builddir :: 
-	mkdir -p build
+	mkdir build
 	python utils/build_preparation.py . build
 
 makebuilddir :: builddir
