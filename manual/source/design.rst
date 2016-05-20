@@ -561,7 +561,7 @@ NeXus Coordinate Systems
     coordinate systems; IUCr
 
 The NeXus coordinate system is shown :ref:`below <fig.NeXus-coord>`.
-Note that it is the same as that used by *McStas* (http://mcstas.risoe.dk).
+Note that it is the same as that used by *McStas* (http://mcstas.org).
 
 .. compound::
 
@@ -587,142 +587,6 @@ Note that it is the same as that used by *McStas* (http://mcstas.risoe.dk).
           International Tables for Crystallography, volume G,
           and consequently, *+x* is also reversed.
 
-
-
-:index:`Coordinate systems <coordinate systems>`
-in NeXus have undergone significant development. Initially, only motor
-positions of the relevant motors were stored without further standardization.
-This soon proved to be
-too little and the *NeXus polar coordinate* system
-:index:`was <coordinate systems; NeXus polar coordinate>`
-developed. This system still
-is very close to angles that are meaningful to an instrument scientist
-but allows to define general positions of
-components easily. Then users from the simulation community
-approached the NeXus team and asked for a means
-to store absolute coordinates. This was implemented through
-the use of the *NXgeometry* class on top of the
-*McStas* :index:`system <coordinate systems; McStas>`.
-We soon learned that all the things we do can be expressed through the
-McStas coordinate system. So it became the reference coordinate system
-for NeXus. ``NXgeometry`` was expanded to allow the description of shapes
-when the demand came up. Later, members of the
-:index:`CIF <coordinate systems; CIF>` team
-convinced the NeXus team of the beauty of transformation matrices and
-NeXus was enhanced to store the necessary information to fully map CIF
-concepts. Not much had to be changed though as we
-choose to document the existing angles in CIF terms. The CIF system
-allows to store arbitrary operations and nevertheless calculate
-absolute coordinates in the laboratory coordinate system. It also
-allows to convert from local, for example detector
-coordinate systems, to absolute coordinates in the laboratory system.
-
-Please note that NXgeometry and the polar coordinate system are suggested
-to be deprecated. For new projects, rather use the CIF approach.
-
-.. _Design-Coordinate-NXgeometry:
-
-McStas and ``NXgeometry`` System
-================================
-
-.. index::
-    geometry
-    coordinate systems; McStas
-    McStas
-
-As stated above, NeXus uses the
-*McStas coordinate system* (http://mcstas.risoe.dk)
-as its laboratory coordinate system.
-The instrument is given a global, absolute coordinate system where the
-*z* axis points in the direction of the incident beam,
-the *x* axis is perpendicular to the beam in the horizontal
-plane pointing left as seen from the source, and the *y* axis
-points upwards. See  below for a drawing of the McStas coordinate system.  The origin of this
-coordinate system is the sample position or, if this is ambiguous, the center of the sample holder
-with all angles and translations set to zero.  The McStas coordinate system is
-illustrated in the next figure:
-
-.. compound::
-
-    .. _fig.mcstas-coord:
-
-    .. figure:: img/mcstascoord.png
-        :alt: fig.mcstas-coord
-        :width: 60%
-        :align: center
-
-        The McStas Coordinate System
-
-The NeXus NXgeometry class directly uses the
-:index:`McStas coordinate system <coordinate systems; McStas>`.
-``NXgeometry`` classes can appear in any
-component in order to specify its position.
-The suggested name to use is geometry.
-In ``NXgeometry`` the ``NXtranslation/values``
-field defines the absolute position of the component in the McStas coordinate system. The ``NXorientation/value`` field describes
-the orientation of the component as a vector of in the McStas coordinate system.
-
-..  Comment by MK: I think NXgeometry sucks. It is decided upon, so we have to document it as is. But I do think that
-    it introduces too many levels of hierarchy. I would rather like to have:
-    - an absolute_position[n,3] field at component level. This makes the absolute position easy to see and the ``n`` opens up
-    easily for those components which consist of many subcomponents like a many pixel detector.
-    - an ``absolute_orientation[n?,3]`` field to define the orientation at component level.
-    Maybe we need an ``n`` here too for multi-pixel components.
-    - I would love to pull down the NXshape group to component level too.
-    Perhaps we can allow that and mark NXgeometry deprecated?
-
-Please note that it is planned to deprecate NXgeometry in favour of the transformation based
-system described below.
-
-.. _Design-Coordinate-Spherical:
-
-Simple (Spherical Polar) Coordinate System
-==========================================
-
-.. index::
-    geometry
-    coordinate systems; spherical polar
-    McStas
-
-In this system,
-the instrument is considered as a set of components through
-which the incident beam passes. The variable *distance* is assigned to each component and represents the
-effective beam flight path length between this component and the sample. A sign
-convention is used where negative numbers represent components pre-sample and positive
-numbers components post-sample. At each component there is local spherical coordinate system
-with the angles *polar_angle* and *azimuthal_angle*.
-The size of the sphere is the distance to the previous component.
-
-In order to understand this spherical polar coordinate system it is helpful
-to look initially at the common condition that *azimuthal_angle*
-is zero. This corresponds to working directly in the horizontal scattering
-plane of the instrument. In this case *polar_angle* maps
-directly to the setting commonly known as *two theta*.
-Now, there are instruments where components live outside of the scattering plane.
-Most notably detectors. In order to describe such components we first apply
-the tilt out of the horizontal scattering plane as the
-*azimuthal_angle*. Then, in this tilted plane, we rotate
-to the component. The beauty of this is that *polar_angle*
-is always *two theta*. Which, in the case of a component
-out of the horizontal scattering plane, is not identical to the value read
-from the motor responsible for rotating the component. This situation is shown in
-:ref:`Polar Coordinate System <fig.polar-geometry-figure>`.
-
-.. compound::
-
-    .. _fig.polar-geometry-figure:
-
-    .. figure:: img/polplane.png
-        :alt: fig.polar-geometry-figure
-        :width: 60%
-        :align: center
-
-        NeXus Simple (Spherical Polar) Coordinate System
-
-Please note that it is planned to deprecate this polar system in favour of the transformation based
- system described below.
-
-
 .. _CoordinateTransformations:
 
 Coordinate Transformations
@@ -730,11 +594,11 @@ Coordinate Transformations
 
 .. index:: transformation matrices
 
-Another way to look at coordinates is through
-the use of :index:`transformation matrices <coordinate systems; transformations>`.
+In the recommended way of dealing with geometry NeXus uses a series of 
+:index:`transformations <coordinate systems; transformations>` to place objects in space.
 In this world view, the absolute position of a component or a detector pixel with respect to
 the laboratory coordinate system is calculated by applying a series of translations and
-rotations. These operations are commonly expressed as transformation matrices and their
+rotations. These operations can be expressed as transformation matrices and their
 combination as matrix multiplication. A very important aspect is that the order of application
 of the individual operations *does* matter. Another important aspect is that
 any operation transforms the whole coordinate system and gives rise to a new local coordinate system.
@@ -744,7 +608,7 @@ computer games. The beauty in this comes from the fact that the operations to ap
 to instrument settings and constants. It is also easy to analyze the contribution of each individual
 operation: this can be studied under the condition that all other operations are at a zero setting.
 
-In order to use coordinate transformations, several morsels of information need to be known:
+In order to use coordinate transformations, several pieces of information need to be known:
 
     **Type**
         The type of operation: rotation or translation
@@ -804,8 +668,6 @@ NeXus chooses to encode this information in the following way:
     	the ``depends_on`` field in :ref:`NXsample` would have the value ``phi``.
 
 
-
-
     	.. compound::
 
     	    .. rubric:: NeXus Transformation encoding
@@ -863,7 +725,7 @@ also allows to store and use arbitrarily named axes in a NeXus file.
     =================  =====================  ==========
 
 
-For the NeXus spherical coordinate system, the order is implicit and is given in the next example.
+For the NeXus spherical coordinate system (described in the legacy section below), the order is implicit and is given in the next example.
 
 	.. compound::
 
@@ -884,11 +746,159 @@ This is also a nice example of the application of transformation matrices:
 #. This also moves the direction of the *z* vector.
    Along which you translate the component to place by distance.
 
+Coordinate Transformation Attributes
+------------------------------------
+
+The coordinate transformation attributes are:
+
+  **vector** (*NX_FLOAT*)
+      3 values describing the axis of rotation or the direction of translation
+  **offset** (*NX_FLOAT*)
+      3 values describing a translation of the axis before applying the
+      actual operation.
+  **transformation_type**
+      Is either rotation or translation and describes the kind of operation performed
+  **depends_on**
+      States the dataset which is next in the dependency chain. Allowed
+      values for depends_on are:
+
+      **.**
+        A dot ends the depends_on chain
+      **name**
+        The name of a dataset within the enclosing group
+      **dir/name**
+        The name of a dataset further along the path
+      **/dir/dir/name**
+        An absolute path to a dataset in another group
+
+Legacy Geometry Decriptions
+===========================
+
+The above system of chained transformations is the recommended way of 
+encoding geometry going forward. This section describes the traditional way
+this was handled in NeXus, which you may find occasionally in old files. 
+
+
+:index:`Coordinate systems <coordinate systems>`
+in NeXus have undergone significant development. Initially, only motor
+positions of the relevant motors were stored without further standardization.
+This soon proved to be
+too little and the *NeXus polar coordinate* system
+:index:`was <coordinate systems; NeXus polar coordinate>`
+developed. This system still
+is very close to angles that are meaningful to an instrument scientist
+but allows to define general positions of
+components easily. Then users from the simulation community
+approached the NeXus team and asked for a means
+to store absolute coordinates. This was implemented through
+the use of the *NXgeometry* class on top of the
+*McStas* :index:`system <coordinate systems; McStas>`.
+We soon learned that all the things we do can be expressed through the
+McStas coordinate system. So it became the reference coordinate system
+for NeXus. ``NXgeometry`` was expanded to allow the description of shapes
+when the demand came up. Later, members of the
+:index:`CIF <coordinate systems; CIF>` team
+convinced the NeXus team of the beauty of transformation matrices and
+NeXus was enhanced to store the necessary information to fully map CIF
+concepts. Not much had to be changed though as we
+choose to document the existing angles in CIF terms. The CIF system
+allows to store arbitrary operations and nevertheless calculate
+absolute coordinates in the laboratory coordinate system. It also
+allows to convert from local, for example detector
+coordinate systems, to absolute coordinates in the laboratory system.
+
+.. _Design-Coordinate-NXgeometry:
+
+McStas and ``NXgeometry`` System
+--------------------------------
+
+.. index::
+    geometry
+    coordinate systems; McStas
+    McStas
+
+As stated above, NeXus uses the
+*McStas coordinate system* (http://mcstas.org)
+as its laboratory coordinate system.
+The instrument is given a global, absolute coordinate system where the
+*z* axis points in the direction of the incident beam,
+the *x* axis is perpendicular to the beam in the horizontal
+plane pointing left as seen from the source, and the *y* axis
+points upwards. See  below for a drawing of the McStas coordinate system.  The origin of this
+coordinate system is the sample position or, if this is ambiguous, the center of the sample holder
+with all angles and translations set to zero.  The McStas coordinate system is
+illustrated in the next figure:
+
+.. compound::
+
+    .. _fig.mcstas-coord:
+
+    .. figure:: img/mcstascoord.png
+        :alt: fig.mcstas-coord
+        :width: 60%
+        :align: center
+
+        The McStas Coordinate System
+
+The NeXus NXgeometry class directly uses the
+:index:`McStas coordinate system <coordinate systems; McStas>`.
+``NXgeometry`` classes can appear in any
+component in order to specify its position.
+The suggested name to use is geometry.
+In ``NXgeometry`` the ``NXtranslation/values``
+field defines the absolute position of the component in the McStas coordinate system. The ``NXorientation/value`` field describes
+the orientation of the component as a vector of in the McStas coordinate system.
+
+
+.. _Design-Coordinate-Spherical:
+
+Simple (Spherical Polar) Coordinate System
+------------------------------------------
+
+.. index::
+    geometry
+    coordinate systems; spherical polar
+    McStas
+
+In this system,
+the instrument is considered as a set of components through
+which the incident beam passes. The variable *distance* is assigned to each component and represents the
+effective beam flight path length between this component and the sample. A sign
+convention is used where negative numbers represent components pre-sample and positive
+numbers components post-sample. At each component there is local spherical coordinate system
+with the angles *polar_angle* and *azimuthal_angle*.
+The size of the sphere is the distance to the previous component.
+
+In order to understand this spherical polar coordinate system it is helpful
+to look initially at the common condition that *azimuthal_angle*
+is zero. This corresponds to working directly in the horizontal scattering
+plane of the instrument. In this case *polar_angle* maps
+directly to the setting commonly known as *two theta*.
+Now, there are instruments where components live outside of the scattering plane.
+Most notably detectors. In order to describe such components we first apply
+the tilt out of the horizontal scattering plane as the
+*azimuthal_angle*. Then, in this tilted plane, we rotate
+to the component. The beauty of this is that *polar_angle*
+is always *two theta*. Which, in the case of a component
+out of the horizontal scattering plane, is not identical to the value read
+from the motor responsible for rotating the component. This situation is shown in
+:ref:`Polar Coordinate System <fig.polar-geometry-figure>`.
+
+.. compound::
+
+    .. _fig.polar-geometry-figure:
+
+    .. figure:: img/polplane.png
+        :alt: fig.polar-geometry-figure
+        :width: 60%
+        :align: center
+
+        NeXus Simple (Spherical Polar) Coordinate System
+
+
+
 ..
     .. _Size-Shape:
-
-
-
 
 
     Size and Shape (``NXshape``)
@@ -925,31 +935,6 @@ This is also a nice example of the application of transformation matrices:
     specified then the reference point would be elsewhere in the object, with its
     distance from the cylinder edges along the various axes given by elements of the
     ``size[6]`` array.
-
-Coordinate Transformation Attributes
-------------------------------------
-
-The coordinate transformation attributes are:
-
-  **vector** (*NX_FLOAT*)
-      3 values describing the axis of rotation or the direction of translation
-  **offset** (*NX_FLOAT*)
-      3 values describing a translation of the axis before applying the
-      actual operation.
-  **transformation_type**
-      Is either rotation or translation and describes the kind of operation performed
-  **depends_on**
-      States the dataset which is next in the dependency chain. Allowed
-      values for depends_on are:
-
-      **.**
-        A dot ends the depends_on chain
-      **name**
-        The name of a dataset within the enclosing group
-      **dir/name**
-        The name of a dataset further along the path
-      **/dir/dir/name**
-        An absolute path to a dataset in another group
 
 
 Rules and Underlying File Formats
