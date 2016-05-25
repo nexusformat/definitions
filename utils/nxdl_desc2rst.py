@@ -99,9 +99,11 @@ For more details, see:
     single: link target
 
 A ``link`` element can *only* be a child of a 
-``field`` or ``group`` element.
+``definition``,
+``field``, or ``group`` element.
 It describes the path to the original source of the parent
-``field`` or ``group``.
+``definition``,
+``field``, or ``group``.
 
 For more details, see: 
 :ref:`NXDL.data.type.linkType`
