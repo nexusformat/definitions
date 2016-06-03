@@ -71,7 +71,7 @@ described by the following :index:`rules <rules; naming>`:
    names might not be accepted by all software that reads NeXus 
    data files.*  Hence, group and field names that do not
    pass the regular expression above but pass this
-   expression:
+   expression (named *validItemName* in the XML Schema file: *nxdl.xsd*):
    
    .. code-block:: text
        :linenos:
