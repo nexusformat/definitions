@@ -47,7 +47,7 @@ f = h5py.File(FILE_HDF5_MASTER, "w")
 f.attrs['default'] = 'entry'
 nxentry = f.create_group('entry')
 nxentry.attrs['NX_class'] = 'NXentry'
-nxentry.attrs["default"] = 'entry'
+nxentry.attrs["default"] = 'data'
 nxdata = nxentry.create_group('data')
 nxdata.attrs['NX_class'] = 'NXdata'
 
