@@ -12,9 +12,11 @@ tthData = buffer[0]                             # float[]
 countsData = numpy.asarray(buffer[1],'int32')   # int[]
 
 f = h5py.File('writer_2_1.hdf5', "w")  # create the HDF5 NeXus file
+f.attrs['default'] = 'entry'
 
 nxentry = f.create_group('entry')
 nxentry.attrs['NX_class'] = 'NXentry'
+nxentry.attrs['default'] = 'data'
 
 nxinstrument = nxentry.create_group('instrument')
 nxinstrument.attrs['NX_class'] = 'NXinstrument'
