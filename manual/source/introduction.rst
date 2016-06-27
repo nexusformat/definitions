@@ -8,8 +8,9 @@ NeXus Introduction
    introduction
    motivation
 
-NeXus is an effort by an international group of scientists to define 
-a common data exchange format for neutron, X-ray, and muon experiments.  
+NeXus is an effort by an international group of scientists 
+:ref:`motivated <MotivationsForNeXus>`
+to define a common data exchange format for neutron, X-ray, and muon experiments.  
 NeXus is built on top of the scientific data format HDF5 and adds 
 domain-specific rules for organizing data within HDF5 files in addition 
 to a dictionary of well-defined domain-specific field names. The NeXus 

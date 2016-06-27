@@ -85,11 +85,13 @@ Simple plotting
 
 An important motivation for the design of NeXus was to simplify the creation
 of a default plot view.
-While the best representation of a set of observations will vary,
+While the best representation of a set of observations will vary
 depending on various conditions, a good suggestion is often known *a
-priori*. This suggestion is described in the ``NXdata``
+priori*. This suggestion is described in the :ref:`NXdata`
 element so that any program that is used to browse NeXus data files can provide a
 *best representation* without request for user input.
+A description of how simple plotting is facilitated in NeXus is
+shown in the section titled :ref:`Find-Plottable-Data`.
 
 .. _UnifiedFormat:
 

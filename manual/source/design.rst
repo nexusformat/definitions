@@ -154,6 +154,8 @@ attributes can be found in the next table:
 			to be :index:`plotted <plotting>`.
 			Use ``signal="{dataset_name}"`` where ``{dataset_name}``
 			is the name of a field (or link to a field) in the :ref:`NXdata` group.
+			The field referred to by the *signal* attribute
+			might be referred to as the ":index:`signal data`".
 
 		``long_name`` (*NX_CHAR*)
 			Defines title of signal data or axis label of dimension scale
@@ -382,6 +384,7 @@ But there are some base classes which have special uses which need to be mention
     ``NXdata`` is used to identify the default
     :index:`plottable data <plotting>`.
     The notion of a default plot of data is a basic motivation of NeXus.
+    (see :ref:`SimplePlotting`)
 
 :ref:`NXlog`
     ``NXlog`` is used to store time stamped data like the log of a temperature controller.
