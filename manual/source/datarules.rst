@@ -448,6 +448,8 @@ plottable data is as follows:
    
            Find plottable data: select the ``NXdata`` group
 
+.. index:: signal data
+
 #. Pick the default plottable field (the *signal* data).
 
    Open the ``NXdata`` group selected above.
