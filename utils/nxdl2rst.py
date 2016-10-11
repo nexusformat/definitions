@@ -19,6 +19,7 @@ from local_utilities import printf, replicate
 
 
 INDENTATION_UNIT = '  '
+listing_category = None
 
 
 def fmtTyp( node ):
@@ -195,15 +196,21 @@ def printFullTree(ns, parent, name, indent):
     :param str name: name of elements, such as NXentry/NXuser
     :param indent: to keep track of indentation level
     '''
+    global listing_category
 
     for node in parent.xpath('nx:field', namespaces=ns):
         name = node.get('name')
         index_name = re.sub( r'_', ' ', name )
         dims = analyzeDimensions(ns, node)
+        minOccurs = node.get('minOccurs', None)
+        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application definition', 'contributed definition'):
+            optional_text = '(optional) '
+        else:
+            optional_text = ''
         print( '%s.. index:: %s (field)\n' %
                ( indent, index_name ) )
-        print( '%s**%s%s**: %s%s\n' % (
-            indent, name, dims, fmtTyp(node), fmtUnits(node) ) )
+        print( '%s**%s%s**: %s%s%s\n' % (
+            indent, name, dims, optional_text, fmtTyp(node), fmtUnits(node) ) )
 
         printIfDeprecated( ns, node, indent+INDENTATION_UNIT )
         printDoc(indent+INDENTATION_UNIT, ns, node)
@@ -218,11 +225,16 @@ def printFullTree(ns, parent, name, indent):
     for node in parent.xpath('nx:group', namespaces=ns):
         name = node.get('name', '')
         typ = node.get('type', 'untyped (this is an error; please report)')
+        minOccurs = node.get('minOccurs', None)
+        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application definition', 'contributed definition'):
+            optional_text = '(optional) '
+        else:
+            optional_text = ''
         if typ.startswith('NX'):
             if name is '':
                 name = '(%s)' % typ.lstrip('NX')
             typ = ':ref:`%s`' % typ
-        print( '%s**%s**: %s\n' % (indent, name, typ ) )
+        print( '%s**%s**: %s%s\n' % (indent, name, optional_text, typ ) )
 
         printIfDeprecated(ns, node, indent+INDENTATION_UNIT)
         printDoc(indent+INDENTATION_UNIT, ns, node)
@@ -243,6 +255,7 @@ def print_rst_from_nxdl(nxdl_file):
     '''
     print restructured text from the named .nxdl.xml file
     '''
+    global listing_category
     # parse input file into tree
     tree = lxml.etree.parse(nxdl_file)
 
@@ -265,7 +278,7 @@ def print_rst_from_nxdl(nxdl_file):
     #subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
     subdir = root.attrib["category"]
     # TODO: check for consistency with root.get('category')
-    category_for_listing = {
+    listing_category = {
                  'base': 'base class',
                  'application': 'application definition',
                  'contributed': 'contributed definition',
@@ -276,10 +289,10 @@ def print_rst_from_nxdl(nxdl_file):
            (sys.argv[0], sys.argv[1]) )
     print('')
     print( '.. index::' )
-    print( '    ! %s (%s)' % (name,category_for_listing) )
-    print( '    ! %s (%s)' % (lexical_name,category_for_listing) )
+    print( '    ! %s (%s)' % (name,listing_category) )
+    print( '    ! %s (%s)' % (lexical_name,listing_category) )
     print( '    see: %s (%s); %s' %
-           (lexical_name,category_for_listing, name) )
+           (lexical_name,listing_category, name) )
     print('')
     print( '.. _%s:\n' % name )
     print( '='*len(title) )
@@ -296,7 +309,7 @@ def print_rst_from_nxdl(nxdl_file):
     print('')
     print( '**Status**:\n' )
     print( '  %s, extends %s, version %s' %
-           ( category_for_listing.strip(),
+           ( listing_category.strip(),
              extends,
              root.get('version').strip() ) )
 
@@ -338,7 +351,7 @@ def print_rst_from_nxdl(nxdl_file):
         out = [ (':ref:`%s`' % g) for g in groups ]
         txt = ', '.join(sorted(out))
         print( '  %s\n' % ( txt ) )
-        out = [ ('%s (base class); used in %s' % (g, category_for_listing)) for g in groups ]
+        out = [ ('%s (base class); used in %s' % (g, listing_category)) for g in groups ]
         txt = ', '.join(out)
         print( '.. index:: %s\n' % ( txt ) )
 
@@ -397,7 +410,7 @@ if __name__ == '__main__':
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2016 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

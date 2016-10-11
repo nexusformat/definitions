@@ -62,6 +62,11 @@ we walk through a schematic of NeXus program written in C
 
     .. rubric:: Writing a simple NeXus file using NAPI
 
+    .. note:: 
+       We assume the program can define
+       the arrays ``tth`` and ``counts``, each length ``n``.
+       This part has been omitted from the example code.
+
     .. literalinclude:: examples/ex-c-write.c
         :tab-width: 4
         :linenos:
@@ -72,8 +77,8 @@ we walk through a schematic of NeXus program written in C
     .. _ex.write.c:
 
     .. rubric:: program analysis
-
-    #. line 6:
+    
+    #. line 7:
         .. _ex.write.open:
 
         Open the file ``NXfile.nxs`` with *create*
@@ -86,7 +91,7 @@ we walk through a schematic of NeXus program written in C
         group to contain the scan using
         ``NXmakegroup()`` and then
         open it for access using ``NXopengroup()``. [#]_
-    #. line 9:
+    #. line 10:
         The :index:`plottable data <plotting>`
         is contained within an :ref:`NXdata`
         group, which must also be created and opened.
@@ -216,4 +221,4 @@ API <Introduction-NAPI>` may also be useful to study.
 
 .. [#] see :ref:`nxdl-types`
 
-.. [#] https://svn.nexusformat.org/code/trunk/applications/NXbrowse/NXbrowse.c
+.. [#] https://github.com/nexusformat/code/blob/master/applications/NXbrowse/NXbrowse.c

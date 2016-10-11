@@ -14,6 +14,7 @@ README.make.txt             | how to build the documentation
 applications/               | NXDL files for applications and instrument defs
 base_classes/               | NXDL files for components
 contributed_definitions/    | NXDL files from the community
+impatient-guide/            | *NeXus for the Impatient*
 jenkins_build               | configuration for Jenkins continuous integration service
 manual/                     | Sphinx source files for the NeXus documentation
 nxdl.xsd                    | XML Schema for NXDL files
@@ -22,7 +23,5 @@ package/                    | directory for packaging this content
 utils/                      | various tools used in the definitions tree
 www/                        | launch (home) page of NeXus WWW site
 xslt/                       | various XML stylesheet transformations
-_cmake_include_obsolete     | (obsolete) configuration for cmake builds
-_sphinx/                    | (obsolete) remnant Sphinx source files for the manual (pre-release development)
 
 See README.make.txt for how to build the documentation

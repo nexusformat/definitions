@@ -35,8 +35,12 @@ An example raw data hierarchy is
 shown in figure :ref:`Raw Data <table.RawData>`
 (only showing the relevant parts of the data hierarchy).
 In the example shown, the ``data`` field in the ``NXdata`` group
-is linked to the 2-D detector data (a 512x512 array of 32-bit integers)
-which has the attribute ``signal=1``.
+is linked to the 2-D detector data (a 512x512 array of 32-bit integers).
+The attribute ``signal = data`` on the :ref:`NXdata` group marks this
+field as the default plottable data of the ``data:NXdata`` group.
+The NXdata group attribute ``axes = . .`` declares that both dimensions of
+the ``data`` field do not have associated dimension scales (plotting
+routines should use integer scaling for each axis).
 Note that ``[,]`` represents a 2D array.
 
 	.. compound::
@@ -48,7 +52,7 @@ Note that ``[,]`` represents a 2D array.
 	    .. literalinclude:: examples/hierarchy-raw.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 An ``NXentry`` describing raw data contains at least a ``NXsample``,
 one ``NXmonitor``,
@@ -87,7 +91,7 @@ data analysis program. Note that ``[]`` represents a 1D array.
 	    .. literalinclude:: examples/hierarchy-processed.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 NeXus stores such data in a simplified
 ``NXentry`` structure. A processed data ``NXentry``
@@ -130,6 +134,12 @@ easily resolved. In order to solve this issue, the following scheme was implemen
   It contains links to all those data items required to fulfill
   the application definition for the particular method it represents.
 
+- Each ``NXsubentry`` group contains a ``NXdata`` group describing
+  the default plottable data for that experimental method.  
+  To satisfy the NeXus requirement of finding the default
+  plottable data from a ``NXentry`` group, the ``NXdata`` group
+  from one of these ``NXsubentry`` groups (the fluoresence data) was linked.
+
 See figure :ref:`NeXus Multi Method Hierarchy <table.NXsubentry>` for an example hierarchy.
 Note that ``[,]`` represents a 2D array.
 
@@ -142,7 +152,7 @@ Note that ``[,]`` represents a 2D array.
 	    .. literalinclude:: examples/hierarchy-subentry.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 .. _Rules-SpecialCases:
 
@@ -210,7 +220,7 @@ Then we have:
 	    .. literalinclude:: examples/simplescan.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 Simple scan with area detector
 ------------------------------
@@ -229,12 +239,17 @@ times ``ysize`` pixels. The only thing which changes is that
 	    .. literalinclude:: examples/simplescanarea.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
+
+The ``NXdata`` group attribute ``axes = rotation_angle . .`` declares that only the first
+dimension of the plottable ``data`` has a dimension scale (by name, ``rotation_angle``).  
+The other two dimensions have no associated dimension scales and should be plotted against
+integer bin numbers.
 
 Complex *hkl* scan
 ------------------
 
-The next example involves a complex movement along an axis in reciprocal
+The next example involves a complex movement along the :math:`h` axis in reciprocal
 space which requires mutiple motors of a :index:`four-circle diffractometer` to be
 varied during the scan. We then have:
 
@@ -258,15 +273,15 @@ varied during the scan. We then have:
   the positions of phi at the various steps of the scan.
 
 - A dataset at ``NXentry/NXsample/h`` of length ``NP`` containing
-  the positions of the reciprocal coordinate ``h`` at the
+  the positions of the reciprocal coordinate :math:`h` at the
   various steps of the scan.
 
 - A dataset at ``NXentry/NXsample/k`` of length ``NP`` containing
-  the positions of the reciprocal coordinate ``k`` at the
+  the positions of the reciprocal coordinate :math:`k` at the
   various steps of the scan.
 
 - A dataset at ``NXentry/NXsample/l`` of length ``NP`` containing
-  the positions of the reciprocal coordinate ``l`` at the
+  the positions of the reciprocal coordinate :math:`l` at the
   various steps of the scan.
 
 - ``NXdata`` contains links to:
@@ -280,8 +295,8 @@ varied during the scan. We then have:
   + ``NXentry/NXsample/k``
   + ``NXentry/NXsample/l``
   
-  The datasets in ``NXdata`` must have the
-  appropriate attributes as described in the axis location section.
+  The ``NXdata`` also contains appropriate attributes 
+  as described in :ref:`Design-FindPlottable-NIAC2014`.
 
 - All other fields have their normal dimensions.
 
@@ -294,7 +309,7 @@ varied during the scan. We then have:
     .. literalinclude:: examples/complex-hkl-scan.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 Multi-parameter scan: XAS
 -------------------------
@@ -323,7 +338,7 @@ the length of the 1-D temperature array is ``NT``
 	    .. literalinclude:: examples/xas.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text
 
 .. _Rules-SpecialCases-Rastering:
 
@@ -373,4 +388,4 @@ hierarchy.  An example usage case is documented in figure
 	    .. literalinclude:: examples/nxcollection.txt
 	        :tab-width: 4
 	        :linenos:
-	        :language: guess
+	        :language: text

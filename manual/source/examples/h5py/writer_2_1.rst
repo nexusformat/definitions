@@ -43,13 +43,15 @@ numerical data from the previous example) is shown below.
 
 It is interesting to compare the output of the ``h5dump``
 of the data file ``writer_2_1.hdf5`` with our Python instructions.
+See the *downloads* section below.
 
-.. literalinclude:: writer_2_1_h5dump.txt
-    :tab-width: 4
-    :linenos:
-    :language: guess
+.. leave this out
+   .. literalinclude:: writer_2_1_h5dump.txt
+       :tab-width: 4
+       :linenos:
+       :language: text
 
-Look carefully!  It *appears* from the output of
+Look carefully!  It *appears* in the output of
 ``h5dump`` that the actual data for ``two_theta``
 and ``counts`` has *moved* into
 the ``NXdata`` group at HDF5 path ``/entry/data``!  But we stored
@@ -78,4 +80,19 @@ location, in the ``NXdetector`` group.
 .. literalinclude:: writer_2_1_structure.txt
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: text
+
+downloads
+*********
+
+The Python code and files related to this section may be downloaded from the following table.
+
+=====================================  =============================================
+file                                   description
+=====================================  =============================================
+:download:`writer_2_1.py`              python code to write example *writer_2_1*
+:download:`writer_2_1.hdf5`            NeXus file written by this code
+:download:`writer_2_1_h5dump.txt`      *h5dump* analysis of the NeXus file
+:download:`writer_2_1_structure.txt`   *h5toText* analysis of the NeXus file
+=====================================  =============================================
+    

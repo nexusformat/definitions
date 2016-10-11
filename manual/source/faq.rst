@@ -25,13 +25,12 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
 #. NeXus files are binary? This is crazy! How am I supposed to see my data?
 
-    NeXus files are not per se binary. If you use the XML backend the
-    data are stored in a relatively human readable form (see
-    `this example <http://trac.nexusformat.org/definitions/browser/exampledata/code/xml/NXtest.xml.txt>`_).
-    This backend however is only recommended for very small data sets. With
-    the multidimensional data that is routinely recorded on many modern
-    instruments it is very difficult anyway to retrieve useful
-    information on a VT100 terminal. If you want to try, for example
+    Various tools are listed in the :ref:`Utilities` section to inspect
+    NeXus data files.  The easiest graphical tool to use is
+    *HDFview* which can open any HDF file.  Other tools such as *PyMCA*
+    and *NeXPy* provide visualization of scientific data while *h5dump*
+    and *h5toText* provide text renditions of content and structure.
+    If you want to try, for example
     ``nxbrowse``
     is a utility provided by the NeXus community that can be very
     helpful to those who want to inspect their files and avoid
@@ -45,9 +44,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     HDF5 is the default file container to use for NeXus data. It
     is the recommended format for all applications. HDF4 is still
     supported as a on disk format for NeXus but for new installations
-    preference should be given to HDF5. The XML backend is available
-    for special use cases. Choose this option with care considering the
-    space and speed implications.
+    preference should be given to HDF5.
 
 #. Why are the NeXus classes so complicated? I'll never store all that information
 
@@ -61,7 +58,8 @@ This is a list of commonly asked questions concerning the NeXus data format.
     You should really follow the application definition that
     corresponds to your experiment to take full advantage of NeXus.
 
-#. I don't like NeXus. It seems much faster and simpler to develop my own file format. Why should I even consider NeXus?
+#. I don't like NeXus. It seems much faster and simpler to develop 
+   my own file format. Why should I even consider NeXus?
 
     If you consider using an efficient on disk storage format,
     HDF5 is a better choice than most others. It is fast and efficient
@@ -91,7 +89,8 @@ This is a list of commonly asked questions concerning the NeXus data format.
     How do I go about it?
 
     Read the :index:`NXDL` Tutorial in :ref:`NXDL_Tutorial-CreatingNxdlSpec`
-    and have a try. You can ask for help on the `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
+    and have a try. You can ask for help on the 
+    `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
     Once you have a definition that is working well for at least your case,
     you can submit it to the NIAC for acceptance as a standard.
     The procedures for acceptance are defined in the NIAC :index:`constitution`. [#]_
@@ -105,23 +104,24 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
 #. What is the purpose of ``NXdata``?
 
-    ``NXdata`` contains links to the data stored elsewhere in the ``NXentry``. 
-    It identifies the :index:`default plottable data <plotting>`. 
+    ``NXdata`` identifies the :index:`default plottable data <plotting>`. 
     This is one of the basic motivations (see :ref:`SimplePlotting`) for the NeXus standard. 
     The choice of the name ``NXdata`` is historic and does not really reflect its function.
+    The ``NXdata`` group contains data or links to the data stored elsewhere. 
 
 #. How do I identify the plottable data?
 
     See the section: :ref:`Find-Plottable-Data`.
 
-#. How can I specify reasonable axes for my data?
-
-    ..  Is there a better answer for this?
-    	FIXME: This link leads to the naming rules, not axes specification.  Change it.
-
-    See the section: :ref:`multi-dimensional-data`.
-    
-    .. :ref:`DataRules`.
+.. TODO:  What is the intent of this next question?  What defines "reasonable" in this context?
+   #. How can I specify reasonable axes for my data?
+   
+       ..  Is there a better answer for this?
+       	FIXME: This link leads to the naming rules, not axes specification.  Change it.
+   
+       See the section: :ref:`multi-dimensional-data`.
+       
+       .. :ref:`DataRules`.
 
 #. Why aren't ``NXsample`` and ``NXmonitor`` groups stored in the ``NXinstrument`` group?
 
@@ -135,39 +135,25 @@ This is a list of commonly asked questions concerning the NeXus data format.
     be more likely to change from run to run, and so should be stored
     at the top level.
 
-#. Specifications are complicated and often provide too much information for what I need.  Where can I find some good example data files?
-
-    There are a few checked into the
-    `definitions repository <http://trac.nexusformat.org/definitions/browser/exampledata>`_.
-    At the moment the selection is quite limited and not very representative.
-    This repository will be edited as more example files become available.
-
-
 #. Can I use a NXDL specification to parse a NeXus data file?
 
     This should be possible as there is nothing in the NeXus
     specifications to prevent this but it is not implemented in :index:`NAPI`.
     You would need to implement it for yourself.
 
-#. Why do I need to specify the ``NAPItype``? My programming language does not need that information and I don't care about C and colleagues.  Can I leave it out?
-
-    ``NAPItype`` is necessary. When implementing the NeXus-XML API we strived to
-    make this as general as HDF and reasonably efficient for medium
-    sized datasets. This is why we store arrays as a large bunch of
-    numbers in C-storage order. And we need the  ``NAPItype``
-    to figure out the :index:`dimensions <dimension; data set>` of the dataset.
-
-#. Do I have to use the ``NAPI`` subroutines?  Can't I read (or write) the NeXus data files with my own routines?
+#. Do I have to use the ``NAPI`` subroutines?  
+   Can't I read (or write) the NeXus data files with my own routines?
 
     You are not required to use the NAPI to write valid NeXus
     data files. It is possible to avoid the NAPI to write and read
     valid NeXus data files. But, the programmer who chooses this path
-    must have more understanding of how the NeXus HDF or XML data file
+    must have more understanding of how the NeXus HDF data file
     is written. Validation of data files written without the NAPI is
     strongly encouraged.
 
 
-#. I'm using links to place data in two places. Which one should be the data and which one is the link?
+#. I'm using links to place data in two places. 
+   Which one should be the data and which one is the link?
     
     .. index:: link
     

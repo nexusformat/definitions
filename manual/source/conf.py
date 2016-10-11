@@ -11,7 +11,7 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import sys, os, datetime
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -26,6 +26,7 @@ needs_sphinx = '1.1'   # the :index: role debuted in v1.1
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = []
+#extensions.append( 'sphinx.ext.imgmath' )
 extensions.append( 'sphinx.ext.pngmath' )
 extensions.append( 'sphinx.ext.ifconfig' )
 extensions.append( 'matplotlib.sphinxext.mathmpl' )
@@ -47,7 +48,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'NeXus: Manual'
-copyright = u'2015, http://nexusformat.org'
+copyright = u'1996-%d, http://nexusformat.org' % datetime.datetime.now().year
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -144,7 +145,9 @@ html_last_updated_fmt = today_fmt
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
-#html_sidebars = {}
+html_sidebars = {
+    '**': ['localtoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html', 'google_search.html'],
+}
 
 # Additional templates that should be rendered to pages, maps page names to
 # template names.
@@ -192,8 +195,8 @@ latex_font_size = '10pt'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'nexus.tex', u'NeXus: a common data format for neutron, x-ray, and muon science',
-   u'http://nexusformat.org', 'manual'),
+  ('index', 'nexus.tex', u'NeXus: A Common Data Format for Neutron, X-ray, and Muon Science',
+   'NeXus International Advisory Committee\\\\\hfill{}nexus@nexusformat.org\\\\\hfill{}http://nexusformat.org', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -228,7 +231,6 @@ latex_preamble = '''
 # If false, no module index is generated.
 #latex_domain_indices = True
 
-
 # -- Options for manual page output --------------------------------------------
 
 # One entry per manual page. List of tuples
@@ -245,7 +247,7 @@ man_pages = [
 epub_title = u'NeXus: User Guide and Reference Documentation'
 epub_author = u'http://nexusformat.org'
 epub_publisher = u'http://nexusformat.org'
-epub_copyright = u'2015, http://nexusformat.org'
+epub_copyright = unicode(copyright)
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.

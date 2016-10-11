@@ -85,11 +85,13 @@ Simple plotting
 
 An important motivation for the design of NeXus was to simplify the creation
 of a default plot view.
-While the best representation of a set of observations will vary,
+While the best representation of a set of observations will vary
 depending on various conditions, a good suggestion is often known *a
-priori*. This suggestion is described in the ``NXdata``
+priori*. This suggestion is described in the :ref:`NXdata`
 element so that any program that is used to browse NeXus data files can provide a
 *best representation* without request for user input.
+A description of how simple plotting is facilitated in NeXus is
+shown in the section titled :ref:`Find-Plottable-Data`.
 
 .. _UnifiedFormat:
 
@@ -141,66 +143,18 @@ accessible, a point which has received notable comment in the scientific literat
     in the late 1970s complaining about the increasingly-common practice
     of withholding the source code.  If we find the reference, we should cite it here.
 
-More recently, NeXus has recognized that part of the scientific community with a
-desire to write and record scientific data, has small data volumes and a large aversion
-to the requirement of a complicated API necessary to access data in binary files such as
-HDF. For such information, the NeXus API (:index:`NAPI`) has been extended by the 
-addition of the eXtensible Markup Language (:index:`XML`) [#]_  as an 
-alternative to HDF. XML is a text-based format that supports
-compression and structured data and has broad usage in business and e-commerce. While
-possibly complicated, XML files are human readable, and tools for translation and
-extraction are plentiful. The API has routines to read and write XML data and to convert
-between HDF and XML.
+More recently, NeXus has recognized that many facilities face
+increased performance requirements and support for writing HDF5 directly in high level 
+languages has become better (for example with h5py for Python). For that reason 
+HDF5 has become the default recommended storage format for NeXus and the use of the 
+NeXus API for new projects is no longer encouraged.
+In NeXus has recently defined encoding of information in ways that are not 
+compatible with the existing HDF4 and XML container formats (using attribute 
+arrays). The move to HDF5 is strongly advised.
 
-.. [#]
-    XML: http://www.w3.org/XML/. There are
-    many other descriptions of XML, for example: http://en.wikipedia.org/wiki/XML
-
-
-.. _CommonExchangeFormat:
-
-NeXus as a Common Data Exchange Format
-======================================
-
-.. index:: exchange format
-
-By the late 1980s, it had become common practice for a scientific instrument
-or facility to define its own data format, often at the convenience of the local
-computer system. Data from these facilities were not easily interchanged due to various
-differences in computer systems and the compression schemes of binary data. It was
-necessary to contact the facility to obtain a description so that one could write an
-import routine in software. Experience with facilities closing (and subsequent lack of
-access to information describing the facility data format) revealed a significant
-limitation with this common practice.  Further, a large number of conversion routines 
-was necessary to convert data between various formats.
-In :ref:`fig.data-pre-nexus`, circles represent different
-data file formats while arrows represent conversion routines.  Note that
-the red circle only maps to one other format.
-
-.. compound::
-
-    .. _fig.data-pre-nexus:
-
-    .. figure:: img/data-pre-nexus.jpg
-        :alt: fig.data-pre-nexus
-        :width: 35%
-
-        *N* separate file formats
-
-One early idea has been for NeXus to become the common data exchange format,
-and thereby reduce the number of data conversion routines from
-*N * (N-1)* down to *2N*, as shown in
-:ref:`fig.data-post-nexus`.
-
-.. compound::
-
-    .. _fig.data-post-nexus:
-
-    .. figure:: img/data-post-nexus.jpg
-        :alt: fig.data-post-nexus
-        :width: 35%
-
-        *N* separate file formats joined by a common NeXus converter
+For cases where legacy support of the XML or HDF4 storage backends is required
+the NeXus API will still be maintained though and provide an upgrade path via the 
+utilities to convert between the different backends. 
 
 .. _DefinedDictionary:
 

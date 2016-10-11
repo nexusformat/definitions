@@ -10,7 +10,7 @@
 			..
 				NeXus - Neutron and X-ray Common Data Format
 
-				Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
+				Copyright (C) 2008-2016 NeXus International Advisory Committee (NIAC)
 				 
 				This library is free software; you can redistribute it and/osr
 				modify it under the terms of the GNU Lesser General Public
@@ -189,6 +189,10 @@
 				``basicComponent`` data type.
 				(The ``definitionType`` data type is used internally in the NXDL schema 
 				to define elements and attributes to be used by users in NXDL specifications.)
+				
+				Note that the first line of text in a ``doc`` element in a ``definition``
+				is used as a summary in the manual.  Follow the pattern as shown
+				in the base class NXDL files.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>
@@ -630,6 +634,9 @@
 				<xs:attribute name="axes" type="nx:NX_CHAR">
 					<xs:annotation>
 						<xs:documentation>
+							NOTE: Use of this attribute is discouraged.  It is for legacy support.
+							You should use the axes attribute on the NXdata group instead.
+
 							Presence of the ``axes`` attribute means this field is an ordinate.
 							
 							This attribute contains a colon (or comma in legacy files) delimited list
@@ -648,7 +655,7 @@
 					<xs:annotation>
 						<xs:documentation>
 							NOTE: Use of this attribute is discouraged.  It is for legacy support.
-							You should use the axes attribute instead.
+							You should use the axes attribute on the NXdata group instead.
 							
 							Presence of the ``axis`` attribute means this field is an abcissa.
 							
@@ -717,7 +724,7 @@
 				<xs:attribute name="stride" use="optional"  default="1" type="nx:NX_INT">
 					<xs:annotation>
 						<xs:documentation>
-							The ``stride`` and ``offset`` attributes
+							The ``stride`` and ``data_offset`` attributes
 							are used together to index the array of data items in a 
 							multi-dimensional array.  They may be used as an alternative
 							method to address a data array that is not stored in the standard NeXus
@@ -749,16 +756,20 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="offset" use="optional"  default="1" type="nx:nonNegativeUnbounded">
+				<xs:attribute name="data_offset" use="optional"  default="1" type="nx:nonNegativeUnbounded">
 					<xs:annotation>
+						<!--
+							note: renamed from "offset" due to comflict with CIF usage.
+							see: https://github.com/nexusformat/definitions/issues/330#issuecomment-232074420
+							-->
 						<xs:documentation>
-							The ``stride`` and ``offset`` attributes
+							The ``stride`` and ``data_offset`` attributes
 							are used together to index the array of data items in a 
 							multi-dimensional array.  They may be used as an alternative
 							method to address a data array that is not stored in the standard NeXus
 							method of "C" order.
 							
-							The ``offset`` attribute
+							The ``data_offset`` attribute
 							determines the starting coordinates of the data array
 							for each dimension.
 							
@@ -766,7 +777,7 @@
 							or *4. Dataspace Selection Operations* in
 							http://www.hdfgroup.org/HDF5/doc1.6/Dataspaces.html.
 							
-							The ``offset`` attribute contains a 
+							The ``data_offset`` attribute contains a 
 							comma-separated list of integers. 
 							(In addition to the required comma delimiter, 
 							whitespace is also allowed to improve readability.)
@@ -879,6 +890,15 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
+		<xs:attribute name="optional" type="nx:NX_BOOLEAN" default="true">
+			<xs:annotation>
+				<xs:documentation>
+					Is this attribute *optional* (if **true**)
+					or *required* (if **false**)?
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attributeGroup ref="nx:deprecatedAttributeGroup"/>
 	</xs:complexType>
 
 	<xs:simpleType name="nonNegativeUnbounded">
@@ -919,8 +939,9 @@
 					<xs:annotation>
 						<xs:documentation>
 							A link to another item, represented as an
-							absolute path to an existing field such as
-							``/NXentry/NXinstrument/NXdetector/polar_angle``.
+							absolute path to an existing field or group such as
+							``/NXentry/NXinstrument/NXdetector/polar_angle``
+							or ``/NXentry/NXdata``.
 							Could contain these elements:
 							
 							* ``doc``
@@ -960,6 +981,13 @@
 				
 				(This data type is used internally in the NXDL schema 
 				to define elements and attributes to be used by users in NXDL specifications.)
+
+				Note:
+				For documentation of ``definition`` elements,
+				the first line of text in a ``doc``
+				is used as a summary in the manual.  
+				Follow the pattern as shown
+				in the base class NXDL files.
 			</xs:documentation>
 		</xs:annotation>
 		<xs:sequence>

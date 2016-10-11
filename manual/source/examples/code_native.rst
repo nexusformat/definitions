@@ -17,7 +17,11 @@ Compare these code examples with :ref:`NAPI-Examples`.
 .. _code_native.writing:
 
 Writing a simple NeXus file using native HDF5 commands in C
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+.. note:: This example uses the signal/axes attributes applied to the
+   data field, as described in :ref:`Design-FindPlottable-ByName`.
+   New code should use the method described in :ref:`Design-FindPlottable-NIAC2014`.
 
 .. literalinclude:: nxh5write.c
     :tab-width: 4
@@ -27,7 +31,7 @@ Writing a simple NeXus file using native HDF5 commands in C
 .. _code_native.reading:
 
 Reading a simple NeXus file using native HDF5 commands in C
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. literalinclude:: nxh5read.c
     :tab-width: 4

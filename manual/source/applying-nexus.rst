@@ -426,15 +426,13 @@ A group is defined by some XML, as in this example:
 The type is the actual NeXus base class this group belongs to. Optionally a
 ``name`` attribute may be given (default is ``data``).
 
-Next, one needs to include data items too. The XML for such a data item
+Next, one needs to include data items, too. The XML for such a data item
 looks similar to this:
-
-.. FIXME:  This code does not format as a line-numbered example.  It is plain.  Why?
 
 .. literalinclude:: examples/woni-nxdl-data.nxdl
 	:tab-width: 4
 	:linenos:
-	:language: xml
+	:language: text
 
 .. index::
    single: doc (NXDL element)

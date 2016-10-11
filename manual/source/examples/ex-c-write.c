@@ -2,13 +2,13 @@
 
  int main()
  {
+    /* we start with known arrays tth and counts, each length n */
     NXhandle fileID;
     NXopen ("NXfile.nxs", NXACC_CREATE, &fileID);
       NXmakegroup (fileID, "Scan", "NXentry");
       NXopengroup (fileID, "Scan", "NXentry");
         NXmakegroup (fileID, "data", "NXdata");
         NXopengroup (fileID, "data", "NXdata");
-        /* somehow, we already have arrays tth and counts, each length n*/
           NXmakedata (fileID, "two_theta", NX_FLOAT32, 1, &n);
           NXopendata (fileID, "two_theta");
             NXputdata (fileID, tth);

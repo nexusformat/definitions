@@ -3,7 +3,6 @@
 
 import h5py    # HDF5 support
 import numpy
-import my_lib  # uses h5py
 
 print "Write a NeXus HDF5 file"
 fileName = "prj_test.nexus.hdf5"
@@ -15,26 +14,40 @@ mr_arr = data[0]
 i00_arr = numpy.asarray(data[1],'int32')
 
 # create the HDF5 NeXus file
-f = my_lib.makeFile(fileName, file_name=fileName,
-        file_time=timestamp,
-        instrument="APS USAXS at 32ID-B",
-        creator="BasicWriter.py",
-        NeXus_version="4.3.0",
-        HDF5_Version=h5py.version.hdf5_version,
-        h5py_version=h5py.version.version)
+f = h5py.File(fileName, "w")
+# point to the default data to be plotted
+f.attrs['default']          = 'entry'
+# give the HDF5 root some more attributes
+f.attrs['file_name']        = fileName
+f.attrs['file_time']        = timestamp
+f.attrs['instrument']       = 'APS USAXS at 32ID-B'
+f.attrs['creator']          = 'BasicWriter.py'
+f.attrs['NeXus_version']    = '4.3.0'
+f.attrs['HDF5_Version']     = h5py.version.hdf5_version
+f.attrs['h5py_version']     = h5py.version.version
 
-nxentry = my_lib.makeGroup(f, "entry", "NXentry")
-my_lib.makeDataset(nxentry, 'title', data='1-D scan of I00 v. mr')
+# create the NXentry group
+nxentry = f.create_group('entry')
+nxentry.attrs['NX_class'] = 'NXentry'
+nxentry.attrs['default'] = 'mr_scan'
+nxentry.create_dataset('title', data='1-D scan of I00 v. mr')
 
-nxdata = my_lib.makeGroup(nxentry, "mr_scan", "NXdata")
+# create the NXentry group
+nxdata = nxentry.create_group('mr_scan')
+nxdata.attrs['NX_class'] = 'NXdata'
+nxdata.attrs['signal'] = 'I00'      # Y axis of default plot
+nxdata.attrs['axes'] = 'mr'         # X axis of default plot
+nxdata.attrs['mr_indices'] = [0,]   # use "mr" as the first dimension of I00
 
-my_lib.makeDataset(nxdata,  "mr",  mr_arr, units='degrees', 
-                   long_name='USAXS mr (degrees)')
+# X axis data
+ds = nxdata.create_dataset('mr', data=mr_arr)
+ds.attrs['units'] = 'degrees'
+ds.attrs['long_name'] = 'USAXS mr (degrees)'    # suggested X axis plot label
 
-my_lib.makeDataset(nxdata,  "I00",  i00_arr, units='counts',
-      signal=1,          # Y axis of default plot
-      axes='mr',	     # name "mr" as X axis
-      long_name='USAXS I00 (counts)')
+# Y axis data
+ds = nxdata.create_dataset('I00', data=i00_arr)
+ds.attrs['units'] = 'counts'
+ds.attrs['long_name'] = 'USAXS I00 (counts)'    # suggested Y axis plot label
 
 f.close()	# be CERTAIN to close the file
 

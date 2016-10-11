@@ -4,27 +4,47 @@ Writes a simple NeXus HDF5 file using h5py with links
 according to the example from Figure 2.1 in the Design chapter
 '''
 
-import my_lib
+import h5py
+import numpy
 
-INPUT_FILE = 'input.dat'
-HDF5_FILE = 'writer_2_1.hdf5'
+buffer = numpy.loadtxt('input.dat').T
+tthData = buffer[0]                             # float[]
+countsData = numpy.asarray(buffer[1],'int32')   # int[]
 
-#---------------------------
+f = h5py.File('writer_2_1.hdf5', "w")  # create the HDF5 NeXus file
+f.attrs['default'] = 'entry'
 
-tthData, countsData = my_lib.get2ColumnData(INPUT_FILE)
+nxentry = f.create_group('entry')
+nxentry.attrs['NX_class'] = 'NXentry'
+nxentry.attrs['default'] = 'data'
 
-f = my_lib.makeFile(HDF5_FILE)  # create the HDF5 NeXus file
+nxinstrument = nxentry.create_group('instrument')
+nxinstrument.attrs['NX_class'] = 'NXinstrument'
 
-nxentry = my_lib.makeGroup(f, 'entry', 'NXentry')
-nxinstrument = my_lib.makeGroup(nxentry, 'instrument', 'NXinstrument')
-nxdetector = my_lib.makeGroup(nxinstrument, 'detector', 'NXdetector')
+nxdetector = nxinstrument.create_group('detector')
+nxdetector.attrs['NX_class'] = 'NXdetector'
 
-tth = my_lib.makeDataset(nxdetector, "two_theta", tthData, units='degrees')
-counts = my_lib.makeDataset(nxdetector, "counts", countsData, 
-                   units='counts', signal=1, axes='two_theta')
+# store the data in the NXdetector group
+ds_tth = nxdetector.create_dataset('two_theta', data=tthData)
+ds_tth.attrs['units'] = 'degrees'
+ds_counts = nxdetector.create_dataset('counts', data=countsData)
+ds_counts.attrs['units'] = 'counts'
 
-nxdata = my_lib.makeGroup(nxentry, 'data', 'NXdata')
-my_lib.makeLink(nxdetector, tth, nxdata.name+'/two_theta')
-my_lib.makeLink(nxdetector, counts, nxdata.name+'/counts')
+# create the NXdata group to define the default plot
+nxdata = nxentry.create_group('data')
+nxdata.attrs['NX_class'] = 'NXdata'
+nxdata.attrs['signal'] = 'counts'
+nxdata.attrs['axes'] = 'two_theta'
+nxdata.attrs['two_theta_indices'] = [0,]
+
+source_addr = '/entry/instrument/detector/two_theta'    # existing data
+target_addr = 'two_theta'                               # new location
+ds_tth.attrs['target'] = source_addr                    # a NeXus API convention for links
+nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)
+
+source_addr = '/entry/instrument/detector/counts'       # existing data
+target_addr = 'counts'                                  # new location
+ds_counts.attrs['target'] = source_addr                 # a NeXus API convention for links
+nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)
 
 f.close()	# be CERTAIN to close the file

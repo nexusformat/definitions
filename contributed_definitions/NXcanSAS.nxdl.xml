@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2012-2015 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2012-2016 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -29,42 +29,91 @@
      
      In general, for an NXDL file:  NXsomenxdl.nxdl.xml
      all related resources should be stored in subdirectory:  ./somenxdl/
+  NOTE:
+    This is intended to become an application definition, thus its category
+    attribute has been set in anticipation of that use.
  -->
 <definition name="NXcanSAS" extends="NXobject" type="group"
 	    version="1.0"  
-	    category="contributed"
+	    category="application"
 	    xmlns="http://definition.nexusformat.org/nxdl/3.1"
 	    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	    xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
 	    >
 	<doc>
-		Implementation of the :index:`canSAS` standard to store
-		reduced small-angle scattering data of any dimension.
-		
-		for more details, see:
-		
-		* http://www.cansas.org/
-		* http://www.cansas.org/formats/canSAS2012/1.0/doc
-		<!-- 
-		  revise this URL and documentation once canSAS provides 
-		  a full description of the multi-dimensional standard.
-		  
-		  for now, this is based on 
-		  http://www.cansas.org/formats/canSAS2012/1.0/doc/framework.html
-		 -->
-		
-		The minimum requirements for *reduced* small-angle scattering data 
-		as described by canSAS are summarized in the following figure:
-		
-		.. figure:: canSAS/minimum.png
-		   :width: 60%
-		   
-		   The minimum requirements for *reduced* small-angle scattering data.
-		   (:download:`full image &lt;canSAS/minimum.png&gt;`)
+        Implementation of the :index:`canSAS` standard to store reduced small-angle scattering data of any dimension.
+        
+        For more details, see:
+        
+        * http://www.cansas.org/
+        * http://www.cansas.org/formats/canSAS1d/1.1/doc/
+        * https://github.com/canSAS-org/NXcanSAS_examples
+        
+        The minimum requirements for *reduced* small-angle scattering data 
+        as described by canSAS are summarized in the following figure:
+        
+        .. figure:: canSAS/minimum.png
+           :width: 60%
+           
+           The minimum requirements for *reduced* small-angle scattering data.
+           (:download:`full image &lt;canSAS/minimum.png&gt;`)
+        
+        .. rubric::  Implementation of canSAS standard in NeXus
+        
+        This application definition is an implementation of the canSAS
+        standard for storing both one-dimensional and multi-dimensional data.
+        
+        The canSAS data format has a structure similar to NeXus, not identical.
+        To allow canSAS data to be expressed in NeXus, yet identifiable
+        by the canSAS standard, an additional group attribute ``canSAS_class``
+        was introduced.  Here is the mapping of some common groups.
+        
+        ===============  ============  ==========================
+        group (*)        NX_class      canSAS_class
+        ===============  ============  ==========================
+        sasentry         NXentry       SASentry
+        sasdata          NXdata        SASdata
+        sasdetector      NXdetector    SASdetector
+        sasinstrument    NXinstrument  SASinstrument
+        sasnote          NXnote        SASnote
+        sasprocess       NXprocess     SASprocess
+        sasprocessnote   NXcollection  SASprocessnote
+        sastransmission  NXdata        SAStransmission_spectrum
+        sassample        NXsample      SASsample
+        sassource        NXsource      SASsource
+        ===============  ============  ==========================
+        
+        (*) The name of each group is a suggestion,
+        not a fixed requirement and is chosen as fits each data file.  
+        See the section on defining
+        :ref:`NXDL group and field names &lt;RegExpName&gt;`.
+        
+            
+            In canSAS1d, *orientation* (rotations of sample or detector)
+            are described in terms of *roll*, *pitch*, and *yaw*.
+            NeXus uses different terms as shown in the next table:
+            
+            =========   ==============================
+            canSAS1d    NeXus
+            =========   ==============================
+            roll        ``polar_angle``
+            pitch       ``x_axis_rotation`` (not expected or defined here)
+            yaw         ``azimuthal_angle``
+            =========   ==============================
 
 	</doc>
 
   <group type="NXentry">
+	<attribute name="default">
+		<doc>
+			.. index:: plotting
+			
+			Declares which :ref:`NXdata` group 
+			contains the data to be shown by default.
+			It is needed to resolve ambiguity when more than one :ref:`NXdata` group exists. 
+			The value is the name of the default :ref:`NXdata` group.
+		</doc>
+	</attribute>
     <doc>
       .. index:: NXcanSAS (contributed definition); SASentry
       
@@ -155,21 +204,24 @@
       </attribute>
       <attribute name="I_axes">
         <doc>
-          Comma-separated list that describes the names 
-          of the data objects that correspond to the 
-          indices of the ``I`` data object.  Such as::
+          String array that defines the independent data fields used in 
+          the default plot for all of the dimensions of the *signal* field
+          (the *signal* field is the field in this group that is named by
+          the ``signal`` attribute of this group). 
+          One entry is provided for every dimension of the ``I`` data object.  
+          Such as::
           
-          @I_axes="Temperature,Time,Pressure,Q,Q"
+            @I_axes="Temperature", "Time", "Pressure", "Q", "Q"
           
-          Since there are five items in the list, the intensity field
+          Since there are five items in the list, the intensity field of this example
           ``I`` must be a five-dimensional array (rank=5).
         </doc>
       </attribute>
-      <attribute name="I_uncertainty">
+      <attribute name="I_uncertainties">
         <doc>
+          Generally, this is the estimate of the uncertainty of each :math:`I`.
           Typically the estimated standard deviation.  
-          :math:`1/\sqrt{I}` for Poisson statistics.
-          More generally, though, this is the estimate of the uncertainty of each :math:`I`.
+          For Poisson statistics, use :math:`1/\sqrt{I}`.
           
           (optional for numerical arrays) 
           Name of the data object (in this SASdata group) that provides the 
@@ -177,17 +229,21 @@
           
           *Idev* is the canonical name from the 1D standard.  
           The multi-D standard allows for this name to be described in this attribute.
+          Such as::
+          
+            @I_uncertainties="Idev"
+          
         </doc>
       </attribute>
       
-      <attribute name="Q_indices">
+      <attribute name="Q_indices" type="NX_INT">
         <doc>
-          Array that describes which indices 
+          Integer or integer array that describes which indices 
           (of the :math:`I` data object) are used to 
           reference the ``Q`` data object. The items in this array 
           use zero-based indexing.  Such as::
           
-          @Q_indices=1,3,4
+              @Q_indices=1,3,4
           
           which indicates that ``Q`` requires three indices
           from the :math:`I` data object: one for time and
@@ -195,28 +251,34 @@
           ``Q`` data is time-dependent: :math:`\vec{Q}(t)`.
         </doc>
       </attribute>
-      <attribute name="Q_uncertainty">
+      <attribute name="Q_uncertainties">
         <doc>
+          (optional for numerical arrays) 
+          Generally, this is the estimate of the uncertainty of each :math:`Q`.
           Typically the estimated standard deviation.  
-          More general, this is the estimate of the uncertainty of each :math:`Q`.
+          Names the data object (in this SASdata group) that provides the 
+          uncertainty to be used for data analysis.  Such as::
+          
+              @Q_uncertainties="Qdev"
           
           Can use this to describe the slit-length at each datum.
-          Use a subgroup to describe any supplementary uncertainty data
-          such as two-dimensional.              <!-- TODO: confirm -->
+          Use a subgroup to describe any supplementary uncertainty data.
           
-          (optional for numerical arrays) 
-          Name of the data object (in this SASdata group) that provides the 
-          uncertainty to be used for data analysis.
+          To specify two-dimensional uncertainty, such as (*dQw*, *dQl*), 
+          use a string array, such as::
+          
+              @Q_uncertainties="dQw", "dQl"
+          
         </doc>
       </attribute>
       <attribute name="Mask_indices">
         <doc>
-          Array that describes which indices
+          Integer or integer array that describes which indices
           (of the :math:`I` data object) are used to 
           reference the ``Mask`` data object.  The items in this
           array use zero-based indexing.  Such as::
           
-          @Mask_indices=3,4
+              @Mask_indices=3,4
           
           which indicates that Q requires two indices
           from the :math:`I` data object for Q position.
@@ -287,7 +349,78 @@
 			of the analysis process.
 		</doc>
       </field>
+      
+      <field name="Idev" type="NX_NUMBER" units="NX_PER_LENGTH" minOccurs="0">
+        <doc>
+          .. index:: NXcanSAS (contributed definition); Idev
+          
+          Estimated uncertainty (usually standard deviation)
+          in :math:`I`.  Must have the same units as :math:`I`.
 
+          When present, the name of this field is also 
+          recorded in the *uncertainties* attribute of *I*, as in::
+          
+              I/@uncertainties="Idev"
+
+        </doc>
+      </field>
+      
+      <field name="Qdev" type="NX_NUMBER" units="NX_PER_LENGTH" minOccurs="0">
+        <doc>
+          .. index:: NXcanSAS (contributed definition); Qdev
+          
+          Estimated uncertainty (usually standard deviation)
+          in :math:`Q`.  Must have the same units as :math:`Q`.
+          
+          When present, the name of this field is also 
+          recorded in the *uncertainties* attribute of *Q*, 
+          as in::
+          
+              Q/@uncertainties="Qdev"
+              
+              Q/@uncertainties="dQw", "dQl"
+
+        </doc>
+      </field>
+      
+      <field name="dQw" type="NX_NUMBER" units="NX_PER_LENGTH" minOccurs="0">
+        <doc>
+          .. index:: NXcanSAS (contributed definition); dQw
+          
+          :math:`Q` resolution along the axis of scanning 
+          (the high-resolution *slit width* direction). 
+          Useful for defining resolution data from 
+          slit-smearing instruments such as Bonse-Hart geometry.
+          Must have the same units as :math:`Q`.
+          
+          When present, the name of this field is also 
+          recorded in the *uncertainties* attribute of *Q*, 
+          as in::
+          
+              Q/@uncertainties="dQw", "dQl"
+          
+        </doc>
+      </field>
+      
+      <field name="dQl" type="NX_NUMBER" units="NX_PER_LENGTH" minOccurs="0">
+        <doc>
+          .. index:: NXcanSAS (contributed definition); dQl
+          
+          :math:`Q` resolution perpendicular to the axis of scanning 
+          (the low-resolution *slit length* direction). 
+          Useful for defining resolution data from 
+          slit-smearing instruments such as Bonse-Hart geometry.
+          Must have the same units as :math:`Q`.
+          
+          When present, the name of this field is also 
+          recorded in the *uncertainties* attribute of *Q*, 
+          as in::
+          
+              Q/@uncertainties="dQw", "dQl"
+          
+        </doc>
+      </field>
+      
       <field name="Qmean" minOccurs="0" units="NX_PER_LENGTH" type="NX_NUMBER">
         <doc>
           Mean value of :math:`Q` for this data point. 
@@ -308,16 +441,18 @@
     </group>
 
     <!-- optional items -->
-    <field name="title" minOccurs="1" maxOccurs="unbounded">
+    <field name="title" minOccurs="1" maxOccurs="1">
       <doc>
         Title of this *SASentry*.
       </doc>
     </field>
-    <field name="run" minOccurs="1" maxOccurs="unbounded">
+    <field name="run" minOccurs="1" maxOccurs="unbounded" nameType="any">
       <doc>
         Run identification for this *SASentry*. 
         For many facilities, this is an integer. 
-        Use multiple instances of ``run`` as needed.  <!-- TODO: check this, looks unstable -->
+        Use multiple instances of ``run`` as needed, keeping
+        in mind that HDF5 requires unique names for all entities
+        in a group.
       </doc>
       <attribute name="name">
         <doc>
@@ -327,7 +462,7 @@
       </attribute>
     </field>
 
-    <group type="NXinstrument" minOccurs="0" >
+    <group type="NXinstrument">
       <attribute name="canSAS_class">
         <doc>Official canSAS group: :index:`NXcanSAS (contributed definition); SASinstrument`</doc>
         <enumeration>
@@ -369,23 +504,34 @@
 
         </doc>
         
-        <field name="length" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="length" type="NX_NUMBER" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
           <doc>Amount/length of collimation inserted (as on a SANS instrument)</doc>
         </field>
         
-        <group type="NXpinhole" minOccurs="0">
+        <group name="aperture" type="NXaperture" minOccurs="0">
           <doc>
-            Name should be "aperture". 
-            Base class should be either **NXpinhole** or **NXslit**.
+            Name of "aperture" is only a suggestion. 
+            Base class could be either **NXpinhole** or **NXslit**.
+            But **NXaperture** is generic and limits the variation in data files.
           </doc>
-        </group>
-        <group type="NXslit" minOccurs="0">
-          <doc>
-            Name should be "aperture". 
-            Base class should be either **NXpinhole** or **NXslit**.
-          </doc>
+
+          <field name="shape">
+            <doc>
+              describe the type of aperture (pinhole, 4-blade slit, Soller slit, ...)
+            </doc>
+          </field>
+          <field name="x_gap" type="NX_NUMBER" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
+            <doc>opening along the :math:`x` axis</doc>
+          </field>
+          <field name="y_gap" type="NX_NUMBER" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
+            <doc>opening along the :math:`y` axis</doc>
+          </field>
         </group>
 
+        <field name="distance" type="NX_NUMBER" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
+          <doc>Distance from this collimation element to the sample</doc>
+        </field>
+        
         <!-- SAScollimation -->
       </group>
       
@@ -413,26 +559,44 @@
           
         </doc>
         
-        <field name="name">
+        <field name="name" maxOccurs="1">
           <doc>Identifies the name of this detector</doc>
         </field>
-        <field name="distance" type="NX_NUMBER" units="NX_LENGTH" minOccurs="0">
+        <field name="SDD" type="NX_NUMBER" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
           <doc>
-            **SDD**: Distance between sample and detector.
+            Distance between sample and detector.
+            
+            Note: In NXdetector, the ``distance`` field records the 
+            distance to the previous component ... most often the sample.
+            This use is the same as ``SDD`` for most SAS 
+            instruments but not all.  For example, Bonse-Hart cameras 
+            have one or more crystals between the sample and detector.
+              
+            We define here the field ``SDD`` to document without
+            ambiguity the distance between sample and detector.
           </doc>
         </field>
-        <field name="slit_length" type="NX_NUMBER" units="NX_PER_LENGTH" minOccurs="0">
+        <field name="slit_length" type="NX_NUMBER" units="NX_PER_LENGTH" minOccurs="0" maxOccurs="1">
           <doc>
             Slit length of the instrument for this detector, 
             expressed in the same units as :math:`Q`.
           </doc>
         </field>
         
-        <group name="position" type="NXtransformations">
-          <doc>Describes the offset and orientation of the detector.</doc>
-        </group>
+        <field name="x_position" minOccurs="0" maxOccurs="1">
+          <doc>Location of the detector in :math:`x`</doc>
+        </field>
+        <field name="y_position" minOccurs="0" maxOccurs="1">
+          <doc>Location of the detector in :math:`y`</doc>
+        </field>
+        <field name="polar_angle" minOccurs="0" maxOccurs="1">
+          <doc>Rotation of the detector about the :math:`z` axis (roll)</doc>
+        </field>
+        <field name="azimuthal_angle" minOccurs="0" maxOccurs="1">
+          <doc>Rotation of the detector about the :math:`y` axis (yaw)</doc>
+        </field>
         
-        <field name="beam_center_x" type="NX_FLOAT" units="NX_LENGTH">
+        <field name="beam_center_x" type="NX_FLOAT" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
           <doc>
             Position of the beam center on the detector.
             
@@ -442,7 +606,7 @@
           </doc>
         </field>
         
-        <field name="beam_center_y" type="NX_FLOAT" units="NX_LENGTH">
+        <field name="beam_center_y" type="NX_FLOAT" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
           <doc>
             Position of the beam center on the detector.
             
@@ -452,11 +616,11 @@
           </doc>
         </field>
         
-        <field name="x_pixel_size" type="NX_FLOAT" units="NX_LENGTH">
+        <field name="x_pixel_size" type="NX_FLOAT" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
           <doc>Size of each detector pixel. If it is scalar all pixels are the same size</doc>
         </field>
         
-        <field name="y_pixel_size" type="NX_FLOAT" units="NX_LENGTH">
+        <field name="y_pixel_size" type="NX_FLOAT" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
           <doc>Size of each detector pixel. If it is scalar all pixels are the same size</doc>
         </field>
 
@@ -516,34 +680,34 @@
             <item value="proton" />
           </enumeration>
         </field>
-        <field name="beam_shape" minOccurs="0">
+        <field name="beam_shape" minOccurs="0" maxOccurs="1">
           <doc>Text description of the shape of the beam (incident on the sample).</doc>
         </field>
-        <field name="incident_wavelength" minOccurs="0" type="NX_NUMBER" units="NX_WAVELENGTH">
+        <field name="incident_wavelength" minOccurs="0" maxOccurs="1" type="NX_NUMBER" units="NX_WAVELENGTH">
           <doc>wavelength (:math:`\lambda`) of radiation incident on the sample</doc>
         </field>
-        <field name="wavelength_min" minOccurs="0" type="NX_NUMBER" units="NX_WAVELENGTH">
+        <field name="wavelength_min" minOccurs="0" maxOccurs="1" type="NX_NUMBER" units="NX_WAVELENGTH">
           <doc>
             Some facilities specify wavelength using a range. 
             This is the lowest wavelength in such a range.
           </doc>
         </field>
-        <field name="wavelength_max" minOccurs="0" type="NX_NUMBER" units="NX_WAVELENGTH">
+        <field name="wavelength_max" minOccurs="0" maxOccurs="1" type="NX_NUMBER" units="NX_WAVELENGTH">
           <doc>
             Some facilities specify wavelength using a range. 
             This is the highest wavelength in such a range.
           </doc>
         </field>
-        <field name="incident_wavelength_spread" minOccurs="0" type="NX_NUMBER" units="NX_WAVELENGTH">
+        <field name="incident_wavelength_spread" minOccurs="0" maxOccurs="1" type="NX_NUMBER" units="NX_WAVELENGTH">
           <doc>
             Some facilities specify wavelength using a range. 
             This is the width (FWHM) of such a range.
           </doc>
         </field>
-        <field name="beam_size_x" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="beam_size_x" type="NX_NUMBER" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
           <doc>Size of the incident beam along the x axis.</doc>
         </field>
-        <field name="beam_size_y" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="beam_size_y" type="NX_NUMBER" units="NX_LENGTH" minOccurs="0" maxOccurs="1">
           <doc>Size of the incident beam along the y axis.</doc>
         </field>
 
@@ -559,7 +723,7 @@
         ==============
       -->
 
-    <group type="NXsample" minOccurs="0">
+    <group type="NXsample">
       <attribute name="canSAS_class">
         <doc>Official canSAS group: :index:`NXcanSAS (contributed definition); SASsample`</doc>
         <enumeration>
@@ -592,17 +756,36 @@
       <field name="temperature" type="NX_NUMBER" minOccurs="0" maxOccurs="1" units="NX_TEMPERATURE">
         <doc>Temperature of this sample.</doc>
       </field>
-      <field name="details" minOccurs="0" maxOccurs="unbounded">
+      <field name="details" minOccurs="0" maxOccurs="unbounded" nameType="any">
         <doc>Any additional sample details.</doc>
       </field>
+      
+      <!-- canSAS1d "SASsample/position" group: NXtranslation is deprecated -->
+      <field name="x_position" minOccurs="0" maxOccurs="1">
+        <doc>Location of the sample in :math:`x`</doc>
+      </field>
+      <field name="y_position" minOccurs="0" maxOccurs="1">
+        <doc>Location of the sample in :math:`y`</doc>
+      </field>
+      <!-- canSAS1d "SASsample/orientation" group: NXorientation is deprecated
 
-      <group type="NXtranslation" name="position" minOccurs="0">   <!-- TODO: check for compatibility between canSAS and NeXus -->
-        <doc>Location of the sample in :math:`x`, :math:`y`, and :math:`z`.</doc>
-      </group>
-      <group type="NXorientation" name="orientation" minOccurs="0">   <!-- TODO: check for compatibility between canSAS and NeXus -->
-        <doc>Orientation (rotation) of the sample.</doc>
-      </group>
-
+        SASsample/orientation group rotation names mapped into NeXus
+        
+        =========   ==============================
+        canSAS1d    NeXus
+        =========   ==============================
+        roll        polar_angle
+        pitch       x_axis_rotation (not expected or defined here)
+        yaw         azimuthal_angle
+        =========   ==============================
+        -->
+      <field name="polar_angle" minOccurs="0" maxOccurs="1">
+        <doc>Rotation of the sample about the :math:`z` axis (roll)</doc>
+      </field>
+      <field name="azimuthal_angle" minOccurs="0" maxOccurs="1">
+        <doc>Rotation of the sample about the :math:`y` axis (yaw)</doc>
+      </field>
+      
       <!-- NXsample -->
     </group>
     
@@ -634,49 +817,68 @@
         Be sure to include *units* attributes for all numerical fields.
       </doc>
       
-      <field name="name">
+      <field name="name" minOccurs="0" maxOccurs="1">
         <doc>Optional name for this data processing or analysis step</doc>
       </field>
-      <field name="date" type="NX_DATE_TIME" minOccurs="0">
+      <field name="date" type="NX_DATE_TIME" minOccurs="0" maxOccurs="1">
 		<doc>
 			Optional date for this data processing or analysis step. [#iso8601]_
 			
 			
 			.. [#iso8601]  ISO-8601 standard time representation.
 			
-				Use a format for the date which is machine-readable 
-				such as ISO-8601 (e.g., ``yyyy-mm-ddThh:mm:ss``) 
+				NeXus dates and times are reported in ISO-8601 
+				(e.g., ``yyyy-mm-ddThh:mm:ss``) 
 				or modified ISO-8601 (e.g., ``yyyy-mm-dd hh:mm:ss``). 
 				
 				See: http://www.w3.org/TR/NOTE-datetime 
 				or http://en.wikipedia.org/wiki/ISO_8601 for more details.
 		</doc>
       </field>
-      <field name="description" minOccurs="0">
+      <field name="description" minOccurs="0" maxOccurs="1">
         <doc>Optional description for this data processing or analysis step</doc>
       </field>
-      <field name="term" minOccurs="0">
+      <field name="term" minOccurs="0" maxOccurs="unbounded" nameType="any">
         <doc>
           Specifies the value of a single variable, parameter, 
           or term (while defined here as a string, it could be a number) 
           related to the *SASprocess* step.
           
-          The name *term* is not required, it could take any name.
+          Note:
+          The name *term* is not required, it could take any name,
+          as long as the name is unique within this group.
         </doc>
       </field>
       
-      <group type="NXnote">	<!-- suggestion from 2014 NeXus Code Camp -->
-      	<doc>Any additional notes or subprocessing steps will be documented here.</doc>
+      <!--
+        suggested at NIAC2014
+        Isn't this ALWAYS a possibility in any NeXus base class?
+        Not needed to define this but it is a good suggestion for usage.
+        -->
+      <group type="NXnote" minOccurs="0" maxOccurs="unbounded">
+      	<doc>
+      	  Any additional notes or subprocessing steps will be documented here.
+      	  
+      	  An **NXnote** group can be added to any NeXus group at or below the 
+      	  **NXentry** group.  It is shown here as a suggestion of a good place 
+      	  to *consider* its use.
+      	</doc>
       </group>
 
-      <group type="NXcollection">
+      <group name="sasprocessnote" type="NXcollection" minOccurs="0" maxOccurs="unbounded">
         <doc>
           Describes anything about *SASprocess* that is not already described.
           
           Any content not defined in the canSAS standard can be placed at this point.
+
+          Note:
+          The name *sasprocessnote* is not required, it could take any name,
+          as long as the name is unique within the **NXprocess** group.
         </doc>
         <attribute name="canSAS_class">
-        <doc>Official canSAS group: :index:`NXcanSAS (contributed definition); SASprocessnote`</doc>
+          <doc>
+            Official canSAS group: :index:`NXcanSAS (contributed definition); SASprocessnote`
+          </doc>
           <enumeration>
             <item value="SASprocessnote" />
           </enumeration>
@@ -695,7 +897,9 @@
     
     <group type="NXcollection" minOccurs="0" maxOccurs="unbounded">
       <attribute name="canSAS_class">
-        <doc>Official canSAS group: :index:`NXcanSAS (contributed definition); SASnote`</doc>
+        <doc>
+          Official canSAS group: :index:`NXcanSAS (contributed definition); SASnote`
+        </doc>
         <enumeration>
           <item value="SASnote" />
         </enumeration>
@@ -740,16 +944,16 @@
           <item value="T"><doc>For **SAStransmission_spectrum**, this is always "T".</doc></item>
         </enumeration>
       </attribute>
-        <attribute name="T_axes">
-          <enumeration>
-            <item value="T">
-              <doc>the wavelengths field corresponding to this transmission</doc>
-            </item>
-          </enumeration>
-        </attribute>
-        <attribute name="T_uncertainty">
-          <doc>Estimate of the uncertainty of each :math:`T`.</doc>
-        </attribute>
+      <attribute name="T_axes">
+        <enumeration>
+          <item value="T">
+            <doc>the wavelengths field (as a dimension scale) corresponding to this transmission</doc>
+          </item>
+        </enumeration>
+      </attribute>
+      <attribute name="T_uncertainties">
+          <doc>Estimate of the uncertainty of each transmission :math:`T`.</doc>
+      </attribute>
       <attribute name="name">
         <doc>
           Identify what type of spectrum is being described.
@@ -774,6 +978,21 @@
       </field>
       <field name="T" type="NX_NUMBER" units="NX_DIMENSIONLESS">
         <doc>Transmission value (:math:`I/I_0`)</doc>
+      </field>
+      
+      <field name="Tdev" type="NX_NUMBER" units="NX_PER_LENGTH" >
+        <doc>
+          .. index:: NXcanSAS (contributed definition); Tdev
+          
+          Estimated uncertainty (usually standard deviation)
+          in :math:`T`.  Must have the same units as :math:`T`.
+          
+          When present, the name of this field is also 
+          recorded in the *uncertainties* attribute of *T*, as in::
+          
+              T/@uncertainties="Tdev"
+          
+        </doc>
       </field>
     </group>
     

@@ -1,5 +1,5 @@
 #!/bin/sh
-set -o errexit
+set -o errexit -x
 
 # jenkins job name
 job_name="$1"
@@ -12,10 +12,15 @@ fi
 make builddir
 cd build
 make
-# ??? make pdfdoc
+
+( cd ../impatient-guide && rm -rf _build && make latexpdf && make html )
 
 # publish
 if test "${job_name}" = "master branch"; then
+
+    # delete after first run
+    rm -fr /isis/www/nexus/doc/nxvalidate
+
     cd manual
     cd source
 
@@ -26,18 +31,19 @@ if test "${job_name}" = "master branch"; then
     make latexpdf
     cd build
 
+    #pdf
+    cp -f latex/nexus.pdf /isis/www/nexus/doc/NeXusManual.pdf
+
+    #html
     rm -fr /isis/www/nexus/doc/html
     cp -fr html /isis/www/nexus/doc
-    cp -f latex/nexus.pdf /isis/www/nexus/doc/NeXusManual.pdf
     
-    cd ..
-
-    cd ..
-    cd ..
+    cd ../../..
 
     ( cd www; cp -rf * /isis/www/nexus_main )
-    rm -fr /isis/www/nexus_main/download.nexusformat.org
     ( cd www/download.nexusformat.org; cp -rf * /isis/www/nexus )
+
+    ( cd impatient-guide && cp -f _build/latex/NXImpatient.pdf /isis/www/nexus/doc/NXImpatient.pdf && rm -rf /isis/www/nexus/doc/impatient && cp -rf _build/html /isis/www/nexus/doc/impatient )
 fi
 
 exit 0

@@ -5,7 +5,7 @@
 
 # ref: http://www/gnu.org/software/make/manual/make.html
 
-SUBDIRS = manual
+SUBDIRS = manual impatient-guide
 
 .PHONY: subdirs $(SUBDIRS) builddir pdfdoc
 
@@ -17,21 +17,32 @@ subdirs: $(SUBDIRS)
 manual ::
 	$(MAKE) html -C $@
 
+impatient-guide ::
+	$(MAKE) html -C $@
+
 #pdfdoc ::
 #	$(MAKE) latexpdf -C $(SUBDIRS)
 
 clean:
 	$(MAKE) clean -C $(SUBDIRS)
 
-builddir ::
-	$(RM) -r build
+builddir :: 
 	mkdir build
 	python utils/build_preparation.py . build
+
+makebuilddir :: builddir
+	$(MAKE) -C build
+
+cleanbuilddir ::
+	$(MAKE) -C build clean
+
+rmbuilddir ::
+	$(RM) -r build
 
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2016 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

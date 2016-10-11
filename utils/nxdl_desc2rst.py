@@ -99,9 +99,11 @@ For more details, see:
     single: link target
 
 A ``link`` element can *only* be a child of a 
-``field`` or ``group`` element.
+``definition``,
+``field``, or ``group`` element.
 It describes the path to the original source of the parent
-``field`` or ``group``.
+``definition``,
+``field``, or ``group``.
 
 For more details, see: 
 :ref:`NXDL.data.type.linkType`
@@ -476,7 +478,7 @@ if __name__ == '__main__':
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2015 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2016 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

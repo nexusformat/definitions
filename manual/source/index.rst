@@ -29,19 +29,22 @@ This manual built |today|.
 
 .. seealso:: 
 
-   This document is available in different formats:
-   
-   :online HTML:
-   	http://download.nexusformat.org/doc/html/index.html
-
-   ..  2015-05-29,prj: PDF available separately
-      :PDF:
-         :download:`nexus.pdf` (available via online HTML link above)
-
-   A very brief overview is also available (separate from the manual).
+   This document is available in these formats online:
    
    :HTML:
-      http://htmlpreview.github.io/?https://github.com/nexusformat/communications/blob/master/impatient/_build/html/index.html
+   	http://download.nexusformat.org/doc/html/index.html
+
+   :PDF:
+      http://download.nexusformat.org/doc/NeXusManual.pdf
+
+   A very brief overview (title: *NeXus for the Impatient*) 
+   is also available (separate from the manual).
+   
+   :HTML:
+      http://download.nexusformat.org/doc/impatient
+
+   :PDF:
+      http://download.nexusformat.org/doc/NXImpatient.pdf
 
 ..  Suggestions for adding to this manual:
 

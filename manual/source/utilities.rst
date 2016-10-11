@@ -6,10 +6,8 @@ NeXus Utilities
 
 There are many utilities available to read, browse, write, and use NeXus data files. Some
 are provided by the NeXus technical group while others are provided by the community. Still,
-other tools listed here can read or write one of the low-level file formats used by NeXus (HDF4,
-HDF5, or XML).
-
-..  see: http://www.nexusformat.org/Utilities
+other tools listed here can read or write one of the low-level file formats used by NeXus (HDF5,
+HDF4, or XML).
 
 ..  =============================
     section: Utilities from NeXus
@@ -100,41 +98,31 @@ links to further information, as available.
     provided with the source code.
 
 .. index::
-        validation
-	file; validate
-	nxvalidate (utility)
+   validation
+   file; validate
+   nxvalidate (utility)
+   cnxvalidate
+   see: cnxvalidate; nxvalidate (utility)
+
+.. _cnxvalidate:
 
 **nxvalidate**
-    From the source code documentation: 
-    
-    	"Utility to convert a NeXus file into HDF4/HDF5/XML/..." 
-    
-    Note: this command-line tool is
-    different than the newer Java GUI program: ``NXvalidate``.
+   The **nxvalidate** code has been re-written entirely in C,
+   to rely on the NXDL class files (base classes and application definitions).
+   The new code is called **cnxvalidate**.
 
-.. _NXvalidate-java:
-
-.. index:: 
-        NXvalidate (Java GUI)
-
-**NXvalidate**
-    NXvalidate will validate a NeXus file against an application definition. 
-    It relies on ``nxconvert`` being installed. 
-
-    From the source code documentation: 
-    
-    	"NXvalidate is a tool that allows the validation of NeXus files for 
-    	their correctness with respect to content for a given data model.
-    	
-    	"NXvalidate can validate single data files or multiple data files, 
-    	the results are displayed in a friendly way and errors found in the 
-    	file are highlighted to the user."
-    	
-    Note: this Java GUI program is different than the
-    command-line tool ``nxvalidate``.
+   From the :ref:`nxvalidate` source code documentation: 
+   
+      "This is the first version of **nxvalidate** written in C. 
+      Its dependencies are libxml2 and the HDF5 libraries, version 1.8.9 or better. 
+      Its purpose is to validate HDF5 files against NeXus application definitions."
+   
+   Note: this tool is lives in its own GitHub repository: [#]_ **cnxvalidate**.
+   
+   .. [#] **cnxvalidate**: https://github.com/nexusformat/cnxvalidate
 
 .. index:: 
-        plotting
+   plotting
 	NXplot (utility)
 
 **NXplot**
@@ -145,8 +133,8 @@ links to further information, as available.
 .. _Utilities-DataAnalysis:
 
 .. index::
-        single: software
-	single: data analysis software
+   single: software
+   single: data analysis software
 
 Data Analysis
 #############
@@ -270,12 +258,12 @@ as a data format.  It is not intended to be a complete list of all available pac
 .. index:: 
 	spec2nexus
 
-**spec2nexus** (http://spec2nexus.readthedocs.org/)
+**spec2nexus** (http://spec2nexus.readthedocs.io)
     (Python code) Converts SPEC data files and scans into NeXus HDF5 files.
-    Provides h5toText utility program to inspect HDF5 file content.
+    Provides *h5toText* utility program to inspect HDF5 file content.
     Provides libraries:
 
-    * *spec2nexus.prjPySpec*: python binding to read SPEC [#]_ data files
+    * *spec2nexus.spec*: python binding to read SPEC [#]_ data files
     * *spec2nexus.eznx*: (Easy NeXus) supports writing NeXus HDF5 files using h5py
 
     .. [#] SPEC: http://www.certif.com
