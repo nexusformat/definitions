@@ -26,7 +26,8 @@ needs_sphinx = '1.1'   # the :index: role debuted in v1.1
 # Add any Sphinx extension module names here, as strings. They can be extensions
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = []
-extensions.append( 'sphinx.ext.pngmath' )
+extensions.append( 'sphinx.ext.imgmath' )
+#extensions.append( 'sphinx.ext.pngmath' )
 extensions.append( 'sphinx.ext.ifconfig' )
 extensions.append( 'matplotlib.sphinxext.mathmpl' )
 extensions.append( 'sphinx.ext.todo' )
