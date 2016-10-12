@@ -33,6 +33,10 @@ builddir ::
 makebuilddir :: builddir
 	$(MAKE) -C build
 
+remakebuilddir ::
+	python utils/build_preparation.py . build
+	$(MAKE) -C build
+
 cleanbuilddir ::
 	$(MAKE) -C build clean
 
