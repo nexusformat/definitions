@@ -578,12 +578,12 @@ Note that it is the same as that used by *McStas* (http://mcstas.org).
 		+==========================================================+==========================================================+
 		| .. figure:: img/translation-orientation-geometry.jpg     | .. figure:: img/translation-orientation-geometry-2.jpg   |
 		|       :alt: fig.coord.source.view                        |        :alt: fig.coord.detector.view                     |
-		|       :width: 48%                                        |        :width: 48%                                       |
+		|       :width: 33%                                        |        :width: 33%                                       |
 		+----------------------------------------------------------+----------------------------------------------------------+
 
 	.. figure:: img/translation-orientation-geometry-2.jpg
 	      :alt: fig.coord.detector.view
-	      :width: 48%
+	      :width: 33%
 
 	      NeXus coordinate system, as viewed from detector
 
