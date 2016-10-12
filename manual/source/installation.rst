@@ -143,6 +143,38 @@ Instructions how to build the NAPI code can be found either on the
 GitHub project website or in the `README.rst` file shipped with the source
 distribution.
 
+Releases
+########
+
+NeXus definitions
+=================
+
+Releases of the NeXus definitions are listed on the GitHub web site:
+https://github.com/nexusformat/definitions/releases
+
+1. each NXDL file has a ``definitions/@version`` attribute that declares the version of this NXDL file
+2. we will tag the definitions repository with new releases of the NeXus definitions
+
+  a. example: change of an application definition version will compel a new NeXus definitions tag
+
+  b. before pushing a new change, we should copy the documentation PDF of the current release
+     to a place to be setup to retain legacy versions of the documentation 
+     (we can do this manually until we decide how to automate this in a robust way)
+  
+  c. NeXus uses a modified semantic versioning* (http://semver.org): major.minor  but no ".patch" level.
+  
+     :major: (not described above) 3 (currently) - changes in NXDL language that are incompatible with previous versions
+     :minor: (item 2&3 above) 1 (currently) - changes in NXDL structure
+     :patch: (item 1 above) releases for NXDL file changes 
+     
+     For changes at the *patch* level (commits to the GitHub master branch), we will move the current 
+     *major.minor* tag to point to the newest commit hash.
+
+3. changes in the NXDL language (such as new unit types) will become part of a new tag
+4. the syntax of the NXDL language is currently 3.1 (2016-10-12)
+
+-----------
+
 In case you need help, feel free to contact the 
 :ref:`NeXus.mailinglist.main`: 
 
@@ -150,4 +182,3 @@ In case you need help, feel free to contact the
    http://lists.nexusformat.org/mailman/listinfo/nexus
 :email:
    nexus@nexusformat.org
-
