@@ -143,6 +143,11 @@ Instructions how to build the NAPI code can be found either on the
 GitHub project website or in the `README.rst` file shipped with the source
 distribution.
 
+.. index::
+   ! release; NeXus definitions
+
+.. _Releases:
+
 Releases
 ########
 
