@@ -33,8 +33,12 @@ complicated the NeXus hierarchy even further and causes problems with backwards 
 Also there would have been cases of multiple inheritance where things turn really messy. Instead 
 the NeXus community decided to solve the problem with interfaces. Interfaces detail the fields 
 necessary to describe either a shared or special concept. A set of interfaces are  
-defined which a base class can implement. The interfaces implemented by  a given base class 
-are stored as a group attribute which becomes a komma separated list of interfaces.   
+defined which a base class can implement. The interfaces which  a
+given base class can implements  are stored as a group attribute with
+the name **implements**
+which becomes a komma separated list of interfaces.   In a real file
+the **implements** attribute would hold the information which
+interfaces are actually implemented by this isntance of a group.
 
 NeXus interfaces are up to now only used to improve the definition of base classes. 
 
