@@ -40,7 +40,8 @@
 	    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	    xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
 	    >
-	<doc>
+
+  <doc>
         Implementation of the :index:`canSAS` standard to store reduced small-angle scattering data of any dimension.
         
         For more details, see:
@@ -61,8 +62,15 @@
         .. rubric::  Implementation of canSAS standard in NeXus
         
         This application definition is an implementation of the canSAS
-        standard for storing both one-dimensional and multi-dimensional data.
-        
+        standard for storing both one-dimensional and multi-dimensional 
+        *reduced* small-angle scattering data.
+
+        * NXcanSAS is for reduced SAS data and metadata to be stored together in one file.
+        * *Reduced* SAS data consists of :math:`I(\vec{Q})` or :math:`I(|\vec{Q}|)`
+        * External file links are not to be used for the reduced data. 
+        * A good practice/practise is, at least, to include a reference to how the data was acquired and processed.  Yet this is not a requirement.
+        * There is no need for NXcanSAS to refer to any raw data.
+
         The canSAS data format has a structure similar to NeXus, not identical.
         To allow canSAS data to be expressed in NeXus, yet identifiable
         by the canSAS standard, an additional group attribute ``canSAS_class``
@@ -87,21 +95,7 @@
         not a fixed requirement and is chosen as fits each data file.  
         See the section on defining
         :ref:`NXDL group and field names &lt;RegExpName&gt;`.
-        
-            
-            In canSAS1d, *orientation* (rotations of sample or detector)
-            are described in terms of *roll*, *pitch*, and *yaw*.
-            NeXus uses different terms as shown in the next table:
-            
-            =========   ==============================
-            canSAS1d    NeXus
-            =========   ==============================
-            roll        ``polar_angle``
-            pitch       ``x_axis_rotation`` (not expected or defined here)
-            yaw         ``azimuthal_angle``
-            =========   ==============================
-
-	</doc>
+  </doc>
 
   <group type="NXentry">
 	<attribute name="default">
@@ -112,6 +106,7 @@
 			contains the data to be shown by default.
 			It is needed to resolve ambiguity when more than one :ref:`NXdata` group exists. 
 			The value is the name of the default :ref:`NXdata` group.
+			Usually, this will be the name of the first *SASdata* group.
 		</doc>
 	</attribute>
     <doc>
@@ -175,7 +170,13 @@
         
         *Q* can be either a vector (:math:`\vec{Q}`) or a vector magnitude (:math:`|\vec{Q}|`)
         
-        The name of each *SASdata* must be unique within a SASentry group.  Such as ``sasdata01``.
+        The name of each *SASdata* group must be unique within a SASentry group.  
+        Suggest using names such as ``sasdata01``.
+        
+        NOTE:  For the first *SASdata* group, be sure to write the chosen name 
+        into the `SASentry/@default` attribute, as in::
+        
+            SASentry/@default="sasdata01"
         
         A *SASdata* group has several attributes:
         
@@ -308,6 +309,29 @@
 			:math:`|\vec{Q}|` 
 			or :math:`\vec{Q}`,  depending on the context.
         </doc>
+        <attribute name="resolution" type="NX_CHAR" >
+          <doc>
+            (optional) 
+            Generally, this is the principal resolution of each :math:`Q`.
+            Names the data object (in this SASdata group) that provides the 
+            :math:`Q` resolution to be used for data analysis.  Such as::
+            
+                @resolution="Qres"
+            
+            The name of the dataset containing the :math:`Q` resolution
+            is flexible.  The name must be unique in the *SASdata* group.
+            
+            .. comment
+               see: https://github.com/canSAS-org/canSAS2012/issues/7
+            
+               There may also be a subdirectory (optional) with constituent 
+               components, similar to the handling of complex uncertainties.
+            
+               This pattern will demonstrate how to introduce further as-yet 
+               unanticipated terms related to the data.
+
+          </doc>
+        </attribute>
       </field>
       <field name="I" type="NX_NUMBER">
         <!-- http://www.cansas.org/formats/canSAS2012/1.0/doc/basics.html#definition-of-intensity -->
@@ -470,7 +494,7 @@
         </enumeration>
       </attribute>
       <doc>
-        This the SAS instrument.
+        This is the SAS instrument.
         
         .. figure:: canSAS/SASinstrument.png
           :width: 60%
@@ -486,7 +510,8 @@
         ==============
       -->
       
-      <group type="NXcollimator" minOccurs="0">       <!-- TODO: confirm how SAScollimation maps onto NXcollimator -->
+      <!-- TODO: confirm how SAScollimation maps onto NXcollimator -->
+      <group type="NXcollimator" minOccurs="0">       
         <attribute name="canSAS_class">
         <doc>Official canSAS group: :index:`NXcanSAS (contributed definition); SAScollimation`</doc>
           <enumeration>
@@ -589,10 +614,13 @@
         <field name="y_position" minOccurs="0" maxOccurs="1">
           <doc>Location of the detector in :math:`y`</doc>
         </field>
-        <field name="polar_angle" minOccurs="0" maxOccurs="1">
+        <field name="roll" minOccurs="0" maxOccurs="1">
           <doc>Rotation of the detector about the :math:`z` axis (roll)</doc>
         </field>
-        <field name="azimuthal_angle" minOccurs="0" maxOccurs="1">
+        <field name="pitch" minOccurs="0" maxOccurs="1">
+          <doc>Rotation of the detector about the :math:`x` axis (roll)</doc>
+        </field>
+        <field name="yaw" minOccurs="0" maxOccurs="1">
           <doc>Rotation of the detector about the :math:`y` axis (yaw)</doc>
         </field>
         
@@ -760,29 +788,19 @@
         <doc>Any additional sample details.</doc>
       </field>
       
-      <!-- canSAS1d "SASsample/position" group: NXtranslation is deprecated -->
       <field name="x_position" minOccurs="0" maxOccurs="1">
         <doc>Location of the sample in :math:`x`</doc>
       </field>
       <field name="y_position" minOccurs="0" maxOccurs="1">
         <doc>Location of the sample in :math:`y`</doc>
       </field>
-      <!-- canSAS1d "SASsample/orientation" group: NXorientation is deprecated
-
-        SASsample/orientation group rotation names mapped into NeXus
-        
-        =========   ==============================
-        canSAS1d    NeXus
-        =========   ==============================
-        roll        polar_angle
-        pitch       x_axis_rotation (not expected or defined here)
-        yaw         azimuthal_angle
-        =========   ==============================
-        -->
-      <field name="polar_angle" minOccurs="0" maxOccurs="1">
+      <field name="roll" minOccurs="0" maxOccurs="1">
         <doc>Rotation of the sample about the :math:`z` axis (roll)</doc>
       </field>
-      <field name="azimuthal_angle" minOccurs="0" maxOccurs="1">
+      <field name="pitch" minOccurs="0" maxOccurs="1">
+        <doc>Rotation of the sample about the :math:`x` axis (roll)</doc>
+      </field>
+      <field name="yaw" minOccurs="0" maxOccurs="1">
         <doc>Rotation of the sample about the :math:`y` axis (yaw)</doc>
       </field>
       
@@ -865,15 +883,15 @@
       	</doc>
       </group>
 
-      <group name="sasprocessnote" type="NXcollection" minOccurs="0" maxOccurs="unbounded">
+      <group type="NXcollection" minOccurs="0" maxOccurs="unbounded">
         <doc>
           Describes anything about *SASprocess* that is not already described.
           
           Any content not defined in the canSAS standard can be placed at this point.
 
           Note:
-          The name *sasprocessnote* is not required, it could take any name,
-          as long as the name is unique within the **NXprocess** group.
+          The name of this group is flexible, it could take any name,
+          as long as it is unique within the **NXprocess** group.
         </doc>
         <attribute name="canSAS_class">
           <doc>
@@ -929,6 +947,8 @@
           The *SAStransmission_spectrum* element
           (:download:`full image &lt;canSAS/SAStransmission_spectrum.png&gt;`)
         
+        The name of each *SAStransmission_spectrum* group must be unique within a SASentry group.  
+        Suggest using names such as ``sastransmission_spectrum01``.
       </doc>
       <attribute name="canSAS_class">
         <doc>Official canSAS group: :index:`NXcanSAS (contributed definition); SAStransmission_spectrum`</doc>
@@ -974,10 +994,18 @@
       </attribute>
       
       <field name="lambda" type="NX_NUMBER" units="NX_WAVELENGTH">
-        <doc>Wavelength of the radiation.</doc>
+        <doc>
+          Wavelength of the radiation.
+          
+          This array is of the same shape as ``T`` and ``Tdev``.
+        </doc>
       </field>
       <field name="T" type="NX_NUMBER" units="NX_DIMENSIONLESS">
-        <doc>Transmission value (:math:`I/I_0`)</doc>
+        <doc>
+          Transmission value (:math:`I/I_0`)
+          
+          This array is of the same shape as ``lambda`` and ``Tdev``.
+        </doc>
       </field>
       
       <field name="Tdev" type="NX_NUMBER" units="NX_PER_LENGTH" >
@@ -991,12 +1019,12 @@
           recorded in the *uncertainties* attribute of *T*, as in::
           
               T/@uncertainties="Tdev"
-          
+              
+          This array is of the same shape as ``lambda`` and ``T``.
         </doc>
       </field>
     </group>
     
-    <!-- NXsubentry -->
   </group>
   
 </definition>
