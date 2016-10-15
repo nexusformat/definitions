@@ -76,7 +76,9 @@ the following steps are required:
 #. Map the component parameters to NeXus groups and parameters and add the components to the
    ``NXinstrument`` hierarchy
 
-#. Decide what needs to go into ``NXdata``
+#. Decide what needs to go into ``NXdata``.  While this group is optional,
+   you are urged strongly to provide an ``NXdata`` to support
+   default plotting. 
 
 #. Fill the ``NXsample`` and ``NXmonitor`` groups
 
@@ -133,7 +135,7 @@ A more elaborate example of the mapping process is given in the section :ref:`NX
 Decide on ``NXdata``
 ====================
 
-The ``NXdata/`` group is supposed to contain the data required to put up a quick plot. For WONI this is a plot of counts versus
+The optional ``NXdata/`` group is supposed to contain the data required to put up a quick plot. For WONI this is a plot of counts versus
 two theta (polar_angle in NeXus) as can be seen in :ref:`FigWoniPowderData`. Now, in ``NXdata``, create links to the appropriate
 data items in the ``NXinstrument`` hierarchy. In the case of WONI, both parameters live in the ``detector:NXdetector`` group.
 

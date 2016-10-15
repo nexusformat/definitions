@@ -12,7 +12,7 @@ angle *two_theta*, we choose to store both datasets,
 One appropriate NeXus group is :ref:`NXdetector`.
 This group is placed in a :ref:`NXinstrument` group
 which is placed in a :ref:`NXentry` group.
-Still, NeXus requires a :ref:`NXdata` group.
+To support a default plot, we provide a :ref:`NXdata` group.
 Rather than duplicate the same data already placed in the detector group,
 we choose to link to those datasets from the ``NXdata`` group.
 (Compare the next figure with :ref:`fig.data-linking` in the

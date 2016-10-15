@@ -728,14 +728,15 @@ is specified using attributes attached to the :ref:`NXdata` group.
    follow the chain as it is described from that point. 
    Specifically:
    
-   *  The root of the NeXus file will have a ``default`` 
+   *  The root of the NeXus file may have a ``default`` 
       attribute that names the default :ref:`NXentry` group.
       This attribute may be omitted if there is only one NXentry group.
       If a second NXentry group is later added, the ``default`` attribute 
       must be added then.
-   *  Every :ref:`NXentry` group will have a ``default`` 
+   *  Every :ref:`NXentry` group may have a ``default`` 
       attribute that names the default :ref:`NXdata` group.
-      This attribute may be omitted if there is only one NXdata group.
+      This attribute may be omitted if there is only one NXdata group
+      or if no NXdata is present.
       If a second NXdata group is later added, the ``default`` attribute 
       must be added then.
    *  Every :ref:`NXdata` group will have a ``signal`` 

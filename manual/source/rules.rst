@@ -123,22 +123,28 @@ Especially at synchrotron facilities, there are experiments which perform severa
 on the sample at the same time. For example, combine a powder diffraction experiment with XAS.
 This may happen in the same scan, so the data needs to be grouped together. A suitable ``NXentry``
 would need to adhere to two different application definitions. This leads to name clashes which cannot be
-easily resolved. In order to solve this issue, the following scheme was implemented in NeXus:
+resolved easily. In order to solve this issue, the following scheme was implemented in NeXus:
 
 - The complete beamline (all data) is stored in an
   appropriate hierarchy in an ``NXentry``.
 
 - The ``NXentry`` group contains further ``NXsubentry`` groups,
-  one for each method. Each ``NXsubentry`` group is constructed
+  one for each method. 
+  
+- Each :ref:`NXsubentry` group is constructed
   like a ``NXentry`` group.
   It contains links to all those data items required to fulfill
-  the application definition for the particular method it represents.
+  the application definition for the particular. method it represents.
+
+- The name of the application definition is stored in the ``definition``
+  field of the :ref:`NXsubentry` group
 
 - Each ``NXsubentry`` group contains a ``NXdata`` group describing
   the default plottable data for that experimental method.  
   To satisfy the NeXus requirement of finding the default
   plottable data from a ``NXentry`` group, the ``NXdata`` group
-  from one of these ``NXsubentry`` groups (the fluoresence data) was linked.
+  from one of these ``NXsubentry`` groups (the fluoresence data) 
+  was linked.
 
 See figure :ref:`NeXus Multi Method Hierarchy <table.NXsubentry>` for an example hierarchy.
 Note that ``[,]`` represents a 2D array.
@@ -183,7 +189,7 @@ points.
   the scan and the detector data. Thus the ``NXdata`` group  mimics the usual
   tabular representation of a scan.
 
-- Datasets in an ``NXdata`` group must contain the proper attributes
+- The ``NXdata`` group has attributes
   to enable the :index:`default plotting <plotting>`,
   as described in the section titled 
   :ref:`NXdata Facilitates Automatic Plotting <NXdata-facilitates-TheDefaultPlot>`.
