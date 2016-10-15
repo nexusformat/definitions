@@ -166,7 +166,7 @@ https://github.com/nexusformat/definitions/releases
      to a place to be setup to retain legacy versions of the documentation 
      (we can do this manually until we decide how to automate this in a robust way)
   
-  c. NeXus uses a modified semantic versioning* (http://semver.org): major.minor  but no ".patch" level.
+  c. NeXus uses a modified *semantic versioning* [#]_: major.minor  but no ".patch" level.
   
      :major: (not described above) 3 (currently) - changes in NXDL language that are incompatible with previous versions
      :minor: (item 2&3 above) 1 (currently) - changes in NXDL structure
@@ -177,6 +177,8 @@ https://github.com/nexusformat/definitions/releases
 
 3. changes in the NXDL language (such as new unit types) will become part of a new tag
 4. the syntax of the NXDL language is currently 3.1 (2016-10-12)
+
+.. [#] *semantic versioning*: http://semver.org
 
 -----------
 
