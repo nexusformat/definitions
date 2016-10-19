@@ -77,7 +77,7 @@ the following steps are required:
    ``NXinstrument`` hierarchy
 
 #. Decide what needs to go into ``NXdata``.  While this group is optional,
-   you are urged strongly to provide an ``NXdata`` to support
+   you are urged strongly to provide an ``NXdata`` group to support
    default plotting. 
 
 #. Fill the ``NXsample`` and ``NXmonitor`` groups
