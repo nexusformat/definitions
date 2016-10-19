@@ -37,13 +37,40 @@ Consider the case where we wish to store the data from a step scan.
 This case may involve two or more *related*
 1-D arrays of data to be saved, each
 having the same length. For our hypothetical case, we'lll
-have these positioners as arrays:
+have these positioners as arrays and assume that a default plot of
+*photodiode* vs. *ar*:
 
 ======================   ====================================================
 positioner arrays        detector arrays
 ======================   ====================================================
 ``ar``, ``ay``, ``dy``   ``I0``, ``I00``, ``time``, ``Epoch``, ``photodiode``
 ======================   ====================================================
+
+   .. compound::
+
+      .. rubric:: Data file structure for 
+         *Step scan with two or more data columns*
+
+      .. code-block:: text
+         :linenos:
+
+         file.nxs: NeXus HDF5 data file
+            @default = entry
+            entry: NXentry
+               @NX_class = NXentry
+               @default = data
+               data: NXdata
+                  @NX_class = NXdata
+                  @signal = photodiode
+                  @axes = ar
+                  ar: float64[]
+                  ay: float64[]
+                  dy: float64[]
+                  I0: float64[]
+                  I00: float64[]
+                  time: float64[]
+                  Epoch: float64[]
+                  photodiode: float64[]
 
 
 ..  +++++++++++++++ The next case +++++++++++++++++++
