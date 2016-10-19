@@ -46,31 +46,31 @@ positioner arrays        detector arrays
 ``ar``, ``ay``, ``dy``   ``I0``, ``I00``, ``time``, ``Epoch``, ``photodiode``
 ======================   ====================================================
 
-   .. compound::
+.. compound::
 
-      .. rubric:: Data file structure for 
-         *Step scan with two or more data columns*
+   .. rubric:: Data file structure for 
+      *Step scan with two or more data columns*
 
-      .. code-block:: text
-         :linenos:
+   .. code-block:: text
+      :linenos:
 
-         file.nxs: NeXus HDF5 data file
-            @default = entry
-            entry: NXentry
-               @NX_class = NXentry
-               @default = data
-               data: NXdata
-                  @NX_class = NXdata
-                  @signal = photodiode
-                  @axes = ar
-                  ar: float64[]
-                  ay: float64[]
-                  dy: float64[]
-                  I0: float64[]
-                  I00: float64[]
-                  time: float64[]
-                  Epoch: float64[]
-                  photodiode: float64[]
+      file.nxs: NeXus HDF5 data file
+         @default = entry
+         entry: NXentry
+            @NX_class = NXentry
+            @default = data
+            data: NXdata
+               @NX_class = NXdata
+               @signal = photodiode
+               @axes = ar
+               ar: NX_FLOAT[]
+               ay: NX_FLOAT[]
+               dy: NX_FLOAT[]
+               I0: NX_FLOAT[]
+               I00: NX_FLOAT[]
+               time: NX_FLOAT[]
+               Epoch: NX_FLOAT[]
+               photodiode: NX_FLOAT[]
 
 
 ..  +++++++++++++++ The next case +++++++++++++++++++
@@ -96,9 +96,41 @@ The canonical location to store wavelength has been::
 
 	/NXentry/NXinstrument/NXcrystal/wavelength
 
+.. compound::
+
+   .. rubric:: Partial data file structure for 
+      *canonical location to store wavelength*
+
+   .. code-block:: text
+      :linenos:
+
+      entry: NXentry
+         @NX_class = NXentry
+         instrument: NXinstrument
+            @NX_class = NXinstrument
+            crystal: NXcrystal
+               @NX_class = NXcrystal
+               wavelength: NX_FLOAT
+
 More recently, this location makes more sense to many::
 
 	/NXentry/NXinstrument/NXmonochromator/wavelength
+
+.. compound::
+
+   .. rubric:: Partial data file structure for 
+      *location which makes more sense to many* to store wavelength
+
+   .. code-block:: text
+      :linenos:
+
+      entry: NXentry
+         @NX_class = NXentry
+         instrument: NXinstrument
+            @NX_class = NXinstrument
+            monochromator: NXmonochromator
+               @NX_class = NXmonochromator
+               wavelength: NX_FLOAT
 
 :ref:`NXcrystal` describes a crystal monochromator or analyzer.
 Recently, scientists with monochromatic radiation not defined by a crystal,
