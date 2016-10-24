@@ -8,7 +8,7 @@ NeXus Introduction
    introduction
    motivation
 
-NeXus is an effort by an international group of scientists 
+NeXus [#]_ is an effort by an international group of scientists 
 :ref:`motivated <MotivationsForNeXus>`
 to define a common data exchange format for neutron, X-ray, and muon experiments.  
 NeXus is built on top of the scientific data format HDF5 and adds 
@@ -44,6 +44,9 @@ such as NeXus is and how to write simple programs to read and write NeXus files.
 The programmers who produce intermediate files for
 storing analyzed data should agree on simple interchange 
 :index:`rules <rules>`.
+
+.. [#] *J. Appl. Cryst.* (2015). **48**, 301-305
+   (https://doi.org/10.1107/S1600576714027575)
 
 ..  =======================
     section: What is NeXus?
