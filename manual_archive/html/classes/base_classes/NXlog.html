@@ -122,22 +122,38 @@
 <span id="index-0"></span><span id="id1"></span><h1>3.3.1.29. NXlog<a class="headerlink" href="#nxlog" title="Permalink to this headline">¶</a></h1>
 <p><strong>Status</strong>:</p>
 <blockquote>
-<div>base class, extends <a class="reference internal" href="NXobject.html#nxobject"><span>NXobject</span></a>, version 1.0</div></blockquote>
+<div>base class, extends <a class="reference internal" href="NXobject.html#nxobject"><span>NXobject</span></a>, version 1.1</div></blockquote>
 <p><strong>Description</strong>:</p>
 <blockquote>
 <div><p>Information recorded as a function of time.</p>
-<p>Description of information that is recorded against time,
-such as information monitored during the run.
-It contains
-the logged values and the times at which they were measured as elapsed time since a starting
-time recorded in ISO8601 format. This method of storing logged data helps to distinguish
+<p>Description of information that is recorded against
+time. There are two common use cases for this:</p>
+<ul class="simple">
+<li>When logging data such as temperature during a run</li>
+<li>When data is taken in streaming mode data acquisition,</li>
+</ul>
+<p>i.e. just timestamp, value pairs are stored and
+correlated later in data reduction with other data,</p>
+<p>It both cases NXlog contains
+the logged or streamed  values and the times at which they were measured as elapsed time since a starting
+time recorded in ISO8601 format. The time units are
+specified in the units attribute. An optional scaling attribute
+can be used to accomodate non standard clocks.</p>
+<p>This method of storing logged data helps to distinguish
 instances in which a variable is a dimension scale of the data, in which case it is stored
 in an <a class="reference internal" href="NXdata.html#nxdata"><span>NXdata</span></a> group, and instances in which it is logged during the
-run, when it should be stored in an <a class="reference internal" href="#nxlog"><span>NXlog</span></a> group.
-Note: When using multiple <a class="reference internal" href="#nxlog"><span>NXlog</span></a> groups, it is suggested to place
+run, when it should be stored in an <a class="reference internal" href="#nxlog"><span>NXlog</span></a>
+group.</p>
+<p>Note: When using multiple <a class="reference internal" href="#nxlog"><span>NXlog</span></a> groups, it is suggested to place
 them inside a <a class="reference internal" href="NXcollection.html#nxcollection"><span>NXcollection</span></a> group.  In such cases, when
 <a class="reference internal" href="#nxlog"><span>NXlog</span></a> is used in another class,
 <a class="reference internal" href="NXcollection.html#nxcollection"><span>NXcollection</span></a>/<a class="reference internal" href="#nxlog"><span>NXlog</span></a> is then constructed.</p>
+<p>In order to make random access to timestamped data faster there is an optional array pair of
+cue_timestamp_zero and cue_index. The cue_timestamp_zero will
+contain courser timestamps then in the time array, say
+every five minutes. The cue_index will then contain the
+index into the time,value pair of arrays for that
+courser cue_timestamp_zero.</p>
 </div></blockquote>
 <p><strong>Symbols</strong>:</p>
 <blockquote>
@@ -151,27 +167,42 @@ them inside a <a class="reference internal" href="NXcollection.html#nxcollection
 <div><p id="index-1"><strong>time</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-float"><span>NX_FLOAT</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-time"><span>NX_TIME</span></a>}</p>
 <blockquote>
 <div><p>Time of logged entry. The times are relative to the &#8220;start&#8221; attribute
-and in the units specified in the &#8220;units&#8221; attribute.</p>
+and in the units specified in the &#8220;units&#8221;
+attribute. Please note that absolute
+timestamps under unix are relative to 1.1.1970:00:00.</p>
 <p id="index-2"><strong>&#64;start</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-date-time"><span>NX_DATE_TIME</span></a></p>
+<p id="index-3"><strong>&#64;scaling</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-number"><span>NX_NUMBER</span></a></p>
 </div></blockquote>
-<p id="index-3"><strong>value</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-number"><span>NX_NUMBER</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
+<p id="index-4"><strong>value</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-number"><span>NX_NUMBER</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
 <blockquote>
-<div>Array of logged value, such as temperature</div></blockquote>
-<p id="index-4"><strong>raw_value</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-number"><span>NX_NUMBER</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
+<div>Array of logged value, such as temperature. If this is
+a single value the dimensionality is
+nEntries. However, NXlog can also be used to store
+multi dimensional time stamped data such as images. In
+this example the dimensionality of values would be value[nEntries,xdim,ydim].</div></blockquote>
+<p id="index-5"><strong>raw_value</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-number"><span>NX_NUMBER</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
 <blockquote>
 <div>Array of raw information, such as thermocouple voltage</div></blockquote>
-<p id="index-5"><strong>description</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-char"><span>NX_CHAR</span></a></p>
+<p id="index-6"><strong>description</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-char"><span>NX_CHAR</span></a></p>
 <blockquote>
 <div>Description of logged value</div></blockquote>
-<p id="index-6"><strong>average_value</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-float"><span>NX_FLOAT</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
-<p id="index-7"><strong>average_value_error</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-float"><span>NX_FLOAT</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
+<p id="index-7"><strong>average_value</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-float"><span>NX_FLOAT</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
+<p id="index-8"><strong>average_value_error</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-float"><span>NX_FLOAT</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
 <blockquote>
 <div>estimated uncertainty (often used: standard deviation) of average_value</div></blockquote>
-<p id="index-8"><strong>minimum_value</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-float"><span>NX_FLOAT</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
-<p id="index-9"><strong>maximum_value</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-float"><span>NX_FLOAT</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
-<p id="index-10"><strong>duration</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-float"><span>NX_FLOAT</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
+<p id="index-9"><strong>minimum_value</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-float"><span>NX_FLOAT</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
+<p id="index-10"><strong>maximum_value</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-float"><span>NX_FLOAT</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
+<p id="index-11"><strong>duration</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-float"><span>NX_FLOAT</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span>NX_ANY</span></a>}</p>
 <blockquote>
 <div>Total time log was taken</div></blockquote>
+<p id="index-12"><strong>cue_timestamp_zero</strong>: <a class="reference internal" href="../../nxdl-types.html#nx-date-time"><span>NX_DATE_TIME</span></a> {units=<a class="reference internal" href="../../nxdl-types.html#nx-time"><span>NX_TIME</span></a>}</p>
+<blockquote>
+<div>Timestamps matching the corresponding cue_index into the
+time, value pair.</div></blockquote>
+<p id="index-13"><strong>cue_index</strong>: <span class="xref std std-ref">NX_INTEGER</span></p>
+<blockquote>
+<div>Index into the time, value pair matching the corresponding
+cue_timestamp.</div></blockquote>
 </div></blockquote>
 <dl class="docutils">
 <dt><strong>NXDL Source</strong>:</dt>
@@ -205,7 +236,7 @@ and in the units specified in the &#8220;units&#8221; attribute.</p>
     </div>
     <div class="footer" role="contentinfo">
         &copy; <a href="../../copyright.html">Copyright</a> 1996-2016, http://nexusformat.org.
-      Last updated on 2016-11-14 11:50:37 CET.
+      Last updated on 2016-11-22 16:55:48 CET.
       Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.3.1.
     </div>
   </body>
