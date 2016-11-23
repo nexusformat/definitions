@@ -197,9 +197,8 @@ Important Classes
 Here are some of the important classes found in nearly all NeXus files. A
 complete list can be found in the :ref:`Design` chapter.
 
-.. note:: ``NXentry`` and ``NXdata``
-          are the only two classes necessary to store the minimum
-          amount of information in a valid NeXus data file.
+.. note:: ``NXentry``
+          is the only class required in a valid NeXus data file.
 
 .. index:: NXentry (base class)
 
@@ -218,9 +217,7 @@ complete list can be found in the :ref:`Design` chapter.
 .. index:: NXdata (base class)
 
 :ref:`NXdata`
-    *Required:*
-    Each ``NXentry`` group contains one or more groups with 
-    class ``NXdata``. 
+    Each ``NXentry`` group may contain one or more ``NXdata`` groups.
     These groups contain the experimental results
     in a self-contained way, i.e., it should be possible to
     generate a sensible :index:`plot <plotting>`
