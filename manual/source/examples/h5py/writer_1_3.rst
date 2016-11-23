@@ -8,8 +8,7 @@ possible NeXus HDF5 data file, containing only the required NeXus components.
 NeXus requires at least one :ref:`NXentry` group at the root level of
 an HDF5 file.  The ``NXentry`` group contains *all the data and associated
 information that comprise a single measurement.*
-NeXus also requires that each ``NXentry`` group must contain at least
-one :ref:`NXdata` group.  ``NXdata`` is used to describe the
+``NXdata`` is used to describe the
 plottable data in the ``NXentry`` group.  The simplest place to store
 data in a NeXus file is directly in the ``NXdata`` group,
 as shown in the next figure.

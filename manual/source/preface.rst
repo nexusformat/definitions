@@ -122,7 +122,7 @@ Lines 14-15:
 The ``/entry/data``) group has two datasets that are actually
 linked as shown to data sets in a different group.  
 (As you will see later, the ``NXdata`` group
-is required and enables NeXus clients to easily determine what to
+enables NeXus clients to easily determine what to
 offer for display on a default plot.)
 
 .. _preface.Class.path.specification:

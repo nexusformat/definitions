@@ -76,7 +76,9 @@ the following steps are required:
 #. Map the component parameters to NeXus groups and parameters and add the components to the
    ``NXinstrument`` hierarchy
 
-#. Decide what needs to go into ``NXdata``
+#. Decide what needs to go into ``NXdata``.  While this group is optional,
+   you are urged strongly to provide an ``NXdata`` group to support
+   default plotting. 
 
 #. Fill the ``NXsample`` and ``NXmonitor`` groups
 
