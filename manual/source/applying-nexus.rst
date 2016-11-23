@@ -135,7 +135,7 @@ A more elaborate example of the mapping process is given in the section :ref:`NX
 Decide on ``NXdata``
 ====================
 
-The optional ``NXdata/`` group is supposed to contain the data required to put up a quick plot. For WONI this is a plot of counts versus
+The ``NXdata/`` group is supposed to contain the data required to put up a quick plot. For WONI this is a plot of counts versus
 two theta (polar_angle in NeXus) as can be seen in :ref:`FigWoniPowderData`. Now, in ``NXdata``, create links to the appropriate
 data items in the ``NXinstrument`` hierarchy. In the case of WONI, both parameters live in the ``detector:NXdetector`` group.
 
