@@ -8,6 +8,7 @@ import os
 import sys
 import unittest
 import lxml.etree
+from six import with_metaclass
 
 # xmllint --noout --schema nxdl.xsd base_classes/NXentry.nxdl.xml 
 # base_classes/NXentry.nxdl.xml validates
@@ -51,6 +52,7 @@ def validate_xml(xml_file_name):
         raise NXDL_Invalid(msg)
     try:
         result = NXDL_SCHEMA.assertValid(xml_tree)
+        # there is no assertNotRaises so raise this when successful
         raise NXDL_Valid
     except lxml.etree.DocumentInvalid as exc:
         msg = xml_file_name + ' : ' + str(exc)
@@ -66,7 +68,7 @@ class TestMaker(type):
             category, nxdl_name = os.path.split(fname)
             point = nxdl_name.find(".")
             nxdl_name = nxdl_name[:point]
-            test_name = 'test_' + category + '_' + nxdl_name
+            test_name = 'test__' + category + '__' + nxdl_name
             dct[test_name] = cls.make_test(fname)
 
         return super(TestMaker, cls).__new__(cls, clsname, bases, dct)
@@ -81,10 +83,12 @@ class TestMaker(type):
         return test_wrap
 
 
-# FIXME: only works for python2
-class Individual_NXDL_tests(unittest.TestCase):
-   __metaclass__ = TestMaker
+class Individual_NXDL_Tests(with_metaclass(TestMaker, unittest.TestCase)):
+    '''
+    run all tests created in TestMaker() class
+    '''
+    pass
 
 
 if __name__ == '__main__':
-    unittest.main()
+    unittest.main(verbosity=2)
