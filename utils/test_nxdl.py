@@ -13,54 +13,77 @@ import lxml.etree
 # base_classes/NXentry.nxdl.xml validates
 
 
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 NXDL_XSD_SCHEMA = 'nxdl.xsd'
+NXDL_SCHEMA = lxml.etree.XMLSchema(
+    lxml.etree.parse(
+        os.path.join(BASE_DIR, NXDL_XSD_SCHEMA)))
+
 
 class NXDL_Invalid(Exception): pass
 class NXDL_Valid(Exception): pass
 
 
-class TestNXDL(unittest.TestCase):
-    
-    def setUp(self):
-        self.orig_wd = os.getcwd()
-        self.basedir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-        os.chdir(self.basedir)
-        if not os.path.exists(NXDL_XSD_SCHEMA):
-            raise IOError(NXDL_XSD_SCHEMA + " file not found")
-        xsd = lxml.etree.parse(NXDL_XSD_SCHEMA)
-        self.schema = lxml.etree.XMLSchema(xsd)
-    
-    def tearDown(self):
-        os.chdir(self.orig_wd)
-    
-    def validate_xml(self, xml_file_name):
-        '''
-        validate an NXDL XML file against an XML Schema file
-    
-        :param str xml_file_name: name of XML file
-        '''
-        try:
-            xml_tree = lxml.etree.parse(xml_file_name)
-        except lxml.etree.XMLSyntaxError as exc:
-            msg = xml_file_name + ' : ' + str(exc)
-            raise NXDL_Invalid(msg)
-        try:
-            result = self.schema.assertValid(xml_tree)
-            raise NXDL_Valid
-        except lxml.etree.DocumentInvalid as exc:
-            msg = xml_file_name + ' : ' + str(exc)
-            raise NXDL_Invalid(msg)
+def isNXDL(fname):
+    return fname.endswith('.nxdl.xml')
 
-    def test_all_nxdl_files_against_nxdl_xsd(self):
-        # TODO: refactor so that there is a separate test for each NXDL file
-        #  AND all errors in a file are identified, if possible.
-        # see: http://stackoverflow.com/questions/25267374/unittest-from-a-dictionary-of-functions-and-values
-        #   starting with:  class TestMaker(type):
-        for category in ('base_classes applications contributed_definitions'.split() ):
-            nxdl_files = [fn for fn in os.listdir(category) if fn.endswith('.nxdl.xml')]
-            for fn in sorted(nxdl_files):
-                with self.assertRaises(NXDL_Valid):
-                    self.validate_xml(os.path.join(category, fn))
+
+def get_NXDL_file_list():
+    os.chdir(BASE_DIR)
+    file_list = []
+    for category in ('base_classes applications contributed_definitions'.split() ):
+        raw_list = os.listdir(category)
+        nxdl_files = [os.path.join(category, fn) for fn in raw_list if isNXDL(fn)]
+        file_list += sorted(nxdl_files)
+    return file_list
+
+
+def validate_xml(xml_file_name):
+    '''
+    validate an NXDL XML file against an XML Schema file
+
+    :param str xml_file_name: name of XML file
+    '''
+    try:
+        xml_tree = lxml.etree.parse(xml_file_name)
+    except lxml.etree.XMLSyntaxError as exc:
+        msg = xml_file_name + ' : ' + str(exc)
+        raise NXDL_Invalid(msg)
+    try:
+        result = NXDL_SCHEMA.assertValid(xml_tree)
+        raise NXDL_Valid
+    except lxml.etree.DocumentInvalid as exc:
+        msg = xml_file_name + ' : ' + str(exc)
+        raise NXDL_Invalid(msg)
+
+
+class TestMaker(type):
+    
+    def __new__(cls, clsname, bases, dct):
+        # Add a method to the class' __dict__ for every 
+        # file name in the NXDL file list.
+        for fname in get_NXDL_file_list():
+            category, nxdl_name = os.path.split(fname)
+            point = nxdl_name.find(".")
+            nxdl_name = nxdl_name[:point]
+            test_name = 'test_' + category + '_' + nxdl_name
+            dct[test_name] = cls.make_test(fname)
+
+        return super(TestMaker, cls).__new__(cls, clsname, bases, dct)
+
+    @staticmethod
+    def make_test(nxdl_file_name):
+        
+        def test_wrap(self):
+            # test body for each NXDL file test
+            with self.assertRaises(NXDL_Valid):
+                validate_xml(nxdl_file_name)
+        return test_wrap
+
+
+# FIXME: only works for python2
+class Individual_NXDL_tests(unittest.TestCase):
+   __metaclass__ = TestMaker
 
 
 if __name__ == '__main__':
