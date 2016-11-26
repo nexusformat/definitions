@@ -52,6 +52,10 @@ class TestNXDL(unittest.TestCase):
             raise NXDL_Invalid(msg)
 
     def test_all_nxdl_files_against_nxdl_xsd(self):
+        # TODO: refactor so that there is a separate test for each NXDL file
+        #  AND all errors in a file are identified, if possible.
+        # see: http://stackoverflow.com/questions/25267374/unittest-from-a-dictionary-of-functions-and-values
+        #   starting with:  class TestMaker(type):
         for category in ('base_classes applications contributed_definitions'.split() ):
             nxdl_files = [fn for fn in os.listdir(category) if fn.endswith('.nxdl.xml')]
             for fn in sorted(nxdl_files):
