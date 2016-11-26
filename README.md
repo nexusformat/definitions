@@ -1,6 +1,7 @@
 * NeXus: http://www.nexusformat.org/
 * documentation: http://download.nexusformat.org/doc/html/index.html
 * build server: http://build.nexusformat.org/
+* travis-ci: [![Build Status](https://travis-ci.org/nexusformat/definitions.svg)](https://travis-ci.org/nexusformat/definitions) - checks syntax of all NXDL file
 
 These are the components that define the structure of NeXus data files 
 in the development directory.
