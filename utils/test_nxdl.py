@@ -39,19 +39,24 @@ class TestNXDL(unittest.TestCase):
     
         :param str xml_file_name: name of XML file
         '''
-        xml_tree = lxml.etree.parse(xml_file_name)
+        try:
+            xml_tree = lxml.etree.parse(xml_file_name)
+        except lxml.etree.XMLSyntaxError as exc:
+            msg = xml_file_name + ' : ' + str(exc)
+            raise NXDL_Invalid(msg)
         try:
             result = self.schema.assertValid(xml_tree)
             raise NXDL_Valid
-        except lxml.etree.DocumentInvalid:
-            raise NXDL_Invalid
+        except lxml.etree.DocumentInvalid as exc:
+            msg = xml_file_name + ' : ' + str(exc)
+            raise NXDL_Invalid(msg)
 
     def test_all_nxdl_files_against_nxdl_xsd(self):
         for category in ('base_classes applications contributed_definitions'.split() ):
             nxdl_files = [fn for fn in os.listdir(category) if fn.endswith('.nxdl.xml')]
-            print sorted(nxdl_files)
             for fn in sorted(nxdl_files):
-                self.assertRaises(NXDL_Valid, self.validate_xml, os.path.join(category, fn))
+                with self.assertRaises(NXDL_Valid):
+                    self.validate_xml(os.path.join(category, fn))
 
 
 if __name__ == '__main__':
