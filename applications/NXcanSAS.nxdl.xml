@@ -255,9 +255,9 @@
 				The :math:`\vec{Q}` geometry.
 				(:download:`full image &lt;canSAS/Q-geometry.jpg&gt;`)
 			
-			:math:`Q` may be represented either
-			as the three-dimensional scattering vector :math:`\vec{Q}`
-			or by the magnitude of the scattering vector, :math:`|\vec{Q}|`.
+			:math:`Q` may be represented as either
+			the three-dimensional scattering vector :math:`\vec{Q}`
+			or the magnitude of the scattering vector, :math:`|\vec{Q}|`.
 			
 			.. math::  |\vec{Q}| = (4\pi/\lambda) sin(\theta) 
 			
@@ -273,16 +273,26 @@
             Names the data object (in this SASdata group) that provides the 
             uncertainty to be used for data analysis.  Such as::
             
-                @uncertainties="Qdev"
+                @uncertainties="Qerr"
             
-            Can use this to describe the slit-length at each datum.
-            Use a subgroup to describe any supplementary uncertainty data.
+            The uncertainty in Q is the uncertainty on the Q value for a
+            given datapoint (basically a horizontal error bar). 
+            This can have effects on the accuracy of the object size 
+            determined from the scattering pattern.
             
-            To specify two-dimensional uncertainty, such as (*dQw*, *dQl*), 
-            use a string array, such as::
+            The name of the dataset containing the :math:`Q` uncertainty
+            is flexible.  The name must be unique in the *SASdata* group.
             
-                @uncertainties="dQw", "dQl"
+            .. comment
+               see: https://github.com/canSAS-org/canSAS2012/issues/7
             
+            There may also be a subdirectory (optional) with constituent 
+            components.
+
+            .. note:: To report distribution in reported :math:`Q` values, 
+               use the ``@resolution`` attribute.  It is possible for both
+               ``@resolution`` and ``uncertainties`` to be reported.
+
           </doc>
         </attribute>
         <attribute name="resolution" type="NX_CHAR" >
@@ -294,7 +304,15 @@
             Names the data object (in this SASdata group) that provides the 
             :math:`Q` resolution to be used for data analysis.  Such as::
             
-                @resolution="Qres"
+                @resolution="Qdev"
+            
+            This may be used to describe the slit-length at each datum.
+            Use a subgroup to describe any supplementary resolution data.
+            
+            To specify two-dimensional resolution, such as (*dQw*, *dQl*), 
+            use a string array, such as::
+            
+                @resolution="dQw", "dQl"
             
             The name of the dataset containing the :math:`Q` resolution
             is flexible.  The name must be unique in the *SASdata* group.
@@ -303,7 +321,7 @@
                 see: https://github.com/canSAS-org/canSAS2012/issues/7
             
             There may also be a subdirectory (optional) with constituent 
-            components, similar to the handling of complex uncertainties.
+            components.
             
             This pattern will demonstrate how to introduce further as-yet 
             unanticipated terms related to the data.
@@ -316,13 +334,32 @@
             resolution function. This equates to the width of the gaussian 
             distribution if a Gaussian is chosen.  See the ``@resolution_description``
             attribute.
+            
+            .. note:: To report uncertainty in reported :math:`Q` values, 
+               use the ``@uncertainties`` attribute.  It is possible for both
+               ``@resolution`` and ``uncertainties`` to be reported.
+            
           </doc>
         </attribute>
         <attribute name="resolution_description" type="NX_CHAR">
           <doc>
             (optional) 
             Generally, this describes the :math:`Q` ``@resolution`` data object.
-            By default, the value is assumed to be "Gaussian".
+            By default, the value is assumed to be "Gaussian".  These are
+            suggestions:
+            
+            * Gaussian
+            * Lorentzian
+            * Square :
+              note that the width of the square would be ~1.4 times 
+              the standard deviation specified in the vector
+            * Triangular
+            * Sawtooth-outward : vertical edge pointing to larger Q
+            * Sawtooth-inward vertical edge pointing to smaller Q
+            * Bin : range of values contributing
+              (for example, when 2-D detector data have been reduced 
+              to a 1-D :math:`I(|Q|)` dataset)
+            
             For other meanings, it may be necessary to provide further details
             such as the function used to assess the resolution.
             In such cases, use additional datasets or a :ref:`NXnote` subgroup
@@ -383,7 +420,7 @@
             The multi-D standard allows for this name to be described in this attribute.
             Such as::
             
-            @uncertainties="Idev"
+                @uncertainties="Idev"
             
           </doc>
         </attribute>
@@ -397,13 +434,13 @@
             designated via the ``uncertainties`` attribute.  
             Such as::
             
-				I : NX_NUMBER
-				    @uncertainties="Idev" : NX_CHAR
-				    @scaling_factor="I_scaling" : NX_CHAR
-				Idev : NX_NUMBER
-				I_scaling : NX_NUMBER
-				    @uncertainties="I_scaling_dev" : NX_CHAR
-				I_scaling_dev : NX_NUMBER
+              I : NX_NUMBER
+                  @uncertainties="Idev" : NX_CHAR
+                  @scaling_factor="I_scaling" : NX_CHAR
+              Idev : NX_NUMBER
+              I_scaling : NX_NUMBER
+                  @uncertainties="I_scaling_dev" : NX_CHAR
+              I_scaling_dev : NX_NUMBER
             
             The exact names for ``I_scaling`` and ``I_scaling_dev`` are not
             defined by NXcanSAS.  The user has the flexibility to use names 
@@ -416,7 +453,7 @@
         <doc>
           .. index:: NXcanSAS (contributed definition); Idev
           
-          Estimated uncertainty (usually standard deviation)
+          Estimated **uncertainty** (usually standard deviation)
           in :math:`I`.  Must have the same units as :math:`I`.
 
           When present, the name of this field is also 
@@ -431,16 +468,16 @@
         <doc>
           .. index:: NXcanSAS (contributed definition); Qdev
           
-          Estimated uncertainty (usually standard deviation)
+          Estimated **resolution** (usually standard deviation)
           in :math:`Q`.  Must have the same units as :math:`Q`.
           
           When present, the name of this field is also 
-          recorded in the *uncertainties* attribute of *Q*, 
+          recorded in the *resolution* attribute of *Q*, 
           as in::
           
-              Q/@uncertainties="Qdev"
+              Q/@resolution="Qdev"
               
-              Q/@uncertainties="dQw", "dQl"
+              Q/@resolution="dQw", "dQl"
 
         </doc>
       </field>
@@ -449,7 +486,7 @@
         <doc>
           .. index:: NXcanSAS (contributed definition); dQw
           
-          :math:`Q` resolution along the axis of scanning 
+          :math:`Q` **resolution** along the axis of scanning 
           (the high-resolution *slit width* direction). 
           Useful for defining resolution data from 
           slit-smearing instruments such as Bonse-Hart geometry.
@@ -468,7 +505,7 @@
         <doc>
           .. index:: NXcanSAS (contributed definition); dQl
           
-          :math:`Q` resolution perpendicular to the axis of scanning 
+          :math:`Q` **resolution** perpendicular to the axis of scanning 
           (the low-resolution *slit length* direction). 
           Useful for defining resolution data from 
           slit-smearing instruments such as Bonse-Hart geometry.
