@@ -268,8 +268,11 @@
         <attribute name="uncertainties">
           <doc>
             (optional for numerical arrays) 
-            Generally, this is the estimate of the uncertainty of each :math:`Q`.
-            Typically the estimated standard deviation.  
+            This is the estimate of the uncertainty of each Q. By default, 
+            this will be interpreted to be the estimated standard deviation. 
+            In special cases, when a standard deviation cannot possibly be used, 
+            its value can specify another measure of distribution width.
+            
             Names the data object (in this SASdata group) that provides the 
             uncertainty to be used for data analysis.  Such as::
             
@@ -306,13 +309,10 @@
             
                 @resolution="Qdev"
             
-            This may be used to describe the slit-length at each datum.
-            Use a subgroup to describe any supplementary resolution data.
+            To specify two-dimensional resolution for slit-smearing geometry, 
+            such as (*dQw*, *dQl*), use a string array, such as::
             
-            To specify two-dimensional resolution, such as (*dQw*, *dQl*), 
-            use a string array, such as::
-            
-                @resolution="dQw", "dQl"
+               @resolution="dQw", "dQl"
             
             The name of the dataset containing the :math:`Q` resolution
             is flexible.  The name must be unique in the *SASdata* group.
@@ -351,7 +351,7 @@
             * Gaussian
             * Lorentzian
             * Square :
-              note that the width of the square would be ~1.4 times 
+              note that the full width of the square would be ~2.9 times 
               the standard deviation specified in the vector
             * Triangular
             * Sawtooth-outward : vertical edge pointing to larger Q
@@ -378,11 +378,11 @@
 			
 			**absolute units**: :math:`d\Sigma/d\Omega(Q)`
 			differential cross-section
-			per unit volume per unit solid angle (typical units: 1/cm/sr)
+			per unit volume per unit solid angle (typical units: 1/cm/sr or 1/m/sr)
 			
 			**absolute units**: :math:`d\sigma/d\Omega(Q)`
 			differential cross-section
-			per unit atom per unit solid angle (typical units: cm^2)
+			per unit atom per unit solid angle (typical units: cm:math:^2 or m^2)
 			
 			**arbitrary units**: :math:`I(Q)`
 			usually a ratio of two detectors 
@@ -405,12 +405,16 @@
 			In some cases, it is possible to apply a factor to convert the arbitrary 
 			units to an absolute scale.  This should be considered as a possibility 
 			of the analysis process.
+			
+			Where this documentation says *typical units*, it is possible that small-angle
+			data may be presented in other units and still be consistent with NeXus.
+			See the :ref:`nexus-data-units` section.
 		</doc>
         <attribute name="uncertainties">
           <doc>
             Generally, this is the estimate of the uncertainty of each :math:`I`.
             Typically the estimated standard deviation.  
-            For Poisson statistics, use :math:`1/\sqrt{I}`.
+            For Poisson statistics, can not be less than :math:`1/\sqrt{I}`.
             
             (optional for numerical arrays) 
             Name of the data object (in this SASdata group) that provides the 
@@ -525,7 +529,9 @@
           Mean value of :math:`Q` for this data point. 
           Useful when describing data that has been 
           binned from higher-resolution data. 
-          It is unexpected for ``Q`` and ``Qmean`` to have different units.
+          
+          It is expected that ``Q`` is provided 
+          and that both ``Q`` and ``Qmean`` will have the same units.
         </doc>
       </field>
       <field name="ShadowFactor" minOccurs="0" units="NX_DIMENSIONLESS">
