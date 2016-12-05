@@ -20,6 +20,8 @@ NXDL_SCHEMA = lxml.etree.XMLSchema(
     lxml.etree.parse(
         os.path.join(BASE_DIR, NXDL_XSD_SCHEMA)))
 
+NXDL_CATEGORY_NAMES = 'base_classes applications contributed_definitions'.split()
+
 
 class NXDL_Invalid(Exception): pass
 class NXDL_Valid(Exception): pass
@@ -32,7 +34,7 @@ def isNXDL(fname):
 def get_NXDL_file_list():
     os.chdir(BASE_DIR)
     file_list = []
-    for category in ('base_classes applications contributed_definitions'.split() ):
+    for category in NXDL_CATEGORY_NAMES:
         raw_list = os.listdir(category)
         nxdl_files = [os.path.join(category, fn) for fn in raw_list if isNXDL(fn)]
         file_list += sorted(nxdl_files)
@@ -64,11 +66,17 @@ class TestMaker(type):
     def __new__(cls, clsname, bases, dct):
         # Add a method to the class' __dict__ for every 
         # file name in the NXDL file list.
+        cat_number_dict = {c: str(i+1) for i, c in enumerate(NXDL_CATEGORY_NAMES)}
         for fname in get_NXDL_file_list():
             category, nxdl_name = os.path.split(fname)
+            category_number = cat_number_dict[category]
             point = nxdl_name.find(".")
             nxdl_name = nxdl_name[:point]
-            test_name = 'test__' + category + '__' + nxdl_name
+            test_name = 'test'
+            # since these will be sorted, get the categories in the desired order
+            test_name += '__' + str(category_number)
+            test_name += '__' + category
+            test_name += '__' + nxdl_name
             dct[test_name] = cls.make_test(fname)
 
         return super(TestMaker, cls).__new__(cls, clsname, bases, dct)
@@ -85,10 +93,22 @@ class TestMaker(type):
 
 class Individual_NXDL_Tests(with_metaclass(TestMaker, unittest.TestCase)):
     '''
-    run all tests created in TestMaker() class
+    run all tests created in TestMaker() class, called by suite()
     '''
-    pass
+
+
+def suite(*args, **kw):
+    '''gather all the tests together in a suite, called by run()'''
+    test_suite = unittest.TestSuite()
+    test_suite.addTests(unittest.makeSuite(Individual_NXDL_Tests))
+    return test_suite
+
+
+def run():
+    '''run all the unit tests'''
+    runner=unittest.TextTestRunner(verbosity=2)
+    runner.run(suite())
 
 
 if __name__ == '__main__':
-    unittest.main(verbosity=2)
+    run()
