@@ -22,7 +22,7 @@ since these examples are meant for those who are unfamiliar with NeXus.
 
 
 The data shown plotted in the next figure will be written to the NeXus HDF5 file
-using the only two required NeXus objects ``NXentry`` and ``NXdata`` in the first example
+using only two NeXus base classes, ``NXentry`` and ``NXdata``, in the first example
 and then minor variations on this structure in the next two examples.  The
 data model is identical to the one in the :ref:`Introduction <fig.simple-example>` 
 chapter except that the names will be different, as shown below:
@@ -278,9 +278,6 @@ Here is an example of the structure:
           @units = counts
         two_theta --> file="external_angles.hdf5", path="/angles"
 
-.. note:: The file ``external_counts.hdf5`` is not a complete NeXus file since it does not 
-   contain an NXdata group containing a dataset named by the NXdata group ``signal`` attributed.
-
 .. [#] see these URLs for further guidance on HDF5 external links:
    http://www.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateExternal, 
    http://www.h5py.org/docs-1.3/guide/group.html#external-links
@@ -296,9 +293,7 @@ without making a copy of the data files themselves.
    these files to be located together in the same directory for the HDF5 external file 
    links to work properly.`  
 
-To be a valid NeXus file, it must contain a :ref:`NXentry` group containing 
-a :ref:`NXdata` group containing a dataset that is named as the value of the 
-group attribute ``signal={dataset_name}``.
+To be a valid NeXus file, it must contain a :ref:`NXentry` group.
 For the files above, it is simple to make a master file that links to
 the data we desire, from structure that we create.  We then add the
 group attributes that describe the default plottable data:

@@ -1,6 +1,7 @@
 * NeXus: http://www.nexusformat.org/
 * documentation: http://download.nexusformat.org/doc/html/index.html
 * build server: http://build.nexusformat.org/
+* travis-ci: syntax check of every NXDL file [![Build Status](https://travis-ci.org/nexusformat/definitions.svg)](https://travis-ci.org/nexusformat/definitions)
 
 These are the components that define the structure of NeXus data files 
 in the development directory.
@@ -17,6 +18,7 @@ contributed_definitions/    | NXDL files from the community
 impatient-guide/            | *NeXus for the Impatient*
 jenkins_build               | configuration for Jenkins continuous integration service
 manual/                     | Sphinx source files for the NeXus documentation
+manual_archive/             | historical copy of the NeXus documentation
 nxdl.xsd                    | XML Schema for NXDL files
 nxdlTypes.xsd               | called by nxdl.xsd
 package/                    | directory for packaging this content

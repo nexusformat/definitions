@@ -8,7 +8,7 @@ NeXus Introduction
    introduction
    motivation
 
-NeXus is an effort by an international group of scientists 
+NeXus [#]_ is an effort by an international group of scientists 
 :ref:`motivated <MotivationsForNeXus>`
 to define a common data exchange format for neutron, X-ray, and muon experiments.  
 NeXus is built on top of the scientific data format HDF5 and adds 
@@ -44,6 +44,9 @@ such as NeXus is and how to write simple programs to read and write NeXus files.
 The programmers who produce intermediate files for
 storing analyzed data should agree on simple interchange 
 :index:`rules <rules>`.
+
+.. [#] *J. Appl. Cryst.* (2015). **48**, 301-305
+   (https://doi.org/10.1107/S1600576714027575)
 
 ..  =======================
     section: What is NeXus?
@@ -194,9 +197,8 @@ Important Classes
 Here are some of the important classes found in nearly all NeXus files. A
 complete list can be found in the :ref:`Design` chapter.
 
-.. note:: ``NXentry`` and ``NXdata``
-          are the only two classes necessary to store the minimum
-          amount of information in a valid NeXus data file.
+.. note:: ``NXentry``
+          is the only class required in a valid NeXus data file.
 
 .. index:: NXentry (base class)
 
@@ -215,9 +217,7 @@ complete list can be found in the :ref:`Design` chapter.
 .. index:: NXdata (base class)
 
 :ref:`NXdata`
-    *Required:*
-    Each ``NXentry`` group contains one or more groups with 
-    class ``NXdata``. 
+    Each ``NXentry`` group may contain one or more ``NXdata`` groups.
     These groups contain the experimental results
     in a self-contained way, i.e., it should be possible to
     generate a sensible :index:`plot <plotting>`
