@@ -27,15 +27,13 @@ clean:
 	$(MAKE) clean -C $(SUBDIRS)
 
 builddir :: 
-	mkdir build
+	mkdir -p build
 	python utils/build_preparation.py . build
 
 makebuilddir :: builddir
 	$(MAKE) -C build
 
-remakebuilddir ::
-	python utils/build_preparation.py . build
-	$(MAKE) -C build
+remakebuilddir :: makebuilddir
 
 cleanbuilddir ::
 	$(MAKE) -C build clean
