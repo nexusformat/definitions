@@ -17,8 +17,8 @@ base_classes/               | NXDL files for components
 contributed_definitions/    | NXDL files from the community
 impatient-guide/            | *NeXus for the Impatient*
 jenkins_build               | configuration for Jenkins continuous integration service
+legacy_docs/                | legacy PDF copies of the NeXus definitions documentation
 manual/                     | Sphinx source files for the NeXus documentation
-manual_archive/             | historical copy of the NeXus documentation
 nxdl.xsd                    | XML Schema for NXDL files
 nxdlTypes.xsd               | called by nxdl.xsd
 package/                    | directory for packaging this content
