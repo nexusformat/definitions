@@ -6,3 +6,5 @@ of the HTML would become tedious and clutter the current repository.)
 
 The versions are named thus `nexus-<tag>-<yyyy-mm-dd>-<7-char-hash>.pdf` so that they may be identified directly to 
 a particular tag, date, and commit and also so they sort chronologically.
+
+For an example of the release procedure, see [issue 521](https://github.com/nexusformat/definitions/issues/521).
