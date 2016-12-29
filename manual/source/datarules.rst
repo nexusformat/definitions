@@ -509,12 +509,30 @@ plottable data is as follows:
 #. Plot the *signal* data, given *axes* and *AXISNAME_indices*.
 
 
+When all the ``default`` and ``signal`` attributes are present, this 
+Python code will identify directly the default plottable data 
+(assuming a ``plot()`` function has been defined by some code::
+
+    root = h5py.File(hdf5_file_name, "r")
+    
+    default_nxentry_group_name = root.attrs["default"]
+    nxentry = root[default_nxentry_group_name]
+    
+    default_nxdata_group_name = nxentry.attrs["default"]
+    nxdata = nxentry[default_nxdata_group_name]
+    
+    signal_dataset_name = nxdata.attrs["signal"]
+    data = nxdata[signal_dataset_name]
+    
+    plot(data)
+
+
 .. _Find-Plottable-Data-v2:
 
 Version 2
 =========
 
-.. tip:: Try this method for older NeXus data files.
+.. tip:: Try this method for older NeXus data files and :ref:`Find-Plottable-Data-v3` fails..
 
 The second method to identify the default 
 plottable data is as follows:
