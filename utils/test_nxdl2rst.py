@@ -34,52 +34,27 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
     '''
     make it obvious what is required and what is optional
     
-    **field**: NX_TYPE (optional or required)
+    **field**: (optional or required) NX_TYPE
     '''
         
     def test_base_class_NXentry(self):
-        nxdl_file = os.path.join('..', 'base_classes', 'NXentry.nxdl.xml')
-        self.assertTrue(os.path.exists(nxdl_file), nxdl_file)
-        
-        sys.argv.insert(0, 'python')
-        with Capture_stdout() as printed_lines:
-            nxdl2rst.print_rst_from_nxdl(nxdl_file)
-        
         expected_lines = '''
         **definition**: (optional) :ref:`NX_CHAR <NX_CHAR>`
         **(data)**: (optional) :ref:`NXdata`
         **notes**: (optional) :ref:`NXnote`
+        **@default**: (optional) :ref:`NX_CHAR <NX_CHAR>`
         '''.strip().splitlines()
         
-        printed_lines = [_.strip() for _ in printed_lines]
-        for line in expected_lines:
-            self.assertTrue(line.strip() in printed_lines, line.strip())
-       
+        self.apply_tests('base_classes', 'NXentry', expected_lines)
         
     def test_base_class_NXuser(self):
-        nxdl_file = os.path.join('..', 'base_classes', 'NXuser.nxdl.xml')
-        self.assertTrue(os.path.exists(nxdl_file), nxdl_file)
-        
-        sys.argv.insert(0, 'python')
-        with Capture_stdout() as printed_lines:
-            nxdl2rst.print_rst_from_nxdl(nxdl_file)
-        
         expected_lines = '''
         **name**: (optional) :ref:`NX_CHAR <NX_CHAR>`
         '''.strip().splitlines()
         
-        printed_lines = [_.strip() for _ in printed_lines]
-        for line in expected_lines:
-            self.assertTrue(line.strip() in printed_lines, line.strip())
+        self.apply_tests('base_classes', 'NXuser', expected_lines)
         
     def test_application_definition_NXcanSAS(self):
-        nxdl_file = os.path.join('..', 'applications', 'NXcanSAS.nxdl.xml')
-        self.assertTrue(os.path.exists(nxdl_file), nxdl_file)
-        
-        sys.argv.insert(0, 'python')
-        with Capture_stdout() as printed_lines:
-            nxdl2rst.print_rst_from_nxdl(nxdl_file)
-        
         expected_lines = '''
         **definition**: (required) :ref:`NX_CHAR <NX_CHAR>`
         **title**: (required) :ref:`NX_CHAR <NX_CHAR>`
@@ -97,13 +72,21 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
         **(note)**: (optional) :ref:`NXnote`
         **(process)**: (optional) :ref:`NXprocess`
         **(source)**: (optional) :ref:`NXsource`
+        **@timestamp**: (required) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
+        **@canSAS_class**: (required) :ref:`NX_CHAR <NX_CHAR>`
+        **@signal**: (required) :ref:`NX_CHAR <NX_CHAR>`
+        **@I_axes**: (required) :ref:`NX_CHAR <NX_CHAR>`
         '''.strip().splitlines()
+        
+        self.apply_tests('applications', 'NXcanSAS', expected_lines)
 
-# TODO: report on attributes
-#         **@timestamp**: (optional) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
-#         **@canSAS_class**: (required) :ref:`NX_CHAR <NX_CHAR>`
-#         **@signal**: (required) :ref:`NX_CHAR <NX_CHAR>`
-#         **@I_axes**: (optional) :ref:`NX_CHAR <NX_CHAR>`
+    def apply_tests(self, category, class_name, expected_lines):
+        nxdl_file = os.path.join('..', category, class_name+'.nxdl.xml')
+        self.assertTrue(os.path.exists(nxdl_file), nxdl_file)
+        
+        sys.argv.insert(0, 'python')
+        with Capture_stdout() as printed_lines:
+            nxdl2rst.print_rst_from_nxdl(nxdl_file)
         
         printed_lines = [_.strip() for _ in printed_lines]
         for line in expected_lines:
