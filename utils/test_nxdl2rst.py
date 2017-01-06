@@ -37,7 +37,26 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
     **field**: NX_TYPE (optional or required)
     '''
         
-    def test_base_class(self):
+    def test_base_class_NXentry(self):
+        nxdl_file = os.path.join('..', 'base_classes', 'NXentry.nxdl.xml')
+        self.assertTrue(os.path.exists(nxdl_file), nxdl_file)
+        
+        sys.argv.insert(0, 'python')
+        with Capture_stdout() as printed_lines:
+            nxdl2rst.print_rst_from_nxdl(nxdl_file)
+        
+        expected_lines = '''
+        **definition**: (optional) :ref:`NX_CHAR <NX_CHAR>`
+        **(data)**: (optional) :ref:`NXdata`
+        **notes**: (optional) :ref:`NXnote`
+        '''.strip().splitlines()
+        
+        printed_lines = [_.strip() for _ in printed_lines]
+        for line in expected_lines:
+            self.assertTrue(line.strip() in printed_lines, line.strip())
+       
+        
+    def test_base_class_NXuser(self):
         nxdl_file = os.path.join('..', 'base_classes', 'NXuser.nxdl.xml')
         self.assertTrue(os.path.exists(nxdl_file), nxdl_file)
         
@@ -53,7 +72,7 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
         for line in expected_lines:
             self.assertTrue(line.strip() in printed_lines, line.strip())
         
-    def test_application_definition(self):
+    def test_application_definition_NXcanSAS(self):
         nxdl_file = os.path.join('..', 'applications', 'NXcanSAS.nxdl.xml')
         self.assertTrue(os.path.exists(nxdl_file), nxdl_file)
         
@@ -70,6 +89,14 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
         **Idev**: (optional) :ref:`NX_NUMBER <NX_NUMBER>`
         **dQw**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_PER_LENGTH <NX_PER_LENGTH>`}
         **dQl**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_PER_LENGTH <NX_PER_LENGTH>`}
+        **(entry)**: (required) :ref:`NXentry`
+        **(data)**: (required) :ref:`NXdata`
+        **(data)**: (optional) :ref:`NXdata`
+        **(sample)**: (optional) :ref:`NXsample`
+        **(instrument)**: (optional) :ref:`NXinstrument`
+        **(note)**: (optional) :ref:`NXnote`
+        **(process)**: (optional) :ref:`NXprocess`
+        **(source)**: (optional) :ref:`NXsource`
         '''.strip().splitlines()
 
 # TODO: report on attributes

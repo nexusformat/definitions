@@ -215,7 +215,7 @@ def printFullTree(ns, parent, name, indent):
         elif minOccurs in ('1', 1):
             optional_text = '(required) '
         else:
-            optional_text = '(minOccurs=%s) ' % minOccurs
+            optional_text = '(minOccurs=%s) ' % str(minOccurs)
         print( '%s.. index:: %s (field)\n' %
                ( indent, index_name ) )
         print(
@@ -236,11 +236,15 @@ def printFullTree(ns, parent, name, indent):
     for node in parent.xpath('nx:group', namespaces=ns):
         name = node.get('name', '')
         typ = node.get('type', 'untyped (this is an error; please report)')
-        minOccurs = node.get('minOccurs', None)
-        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application definition', 'contributed definition'):
+
+        minOccurs_default = {True: '1', False: '0'}[use_application_defaults]
+        minOccurs = node.get('minOccurs', minOccurs_default)
+        if minOccurs in ('0', 0):
             optional_text = '(optional) '
+        elif minOccurs in ('1', 1):
+            optional_text = '(required) '
         else:
-            optional_text = ''
+            optional_text = '(minOccurs=%s) ' % str(minOccurs)
         if typ.startswith('NX'):
             if name is '':
                 name = '(%s)' % typ.lstrip('NX')
