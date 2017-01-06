@@ -380,10 +380,11 @@ def main():
     '''
     standard command-line processing
     '''
-    if len(sys.argv) != 2:
-        print( 'usage: %s someclass.nxdl.xml' % sys.argv[0] )
-        exit()
-    nxdl_file = sys.argv[1]
+    import argparse
+    parser = argparse.ArgumentParser(description='test nxdl2rst code')
+    parser.add_argument('nxdl_file', help='name of NXDL file')
+    results = parser.parse_args()
+    nxdl_file = results.nxdl_file
 
     if not os.path.exists(nxdl_file):
         print( 'Cannot find %s' % nxdl_file )
