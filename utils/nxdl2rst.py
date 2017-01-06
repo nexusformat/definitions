@@ -167,6 +167,7 @@ def printDoc( indent, ns, node, required=False):
 
 
 def printAttribute( ns, kind, node, indent ):
+    # TODO: issue #524: required, optional, or print minOccurs value
     name = node.get('name')
     index_name = re.sub( r'_', ' ', name )
     print( '%s.. index:: %s (%s attribute)\n' %
@@ -198,19 +199,29 @@ def printFullTree(ns, parent, name, indent):
     '''
     global listing_category
 
+    use_application_defaults = listing_category in (
+        'application definition', 
+        'contributed definition')
+
     for node in parent.xpath('nx:field', namespaces=ns):
         name = node.get('name')
         index_name = re.sub( r'_', ' ', name )
         dims = analyzeDimensions(ns, node)
-        minOccurs = node.get('minOccurs', None)
-        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application definition', 'contributed definition'):
+
+        minOccurs_default = {True: '1', False: '0'}[use_application_defaults]
+        minOccurs = node.get('minOccurs', minOccurs_default)
+        if minOccurs in ('0', 0):
             optional_text = '(optional) '
+        elif minOccurs in ('1', 1):
+            optional_text = '(required) '
         else:
-            optional_text = ''
+            optional_text = '(minOccurs=%s) ' % minOccurs
         print( '%s.. index:: %s (field)\n' %
                ( indent, index_name ) )
-        print( '%s**%s%s**: %s%s%s\n' % (
-            indent, name, dims, optional_text, fmtTyp(node), fmtUnits(node) ) )
+        print(
+            '%s**%s%s**: %s%s%s\n' % (
+                indent, name, dims, optional_text, fmtTyp(node), fmtUnits(node)
+                ))
 
         printIfDeprecated( ns, node, indent+INDENTATION_UNIT )
         printDoc(indent+INDENTATION_UNIT, ns, node)

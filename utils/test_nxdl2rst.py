@@ -51,7 +51,7 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
         
         printed_lines = [_.strip() for _ in printed_lines]
         for line in expected_lines:
-            self.assertTrue(line in printed_lines, line)
+            self.assertTrue(line.strip() in printed_lines, line.strip())
         
     def test_application_definition(self):
         nxdl_file = os.path.join('..', 'applications', 'NXcanSAS.nxdl.xml')
@@ -66,16 +66,21 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
         **title**: (required) :ref:`NX_CHAR <NX_CHAR>`
         **run**: (required) :ref:`NX_CHAR <NX_CHAR>`
         **I**: (required) :ref:`NX_NUMBER <NX_NUMBER>`
-        **Q**: (required) :ref:`NX_NUMBER <NX_NUMBER>`
+        **Q**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_PER_LENGTH <NX_PER_LENGTH>`}
         **Idev**: (optional) :ref:`NX_NUMBER <NX_NUMBER>`
-        **dQw**: (optional) :ref:`NX_NUMBER <NX_NUMBER>`
-        **dQl**: (optional) :ref:`NX_NUMBER <NX_NUMBER>`
-        **@timestamp**: (optional) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
+        **dQw**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_PER_LENGTH <NX_PER_LENGTH>`}
+        **dQl**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_PER_LENGTH <NX_PER_LENGTH>`}
         '''.strip().splitlines()
+
+# TODO: report on attributes
+#         **@timestamp**: (optional) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
+#         **@canSAS_class**: (required) :ref:`NX_CHAR <NX_CHAR>`
+#         **@signal**: (required) :ref:`NX_CHAR <NX_CHAR>`
+#         **@I_axes**: (optional) :ref:`NX_CHAR <NX_CHAR>`
         
         printed_lines = [_.strip() for _ in printed_lines]
         for line in expected_lines:
-            self.assertTrue(line in printed_lines, line)
+            self.assertTrue(line.strip() in printed_lines, line.strip())
 
 
 def suite(*args, **kw):
