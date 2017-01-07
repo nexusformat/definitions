@@ -14,7 +14,7 @@ from __future__ import print_function
 import os, sys, re
 from collections import OrderedDict
 import lxml.etree
-import HTMLParser
+from six.moves import html_parser as HTMLParser
 from local_utilities import printf, replicate
 
 
