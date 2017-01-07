@@ -103,6 +103,20 @@ def getDocLine( ns, node ):
     return re.sub(r'\n', " ", blocks[0])
 
 
+def get_minOccurs(node, use_application_defaults):
+    '''
+    get the value for the ``minOccurs`` attribute
+    
+    :param obj node: instance of lxml.etree._Element
+    :param bool use_application_defaults: use special case value
+    :returns str: value of the attribute (or its default)
+    '''
+    # TODO: can we improve on tehe default by exmaining nxdl.xsd?
+    minOccurs_default = {True: '1', False: '0'}[use_application_defaults]
+    minOccurs = node.get('minOccurs', minOccurs_default)
+    return minOccurs
+
+
 def get_required_or_optional_text(node, use_application_defaults):
     '''
     make clear if a reported item is required or optional
@@ -111,14 +125,15 @@ def get_required_or_optional_text(node, use_application_defaults):
     :param bool use_application_defaults: use special case value
     :returns: formatted text
     '''
-    minOccurs_default = {True: '1', False: '0'}[use_application_defaults]
-    minOccurs = node.get('minOccurs', minOccurs_default)
+    minOccurs = get_minOccurs(node, use_application_defaults)
     if minOccurs in ('0', 0):
         optional_text = '(optional) '
     elif minOccurs in ('1', 1):
         optional_text = '(required) '
     else:
-        optional_text = '(minOccurs=%s) ' % str(minOccurs)
+        # this is unexpected and remarkable
+        # TODO: add a remark to the log
+        optional_text = '(``minOccurs=%s``) ' % str(minOccurs)
     return optional_text
 
 
