@@ -111,7 +111,7 @@ def get_minOccurs(node, use_application_defaults):
     :param bool use_application_defaults: use special case value
     :returns str: value of the attribute (or its default)
     '''
-    # TODO: can we improve on tehe default by exmaining nxdl.xsd?
+    # TODO: can we improve on the default by exmaining nxdl.xsd?
     minOccurs_default = {True: '1', False: '0'}[use_application_defaults]
     minOccurs = node.get('minOccurs', minOccurs_default)
     return minOccurs
@@ -210,7 +210,6 @@ def printDoc( indent, ns, node, required=False):
 
 
 def printAttribute( ns, kind, node, optional, indent ):
-    # TODO: issue #524: required, optional, or print minOccurs value
     name = node.get('name')
     index_name = re.sub( r'_', ' ', name )
     print( '%s.. index:: %s (%s attribute)\n' %
