@@ -9,7 +9,7 @@ import sys
 import unittest
 import lxml.etree
 from six import with_metaclass
-from cStringIO import StringIO
+from six import StringIO
 
 import nxdl2rst
 
@@ -81,7 +81,8 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
         self.apply_tests('applications', 'NXcanSAS', expected_lines)
 
     def apply_tests(self, category, class_name, expected_lines):
-        nxdl_file = os.path.join('..', category, class_name+'.nxdl.xml')
+        print(os.getcwd())
+        nxdl_file = os.path.join(os.path.dirname(__file__),'..', category, class_name+'.nxdl.xml')
         self.assertTrue(os.path.exists(nxdl_file), nxdl_file)
         
         sys.argv.insert(0, 'python')
