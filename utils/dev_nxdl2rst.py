@@ -17,7 +17,7 @@ import sys
 
 
 # find the directory of this python file
-BASEDIR = os.path.split(os.path.abspath(__file__))[0]
+BASEDIR = os.path.dirname(__file__)
 
 
 # nxdl = os.path.join(BASEDIR, '..', 'applications', 'NXarchive.nxdl.xml')

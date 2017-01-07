@@ -125,15 +125,24 @@ def get_required_or_optional_text(node, use_application_defaults):
     :param bool use_application_defaults: use special case value
     :returns: formatted text
     '''
-    minOccurs = get_minOccurs(node, use_application_defaults)
-    if minOccurs in ('0', 0):
-        optional_text = '(optional) '
-    elif minOccurs in ('1', 1):
-        optional_text = '(required) '
+    tag = node.tag.split('}')[-1]
+    nm = node.get('name')
+    if tag in ('field', 'group'):
+        minOccurs = get_minOccurs(node, use_application_defaults)
+        if minOccurs in ('0', 0):
+            optional_text = '(optional) '
+        elif minOccurs in ('1', 1):
+            optional_text = '(required) '
+        else:
+            # this is unexpected and remarkable
+            # TODO: add a remark to the log
+            optional_text = '(``minOccurs=%s``) ' % str(minOccurs)
+    elif tag in ('attribute',):
+        optional_default = not use_application_defaults
+        optional = node.get('optional', optional_default) in (True, 'true', '1', 1)
+        optional_text = {True: '(optional) ', False: '(required) '}[optional]
     else:
-        # this is unexpected and remarkable
-        # TODO: add a remark to the log
-        optional_text = '(``minOccurs=%s``) ' % str(minOccurs)
+        optional_text = '(unknown tag: ' + str(tag) + ') '
     return optional_text
 
 

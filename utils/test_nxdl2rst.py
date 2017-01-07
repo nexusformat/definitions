@@ -72,7 +72,8 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
         **(note)**: (optional) :ref:`NXnote`
         **(process)**: (optional) :ref:`NXprocess`
         **(source)**: (optional) :ref:`NXsource`
-        **@timestamp**: (required) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
+        **@default**: (optional) :ref:`NX_CHAR <NX_CHAR>`
+        **@timestamp**: (optional) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
         **@canSAS_class**: (required) :ref:`NX_CHAR <NX_CHAR>`
         **@signal**: (required) :ref:`NX_CHAR <NX_CHAR>`
         **@I_axes**: (required) :ref:`NX_CHAR <NX_CHAR>`
@@ -81,7 +82,6 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
         self.apply_tests('applications', 'NXcanSAS', expected_lines)
 
     def apply_tests(self, category, class_name, expected_lines):
-        print(os.getcwd())
         nxdl_file = os.path.join(os.path.dirname(__file__),'..', category, class_name+'.nxdl.xml')
         self.assertTrue(os.path.exists(nxdl_file), nxdl_file)
         
