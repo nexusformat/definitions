@@ -14,7 +14,7 @@ from __future__ import print_function
 import os, sys, re
 from collections import OrderedDict
 import lxml.etree
-import HTMLParser
+from six.moves import html_parser as HTMLParser
 from local_utilities import printf, replicate
 
 
@@ -103,6 +103,49 @@ def getDocLine( ns, node ):
     return re.sub(r'\n', " ", blocks[0])
 
 
+def get_minOccurs(node, use_application_defaults):
+    '''
+    get the value for the ``minOccurs`` attribute
+    
+    :param obj node: instance of lxml.etree._Element
+    :param bool use_application_defaults: use special case value
+    :returns str: value of the attribute (or its default)
+    '''
+    # TODO: can we improve on the default by exmaining nxdl.xsd?
+    minOccurs_default = {True: '1', False: '0'}[use_application_defaults]
+    minOccurs = node.get('minOccurs', minOccurs_default)
+    return minOccurs
+
+
+def get_required_or_optional_text(node, use_application_defaults):
+    '''
+    make clear if a reported item is required or optional
+    
+    :param obj node: instance of lxml.etree._Element
+    :param bool use_application_defaults: use special case value
+    :returns: formatted text
+    '''
+    tag = node.tag.split('}')[-1]
+    nm = node.get('name')
+    if tag in ('field', 'group'):
+        minOccurs = get_minOccurs(node, use_application_defaults)
+        if minOccurs in ('0', 0):
+            optional_text = '(optional) '
+        elif minOccurs in ('1', 1):
+            optional_text = '(required) '
+        else:
+            # this is unexpected and remarkable
+            # TODO: add a remark to the log
+            optional_text = '(``minOccurs=%s``) ' % str(minOccurs)
+    elif tag in ('attribute',):
+        optional_default = not use_application_defaults
+        optional = node.get('optional', optional_default) in (True, 'true', '1', 1)
+        optional_text = {True: '(optional) ', False: '(required) '}[optional]
+    else:
+        optional_text = '(unknown tag: ' + str(tag) + ') '
+    return optional_text
+
+
 def analyzeDimensions( ns, parent ):
     node_list = parent.xpath('nx:dimensions', namespaces=ns)
     if len(node_list) != 1:
@@ -166,13 +209,13 @@ def printDoc( indent, ns, node, required=False):
             print()
 
 
-def printAttribute( ns, kind, node, indent ):
+def printAttribute( ns, kind, node, optional, indent ):
     name = node.get('name')
     index_name = re.sub( r'_', ' ', name )
     print( '%s.. index:: %s (%s attribute)\n' %
            ( indent, index_name, kind ) )
-    print( '%s**@%s**: %s%s\n' % (
-        indent, name, fmtTyp(node), fmtUnits(node) ) )
+    print( '%s**@%s**: %s%s%s\n' % (
+        indent, name, optional, fmtTyp(node), fmtUnits(node) ) )
     printDoc(indent+INDENTATION_UNIT, ns, node)
     node_list = node.xpath('nx:enumeration', namespaces=ns)
     if len(node_list) == 1:
@@ -198,19 +241,22 @@ def printFullTree(ns, parent, name, indent):
     '''
     global listing_category
 
+    use_application_defaults = listing_category in (
+        'application definition', 
+        'contributed definition')
+
     for node in parent.xpath('nx:field', namespaces=ns):
         name = node.get('name')
         index_name = re.sub( r'_', ' ', name )
         dims = analyzeDimensions(ns, node)
-        minOccurs = node.get('minOccurs', None)
-        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application definition', 'contributed definition'):
-            optional_text = '(optional) '
-        else:
-            optional_text = ''
+
+        optional_text = get_required_or_optional_text(node, use_application_defaults)
         print( '%s.. index:: %s (field)\n' %
                ( indent, index_name ) )
-        print( '%s**%s%s**: %s%s%s\n' % (
-            indent, name, dims, optional_text, fmtTyp(node), fmtUnits(node) ) )
+        print(
+            '%s**%s%s**: %s%s%s\n' % (
+                indent, name, dims, optional_text, fmtTyp(node), fmtUnits(node)
+                ))
 
         printIfDeprecated( ns, node, indent+INDENTATION_UNIT )
         printDoc(indent+INDENTATION_UNIT, ns, node)
@@ -220,16 +266,14 @@ def printFullTree(ns, parent, name, indent):
             printEnumeration( indent+INDENTATION_UNIT, ns, node_list[0] )
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, 'field', subnode, indent+INDENTATION_UNIT )
+            optional = get_required_or_optional_text(subnode, use_application_defaults)
+            printAttribute( ns, 'field', subnode, optional, indent+INDENTATION_UNIT )
 
     for node in parent.xpath('nx:group', namespaces=ns):
         name = node.get('name', '')
         typ = node.get('type', 'untyped (this is an error; please report)')
-        minOccurs = node.get('minOccurs', None)
-        if minOccurs is not None and minOccurs in ('0',) and listing_category in ('application definition', 'contributed definition'):
-            optional_text = '(optional) '
-        else:
-            optional_text = ''
+
+        optional_text = get_required_or_optional_text(node, use_application_defaults)
         if typ.startswith('NX'):
             if name is '':
                 name = '(%s)' % typ.lstrip('NX')
@@ -240,7 +284,8 @@ def printFullTree(ns, parent, name, indent):
         printDoc(indent+INDENTATION_UNIT, ns, node)
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
-            printAttribute( ns, 'group', subnode, indent+INDENTATION_UNIT )
+            optional = get_required_or_optional_text(subnode, use_application_defaults)
+            printAttribute( ns, 'group', subnode, optional, indent+INDENTATION_UNIT )
 
         nodename = '%s/%s' % (name, node.get('type'))
         printFullTree(ns, node, nodename, indent+INDENTATION_UNIT)
@@ -283,6 +328,10 @@ def print_rst_from_nxdl(nxdl_file):
                  'application': 'application definition',
                  'contributed': 'contributed definition',
                  }[subdir]
+
+    use_application_defaults = listing_category in (
+        'application definition', 
+        'contributed definition')
 
     # print ReST comments and section header
     print( '.. auto-generated by script %s from the NXDL source %s' %
@@ -362,7 +411,8 @@ def print_rst_from_nxdl(nxdl_file):
     # print full tree
     print( '**Structure**:\n' )
     for subnode in root.xpath('nx:attribute', namespaces=ns):
-        printAttribute( ns, 'file', subnode, INDENTATION_UNIT )
+        optional = get_required_or_optional_text(subnode, use_application_defaults)
+        printAttribute( ns, 'file', subnode, optional, INDENTATION_UNIT )
     printFullTree(ns, root, name, INDENTATION_UNIT)
 
     # print NXDL source location
@@ -380,10 +430,11 @@ def main():
     '''
     standard command-line processing
     '''
-    if len(sys.argv) != 2:
-        print( 'usage: %s someclass.nxdl.xml' % sys.argv[0] )
-        exit()
-    nxdl_file = sys.argv[1]
+    import argparse
+    parser = argparse.ArgumentParser(description='test nxdl2rst code')
+    parser.add_argument('nxdl_file', help='name of NXDL file')
+    results = parser.parse_args()
+    nxdl_file = results.nxdl_file
 
     if not os.path.exists(nxdl_file):
         print( 'Cannot find %s' % nxdl_file )
