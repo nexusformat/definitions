@@ -33,18 +33,33 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
 	>
+                <!--    
+                        nxdl.xsd rules do not allow us to show this as a variable name
+                        - we'll use AXISNAME in ALL CAPS for consistency with the
+			use in NXDATA.
+                -->
 
 	<doc>
-		Collection of translations and rotations to describe a geometry
+		Collection of axis-based translations and rotations to describe a geometry.
+		May also contain general axes that do not move.
 		
-		A sequence of transformations lists the offset and rotation steps needed
-		to describe the position and orientation of any movable or fixed device.
+		A nested sequence of transformations lists the offset and rotation steps 
+		needed to describe the position and orientation of any movable or fixed device.
 
-		This class will usually contain all axes of a sample stage or goniometer.
+		There will be one or more transformations (axes)  defined by one or more fields
+		for each transformation.  The all-caps name AXISNAME designates the
+		particular axis generating a transformation (e.g. a rotation axis or a translation
+		axis or a general axis).  
+
+		This class will usually contain all axes of a sample stage or goniometer or
+		a detector.  The NeXus default McSTAS coordinate frame is assumed, but additional
+		useful coordinate axes may be defined as general axes.
 
 		The entry point (``depends_on``) will be outside of this class and point to a
 		field in here. Following the chain may also require following ``depends_on`` 
-		links to transformations outside, for example to a common base table.
+		links to transformations outside, for example to a common base table.  If
+		a relative path is given, it is relative to the group enclosing the ``depends_on``
+		specification.
 
 		For a chain of three transformations, where :math:`T_1` depends on :math:`T_2`
 		and that in turn depends on :math:`T_3`, the final transformation :math:`T_f` is
@@ -78,19 +93,27 @@
 		This entire explanation is not clear.
 		-->
 
-	<field name="AXIS" nameType="any" type="NX_NUMBER" maxOccurs="unbounded">
+	<field name="AXISNAME" nameType="any" type="NX_NUMBER" maxOccurs="unbounded">
 		<doc>
 			Units need to be appropriate for translation or rotation
 			
-			The name of this field is not defined.  The user is free to use any name
-			that does not cause confusion.  When using more than one TRANSFORMATION field,
+			The name of this field is not forced.  The user is free to use any name
+			that does not cause confusion.  When using more than one AXISNAME field,
 			make sure that each field name is unique in the same group, as required
 			by HDF5.
 		</doc>
 		<attribute name="transformation_type">
+			<doc>
+				The transformation_type may be ``translation``, in which case the
+				values are linear displacements along the axis, ``rotation``,
+				in which case the values are angular rotations around the axis,
+				or ``general`` for an axis that simply helps to define a coordinate
+				frame and does not have any displacement values.
+			</doc>
 			<enumeration>
 				<item value="translation" />
 				<item value="rotation" />
+				<item value="general" />
 			</enumeration>
 		</attribute>
 		<attribute name="vector" type="NX_NUMBER">
@@ -110,26 +133,37 @@
 		</attribute>
 		<attribute name="depends_on" type="NX_CHAR">
 			<doc>
-				Points to the name of the next element in the geometry chain.
+				Points to the path to a field defining the axis on which this
+				depends or the string ".".
 			</doc>
 		</attribute>
 	</field>
-	<field name="AXIS_end" type="NX_NUMBER" maxOccurs="unbounded">
-	  <doc>
-	  In the case of an oscillating axis, this field describes the
-	  end of the oscillation, whereas the data in the actual AXIS
-	  describes the start of the oscillation.
-	  </doc>
-	 </field>
-	<field name="AXIS_increment" type="NX_NUMBER" maxOccurs="unbounded">
-	  <doc>
-	  In the case of an oscillating axis, this field describes the
-	  amount of the oscillation. The actual AXIS field will
-	  contain the start of the oscillation. This field could
-	  actually be derived from AXIS_end but the fact is that both
-	  AXIS_end and AXIS_increment are representations which are in
-	  common use. Thus, the fields are there, decide to use one or
-	  the other or both. 
-	  </doc>
-	 </field>
+	<field name="AXISNAME_end" nameType="any" type="NX_NUMBER" minOccurs="0">
+		<doc>
+			AXISNAME_end is a placeholder for a name constructed from the actual
+			name of an axis to which ``_end`` has been appended.
+
+			The values in this field are the end points of the motions that start
+			at the corresponding positions given in the AXISNAME field.
+		</doc>
+	</field>
+	<field name="AXISNAME_range" nameType="any" type="NX_NUMBER" minOccurs="0">
+		<doc>
+			AXISNAME_range is a placeholder for a name constructed from the actual
+			name of an axis to which ``_range`` has been appended.
+
+			The values in this optional field are differences between the values
+			in the field AXISNAME_end and the field AXISNAME.
+		</doc>
+	</field>
+	<field name="AXISNAME_average_range" nameType="any" type="NX_NUMBER" minOccurs="0">
+		<doc>
+			AXISNAME_average_range is a placeholder for a name constructed from the actual
+			name of an axis to which ``_average_range`` has been appended.
+
+			The value of this optional field is the average of the differences between the
+			values in the field AXISNAME_end and the field AXISNAME.			
+		</doc>
+	</field>
 </definition>
+
