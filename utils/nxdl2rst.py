@@ -211,7 +211,7 @@ def printDoc( indent, ns, node, required=False):
 
 def printAttribute( ns, kind, node, optional, indent ):
     name = node.get('name')
-    index_name = re.sub( r'_', ' ', name )
+    index_name = name
     print( '%s.. index:: %s (%s attribute)\n' %
            ( indent, index_name, kind ) )
     print( '%s**@%s**: %s%s%s\n' % (
@@ -247,7 +247,7 @@ def printFullTree(ns, parent, name, indent):
 
     for node in parent.xpath('nx:field', namespaces=ns):
         name = node.get('name')
-        index_name = re.sub( r'_', ' ', name )
+        index_name = name
         dims = analyzeDimensions(ns, node)
 
         optional_text = get_required_or_optional_text(node, use_application_defaults)
@@ -317,7 +317,6 @@ def print_rst_from_nxdl(nxdl_file):
         raise Exception( 'Unexpected class name "%s"; does not start with NX' %
                          ( name ) )
     lexical_name = name[2:] # without padding 'NX', for indexing
-    lexical_name = re.sub( r'_', ' ', lexical_name )
 
     # retrieve category from directory
     #subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
