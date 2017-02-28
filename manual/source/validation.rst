@@ -29,12 +29,21 @@ a laboratory, or even an entire user facility.
 .. index::
    nxvalidate
 
+
+.. TODO
+
+   Chapter should describe how data files are verified (validated) 
+   for conformance to the NeXus standard. 
+   
+   Additional expectation for this chapter 
+   is a description of how validation works.
+
 .. _nxvalidate:
 
 nxvalidate
 ##########
 
-The :ref:`cnxvalidate <cnxvalidate>` utility [#]_, new in 2016, is available for testing. 
+The new nxvalidate utility is available for testing from https://github.com/nexusformat/cnxvalidate 
 For the moment, the most recent documentation is served from the GitHub web site. 
 
 This utility only works on HDF5 files and is aimed 
@@ -42,3 +51,23 @@ to be faster, simpler, more portable and robust than
 previous programmes for NeXus file validation.
 
 .. [#] :ref:`cnxvalidate <cnxvalidate>`: from https://github.com/nexusformat/cnxvalidate
+
+
+
+.. _punx:
+
+punx
+####
+
+Python Utilities for NeXus HDF5 files
+
+**punx** can validate
+both NXDL files and NeXus HDF5 data files, as well as print
+the structure of any HDF5 file, even non-NeXus files.
+ 
+NOTE: project is under initial construction, 
+not yet released for public use, but is useful in its 
+present form (version 0.0.9).  
+ 
+See the program documentation for more details:
+https://punx.readthedocs.io
