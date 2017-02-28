@@ -1,27 +1,29 @@
 .. _Example-Viewing-LRMECS-Data:
 
-================================================
 Viewing 2-D Data from LRMECS
-================================================
+############################
 
 The IPNS LRMECS instrument stored data in NeXus HDF4 data files.  
 One such example is available from the repository of NeXus data 
-file examples.
+file examples. [#]_
 For this example, we will start with a conversion of that 
 original data file into *HDF5* format.
 
-	:HDF4:
-		http://svn.nexusformat.org/definitions/exampledata/IPNS/LRMECS/lrcs3701.nxs
-	:HDF5:
-		http://svn.nexusformat.org/definitions/exampledata/IPNS/LRMECS/lrcs3701.nx5
+======  =============
+format  file name
+======  =============
+HDF4    lrcs3701.nxs
+HDF5    lrcs3701.nx5
+======  ============= 
 
 This dataset contains two histograms with 2-D images (148x750 and 148x32) of 32-bit integers.
 First, we use the ``h5dump`` tool to investigate the header content of the file 
 (not showing any of the data).
 
+.. [#] LRMECS example data: https://github.com/nexusformat/exampledata/tree/master/IPNS/LRMECS
 
 Visualize Using ``h5dump``
-###############################
+**************************
 
 Here, the output of the command::
 
@@ -30,7 +32,7 @@ Here, the output of the command::
 has been edited to only show the first *NXdata* group (``/Histogram1/data``):
 
 LRMECS ``lrcs3701`` data: ``h5dump`` output
-++++++++++++++++++++++++++++++++++++++++++++++++++
+===========================================
 
 .. literalinclude:: dump-histogram1-data.txt
     :tab-width: 4
@@ -39,7 +41,7 @@ LRMECS ``lrcs3701`` data: ``h5dump`` output
 
 
 Visualize Using *HDFview*
-###############################
+*************************
 
 For many, the simplest way to view the data content 
 of an HDF5 file is to use the  *HDFview* program 
@@ -72,7 +74,7 @@ radio button, and then (accepting everything else as a default) press the
     LRMECS ``lrcs3701`` data: *HDFview* *Open As* dialog
 
 LRMECS ``lrcs3701`` data: image
-++++++++++++++++++++++++++++++++++++++++++++++++++
+===============================
 
 .. figure:: hdfview-image.jpg
     :width: 80%
@@ -81,7 +83,7 @@ LRMECS ``lrcs3701`` data: image
 
 
 Visualize Using *IgorPro*
-###############################
+*************************
 
 Another way to visualize this data is to use a commercial 
 package for scientific data visualization and analysis.  
@@ -132,7 +134,7 @@ to display the image.
     LRMECS ``lrcs3701`` data: *IgorPro* *HDFBrowser* dialog
 
 LRMECS ``lrcs3701`` data: image
-++++++++++++++++++++++++++++++++++++++++++++++++++
+===============================
 
 .. figure:: igor-data.jpg
     :width: 80%
