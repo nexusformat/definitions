@@ -11,6 +11,12 @@ Two things to note about the development and history of NeXus:
 
 - The NIAC has already discussed many matters related to the format.
 
+.. release_3_2: 
+
+:October 2016:
+    `release 3.2 <https://github.com/nexusformat/definitions/releases/tag/v3.2>`
+    of NeXus Definitions
+
 :2014-12:
     The NIAC approves a new method to identify the default data to be plotted,
     applying attributes at the group level to the root of the HDF5 tree,
