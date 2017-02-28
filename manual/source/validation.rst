@@ -43,14 +43,15 @@ a laboratory, or even an entire user facility.
 nxvalidate
 ##########
 
-The new nxvalidate utility is available for testing from https://github.com/nexusformat/cnxvalidate 
-For the moment, the most recent documentation is served from the GitHub web site. 
+The :ref:`cnxvalidate <nxvalidate>` utility [#]_, 
+new in 2016, is available for testing.
+Refer to the GitHub location for the most recent information. 
 
 This utility only works on HDF5 files and is aimed 
 to be faster, simpler, more portable and robust than 
 previous programmes for NeXus file validation.
 
-.. [#] :ref:`cnxvalidate <cnxvalidate>`: from https://github.com/nexusformat/cnxvalidate
+.. [#] :ref:`cnxvalidate <nxvalidate>`: from https://github.com/nexusformat/cnxvalidate
 
 
 

@@ -116,7 +116,7 @@ links to further information, as available.
 Validation
 ##########
 
-The list of applications below are for validating NeXus files. 
+The list of applications below are for :ref:`validating <Verification>` NeXus files. 
 The list is not intended to be a complete list of all available packages.
 
 .. index::
