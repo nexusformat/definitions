@@ -97,29 +97,6 @@ links to further information, as available.
     All of these concepts are discussed in detail in the documentation
     provided with the source code.
 
-.. index::
-   validation
-   file; validate
-   nxvalidate (utility)
-   cnxvalidate
-   see: cnxvalidate; nxvalidate (utility)
-
-.. _cnxvalidate:
-
-**nxvalidate**
-   The **nxvalidate** code has been re-written entirely in C,
-   to rely on the NXDL class files (base classes and application definitions).
-   The new code is called **cnxvalidate**.
-
-   From the :ref:`nxvalidate` source code documentation: 
-   
-      "This is the first version of **nxvalidate** written in C. 
-      Its dependencies are libxml2 and the HDF5 libraries, version 1.8.9 or better. 
-      Its purpose is to validate HDF5 files against NeXus application definitions."
-   
-   Note: this tool is lives in its own GitHub repository: [#]_ **cnxvalidate**.
-   
-   .. [#] **cnxvalidate**: https://github.com/nexusformat/cnxvalidate
 
 .. index:: 
    plotting
@@ -136,10 +113,56 @@ links to further information, as available.
    single: software
    single: data analysis software
 
+Validation
+##########
+
+The list of applications below are for :ref:`validating <Verification>` NeXus files. 
+The list is not intended to be a complete list of all available packages.
+
+.. index::
+   validation
+   file; validate
+   nxvalidate (utility)
+
+.. _nxvalidate:
+
+**nxvalidate**
+   From the source code documentation: 
+    
+   *"This is the first version of nxvalidate written in C. 
+   Its dependencies are libxml2 and the HDF5 libraries, 
+   version 1.8.9 or better. Its purpose is to validate HDF5 
+   data files against NeXus application definitions."*
+    
+   Note: this tool is lives in its own GitHub repository **cnxvalidate**:
+   https://github.com/nexusformat/cnxvalidate.git
+
+.. index::
+        validation
+   file; validate
+   punx (utility)
+
+.. _punx:
+
+**punx**
+   Python Utilities for NeXus HDF5 files
+   
+   **punx** can validate
+   both NXDL files and NeXus HDF5 data files, as well as print
+   the structure of any HDF5 file, even non-NeXus files.
+    
+   NOTE: project is under initial construction, 
+   not yet released for public use, but is useful in its 
+   present form (version 0.0.9).  
+    
+   See the program documentation for more details:
+   https://punx.readthedocs.io
++
 Data Analysis
 #############
 
-The list of applications below are some of the utilities that have been developed (or modified) to read/write NeXus files
+The list of applications below are some of the utilities that have been 
+developed (or modified) to read/write NeXus files
 as a data format.  It is not intended to be a complete list of all available packages.
 
 .. index:: 
