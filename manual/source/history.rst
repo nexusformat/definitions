@@ -23,7 +23,7 @@ Two things to note about the development and history of NeXus:
     and the NXentry and NXdata groups. 
     See the description in :ref:`Design-FindPlottable-NIAC2014`
     and the proposal:
-    http://wiki.nexusformat.org/2014_How_to_find_default_data
+    http://www.nexusformat.org/2014_How_to_find_default_data.html
 
 :2012-05:
     first release (3.1.0) of NXDL (NeXus Definition Language)
@@ -135,13 +135,13 @@ Two things to note about the development and history of NeXus:
     for the European neutron scattering community while working at ISIS
 
 
-.. [#NeXus_Proposal] http://wiki.nexusformat.org/images/9/9a/NeXus_Proposal.pdf
+.. [#NeXus_Proposal] http://www.nexusformat.org/pdfs/NeXus_Proposal.pdf
 
 .. [#softness] http://www.neutron.anl.gov/softness
 
-.. [#aps] http://wiki.nexusformat.org/images/d/d5/Proposed_Data_Standard_for_the_APS.pdf
+.. [#aps] http://www.nexusformat.org/pdfs/Proposed_Data_Standard_for_the_APS.pdf
 
-.. [#netCDF] http://wiki.nexusformat.org/images/b/b8/European-Formats.pdf
+.. [#netCDF] http:/wwww.nexusformat.org/pdfs/European-Formats.pdf
 
 
 .. comment from here moved to file: history-unpublished-comment.txt
