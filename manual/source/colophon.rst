@@ -3,7 +3,7 @@ Colophon
 ========
 
 These docs (manual and reference) were produced using :index:`Sphinx <Sphinx (documentation generator)>`
-(http://sphinx.pocoo.org).
+(http://sphinx-doc.org).
 The :index:`source for the manual <manual source>` shows many examples of the structures
 used to create the manual.  If you have any questions about 
 how to contribute to this manual, please contact the NeXus

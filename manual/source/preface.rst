@@ -10,6 +10,7 @@
 
 	With revision 3.1 of the manual, NeXus introduced a complete version
 	of the documentation of the NeXus standard.  The content from the wiki
+	at the time
 	was converted, augmented (in some parts significantly), clarified,
 	and indexed.  The NeXus Definition Language (NXDL) was introduced 
 	to define base classes and application definitions.
