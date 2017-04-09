@@ -217,7 +217,7 @@ latex_use_parts = False
 #latex_show_urls = False
 
 # Additional stuff for the LaTeX preamble.
-latex_preamble = '''
+latex_elements['preamble'] = '''
 % 2012-09-25,PRJ: #240  temporary diagnostic
 \\listfiles
 % when done, remove referencing from index.rst and cp from Makefile: latexpdf
