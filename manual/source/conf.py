@@ -227,7 +227,7 @@ preamble_text = '''
 latex_elements = {
     'preamble_text':  preamble_text       # the new way
 }
-latex_preamble = preamble_text       # the old way
+#latex_preamble = preamble_text       # the old way
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []
