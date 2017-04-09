@@ -157,7 +157,7 @@ The list is not intended to be a complete list of all available packages.
     
    See the program documentation for more details:
    https://punx.readthedocs.io
-+
+
 Data Analysis
 #############
 
