@@ -32,7 +32,7 @@ development of NeXus with the larger community.
 .. _NeXus.webpage:
 
 NeXus Webpage
-============
+=============
 
 First of all, there is the NeXus webpage,
 http://www.nexusformat.org/,
