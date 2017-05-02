@@ -50,7 +50,7 @@ code are always welcome!
 .. _community.Contributed.Definitions:
 
 Contributed Definitions
-========================
+=======================
 
 The community is encouraged to provide new definitions 
 (:ref:`base.class.definitions` or :ref:`application.definitions`) for consideration
@@ -59,7 +59,7 @@ will be entered in the :ref:`contributed.definitions`
 and will be curated according to procedures set forth by the :ref:`NIAC`.
 
 Other Ways NeXus Coordinates with the Scientific Community
-============================================================
+==========================================================
 
 .. toctree::
    :maxdepth: 1

@@ -216,14 +216,18 @@ latex_use_parts = False
 # If true, show URL addresses after external links.
 #latex_show_urls = False
 
-# Additional stuff for the LaTeX preamble.
-latex_preamble = '''
+# Additional stuff for the LaTeX preamble_text.
+preamble_text = '''
 % 2012-09-25,PRJ: #240  temporary diagnostic
 \\listfiles
 % when done, remove referencing from index.rst and cp from Makefile: latexpdf
 \usepackage{enumitem}
 \setlistdepth{9}
 '''
+latex_elements = {
+    'preamble_text':  preamble_text       # the new way
+}
+#latex_preamble = preamble_text       # the old way
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []
