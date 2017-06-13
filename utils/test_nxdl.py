@@ -88,6 +88,7 @@ class TestMaker(type):
             # test body for each NXDL file test
             with self.assertRaises(NXDL_Valid):
                 validate_xml(nxdl_file_name)
+            self.assertRaises(NXDL_Valid, validate_xml, nxdl_file_name)
         return test_wrap
 
 
