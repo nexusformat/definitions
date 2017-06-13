@@ -26,5 +26,6 @@ def suite(*args, **kw):
 if __name__ == '__main__':
     owd = os.getcwd()
     runner=unittest.TextTestRunner(verbosity=2)
-    runner.run(suite())
+    result = runner.run(suite())
     os.chdir(owd)
+    sys.exit(len(result.errors))
