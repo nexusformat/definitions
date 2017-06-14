@@ -353,9 +353,9 @@ def getDocFromNode(ns, node, retval=None):
     # be sure to grab _all_ content in the documentation
     # it might look like XML
     s = lxml.etree.tostring(docnodes[0], pretty_print=True)
-    p1 = s.find('>')+1
-    p2 = s.rfind('</')
-    text = s[p1:p2].lstrip('\n')    # cut off the enclosing tag
+    p1 = s.decode().find('>')+1
+    p2 = s.decode().rfind('</')
+    text = s[p1:p2].decode().lstrip('\n')    # cut off the enclosing tag
     
     lines = text.splitlines()
     if len(lines) > 1:
