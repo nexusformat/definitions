@@ -663,7 +663,7 @@ group in the following way:
          single: vector (field attribute)
          see: direction; vector (field attribute)
 
-       ``vector`` (*NX_FLOAT*)
+       ``vector`` (*NX_NUMBER*)
         This is a set of 3 values forming a unit vector for **direction** that
         describes the components of either the direction of the rotation axis or
         the direction along which the translation happens.
@@ -671,7 +671,7 @@ group in the following way:
        .. index::
          ! single: offset (field attribute)
 
-       ``offset`` (*NX_FLOAT*)
+       ``offset`` (*NX_NUMBER*)
          This is a set of 3 values forming the offset vector for a translation to apply
          before applying the operation of the actual transformation. Without this offset
          attribute, additional virtual translations would need to be introduced in order
