@@ -23,22 +23,19 @@ following activities.
 #. To receive and examine all proposed amendments and extensions to the NeXus format.
    In particular, to ratify proposed instrument and group class definitions, to ensure
    that the data structures conform to the basic NeXus specification, and to ensure
-   that the definitions of data items
+   that the definitions of data items (fields)
    are clear and unambiguous and conform to accepted
    scientific usage.
    
-   ..  2010-02-06,PRJ: Can we change "data item" to "field" and be consistent with NXDL nomenclature?
-
 #. To ensure that documentation of the NeXus format is sufficient, current, and
    available to potential users both on the internet and in other forms.
 
-#. To coordinate with the developers of the NeXus Application Programming Interface
-   to ensure that it supports the use of the NeXus format in the neutron, X-ray, and
-   muon communities, and to promote other software development that will benefit users
+#. To coordinate the maintenance of the NeXus Application Programming Interface
+   and to promote other software development that will benefit users
    of the NeXus format.
 
 #. To coordinate with other organizations that maintain and develop related data
-   formats to ensure maximum compatibility.
+   formats to reach compatibility.
 
 The committee will meet at least once every other calendar year according to the following
 plan:
@@ -55,5 +52,5 @@ plan:
 
 .. [#]
     For more details about the NIAC :index:`constitution`, procedures, and meetings, refer to
-    the NIAC wiki page: http://wiki.nexusformat.org/NIAC
+    the NIAC web page: http://www.nexusformat.org/NIAC.html
     The members of the NIAC may be reached by email: nexus-committee@nexusformat.org

@@ -509,12 +509,30 @@ plottable data is as follows:
 #. Plot the *signal* data, given *axes* and *AXISNAME_indices*.
 
 
+When all the ``default`` and ``signal`` attributes are present, this 
+Python code will identify directly the default plottable data 
+(assuming a ``plot()`` function has been defined by some code::
+
+    root = h5py.File(hdf5_file_name, "r")
+    
+    default_nxentry_group_name = root.attrs["default"]
+    nxentry = root[default_nxentry_group_name]
+    
+    default_nxdata_group_name = nxentry.attrs["default"]
+    nxdata = nxentry[default_nxdata_group_name]
+    
+    signal_dataset_name = nxdata.attrs["signal"]
+    data = nxdata[signal_dataset_name]
+    
+    plot(data)
+
+
 .. _Find-Plottable-Data-v2:
 
 Version 2
 =========
 
-.. tip:: Try this method for older NeXus data files.
+.. tip:: Try this method for older NeXus data files and :ref:`Find-Plottable-Data-v3` fails..
 
 The second method to identify the default 
 plottable data is as follows:
@@ -728,14 +746,15 @@ is specified using attributes attached to the :ref:`NXdata` group.
    follow the chain as it is described from that point. 
    Specifically:
    
-   *  The root of the NeXus file will have a ``default`` 
+   *  The root of the NeXus file may have a ``default`` 
       attribute that names the default :ref:`NXentry` group.
       This attribute may be omitted if there is only one NXentry group.
       If a second NXentry group is later added, the ``default`` attribute 
       must be added then.
-   *  Every :ref:`NXentry` group will have a ``default`` 
+   *  Every :ref:`NXentry` group may have a ``default`` 
       attribute that names the default :ref:`NXdata` group.
-      This attribute may be omitted if there is only one NXdata group.
+      This attribute may be omitted if there is only one NXdata group
+      or if no NXdata is present.
       If a second NXdata group is later added, the ``default`` attribute 
       must be added then.
    *  Every :ref:`NXdata` group will have a ``signal`` 
@@ -757,7 +776,7 @@ is specified using attributes attached to the :ref:`NXdata` group.
    When no default axis is available for a particular dimension 
    of the plottable data, use a "." in that position. 
    
-   See examples provided on the NeXus wiki ([#axes]_).
+   See examples provided on the NeXus webpage ([#axes]_).
    
    If there are no axes at all (such as with a stack of images), 
    the axes attribute can be omitted.
@@ -800,19 +819,19 @@ is specified using attributes attached to the :ref:`NXdata` group.
    "strict writer, liberal reader". 
 
 .. [#] Summary of the discussion at NIAC2014 to revise how to find default data: 
-       http://wiki.nexusformat.org/2014_How_to_find_default_data
+       http://www.nexusformat.org/2014_How_to_find_default_data.html
 .. [#aa]  Note on array attributes:
           Attributes potentially containing multiple values 
           (axes and _indices) are to be written as string or integer arrays, 
           to avoid string parsing in reading applications.
-.. [#axes] NIAC2014 proposition: http://wiki.nexusformat.org/2014_axes_and_uncertainties
+.. [#axes] NIAC2014 proposition: http://www.nexusformat.org/2014_axes_and_uncertainties.html
 
 
 Examples
 ++++++++
 
 Several examples are provided to illustrate this method.
-More examples are available in the NeXus wiki ([#axes]_).
+More examples are available in the NeXus webpage ([#axes]_).
 
 .. compound::
 
@@ -957,7 +976,7 @@ attribute for the other scales is optional.
 
 .. 2016-01-23,PRJ: not necessary
    Perhaps substitute with the discussion from NIAC2014?
-   http://wiki.nexusformat.org/2014_axes_and_uncertainties
+   http://www.nexusformat.org/2014_axes_and_uncertainties.html
    
    .. _Design-Linking-Discussion:
    

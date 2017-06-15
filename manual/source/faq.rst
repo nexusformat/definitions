@@ -19,9 +19,8 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     This is not easy to say, not all facilities using NeXus actively
     participate in the committee. Some facilities have reported their
-    adoption status on the `Facilities Wiki page <http://wiki.nexusformat.org/Facilities>`_.
-    Please have a look at this list. Keep in mind that it is not
-    complete.
+    adoption status on the `Facilities web page <http://www.nexusformat.org/Facilities.html>`_.
+    Please have a look at this list. Keep in mind that it is never fully complete or up to date.
 
 #. NeXus files are binary? This is crazy! How am I supposed to see my data?
 
@@ -78,11 +77,10 @@ This is a list of commonly asked questions concerning the NeXus data format.
     effort. Seriously.
 
     If you encounter any problems because the classes are not
-    sufficient to describe your configuration, please contact the
-    :index:`NIAC`
-    Executive Secretary explaining the problem, and post a suggestion
-    at the relevant class wiki page. Or raise the problem in one of the
-    `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
+    sufficient to describe your experiment, please contact the
+    `mailing list <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
+    Pull requests for the defintions repository (for example adding contributed defintions) 
+    are also welcome (see next question).
     The NIAC is always willing to consider new proposals.
 
 #. I want to :index:`contribute` an application definition.
@@ -98,8 +96,8 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
 	.. [#]
 	    Refer to the most recent version of the NIAC constitution on the
-	    NIAC wiki:
-	    http://wiki.nexusformat.org/NIAC#Constitution
+	    NIAC web page:
+	    http://www.nexusformat.org/NIAC.html#constitution
 
 
 #. What is the purpose of ``NXdata``?

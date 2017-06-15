@@ -171,10 +171,15 @@ The columns in the table are described as follows:
     of zero means the item is optional. For attributes,
     ``maxOccurs`` cannot be greater than 1.
     
-    ================= ========= =========
-    NXDL element type minOccurs maxOccurs
-    ================= ========= =========
-    group             0         unbounded
-    field             0         unbounded
-    attribute         0         1
-    ================= ========= =========
+    ================= ==============  =========
+    NXDL element type minOccurs       maxOccurs
+    ================= ==============  =========
+    group             [#minOccurs]_   unbounded
+    field             [#minOccurs]_   unbounded
+    attribute         [#minOccurs]_   1
+    ================= ==============  =========
+
+    .. [#minOccurs] For NXDL *base classes*, ``minOccurs=0`` is the default, 
+       for NXDL *application definitions* and  *contributed definitions*, ``minOccurs=1`` is the default.
+       In all cases, the ``minOccurs`` attribute in the NXDL file will override the default
+       for that element (group, field, attribute, or link).

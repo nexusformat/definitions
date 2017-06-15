@@ -27,9 +27,9 @@ needs_sphinx = '1.1'   # the :index: role debuted in v1.1
 # coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = []
 #extensions.append( 'sphinx.ext.imgmath' )
-extensions.append( 'sphinx.ext.pngmath' )
+#extensions.append( 'sphinx.ext.pngmath' )
+extensions.append( 'sphinx.ext.mathjax' )
 extensions.append( 'sphinx.ext.ifconfig' )
-extensions.append( 'matplotlib.sphinxext.mathmpl' )
 extensions.append( 'sphinx.ext.todo' )
 extensions.append( 'sphinx.ext.viewcode' )
 
@@ -216,14 +216,18 @@ latex_use_parts = False
 # If true, show URL addresses after external links.
 #latex_show_urls = False
 
-# Additional stuff for the LaTeX preamble.
-latex_preamble = '''
+# Additional stuff for the LaTeX preamble_text.
+preamble_text = '''
 % 2012-09-25,PRJ: #240  temporary diagnostic
 \\listfiles
 % when done, remove referencing from index.rst and cp from Makefile: latexpdf
 \usepackage{enumitem}
 \setlistdepth{9}
 '''
+latex_elements = {
+    'preamble_text':  preamble_text       # the new way
+}
+#latex_preamble = preamble_text       # the old way
 
 # Documents to append as an appendix to all manuals.
 #latex_appendices = []

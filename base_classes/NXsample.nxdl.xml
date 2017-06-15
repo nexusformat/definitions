@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2016 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2017 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -125,6 +125,18 @@
 	<field name="changer_position" type="NX_INT" units="NX_UNITLESS">
 		<doc>Sample changer position</doc>
 	</field>
+	<field name="unit_cell_abc" type="NX_FLOAT" units="NX_LENGTH">
+		<doc>Crystallography unit cell parameters a, b, and c</doc>
+		<dimensions>
+			<dim index="1" value="3"/>
+		</dimensions>
+	</field>
+	<field name="unit_cell_alphabetagamma" type="NX_FLOAT" units="NX_ANGLE">
+		<doc>Crystallography unit cell parameters alpha, beta, and gamma</doc>
+		<dimensions>
+			<dim index="1" value="3"/>
+		</dimensions>
+	</field>
 	<field name="unit_cell" type="NX_FLOAT" units="NX_LENGTH">
 		<doc>Unit cell parameters (lengths and angles)</doc>
 		<dimensions rank="2">
@@ -158,6 +170,20 @@
 			<dim index="3" value="3"/>
 		</dimensions>
 	</field>
+	<field name="ub_matrix" type="NX_FLOAT">
+		<doc>
+			UB matrix of single crystal sample using Busing-Levy convention:
+			W. R. Busing and H. A. Levy (1967). Acta Cryst. 22, 457-464. This is 
+			the multiplication of the orientation_matrix, given above, 
+			with the :math:`B` matrix which 
+			can be derived from the lattice constants. 
+		</doc>
+		<dimensions rank="3">
+			<dim index="1" value="n_comp"/>
+			<dim index="2" value="3"/>
+			<dim index="3" value="3"/>
+		</dimensions>
+	</field>
 	<field name="mass" type="NX_FLOAT" units="NX_MASS">
 		<doc>Mass of sample</doc>
 		<dimensions rank="1">
@@ -181,6 +207,8 @@
 			<item value="sample" />
 			<item value="sample+can" />
 			<item value="can" />
+			<item value="sample+buffer" />
+			<item value="buffer" />
 			<item value="calibration sample" />
 			<item value="normalisation sample" />
 			<item value="simulated data" />
@@ -218,6 +246,12 @@
 	<group type="NXbeam">
 		<doc>Details of beam incident on sample - used to calculate sample/beam interaction point</doc>
 	</group>
+	<group type="NXsample_component">
+		<doc>
+			One group per sample component
+			This is the perferred way of recording per component information over the n_comp arrays
+		</doc>
+	</group>
 	<field name="component">
 		<doc>Details of the component of the sample and/or can</doc>
 		<dimensions rank="1">
@@ -254,27 +288,32 @@
 			<dim index="1" value="n_comp"/>
 		</dimensions>
 	</field>
-	<field name="unit_cell_class">
-		<doc>
-			In case it is all we know and we want to record/document it
-		</doc>
-		<dimensions rank="1">
+        <field name="unit_cell_class">
+                <doc>
+                        In case it is all we know and we want to record/document it
+                </doc>
+                <enumeration>
+                        <item value="triclinic" />
+                        <item value="monoclinic" />
+                        <item value="orthorhombic" />
+                        <item value="tetragonal" />
+                        <item value="rhombohedral" />
+                        <item value="hexagonal" />
+                        <item value="cubic" />
+                </enumeration>
+        </field>
+        <field name="space_group">
+                <doc>Crystallographic space group</doc>
+		<dimensions>
 			<dim index="1" value="n_comp"/>
 		</dimensions>
-		<enumeration>
-			<item value="cubic" />
-			<item value="tetragonal" />
-			<item value="orthorhombic" />
-			<item value="monoclinic" />
-			<item value="triclinic" />
-		</enumeration>
-	</field>
-	<field name="unit_cell_group">
-		<doc>Crystallographic point or space group</doc>
-		<dimensions rank="1">
+        </field>
+        <field name="point_group">
+                <doc>Crystallographic point group, deprecated if space_group present</doc>
+		<dimensions>
 			<dim index="1" value="n_comp"/>
-		</dimensions>
-	</field>
+        </dimensions>
+		</field>
 	<field name="path_length" type="NX_FLOAT" units="NX_LENGTH">
 		<doc>
 			Path length through sample/can for simple case when 

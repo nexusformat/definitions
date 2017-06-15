@@ -17,16 +17,17 @@ import sys
 
 
 # find the directory of this python file
-BASEDIR = os.path.split(os.path.abspath(__file__))[0]
+BASEDIR = os.path.dirname(__file__)
 
 
 # nxdl = os.path.join(BASEDIR, '..', 'applications', 'NXarchive.nxdl.xml')
 # nxdl = os.path.join(BASEDIR, '..', 'applications', 'NXsas.nxdl.xml')
 # nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXcrystal.nxdl.xml')
 # nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXobject.nxdl.xml')
+# nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXuser.nxdl.xml')
 # nxdl = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXarpes.nxdl.xml')
 # nxdl = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXmagnetic_kicker.nxdl.xml')
-nxdl = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXcanSAS.nxdl.xml')
+nxdl = os.path.join(BASEDIR, '..', 'applications', 'NXcanSAS.nxdl.xml')
 
 if len(sys.argv) == 1:
     sys.argv.append(nxdl)

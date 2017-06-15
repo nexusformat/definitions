@@ -25,6 +25,7 @@ which oversees the development of the NeXus data format.
 Its members represent many of the major neutron and synchrotron
 scattering sources in the world. Membership and posting to this list
 are limited to the committee members, but the archives are public.
+General discussions should be held in the public mailing list.
 
 + List Address: nexus-committee@nexusformat.org
 + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-committee
@@ -35,8 +36,8 @@ are limited to the committee members, but the archives are public.
 NeXus Video Conference Announcements
 ====================================
 
-There are video conferences on NeXus roughly every other week. 
-Agenda and joining details are posted on the wiki: http://wiki.nexusformat.org/NeXus_Teleconferences
+There are video conferences on NeXus roughly twice a month.
+Agenda and joining details are posted on the webpage: http://www.nexusformat.org/Teleconferences.html
 In addition calender invites are sent to this list.
 NeXus-Tech used to be used for discussions in the past. Now the list is moderated to only allow 
 commuication related to holding meetings. All other traffic should go to the main list nexus@nexusformat.org

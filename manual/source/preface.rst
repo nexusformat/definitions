@@ -10,6 +10,7 @@
 
 	With revision 3.1 of the manual, NeXus introduced a complete version
 	of the documentation of the NeXus standard.  The content from the wiki
+	at the time
 	was converted, augmented (in some parts significantly), clarified,
 	and indexed.  The NeXus Definition Language (NXDL) was introduced 
 	to define base classes and application definitions.
@@ -122,7 +123,7 @@ Lines 14-15:
 The ``/entry/data``) group has two datasets that are actually
 linked as shown to data sets in a different group.  
 (As you will see later, the ``NXdata`` group
-is required and enables NeXus clients to easily determine what to
+enables NeXus clients to easily determine what to
 offer for display on a default plot.)
 
 .. _preface.Class.path.specification:
