@@ -243,6 +243,14 @@ matches the data type specifier.
     the encoding of most of the strings in a NeXus file will be a moot point.
     Where encoding in UTF-8 will be important is when recording people's names in ``NXuser``
     and text notes in ``NXnotes``.
+    
+    .. https://github.com/nexusformat/NIAC/issues/23#issuecomment-308773465
+    
+    .. index:: strings; variable-length
+    .. index:: strings; fixed-length
+    
+    NeXus accepts both variable and fixed length strings, 
+    software that reads NeXus data files should support both.
 
 .. index:: binary data
 
