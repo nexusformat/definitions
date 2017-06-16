@@ -225,7 +225,8 @@ preamble_text = '''
 \setlistdepth{9}
 '''
 latex_elements = {
-    'preamble_text':  preamble_text       # the new way
+    'preamble_text':  preamble_text,       # the new way
+    'maxlistdepth':   10,                  # deeply nested application definitions
 }
 #latex_preamble = preamble_text       # the old way
 
