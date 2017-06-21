@@ -566,8 +566,12 @@ NeXus Coordinate Systems
     coordinate systems; McStas
     coordinate systems; IUCr
 
-The NeXus coordinate system is shown :ref:`below <fig.NeXus-coord>`.
-Note that it is the same as that used by *McStas* (http://mcstas.org).
+The NeXus coordinate system is shown :ref:`below <fig.NeXus-coord>`. Note that
+it is the same as that used by *McStas* (http://mcstas.org). This choice is
+arbitrary and any other choice should be possible as long as it is
+used consistently and application code that reads NeXus files does not assume
+any prior knowledge of the chosen coordinate system.
+
 
 .. compound::
 
@@ -579,12 +583,12 @@ Note that it is the same as that used by *McStas* (http://mcstas.org).
 		+==========================================================+==========================================================+
 		| .. figure:: img/translation-orientation-geometry.jpg     | .. figure:: img/translation-orientation-geometry-2.jpg   |
 		|       :alt: fig.coord.source.view                        |        :alt: fig.coord.detector.view                     |
-		|       :width: 48%                                        |        :width: 48%                                       |
+		|       :width: 33%                                        |        :width: 33%                                       |
 		+----------------------------------------------------------+----------------------------------------------------------+
 
 	.. figure:: img/translation-orientation-geometry-2.jpg
 	      :alt: fig.coord.detector.view
-	      :width: 48%
+	      :width: 33%
 
 	      NeXus coordinate system, as viewed from detector
 
@@ -604,12 +608,12 @@ In the recommended way of dealing with geometry NeXus uses a series of
 :index:`transformations <coordinate systems; transformations>` to place objects in space.
 In this world view, the absolute position of a component or a detector pixel with respect to
 the laboratory coordinate system is calculated by applying a series of translations and
-rotations. These operations can be expressed as transformation matrices and their
-combination as matrix multiplication. A very important aspect is that the order of application
-of the individual operations *does* matter. Another important aspect is that
-any operation transforms the whole coordinate system and gives rise to a new local coordinate system.
-The mathematics behind this is
-well known and used in such applications such as industrial robot control, space flight and
+rotations. Thus a rotation or translation operation transforms the whole coordinate system
+and gives rise to a new local coordinate system. These transformations between coordinate
+systems are mathematical operations and can be expressed as matrices and their combination
+as matrix multiplication. A very important aspect is that the order of application of the
+individual operations *does* matter. The mathematics behind this is well known and used in
+such applications such as industrial robot control, flight dynamics and
 computer games. The beauty in this comes from the fact that the operations to apply map easily
 to instrument settings and constants. It is also easy to analyze the contribution of each individual
 operation: this can be studied under the condition that all other operations are at a zero setting.
@@ -628,61 +632,89 @@ In order to use coordinate transformations, several pieces of information need t
     **Order**
         The order of operations to apply to move a component into its place.
 
-NeXus chooses to encode this information in the following way:
 
-    .. index::
-       single: transformation type (field attribute)
-       single: translation
-       single: rotation
+Coordinate Transformation Field And Attributes
+----------------------------------------------
 
-    **Type**
-    	Through a field attribute **transformation_type**.
-	This can take the value of either *translation*
-    	or *rotation*.
+NeXus chooses to encode information about each transformation as a field in an ``NXtransformations``
+group in the following way:
 
-    .. index::
-       single: vector (field attribute)
-       see: direction; vector (field attribute)
+  .. index::
+     ! single: value (transformation matrix)
+     ! single: offset (field attribute)
 
-    **Direction**
-    	Through a field attribute **vector**. This is a set of three values
-    	describing either the components of the rotation axis
-    	or the direction along which the translation happens.
+  ``value``
+     This is represented in the actual data of the field or the **value** of the
+     transformation. Its actual name should relate to the physical device used to
+     effect the transformation.
 
-    .. index::
-       ! single: value (transformation matrix)
-       ! single: offset (field attribute)
+     The coordinate transformation attributes are:
 
-    **Value**
-    	This is represented in the actual data of the data set. In addition, there is the
-    	**offset** attribute which has three components describing a translation to apply before
-    	applying the operation of the real axis. Without the offset attribute additional virtual
-    	translations would need to be introduced in order to encode mechanical offsets in the axis.
+       .. index::
+         single: transformation type (field attribute)
+         single: translation
+         single: rotation
 
-    .. index::
-       see: order (transformation); depends on (field attribute)
-       ! single: depends on (field attribute)
+       ``transformation_type``
+         This specifies the **type** of transformation and is either *rotation*
+         or *translation* and describes the kind of operation performed
 
-    **Order**
-    	The order is encoded through the **depends_on** attribute on a data set. The value of the
-    	**depends_on** attribute is the axis upon which the current axis sits.
-    	If the axis sits in the same group it is just a name,
-    	if it is in another group it is a path to the dependent axis.
-    	In addition, for each beamline component, there is a **depends_on** field which points to the data set at the
-    	head of the axis dependency chain. Take as an example an :index:`eulerian cradle` as used on a
-    	:index:`four-circle diffractometer`. Such a cradle has a dependency chain of ``phi:chi:rotation_angle``. Then
-    	the ``depends_on`` field in :ref:`NXsample` would have the value ``phi``.
+       .. index::
+         single: vector (field attribute)
+         see: direction; vector (field attribute)
 
+       ``vector`` (*NX_NUMBER*)
+        This is a set of 3 values forming a unit vector for **direction** that
+        describes the components of either the direction of the rotation axis or
+        the direction along which the translation happens.
 
-    	.. compound::
+       .. index::
+         ! single: offset (field attribute)
 
-    	    .. rubric:: NeXus Transformation encoding
+       ``offset`` (*NX_NUMBER*)
+         This is a set of 3 values forming the offset vector for a translation to apply
+         before applying the operation of the actual transformation. Without this offset
+         attribute, additional virtual translations would need to be introduced in order
+         to encode mechanical offsets in the axis.
 
-    	    .. _table.EulerCIF:
+       .. index::
+         see: order (transformation); depends on (field attribute)
+         ! single: depends on (field attribute)
 
-    	    Transformation encoding for an eulerian cradle on a four-circle diffractometer
+       ``depends_on``
+    	 The **order** is encoded through this attribute. The value is the name of the
+         transformation upon which the current transformation depends on.
 
-    	    .. literalinclude:: examples/euler-cif.txt
+         As each transformation represents possible motion by a physical device, this
+         dependency expresses the attachment order; thus, the current device is attached
+         to (or mounted on) the next device referred to by the attribute.
+
+         Allowed values for depends_on are:
+
+           ``.``
+             A dot ends the depends_on chain
+           ``name``
+             The name of a field within the enclosing group
+           ``dir/name``
+             The name of a field further along the path
+           ``/dir/dir/name``
+             An absolute path to a field in another group
+
+    	 In addition, for each beamline component, there is a ``depends_on`` attribute
+         that points to the field at the head of the axis dependency chain. For example,
+         consider an :index:`eulerian cradle` as used on a :index:`four-circle diffractometer`.
+         Such a cradle has a dependency chain of ``phi:chi:rotation_angle``. Then
+    	 the ``depends_on`` field in :ref:`NXsample` would have the value ``phi``.
+
+         .. compound::
+
+           .. rubric:: NeXus Transformation encoding
+
+           .. _table.EulerCIF:
+
+           Transformation encoding for an eulerian cradle on a four-circle diffractometer
+
+           .. literalinclude:: examples/euler-cif.txt
     	        :tab-width: 4
     	        :linenos:
     	        :language: text
@@ -752,30 +784,6 @@ This is also a nice example of the application of transformation matrices:
 #. This also moves the direction of the *z* vector.
    Along which you translate the component to place by distance.
 
-Coordinate Transformation Attributes
-------------------------------------
-
-The coordinate transformation attributes are:
-
-  **vector** (*NX_FLOAT*)
-      3 values describing the axis of rotation or the direction of translation
-  **offset** (*NX_FLOAT*)
-      3 values describing a translation of the axis before applying the
-      actual operation.
-  **transformation_type**
-      Is either rotation or translation and describes the kind of operation performed
-  **depends_on**
-      States the dataset which is next in the dependency chain. Allowed
-      values for depends_on are:
-
-      **.**
-        A dot ends the depends_on chain
-      **name**
-        The name of a dataset within the enclosing group
-      **dir/name**
-        The name of a dataset further along the path
-      **/dir/dir/name**
-        An absolute path to a dataset in another group
 
 Legacy Geometry Decriptions
 ===========================
