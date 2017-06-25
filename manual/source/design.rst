@@ -259,8 +259,7 @@ path [#absolute_address]_ to the *original* dataset.
          #. Get the absolute HDF5 address [#absolute_address]_ of the ID.
          #. Create a ``target`` attribute for the ID.
          #. Set the ``target`` attribute's value to the absolute HDF5 address of the ID.
-      #. Create an `HDF5 hard link 
-         &lt;https://support.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateHard>`_ 
+      #. Create an HDF5 hard link [#hdf5_hard_link]_
          to the ID at the desired (new) HDF5 address.
 
    .. [#] The notion of an *original* dataset with regard to links is
@@ -279,6 +278,9 @@ path [#absolute_address]_ to the *original* dataset.
       such as: ``/entry/instrument/detector/polar_angle``) 
       rather than a **relative** address (starting from the current group,
       such as: ``detector/polar_angle``).
+
+   .. [#hdf5_hard_link] HDF5 hard link: 
+      https://support.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateHard
 
 NeXus links are best understood with an example.
 The canonical location (expressed as a NeXus class path) to store wavelength
