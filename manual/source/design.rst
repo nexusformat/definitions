@@ -268,7 +268,8 @@ path [#absolute_address]_ to the *original* dataset.
       the *original* dataset.  But, when the file is viewed with a tool
       such as *h5dump*, confusion often occurs over which dataset is
       original and which is a link to the original.  Actually, both HDF5 paths
-      point to the exact same dataset which exists at a specific offset in the HDF5 file.
+      point to the exact, same dataset which exists at a specific offset in the HDF5 file.
+      
       See the :ref:`FAQ` question: **I'm using links to place data in two places.
       Which one should be the data and which one is the link?**
 
