@@ -48,6 +48,39 @@ contributed_definitions (proposed definitions from the community)
     In application definitions involving raw data,
     write the raw data in the :ref:`NXinstrument` tree and then link to it
     from the location(s) defined in the relevant application definition.
+    See figure :ref:`NeXus Multi Method Hierarchy <table.NXsubentry>`
+    for an example.
+    
+    .. index:: subentry; NXsubentry, use of, multi-modal data
+    
+    To write a data file with an application definition, start with either
+    a :ref:`NXentry` (or :ref:`NXsubentry`) group [#]_ and write the name of the
+    application definition in the ``definition`` field.  Then write data into 
+    this group according to the specifications of the application definition.
+    
+    .. [#] For data files involving just an application definition, use
+       the :ref:`NXentry` group.  Such as this structure::
+       
+         entry:NXentry
+            definition="NXsas"
+       
+       For files that describe multi-modal
+       data and require use of two or more application definitions
+       (such as :ref:`NXsas` *and* :ref:`NXcanSAS`), you must place each
+       application definition in a :ref:`NXsubentry` of the :ref:`NXentry` group.
+       Such as this structure::
+       
+         entry:NXentry
+            raw:NXsubentry
+               definition="NXsas"
+            reduced:NXsubentry
+               definition="NXcanSAS"
+            fluo:NXsubentry
+               definition="NXfluo"
+       
+       If you anticipate your data file will eventually require an additional
+       application definition, you should start with each application definition
+       in a :ref:`NXsubentry` group.
 
 :ref:`contributed definitions <contributed.definitions>`
     NXDL files in the NeXus contributed definitions include propositions from
