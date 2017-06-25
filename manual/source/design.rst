@@ -336,6 +336,9 @@ This requirement can be satisifed easily::
 
 .. index:: link; external file
 
+External File Links
+-------------------
+
 NeXus also allows for links to external files.
 Consider the case where an instrument uses a detector with
 a closed-system software support provided by a commercial vendor.
