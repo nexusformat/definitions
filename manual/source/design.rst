@@ -239,10 +239,29 @@ a more descriptive representation of the concept of linking.
 
         Linking in a NeXus file
 
+.. index:: 
+   ! single: target, attribute
+   single: link, target, attribute
+   single: address, absolute
+   single: address, relative
+
 NeXus links are HDF5 hard links with an additional ``target`` attribute.
-The ``target`` attribute is added for NeXus to distinguish the HDF5 path to the
-*original* [#]_ dataset.  The value of the ``target`` attribute is the HDF5 path
-to the *original* dataset.
+The ``target`` attribute is added [#]_ for NeXus to distinguish the HDF5 path to the
+*original* [#]_ dataset.  The value of the ``target`` attribute is the HDF5 
+path [#absolute_address]_ to the *original* dataset.
+
+   .. [#] When using the NAPI, the ``target`` attribute is added automatically.
+      When the NAPI is not used to write NeXus/HDF5 files, this attribute must 
+      be added.  Here are the steps to follow:
+      
+      #. Get the HDF5 reference ID of the source item (*field*, *group*, or *link*) to be linked.
+      #. If the ID does not have a ``target`` attribute defined:
+         #. Get the absolute HDF5 address [#absolute_address]_ of the ID.
+         #. Create a ``target`` attribute for the ID.
+         #. Set the ``target`` attribute's value to the absolute HDF5 address of the ID.
+      #. Create an `HDF5 hard link 
+         &lt;https://support.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateHard>`_ 
+         to the ID at the desired (new) HDF5 address.
 
    .. [#] The notion of an *original* dataset with regard to links is
       a NeXus abstraction.  In truth, HDF5 makes no distinction which is
@@ -252,6 +271,13 @@ to the *original* dataset.
       point to the exact same dataset which exists at a specific offset in the HDF5 file.
       See the :ref:`FAQ` question: **I'm using links to place data in two places.
       Which one should be the data and which one is the link?**
+
+   .. [#absolute_address] When using the ``target`` attribute, 
+      **always** specify the HDF5 address
+      as an *absolute** address (starts from the HDF5 root,
+      such as: ``/entry/instrument/detector/polar_angle``) 
+      rather than a **relative** address (starting from the current group,
+      such as: ``detector/polar_angle``).
 
 NeXus links are best understood with an example.
 The canonical location (expressed as a NeXus class path) to store wavelength
