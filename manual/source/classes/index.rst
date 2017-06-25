@@ -29,15 +29,7 @@ contributed_definitions (proposed definitions from the community)
     
     Validation procedures should treat such additional items 
     (not covered by a base class specification) as notes or warnings
-    rather than errors.  
-    
-    .. index:: link
-    
-    It is recommended that NeXus links be used liberally in
-    data files to reduce duplication of data.  This is especially true
-    when writing data adhering to an application definition.  For raw
-    data, write the raw data in the :ref:`NXinstrument` tree and then link to it
-    from the location(s) defined in the relevant application definition.
+    rather than errors. 
 
 :ref:`application definitions <application.definitions>`
     NeXus application definitions define the *minimum*
@@ -48,7 +40,15 @@ contributed_definitions (proposed definitions from the community)
     
     As in base classes (see above), additional terms that are
     not described by the application definition, may be added to
-    data files that incorporate or adhere to application definitions.
+    data files that incorporate or adhere to application definitions. 
+    
+    .. index:: link
+    
+    It is recommended that NeXus links be used liberally in
+    data files to reduce duplication of data.  This is especially true
+    when writing data adhering to an application definition.  For raw
+    data, write the raw data in the :ref:`NXinstrument` tree and then link to it
+    from the location(s) defined in the relevant application definition.
 
 :ref:`contributed definitions <contributed.definitions>`
     NXDL files in the NeXus contributed definitions include propositions from
