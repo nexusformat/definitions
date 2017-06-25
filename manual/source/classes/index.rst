@@ -44,10 +44,9 @@ contributed_definitions (proposed definitions from the community)
     
     .. index:: link
     
-    It is recommended that NeXus links be used liberally in
-    data files to reduce duplication of data.  This is especially true
-    when writing data adhering to an application definition.  For raw
-    data, write the raw data in the :ref:`NXinstrument` tree and then link to it
+    Use NeXus links liberally in data files to reduce duplication of data.
+    In application definitions involving raw data,
+    write the raw data in the :ref:`NXinstrument` tree and then link to it
     from the location(s) defined in the relevant application definition.
 
 :ref:`contributed definitions <contributed.definitions>`
