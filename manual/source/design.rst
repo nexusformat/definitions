@@ -361,6 +361,12 @@ showing an external file link in HDF5:
 				TARGETPATH "entry/instrument/detector/data"
 			 }
 
+.. note:: The NAPI code makes no ``target`` attribute assignment for 
+   links to external files.  It is best to avoid using the 
+   ``target`` attribute with external file links.
+   
+   .. Q: So what happens if the object in the external file
+      has a ``@target`` attribute?
 
 .. _Design-NeXusClasses:
 
