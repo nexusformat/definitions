@@ -4,7 +4,7 @@
 .. _all.class.definitions:
 
 NeXus Class Definitions
-#########################
+#######################
 
 Definitions of NeXus classes. These are split into base_classes (low level objects), 
 application definitions (groupings of objects for a particular technique) and 
@@ -30,6 +30,14 @@ contributed_definitions (proposed definitions from the community)
     Validation procedures should treat such additional items 
     (not covered by a base class specification) as notes or warnings
     rather than errors.  
+    
+    .. index:: link
+    
+    It is recommended that NeXus links be used liberally in
+    data files to reduce duplication of data.  This is especially true
+    when writing data adhering to an application definition.  For raw
+    data, write the raw data in the :ref:`NXinstrument` tree and then link to it
+    from the location(s) defined in the relevant application definition.
 
 :ref:`application definitions <application.definitions>`
     NeXus application definitions define the *minimum*
