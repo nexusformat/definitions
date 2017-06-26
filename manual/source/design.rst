@@ -244,6 +244,8 @@ a more descriptive representation of the concept of linking.
    single: link, target, attribute
    single: address, absolute
    single: address, relative
+   ! link, NeXus link
+   ! NeXus link
 
 NeXus links are HDF5 hard links with an additional ``target`` attribute.
 The ``target`` attribute is added [#]_ for NeXus to distinguish the HDF5 path to the
@@ -334,7 +336,7 @@ This requirement can be satisifed easily::
         lambda --> "/entry/instrument/crystal/wavelength"
 
 
-.. index:: link; external file
+.. index:: link, external file
 
 External File Links
 -------------------
@@ -370,6 +372,20 @@ showing an external file link in HDF5:
 
    .. [#] ``NX5nativeexternallink()``:
       https://github.com/nexusformat/code/blob/fe8ddd287ee33961982931e2016cc25f76f95edd/src/napi5.c#L2248
+
+.. index:: link, external file; NeXus link
+
+Combining NeXus links and External File Links
+---------------------------------------------
+
+Consider the case described in `Links to Data in External HDF5 Files <h5py-example-external-links>`_,
+where numerical data are provided in two different HDF5 files and a *master* NeXus HDF5 file links to 
+the data through external file links.  HDF5 will not allow hard links to be constructed with these data
+objects in the master file.  An error such as *Interfile hard links are not allowed* (as generated
+from h5py) will arise.  This makes sense since there is no such data object in the file.
+
+Instead, it is necessary to make an external file link at each place in the master where external
+data is to be represented.
 
 .. _Design-NeXusClasses:
 
