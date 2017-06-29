@@ -124,15 +124,15 @@ Selections with included whitespace are surrounded by quotes. See the
 example above for usage.
 
 For fields, the data type may not be specified in the NXDL file.
-The *default data type* is NX_CHAR and this is *shown in parentheses* in the *Type* column.
+The *default data type* is ``NX_CHAR``.
 See :ref:`NXdata` for examples.
 
 Units
 =====
 
 :index:`Data units <units>`,
-given as character strings,
-must conform to the NeXus units standard.
+are given as character strings,
+must conform to the NeXus :ref:`units standard <nxdl-units>`.
 See the :ref:`NeXus units <Design-Units>` section for details.
 
 Description
