@@ -336,7 +336,7 @@ This requirement can be satisifed easily::
         lambda --> "/entry/instrument/crystal/wavelength"
 
 
-.. index:: link, external file
+.. index:: link; external file
 
 External File Links
 -------------------
@@ -373,7 +373,14 @@ showing an external file link in HDF5:
    .. [#] ``NX5nativeexternallink()``:
       https://github.com/nexusformat/code/blob/fe8ddd287ee33961982931e2016cc25f76f95edd/src/napi5.c#L2248
 
-.. index:: link, external file; NeXus link
+The NAPI maintains a group attribute ``@napimount`` that provides
+a URL to a group in another file.  More information about the
+``@napimount`` attribute is described in the 
+*NeXus Programmers Reference*. [#]_
+
+.. [#] http://download.nexusformat.org/doc/NeXusIntern.pdf
+
+.. index:: link; external file, NeXus link
 
 Combining NeXus links and External File Links
 ---------------------------------------------
