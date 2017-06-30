@@ -12,6 +12,7 @@ LGPL.txt                    | one proposed license model
 NXDL_VERSION                | the current NXDL version number
 README.txt                  | README file
 README.make.txt             | how to build the documentation
+release-history.md          | starting from v3.3
 applications/               | NXDL files for applications and instrument defs
 base_classes/               | NXDL files for components
 contributed_definitions/    | NXDL files from the community
