@@ -116,6 +116,15 @@ In such instances, the *value shown in parentheses* in the
 group by removing the "NX" prefix.
 See :ref:`NXentry` for examples.
 
+.. index:: flexible name
+
+When the name is allowed to be *flexible* (the exact name given
+by this NXDL specification is not required but is set
+at the time the HDF file is written), the flexible
+part of the name will be written in all capital letters.
+For example, in the :ref:`NXdata` group, the ``DATA``,
+``VARIABLE``, and ``VARIABLE_errors`` fields are *flexible*.
+
 NeXus data type
 ===============
 
