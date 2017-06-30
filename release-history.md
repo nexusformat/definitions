@@ -3,9 +3,11 @@
 
 (starting from v3.3)
 
-:`#` prefix: issue or pull request
-:hash tag: a specific set of changes, such as `abc1234`
-:WIP: work in progress, not closed at time of release
+**`#`** (prefix): issue or pull request
+
+**hash tag**: a specific set of changes, such as `abc1234`
+
+**WIP**: work in progress, not closed at time of release
 
 ## v3.3
 
@@ -102,7 +104,7 @@
 * e1d87e88 (origin/nxreflections_niac2016) NXreflections changes following Jun7 2017 Telco
 * aeb9816c Merge pull request #568 from nexusformat/nxreflections_niac2016
 * 685efde4 #568 correct ReST indentation errors, split long doc lines
-* 6b6e1287 #568 add symbols table for bounding_box[n, 6]
+* b6e1287 #568 add symbols table for bounding_box[n, 6]
 * f7fecce1 Add dimension n to most fields. Add new dimension m for the experiments field, as it links sets of reflections back to an NXmx entry.
 * bbaf17ed fixes #572: in NXDL, "dimensions" before "attribute"
 * 79c22dd8 tests #573
