@@ -27,4 +27,5 @@ utils/                      | various tools used in the definitions tree
 www/                        | launch (home) page of NeXus WWW site
 xslt/                       | various XML stylesheet transformations
 
-See README.make.txt for how to build the documentation
+* See [README.make.txt](README.make.txt) for how to build the documentation
+* See [release-history.md](release-history.md) for what has changed since the previous release
