@@ -34,6 +34,11 @@ there is an associated tag in the version repository.  Such
 as `NXcrystal-1.0` is tagged in GiHub and accessible via URL:
 https://github.com/nexusformat/definitions/releases/tag/NXcrystal-1.0
 
+Description
+===========
+
+General documentation if this NXDL file.
+
 Symbols table
 =============
 
@@ -141,23 +146,6 @@ Description
 A simple text description of the field. No markup or formatting
 is allowed.
 
-.. TODO:  What to do with this? 
-   The absence of *Occurrences* in the item
-   description signifies that
-   both ``minOccurs`` and ``maxOccurs`` have
-   the default values.
-   If the number of occurrences of an item are specified
-   in the NXDL (through ``@minOccurs`` and
-   ``@maxOccurs`` attributes), they will be reported in
-   the Description column similar to the example shown above.
-   Default values for occurrences are shown in the following table. The
-   ``NXDL element type`` is either a group (such as a
-   NeXus base class), a field (that specifies the name and type of a
-   variable), or an attribute of a field or group. The number of times an
-   item can appear ranges between ``minOccurs`` and
-   ``maxOccurs``. A default ``minOccurs``
-   of zero means the item is optional. For attributes,
-   ``maxOccurs`` cannot be greater than 1.
 
 ================= ==============  =========
 NXDL element type minOccurs       maxOccurs
