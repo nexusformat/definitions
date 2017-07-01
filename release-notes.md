@@ -163,3 +163,5 @@
 * d1ac9876 (origin/master, origin/HEAD) #562
 * 115f9393 #577, #580 start a history file
 * ebdf2c9c (HEAD -> master) #577, #580 link to main README
+* 4814b75 (tag: NXreflections-1.1) fixes #588
+* d3a9288 #577 update release notes with new tags
