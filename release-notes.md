@@ -11,6 +11,11 @@
 
 ## v3.3
 
+### Tags
+
+* 463b358 Schema-3.3
+* 4814b75 NXreflections-1.1
+
 ### Pull Requests
 * #540 (merged) issue #539
 * #542 (merged) NXmx multimodule and dectris changes
