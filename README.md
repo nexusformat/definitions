@@ -12,7 +12,7 @@ LGPL.txt                    | one proposed license model
 NXDL_VERSION                | the current NXDL version number
 README.txt                  | README file
 README.make.txt             | how to build the documentation
-release-history.md          | starting from v3.3
+release-notes.md            | starting from v3.3
 applications/               | NXDL files for applications and instrument defs
 base_classes/               | NXDL files for components
 contributed_definitions/    | NXDL files from the community
@@ -28,4 +28,4 @@ www/                        | launch (home) page of NeXus WWW site
 xslt/                       | various XML stylesheet transformations
 
 * See [README.make.txt](README.make.txt) for how to build the documentation
-* See [release-history.md](release-history.md) for what has changed since the previous release
+* See [release-notes.md](release-notes.md) for what has changed since the previous release
