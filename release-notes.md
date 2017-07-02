@@ -210,3 +210,10 @@ Commits |  143
 * [40df53f](https://github.com/nexusformat/definitions/commit/40df53fe62b1f6c3105ff14576ee99e36d221f55) keep up with new activity
 * [8cd0037](https://github.com/nexusformat/definitions/commit/8cd003739e889a499cbcdd945b014c17cc67b7d6) fixes #586
 
+## [v3.2](https://github.com/nexusformat/definitions/releases/tag/v3.2)
+
+* no prepared notes
+
+## [v3.1.0](https://github.com/nexusformat/definitions/releases/tag/v3.1.0)
+
+* no prepared notes
