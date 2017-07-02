@@ -83,6 +83,9 @@ class ReleaseNotes(object):
     def print_report(self):
         print("## " + self.milestone_title)
         print("")
+        if self.milestone is not None:
+            print("**milestone**: [%s](%s)" % (self.milestone.title, self.milestone.url))
+            print("")
         print("section | number")
         print("-"*5, " | ", "-"*5)
         print("New Tags | ", len(self.db["tags"]))
