@@ -9,7 +9,7 @@
 
 ## v3.3
 
-**milestone**: NXDL 3.3
+**milestone**: [NXDL 3.3](https://github.com/nexusformat/definitions/milestone/4)
 
 section | number
 -----  |  -----
