@@ -7,16 +7,16 @@
 
 **hash tag**: a specific set of changes, such as `abc1234`
 
-## v3.3
+## NXDL 3.3
 
-**milestone**: [NXDL 3.3](https://github.com/nexusformat/definitions/milestone/4)
+**milestone**: [NXDL 3.3](https://api.github.com/repos/nexusformat/definitions/milestones/4)
 
 section | number
 -----  |  -----
 New Tags |  2
 Pull Requests |  15
-Issues |  20
-Commits |  143
+Issues |  21
+Commits |  148
 
 ### Tags
 
@@ -44,6 +44,7 @@ Commits |  143
 ### Issues
 
 * [#177](https://github.com/nexusformat/definitions/issues/177) NXcharacterization needs proper documentation
+* [#281](https://github.com/nexusformat/definitions/issues/281) allow string array content 
 * [#504](https://github.com/nexusformat/definitions/issues/504) NXreflections
 * [#526](https://github.com/nexusformat/definitions/issues/526) defs_intro.rst needs to be updated
 * [#535](https://github.com/nexusformat/definitions/issues/535) revise or remove the suggestion in NXpositioner
@@ -209,6 +210,12 @@ Commits |  143
 * [7487e8b](https://github.com/nexusformat/definitions/commit/7487e8bc1eda82e308b68a2fbe7cb67689042a64) #577 cross-reference
 * [40df53f](https://github.com/nexusformat/definitions/commit/40df53fe62b1f6c3105ff14576ee99e36d221f55) keep up with new activity
 * [8cd0037](https://github.com/nexusformat/definitions/commit/8cd003739e889a499cbcdd945b014c17cc67b7d6) fixes #586
+* [4dc8657](https://github.com/nexusformat/definitions/commit/4dc8657ba15b3f3877dea1635940b7a130d3687b) #577 release notes, prepared via #586
+* [6cdfeb1](https://github.com/nexusformat/definitions/commit/6cdfeb108baf7432c5459311209de5f438fa5203) #577 (manually) add URL to milestone reference
+* [e35308c](https://github.com/nexusformat/definitions/commit/e35308c0b2fe2d3887c10949f75d388fa441d91d) #577 point to previous releases, no notes
+* [1501a17](https://github.com/nexusformat/definitions/commit/1501a177ba30ef8b567235b9fc2edf185714c5f0) #577 report the milestone URL
+* [bed843f](https://github.com/nexusformat/definitions/commit/bed843ff1895120dafd564bc82ae0dcc4b1f984e) fixes #281
+
 
 ## [v3.2](https://github.com/nexusformat/definitions/releases/tag/v3.2)
 
