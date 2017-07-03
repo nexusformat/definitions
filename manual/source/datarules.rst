@@ -238,7 +238,7 @@ matches the data type specifier.
 .. index:: ! strings
 
 **strings**
-    ``NX_CHAR``:
+   ``NX_CHAR``:
    All strings are to be encoded in UTF-8. Since most strings in a
    NeXus file are restricted to a small set of characters 
    and the first 128 characters are standard across encodings,
