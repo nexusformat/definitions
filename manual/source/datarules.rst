@@ -238,19 +238,30 @@ matches the data type specifier.
 .. index:: ! strings
 
 **strings**
-    All strings are to be encoded in UTF-8. Since most strings in a
-    NeXus file are restricted to a small set of characters and the first 128 characters are standard across encodings,
-    the encoding of most of the strings in a NeXus file will be a moot point.
-    Where encoding in UTF-8 will be important is when recording people's names in ``NXuser``
-    and text notes in ``NXnotes``.
-    
-    .. https://github.com/nexusformat/NIAC/issues/23#issuecomment-308773465
-    
-    .. index:: strings; variable-length
-    .. index:: strings; fixed-length
-    
-    NeXus accepts both variable and fixed length strings, 
-    software that reads NeXus data files should support both.
+    ``NX_CHAR``:
+   All strings are to be encoded in UTF-8. Since most strings in a
+   NeXus file are restricted to a small set of characters 
+   and the first 128 characters are standard across encodings,
+   the encoding of most of the strings in a NeXus file will be a moot point.
+   Encoding in UTF-8 will be important when recording people's names 
+   in ``NXuser`` and text notes in ``NXnotes``.
+   
+   .. https://github.com/nexusformat/NIAC/issues/23#issuecomment-308773465
+   
+   .. index:: strings; variable-length
+   .. index:: strings; fixed-length
+   .. index:: strings; arrays
+   
+   .. https://github.com/nexusformat/definitions/issues/281
+   
+   NeXus accepts both variable and fixed length strings, 
+   as well as arrays of strings.
+   Software that reads NeXus data files should support 
+   all of these.
+
+   Some file writers write strings as a string array
+   of rank 1 and length 1.
+   Clients should be prepared to handle such strings.
 
 .. index:: binary data
 
