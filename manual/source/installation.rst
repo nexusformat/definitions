@@ -6,9 +6,8 @@
 
 .. _Installation:
 
-============
 Installation
-============
+############
 
 .. index::
    single: NAPI; installation; download location
@@ -29,7 +28,7 @@ NeXus mailing list: http://lists.nexusformat.org/mailman/listinfo/nexus
 .. _Installation-Binary:
 
 Precompiled Binary Installation
-###############################
+*******************************
 
 
 .. _Installation-Linux:
@@ -108,7 +107,7 @@ http://download.nexusformat.org/kits/macosx/
 .. _Installation-Source:
 
 Source Installation
-###################
+*******************
 
 .. _Installation-Source-Generic:
 
@@ -149,13 +148,53 @@ distribution.
 .. _Releases:
 
 Releases
-########
+********
+
+The NeXus definitions are expected to evolve.
+The evolution is marked as a series of *releases*
+which are snapshots of the repository (and current
+state of the NeXus standard).
+Each new *release* of the definitions
+will be posted to the definitions GitHub repository
+and announced to the community via the
+NeXus mailing list: ``nexus@nexusformat.org``
+(http://download.nexusformat.org/doc/html/mailinglist.html#nexus-mailing-list)
 
 NeXus definitions
 =================
 
 Releases of the NeXus definitions are listed on the GitHub web site:
 https://github.com/nexusformat/definitions/releases
+
+.. index:: release; notes
+
+Release Notes
+-------------
+
+Detailed notes about each release (start with v3.3) are posted
+to the definitions GitHub wiki:
+https://github.com/nexusformat/definitions/wiki/Release-Notes
+
+.. index:: release; process
+
+Release Process
+---------------
+
+The process to make a new release of the NeXus definitions
+repository is documented in the repository's GitHub wiki:
+https://github.com/nexusformat/definitions/wiki/Release-Procedure.
+
+The release process starts by creating a GitHub 
+[Milestone](https://help.github.com/articles/tracking-the-progress-of-your-work-with-milestones/) 
+for the new release.
+Milestones for the NeXus definitions repository are
+available on the GitHub site:
+https://github.com/nexusformat/definitions/milestones
+
+.. index:: release; versioning
+
+Versioning
+----------
 
 1. each NXDL file has a ``definitions/@version`` attribute that declares the version of this NXDL file
 2. we will tag the definitions repository with new releases of the NeXus definitions
@@ -176,7 +215,7 @@ https://github.com/nexusformat/definitions/releases
      *major.minor* tag to point to the newest commit hash.
 
 3. changes in the NXDL language (such as new unit types) will become part of a new tag
-4. the syntax of the NXDL language is currently 3.1 (2016-10-12)
+4. the syntax of the NXDL language is currently 3.3 (2017-05-02)
 
 .. [#] *semantic versioning*: http://semver.org
 
