@@ -11,8 +11,8 @@ component                      | description
 -------------------------------|------------------------
 [BUILDING.rst](BUILDING.rst)   | how to build the documentation
 [LGPL.txt](LGPL.txt)           | one proposed license model
-NXDL_VERSION                   | the current NXDL version number
-README.md                      | this file
+[NXDL_VERSION](NXDL_VERSION)   | the current NXDL version number
+[README.md](README.md}         | this file
 applications/                  | NXDL files for applications and instrument defs
 base_classes/                  | NXDL files for components
 contributed_definitions/       | NXDL files from the community
