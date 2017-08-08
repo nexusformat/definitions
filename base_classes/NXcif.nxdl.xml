@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2008-2017 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" 
+	category="base"
+	name="NXcif" 
+	version="1.0"
+	type="group" 
+	extends="NXobject"
+	ignoreExtraGroups="true"
+	ignoreExtraFields="true"
+	ignoreExtraAttributes="true"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
+	>
+
+	<!-- 
+		The ignoreExtra* attributes are used in the definition to
+		avoid warning messages that would be generated from 
+		unexpected groups, fields, and attributes.
+		Since no groups or attributes are declared here, _every_
+		child of this class would generate a warning message without this 
+		attribute being set to "true".
+	-->
+
+	<doc>
+		A NeXus transliteration of a CIF file, to be validated only as a CIF
+                rather than as a NeXus file (similar to the handling of NXcollection).
+
+                Use :ref:`NXcif` to incorporate the information in an arbitrary
+                CIF into a NeXus file.
+		
+		The original suggestion is to use this as a container 
+		class for a PDB entry to be used to describe a sample in NXsample
+                in a data collection, but in other cases it may be more 
+                appropriate to place this higher, say in NXentry.
+		
+		For NeXus validation, :ref:`NXcif` will always generate 
+		a warning since it is always an optional group.  
+		Anything (groups, fields, or attributes) placed in
+		an :ref:`NXcollection` group will not be validated.
+
+                The recommended structure is to follow the structure of a CIF
+                with each CIF data block mapped to a NeXus group of class NXcif,
+                using a lowercase version of the data block name as the name
+                of the NeXus group, each CIF category in that data block mappred 
+                mapped to a NeXus group of class NXcif and with each CIF column
+                mapped to a NeXus field.  The columns in a looped CIF category 
+                should always be presented as arrays.  The columns in an unlooped
+                CIF category should be presented as scalar values.  If a CIF category
+                specifies particular units for columns, the same units should be
+                used for the corresponding fields.
+
+                All text data should be presented as quoted strings, with the quote
+                marks except for the null values "." or "?".
+
+                If a CIF null value, "." or "?", is contained in a numeric column, the
+                IEEE nan should be used for "?" and the IEEE inf should be used for ".".
+
+                For example, a PDB entry that begins
+
+               =====================================================================================
+
+               data_1YVA
+               # 
+               _entry.id   1YVA 
+               #  
+               _audit_conform.dict_name       mmcif_pdbx.dic 
+               _audit_conform.dict_version    5.279 
+               _audit_conform.dict_location   http://mmcif.pdb.org/dictionaries/ascii/mmcif_pdbx.dic 
+               # 
+               loop_
+               _database_2.database_id 
+               _database_2.database_code 
+               PDB   1YVA         
+               RCSB  RCSB031959   
+               WWPDB D_1000031959 
+               # 
+
+               =====================================================================================
+
+               would produce:
+
+	       =====================================================================================
+
+	       sample:NXsample
+	           1yva:NXcif
+	             entry:NXcif
+	                 id:"1YVA"
+	             audit_conform:NXcif
+	                 dict_name:"mmcif_pdbx.dic" 
+                     dict_version:"5.279"
+                     dict_location:"http://mmcif.pdb.org/dictionaries/ascii/mmcif_pdbx.dic"
+                 database_2:NXcif
+                     database_id:["PDB","RCSB","WWPDB"]
+                     database_code:["1YVA","RCSB031959","D_1000031959"]
+              
+	       =====================================================================================
+
+                
+	</doc>
+	
+	<!-- any content is purely optional -->
+	<!-- 
+	   NOTE
+	   =====
+	   
+	   As with NXcollection, NXcif is an unvalidated class, do not add 
+           any subgroups in this nxdl file.
+	   
+	   See: https://github.com/nexusformat/definitions/issues/259
+	 -->
+</definition>
+
