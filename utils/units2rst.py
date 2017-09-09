@@ -49,7 +49,15 @@ def worker(nodeMatchString, section = 'units'):
         node_name = node.get('name')
         if 'nxdl:' + node_name in members:
             words = node.xpath('xs:annotation/xs:documentation', namespaces=ns)[0]
-            db[node_name] = words.text
+            examples = []
+            for example in words.iterchildren():
+                nm = example.attrib.get("name")
+                if nm is not None and nm == "example":
+                    examples.append("``"+example.text+"``")
+            a = words.text
+            if len(examples) > 0:
+                a = a.strip() + " -- example(s): " + " | ".join(examples)
+            db[node_name] = a
 
 #             for item in node.xpath('xs:restriction//xs:enumeration', namespaces=ns):
 #                 key = '%s' % item.get('value')
