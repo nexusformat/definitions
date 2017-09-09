@@ -56,7 +56,7 @@ def worker(nodeMatchString, section = 'units'):
                     examples.append("``"+example.text+"``")
             a = words.text
             if len(examples) > 0:
-                a = a.strip() + " -- example(s): " + " | ".join(examples)
+                a = a.strip() + ", example(s): " + " | ".join(examples)
             db[node_name] = a
 
 #             for item in node.xpath('xs:restriction//xs:enumeration', namespaces=ns):
