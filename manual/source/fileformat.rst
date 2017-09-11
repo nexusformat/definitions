@@ -113,9 +113,9 @@ basic NeXus data components:
   
   .. code-block:: c
 
-	  # --tba--
-	  # TODO: write some text about HDF5 hard links
-	  # until then, see the h5dump example below
+     NXmakelink (fileid, &itemid);
+     # -or-
+     NXmakenamedlink (fileid, "linked_name", &itemid);
 
 See the sections :ref:`example.napi.simple.2d.write`
 and  :ref:`example.napi.simple.3d.write.python` in the :ref:`Examples`
