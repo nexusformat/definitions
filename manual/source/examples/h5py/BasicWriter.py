@@ -3,8 +3,9 @@
 
 import h5py    # HDF5 support
 import numpy
+import six
 
-print "Write a NeXus HDF5 file"
+print("Write a NeXus HDF5 file")
 fileName = u"prj_test.nexus.hdf5"
 timestamp = u"2010-10-18T17:17:04-0500"
 
@@ -23,8 +24,8 @@ f.attrs[u'file_time']        = timestamp
 f.attrs[u'instrument']       = u'APS USAXS at 32ID-B'
 f.attrs[u'creator']          = u'BasicWriter.py'
 f.attrs[u'NeXus_version']    = u'4.3.0'
-f.attrs[u'HDF5_Version']     = unicode(h5py.version.hdf5_version)
-f.attrs[u'h5py_version']     = unicode(h5py.version.version)
+f.attrs[u'HDF5_Version']     = six.u(h5py.version.hdf5_version)
+f.attrs[u'h5py_version']     = six.u(h5py.version.version)
 
 # create the NXentry group
 nxentry = f.create_group(u'entry')
@@ -51,4 +52,4 @@ ds.attrs[u'long_name'] = u'USAXS I00 (counts)'    # suggested Y axis plot label
 
 f.close()	# be CERTAIN to close the file
 
-print "wrote file:", fileName
+print("wrote file:", fileName)
