@@ -67,11 +67,10 @@
 		<doc>
 			.. index:: plotting
 			
-			String array that defines the independent data fields used in 
-			the default plot for all of the dimensions of the *signal* field
-			(the *signal* field is the field in this group that is named by
-			the ``signal`` attribute of this group). 
+			String array that defines the names of independent data fields used 
+			in the default plot for each of the dimensions of the *signal* field.
 			One entry is provided for every dimension in the *signal* field.
+		    The field(s) named in this attribute *must* exist. 
 			
 			An axis slice is specified using a field named 
 			``AXIS_indices`` as described below (where the text shown here
@@ -83,10 +82,13 @@
 			
 				@axes="time", ".", "."
 			
-			Since there are three items in the list, the the *signal* field
-			must must be a three-dimensional array (rank=3).  The first dimension
-			is described by the values of a one-dimensional array named ``time``
-			while the other two dimensions have no fields to be used as dimension scales.
+			In this example, since there are three items in the list, the 
+			*signal* field must must be a three-dimensional array (rank=3).  The 
+			first dimension is described by the values of a one-dimensional 
+			array named ``time`` while the other two dimensions have no fields 
+			to be used as dimension scales. If the dimension scale does not 
+			exist, it is assumed the data will be plotted against the 
+			corresponding array index.
 			
 			See examples provided on the NeXus wiki:
 			http://wiki.nexusformat.org/2014_axes_and_uncertainties
@@ -116,6 +118,7 @@
 			
 			Here, *AXIS* is to be replaced by the name of each 
 			field described in the ``axes`` attribute.  
+
 			An example with 2-D data, :math:`d(t,P)`, will illustrate::
 			
 			  data_2d:NXdata
@@ -142,11 +145,9 @@
 		
 		It is recommended that there is at least one :ref:`NXdata` group 
 		in each :ref:`NXentry` group.  
-		Note that the ``variable`` and ``data`` 
-		can be defined with different names.  
-		The ``signal`` and ``axes`` attributes of the 
-		``data`` group define which items 
-		are plottable data and which are *dimension scales*, respectively.
+		The ``signal`` and ``axes`` attributes of the ``data`` group define 
+		which fields are plottable data and which are the independent variables,
+		or *dimension scales*, respectively.
 		
 		:ref:`NXdata` is used to implement one of the basic motivations in NeXus,
 		to identify plottable data in each :ref:`NXentry`.  The actual data
@@ -162,7 +163,7 @@
 		  the group.
 		* The plottable data may be of arbitrary rank up to a maximum
 		  of ``NX_MAXRANK=32``.
-		* The plottable data will be named as the value of 
+		* The name of the plottable data will be defined by the value of 
 		  the group ``signal`` attribute, such as::
 		  
 		    data:NXdata
@@ -175,9 +176,6 @@
 		  The field named in the ``signal`` attribute **must** exist, either
 		  directly as a field or defined through a link.
 		
-		* The group ``axes`` attribute will name the
-		  *dimension scale* associated with the plottable data.
-
 		* If available, the standard deviations of the data are to be
 		  stored in a field of the same rank and dimensions, either with the 
 		  name ``DATA_errors`` or with a name specified in the data's 
@@ -192,13 +190,19 @@
 		
 		.. index:: link
 		.. index:: axes (attribute)
+
+		* The group ``axes`` attribute will list these *dimension scales*.
+		  associated with the plottable data in the order of their respective
+		  dimension, *i.e.*, starting with the slowest-changing dimension in 
+		  row major order.
 		
 		The preferred method to associate each data dimension with
 		its respective dimension scale is to specify the field name
 		of each dimension scale in the group ``axes`` attribute as a string list.
 		Here is an example for 2-D data, *data*, plotted 
 		against *time*, and *pressure*.  (An additional *temperature* data set 
-		is provided and could be selected as an alternate for the *pressure* axis.)::
+		is provided and could be selected as an alternate for the *pressure* 
+		axis.)::
 
 		  data_2d:NXdata
 		    @signal="data"
@@ -215,21 +219,23 @@
 		
 		There are two older methods of associating 
 		each data dimension to its respective dimension scale.
-		Both are now out of date and
-		should not be used when writing new data files.
-		However, client software should expect to see data files
+		Both should not be used when writing new data files, but
+	    client software should expect to see legacy data files
 		written with any of these methods.
 		
-		  * One method uses the ``axes`` 
-		    attribute to specify the names of each *dimension scale*.
+		  * One method adds the ``axes`` attribute to the data, rather than to
+		    the group. This is not recommended because the data field could be
+		    linked from another group, which does not contain all the 
+		    *dimension scales*.
 		
-		  * The oldest method uses the ``axis`` attribute on each
-		    *dimension scale* to identify
-		    with an integer the axis whose value is the number of the dimension.
+		  * The oldest method adds am ``axis`` attribute to each
+		    *dimension scale* set to an integer corresponding to the 
+		    corresponding dimension.
 	</doc>
 	<field name="AXIS" type="NX_NUMBER" nameType="any">
 		<doc>
-	 		Dimension scale defining an axis of the data.
+	 		Dimension scale defining an axis of the data. There should be one
+	 		of these for each dimensions of the ``DATA`` field.
 	 		Client is responsible for defining the dimensions of the data.
 	 		The name of this field may be changed to fit the circumstances.
 	 		Standard NeXus client tools will use the attributes to determine
@@ -256,9 +262,8 @@
 			<doc>
 				Index (positive integer) identifying this specific set of numbers.
 				
-				N.B. The ``axis`` attribute is the old way of designating a link.  
-				Do not use the ``axes`` attribute with the ``axis`` attribute.
-				The ``axes`` *group* attribute is now preferred.
+				N.B. The ``axis`` attribute is now deprecated and should not be 
+				used in writing new files.  
 			</doc>
 		</attribute>
 	</field>
@@ -302,10 +307,13 @@
 			<doc>
 				.. index:: plotting
 	
-				Plottable (independent) axis, indicate index number.
+				Plottable (independent) axis, with a value designating its 
+				priority in the :ref:`NXdata` group.
 				Only one field in a :ref:`NXdata` group may have the
 				``signal=1`` attribute.
-				Do not use the ``signal`` attribute with the ``axis`` attribute.
+				
+				N.B. The ``signal`` attribute is now deprecated
+				and should not be used in writing new files.  
 			</doc>
 		</attribute>
 		<attribute name="axes"
@@ -314,9 +322,9 @@
 				Defines the names of the dimension scales
 				(independent axes) for this data set
 				as a colon-delimited array.
-				NOTE: The ``axes`` attribute is the preferred
-				method of designating a link.
-				Do not use the ``axes`` attribute with the ``axis`` attribute.
+
+				N.B. The ``axes`` attribute is now deprecated and should not be 
+				used in writing new files.  
 			</doc>
 		</attribute>
 		<attribute name="uncertainties">
