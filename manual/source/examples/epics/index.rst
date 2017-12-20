@@ -154,6 +154,11 @@ reading a TIFF file or from an EPICS PV using PyEpics.  The file
 detector and writes it to a NeXus HDF5 data file, along with some 
 additional metadata.  
 
+using the *h5py* package
+========================
+
+This example uses the *h5py* [#]_ package to write the HDF5 file.
+
 .. literalinclude:: write_nexus_file.py
    :tab-width: 4
    :linenos:
@@ -169,12 +174,26 @@ example.h5 file.  It has this tree structure:
    :linenos:
    :language: guess
 
+
+using the *nexusformat* package
+===============================
+
+There is a *nexusformat* [#]_ package for python to simplify
+the work to create a NeXus file.  Rewriting the above code
+using that package:
+
+.. literalinclude:: write_nexus_file2.py
+   :tab-width: 4
+   :linenos:
+   :language: guess
+
+
 Visualization
 *************
 
 You can visualize the HDF5 files with several programs, such as:
 hdfview [#]_, nexpy [#]_, or pymca [#]_.  
-Views of the image shown using **NeXPy** (from the HDF5 file) 
+Views of the test image shown using **NeXPy** (from the HDF5 file) 
 and **caQtDM** (the image from EPICS) are shown.
 
 .. figure:: screen1.png
@@ -200,6 +219,7 @@ file                             description
 :download:`layout.xml`           The layout file
 :download:`mrinal_001.h5`        example NeXus HDF5 file written from EPICS
 :download:`write_nexus_file.py`  Python code to get images from EPICS and write a NeXus file
+:download:`write_nexus_file2.py` `write_nexus_file.py` rewritten with `nexusformat` package
 :download:`example.h5`           example NeXus HDF5 file written from Python
 ================================ ============================================================
 
@@ -212,6 +232,8 @@ Footnotes
 .. [#] HDF5 File Writer: http://cars9.uchicago.edu/software/epics/NDFileHDF5.html
 .. [#] EPICS SimDetector: http://cars9.uchicago.edu/software/epics/simDetectorDoc.html
 .. [#] caQtDM: http://epics.web.psi.ch/software/caqtdm/
+.. [#] h5py: http://docs.h5py.org
+.. [#] nexusformat: This Python package is described on the NeXPy web site
 .. [#] hdfview: https://support.hdfgroup.org/products/java/hdfview/
 .. [#] nexpy: https://nexpy.github.io/nexpy/
 .. [#] pymca: http://pymca.sourceforge.net/
