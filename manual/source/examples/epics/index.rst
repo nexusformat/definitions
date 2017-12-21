@@ -48,8 +48,16 @@ Put these files into a known directory where your EPICS IOC can find them.
 ``attributes.xml``
 ******************
 
-The attributes file is easy to edit but requires a wide screen.  
+The attributes file is easy to edit.
 Any text editor will do.  
+A wide screen will be helpful.  
+
+.. index:: !ndattribute
+
+Each ``<Attribute />`` element declares a single **ndattribute**
+which is associated with an area detector image.  These **ndattribute** items can be
+written to specific locations in the HDF5 file or placed by 
+default in a *default location*.
 
 .. note:: The attributes file shown here has been reformatted 
    for display in this manual.  The *downloads* section below
@@ -62,36 +70,84 @@ Any text editor will do.
    :linenos:
    :language: guess
 
+If you want to add additional EPICS process variables (PVs) 
+to be written in the HDF5 file, 
+create additional ``<Attribute />`` elements (such as the
+``calc1_val``) and modify the ``name``, ``source``, and 
+``description`` values.  Be sure to use a unique **name** 
+for each **ndattribute** in the attributes file.
 
-
-If you want to add PVs to be written in the HDF5 file, 
-replicate the ``calc1_val`` line.  There is one additional attribute you can use.   
-The attribute ``when`` (*Event when the attribute data is updated*) can take 
-any of these values:  ``OnFileOpen``, ``OnFileClose``, ``OnFileWrite``
-
-Such as::
-
-    <Attribute 
-       name="calc1_val"
-      type="EPICS_PV"
-      source="prj:userCalc1.VAL"
-      datatype="DBR_NATIVE"
-      description="some calculation result"
-      when="OnFileWrite"/>
-
+.. note:: **ndattribute** is an item specified by
+   an ``<Attribute />`` element in the attributes file.
 
 ``layout.xml``
 **************
 
 You might not need to edit the layout file.  
 It will be fine (at least a good starting point) as it is, 
-even if you add PVs to the attributes.xml file.
+even if you add PVs (a.k.a. *ndattribute*) to the attributes.xml file.
 
 .. literalinclude:: layout.xml
    :tab-width: 4
    :linenos:
    :language: guess
 
+If you do not specify where in the file to write an *ndattribute* from the 
+attributes file, it will be written within the group that has
+``ndattr_default="true"``.  This identifies the group to the 
+HDF5 file writing plugin as the *default location* to store
+content from the attributes file.  In the example layout file, 
+that *default location* is the ``/entry/instrument/NDAttributes`` group::
+
+   <group 
+         name="NDAttributes" 
+         ndattr_default="true"> 
+     <attribute 
+         name="NX_class" 
+         source="constant" 
+         value="NXcollection" 
+         type="string"/> 
+   </group>
+
+
+To specify where PVs are written in the HDF5 file, you must 
+create ``<dataset />`` (or ``<attribute />``) elements at the 
+appropriate place in the NeXus HDF5 file layout.  See 
+the NeXus manual [#]_ for placement advice if you are unsure.
+
+You reference each *ndattribute* by its ``name`` value from the attributes
+file and use it as the value of the ``ndattribute`` in the layout file.
+In this example, ``ndattribute="calc1_val"`` in the 
+layout file references ``name="calc1_val"`` in the attributes file
+and will be identified in the HDF5 file by the name ``userCalc1``::
+
+   <dataset 
+      name="userCalc1" 
+      ndattribute="calc1_val"/> 
+
+.. note:: A value from the attributes file is only written
+   either in the *default location* or in the location named by
+   a ``<dataset/>`` or ``<attribute/>`` entry in the layout file.
+   Expect problems if you define the same *ndattribute*
+   in more than one place in the layout file.
+
+You can control when a value is written to the file, using 
+``when=""``.  This can be set to one of these values:  
+``OnFileOpen``, ``OnFileClose``, ``OnFileWrite``
+
+Such as::
+
+   <dataset 
+      name="userCalc1" 
+      ndattribute="calc1_val"
+      when="OnFileWrite"/> 
+
+or::
+
+   <attribute 
+      name="exposure_s" 
+      source="AcquireTime" 
+      when="OnFileWrite"/>
 
 
 additional configuration
@@ -231,6 +287,7 @@ Footnotes
 .. [#] EPICS Area Detector: http://cars9.uchicago.edu/software/epics/areaDetector.html
 .. [#] HDF5 File Writer: http://cars9.uchicago.edu/software/epics/NDFileHDF5.html
 .. [#] EPICS SimDetector: http://cars9.uchicago.edu/software/epics/simDetectorDoc.html
+.. [#] NeXus manual: http://download.nexusformat.org/doc/html/index.html
 .. [#] caQtDM: http://epics.web.psi.ch/software/caqtdm/
 .. [#] h5py: http://docs.h5py.org
 .. [#] nexusformat: This Python package is described on the NeXPy web site
