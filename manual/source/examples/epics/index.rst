@@ -244,9 +244,9 @@ example.h5 file.  It has this tree structure:
 using the *nexusformat* package
 ===============================
 
-There is a *nexusformat* [#]_ package for python to simplify
+The *nexusformat* [#]_ package for python simplifies
 the work to create a NeXus file.  Rewriting the above code
-using that package:
+using *nexusformat*:
 
 .. literalinclude:: write_nexus_file2.py
    :tab-width: 4
