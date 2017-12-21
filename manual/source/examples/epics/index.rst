@@ -9,7 +9,6 @@ Two examples in this section show how to write NeXus HDF5 data files
 with EPICS Area Detector images.  
 The first shows how to configure the HDF5 File Writing Plugin
 of the EPICS Area Detector software.
-
 The second example shows how to write an EPICS Area Detector image
 using Python.
 
@@ -77,7 +76,7 @@ create additional ``<Attribute />`` elements (such as the
 ``description`` values.  Be sure to use a unique **name** 
 for each **ndattribute** in the attributes file.
 
-.. note:: **ndattribute** is an item specified by
+.. note:: **ndattribute** : item specified by
    an ``<Attribute />`` element in the attributes file.
 
 ``layout.xml``
@@ -123,6 +122,7 @@ and will be identified in the HDF5 file by the name ``userCalc1``::
 
    <dataset 
       name="userCalc1" 
+      source="ndattribute"
       ndattribute="calc1_val"/> 
 
 .. note:: A value from the attributes file is only written
@@ -139,6 +139,7 @@ Such as::
 
    <dataset 
       name="userCalc1" 
+      source="ndattribute"
       ndattribute="calc1_val"
       when="OnFileWrite"/> 
 
@@ -146,7 +147,8 @@ or::
 
    <attribute 
       name="exposure_s" 
-      source="AcquireTime" 
+      source="ndattribute"
+      ndattribute="AcquireTime" 
       when="OnFileWrite"/>
 
 
@@ -230,6 +232,14 @@ example.h5 file.  It has this tree structure:
    :linenos:
    :language: guess
 
+.. note::  Alternatively, the metadata shown in this example might 
+   be placed in the ``/entry/instrument/detector`` (*NXdetector*)
+   group along with the image ``data``
+   since it provides image-related information such as size.
+   
+   In the interest of keeping this example simpler and similar to the one
+   above using the HDF5 File Writing Plugin, the metadata has been
+   written into the same ``/entry/instrument/NDAttributes`` location.
 
 using the *nexusformat* package
 ===============================
