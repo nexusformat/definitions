@@ -239,7 +239,8 @@ example.h5 file.  It has this tree structure:
    
    In the interest of keeping this example simpler and similar to the one
    above using the HDF5 File Writing Plugin, the metadata has been
-   written into the same ``/entry/instrument/NDAttributes`` location.
+   written into a *NXcollection* group at ``/entry/instrument/metadata`` location.
+   (Compare with the *NXcollection* group  ``/entry/instrument/NDAttributes`` above.)
 
 using the *nexusformat* package
 ===============================
