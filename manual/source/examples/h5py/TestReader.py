@@ -12,12 +12,12 @@ DATASET_TYPE_MATCH = "<class 'h5py.highlevel.Dataset'>"
 
 def print_attr(parent, label):
     for k, v in parent.attrs.iteritems():
-        print "%s.attrs[%s]=%s" % (label, k, v)
+        print("%s.attrs[%s]=%s" % (label, k, v))
 
 
 def print_child(item, label):
-    print "#" + "-"*40
-    print "%s  %s" % (label, type(item))
+    print("#" + "-"*40)
+    print("%s  %s" % (label, type(item)))
     print_attr(item, label)
     if (repr(type(item)) == GROUP_TYPE_MATCH):
         base = label
@@ -28,10 +28,10 @@ def print_child(item, label):
             print_child(item[k], key)
     if (repr(type(item)) == DATASET_TYPE_MATCH):
         #print label, item.value
-	print label
-        print "shape:", item.shape
-        print "size:", len(item.shape)
-        print "NumPy dtype:", item.dtype
+        print(label)
+        print("shape:", item.shape)
+        print("size:", len(item.shape))
+        print("NumPy dtype:", item.dtype)
 
 
 def process(fileName):
@@ -39,8 +39,8 @@ def process(fileName):
         f = h5py.File(fileName, "r")
     except:
         return False
-    print f.filename
-    print "keys: ", f.keys()
+    print(f.filename)
+    print("keys: ", f.keys())
     print_attr(f, "f")
     for k in f.keys():
         print_child(f[k], "%s://%s" % (fileName, k))
@@ -50,6 +50,6 @@ def process(fileName):
 
 if __name__ == '__main__':
     for fileName in testFiles:
-        print "#" + "="*60
+        print("#" + "="*60)
         if not process( fileName ):
-            print "Could not open:", fileName
+            print("Could not open:", fileName)

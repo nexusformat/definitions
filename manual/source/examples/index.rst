@@ -22,12 +22,13 @@ or writing compliant NeXus files in the HDF5 storage containers.
 Please be aware that not all exmples are up to date with the latest format recommendations.
 
 .. toctree::
-	:maxdepth: 1
-
-	code_native
-	h5py/index
-	matlab/index
-	lrmecs/index
+   :maxdepth: 1
+   
+   code_native
+   h5py/index
+   matlab/index
+   lrmecs/index
+   epics/index
 
 .. _Examples.NAPI:
 
