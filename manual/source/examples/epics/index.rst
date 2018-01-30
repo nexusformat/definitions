@@ -132,8 +132,8 @@ and will be identified in the HDF5 file by the name ``userCalc1``::
    in more than one place in the layout file.
 
 You can control when a value is written to the file, using 
-``when=""``.  This can be set to one of these values:  
-``OnFileOpen``, ``OnFileClose``, ``OnFileWrite``
+``when=""`` in the layout file.  This can be set to one of these values:  
+``OnFileOpen``, ``OnFileClose``
 
 Such as::
 
@@ -141,7 +141,7 @@ Such as::
       name="userCalc1" 
       source="ndattribute"
       ndattribute="calc1_val"
-      when="OnFileWrite"/> 
+      when="OnFileOpen"/> 
 
 or::
 
@@ -149,7 +149,7 @@ or::
       name="exposure_s" 
       source="ndattribute"
       ndattribute="AcquireTime" 
-      when="OnFileWrite"/>
+      when="OnFileClose"/>
 
 
 additional configuration
