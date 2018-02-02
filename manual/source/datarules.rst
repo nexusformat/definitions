@@ -106,6 +106,19 @@ adequately documented.
 	    Rather than persist in using names not specified in the standard, please suggest additions to the :ref:`NIAC`.
 
 
+The data stored in NeXus fields must be readback values. This means values as read from the detector, other hardware etc. 
+There are occasions where it is sensible to store the target value the variable was supposed to have. In this case the target 
+value is stored with a name built by appending _set to the normal NeXus field name.  An example:
+
+.. code-block:: text
+    :linenos:
+
+    temperature
+    temperature_set
+
+The temperature field will hold the readback from the cryostat/furnace/whatever. The field temperature_set will hold 
+the target value for the temperature as set by the experiment control software. 
+
 .. _Design-ArrayStorageOrder:
 
 NeXus Array Storage Order
