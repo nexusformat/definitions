@@ -10,26 +10,26 @@ in the Introduction chapter
 import h5py
 import numpy
 
-buffer = numpy.loadtxt('input.dat').T
+buffer = numpy.loadtxt("input.dat").T
 tthData = buffer[0]                             # float[]
 countsData = numpy.asarray(buffer[1],'int32')   # int[]
 
-f = h5py.File('writer_1_3.hdf5', "w")  # create the HDF5 NeXus file
+f = h5py.File("writer_1_3.hdf5", "w")  # create the HDF5 NeXus file
 # since this is a simple example, no attributes are used at this point
 
-nxentry = f.create_group('Scan')
-nxentry.attrs["NX_class"] = 'NXentry'
+nxentry = f.create_group(u"Scan")
+nxentry.attrs[u"NX_class"] = u"NXentry"
 
-nxdata = nxentry.create_group('data')
-nxdata.attrs["NX_class"] = 'NXdata'
-nxdata.attrs['signal'] = "counts"
-nxdata.attrs['axes'] = "two_theta"
-nxdata.attrs['two_theta_indices'] = [0,]
+nxdata = nxentry.create_group(u"data")
+nxdata.attrs["NX_class"] = u"NXdata"
+nxdata.attrs[u"signal"] = u"counts"
+nxdata.attrs[u"axes"] = u"two_theta"
+nxdata.attrs[u"two_theta_indices"] = [0,]
 
-tth = nxdata.create_dataset("two_theta", data=tthData)
-tth.attrs['units'] = "degrees"
+tth = nxdata.create_dataset(u"two_theta", data=tthData)
+tth.attrs[u"units"] = u"degrees"
 
-counts = nxdata.create_dataset("counts", data=countsData)
-counts.attrs['units'] = "counts"
+counts = nxdata.create_dataset(u"counts", data=countsData)
+counts.attrs[u"units"] = u"counts"
 
 f.close()	# be CERTAIN to close the file

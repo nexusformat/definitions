@@ -39,7 +39,7 @@ contributed_definitions (proposed definitions from the community)
     are optional in the NeXus data file.
     
     As in base classes (see above), additional terms that are
-    not described by the application definition, may be added to
+    not described by the application definition may be added to
     data files that incorporate or adhere to application definitions. 
     
     .. index:: link
