@@ -871,10 +871,12 @@ Shape Descriptions
 
 The shape of instrument components can be described using the :ref:`NXoff_geometry`
 class. ``NXoff_geometry`` is a polygon-based description, based on the open OFF format.
-Conversion between OFF files and the NeXus description is straightforward
-allows geometry to be defined or viewed in CAD software or 3D Viewing tools
-such as Geomview (http://www.geomview.org/). OFF files can also be used to
-define the shape of components in McStas.
+Conversion between OFF files and the NeXus description is straightforward. This is
+beneficial as existing tools can use, view or manipulate the geometry in OFF files.
+CAD software, for example `FreeCAD <https://www.freecadweb.org/>`_, can be used to
+define the geometry. 3D rendering tools such as `Geomview <http://www.geomview.org/>`_
+can be used to view the geometry. `McStas <http://www.mcstas.org/>`_ can use OFF
+files to define the shape of components for scattering simulations.
 
 The example OFF file show below defines a cube. The first line containing
 numbers defines: the number of vertices, the number of faces (polygons) making
