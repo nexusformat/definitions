@@ -35,6 +35,8 @@ makebuilddir :: builddir
 
 remakebuilddir :: makebuilddir
 
+rebuildall :: rmbuilddir makebuilddir
+
 cleanbuilddir ::
 	$(MAKE) -C build clean
 
