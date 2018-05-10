@@ -180,3 +180,49 @@ attribute         [#minOccurs]_   1
     for NXDL *application definitions* and  *contributed definitions*, ``minOccurs=1`` is the default.
     In all cases, the ``minOccurs`` attribute in the NXDL file will override the default
     for that element (group, field, attribute, or link).
+
+.. index:: !choice
+
+Choice
+======
+
+The ``choice`` element allows one to create a group with a defined name 
+that is one specific NXDL base class from a defined list of possibilities
+
+In some cases when creating an application definition, more than one 
+choice of base class might be used to define a particular subgroup.  
+For this particular situation, the ``choice`` was added to the NeXus 
+NXDL Schema. 
+
+In this example fragment of an NXDL application definition, 
+the ``pixel_shape`` could be represented by *either* 
+``NXoff_geometry`` or ``NXcylindrical_geometry``.
+
+
+.. code-block:: xml
+    :linenos:
+
+	<choice name="pixel_shape">
+	  <group type="NXoff_geometry">
+	    <doc>
+	      Shape description of each pixel. Use only if all pixels in the detector
+	      are of uniform shape.
+	    </doc>
+	  </group>
+	  <group type="NXcylindrical_geometry">
+	    <doc>
+	      Shape description of each pixel. Use only if all pixels in the detector
+	      are of uniform shape and require being described by cylinders.
+	    </doc>
+	  </group>
+	</choice>
+
+
+The ``@name`` attribute of the ``choice`` element specifies the name that
+will appear in the HDF5 data file using one of the groups listed within the choice.
+Thus, it is not necessary to specify the name in each group.  (At some point, 
+the NXDL Schema may be modified to enforce this rule.)
+
+A ``choice`` element may be used wherever a ``group`` element
+is used.  It **must** have at least two groups listed (otherwise, it would
+not be useful).
