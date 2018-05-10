@@ -6,11 +6,23 @@ Introduction to NeXus definitions
 ..
 	.. image:: img/NeXus.png
 
-While the design principles of NeXus are explained in the :ref:`UserManual`, this Reference Documentation specifies all allowed :ref:`base classes <base.class.definitions>` and all standardized :ref:`application definitions <application.definitions>`. Furthermore, it also contains :ref:`contributed definitions <contributed.definitions>` of new bases classes or application definitions that are currently under review.
+While the design principles of NeXus are explained in the 
+:ref:`UserManual`, this Reference Documentation specifies 
+all allowed :ref:`base classes <base.class.definitions>` 
+and all standardized :ref:`application definitions <application.definitions>`. 
+Furthermore, it also contains 
+:ref:`contributed definitions <contributed.definitions>` 
+of new bases classes or application definitions that 
+are currently under review.
 
-Base class definitions and application definitions have basically the same structure, but different semantics: Base class definitions define the *complete* set of 
-terms that *might* be used in an instance of that class.  Application definitions 
-define the *minimum* set of terms that *must* be used in an instance of that class.  
+Base class definitions and application definitions have basically 
+the same structure, but different semantics: 
+
+* Base class definitions define the *complete* set of 
+  terms that *might* be used in an instance of that class.  
+
+* Application definitions 
+  define the *minimum* set of terms that *must* be used in an instance of that class.  
 
 Base classes and application definitions are specified using a domain-specific XML scheme, the :ref:`NXDL`.
 
