@@ -29,8 +29,11 @@ the *Status*, *Description*, table of *Symbols* (if defined),
 other NeXus base class *Groups cited*, an annotated *Structure*,
 and a link to the *NXDL Source* (XML) file.
 
-Each of the NXDL files has its own version number, for which 
-there is an associated tag in the version repository.  Such
+.. index:: release; versioning
+.. index:: release; tags
+.. index:: tags
+
+Each of the NXDL files has its own tag in the version repository.  Such
 as `NXcrystal-1.0` is tagged in GiHub and accessible via URL:
 https://github.com/nexusformat/definitions/releases/tag/NXcrystal-1.0
 
@@ -104,11 +107,10 @@ identified with a leading "at" symbol (``@``)
 and belong with the preceding field or group,
 are additional metadata used to define this field or group.
 In the example above, the
-``program_name`` element has two attributes:
-``version`` (required) and
-``configuration`` (optional) while the
-``thumbnail`` element has one attribute:
-``mime_type`` (optional).
+``program_name`` element has the 
+``configuration`` (optional) attribute while the
+``thumbnail`` element has the
+``mime_type`` (optional) attribute.
 
 For groups, the name may not be declared in the NXDL specification.
 In such instances, the *value shown in parentheses* in the
