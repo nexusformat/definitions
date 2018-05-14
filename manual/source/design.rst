@@ -385,7 +385,8 @@ a URL to a group in another file.  More information about the
 Combining NeXus links and External File Links
 ---------------------------------------------
 
-Consider the case described in `Links to Data in External HDF5 Files <h5py-example-external-links>`_,
+Consider the case described in 
+:ref:`Links to Data in External HDF5 Files <h5py-example-external-links>`,
 where numerical data are provided in two different HDF5 files and a *master* NeXus HDF5 file links to 
 the data through external file links.  HDF5 will not allow hard links to be constructed with these data
 objects in the master file.  An error such as *Interfile hard links are not allowed* (as generated
