@@ -201,7 +201,7 @@ Versioning (Tags)
 -----------------
 
 Versioning of each of the NXDL files, as well as the 
-complete set of NXDL files is now described in wiki [#]_
+complete set of NXDL files is now described in the wiki [#]_
 of the NeXus definitions repository [#]_.  
 Please see that wiki for complete information.
 
