@@ -26,6 +26,17 @@ def str2time(time_string):
     return datetime.strptime(time_string, fmt)
 
 
+def getCredentialsFile():
+    search_paths = [
+        os.path.dirname(__file__),
+        os.path.join(os.environ["HOME"], ".config"),    # TODO: robust?
+    ]
+    for path in search_paths:
+        full_name = os.path.join(path, CREDS_FILE_NAME)
+        if os.path.exists(full_name):
+            return full_name
+
+
 class ReleaseNotes(object):
     
     def __init__(self, base, head=None, milestone=None):
@@ -36,9 +47,7 @@ class ReleaseNotes(object):
 
         self.commit_db = {}
         self.db = dict(tags={}, pulls={}, issues={}, commits={})
-        self.creds_file_name = os.path.join(
-            os.path.dirname(__file__), 
-            CREDS_FILE_NAME)
+        self.creds_file_name = getCredentialsFile()
         if not os.path.exists(self.creds_file_name):
             raise ValueError('Missing file: ' + self.creds_file_name)
     
