@@ -6,7 +6,6 @@
 Create release notes for a new relase of the GitHub repository.
 '''
 
-from __future__ import print_function
 from datetime import datetime
 import os, sys
 import github
@@ -14,9 +13,7 @@ import collections
 import argparse
 
 
-CREDS_FILE_NAME = "__github_creds__.txt"
-GITHUB_NXDL_ORGANIZATION = "nexusformat"
-GITHUB_NXDL_REPOSITORY = "definitions"
+CREDS_FILE_NAME = "__github_creds__.txt"        # put in ~/.config/ directory not readable by others
 GITHUB_PER_PAGE = 30
 
 
@@ -35,6 +32,56 @@ def getCredentialsFile():
         full_name = os.path.join(path, CREDS_FILE_NAME)
         if os.path.exists(full_name):
             return full_name
+    raise ValueError('Cannot find credentials file: ' + CREDS_FILE_NAME)
+
+
+def findGitConfigFile():
+    """
+    return full path to .git/config file
+    
+    must be in current working directory or some parent directory
+    
+    This is a simplistic search that could be improved by using 
+    an open source package.
+    
+    Needs testing for when things are wrong.
+    """
+    path = os.getcwd()
+    for i in range(99):
+        config_file = os.path.join(path, ".git", "config")
+        if os.path.exists(config_file):
+            return config_file
+        # TODO: what if we reach the root of the file system?
+        path = os.path.abspath(os.path.join(path, ".."))
+    msg = "Could not find .git/config file in any parent directory."
+    raise ValueError(msg)
+
+
+def getRepositoryInfo():
+    """
+    return organization, repository from .git/config file
+    
+    This is a simplistic search that could be improved by using 
+    an open source package.
+    
+    Needs testing for when things are wrong.
+    """
+    config_file = findGitConfigFile()
+        
+    # found it!
+    found_origin = False
+    with open(config_file, "r") as f:
+        for line in f.readlines():
+            line = line.strip()
+            if line == '[remote "origin"]':
+                found_origin = True
+            elif line.startswith("url"):
+                url = line.split("=")[-1].strip()
+                if url.find("github.com") < 0:
+                    msg = "Not a GitHub repo: " + url
+                    raise ValueError(msg)
+                org, repo = url.rstrip(".git").split("/")[-2:]
+                return org, repo
 
 
 class ReleaseNotes(object):
@@ -47,15 +94,14 @@ class ReleaseNotes(object):
 
         self.commit_db = {}
         self.db = dict(tags={}, pulls={}, issues={}, commits={})
+        self.organization, self.repository = getRepositoryInfo()
         self.creds_file_name = getCredentialsFile()
-        if not os.path.exists(self.creds_file_name):
-            raise ValueError('Missing file: ' + self.creds_file_name)
     
     def connect(self):
         uname, pwd = open(self.creds_file_name, 'r').read().split()
         self.gh = github.Github(uname, password=pwd, per_page=GITHUB_PER_PAGE)
-        self.user = self.gh.get_user(GITHUB_NXDL_ORGANIZATION)
-        self.repo = self.user.get_repo(GITHUB_NXDL_REPOSITORY)
+        self.user = self.gh.get_user(self.organization)
+        self.repo = self.user.get_repo(self.repository)
     
     def learn(self):
         base_commit = None
@@ -66,9 +112,13 @@ class ReleaseNotes(object):
             commits[commit.sha] = commit
 #         commits = self.db["commits"] = {commit.sha: commit for commit in compare.commits}
         
-        for milestone in self.repo.get_milestones():
+        for milestone in self.repo.get_milestones(state="all"):
             if milestone.title == self.milestone_title:
                 self.milestone = milestone
+                break
+        if self.milestone is None:
+            msg = "Could not find milestone: " + self.milestone
+            raise ValueError(msg)
 
         tags = self.db["tags"]
         for tag in self.repo.get_tags():
