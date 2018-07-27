@@ -401,7 +401,6 @@ file. As always, the start is an empty template file. This looks like the XML co
    single: name (NXDL attribute)
    single: extends (NXDL attribute)
    single: type (NXDL attribute)
-   single: version (NXDL attribute)
    single: xmlns (NXDL attribute)
    single: xsi:schemaLocation (NXDL attribute)
 
@@ -410,8 +409,6 @@ Then, locate the XML root element ``definition`` and change the
 ``name attribute`` (the XML shorthand for this attribute is
 ``/definition/@name``) to ``NXwoni``.
 Change the ``doc`` as well.
-Also consider keeping track of ``/definition/@version``
-as suits your development of this NXDL file.
 
 The next thing which needs to be done is adding groups into the definition.
 A group is defined by some XML, as in this example:

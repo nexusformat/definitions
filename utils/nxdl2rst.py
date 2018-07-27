@@ -347,7 +347,7 @@ def print_rst_from_nxdl(nxdl_file):
     print( title )
     print( '='*len(title) )
 
-    # print category, version, parent class
+    # print category & parent class
     extends = root.get('extends')
     if extends is None:
         extends = 'none'
@@ -356,10 +356,9 @@ def print_rst_from_nxdl(nxdl_file):
 
     print('')
     print( '**Status**:\n' )
-    print( '  %s, extends %s, version %s' %
+    print( '  %s, extends %s' %
            ( listing_category.strip(),
-             extends,
-             root.get('version').strip() ) )
+             extends ) )
 
     printIfDeprecated(ns, root, '')
 
@@ -460,7 +459,7 @@ if __name__ == '__main__':
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2017 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2018 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
