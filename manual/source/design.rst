@@ -878,7 +878,7 @@ define the geometry. 3D rendering tools such as `Geomview <http://www.geomview.o
 can be used to view the geometry. `McStas <http://www.mcstas.org/>`_ can use OFF
 files to define the shape of components for scattering simulations.
 
-The example OFF file show below defines a cube. The first line containing
+The example OFF file shown below defines a cube. The first line containing
 numbers defines: the number of vertices, the number of faces (polygons) making
 up the model's surface, and the number of edges in the mesh. Note, the number of
 edges must be present but does not need to be correct
@@ -901,7 +901,13 @@ the :ref:`NXoff_geometry` class. The vertex indices of the face list in the OFF
 file occupy the ``winding_order`` dataset of the NeXus class, however the list
 is flattened to 1D in order to avoid a ragged-edged dataset, which are not
 easy to work with using HDF libraries. A ``faces`` dataset contains the position
-of the first entry in ``winding_order`` for each face.
+of the first entry in ``winding_order`` for each face. The ``NXoff_geometry``
+equivalent of the OFF cube example is shown below.
+
+.. literalinclude:: examples/cube_NXoff_geometry.txt
+   :tab-width: 4
+   :linenos:
+   :language: text
 
 ``NXcylindrical_geometry``
 --------------------------
@@ -929,7 +935,7 @@ define each cylinder in the ``cylinders`` dataset.
 
 
 Detector Shape Descriptions
---------------------------
+---------------------------
 
 An ``NXoff_geometry`` or ``NXcylindrical_geometry`` group named ``shape`` can
 be placed in an ``NXdetector`` or ``NXdetector_module`` to define the complete
@@ -941,7 +947,7 @@ how the pixel shape is tiled to form the geometry of the complete detector.
 .. _LegacyGeometryDescriptions:
 
 Legacy Geometry Descriptions
-===========================
+============================
 
 The above system of chained transformations is the recommended way of
 encoding geometry going forward. This section describes the traditional way
