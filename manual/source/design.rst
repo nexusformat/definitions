@@ -938,8 +938,8 @@ define each cylinder in the ``cylinders`` dataset.
 Detector Shape Descriptions
 ---------------------------
 
-An ``NXoff_geometry`` or ``NXcylindrical_geometry`` group named ``shape`` can
-be placed in an ``NXdetector`` or ``NXdetector_module`` to define the complete
+An ``NXoff_geometry`` or ``NXcylindrical_geometry`` group named ``detector_shape``
+can be placed in an ``NXdetector`` or ``NXdetector_module`` to define the complete
 shape of the detector. Alternatively, the group can be named ``pixel_shape``
 and define the shape of a single pixel. In this case, ``x_pixel_offset``,
 ``y_pixel_offset`` and ``z_pixel_offset`` datasets of the ``NXdetector`` define
