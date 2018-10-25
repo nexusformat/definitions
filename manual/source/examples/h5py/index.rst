@@ -230,7 +230,7 @@ it that way (in order of appearance) by default.
 Links to Data in External HDF5 Files
 ####################################
 
-HDF5 files may contain links to data (or groups) in other files.
+HDF5 files may contain links to data (or groups) in other files.  
 This can be used to advantage to refer to data in existing HDF5 files
 and create NeXus-compliant data files.  Here, we show such an example, 
 using the same ``counts`` v. ``two_theta`` data from the examples above.

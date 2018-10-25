@@ -192,32 +192,23 @@ available on the GitHub site:
 https://github.com/nexusformat/definitions/milestones
 
 .. index:: release; versioning
+.. index:: release; tags
+.. index:: tags
 
-Versioning
-----------
+.. version.tags_:
 
-1. each NXDL file has a ``definitions/@version`` attribute that declares the version of this NXDL file
-2. we will tag the definitions repository with new releases of the NeXus definitions
+Versioning (Tags)
+-----------------
 
-  a. example: change of an application definition version will compel a new NeXus definitions tag
+Versioning of each of the NXDL files, as well as the 
+complete set of NXDL files is now described in the wiki [#]_
+of the NeXus definitions repository [#]_.  
+Please see that wiki for complete information.
 
-  b. before pushing a new change, we should copy the documentation PDF of the current release
-     to a place to be setup to retain legacy versions of the documentation 
-     (we can do this manually until we decide how to automate this in a robust way)
-  
-  c. NeXus uses a modified *semantic versioning* [#]_: major.minor  but no ".patch" level.
-  
-     :major: (not described above) 3 (currently) - changes in NXDL language that are incompatible with previous versions
-     :minor: (item 2&3 above) 1 (currently) - changes in NXDL structure
-     :patch: (item 1 above) releases for NXDL file changes 
-     
-     For changes at the *patch* level (commits to the GitHub master branch), we will move the current 
-     *major.minor* tag to point to the newest commit hash.
-
-3. changes in the NXDL language (such as new unit types) will become part of a new tag
-4. the syntax of the NXDL language is currently 3.3 (2017-05-02)
-
-.. [#] *semantic versioning*: http://semver.org
+.. [#] Release Procedure: 
+   https://github.com/nexusformat/definitions/wiki/Release-Procedure
+.. [#] Definitions repository:
+   https://github.com/nexusformat/definitions
 
 -----------
 

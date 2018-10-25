@@ -84,6 +84,15 @@ For more details, see:
 :ref:`NXDL.data.type.fieldType`
                 ''',
                 
+                'choice': '''
+A ``choice`` element is used when a named group might take one
+of several possible NeXus base classes.  Logically, it must
+have at least two group children.
+
+For more details, see: 
+:ref:`NXDL.data.type.choiceType`
+                ''',
+                
                 'group': '''
 A ``group`` element can *only* be a child of a 
 ``definition`` or ``group`` element.
@@ -323,7 +332,7 @@ def applyTemplates(ns, parent, path, indentLevel, handler=generalHandler):
     for node in parent.xpath(path, namespaces=ns):
         name = node.get('name') or node.get('ref') or node.get('value')
         if name is not None:
-            if name in ('nx:groupGroup'):
+            if name in ('nx:groupGroup',):
                 print(">"*45, name)
             if name in db:
                 raise "Duplicate name found: " + name
@@ -438,6 +447,7 @@ def main(tree, ns):
                  "/xs:schema/xs:complexType[@name='docType']",
                  "/xs:schema/xs:complexType[@name='enumerationType']",
                  "/xs:schema/xs:complexType[@name='fieldType']",
+                 "/xs:schema/xs:complexType[@name='choiceType']",
                  "/xs:schema/xs:complexType[@name='groupType']",
                  "/xs:schema/xs:complexType[@name='linkType']",
                  "/xs:schema/xs:complexType[@name='symbolsType']",

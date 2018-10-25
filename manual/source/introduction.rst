@@ -195,7 +195,10 @@ Important Classes
 -----------------
 
 Here are some of the important classes found in nearly all NeXus files. A
-complete list can be found in the :ref:`Design` chapter.
+complete list can be found in the :ref:`Design-NeXusClasses` chapter.
+A complete list of *all* NeXus classes may be found in
+the :ref:`all.class.definitions` chapter.
+
 
 .. note:: ``NXentry``
           is the only class required in a valid NeXus data file.
