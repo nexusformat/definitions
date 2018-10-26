@@ -14,7 +14,7 @@ subdirs: $(SUBDIRS)
 #$(SUBDIRS):
 #	$(MAKE) -C $@
 
-manual ::
+manual :: nxdl2rst
 	$(MAKE) html -C $@
 
 impatient-guide ::
@@ -25,6 +25,9 @@ impatient-guide ::
 
 clean:
 	$(MAKE) clean -C $(SUBDIRS)
+
+nxdl2rst:
+	$(MAKE) -C manual/source
 
 builddir :: 
 	mkdir -p build
