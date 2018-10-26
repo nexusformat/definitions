@@ -252,12 +252,22 @@ matches the data type specifier.
 
 **strings**
    ``NX_CHAR``:
-   All strings are to be encoded in UTF-8. Since most strings in a
-   NeXus file are restricted to a small set of characters 
-   and the first 128 characters are standard across encodings,
-   the encoding of most of the strings in a NeXus file will be a moot point.
-   Encoding in UTF-8 will be important when recording people's names 
-   in ``NXuser`` and text notes in ``NXnotes``.
+   The preferred string representation is UTF-8. 
+   Both fixed-length strings and variable-length strings are valid. 
+   String arrays cannot be used where only a string is expected 
+   (title, start_time, end_time, ``NX_class`` attribute,...). 
+   Fields or attributes requiring the use of string arrays will be 
+   clearly marked as such (like the ``NXdata`` attribute auxiliary_signals).
+   
+   .. https://github.com/nexusformat/NIAC/issues/31#issuecomment-433481024
+
+   ..
+      All strings are to be encoded in UTF-8. Since most strings in a
+      NeXus file are restricted to a small set of characters 
+      and the first 128 characters are standard across encodings,
+      the encoding of most of the strings in a NeXus file will be a moot point.
+      Encoding in UTF-8 will be important when recording people's names 
+      in ``NXuser`` and text notes in ``NXnotes``.
    
    .. https://github.com/nexusformat/NIAC/issues/23#issuecomment-308773465
    
@@ -266,15 +276,17 @@ matches the data type specifier.
    .. index:: strings; arrays
    
    .. https://github.com/nexusformat/definitions/issues/281
-   
-   NeXus accepts both variable and fixed length strings, 
-   as well as arrays of strings.
-   Software that reads NeXus data files should support 
-   all of these.
 
-   Some file writers write strings as a string array
-   of rank 1 and length 1.
-   Clients should be prepared to handle such strings.
+
+   ..
+      NeXus accepts both variable and fixed length strings, 
+      as well as arrays of strings.
+      Software that reads NeXus data files should support 
+      all of these.
+
+      Some file writers write strings as a string array
+      of rank 1 and length 1.
+      Clients should be prepared to handle such strings.
 
 .. index:: binary data
 
