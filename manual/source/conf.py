@@ -21,7 +21,7 @@ import sys, os, datetime
 
 # -- Project information -----------------------------------------------------
 
-project = u'NeXusManual'
+project = u'nexus'
 author = u'NIAC, https://nexusformat.org'
 copyright = u'1996-{}, {}'.format(datetime.datetime.now().year, author)
 # description = u'One line description of project.'
@@ -131,7 +131,7 @@ htmlhelp_basename = 'NeXusManualdoc'
 latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
-    # 'papersize': 'letterpaper',
+    'papersize': 'letterpaper',
 
     # The font size ('10pt', '11pt' or '12pt').
     #
@@ -146,8 +146,10 @@ latex_elements = {
     #
     # 'figure_align': 'htbp',
 
-    'latex_logo': "nexuslogo.png"    # FIXME:
+    'maxlistdepth': 10,
 }
+
+latex_logo = "nexuslogo.png"
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,
@@ -155,7 +157,7 @@ latex_elements = {
 latex_documents = [
     (
         master_doc, 
-        project + '.tex', 
+        project + '.tex'.lower(), 
         project + u' Documentation',
         # author: 'NeXus International Advisory Committee\\\\\hfill{}nexus@nexusformat.org\\\\\hfill{}http://nexusformat.org'
         author, 
