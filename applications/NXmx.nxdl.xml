@@ -73,6 +73,24 @@
 				</enumeration>
 			</field>
 
+			<group type="NXdata" minOccurs="0">
+
+				<field name="data" type="NX_NUMBER" minOccurs="0">
+					<doc>
+						For a dimension-2 detector, the rank of the data array will be 3.
+						For a dimension-3 detector, the rank of the data array will be 4.
+						This allows for the introduction of the frame number as the
+						first index.
+					</doc>
+					<dimensions rank="dataRank">
+						<dim index="1" value="np" />
+						<dim index="2" value="i" />
+						<dim index="3" value="j" />
+						<dim index="4" value="k" required="false"/>
+					</dimensions>
+				</field>
+			</group>
+
 			<group type="NXinstrument">
 				<group type="NXattenuator" minOccurs="0">
 					<field name="attenuator_transmission" type="NX_NUMBER" units="NX_UNITLESS"
@@ -162,7 +180,7 @@
 						</doc>
 					</group>
 
-					<field name="data" type="NX_NUMBER">
+					<field name="data" type="NX_NUMBER" minOccurs="0">
 						<doc>
 							For a dimension-2 detector, the rank of the data array will be 3.
 							For a dimension-3 detector, the rank of the data array will be 4.
@@ -366,7 +384,7 @@
 						</dimensions>
 					</field>
 
-					<field name="pixel_mask_applied" type="NX_BOOLEAN" minOccurs="0">
+					<field name="pixel_mask_applied" type="NX_INT" minOccurs="0">
 						<doc>
 							True when the pixel mask correction has been applied in the
 							electronics, false otherwise.
@@ -414,7 +432,7 @@
 						</dimensions>
 					</field>
 
-					<field name="countrate_correction_applied" type="NX_BOOLEAN"
+					<field name="countrate_correction_applied" type="NX_INT"
 						minOccurs="0">
 						<doc>
 							True when a count-rate correction has already been applied in
@@ -497,7 +515,87 @@
 						</doc>
 					</field>
 				</group>
+				<group type="NXbeam" minOccurs="0">
+					<field name="incident_wavelength" type="NX_FLOAT" units="NX_WAVELENGTH"
+						minOccurs="0" >
+						<doc>
+							In the case of a monchromatic beam this is the scalar
+							wavelength.
+
+							In the case of a polychromatic beam this is an array of
+							the wavelengths with the relative weights in
+							incident_wavelength_weight.
+						</doc>
+					</field>
+
+					<field name="incident_wavelength_weight" type="NX_FLOAT" minOccurs="0" >
+						<doc>
+							In the case of a polychromatic beam this is an array of the
+							relative weights of the corresponding wavelengths in
+							incident_wavelength.
+						</doc>
+					</field>
+
+					<field name="incident_wavelength_spread" type="NX_FLOAT" units="NX_WAVELENGTH"
+						minOccurs="0" >
+						<doc>
+							The wavelength spread FWHM for the corresponding
+							wavelength(s) in incident_wavelength.
+						</doc>
+					</field>
+
+					<group name="incident_wavelength_spectrum" type="NXdata"
+						minOccurs="0" />
+
+					<field name="flux" type="NX_FLOAT" units="NX_FLUX" minOccurs="0">
+						<doc>
+							flux incident on beam plane area in photons
+							per second per unit area
+						</doc>
+					</field>
+
+					<field name="total_flux" type="NX_FLOAT" units="NX_FREQUENCY" minOccurs="0">
+						<doc>
+							flux incident on beam plane in photons per second
+						</doc>
+					</field>
+
+					<field name="incident_beam_size" type="NX_FLOAT" units="NX_LENGTH"  minOccurs="0">
+						<doc>
+							Two-element array of FWHM (if Gaussian or Airy function) or
+							diameters (if top hat) or widths (if rectangular) of beam
+							in the order x, y
+						</doc>
+							<dimensions rank="1">
+							    <dim index="1" value="2"/>
+							</dimensions>
+					</field>
+
+					<field name="profile" type="NX_CHAR" minOccurs="0">
+						<doc>
+							The beam profile, Gaussian, Airy function, top-hat or
+							rectangular.  The profile is given in the plane of
+							incidence of the beam on the sample.
+						</doc>
+						<enumeration>
+							<item value="Gaussian"/>
+							<item value="Airy"/>
+							<item value="top-hat"/>
+							<item value="rectangular"/>
+						</enumeration>
+					</field>
+
+
+					<field name="incident_polarisation_stokes" minOccurs="0">
+						<dimensions rank="2">
+							<dim index="1" value="np" />
+							<dim index="2" value="4" />
+						</dimensions>
+					</field>
+				</group>
 			</group>
+
+
 
 			<group type="NXsample">
 				<field name="name" type="NX_CHAR" minOccurs="0">
@@ -537,7 +635,7 @@
 
 				<field name="temperature" units="NX_TEMPERATURE" minOccurs="0" />
 
-				<group type="NXbeam">
+				<group type="NXbeam" minOccurs="0">
 					<field name="incident_wavelength" type="NX_FLOAT" units="NX_WAVELENGTH"
 						minOccurs="0" >
 						<doc>
