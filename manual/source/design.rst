@@ -171,10 +171,10 @@ attributes can be found in the next table:
 
 		``interpretation`` (*NX_CHAR*)
 			Describes how to display the data.
-			``rgba``, ``hsla`` and ``cmyk`` are (4 x n x m) arrays, where the
+			``rgba``, ``hsla`` and ``cmyk`` are (`n x m x 4`) arrays, where the
 			4 channels are the colour channels appropriately. If the image data
 			does not contain an alpha channel, then the array should simply be
-			(3 x n x m).
+			(`n x m x 3`).
 			Allowed values include:
 
 			* ``scaler`` (0-D data)
