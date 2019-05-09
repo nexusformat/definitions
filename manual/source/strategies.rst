@@ -144,6 +144,41 @@ which also allows "energy" to be specified if one is so inclined.
 	for a short discussion of the difference between the HDF5 path 
 	and the NeXus symbolic class path.
 
+.. _Strategies-timestamped:
+	
+Strategies: Time-stamped data
+#############################
+*How should I store time-stamped data?*
+Time-stamped data can stored in both :ref:`NXlog` and :ref:`NXevent_data`. 
+:ref:`NXevent_data` is used for storing neutron event data and :ref:`NXlog` would be used 
+for storing any other time-stamped data, e.g. sample temperature, chopper 
+top-dead-centre, motor position etc.
+
+Both :ref:`NXlog` and :ref:`NXevent_data` have additional support for storing time-stamped 
+data in the form of cues; cues can be used to place markers in the data that allow one to 
+quickly look up coarse time ranges of interest. This coarse range of data can then be manually 
+trimmed to be more selective, if required.
+The application writing the NeXus file is responsible for writing cues and when they are written. 
+For example, the cue could be written every 10 seconds, every pulse, every 100 datapoints and so on.
+
+Let's consider the case where NXlog is being used to store sample temperature data that has been 
+sampled once every three seconds. The application that wrote the data has added cues every 20 
+seconds. Pictorially, this may look something like this:
+
+.. image:: img/timestamp-cues-example.png
+:width: 50%
+:height: 50%
+
+If we wanted to retrieve the mean temperature between 30 and 40 seconds, we would use the cues 
+to grab the data between 20 seconds and 40 seconds, and then trim that data to get the data we 
+want.
+Obviously in this simple example this does not gain us a lot, but it is easy to see that in a 
+large dataset having appropriately placed cues can save significant computational time when looking 
+up values in a certain time-stamp range.
+
+In the NeXus Features repository, `ECB064453EDB096D <https://github.com/nexusformat/features/tree/master/src/recipes/ECB064453EDB096D>`_ 
+shows example code using cues to select data.
+
 
 Strategies: The next case
 #########################
