@@ -176,7 +176,7 @@ Obviously in this simple example this does not gain us a lot, but it is easy to 
 large dataset having appropriately placed cues can save significant computational time when looking 
 up values in a certain time-stamp range.
 
-In the NeXus Features repository, the feature `ECB064453EDB096D <https://github.com/nexusformat/features/tree/master/src/recipes/ECB064453EDB096D>`_ 
+In the NeXus Features repository, the feature `ECB064453EDB096D <https://github.com/nexusformat/features/tree/b0f4862f267844a3f66efa701953e684978b0959/src/recipes/ECB064453EDB096D>`_ 
 shows example code that uses cues to select time-stamped data.
 
 
