@@ -359,7 +359,7 @@ def print_rst_from_nxdl(nxdl_file):
     print( '  %s, extends %s, version %s' %
            ( listing_category.strip(),
              extends,
-             root.get('version','').strip() ) )
+             root.get('version').strip() ) )
 
     printIfDeprecated(ns, root, '')
 
