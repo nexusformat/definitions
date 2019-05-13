@@ -44,6 +44,13 @@ cleanbuilddir ::
 rmbuilddir ::
 	$(RM) -r build
 
+# for developer's use on local build host
+local ::
+	python utils/test_suite.py
+	$(RM) -r build
+	mkdir -p build
+	python utils/build_preparation.py . build
+	$(MAKE) -C build
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
