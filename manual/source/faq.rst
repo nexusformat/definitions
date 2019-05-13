@@ -194,3 +194,11 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
    See the :ref:`where.to.store.metadata` section.
 
+#. What file extension should I use when writing a NeXus data file?
+
+   Any extension is permitted. 
+   Common extensions are `.h5`, `.hdf`, `.hdf5`, and `.nxs` 
+   while others are possible. 
+   See the many examples in the NeXus exampledata repository. 
+   (https://github.com/nexusformat/exampledata)
+

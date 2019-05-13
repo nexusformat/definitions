@@ -1,4 +1,5 @@
 * NeXus: http://www.nexusformat.org/
+* citation: [![DOI](https://zenodo.org/badge/19377430.svg)](https://zenodo.org/badge/latestdoi/19377430) (DOI: 10.5281/zenodo.1472392)
 * documentation: http://download.nexusformat.org/doc/html/index.html
 * Release Notes: https://github.com/nexusformat/definitions/wiki/Release-Notes
 * build server: http://build.nexusformat.org/

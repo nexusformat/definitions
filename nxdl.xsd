@@ -227,18 +227,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="version" use="required">
-			<xs:annotation>
-				<xs:documentation>
-					Version of *this* NXDL definition.  
-					Each NXDL specification
-					may have a different version to facilitate software maintenance.
-					This value is modified by the person who edits this file when
-					this NXDL specification has changed significantly (in a way that
-					downstream software should be aware).
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 		<xs:attribute name="type" use="required" type="nx:definitionTypeAttr">
 			<xs:annotation>
 				<xs:documentation>Must be ``type="group"``</xs:documentation>
@@ -271,7 +259,6 @@
 					(2014-08-19: deprecated since switch to GitHub version control)
 					The identifier string from the subversion revision control system.
 					This reports the time stamp and the revision number of this file.
-					(Updated automatically, unlike the ``version`` attribute.)
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -364,6 +351,41 @@
 			<xs:enumeration value="definition" />
 		</xs:restriction>
 	</xs:simpleType>
+	
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	
+	<xs:complexType name="choiceType">
+		<xs:annotation>
+			<xs:documentation>
+				A ``choice`` element is used when a named group might take one
+				of several possible NeXus base classes.  Logically, it must
+				have at least two group children.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+		  <xs:element name="group" type="nx:groupType" minOccurs="2" maxOccurs="unbounded">
+		  	<xs:annotation>
+		  		<xs:documentation>
+		  			NeXus base class that could be used here.
+		  			The group will take the ``@name`` attribute 
+		  			defined by the parent ``choice`` element
+		  			so do not specify the ``@name`` attribute of
+		  			the group here.
+		  		</xs:documentation>
+		  		<!-- TODO: How to enforce the name rule in the schema? -->
+		  	</xs:annotation>
+		  </xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" use="required" type="nx:validItemName">
+			<xs:annotation>
+				<xs:documentation>
+					The name to be applied to the selected child group.  
+					None of the child groups should define a 
+					``@name`` attribute.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
 	
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	
@@ -471,6 +493,14 @@
 					<xs:documentation>
 						Use an ``attribute`` if additional information 
 						needs to be associated with a ``group``.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="choice" type="nx:choiceType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						Use a ``choice`` if a named group could be either
+						of a defined list of base classes.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
