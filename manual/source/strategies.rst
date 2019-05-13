@@ -166,8 +166,8 @@ sampled once every three seconds. The application that wrote the data has added 
 seconds. Pictorially, this may look something like this:
 
 .. image:: img/timestamp-cues-example.png
-:width: 50%
-:height: 50%
+   :width: 50pc
+   :height: 50pc
 
 If we wanted to retrieve the mean temperature between 30 and 40 seconds, we would use the cues 
 to grab the data between 20 seconds and 40 seconds, and then trim that data to get the data we 
