@@ -119,6 +119,39 @@ value is stored with a name built by appending _set to the normal NeXus field na
 The temperature field will hold the readback from the cryostat/furnace/whatever. The field temperature_set will hold 
 the target value for the temperature as set by the experiment control software. 
 
+
+.. _Design-Variants:
+
+
+Variants
+#########
+
+Sometimes it is necessary to store alternate values of a NeXus dataset 
+in a NeXus file. A common example may be the beam center of which a
+value is available at data acquisition. But later on, as part of the
+data reduction, a better beam center is calculated. In order to store
+this the original field can have a variant attribute which points to
+the dataset containing the improved value. If even better values
+become available, this dataset can also have a variant attribute
+pointing to the next better value for the dataset. A reader the can
+follow the variant chain and locate the desired variant. 
+
+A little example is in order to illustrate the scheme:
+
+.. code-block:: text
+
+		beam_center_x
+		     @variant=beam_center_x_refined
+		beam_center_x_refined
+		     @variant=beam_center_x_super_refined
+		beam_center_x_super_refined
+
+NeXus borrowed this scheme from CIF. In this way all the different
+variants of a dataset can be preserved. The expectation is that
+variants will be rarely used and NXprocess groups with the results of
+data reduction will be written instead. 
+
+
 .. _Design-ArrayStorageOrder:
 
 NeXus Array Storage Order
