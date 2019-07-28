@@ -26,7 +26,7 @@ Writing a simple NeXus file using native HDF5 commands in C
 .. literalinclude:: nxh5write.c
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: c
 
 .. _code_native.reading:
 
@@ -36,5 +36,5 @@ Reading a simple NeXus file using native HDF5 commands in C
 .. literalinclude:: nxh5read.c
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: c
     

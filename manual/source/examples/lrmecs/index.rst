@@ -37,7 +37,7 @@ LRMECS ``lrcs3701`` data: ``h5dump`` output
 .. literalinclude:: dump-histogram1-data.txt
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: text
 
 
 Visualize Using *HDFview*
