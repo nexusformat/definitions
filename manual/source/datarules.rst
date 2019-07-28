@@ -21,8 +21,11 @@ Group and field names used within NeXus follow a naming convention
 described by the following :index:`rules <rules; naming>`:
 
 * The names of NeXus *group* and *field* items
-  must only contain a restricted set of characters.
-  This set may be described by a regular expression 
+  must only contain a restricted set of characters
+  (valid program variable names)
+  since they may be used in computer programs.
+  
+  This set is described by a regular expression 
   syntax :index:`regular expression`
   :ref:`regular expression syntax <RegExpName>`,
   as described below.
@@ -41,26 +44,41 @@ described by the following :index:`rules <rules; naming>`:
    the HDF5 data file.
 
 .. compound::
+   
+   The names of NeXus *group* and *field* items must 
+   contain only these characters (the names *must* match either
+   of the regular expressions below):
+   
+   * start with ``_`` or letter (upper or lower case)
+   * upper or lower case letters
+   * digits
+   * ``_`` (underscore character)
+   
+   Note: This means that names should not start with numbers,
+   nor should they include ``.`` characters (or any other text that
+   does not match either of the regular expressions below).
 
    .. _RegExpName:
    
    .. rubric:: Regular expression pattern for NXDL group and field names
    
-   It is recommended that all group and field names 
-   contain only these characters:
-   
-   * lower case letters
-   * digits
-   * "_" (underscore character)
-   
-   and that they begin with a lower case letter.
-   This is the regular expression used to check 
-   this recommendation.
+   The names of NeXus *group* and *field* items must match
+   either this preferred regular expression (no upper case):
     
    .. code-block:: text
        :linenos:
    
        [a-z_][a-z\d_]*
+   
+   or this alternative regular expression (upper case allowed):
+    
+   .. code-block:: text
+       :linenos:
+   
+       [A-Za-z_][\w_]*
+   
+   Note: The alternative regular expression is named *validItemName* 
+   in the XML Schema file: *nxdl.xsd*.
    
    The length should be limited to no more than 
    63 characters (imposed by the HDF5 :index:`rules <rules; HDF5>` for names).
@@ -70,15 +88,8 @@ described by the following :index:`rules <rules; naming>`:
    files with upper case characters in the group or field 
    names might not be accepted by all software that reads NeXus 
    data files.*  Hence, group and field names that do not
-   pass the regular expression above but pass this
-   expression (named *validItemName* in the XML Schema file: *nxdl.xsd*):
-   
-   .. code-block:: text
-       :linenos:
-   
-       [A-Za-z_][\w_]*
-   
-   will be flagged as a warning during data file validation.
+   pass the preferred regular expression (no upper case) but pass the other
+   expression may be flagged as a warning during data file validation.
 	
 
 .. rubric:: Use of underscore in descriptive names
