@@ -355,7 +355,7 @@ showing an external file link in HDF5:
 
 		.. rubric:: Example of linking to data in an external HDF5 file
 
-		.. code-block:: guess
+		.. code-block:: text
 			:linenos:
 
 			 EXTERNAL_LINK "data" {
