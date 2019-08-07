@@ -11,6 +11,7 @@ in the development directory.
 component                      | description
 -------------------------------|------------------------
 [BUILDING.rst](BUILDING.rst)   | how to build the documentation
+[CHANGES.rst](CHANGES.rst)     | Change History
 [LGPL.txt](LGPL.txt)           | one proposed license model
 [NXDL_VERSION](NXDL_VERSION)   | the current NXDL version number
 [README.md](README.md)         | this file
