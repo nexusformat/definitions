@@ -23,7 +23,11 @@ Change History
 
     * `v2018.5 <https://github.com/nexusformat/definitions/releases/tag/v2018.5>`_
        see release notes: https://github.com/nexusformat/definitions/wiki/releasenotes__v2018.5
+    * `#597 <https://github.com/nexusformat/definitions/issues/597>`_
+       changed versioning scheme and procedures
 
 :releases before v2018.5:
 
+    * 3.3
+    * 3.2
     * see Release Notes wiki: https://github.com/nexusformat/definitions/wiki/Release-Notes
