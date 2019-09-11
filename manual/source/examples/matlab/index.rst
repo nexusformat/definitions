@@ -24,7 +24,7 @@ This is the same data used with :ref:`Example-H5py`.
 .. literalinclude:: input.dat
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: text
 
 writing data
 ++++++++++++
@@ -38,7 +38,7 @@ writing data
     .. literalinclude:: basic_writer.m
 	    :tab-width: 4
 	    :linenos:
-	    :language: guess
+	    :language: text
 
 reading data
 ++++++++++++
@@ -52,7 +52,7 @@ reading data
     .. literalinclude:: basic_reader.m
 	    :tab-width: 4
 	    :linenos:
-	    :language: guess
+	    :language: text
 
 
 writing data file with links
@@ -67,7 +67,7 @@ writing data file with links
     .. literalinclude:: writer_2_1.m
 	    :tab-width: 4
 	    :linenos:
-	    :language: guess
+	    :language: text
 
 .. compound::
 
@@ -78,7 +78,7 @@ writing data file with links
     .. literalinclude:: h5link.m
 	    :tab-width: 4
 	    :linenos:
-	    :language: guess
+	    :language: text
 
 
 Downloads

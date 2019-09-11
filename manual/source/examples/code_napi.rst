@@ -32,7 +32,7 @@ NAPI C Example: write simple NeXus file
 .. literalinclude:: napi-example.c
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: c
 
 NAPI F77 Example: write simple NeXus file
 +++++++++++++++++++++++++++++++++++++++++
@@ -42,7 +42,7 @@ NAPI F77 Example: write simple NeXus file
 .. literalinclude:: napi-example.f77
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: fortran
 
 NAPI F90 Example: write simple NeXus file
 +++++++++++++++++++++++++++++++++++++++++
@@ -54,7 +54,7 @@ NAPI F90 Example: write simple NeXus file
 .. literalinclude:: napi-example.f90
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: fortran
 
 
 .. _example.napi.simple.3d.write.python:
@@ -75,7 +75,7 @@ NAPI Python Example: write simple NeXus file
 .. literalinclude:: simple3D.py
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: python
 
 View a NeXus HDF5 file using *h5dump*
 #####################################
@@ -93,7 +93,7 @@ NAPI Python Example: ``h5dump`` output of NeXus HDF5 file
 .. literalinclude:: simple3D.h5dump.txt
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: text
 
 
 View a NeXus HDF5 file using *h5toText.py*
@@ -114,5 +114,5 @@ NAPI Python Example: ``h5toText`` output of NeXus HDF5 file
 .. literalinclude:: simple3D.xture.txt
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: text
     
