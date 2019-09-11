@@ -15,9 +15,9 @@ Change History
 :v2019.10:  expected *2019-10-15*
 
     * `#628 <https://github.com/nexusformat/definitions/issues/628>`_
-       new: NXptycho
+       new: contributed_definitions/NXcxi_ptycho
     * `#614 <https://github.com/nexusformat/definitions/pull/614>`_
-       new: NXpdb
+       new: base/NXpdb
 
 :v2018.5:  released *2018-05-15*
 
