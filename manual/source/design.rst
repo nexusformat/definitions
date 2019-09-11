@@ -34,7 +34,7 @@ used by NeXus. These are:
     Multidimensional arrays and scalars representing the actual data to be stored
 
 :ref:`Design-Attributes`
-    Attributes containing additional metadata can be assigned to groups, fields, 
+    Attributes containing additional metadata can be assigned to groups, fields,
     or :ref:`files <Design-FileAttributes>`.
 
 :ref:`Design-Links`
@@ -171,10 +171,10 @@ attributes can be found in the next table:
 
 		``interpretation`` (*NX_CHAR*)
 			Describes how to display the data.
-			``rgba``, ``hsla`` and ``cmyk`` are (4 x n x m) arrays, where the
+			``rgba``, ``hsla`` and ``cmyk`` are (`n x m x 4`) arrays, where the
 			4 channels are the colour channels appropriately. If the image data
 			does not contain an alpha channel, then the array should simply be
-			(3 x n x m).
+			(`n x m x 3`).
 			Allowed values include:
 
 			* ``scaler`` (0-D data)
@@ -239,19 +239,50 @@ a more descriptive representation of the concept of linking.
 
         Linking in a NeXus file
 
+.. index::
+   ! single: target, attribute
+   single: link, target, attribute
+   single: address, absolute
+   single: address, relative
+   ! link, NeXus link
+   ! NeXus link
+
 NeXus links are HDF5 hard links with an additional ``target`` attribute.
-The ``target`` attribute is added for NeXus to distinguish the HDF5 path to the
-*original* [#]_ dataset.  The value of the ``target`` attribute is the HDF5 path
-to the *original* dataset.
+The ``target`` attribute is added [#]_ for NeXus to distinguish the HDF5 path to the
+*original* [#]_ dataset.  The value of the ``target`` attribute is the HDF5
+path [#absolute_address]_ to the *original* dataset.
+
+   .. [#] When using the NAPI, the ``target`` attribute is added automatically.
+      When the NAPI is not used to write NeXus/HDF5 files, this attribute must
+      be added.  Here are the steps to follow:
+
+      #. Get the HDF5 reference ID of the source item (*field*, *group*, or *link*) to be linked.
+      #. If the ID does not have a ``target`` attribute defined:
+         #. Get the absolute HDF5 address [#absolute_address]_ of the ID.
+         #. Create a ``target`` attribute for the ID.
+         #. Set the ``target`` attribute's value to the absolute HDF5 address of the ID.
+      #. Create an HDF5 hard link [#hdf5_hard_link]_
+         to the ID at the desired (new) HDF5 address.
 
    .. [#] The notion of an *original* dataset with regard to links is
       a NeXus abstraction.  In truth, HDF5 makes no distinction which is
       the *original* dataset.  But, when the file is viewed with a tool
       such as *h5dump*, confusion often occurs over which dataset is
       original and which is a link to the original.  Actually, both HDF5 paths
-      point to the exact same dataset which exists at a specific offset in the HDF5 file.
+      point to the exact, same dataset which exists at a specific offset in the HDF5 file.
+
       See the :ref:`FAQ` question: **I'm using links to place data in two places.
       Which one should be the data and which one is the link?**
+
+   .. [#absolute_address] When using the ``target`` attribute,
+      **always** specify the HDF5 address
+      as an *absolute** address (starts from the HDF5 root,
+      such as: ``/entry/instrument/detector/polar_angle``)
+      rather than a **relative** address (starting from the current group,
+      such as: ``detector/polar_angle``).
+
+   .. [#hdf5_hard_link] HDF5 hard link:
+      https://support.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateHard
 
 NeXus links are best understood with an example.
 The canonical location (expressed as a NeXus class path) to store wavelength
@@ -307,6 +338,9 @@ This requirement can be satisifed easily::
 
 .. index:: link; external file
 
+External File Links
+-------------------
+
 NeXus also allows for links to external files.
 Consider the case where an instrument uses a detector with
 a closed-system software support provided by a commercial vendor.
@@ -321,7 +355,7 @@ showing an external file link in HDF5:
 
 		.. rubric:: Example of linking to data in an external HDF5 file
 
-		.. code-block:: guess
+		.. code-block:: text
 			:linenos:
 
 			 EXTERNAL_LINK "data" {
@@ -329,6 +363,37 @@ showing an external file link in HDF5:
 				TARGETPATH "entry/instrument/detector/data"
 			 }
 
+.. note:: The NAPI code [#]_ makes no ``target`` attribute assignment for
+   links to external files.  It is best to avoid using the
+   ``target`` attribute with external file links.
+
+   .. Q: So what happens if the object in the external file
+      has a ``@target`` attribute?
+
+   .. [#] ``NX5nativeexternallink()``:
+      https://github.com/nexusformat/code/blob/fe8ddd287ee33961982931e2016cc25f76f95edd/src/napi5.c#L2248
+
+The NAPI maintains a group attribute ``@napimount`` that provides
+a URL to a group in another file.  More information about the
+``@napimount`` attribute is described in the
+*NeXus Programmers Reference*. [#]_
+
+.. [#] http://download.nexusformat.org/doc/NeXusIntern.pdf
+
+.. index:: link; external file, NeXus link
+
+Combining NeXus links and External File Links
+---------------------------------------------
+
+Consider the case described in
+:ref:`Links to Data in External HDF5 Files <h5py-example-external-links>`,
+where numerical data are provided in two different HDF5 files and a *master* NeXus HDF5 file links to
+the data through external file links.  HDF5 will not allow hard links to be constructed with these data
+objects in the master file.  An error such as *Interfile hard links are not allowed* (as generated
+from h5py) will arise.  This makes sense since there is no such data object in the file.
+
+Instead, it is necessary to make an external file link at each place in the master where external
+data is to be represented.
 
 .. _Design-NeXusClasses:
 
@@ -526,7 +591,7 @@ certain applications of NeXus, too. The tool which NeXus uses for the expression
 :ref:`Application Definition <application.definitions>`.
 A NeXus Application Definition describes which groups and data items have to be present in
 a file in order to properly describe an application of NeXus. For example for describing  a powder diffraction
-experiment. 
+experiment.
 An application definition may also declare terms which are optional in the data file.
 Typically an application definition will contain only a small subset of the many groups and fields
 defined in NeXus. NeXus application definitions are also expressed in the NeXus Definition Language (NXDL). A tool exists
@@ -556,18 +621,35 @@ that it is always possible to add more data to a file without breaking its compl
 .. index::
     ! coordinate systems; NeXus
 
+.. _Design-Geometry:
+
+NeXus Geometry
+##############
+
+NeXus supports description of the shape, position and orientation of objects in
+:ref:`Design-CoordinateSystem`. Position and
+orientation can be defined as :ref:`CoordinateTransformations` using the
+:ref:`NXtransformations` class. :ref:`ShapeDescriptions` use the :ref:`NXoff_geometry`
+or :ref:`NXcylindrical_geometry` class.
+
+You may come across old files which use :ref:`LegacyGeometryDescriptions`.
+
 .. _Design-CoordinateSystem:
 
-NeXus Coordinate Systems
-########################
+The NeXus Coordinate System
+===========================
 
 .. index::
     single: geometry
     coordinate systems; McStas
     coordinate systems; IUCr
 
-The NeXus coordinate system is shown :ref:`below <fig.NeXus-coord>`.
-Note that it is the same as that used by *McStas* (http://mcstas.org).
+The NeXus coordinate system is shown :ref:`below <fig.NeXus-coord>`. Note that
+it is the same as that used by *McStas* (http://mcstas.org). This choice is
+arbitrary and any other choice should be possible as long as it is
+used consistently and application code that reads NeXus files does not assume
+any prior knowledge of the chosen coordinate system.
+
 
 .. compound::
 
@@ -579,12 +661,12 @@ Note that it is the same as that used by *McStas* (http://mcstas.org).
 		+==========================================================+==========================================================+
 		| .. figure:: img/translation-orientation-geometry.jpg     | .. figure:: img/translation-orientation-geometry-2.jpg   |
 		|       :alt: fig.coord.source.view                        |        :alt: fig.coord.detector.view                     |
-		|       :width: 48%                                        |        :width: 48%                                       |
+		|       :width: 33%                                        |        :width: 33%                                       |
 		+----------------------------------------------------------+----------------------------------------------------------+
 
 	.. figure:: img/translation-orientation-geometry-2.jpg
 	      :alt: fig.coord.detector.view
-	      :width: 48%
+	      :width: 33%
 
 	      NeXus coordinate system, as viewed from detector
 
@@ -600,16 +682,16 @@ Coordinate Transformations
 
 .. index:: transformation matrices
 
-In the recommended way of dealing with geometry NeXus uses a series of 
+In the recommended way of dealing with geometry NeXus uses a series of
 :index:`transformations <coordinate systems; transformations>` to place objects in space.
 In this world view, the absolute position of a component or a detector pixel with respect to
 the laboratory coordinate system is calculated by applying a series of translations and
-rotations. These operations can be expressed as transformation matrices and their
-combination as matrix multiplication. A very important aspect is that the order of application
-of the individual operations *does* matter. Another important aspect is that
-any operation transforms the whole coordinate system and gives rise to a new local coordinate system.
-The mathematics behind this is
-well known and used in such applications such as industrial robot control, space flight and
+rotations. Thus a rotation or translation operation transforms the whole coordinate system
+and gives rise to a new local coordinate system. These transformations between coordinate
+systems are mathematical operations and can be expressed as matrices and their combination
+as matrix multiplication. A very important aspect is that the order of application of the
+individual operations *does* matter. The mathematics behind this is well known and used in
+such applications such as industrial robot control, flight dynamics and
 computer games. The beauty in this comes from the fact that the operations to apply map easily
 to instrument settings and constants. It is also easy to analyze the contribution of each individual
 operation: this can be studied under the condition that all other operations are at a zero setting.
@@ -628,61 +710,89 @@ In order to use coordinate transformations, several pieces of information need t
     **Order**
         The order of operations to apply to move a component into its place.
 
-NeXus chooses to encode this information in the following way:
 
-    .. index::
-       single: transformation type (field attribute)
-       single: translation
-       single: rotation
+Coordinate Transformation Field And Attributes
+----------------------------------------------
 
-    **Type**
-    	Through a field attribute **transformation_type**.
-	This can take the value of either *translation*
-    	or *rotation*.
+NeXus chooses to encode information about each transformation as a field in an ``NXtransformations``
+group in the following way:
 
-    .. index::
-       single: vector (field attribute)
-       see: direction; vector (field attribute)
+  .. index::
+     ! single: value (transformation matrix)
+     ! single: offset (field attribute)
 
-    **Direction**
-    	Through a field attribute **vector**. This is a set of three values
-    	describing either the components of the rotation axis
-    	or the direction along which the translation happens.
+  ``value``
+     This is represented in the actual data of the field or the **value** of the
+     transformation. Its actual name should relate to the physical device used to
+     effect the transformation.
 
-    .. index::
-       ! single: value (transformation matrix)
-       ! single: offset (field attribute)
+     The coordinate transformation attributes are:
 
-    **Value**
-    	This is represented in the actual data of the data set. In addition, there is the
-    	**offset** attribute which has three components describing a translation to apply before
-    	applying the operation of the real axis. Without the offset attribute additional virtual
-    	translations would need to be introduced in order to encode mechanical offsets in the axis.
+       .. index::
+         single: transformation type (field attribute)
+         single: translation
+         single: rotation
 
-    .. index::
-       see: order (transformation); depends on (field attribute)
-       ! single: depends on (field attribute)
+       ``transformation_type``
+         This specifies the **type** of transformation and is either *rotation*
+         or *translation* and describes the kind of operation performed
 
-    **Order**
-    	The order is encoded through the **depends_on** attribute on a data set. The value of the
-    	**depends_on** attribute is the axis upon which the current axis sits.
-    	If the axis sits in the same group it is just a name,
-    	if it is in another group it is a path to the dependent axis.
-    	In addition, for each beamline component, there is a **depends_on** field which points to the data set at the
-    	head of the axis dependency chain. Take as an example an :index:`eulerian cradle` as used on a
-    	:index:`four-circle diffractometer`. Such a cradle has a dependency chain of ``phi:chi:rotation_angle``. Then
-    	the ``depends_on`` field in :ref:`NXsample` would have the value ``phi``.
+       .. index::
+         single: vector (field attribute)
+         see: direction; vector (field attribute)
 
+       ``vector`` (*NX_NUMBER*)
+        This is a set of 3 values forming a unit vector for **direction** that
+        describes the components of either the direction of the rotation axis or
+        the direction along which the translation happens.
 
-    	.. compound::
+       .. index::
+         ! single: offset (field attribute)
 
-    	    .. rubric:: NeXus Transformation encoding
+       ``offset`` (*NX_NUMBER*)
+         This is a set of 3 values forming the offset vector for a translation to apply
+         before applying the operation of the actual transformation. Without this offset
+         attribute, additional virtual translations would need to be introduced in order
+         to encode mechanical offsets in the axis.
 
-    	    .. _table.EulerCIF:
+       .. index::
+         see: order (transformation); depends on (field attribute)
+         ! single: depends on (field attribute)
 
-    	    Transformation encoding for an eulerian cradle on a four-circle diffractometer
+       ``depends_on``
+    	 The **order** is encoded through this attribute. The value is the name of the
+         transformation upon which the current transformation depends on.
 
-    	    .. literalinclude:: examples/euler-cif.txt
+         As each transformation represents possible motion by a physical device, this
+         dependency expresses the attachment order; thus, the current device is attached
+         to (or mounted on) the next device referred to by the attribute.
+
+         Allowed values for depends_on are:
+
+           ``.``
+             A dot ends the depends_on chain
+           ``name``
+             The name of a field within the enclosing group
+           ``dir/name``
+             The name of a field further along the path
+           ``/dir/dir/name``
+             An absolute path to a field in another group
+
+    	 In addition, for each beamline component, there is a ``depends_on`` attribute
+         that points to the field at the head of the axis dependency chain. For example,
+         consider an :index:`eulerian cradle` as used on a :index:`four-circle diffractometer`.
+         Such a cradle has a dependency chain of ``phi:chi:rotation_angle``. Then
+    	 the ``depends_on`` field in :ref:`NXsample` would have the value ``phi``.
+
+         .. compound::
+
+           .. rubric:: NeXus Transformation encoding
+
+           .. _table.EulerCIF:
+
+           Transformation encoding for an eulerian cradle on a four-circle diffractometer
+
+           .. literalinclude:: examples/euler-cif.txt
     	        :tab-width: 4
     	        :linenos:
     	        :language: text
@@ -752,37 +862,97 @@ This is also a nice example of the application of transformation matrices:
 #. This also moves the direction of the *z* vector.
    Along which you translate the component to place by distance.
 
-Coordinate Transformation Attributes
-------------------------------------
+.. _ShapeDescriptions:
 
-The coordinate transformation attributes are:
+Shape Descriptions
+==================
 
-  **vector** (*NX_FLOAT*)
-      3 values describing the axis of rotation or the direction of translation
-  **offset** (*NX_FLOAT*)
-      3 values describing a translation of the axis before applying the
-      actual operation.
-  **transformation_type**
-      Is either rotation or translation and describes the kind of operation performed
-  **depends_on**
-      States the dataset which is next in the dependency chain. Allowed
-      values for depends_on are:
+``NXoff_geometry``
+------------------
 
-      **.**
-        A dot ends the depends_on chain
-      **name**
-        The name of a dataset within the enclosing group
-      **dir/name**
-        The name of a dataset further along the path
-      **/dir/dir/name**
-        An absolute path to a dataset in another group
+The shape of instrument components can be described using the :ref:`NXoff_geometry`
+class. ``NXoff_geometry`` is a polygon-based description, based on the open OFF format.
+Conversion between OFF files and the NeXus description is straightforward. This is
+beneficial as existing tools can use, view or manipulate the geometry in OFF files.
+CAD software, for example `FreeCAD <https://www.freecadweb.org/>`_, can be used to
+define the geometry. 3D rendering tools such as `Geomview <http://www.geomview.org/>`_
+can be used to view the geometry. `McStas <http://www.mcstas.org/>`_ can use OFF
+files to define the shape of components for scattering simulations.
 
-Legacy Geometry Decriptions
-===========================
+The example OFF file shown below defines a cube. The first line containing
+numbers defines: the number of vertices, the number of faces (polygons) making
+up the model's surface, and the number of edges in the mesh. Note, the number of
+edges must be present but does not need to be correct
+(http://www.geomview.org/docs/html/OFF.html).
 
-The above system of chained transformations is the recommended way of 
+.. literalinclude:: examples/cube.off
+   :tab-width: 4
+   :linenos:
+   :language: text
+
+Following the initial line are the xyz coordinates of each vertex. Proceeding
+which is the list of faces. Each line defining a face starts with the number of
+vertices in that face followed by the sequence number of the composing vertices,
+indexed from zero. The vertex indices form a winding order by defining the face
+normal by the right-hand rule. The number of vertices in each face need not be
+constant; a mesh can comprise of polygons of many different orders.
+
+The list of vertices in an OFF file maps directly to the ``vertices`` dataset in
+the :ref:`NXoff_geometry` class. The vertex indices of the face list in the OFF
+file occupy the ``winding_order`` dataset of the NeXus class, however the list
+is flattened to 1D in order to avoid a ragged-edged dataset, which are not
+easy to work with using HDF libraries. A ``faces`` dataset contains the position
+of the first entry in ``winding_order`` for each face. The ``NXoff_geometry``
+equivalent of the OFF cube example is shown below.
+
+.. literalinclude:: examples/cube_NXoff_geometry.txt
+   :tab-width: 4
+   :linenos:
+   :language: text
+
+``NXcylindrical_geometry``
+--------------------------
+
+Although the polygon-based description of :ref:`NXoff_geometry` is very flexible,
+it is not ideal for curved shapes when high precision is required since a very
+large number of vertices may be necessary. A common example of this is when
+describing helium tube, neutron detectors. :ref:`NXcylindrical_geometry` provides
+a more concise method of defining shape for such cases.
+
+Like ``NXoff_geometry``, ``NXcylindrical_geometry`` contains a ``vertices``
+dataset. The indices of three vertices (**A**, **B**, **C** in :ref:`fig.cylinder_3_points`) in the ``vertices`` dataset are used to
+define each cylinder in the ``cylinders`` dataset.
+
+.. compound::
+
+    .. _fig.cylinder_3_points:
+
+    .. figure:: img/cylinder_3_points.png
+        :alt: fig.cylinder_3_points
+        :width: 15%
+        :align: center
+
+        Cylinder definition with three vertices
+
+
+Detector Shape Descriptions
+---------------------------
+
+An ``NXoff_geometry`` or ``NXcylindrical_geometry`` group named ``detector_shape``
+can be placed in an ``NXdetector`` or ``NXdetector_module`` to define the complete
+shape of the detector. Alternatively, the group can be named ``pixel_shape``
+and define the shape of a single pixel. In this case, ``x_pixel_offset``,
+``y_pixel_offset`` and ``z_pixel_offset`` datasets of the ``NXdetector`` define
+how the pixel shape is tiled to form the geometry of the complete detector.
+
+.. _LegacyGeometryDescriptions:
+
+Legacy Geometry Descriptions
+============================
+
+The above system of chained transformations is the recommended way of
 encoding geometry going forward. This section describes the traditional way
-this was handled in NeXus, which you may find occasionally in old files. 
+this was handled in NeXus, which you may find occasionally in old files.
 
 
 :index:`Coordinate systems <coordinate systems>`

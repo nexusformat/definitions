@@ -3,7 +3,7 @@
 <!--
   # NeXus - Neutron and X-ray Common Data Format
   #
-  # Copyright (C) 2013-2017 NeXus International Advisory Committee (NIAC)
+  # Copyright (C) 2013-2018 NeXus International Advisory Committee (NIAC)
   #
   # This library is free software; you can redistribute it and/or
   # modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
   # For further information, see http://www.nexusformat.org
 -->
 <definition name="NXmx" extends="NXobject" type="group"
-		version="1.5" category="application"
+		category="application"
 		xmlns="http://definition.nexusformat.org/nxdl/3.1"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
@@ -74,6 +74,13 @@
 			</field>
 
 			<group type="NXinstrument">
+			        <field name="name" minOccurs="1">
+                                       <doc>Name of instrument</doc>
+                                       <attribute name="short_name">
+                                               <doc>short name for instrument, perhaps the acronym</doc>
+                                       </attribute>
+                                </field>
+
 				<group type="NXattenuator" minOccurs="0">
 					<field name="attenuator_transmission" type="NX_NUMBER" units="NX_UNITLESS"
 						minOccurs="0" />
@@ -173,7 +180,7 @@
 							<dim index="1" value="np" />
 							<dim index="2" value="i" />
 							<dim index="3" value="j" />
-							<dim index="4" value="k" minOccurs="0"/>
+							<dim index="4" value="k" required="false"/>
 						</dimensions>
 					</field>
 
@@ -204,20 +211,26 @@
 						</doc>
 						<field name="data_origin" type="NX_INT">
 							<doc>
-								A dimension-2 or dimension-3  field which gives the indices
+								A dimension-2 or dimension-3 field which gives the indices
 								of the origin of the hyperslab of data for this module in the
 								main area detector image in the parent NXdetector module.
 
 								The data_origin is 0-based.
 
-								The frame number dimension (np) is omitted.  The order
-								of indices is i, j or i, j, k, i.e. slow to fast.
+								The frame number dimension (np) is omitted.  Thus the
+								data_origin field for a dimension-2 dataset with indices (np, i, j)
+								will be an array with indices (i, j), and for a dimension-3
+								dataset with indices (np, i, j, k) will be an array with indices
+								(i, j, k).
+
+								The order of indices (i, j or i, j, k) is slow to fast.
 							</doc>
 						</field>
 						<field name="data_size" type="NX_INT">
 							<doc>
 								Two or three values for the size of the module in pixels in
-								each direction.
+								each direction. Dimensionality and order of indices is the
+								same as for data_origin.
 							</doc>
 						</field>
 						<field name="data_stride" type="NX_INT" minOccurs="0">
@@ -248,8 +261,8 @@
 						</field>
 						<field name="fast_pixel_direction" units="NX_LENGTH" type="NX_NUMBER">
 							<doc>
-								Values along the direction of fastest varying pixel direction.The
-								direction itself is given through the vector attribute
+								Values along the direction of fastest varying pixel direction.
+								The direction itself is given through the vector attribute
 							</doc>
 							<attribute name="transformation_type">
 								<enumeration>
@@ -337,7 +350,7 @@
 						<dimensions rank="dataRank">
 							<dim index="1" value="i" />
 							<dim index="2" value="j" />
-							<dim index="3" value="k" minOccurs="0"/>
+							<dim index="3" value="k" required="false"/>
 						</dimensions>
 					</field>
 
@@ -353,7 +366,7 @@
 						<dimensions rank="dataRank">
 							<dim index="1" value="i" />
 							<dim index="2" value="j" />
-							<dim index="3" value="k" minOccurs="0"/>
+							<dim index="3" value="k" required="false"/>
 						</dimensions>
 					</field>
 
@@ -362,7 +375,7 @@
 						<dimensions rank="dataRank">
 							<dim index="1" value="i" />
 							<dim index="2" value="j" />
-							<dim index="3" value="k" minOccurs="0"/>
+							<dim index="3" value="k" required="false"/>
 						</dimensions>
 					</field>
 
@@ -375,7 +388,10 @@
 
 					<field name="pixel_mask" type="NX_INT" minOccurs="0">
 						<doc>
-							The 32-bit pixel mask for the detector.
+							The 32-bit pixel mask for the detector. Can be either one mask
+							for the whole dataset (i.e. an array with indices i, j) or
+							each frame can have its own mask (in which case it would be
+							an array with indices np, i, j).
 							Contains a bit field
 							for each pixel to signal dead,
 							blind or high or otherwise unwanted
@@ -406,14 +422,22 @@
 
 							If the full bit depths is not required, providing a
 							mask with fewer bits is permissible.
+
+							If needed, additional pixel masks can be specified by
+							including additional entries named pixel_mask_N, where
+							N is an integer. For example, a general bad pixel mask
+							could be specified in pixel_mask that indicates noisy
+							and dead pixels, and an additional pixel mask from
+							experiment-specific shadowing could be specified in
+							pixel_mask_2. The cumulative mask is the bitwise OR
+							of pixel_mask and any pixel_mask_N entries.
 						</doc>
 						<dimensions rank="dataRank">
 							<dim index="1" value="i" />
 							<dim index="2" value="j" />
-							<dim index="3" value="k" minOccurs="0"/>
+							<dim index="3" value="k" required="false"/>
 						</dimensions>
 					</field>
-
 					<field name="countrate_correction_applied" type="NX_BOOLEAN"
 						minOccurs="0">
 						<doc>
@@ -588,7 +612,9 @@
 							diameters (if top hat) or widths (if rectangular) of beam
 							in the order x, y
 						</doc>
-						<dimensions rank="1" value="2" />
+							<dimensions rank="1">
+							    <dim index="1" value="2"/>
+							</dimensions>
 					</field>
 
 					<field name="profile" type="NX_CHAR" minOccurs="0">
@@ -614,6 +640,151 @@
 					</field>
 				</group>
 			</group>
+
+                        <group type="NXsource">
+				<doc>The neutron or x-ray storage ring/facility.</doc>
+				<field name="distance" type="NX_FLOAT" units="NX_LENGTH">
+					<doc>
+						Effective distance from sample
+						Distance as seen by radiation from sample. This number should be negative
+						to signify that it is upstream of the sample.
+					</doc>
+				</field>
+				<field name="name" minOccurs="1">
+					<doc>Name of source</doc>
+					<attribute name="short_name">
+						<doc>short name for source, perhaps the acronym</doc>
+					</attribute>
+				</field>
+				<field name="type">
+					<doc>type of radiation source (pick one from the enumerated list and spell exactly)</doc>
+					<enumeration>
+						<item value="Spallation Neutron Source" />
+						<item value="Pulsed Reactor Neutron Source" />
+						<item value="Reactor Neutron Source" />
+						<item value="Synchrotron X-ray Source" />
+						<item value="Pulsed Muon Source" />
+						<item value="Rotating Anode X-ray" />
+						<item value="Fixed Tube X-ray" />
+						<item value="UV Laser" />
+						<item value="Free-Electron Laser" />
+						<item value="Optical Laser" />
+						<item value="Ion Source" />
+						<item value="UV Plasma Source" />
+					</enumeration>
+				</field>
+				<field name="probe">
+					<doc>type of radiation probe (pick one from the enumerated list and spell exactly)</doc>
+					<enumeration>
+						<item value="neutron" />
+						<item value="x-ray" />
+						<item value="muon" />
+						<item value="electron" />
+						<item value="ultraviolet" />
+						<item value="visible light" />
+						<item value="positron" />
+						<item value="proton" />
+					</enumeration>
+				</field>
+				<field name="power" type="NX_FLOAT" units="NX_POWER">
+					<doc>Source power</doc>
+				</field>
+				<field name="emittance_x" type="NX_FLOAT" units="NX_EMITTANCE">
+					<doc>Source emittance (nm-rad) in X (horizontal) direction.</doc>
+				</field>
+				<field name="emittance_y" type="NX_FLOAT" units="NX_EMITTANCE">
+					<doc>Source emittance (nm-rad) in Y (horizontal) direction.</doc>
+				</field>
+				<field name="sigma_x" type="NX_FLOAT" units="NX_LENGTH">
+					<doc>particle beam size in x</doc>
+				</field>
+				<field name="sigma_y" type="NX_FLOAT" units="NX_LENGTH">
+					<doc>particle beam size in y</doc>
+				</field>
+				<field name="flux" type="NX_FLOAT" units="NX_FLUX">
+					<doc>Source intensity/area (example: s-1 cm-2)</doc>
+				</field>
+				<field name="energy" type="NX_FLOAT" units="NX_ENERGY">
+					<doc>
+						Source energy.
+						For storage rings, this would be the particle beam energy.
+						For X-ray tubes, this would be the excitation voltage.
+					</doc>
+				</field>
+				<field name="current" type="NX_FLOAT" units="NX_CURRENT">
+					<doc>Accelerator, X-ray tube, or storage ring current</doc>
+				</field>
+				<field name="voltage" type="NX_FLOAT" units="NX_VOLTAGE">
+					<doc>Accelerator voltage</doc>
+				</field>
+				<field name="frequency" type="NX_FLOAT" units="NX_FREQUENCY">
+					<doc>Frequency of pulsed source</doc>
+				</field>
+				<field name="period" type="NX_FLOAT" units="NX_PERIOD">
+					<doc>Period of pulsed source</doc>
+				</field>
+				<field name="target_material">
+					<doc>Pulsed source target material</doc>
+					<enumeration>
+						<item value="Ta" />
+						<item value="W" />
+						<item value="depleted_U" />
+						<item value="enriched_U" />
+						<item value="Hg" />
+						<item value="Pb" />
+						<item value="C" />
+					</enumeration>
+				</field>
+				<group name="notes" type="NXnote">
+					<doc>
+						any source/facility related messages/events that
+						occurred during the experiment
+					</doc>
+				</group>
+				<group name="bunch_pattern" type="NXdata">
+					<doc>
+						For storage rings, description of the bunch pattern.
+						This is useful to describe irregular bunch patterns.
+					</doc>
+					<field name="title"><doc>name of the bunch pattern</doc></field>
+				</group>
+				<field name="number_of_bunches" type="NX_INT">
+					<doc>For storage rings, the number of bunches in use.</doc>
+				</field>
+				<field name="bunch_length" type="NX_FLOAT" units="NX_TIME">
+					<doc>For storage rings, temporal length of the bunch</doc>
+				</field>
+				<field name="bunch_distance" type="NX_FLOAT" units="NX_TIME">
+					<doc>For storage rings, time between bunches</doc>
+				</field>
+				<field name="pulse_width" type="NX_FLOAT" units="NX_TIME">
+					<doc>temporal width of source pulse</doc><!-- pulsed sources or storage rings could use this -->
+				</field>
+				<group name="pulse_shape" type="NXdata">
+					<doc>source pulse shape</doc><!-- pulsed sources or storage rings could use this -->
+				</group>
+				<field name="mode">
+					<doc>source operating mode</doc>
+					<enumeration>
+						<item value="Single Bunch"><doc>for storage rings</doc></item>
+						<item value="Multi Bunch"><doc>for storage rings</doc></item>
+						<!-- other sources could add to this -->
+					</enumeration>
+				</field>
+				<field name="top_up" type="NX_BOOLEAN">
+					<doc>Is the synchrotron operating in top_up mode?</doc>
+				</field>
+				<field name="last_fill" type="NX_NUMBER" units="NX_CURRENT">
+					<doc>For storage rings, the current at the end of the most recent injection.</doc>
+					<attribute name="time" type="NX_DATE_TIME"><doc>date and time of the most recent injection.</doc></attribute>
+				</field>
+				<group name="geometry" type="NXgeometry">
+					<doc>"Engineering" location of source</doc>
+				</group>
+				<group type="NXdata" name="distribution">
+				  <doc>The wavelength or energy distribution of the source</doc>
+				</group>
+                        </group>
 
 			<group type="NXdata" />
 		</group>

@@ -59,7 +59,11 @@ def getDocBlocks( ns, node ):
     # substitute HTML entities in markup: "<" for "&lt;"
     # thanks: http://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
     htmlparser = HTMLParser.HTMLParser()
-    text = htmlparser.unescape(text)
+    try:		# see #661
+        import html
+        text = html.unescape(text)
+    except ImportError:
+        text = htmlparser.unescape(text)
 
     # Blocks are separated by whitelines
     blocks = re.split( '\n\s*\n', text )
@@ -347,7 +351,7 @@ def print_rst_from_nxdl(nxdl_file):
     print( title )
     print( '='*len(title) )
 
-    # print category, version, parent class
+    # print category & parent class
     extends = root.get('extends')
     if extends is None:
         extends = 'none'
@@ -356,10 +360,9 @@ def print_rst_from_nxdl(nxdl_file):
 
     print('')
     print( '**Status**:\n' )
-    print( '  %s, extends %s, version %s' %
+    print( '  %s, extends %s' %
            ( listing_category.strip(),
-             extends,
-             root.get('version').strip() ) )
+             extends ) )
 
     printIfDeprecated(ns, root, '')
 
@@ -460,7 +463,7 @@ if __name__ == '__main__':
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2017 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2018 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

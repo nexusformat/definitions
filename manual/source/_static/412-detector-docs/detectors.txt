@@ -1,0 +1,224 @@
+Working with detectors
+######################
+
+Nexus supports a wide variety of different detector types which are all covered
+by the ``NXdetector`` class. However, most detectors can be reduced to one of
+the following four types
+
+    * :math:`0`-dimensional point detectors
+    * :math:`1`-dimensional strip detectors
+    * :math:`2`-dimensional area detectors
+    * :math:`3`-dimensional whatever you call this mess
+
+The ``layout`` field of ``NXdetector`` determines to which of theses four basic 
+types a detector belongs too. Currently on the first three are supported (with 
+``layout`` set to ``point``, ``linear``, or ``area``).
+
+The detector coordinate frame
+=============================
+Every detector is associated with a local coordinate frame. The definition of
+the directions of this frame depends on what kind of detector we are dealing
+with. 
+
+For a point detector the situation is simple. The sensitive area of the detector 
+can be considered as a single pixel whose center denotes the origin of the
+detectors local coordinate frame. As this area is typically of circular shape 
+the ``diameter`` field of ``NXdetector`` can be used to describe all required
+geometrical properties of such a detector. 
+
+Strip (1 dimensional) detector require slightly more work. The origin 
+of such a detector lies in the first pixel of the data stream and the 
+:math:`x`-axis's positive direction point along the read out direction. 
+
+    .. figure:: img/1d_detector_coordinate_frame.png
+       :align: center
+       :scale: 40%
+
+       The red pixel is the first in the detectors data stream and thus 
+       denotes the origin of the local coordinate frame. The positive
+       :math:`x`-direction runs along the pixels of the strip detector. 
+
+Let :math:`\Delta_x` and :math:`\Delta_y` be the size of each pixel in
+:math:`x`- and :math:`y`-direction and :math:`i` denote the pixel index along
+the :math:`x`-direction the position :math:`p_i` of each pixel center can be 
+compute with 
+
+    .. math::
+        
+        p_i = i\Delta_x
+
+where :math:`i` is running from :math:`0\dots N-1` for a detector with :math:`N`
+pixels.
+
+For area (2 dimensional) detectors the origin of the detectors local 
+coordinate frame is (as for strip detectors) the first pixel in the data stream. 
+
+    .. figure:: img/2d_detector_coordinate_frame.png
+       :align: center
+       :scale: 40%
+
+       The red pixel denotes the origin of the coordinate frame of this 
+       area detector, which is the first pixel in the detectors data stream (the
+       green line in this figure denotes the read-out direction of the detector). 
+       The positive x-direction of the detectors local coordinate frame is 
+       determined by the direction of the slower dimension while the
+       y-direction by the fastest.  
+
+The positive directions of the :math:`x`- and :math:`y`-axis are determined by
+the direction of the slow and fast dimension of the detector respectively. Let
+:math:`\Delta_x` and :math:`\Delta_y` be the pixel size in :math:`x` and
+:math:`y` direction and :math:`i` and :math:`j` denote the pixel index in
+:math:`x` and :math:`y` direction respectively. With :math:`i\in\left{0\dots
+N-1\right}` and :math:`j\in\left{0\dots M-1\right}` for a detector of
+:math:`N\times M` pixels we can compute the spatial position :math:`p_{ij}` of
+every pixel within the local coordinate frame of the detector with
+
+.. math::
+    
+    p_{i,j}=\left(i\Delta_x,j\Delta_y\right)
+
+
+It follows from the definition of the coordinate directions that pixel 
+positions always reside within the positive quadrant of the detectors 
+local Cartesian coordinate frame.
+
+Finally, for a 3 dimensional detector 
+
+    .. figure:: img/3d_detector_coordinate_frame.png
+       :align: center
+       :scale: 40%
+
+       As for all other detectors the origin of the detector local coordinate
+       frame is determined by the position of the first pixel in the data 
+       data stream of the detector (here denoted by the red pixel at the left
+       bottom). The fastest dimension is the z-axis and its direction is
+       determined by the read-out direction of the detector. The y- and 
+       the x-direction are the fast and the slowest direction 
+       respectively.
+
+As a general rule of thumb for all detectors one can say that every dimension
+added becomes the fastest. The order in which directions are asociated with
+theses directions are :math:`x`, :math:`y`, and :math:`z`. For a 1D detector the
+fastest direction is :math:`x`, for a 2D detector :math:`y`, and for a 3D
+detector :math:`z`. 
+
+Multimodule detectors
+=====================
+
+In many cases the image recorded during an experiment is not recorded 
+by a single chip in a detector but by an array of individual chips (modules). 
+There are basically two possibilities how to handle such setups
+ - every detector module can be considered as an individual detector and is
+   stored in its own instance of `NXdetector` or even in a separate file.
+ - the detector hardware delivers a single image frame where all modules 
+   are collated in a single data array. 
+
+``NXdetector_module`` provides the means to handle the latter case where the
+detector hardware delivers a single array containing the data content 
+of every module. Currently ``NXdetector`` module can only deal with 
+planar module configurations.  
+The best way to understanding of ``NXdetector_module` is by means of an 
+example.
+
+    .. figure:: img/detector_module_1.png
+       :align: center
+       :scale: 40%
+
+       A simple multi module detector. The individual modules have a 
+       different size but are only shifted within the same plane 
+       with respect to each other. We assume here that the pixel size is 
+       :math:`1\times 1` in arbitrary units (do not use this for real 
+       data). The blue squares define the first pixel in each modules 
+       data stream. 
+
+The `NXdetector` instance for the above example would look like this
+    .. code-block:: xml
+       :linenos:
+
+       detector:NXdetector
+            module_1:NXdetector_module
+                data_origin:[0,0]
+                data_size:[6,16]
+
+                module_offset:0
+                    @transformation_type:translation
+                    @vector:[0,0,0]
+
+                fast_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[0,1,0]
+
+                slow_pixel_direction:1
+                    @transformation_type::translation
+                    @vector:[-1,0,0]
+
+            module_2:NXdetector_module
+                data_origin:[6,8]
+                data_size:[14,8]
+
+                module_offset:10
+                    @transformation_type:translation
+                    @vector:[0.6,0.8,0]
+
+                fast_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[0,1,0]
+
+                slow_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[-1,0,0]
+
+            module_3:NXdetector_module
+                data_origin:[6,0]
+                data_size:[14,8]
+                module_offset:6
+                    @transformation_type:translation
+                    @vector:[1,0,0]
+                
+                fast_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[0,1,0]
+
+                slow_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[-1,0,0]
+
+            module_4:NXdetector_module
+                data_origin:[20,0]
+                data_size:[6,16]
+                module_offset:20
+                    @transformation_type:translation
+                    @vector:[1,0,0]
+                
+                fast_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[0,1,0]
+
+                slow_pixel_direction:1
+                    @transformation_type:translation
+                    @vector:[-1,0,0]
+
+In this example we assume that the detector consists of 4 modules which are
+seamlessly connected together (there are no gaps between the module - which is
+very unlikely but ok for an example). The readout system provides a single image
+array comprising the content of each of the individual modules.  Each of the 
+modules is represented by its own instance of ``NXdetector_module``. 
+The ``data_origin`` and ``data_size`` determine the region in the array where to 
+find the data from a particular module while the ``module_offset`` describes the 
+physical offset between the modules. ``module_offset`` is given in terms of the 
+detector local coordinate frame. 
+
+The ``fast_pixel_direction`` and ``slow_pixel_direction`` provide the step width 
+between each of the pixels along a particular dimension. If there are no 
+gaps between the pixels (like in the above example) this number would be equal 
+to the pixel size. Be aware that the ``vector`` attribute of the 
+``slow_pixel_direction`` and ``fast_pixel_direction`` field is given in terms of
+the laboratory frame. These fields are thus not only useful to determine the
+step width between the pixels but, in addition, also determine along which axis
+the fast and slow pixel dimensions run in the laboratory frame.
+
+
+
+The ``module_offset`` field describes the physical offset between the different 
+modules (or chips) in the detector.
+

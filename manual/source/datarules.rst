@@ -106,6 +106,19 @@ adequately documented.
 	    Rather than persist in using names not specified in the standard, please suggest additions to the :ref:`NIAC`.
 
 
+The data stored in NeXus fields must be readback values. This means values as read from the detector, other hardware etc. 
+There are occasions where it is sensible to store the target value the variable was supposed to have. In this case the target 
+value is stored with a name built by appending _set to the normal NeXus field name.  An example:
+
+.. code-block:: text
+    :linenos:
+
+    temperature
+    temperature_set
+
+The temperature field will hold the readback from the cryostat/furnace/whatever. The field temperature_set will hold 
+the target value for the temperature as set by the experiment control software. 
+
 .. _Design-ArrayStorageOrder:
 
 NeXus Array Storage Order
@@ -238,11 +251,42 @@ matches the data type specifier.
 .. index:: ! strings
 
 **strings**
-    All strings are to be encoded in UTF-8. Since most strings in a
-    NeXus file are restricted to a small set of characters and the first 128 characters are standard across encodings,
-    the encoding of most of the strings in a NeXus file will be a moot point.
-    Where encoding in UTF-8 will be important is when recording people's names in ``NXuser``
-    and text notes in ``NXnotes``.
+   ``NX_CHAR``:
+   The preferred string representation is UTF-8. 
+   Both fixed-length strings and variable-length strings are valid. 
+   String arrays cannot be used where only a string is expected 
+   (title, start_time, end_time, ``NX_class`` attribute,...). 
+   Fields or attributes requiring the use of string arrays will be 
+   clearly marked as such (like the ``NXdata`` attribute auxiliary_signals).
+   
+   .. https://github.com/nexusformat/NIAC/issues/31#issuecomment-433481024
+
+   ..
+      All strings are to be encoded in UTF-8. Since most strings in a
+      NeXus file are restricted to a small set of characters 
+      and the first 128 characters are standard across encodings,
+      the encoding of most of the strings in a NeXus file will be a moot point.
+      Encoding in UTF-8 will be important when recording people's names 
+      in ``NXuser`` and text notes in ``NXnotes``.
+   
+   .. https://github.com/nexusformat/NIAC/issues/23#issuecomment-308773465
+   
+   .. index:: strings; variable-length
+   .. index:: strings; fixed-length
+   .. index:: strings; arrays
+   
+   .. https://github.com/nexusformat/definitions/issues/281
+
+
+   ..
+      NeXus accepts both variable and fixed length strings, 
+      as well as arrays of strings.
+      Software that reads NeXus data files should support 
+      all of these.
+
+      Some file writers write strings as a string array
+      of rank 1 and length 1.
+      Clients should be prepared to handle such strings.
 
 .. index:: binary data
 
@@ -318,7 +362,7 @@ a format compatible with `Unidata UDunits`_ [#UDunits]_
 Application definitions may specify units to be used for fields
 using :index:`an <enumeration>` ``enumeration``.
 
-.. _Unidata UDunits: http://www.unidata.ucar.edu/software/udunits/udunits-2.2.20/doc/udunits/udunits2.html#Database
+.. _Unidata UDunits: http://www.unidata.ucar.edu/software/udunits
 .. [#UDunits]
     The :index:`UDunits`
     specification also includes instructions  for derived units.
