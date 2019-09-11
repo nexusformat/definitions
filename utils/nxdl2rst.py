@@ -59,7 +59,11 @@ def getDocBlocks( ns, node ):
     # substitute HTML entities in markup: "<" for "&lt;"
     # thanks: http://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
     htmlparser = HTMLParser.HTMLParser()
-    text = htmlparser.unescape(text)
+    try:		# see #661
+        import html
+        text = html.unescape(text)
+    except ImportError:
+        text = htmlparser.unescape(text)
 
     # Blocks are separated by whitelines
     blocks = re.split( '\n\s*\n', text )
