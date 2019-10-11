@@ -47,13 +47,13 @@ A NeXus binary RPM (nexus-\*.i386.rpm) contains ready compiled NeXus libraries w
 source RPM (nexus-\*.src.rpm) needs to be compiled into a binary RPM before it can be
 installed. In general, a binary RPM is installed using the command
 
-.. code-block:: guess
+.. code-block:: bash
 
 	rpm -Uvh file.i386.rpm
 
 or, to change installation location from the default (e.g. /usr/local) area, using
 
-.. code-block:: guess
+.. code-block:: bash
 
 	rpm -Uvh --prefix /alternative/directory file.i386.rpm
 
@@ -62,7 +62,7 @@ than i386) or the binary RPM requires libraries (e.g. HDF4) that you do not have
 instead rebuild a source RPM (.src.rpm) to generate the correct binary RPM for you machine.
 Download the source RPM file and then run
 
-.. code-block:: guess
+.. code-block:: bash
 
 	rpmbuild --rebuild file.src.rpm
 
@@ -74,7 +74,7 @@ area turns out not to be big enough to compile the package.
 
 If you are using Fedora, then you can install all the dependencies by typing
 
-.. code-block:: guess
+.. code-block:: bash
 
 	yum install hdf hdf-devel hdf5 hdf5-devel mxml mxml-devel
 
