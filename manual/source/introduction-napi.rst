@@ -145,7 +145,7 @@ created in the :ref:`example above <fig.ex-c-write>`.
     .. literalinclude:: examples/ex-c-read.c
         :tab-width: 4
         :linenos:
-        :language: c
+        :language: text
 
 .. _Introduction-HowToBrowse:
 
