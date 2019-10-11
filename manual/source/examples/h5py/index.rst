@@ -56,7 +56,7 @@ chapter except that the names will be different, as shown below:
 	.. literalinclude:: input.dat
 	    :tab-width: 4
 	    :linenos:
-	    :language: guess
+	    :language: text
 
 Writing the simplest data using ``h5py``
 ########################################
@@ -149,7 +149,7 @@ corrupt the file when the program quits.
     .. literalinclude:: BasicWriter.py
 	    :tab-width: 4
 	    :linenos:
-	    :language: guess
+	    :language: python
 
 .. _Example-H5py-Reading:
 
@@ -178,7 +178,7 @@ extracting other useful stuff from the file.
     .. literalinclude:: BasicReader.py
 	    :tab-width: 4
 	    :linenos:
-	    :language: guess
+	    :language: python
 
 Output from ``BasicReader.py`` is shown next.
 
@@ -335,7 +335,7 @@ to write a NeXus-compliant HDF5 file with links to data in other HDF5 files.
     .. literalinclude:: externalExample.py
        :tab-width: 4
        :linenos:
-       :language: guess
+       :language: python
 
        
 downloads
