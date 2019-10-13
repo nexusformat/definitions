@@ -104,7 +104,7 @@ Name must satisfy both
 :index:`HDF <rules; HDF>` and :index:`XML <rules; XML>`
 :index:`naming <rules; naming>`.
 
-.. code-block:: guess
+.. code-block:: text
     :linenos:
 
 	NameStartChar ::=  _ | a..z | A..Z

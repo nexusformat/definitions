@@ -145,7 +145,7 @@ created in the :ref:`example above <fig.ex-c-write>`.
     .. literalinclude:: examples/ex-c-read.c
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 .. _Introduction-HowToBrowse:
 
@@ -171,7 +171,7 @@ is an example session of :index:`nxbrowse`
     .. literalinclude:: examples/ex-unix-using-nxbrowse.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
     .. _fig.using.nxbrowse:
 

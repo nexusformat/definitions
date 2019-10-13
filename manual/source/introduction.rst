@@ -333,7 +333,7 @@ a short Python program and the *h5py* package:
    .. literalinclude:: examples/verysimple.py
       :tab-width: 4
       :linenos:
-      :language: guess
+      :language: python
 
 .. _Introduction-DataStorageObjects:
 
@@ -377,7 +377,7 @@ the simple NeXus file shown above.
    .. literalinclude:: examples/verysimple.nxdl.xml
       :tab-width: 4
       :linenos:
-      :language: guess
+      :language: xml
 
 Complete examples of reading and writing NeXus data files are 
 provided :ref:`later <Examples>`.
@@ -418,7 +418,7 @@ would contain lines similar to the following:
    .. literalinclude:: examples/ex-simple.c
       :tab-width: 4
       :linenos:
-      :language: guess
+      :language: c
 
 In this example, the program requests the value of the data that has
 the label ``wavelength``, storing the result in the variable lambda.
