@@ -132,8 +132,10 @@ def get_required_or_optional_text(node, use_application_defaults):
     tag = node.tag.split('}')[-1]
     nm = node.get('name')
     if tag in ('field', 'group'):
+        optional_default = not use_application_defaults
+        optional = node.get('optional', optional_default) in (True, 'true', '1', 1)
         minOccurs = get_minOccurs(node, use_application_defaults)
-        if minOccurs in ('0', 0):
+        if minOccurs in ('0', 0) or optional:
             optional_text = '(optional) '
         elif minOccurs in ('1', 1):
             optional_text = '(required) '
