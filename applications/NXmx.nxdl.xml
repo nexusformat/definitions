@@ -63,8 +63,30 @@
 			<field name="title" type="NX_CHAR" minOccurs="0" />
 
 			<field name="start_time" type="NX_DATE_TIME" recommended="true" />
+				<doc> 
+					ISO 8601 time/date of the first data point collected in UTC,
+					using the Z suffix to avoid confusion with local time.
+					Note that the time zone of the beamline should be provided in
+					NXentry/NXinstrument/time_zone.
+                                </doc>
 
-			<field name="end_time" type="NX_DATE_TIME" recommended="true" />
+			<field name="end_time" type="NX_DATE_TIME" optional="true" />
+				<doc> 
+					ISO 8601 time/date of the last data point collected in UTC,
+					using the Z suffix to avoid confusion with local time.
+					Note that the time zone of the beamline should be provided in
+					NXentry/NXinstrument/time_zone.  This field should only be
+					filled when the value is accurately observed.   
+                                </doc>
+
+			<field name="end_time_estimated" type="NX_DATE_TIME" optional="true" />
+				<doc> 
+					ISO 8601 time/date of the last data point collected in UTC,
+					using the Z suffix to avoid confusion with local time.
+					Note that the time zone of the beamline should be provided in
+					NXentry/NXinstrument/time_zone.  This field may be filled
+					with a value estimated before an observed value is avilable.
+                                </doc>
 
 			<field name="definition">
 				<doc> NeXus NXDL schema to which this file conforms </doc>
@@ -96,7 +118,7 @@
 					<doc>Descriptive name of sample</doc>
 				</field>
 
-				<field name="depends_on" type="NX_CHAR" recommended="true">
+				<field name="depends_on" type="NX_CHAR">
 					<!-- better type for paths the need to resolve -->
 					<doc>
 						This is a requirement to describe for any scan experiment.
@@ -106,10 +128,13 @@
 						The axis on which the sample position depends may be stored
 						anywhere, but is normally stored in the NXtransformations
 						NXtransformations group within the NXsample group.
+
+						If there is no goniometer, e.g. with a jet, depends_on
+						should be set to "."				
 					</doc>
 				</field>
 
-				<group type="NXtransformations" recommended="true">
+				<group type="NXtransformations">
 					<doc>
 						This is the recommended location for sample goniometer
 						and other related axes.
@@ -138,6 +163,17 @@
                                        <attribute name="short_name">
                                                <doc>short name for instrument, perhaps the acronym</doc>
                                        </attribute>
+                                </field>
+
+				<field name="time_zone" type="NX_DATE_TIME" recommended="true" />
+				<doc> 
+					ISO 8601 time_zone offset from UTC of the instrument at which the
+					data presented was collected.
+                                </doc>
+
+
+			        <field name="name" minOccurs="1">
+                                       <doc>Name of instrument</doc>
                                 </field>
 
 				<group type="NXattenuator" minOccurs="0">
@@ -211,17 +247,17 @@
 						needs a uniquely named NXdetector group.
 					</doc>
 
-					<field name="depends_on" type="NX_CHAR" recommended="true">
+					<field name="depends_on" type="NX_CHAR">
 						<doc>
-							In simple cases, a depends_on at the NXdetector level is mandatory,
-							but in other cases, e.g. the Jungfrau, positioning by module
-							may be more appropriate.							
+							NeXus path to the detector positioner axis that most directly 
+							supports the detector.
 						</doc>
+
                                         </field> <!-- better type for paths needed  -->
 
-					<group type="NXtransformations" recommended="true">
+					<group type="NXtransformations">
 						<doc>
-							Suggested location for axes (transformations) to do with the
+							Location for axes (transformations) to do with the
 							detector
 						</doc>
 					</group>
@@ -363,10 +399,21 @@
 					<field name="distance" type="NX_FLOAT" units="NX_LENGTH" recommended="true">
 						<doc>
 							Distance from the sample to the beam center.
-							This value is a
-							guidance only, the proper geometry can be
-							found following the
-							depends_on axis chain.
+							Normally this value is for guidance only, the proper 
+							geometry can be found following the depends_on axis chain,
+							But in appropriate cases where the dectector distance
+							to the sample is observable independent of the axis
+							chain, that may take precedence over the axis chain
+							calculation.  
+						</doc>
+					</field>
+
+					<field name="distance_derived" type="NX_BOOLEAN" units="NX_LENGTH" recommended="true">
+						<doc>
+							Boolean to indicate if the distance is a derived, rather than
+							a primary observation.  If distance_derived true or is not specified,
+							the distance is assumed to be derived from delector axis
+							specifications.
 						</doc>
 					</field>
 
@@ -382,13 +429,25 @@
 						</doc>
 					</field>
 
+					<field name="beam_center_derived" type="NX_BOOLEAN" units="NX_LENGTH" optional="true">
+						<doc>
+							Boolean to indicate if the distance is a derived, rather than
+							a primary observation.  If true or not provided, that value of
+							beam_center_derived is assumed to be true
+						</doc>
+					</field>
+
+
+
 					<field name="beam_center_x" type="NX_FLOAT" units="NX_LENGTH"
 						recommended="true">
 						<doc>
 							This is the x position where the direct beam would hit the
 							detector. This is a length and can be outside of the actual
 							detector. The length can be in physical units or pixels as
-							documented by the units attribute.
+							documented by the units attribute.  Normally, this should
+							be derived from the axis chain, but the direct specification
+							may take precendence if it is not a derived quantity.
 						</doc>
 					</field>
 
@@ -398,7 +457,9 @@
 							This is the y position where the direct beam would hit the
 							detector. This is a length and can be outside of the actual
 							detector. The length can be in physical units or pixels as
-							documented by the units attribute.
+							documented by the units attribute.  Normally, this should
+                                                        be derived from the axis chain, but the direct specification
+                                                        may take precendence if it is not a derived quantity.
 						</doc>
 					</field>
 
@@ -427,7 +488,8 @@
 					</field>
 
 					<field name="flatfield" type="NX_FLOAT" minOccurs="0">
-						<doc>Flat field correction data.</doc>
+						<doc>Flat field correction data.  If provided, it is recommended
+						that is be compressed</doc>
 						<dimensions rank="dataRank">
 							<dim index="1" value="i" />
 							<dim index="2" value="j" />
@@ -436,7 +498,8 @@
 					</field>
 
 					<field name="flatfield_error" type="NX_FLOAT" minOccurs="0">
-						<doc>Errors of the flat field correction data.</doc>
+						<doc>Errors of the flat field correction data.  If provided, it is recommended
+                                                that it be compressed</doc>
 						<dimensions rank="dataRank">
 							<dim index="1" value="i" />
 							<dim index="2" value="j" />
@@ -447,7 +510,7 @@
 					<field name="pixel_mask_applied" type="NX_BOOLEAN" minOccurs="0">
 						<doc>
 							True when the pixel mask correction has been applied in the
-							electronics, false otherwise.
+							electronics, false otherwise.  
 						</doc>
 					</field>
 
@@ -496,6 +559,8 @@
 							experiment-specific shadowing could be specified in
 							pixel_mask_2. The cumulative mask is the bitwise OR
 							of pixel_mask and any pixel_mask_N entries.
+
+							If provided, it is recommended that it be compressed
 						</doc>
 						<dimensions rank="2">
 							<dim index="1" value="i" />
