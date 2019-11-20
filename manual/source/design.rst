@@ -443,7 +443,7 @@ NXmonochromator base class describes all the possible field names which NeXus al
 monochromator.
 
 Most NeXus base classes represent instrument components. Some are used as containers to structure information in a
-file (``NXentry``, ``NXcollection``, ``NXinstrument``, ``NXprocess``, ``NXparameter``).
+file (``NXentry``, ``NXcollection``, ``NXinstrument``, ``NXprocess``, ``NXparameters``).
 But there are some base classes which have special uses which need to be mentioned here:
 
 :ref:`NXdata`

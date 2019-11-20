@@ -337,7 +337,7 @@ for storing such data:
       reduction:NXprocess
          program_name = "pyDataProc2010"
          version = "1.0a"
-         input:NXparameter
+         input:NXparameters
             filename = "sn2013287.nxs"
       sample:NXsample
       data:NXdata
@@ -361,8 +361,8 @@ Here the ``NXentry`` contains:
     This group is used to document what kind of processing occurred to
     obtain the results stored in this ``NXentry``. Here NeXus documents the name
     and version of the program used to do the reduction.
-``input:NXparameter``
-    The ``NXparameter`` groups describe the input and output
+``input:NXparameters``
+    The ``NXparameters`` groups describe the input and output
     parameters of the data reduction program. NeXus does not provide
     standard names here but rather provides containers to store this
     information which is important to make results reproducible.

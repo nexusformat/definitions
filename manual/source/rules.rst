@@ -103,7 +103,7 @@ In the case of processed data, the ``NXdata`` group holds the
 result of the processing together with the associated axis data.
 The ``NXprocess``
 group holds the name and version of the program used for this processing
-step and further ``NXparameter`` groups. These groups ought to contain the
+step and further ``NXparameters`` groups. These groups ought to contain the
 parameters used for this data processing step in suitable detail so that
 the processing step can be reproduced.
 
