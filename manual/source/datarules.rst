@@ -127,14 +127,15 @@ Variants
 #########
 
 Sometimes it is necessary to store alternate values of a NeXus dataset 
-in a NeXus file. A common example may be the beam center of which a
-value is available at data acquisition. But later on, as part of the
-data reduction, a better beam center is calculated. In order to store
-this the original field can have a variant attribute which points to
-the dataset containing the improved value. If even better values
-become available, this dataset can also have a variant attribute
-pointing to the next better value for the dataset. A reader the can
-follow the variant chain and locate the desired variant. 
+in a NeXus file. A common example may be the beam center of which a 
+rough value is available at data acquisition. But later on, a better beam 
+center is calculated as part of the data reduction. In order to store 
+this without losing the historical information, the original field can be given a variant attribute that points to 
+a new dataset containing the obsolete value. If even better values 
+become available, further datasets can be inserted into the chain of variant attributes 
+pointing to the preceeding value for the dataset. A reader can thus 
+keep the best value in the pre-defined dataset, and also be able to 
+follow the variant chain and locate older variants. 
 
 A little example is in order to illustrate the scheme:
 
@@ -143,8 +144,8 @@ A little example is in order to illustrate the scheme:
 		beam_center_x
 		     @variant=beam_center_x_refined
 		beam_center_x_refined
-		     @variant=beam_center_x_super_refined
-		beam_center_x_super_refined
+		     @variant=beam_center_x_initial_guess
+		beam_center_x_initial_guess
 
 NeXus borrowed this scheme from CIF. In this way all the different
 variants of a dataset can be preserved. The expectation is that
