@@ -48,6 +48,39 @@ if test "${job_name}" = "master branch"; then
 
 
     ( cd impatient-guide && cp -f _build/latex/NXImpatient.pdf ${WWW_ROOT}/doc/NXImpatient.pdf && rm -rf ${WWW_ROOT}/doc/impatient && cp -rf _build/html ${WWW_ROOT}/doc/impatient )
+
+
 fi
+    ## new gh-pages stuff
+
+    rm -fr dist
+
+    git clone https://github.com/nexusformat/definitions.git --branch gh-pages dist
+    export DIST_ROOT=`pwd`/dist
+    rm -fr dist/*
+
+    cd manual
+    cd source
+
+    cp -fr examples ${DIST_ROOT}
+
+    cd ..
+    make latexpdf
+    cd build
+
+    #pdf
+    cp -f latex/nexus.pdf ${DIST_ROOT}/NeXusManual.pdf
+
+    #html
+    cp -fr html/* ${DIST_ROOT}
+
+    cd ../../..
+
+    ( cd impatient-guide && cp -f _build/latex/NXImpatient.pdf ${DIST_ROOT}/NXImpatient.pdf && cp -rf _build/html ${DIST_ROOT}/impatient )
+
+    cd ${DIST_ROOT}
+    git add .
+    git commit -m "Update docs"
+    git push origin gh-pages
 
 exit 0
