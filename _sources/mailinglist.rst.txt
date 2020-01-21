@@ -38,9 +38,9 @@ NeXus Video Conference Announcements
 
 There are video conferences on NeXus roughly twice a month.
 Agenda and joining details are posted on the webpage: http://www.nexusformat.org/Teleconferences.html
-In addition calender invites are sent to this list.
-NeXus-Tech used to be used for discussions in the past. Now the list is moderated to only allow 
-commuication related to holding meetings. All other traffic should go to the main list nexus@nexusformat.org
+In addition calendar invites are sent to this list.
+NeXus-Tech used to be used for discussions in the past. Now the list is moderated to only allow
+communication related to holding meetings. All other traffic should go to the main list nexus@nexusformat.org
 
 + List Address: nexus-tech@nexusformat.org
 + Subscriptions: http://lists.nexusformat.org/mailman/listinfo/nexus-tech
@@ -52,9 +52,9 @@ NeXus Developers Mailing List (retired)
 
 This mailing list was for discussions concerning the technical
 development of NeXus (the Definitions, NXDL, and
-the NeXus Application Program Interface). There was, however, much 
-overlap with the general NeXus mailing list and so this separate list was 
-closed in October 2012, but the archive of previous posting is still available. 
+the NeXus Application Program Interface). There was, however, much
+overlap with the general NeXus mailing list and so this separate list was
+closed in October 2012, but the archive of previous posting is still available.
 
 .. closed for new contributions per NIAC 2012
 	+ List Address: nexus-developers@nexusformat.org

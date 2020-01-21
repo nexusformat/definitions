@@ -29,7 +29,7 @@ Authors
 	``<petersonpf@ornl.gov>``, Spallation Neutron Source, Oak Ridge, TN, USA,
 
 **Tobias Richter**:
-	``<Tobias.Richter@diamond.ac.uk>``, Diamond Light Source Ltd., Didcot, UK,
+	``<Tobias.Richter@esss.se>``, European Spallation Source, Lund, Sweden,
 
 **Joachim Wuttke**:
         ``<j.wuttke@fz-juelich.de>``, Forschungszentrum Jülich, Jülich Centre for Neutron Science at Heinz Maier-Leibnitz Zentrum Garching, Germany.

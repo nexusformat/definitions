@@ -37,9 +37,9 @@ NXmx
   **k**: number of detector pixels in the third slowest direction
 
 **Groups cited**:
-  :ref:`NXattenuator`, :ref:`NXbeam`, :ref:`NXcollection`, :ref:`NXdata`, :ref:`NXdetector_group`, :ref:`NXdetector_module`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXsample`, :ref:`NXtransformations`
+  :ref:`NXattenuator`, :ref:`NXbeam`, :ref:`NXcollection`, :ref:`NXdata`, :ref:`NXdetector_group`, :ref:`NXdetector_module`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXgeometry`, :ref:`NXinstrument`, :ref:`NXnote`, :ref:`NXsample`, :ref:`NXsource`, :ref:`NXtransformations`
 
-.. index:: NXentry (base class); used in application definition, NXinstrument (base class); used in application definition, NXattenuator (base class); used in application definition, NXdetector_group (base class); used in application definition, NXdetector (base class); used in application definition, NXtransformations (base class); used in application definition, NXcollection (base class); used in application definition, NXdetector_module (base class); used in application definition, NXsample (base class); used in application definition, NXbeam (base class); used in application definition, NXdata (base class); used in application definition
+.. index:: NXentry (base class); used in application definition, NXinstrument (base class); used in application definition, NXattenuator (base class); used in application definition, NXdetector_group (base class); used in application definition, NXdetector (base class); used in application definition, NXtransformations (base class); used in application definition, NXcollection (base class); used in application definition, NXdetector_module (base class); used in application definition, NXsample (base class); used in application definition, NXbeam (base class); used in application definition, NXdata (base class); used in application definition, NXsource (base class); used in application definition, NXnote (base class); used in application definition, NXgeometry (base class); used in application definition
 
 **Structure**:
 
@@ -71,6 +71,18 @@ NXmx
 
     **(instrument)**: (required) :ref:`NXinstrument`
 
+
+      .. index:: name (field)
+
+      **name**: (required) :ref:`NX_CHAR <NX_CHAR>`
+
+        Name of instrument
+
+        .. index:: short_name (field attribute)
+
+        **@short_name**: (required) :ref:`NX_CHAR <NX_CHAR>`
+
+          short name for instrument, perhaps the acronym
 
       **(attenuator)**: (optional) :ref:`NXattenuator`
 
@@ -252,8 +264,9 @@ NXmx
         **pixel_mask[i, j, k]**: (optional) :ref:`NX_INT <NX_INT>`
 
           The 32-bit pixel mask for the detector. Can be either one mask
-          for the whole dataset (rank i, j, k) or each frame can have its own
-          mask (rank np, i, j, k).
+          for the whole dataset (i.e. an array with indices i, j) or
+          each frame can have its own mask (in which case it would be
+          an array with indices np, i, j).
           Contains a bit field
           for each pixel to signal dead,
           blind or high or otherwise unwanted
@@ -284,6 +297,15 @@ NXmx
 
           If the full bit depths is not required, providing a
           mask with fewer bits is permissible.
+
+          If needed, additional pixel masks can be specified by
+          including additional entries named pixel_mask_N, where
+          N is an integer. For example, a general bad pixel mask
+          could be specified in pixel_mask that indicates noisy
+          and dead pixels, and an additional pixel mask from
+          experiment-specific shadowing could be specified in
+          pixel_mask_2. The cumulative mask is the bitwise OR
+          of pixel_mask and any pixel_mask_N entries.
 
         .. index:: countrate_correction_applied (field)
 
@@ -620,6 +642,262 @@ NXmx
 
         **incident_wavelength_spectrum**: (optional) :ref:`NXdata`
 
+
+    **(source)**: (required) :ref:`NXsource`
+
+      The neutron or x-ray storage ring/facility.
+
+      .. index:: distance (field)
+
+      **distance**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
+
+        Effective distance from sample
+        Distance as seen by radiation from sample. This number should be negative
+        to signify that it is upstream of the sample.
+
+      .. index:: name (field)
+
+      **name**: (required) :ref:`NX_CHAR <NX_CHAR>`
+
+        Name of source
+
+        .. index:: short_name (field attribute)
+
+        **@short_name**: (required) :ref:`NX_CHAR <NX_CHAR>`
+
+          short name for source, perhaps the acronym
+
+      .. index:: type (field)
+
+      **type**: (required) :ref:`NX_CHAR <NX_CHAR>`
+
+        type of radiation source (pick one from the enumerated list and spell exactly)
+
+        Any of these values:
+
+          * ``Spallation Neutron Source``
+
+          * ``Pulsed Reactor Neutron Source``
+
+          * ``Reactor Neutron Source``
+
+          * ``Synchrotron X-ray Source``
+
+          * ``Pulsed Muon Source``
+
+          * ``Rotating Anode X-ray``
+
+          * ``Fixed Tube X-ray``
+
+          * ``UV Laser``
+
+          * ``Free-Electron Laser``
+
+          * ``Optical Laser``
+
+          * ``Ion Source``
+
+          * ``UV Plasma Source``
+
+
+      .. index:: probe (field)
+
+      **probe**: (required) :ref:`NX_CHAR <NX_CHAR>`
+
+        type of radiation probe (pick one from the enumerated list and spell exactly)
+
+        Any of these values:
+
+          * ``neutron``
+
+          * ``x-ray``
+
+          * ``muon``
+
+          * ``electron``
+
+          * ``ultraviolet``
+
+          * ``visible light``
+
+          * ``positron``
+
+          * ``proton``
+
+
+      .. index:: power (field)
+
+      **power**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_POWER <NX_POWER>`}
+
+        Source power
+
+      .. index:: emittance_x (field)
+
+      **emittance_x**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_EMITTANCE <NX_EMITTANCE>`}
+
+        Source emittance (nm-rad) in X (horizontal) direction.
+
+      .. index:: emittance_y (field)
+
+      **emittance_y**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_EMITTANCE <NX_EMITTANCE>`}
+
+        Source emittance (nm-rad) in Y (horizontal) direction.
+
+      .. index:: sigma_x (field)
+
+      **sigma_x**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
+
+        particle beam size in x
+
+      .. index:: sigma_y (field)
+
+      **sigma_y**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
+
+        particle beam size in y
+
+      .. index:: flux (field)
+
+      **flux**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_FLUX <NX_FLUX>`}
+
+        Source intensity/area (example: s-1 cm-2)
+
+      .. index:: energy (field)
+
+      **energy**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_ENERGY <NX_ENERGY>`}
+
+        Source energy.
+        For storage rings, this would be the particle beam energy.
+        For X-ray tubes, this would be the excitation voltage.
+
+      .. index:: current (field)
+
+      **current**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_CURRENT <NX_CURRENT>`}
+
+        Accelerator, X-ray tube, or storage ring current
+
+      .. index:: voltage (field)
+
+      **voltage**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_VOLTAGE <NX_VOLTAGE>`}
+
+        Accelerator voltage
+
+      .. index:: frequency (field)
+
+      **frequency**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_FREQUENCY <NX_FREQUENCY>`}
+
+        Frequency of pulsed source
+
+      .. index:: period (field)
+
+      **period**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_PERIOD <NX_PERIOD>`}
+
+        Period of pulsed source
+
+      .. index:: target_material (field)
+
+      **target_material**: (required) :ref:`NX_CHAR <NX_CHAR>`
+
+        Pulsed source target material
+
+        Any of these values:
+
+          * ``Ta``
+
+          * ``W``
+
+          * ``depleted_U``
+
+          * ``enriched_U``
+
+          * ``Hg``
+
+          * ``Pb``
+
+          * ``C``
+
+
+      .. index:: number_of_bunches (field)
+
+      **number_of_bunches**: (required) :ref:`NX_INT <NX_INT>`
+
+        For storage rings, the number of bunches in use.
+
+      .. index:: bunch_length (field)
+
+      **bunch_length**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_TIME <NX_TIME>`}
+
+        For storage rings, temporal length of the bunch
+
+      .. index:: bunch_distance (field)
+
+      **bunch_distance**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_TIME <NX_TIME>`}
+
+        For storage rings, time between bunches
+
+      .. index:: pulse_width (field)
+
+      **pulse_width**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_TIME <NX_TIME>`}
+
+        temporal width of source pulse
+
+      .. index:: mode (field)
+
+      **mode**: (required) :ref:`NX_CHAR <NX_CHAR>`
+
+        source operating mode
+
+        Any of these values:
+
+          * ``Single Bunch``: for storage rings
+
+          * ``Multi Bunch``: for storage rings
+
+
+      .. index:: top_up (field)
+
+      **top_up**: (required) :ref:`NX_BOOLEAN <NX_BOOLEAN>`
+
+        Is the synchrotron operating in top_up mode?
+
+      .. index:: last_fill (field)
+
+      **last_fill**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_CURRENT <NX_CURRENT>`}
+
+        For storage rings, the current at the end of the most recent injection.
+
+        .. index:: time (field attribute)
+
+        **@time**: (required) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
+
+          date and time of the most recent injection.
+
+      **notes**: (required) :ref:`NXnote`
+
+        any source/facility related messages/events that
+        occurred during the experiment
+
+      **bunch_pattern**: (required) :ref:`NXdata`
+
+        For storage rings, description of the bunch pattern.
+        This is useful to describe irregular bunch patterns.
+
+        .. index:: title (field)
+
+        **title**: (required) :ref:`NX_CHAR <NX_CHAR>`
+
+          name of the bunch pattern
+
+      **pulse_shape**: (required) :ref:`NXdata`
+
+        source pulse shape
+
+      **geometry**: (required) :ref:`NXgeometry`
+
+        "Engineering" location of source
+
+      **distribution**: (required) :ref:`NXdata`
+
+        The wavelength or energy distribution of the source
 
     **(data)**: (required) :ref:`NXdata`
 
