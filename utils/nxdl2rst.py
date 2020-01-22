@@ -280,7 +280,7 @@ def printFullTree(ns, parent, name, indent):
         optional_text = get_required_or_optional_text(node, use_application_defaults)
         if typ.startswith('NX'):
             if name is '':
-                name = '(%s)' % typ.lstrip('NX')
+                name = typ.lstrip('NX').upper()
             typ = ':ref:`%s`' % typ
         print( '%s**%s**: %s%s\n' % (indent, name, optional_text, typ ) )
 
