@@ -15,5 +15,5 @@ IDL - they are installed when NeXus is compiled from source after being configur
 		--with-idldlm=/path/to/install/dlm/files/to
 
 For further details see the README 
-(http://htmlpreview.github.com/?https://github.com/nexusformat/code/blob/master/bindings/idl/README.html) 
-for the NeXus IDL binding.
+(https://htmlpreview.github.com/?https://github.com/nexusformat/code/blob/master/bindings/idl/README.html) 
+for the NeXus IDL binding. The source code is stored at https://github.com/nexusformat/code/tree/master/bindings/idl

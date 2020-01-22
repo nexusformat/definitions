@@ -48,5 +48,4 @@ Name               Description                             Value
 ``NXr8``           Kind parameter for an 8-byte real       ``kind(1.0D0)``
 =================  ======================================  ============================
 
-Also see the doxygen documentation.
-(http://download.nexusformat.org/doxygen/html-f90/)
+The bindings are listed at https://github.com/nexusformat/code/tree/master/bindings/f90 and can be built as part of the API distribution https://github.com/nexusformat/code/releases

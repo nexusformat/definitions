@@ -357,7 +357,7 @@ On-line Documentation
 
 The following documentation is browsable online:
 
-#. The Doxygen API documentation [#doxygen_api_URL]_
+#. `The API source code <https://github.com/nexusformat/code/blob/master/bindings/java/>`_
 
 #. A verbose tutorial for the NeXus for Java API.
 
@@ -366,4 +366,3 @@ The following documentation is browsable online:
 #. Finally, the source code for the test driver for the API
    which also serves as a documented usage example.
 
-.. [#doxygen_api_URL] http://download.nexusformat.org/doxygen/html-java/
