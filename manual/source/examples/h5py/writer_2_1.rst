@@ -73,7 +73,7 @@ has been made and shows the HDF5 path to the description.
 NeXus recognizes this behavior of the HDF5 library and adds an additional structure
 when building hard links, the ``target`` attribute,
 to preserve the original location of the data.  Not that it actually matters.
-The ``h5toText.py`` tool knows about the additional NeXus
+The ``punx.py tree`` tool knows about the additional NeXus
 ``target`` attribute and shows the data to appear in its original
 location, in the ``NXdetector`` group.
 
@@ -93,6 +93,6 @@ file                                   description
 :download:`writer_2_1.py`              python code to write example *writer_2_1*
 :download:`writer_2_1.hdf5`            NeXus file written by this code
 :download:`writer_2_1_h5dump.txt`      *h5dump* analysis of the NeXus file
-:download:`writer_2_1_structure.txt`   *h5toText* analysis of the NeXus file
+:download:`writer_2_1_structure.txt`   *punx tree* analysis of the NeXus file
 =====================================  =============================================
     

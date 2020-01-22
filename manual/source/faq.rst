@@ -28,7 +28,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     NeXus data files.  The easiest graphical tool to use is
     *HDFview* which can open any HDF file.  Other tools such as *PyMCA*
     and *NeXPy* provide visualization of scientific data while *h5dump*
-    and *h5toText* provide text renditions of content and structure.
+    and *punx tree* provide text renditions of content and structure.
     If you want to try, for example
     ``nxbrowse``
     is a utility provided by the NeXus community that can be very
