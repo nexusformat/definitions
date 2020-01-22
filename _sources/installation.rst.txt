@@ -157,8 +157,7 @@ state of the NeXus standard).
 Each new *release* of the definitions
 will be posted to the definitions GitHub repository
 and announced to the community via the
-NeXus mailing list: ``nexus@nexusformat.org``
-(http://download.nexusformat.org/doc/html/mailinglist.html#nexus-mailing-list)
+NeXus mailing list: :ref:`nexus@nexusformat.org<NeXus.mailinglist.main>`
 
 NeXus definitions
 =================

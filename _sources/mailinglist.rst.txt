@@ -37,7 +37,7 @@ NeXus Video Conference Announcements
 ====================================
 
 There are video conferences on NeXus roughly twice a month.
-Agenda and joining details are posted on the webpage: http://www.nexusformat.org/Teleconferences.html
+Agenda and joining details are posted on the webpage: https://www.nexusformat.org/Teleconferences.html
 In addition calendar invites are sent to this list.
 NeXus-Tech used to be used for discussions in the past. Now the list is moderated to only allow
 communication related to holding meetings. All other traffic should go to the main list nexus@nexusformat.org

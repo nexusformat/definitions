@@ -298,7 +298,7 @@ Footnotes
 .. [#] EPICS Area Detector: http://cars9.uchicago.edu/software/epics/areaDetector.html
 .. [#] HDF5 File Writer: http://cars9.uchicago.edu/software/epics/NDFileHDF5.html
 .. [#] EPICS SimDetector: http://cars9.uchicago.edu/software/epics/simDetectorDoc.html
-.. [#] NeXus manual: http://download.nexusformat.org/doc/html/index.html
+.. [#] NeXus manual: https://manual.nexusformat.org/
 .. [#] caQtDM: http://epics.web.psi.ch/software/caqtdm/
 .. [#] h5py: http://docs.h5py.org
 .. [#] nexusformat: This Python package is described on the NeXPy web site
