@@ -160,8 +160,11 @@ NeXus Array Storage Order
 
 NeXus stores :index:`multi-dimensional <dimension; storage order>` 
 arrays of physical values in C language storage order,
-where the last dimension is the fastest varying. This is the rule.
+where the first dimension has the :index:`slowest varying <dimension; slowest varying>` index when iterating through the array in storage order,
+and the last dimension is the :index:`fastest varying <dimension; fastest varying>`. This is the rule.
 *Good reasons are required to deviate from this rule.*
+
+Where the array contains data from a detector, the array dimensions may correspond to physical directions or axes. The slowest, slow, fast, fastest qualifiers can then apply to these axes too.
 
 It is possible to store data in storage orders other than C language order.
 
