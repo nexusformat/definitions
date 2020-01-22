@@ -59,7 +59,7 @@ Installation under Windows
 
 Note that the location or the naming of these files in the binary Nexus distributions 
 have changed over the years. 
-In the Nexus 4.3.0 Windows 64-bit distribution (http://download.nexusformat.org/kits/4.3.0/win64/), 
+In the Nexus 4.3.0 Windows 64-bit distribution (see Assets in https://github.com/nexusformat/code/releases/tag/4.3.0), 
 By default, the DLL is at: ``C:\Program Files\NeXus Data Format\bin\libjnexus-0.dll``. 
 Please rename this file to ``jnexus.dll`` before making it available in your path. 
 This is important, otherwise, JVM runtime will not be able to locate this file. 
