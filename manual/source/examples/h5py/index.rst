@@ -279,8 +279,8 @@ Here is an example of the structure:
         two_theta --> file="external_angles.hdf5", path="/angles"
 
 .. [#] see these URLs for further guidance on HDF5 external links:
-   http://www.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateExternal, 
-   http://www.h5py.org/docs-1.3/guide/group.html#external-links
+   https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_EXTERNAL, 
+   http://docs.h5py.org/en/stable/high/group.html#external-links
 
 file: external_master.hdf5
 ==========================
