@@ -106,7 +106,7 @@ NeXus data file validation and view. [#]_
 The *tree* option of this tool [#]_ was developed to show the actual data content of an
 HDF5 file that we create.
 
-.. [#] **punx** : http://punx.readthedocs.io/
+.. [#] **punx** : https://punx.readthedocs.io/
 .. [#] **punx tree** : https://punx.readthedocs.io/en/latest/source_code/h5tree.html#how-to-use-h5tree
 
 NAPI Python Example: ``punx tree simple3D.h5`` output of NeXus HDF5 file
