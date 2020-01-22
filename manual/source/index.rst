@@ -5,7 +5,7 @@
 User Manual and Reference Documentation
 =======================================
 
-http://www.nexusformat.org/
+https://www.nexusformat.org/
 
 .. toctree::
     :maxdepth: 2
@@ -32,19 +32,19 @@ This manual built |today|.
    This document is available in these formats online:
    
    :HTML:
-   	http://download.nexusformat.org/doc/html/index.html
+   	https://manual.nexusformat.org/
 
    :PDF:
-   	http://download.nexusformat.org/doc/NeXusManual.pdf
+   	https://manual.nexusformat.org/pdf/NeXusManual.pdf
 
    A very brief overview (title: *NeXus for the Impatient*) 
    is also available (separate from the manual).
    
    :HTML:
-      http://download.nexusformat.org/doc/impatient
+      https://manual.nexusformat.org/impatient/
 
    :PDF:
-      http://download.nexusformat.org/doc/NXImpatient.pdf
+      https://manual.nexusformat.org/pdf/NXImpatient.pdf
 
 ..  Suggestions for adding to this manual:
 

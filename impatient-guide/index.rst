@@ -13,9 +13,9 @@ Why NeXus?
 .. seealso:: 
 
    This document is available online in 
-   `HTML <http://download.nexusformat.org/doc/impatient>`_
+   `HTML <https://manual.nexusformat.org/impatient>`_
    and
-   `PDF <http://download.nexusformat.org/doc/NXImpatient.pdf>`_
+   `PDF <https://manual.nexusformat.org/pdf/NXImpatient.pdf>`_
    formats.
 
 The NeXus data format [#NeXus]_ is a tool which has been designed to
@@ -444,8 +444,7 @@ Any program whose aim is to identify plottable data should use the following pro
 
 #. Plot the *signal* data, given *axes* and *AXISNAME_indices*.
 
-For details of this process, consult this 
-`section <http://download.nexusformat.org/doc/html/datarules.html#version-3>`_ 
+For details of this process, consult this :ref:`section<Find-Plottable-Data-v3>`
 of the NeXus manual. [#v3]_
 
 
@@ -692,7 +691,7 @@ More Information
 ================
 
 Did we get you interested? Here is where you can get more information.
-Our main entry point is the NeXus WWW-site at http://www.nexusformat.org
+Our main entry point is the NeXus WWW-site at https://www.nexusformat.org/
 where you can find more information, download the NeXus API, 
 NeXus User Manual [#Manual]_ and
 NeXus Reference Documentation. [#RefDoc]_
@@ -717,7 +716,7 @@ which meets once a  year. The NIAC strives to have a representative for
 each participating facility. The NIAC has a constitution which you can
 find on the NeXus WWW site.
 
-.. [#NeXus] NeXus: http://www.nexusformat.org/
+.. [#NeXus] NeXus: https://www.nexusformat.org/
 
   .. shameless self-promotion
 
@@ -729,10 +728,8 @@ find on the NeXus WWW site.
    http://svn.nexusformat.org/definitions/exampledata/IPNS/LRMECS/lrcs3701.nx5
 
 .. [#Manual] NeXus User Manual:
-   http://download.nexusformat.org/doc/html/UserManual.html
+   :ref:`NeXus User Manual<UserManual>`
 
-.. [#RefDoc] NeXus Reference Documentation:
-   http://download.nexusformat.org/doc/html/ReferenceDocumentation.html
+.. [#RefDoc] :ref:`NeXus Reference Documentation<ReferenceDocumentation>`
 
-.. [#v3] Finding the plottable data:
-   http://download.nexusformat.org/doc/html/datarules.html#version-3
+.. [#v3] :ref:`Finding the plottable data<Find-Plottable-Data-v3>`

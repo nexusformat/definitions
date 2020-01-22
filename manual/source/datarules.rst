@@ -863,12 +863,12 @@ is specified using attributes attached to the :ref:`NXdata` group.
    "strict writer, liberal reader". 
 
 .. [#] Summary of the discussion at NIAC2014 to revise how to find default data: 
-       http://www.nexusformat.org/2014_How_to_find_default_data.html
+       https://www.nexusformat.org/2014_How_to_find_default_data.html
 .. [#aa]  Note on array attributes:
           Attributes potentially containing multiple values 
           (axes and _indices) are to be written as string or integer arrays, 
           to avoid string parsing in reading applications.
-.. [#axes] NIAC2014 proposition: http://www.nexusformat.org/2014_axes_and_uncertainties.html
+.. [#axes] NIAC2014 proposition: https://www.nexusformat.org/2014_axes_and_uncertainties.html
 
 
 Examples
@@ -1020,7 +1020,7 @@ attribute for the other scales is optional.
 
 .. 2016-01-23,PRJ: not necessary
    Perhaps substitute with the discussion from NIAC2014?
-   http://www.nexusformat.org/2014_axes_and_uncertainties.html
+   https://www.nexusformat.org/2014_axes_and_uncertainties.html
    
    .. _Design-Linking-Discussion:
    

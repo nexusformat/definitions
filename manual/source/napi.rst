@@ -239,4 +239,4 @@ Reporting Bugs in the NeXus API
 
 If you encounter any bugs in the installation or running of the NeXus API, 
 please report them online using our Issue Reporting system. 
-(http://www.nexusformat.org/IssueReporting.html)
+(https://www.nexusformat.org/IssueReporting.html)
