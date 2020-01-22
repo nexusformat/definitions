@@ -444,9 +444,9 @@ Any program whose aim is to identify plottable data should use the following pro
 
 #. Plot the *signal* data, given *axes* and *AXISNAME_indices*.
 
-For details of this process, consult this :ref:`section<Find-Plottable-Data-v3>`
+For details of this process, consult this 
+`section <https://manual.nexusformat.org/datarules.html#version-3>`_ 
 of the NeXus manual. [#v3]_
-
 
 NeXus Benefits
 ==============
@@ -728,8 +728,11 @@ find on the NeXus WWW site.
    http://svn.nexusformat.org/definitions/exampledata/IPNS/LRMECS/lrcs3701.nx5
 
 .. [#Manual] NeXus User Manual:
-   :ref:`NeXus User Manual<UserManual>`
+   https://manual.nexusformat.org/UserManual.html
 
-.. [#RefDoc] :ref:`NeXus Reference Documentation<ReferenceDocumentation>`
+.. [#RefDoc] NeXus Reference Documentation:
+   https://manual.nexusformat.org/ReferenceDocumentation.html
 
-.. [#v3] :ref:`Finding the plottable data<Find-Plottable-Data-v3>`
+.. [#v3] Finding the plottable data:
+   https://manual.nexusformat.org/datarules.html#version-3
+
