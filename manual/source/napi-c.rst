@@ -8,10 +8,11 @@
 NAPI C and C++ Interface
 ========================
 
-Doxygen documentation is provided online:
+Documentation is provided online:
 
 :C:
-	http://download.nexusformat.org/doxygen/html-c/
+	https://manual.nexusformat.org/doxygen/html-c/
 
 :C++:
-	http://download.nexusformat.org/doxygen/html-cpp/
+	https://manual.nexusformat.org/doxygen/html-cpp/
+        https://github.com/nexusformat/code/tree/master/bindings/cpp

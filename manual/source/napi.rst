@@ -34,9 +34,9 @@ Python and IDL. The API makes the reading and writing of NeXus files
 transparent; the user doesn't even need to know the underlying format when 
 reading a file since the API calls are the same. 
 
-More in-depth and up-to-date information about the NeXus Application 
+The NeXus Application 
 Programming Interface for the various language backends is available on-line 
-from http://download.nexusformat.org.
+from https://github.com/nexusformat/code/
 
 The  NeXusIntern.pdf document 
 (https://github.com/nexusformat/code/blob/master/doc/api/NeXusIntern.pdf) describes the 
@@ -96,7 +96,6 @@ The core API comprises the following functional groups:
 	napi-f77
 	napi-f90
 	napi-java
-	napi-python
 	napi-idl
 
 
