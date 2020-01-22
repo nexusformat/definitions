@@ -62,7 +62,7 @@ def getDocBlocks( ns, node ):
     try:		# see #661
         import html
         text = html.unescape(text)
-    except ImportError:
+    except (ImportError, AttributeError):
         text = htmlparser.unescape(text)
 
     # Blocks are separated by whitelines
