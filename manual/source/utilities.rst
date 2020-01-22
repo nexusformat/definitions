@@ -153,7 +153,10 @@ The list is not intended to be a complete list of all available packages.
     
    NOTE: project is under initial construction, 
    not yet released for public use, but is useful in its 
-   present form (version 0.0.9).  
+   present form (version 0.2.3).
+
+   **punx** can show the tree structure of any HDF5 file.
+   The output is more concise than that from *h5dump*.
     
    See the program documentation for more details:
    https://punx.readthedocs.io
@@ -281,10 +284,13 @@ as a data format.  It is not intended to be a complete list of all available pac
 .. index:: 
 	spec2nexus
 
-**spec2nexus** (http://spec2nexus.readthedocs.io)
+**spec2nexus** (https://spec2nexus.readthedocs.io)
     (Python code) Converts SPEC data files and scans into NeXus HDF5 files.
-    Provides *h5toText* utility program to inspect HDF5 file content.
-    Provides libraries:
+    (Note the *h5toText* tool mentioned here previously is no longer
+    available from the *spec2nexus* project.  The code has been moved
+    into the *punx* project: https://punx.readthedocs.io/.)
+    
+    *spec2nexus* provides libraries:
 
     * *spec2nexus.spec*: python binding to read SPEC [#]_ data files
     * *spec2nexus.eznx*: (Easy NeXus) supports writing NeXus HDF5 files using h5py
