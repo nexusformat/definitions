@@ -284,9 +284,13 @@ as a data format.  It is not intended to be a complete list of all available pac
 .. index:: 
 	spec2nexus
 
-**spec2nexus** (http://spec2nexus.readthedocs.io)
+**spec2nexus** (https://spec2nexus.readthedocs.io)
     (Python code) Converts SPEC data files and scans into NeXus HDF5 files.
-    Provides libraries:
+    (Note the *h5toText* tool mentioned here previously is no longer
+    available from the *spec2nexus* project.  The code has been moved
+    into the *punx* project: https://punx.readthedocs.io/.)
+    
+    *spec2nexus* provides libraries:
 
     * *spec2nexus.spec*: python binding to read SPEC [#]_ data files
     * *spec2nexus.eznx*: (Easy NeXus) supports writing NeXus HDF5 files using h5py
