@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-Read the the NeXus NXDL types specification and find
+Read the NXDL field types specification and find
 all the valid data types.  Write a restructured
 text (.rst) document for use in the NeXus manual in 
 the NXDL chapter.
@@ -138,7 +138,7 @@ DATATYPE_DICT = {
 
 ELEMENT_PREAMBLE = '''
 ===============================
-NXDL Elements and Data Types
+NXDL Elements and Field Types
 ===============================
 
 The documentation in this section has been obtained directly 
@@ -176,10 +176,10 @@ DATATYPE_PREAMBLE = '''
 
 .. _NXDL.data.types.internal:
 
-NXDL Data Types (internal)
+NXDL Field Types (internal)
 ============================
 
-Data types that define the NXDL language are described here.
+Field types that define the NXDL language are described here.
 These data types are defined in the XSD Schema (``nxdl.xsd``)
 and are used in various parts of the Schema to define common structures
 or to simplify a complicated entry.  While the data types are not intended for
