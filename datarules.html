@@ -49,6 +49,7 @@
   <ul>
 <li><a class="reference internal" href="#">1.2.3.2. Rules for Storing Data Items in NeXus Files</a><ul>
 <li><a class="reference internal" href="#naming-conventions">Naming Conventions</a></li>
+<li><a class="reference internal" href="#variants">Variants</a></li>
 <li><a class="reference internal" href="#nexus-array-storage-order">NeXus Array Storage Order</a><ul>
 <li><a class="reference internal" href="#non-c-storage-order">Non C Storage Order</a></li>
 </ul>
@@ -228,6 +229,31 @@ temperature_set
 </td></tr></table></div>
 <p>The temperature field will hold the readback from the cryostat/furnace/whatever. The field temperature_set will hold
 the target value for the temperature as set by the experiment control software.</p>
+</div>
+<div class="section" id="variants">
+<span id="design-variants"></span><h2>Variants<a class="headerlink" href="#variants" title="Permalink to this headline">¶</a></h2>
+<p>Sometimes it is necessary to store alternate values of a NeXus dataset
+in a NeXus file. A common example may be the beam center of which a
+rough value is available at data acquisition. But later on, a better beam
+center is calculated as part of the data reduction. In order to store
+this without losing the historical information, the original field can be given a variant attribute that points to
+a new dataset containing the obsolete value. If even better values
+become available, further datasets can be inserted into the chain of variant attributes
+pointing to the preceeding value for the dataset. A reader can thus
+keep the best value in the pre-defined dataset, and also be able to
+follow the variant chain and locate older variants.</p>
+<p>A little example is in order to illustrate the scheme:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>beam_center_x
+     @variant=beam_center_x_refined
+beam_center_x_refined
+     @variant=beam_center_x_initial_guess
+beam_center_x_initial_guess
+</pre></div>
+</div>
+<p>NeXus borrowed this scheme from CIF. In this way all the different
+variants of a dataset can be preserved. The expectation is that
+variants will be rarely used and NXprocess groups with the results of
+data reduction will be written instead.</p>
 </div>
 <div class="section" id="nexus-array-storage-order">
 <span id="design-arraystorageorder"></span><h2>NeXus Array Storage Order<a class="headerlink" href="#nexus-array-storage-order" title="Permalink to this headline">¶</a></h2>

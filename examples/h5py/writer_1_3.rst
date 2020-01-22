@@ -67,7 +67,7 @@ decided by the ``h5py`` support package.
        :language: text
 
 Since the output of ``h5dump`` is verbose (see the *Downloads* section below), 
-the *h5toText* tool [#]_ was used to
+the *punx tree* tool [#]_ was used to
 print out the structure of HDF5 data files.  This tool provides a simplified view
 of the NeXus file.  Here is the output:
 
@@ -77,9 +77,9 @@ of the NeXus file.  Here is the output:
     :language: text
 
 As the data files in these examples become more complex, you will appreciate
-the information density provided by *h5toText*.
+the information density provided by *punx tree*.
 
-.. [#] *h5toText* : http://spec2nexus.readthedocs.org/en/latest/h5toText.html
+.. [#] *punx tree* : https://punx.readthedocs.io/en/latest/source_code/h5tree.html#how-to-use-h5tree
 
 downloads
 *********
@@ -92,5 +92,5 @@ file                                   description
 :download:`writer_1_3.py`              python code to write example *writer_1_3*
 :download:`writer_1_3.hdf5`            NeXus file written by this code
 :download:`writer_1_3_h5dump.txt`      *h5dump* analysis of the NeXus file
-:download:`writer_1_3_structure.txt`   *h5toText* analysis of the NeXus file
+:download:`writer_1_3_structure.txt`   *punx tree* analysis of the NeXus file
 =====================================  =============================================
