@@ -282,7 +282,7 @@ path [#absolute_address]_ to the *original* dataset.
       such as: ``detector/polar_angle``).
 
    .. [#hdf5_hard_link] HDF5 hard link:
-      https://support.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateHard
+      https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_HARD
 
 NeXus links are best understood with an example.
 The canonical location (expressed as a NeXus class path) to store wavelength

@@ -127,7 +127,7 @@ Two things to note about the development and history of NeXus:
 
 1994-10:
     :index:`Ray Osborn <single: Osborn, Raymond>` convened a series of three workshops called
-    *SoftNeSS*. [#softness]_
+    *SoftNeSS*.
     In the first meeting,
     Mark Könnecke and Jon Tischler were invited to meet with representatives
     from all the major U.S. neutron scattering laboratories
@@ -146,8 +146,6 @@ Two things to note about the development and history of NeXus:
 
 
 .. [#NeXus_Proposal] https://www.nexusformat.org/pdfs/NeXus_Proposal.pdf
-
-.. [#softness] http://www.neutron.anl.gov/softness
 
 .. [#aps] https://www.nexusformat.org/pdfs/Proposed_Data_Standard_for_the_APS.pdf
 

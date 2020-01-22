@@ -728,10 +728,10 @@ find on the NeXus WWW site.
    http://svn.nexusformat.org/definitions/exampledata/IPNS/LRMECS/lrcs3701.nx5
 
 .. [#Manual] NeXus User Manual:
-   https://manual.nexusformat.org/UserManual.html
+   https://manual.nexusformat.org/user_manual.html
 
 .. [#RefDoc] NeXus Reference Documentation:
-   https://manual.nexusformat.org/ReferenceDocumentation.html
+   https://manual.nexusformat.org/ref_doc.html
 
 .. [#v3] Finding the plottable data:
    https://manual.nexusformat.org/datarules.html#version-3
