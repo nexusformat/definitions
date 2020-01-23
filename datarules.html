@@ -49,6 +49,7 @@
 <li><a class="reference internal" href="#">1.2.3.2. Rules for Storing Data Items in NeXus Files</a><ul>
 <li><a class="reference internal" href="#naming-conventions">Naming Conventions</a></li>
 <li><a class="reference internal" href="#variants">Variants</a></li>
+<li><a class="reference internal" href="#uncertainties-or-errors">Uncertainties or Errors</a></li>
 <li><a class="reference internal" href="#nexus-array-storage-order">NeXus Array Storage Order</a><ul>
 <li><a class="reference internal" href="#non-c-storage-order">Non C Storage Order</a></li>
 </ul>
@@ -193,7 +194,7 @@ expression (named <em>validItemName</em> in the XML Schema file: <em>nxdl.xsd</e
 </td></tr></table></div>
 <p class="compound-last">will be flagged as a warning during data file validation.</p>
 </div>
-<p class="rubric">Use of underscore in descriptive names</p>
+<p class="rubric" id="use-underscore">Use of underscore in descriptive names</p>
 <p>Sometimes it is necessary to combine words in order to build a
 descriptive name for a field or a group.
 In such cases lowercase words are connected by underscores.</p>
@@ -215,7 +216,7 @@ Terms with other names are permitted but might not be recognized by standard sof
 Rather than persist in using names not specified in the standard, please suggest additions to the <a class="reference internal" href="niac.html#niac"><span class="std std-ref">NIAC: The NeXus International Advisory Committee</span></a>.</p>
 </div>
 </div></blockquote>
-<p>The data stored in NeXus fields must be readback values. This means values as read from the detector, other hardware etc.
+<p id="target-value">The data stored in NeXus fields must be readback values. This means values as read from the detector, other hardware etc.
 There are occasions where it is sensible to store the target value the variable was supposed to have. In this case the target
 value is stored with a name built by appending _set to the normal NeXus field name.  An example:</p>
 <div class="highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>1
@@ -225,6 +226,45 @@ temperature_set
 </td></tr></table></div>
 <p>The temperature field will hold the readback from the cryostat/furnace/whatever. The field temperature_set will hold
 the target value for the temperature as set by the experiment control software.</p>
+<p class="rubric" id="reserved-suffixes">Reserved field name suffixes</p>
+<p>When naming a field (or dataset), NeXus has reserved certain suffixes to the names
+so that a specific meaning may be attached.  Consider a field named <code class="docutils literal notranslate"><span class="pre">DATASET</span></code>,
+the following table lists the suffixes reserved by NeXus.</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 9%" />
+<col style="width: 13%" />
+<col style="width: 78%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>suffix</p></th>
+<th class="head"><p>reference</p></th>
+<th class="head"><p>meaning</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><cite>_end</cite></p></td>
+<td><p><a class="reference internal" href="classes/base_classes/NXtransformations.html#nxtransformations"><span class="std std-ref">NXtransformations</span></a></p></td>
+<td><p>end points of the motions that start with <code class="docutils literal notranslate"><span class="pre">DATASET</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>_errors</cite></p></td>
+<td><p><a class="reference internal" href="classes/base_classes/NXdata.html#nxdata"><span class="std std-ref">NXdata</span></a></p></td>
+<td><p>uncertainties (a.k.a., errors)</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>_increment_set</cite></p></td>
+<td><p><a class="reference internal" href="classes/base_classes/NXtransformations.html#nxtransformations"><span class="std std-ref">NXtransformations</span></a></p></td>
+<td><p>intended average range through which the corresponding axis moves during the exposure of a frame</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>_indices</cite></p></td>
+<td><p><a class="reference internal" href="classes/base_classes/NXdata.html#nxdata"><span class="std std-ref">NXdata</span></a></p></td>
+<td><p>Integer array that defines the indices of the signal field which need to be used in the <code class="docutils literal notranslate"><span class="pre">DATASET</span></code> in order to reference the corresponding axis value</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>_set</cite></p></td>
+<td><p><span class="xref std std-ref">target_value</span></p></td>
+<td><p>Target value of <code class="docutils literal notranslate"><span class="pre">DATASET</span></code></p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="variants">
 <span id="design-variants"></span><h2>Variants<a class="headerlink" href="#variants" title="Permalink to this headline">¶</a></h2>
@@ -250,6 +290,16 @@ beam_center_x_initial_guess
 variants of a dataset can be preserved. The expectation is that
 variants will be rarely used and NXprocess groups with the results of
 data reduction will be written instead.</p>
+</div>
+<div class="section" id="uncertainties-or-errors">
+<span id="design-uncertainties"></span><h2>Uncertainties or Errors<a class="headerlink" href="#uncertainties-or-errors" title="Permalink to this headline">¶</a></h2>
+<p>It is desirable to store experimental errors together with the data. NeXus supports this through
+a convention: uncertainties or experimental errors on data are stored in a separate field which has a name
+consisting of the original name of the data with _errors appended to it. These uncertainties fields have the
+sampe shape as the original data field.</p>
+<p>An example, from NXdetector:</p>
+<p>Where data errors would contain the erros on data, and beam_center_x_errors the error on
+the beam center for x.</p>
 </div>
 <div class="section" id="nexus-array-storage-order">
 <span id="design-arraystorageorder"></span><h2>NeXus Array Storage Order<a class="headerlink" href="#nexus-array-storage-order" title="Permalink to this headline">¶</a></h2>
