@@ -14,6 +14,12 @@ help:
 
 .PHONY: help Makefile
 
+# # TODO: where to add this in next line
+# # https://github.com/nexusformat/definitions/issues/659
+# # LATEXOPTS="--interaction=nonstopmode" 
+# latexpdf :: Makefile
+# 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 %: Makefile
