@@ -384,6 +384,17 @@ def getDocFromNode(ns, node, retval=None):
             if not len(line[:indent].strip()) == 0:
                 raise "Something wrong with indentation on this line:\n" + line
             text += '\n' + line[indent:]
+
+    # substitute HTML entities in markup: "<" for "&lt;"
+    # thanks: http://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
+    try:		# see #661
+        import html
+        text = html.unescape(text)
+    except (ImportError, AttributeError):
+        from six.moves import html_parser as HTMLParser
+        htmlparser = HTMLParser.HTMLParser()
+        text = htmlparser.unescape(text)
+
     return text.lstrip()
 
 
