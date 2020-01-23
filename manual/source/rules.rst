@@ -380,8 +380,8 @@ Just use the standard NeXus raw data file structure, but replace the correspondi
 with an :ref:`NXlog` or :ref:`NXevent_data` structure of the same name. 
 
 For example, consider your instrument is streaming detector images against a magnetic_field on the sample. In this case both 
-NXsample/magnetic_field and NXdetector/data would become NXlog structures instead of simple arrays. The NXlog structure will 
-have the same name as the NeXus field name.        
+NXsample/magnetic_field and NXdetector/data would become NXlog structures instead of simple arrays i.e. the NXlog structure will 
+have the same name as the NeXus field involved.        
  
 
 NXcollection
