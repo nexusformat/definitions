@@ -18,49 +18,6 @@ make
 # publish
 if test "${job_name}" = "master branch"; then
 
-    export WWW_ROOT=/isis/www/nexus
-    mkdir -p ${WWW_ROOT}/doc/examples
-
-    # delete after first run
-    rm -fr ${WWW_ROOT}/doc/nxvalidate
-
-    cd manual
-    cd source
-
-    rm -fr ${WWW_ROOT}/doc/examples
-    cp -fr examples ${WWW_ROOT}/doc
-
-    cd ..
-    # be more deliberate about building the PDF
-    # first, build all intermediate content, indices, etc.
-    make latex
-    cd build/latex/
-    # next, build the PDF
-    # extra option needed to satisfy "levels nested too deeply" error
-    # expect it to fail (thus exit 0) since nexus.ind not found first time
-    ( pdflatex --interaction=nonstopmode nexus.tex || exit 0 )
-    # make the .ind file now
-    makeindex nexus.idx
-    # run again with fresh nexus.ind
-    ( pdflatex --interaction=nonstopmode nexus.tex || exit 0 )
-    cd ..
-
-    #pdf
-    cp -f latex/nexus.pdf ${WWW_ROOT}/doc/NeXusManual.pdf
-
-    #html
-    rm -fr ${WWW_ROOT}/doc/html
-    cp -fr html ${WWW_ROOT}/doc
-
-    cd ../../..
-
-    ( cd www/download.nexusformat.org; cp -rf * ${WWW_ROOT} )
-
-
-    ( cd impatient-guide && cp -f _build/latex/NXImpatient.pdf ${WWW_ROOT}/doc/NXImpatient.pdf && rm -rf ${WWW_ROOT}/doc/impatient && cp -rf _build/html ${WWW_ROOT}/doc/impatient )
-
-    cd build
-
     ## new gh-pages stuff
 
     git_rev=`git rev-parse --short HEAD`
@@ -69,7 +26,8 @@ if test "${job_name}" = "master branch"; then
     rm -fr ${DIST_ROOT}
     git clone https://github.com/nexusformat/definitions.git --branch gh-pages ${DIST_ROOT}
 
-    # need to preserve CNAME file for custom github domain
+    ## need to preserve CNAME file for custom github domain
+	
     [ -f ${DIST_ROOT}/CNAME ] && cp -f ${DIST_ROOT}/CNAME /tmp/CNAME.$$
     rm -fr ${DIST_ROOT}/*
     [ -f /tmp/CNAME.$$ ] && mv /tmp/CNAME.$$ ${DIST_ROOT}/CNAME
