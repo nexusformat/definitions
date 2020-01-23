@@ -151,11 +151,12 @@ Strategies: Time-stamped data
 *How should I store time-stamped data?*
 
 Time-stamped data can be stored in either :ref:`NXlog` and :ref:`NXevent_data` structures. 
-Of the two, :ref:`NXlog` is the most important one, :ref:`NXevent_data` is used only for storing neutron event data 
+Of the two, :ref:`NXlog` is the most important one, :ref:`NXevent_data` is normally only used for storing detector 
+time of flight event data 
 and :ref:`NXlog` would be used for storing any other time-stamped data, e.g. sample temperature, chopper top-dead-centre, 
-motor position, detector data etc.
+motor position, detector images etc.
 
-Regarding the NeXus file structure to use, there is one simple rule: just use the standard NeXus file structure but insert 
+Regarding the NeXus file structure to use, there is one simple rule: just use the standard NeXus file structure but insert/replace 
 the fields for streamed data elements through :ref:`NXlog` or :ref:`NXevent_data` structures. For example, consider the 
 collection of detector images against a change in the magnetic field on the sample. Then, both NXsample/magnetic_field and 
 NXdetector/data would be :ref:`NXlog` structures containing the time stamped data. 
