@@ -44,7 +44,7 @@ described by the following :index:`rules <rules; naming>`:
 
    .. _RegExpName:
    
-   .. rubric:: Regular expression pattern for NXDL group and field names
+   .. rubric:: Regular expression pattern for NeXus group and field names
    
    It is recommended that all group and field names 
    contain only these characters:
