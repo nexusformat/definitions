@@ -196,7 +196,7 @@ as a data format.  It is not intended to be a complete list of all available pac
 .. index:: 
 	Gumtree (data analysis software)
 
-**Gumtree** (http://docs.codehaus.org/display/GUMTREE)
+**Gumtree** (https://archive.ansto.gov.au/ResearchHub/OurInfrastructure/ACNS/Facilities/Computing/GumTree/index.htm)
     Gumtree  is an open source project, providing a graphical user 
     interface for instrument status and control, data acquisition 
     and data reduction.
@@ -204,7 +204,7 @@ as a data format.  It is not intended to be a complete list of all available pac
 .. index:: 
 	IDL (data analysis software)
 
-**IDL** (http://www.ittvis.com/)
+**IDL** (https://www.harrisgeospatial.com/docs/using_idl_home.html)
     IDL is a high-level technical computing language and interactive 
     environment for algorithm development, data visualization, 
     data analysis, and numeric computation.

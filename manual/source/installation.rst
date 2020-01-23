@@ -41,7 +41,7 @@ Linux RPM Distribution Kits
    see: RPM; NAPI installation
 
 An installation kit (source or binary) can be downloaded from:
-http://download.nexusformat.org/kits/
+https://github.com/nexusformat/code/releases/tag/4.3.0
 
 A NeXus binary RPM (nexus-\*.i386.rpm) contains ready compiled NeXus libraries whereas a
 source RPM (nexus-\*.src.rpm) needs to be compiled into a binary RPM before it can be
@@ -89,7 +89,7 @@ Microsoft Windows Installation Kit
    see: Windows; NAPI installation
 
 A Windows MSI based installation kit is available and can be downloaded from: 
-http://download.nexusformat.org/kits/windows/
+https://github.com/nexusformat/code/releases/tag/4.3.0
 
 .. _Installation-MacOS:
 
@@ -102,7 +102,7 @@ Mac OS X Installation Kit
 
 
 An installation disk image (.dmg) can be downloaded from: 
-http://download.nexusformat.org/kits/macosx/
+https://github.com/nexusformat/code/releases/tag/4.3.0
 
 .. _Installation-Source:
 
@@ -157,8 +157,7 @@ state of the NeXus standard).
 Each new *release* of the definitions
 will be posted to the definitions GitHub repository
 and announced to the community via the
-NeXus mailing list: ``nexus@nexusformat.org``
-(http://download.nexusformat.org/doc/html/mailinglist.html#nexus-mailing-list)
+NeXus mailing list: :ref:`nexus@nexusformat.org<NeXus.mailinglist.main>`
 
 NeXus definitions
 =================

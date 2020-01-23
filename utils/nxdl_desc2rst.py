@@ -191,7 +191,7 @@ DATATYPE_POSTAMBLE = '''
 **The** ``xs:string`` **data type**
     The ``xs:string`` data type can contain characters, 
     line feeds, carriage returns, and tab characters.
-    See http://www.w3schools.com/Schema/schema_dtypes_string.asp 
+    See https://www.w3schools.com/xml/schema_dtypes_string.asp
     for more details.
 
 **The** ``xs:token`` **data type**
@@ -201,7 +201,7 @@ DATATYPE_POSTAMBLE = '''
     The ``xs:token`` data type also contains characters, 
     but the XML processor will remove line feeds, carriage returns, tabs, 
     leading and trailing spaces, and multiple spaces.
-    See http://www.w3schools.com/Schema/schema_dtypes_string.asp 
+    See https://www.w3schools.com/xml/schema_dtypes_string.asp
     for more details.
 '''
 

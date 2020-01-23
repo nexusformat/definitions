@@ -19,7 +19,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     This is not easy to say, not all facilities using NeXus actively
     participate in the committee. Some facilities have reported their
-    adoption status on the `Facilities web page <http://www.nexusformat.org/Facilities.html>`_.
+    adoption status on the `Facilities web page <https://www.nexusformat.org/Facilities.html>`_.
     Please have a look at this list. Keep in mind that it is never fully complete or up to date.
 
 #. NeXus files are binary? This is crazy! How am I supposed to see my data?
@@ -78,7 +78,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     If you encounter any problems because the classes are not
     sufficient to describe your experiment, please contact the
-    `mailing list <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
+    :ref:`mailing list<NeXus.mailinglist.main>`.
     Pull requests for the defintions repository (for example adding contributed defintions) 
     are also welcome (see next question).
     The NIAC is always willing to consider new proposals.
@@ -88,7 +88,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     Read the :index:`NXDL` Tutorial in :ref:`NXDL_Tutorial-CreatingNxdlSpec`
     and have a try. You can ask for help on the 
-    `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
+    :ref:`mailing lists<NeXus.mailinglist.main>`.
     Once you have a definition that is working well for at least your case,
     you can submit it to the NIAC for acceptance as a standard.
     The procedures for acceptance are defined in the NIAC :index:`constitution`. [#]_
@@ -97,7 +97,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 	.. [#]
 	    Refer to the most recent version of the NIAC constitution on the
 	    NIAC web page:
-	    http://www.nexusformat.org/NIAC.html#constitution
+	    https://www.nexusformat.org/NIAC.html#constitution
 
 
 #. What is the purpose of ``NXdata``?
