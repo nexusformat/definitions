@@ -62,7 +62,7 @@ def getDocBlocks( ns, node ):
     try:		# see #661
         import html
         text = html.unescape(text)
-    except ImportError:
+    except (ImportError, AttributeError):
         text = htmlparser.unescape(text)
 
     # Blocks are separated by whitelines
@@ -463,7 +463,7 @@ if __name__ == '__main__':
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2018 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
