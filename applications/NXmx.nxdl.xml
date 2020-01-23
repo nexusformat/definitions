@@ -29,14 +29,11 @@
 		>
 
 		<symbols>
-			<!-- TODO define options for most fields to allow them to be either scalar
-				or arrays indexed by np, i, j, k, ...,
-			-->
 			<doc>
 				These symbols will be used below to coordinate datasets
 				with the same shape.  Most MX x-ray detectors will produce
 				two-dimensional images.  Some will produce three-dimensional
-				images, using one of the indices to select a detector element.
+				images, using one of the indices to select a detector module.
 			</doc>
 			<symbol name="dataRank">
 				<doc>rank of the ``data`` field</doc>
@@ -571,7 +568,7 @@
 							In the case of a monchromatic beam this is the scalar
 							wavelength.
 
-							Several other usecases are permitted, depending on the
+							Several other use cases are permitted, depending on the
 							presence or absence of other incident_wavelength_X
 							fields.
 
@@ -627,14 +624,20 @@
 
 					<field name="flux" type="NX_FLOAT" units="NX_FLUX" minOccurs="0">
 						<doc>
-							flux incident on beam plane area in photons
+							flux density incident on beam plane area in photons
 							per second per unit area
+
+							In the case of a beam that varies in flux shot-to-shot,
+							this is an array of values, one for each recorded shot.
 						</doc>
 					</field>
 
 					<field name="total_flux" type="NX_FLOAT" units="NX_FREQUENCY" minOccurs="0">
 						<doc>
 							flux incident on beam plane in photons per second
+
+							In the case of a beam that varies in total flux shot-to-shot,
+							this is an array of values, one for each recorded shot.
 						</doc>
 					</field>
 
@@ -674,150 +677,17 @@
 			</group>
 
                         <group type="NXsource">
-				<doc>The neutron or x-ray storage ring/facility.</doc>
-				<field name="distance" type="NX_FLOAT" units="NX_LENGTH">
-					<doc>
-						Effective distance from sample
-						Distance as seen by radiation from sample. This number should be negative
-						to signify that it is upstream of the sample.
-					</doc>
-				</field>
+				<doc>
+					The neutron or x-ray storage ring/facility. Note, the NXsource base class
+					as many more fields available, but at present we only require the name.
+				</doc>
 				<field name="name" minOccurs="1">
 					<doc>Name of source</doc>
 					<attribute name="short_name">
 						<doc>short name for source, perhaps the acronym</doc>
 					</attribute>
 				</field>
-				<field name="type">
-					<doc>type of radiation source (pick one from the enumerated list and spell exactly)</doc>
-					<enumeration>
-						<item value="Spallation Neutron Source" />
-						<item value="Pulsed Reactor Neutron Source" />
-						<item value="Reactor Neutron Source" />
-						<item value="Synchrotron X-ray Source" />
-						<item value="Pulsed Muon Source" />
-						<item value="Rotating Anode X-ray" />
-						<item value="Fixed Tube X-ray" />
-						<item value="UV Laser" />
-						<item value="Free-Electron Laser" />
-						<item value="Optical Laser" />
-						<item value="Ion Source" />
-						<item value="UV Plasma Source" />
-					</enumeration>
-				</field>
-				<field name="probe">
-					<doc>type of radiation probe (pick one from the enumerated list and spell exactly)</doc>
-					<enumeration>
-						<item value="neutron" />
-						<item value="x-ray" />
-						<item value="muon" />
-						<item value="electron" />
-						<item value="ultraviolet" />
-						<item value="visible light" />
-						<item value="positron" />
-						<item value="proton" />
-					</enumeration>
-				</field>
-				<field name="power" type="NX_FLOAT" units="NX_POWER">
-					<doc>Source power</doc>
-				</field>
-				<field name="emittance_x" type="NX_FLOAT" units="NX_EMITTANCE">
-					<doc>Source emittance (nm-rad) in X (horizontal) direction.</doc>
-				</field>
-				<field name="emittance_y" type="NX_FLOAT" units="NX_EMITTANCE">
-					<doc>Source emittance (nm-rad) in Y (horizontal) direction.</doc>
-				</field>
-				<field name="sigma_x" type="NX_FLOAT" units="NX_LENGTH">
-					<doc>particle beam size in x</doc>
-				</field>
-				<field name="sigma_y" type="NX_FLOAT" units="NX_LENGTH">
-					<doc>particle beam size in y</doc>
-				</field>
-				<field name="flux" type="NX_FLOAT" units="NX_FLUX">
-					<doc>Source intensity/area (example: s-1 cm-2)</doc>
-				</field>
-				<field name="energy" type="NX_FLOAT" units="NX_ENERGY">
-					<doc>
-						Source energy.
-						For storage rings, this would be the particle beam energy.
-						For X-ray tubes, this would be the excitation voltage.
-					</doc>
-				</field>
-				<field name="current" type="NX_FLOAT" units="NX_CURRENT">
-					<doc>Accelerator, X-ray tube, or storage ring current</doc>
-				</field>
-				<field name="voltage" type="NX_FLOAT" units="NX_VOLTAGE">
-					<doc>Accelerator voltage</doc>
-				</field>
-				<field name="frequency" type="NX_FLOAT" units="NX_FREQUENCY">
-					<doc>Frequency of pulsed source</doc>
-				</field>
-				<field name="period" type="NX_FLOAT" units="NX_PERIOD">
-					<doc>Period of pulsed source</doc>
-				</field>
-				<field name="target_material">
-					<doc>Pulsed source target material</doc>
-					<enumeration>
-						<item value="Ta" />
-						<item value="W" />
-						<item value="depleted_U" />
-						<item value="enriched_U" />
-						<item value="Hg" />
-						<item value="Pb" />
-						<item value="C" />
-					</enumeration>
-				</field>
-				<group name="notes" type="NXnote">
-					<doc>
-						any source/facility related messages/events that
-						occurred during the experiment
-					</doc>
-				</group>
-				<group name="bunch_pattern" type="NXdata">
-					<doc>
-						For storage rings, description of the bunch pattern.
-						This is useful to describe irregular bunch patterns.
-					</doc>
-					<field name="title"><doc>name of the bunch pattern</doc></field>
-				</group>
-				<field name="number_of_bunches" type="NX_INT">
-					<doc>For storage rings, the number of bunches in use.</doc>
-				</field>
-				<field name="bunch_length" type="NX_FLOAT" units="NX_TIME">
-					<doc>For storage rings, temporal length of the bunch</doc>
-				</field>
-				<field name="bunch_distance" type="NX_FLOAT" units="NX_TIME">
-					<doc>For storage rings, time between bunches</doc>
-				</field>
-				<field name="pulse_width" type="NX_FLOAT" units="NX_TIME">
-					<doc>temporal width of source pulse</doc><!-- pulsed sources or storage rings could use this -->
-				</field>
-				<group name="pulse_shape" type="NXdata">
-					<doc>source pulse shape</doc><!-- pulsed sources or storage rings could use this -->
-				</group>
-				<field name="mode">
-					<doc>source operating mode</doc>
-					<enumeration>
-						<item value="Single Bunch"><doc>for storage rings</doc></item>
-						<item value="Multi Bunch"><doc>for storage rings</doc></item>
-						<!-- other sources could add to this -->
-					</enumeration>
-				</field>
-				<field name="top_up" type="NX_BOOLEAN">
-					<doc>Is the synchrotron operating in top_up mode?</doc>
-				</field>
-				<field name="last_fill" type="NX_NUMBER" units="NX_CURRENT">
-					<doc>For storage rings, the current at the end of the most recent injection.</doc>
-					<attribute name="time" type="NX_DATE_TIME"><doc>date and time of the most recent injection.</doc></attribute>
-				</field>
-				<group name="geometry" type="NXgeometry">
-					<doc>"Engineering" location of source</doc>
-				</group>
-				<group type="NXdata" name="distribution">
-				  <doc>The wavelength or energy distribution of the source</doc>
-				</group>
-                        </group>
-
+			</group>
 			<group type="NXdata" />
 		</group>
 </definition>
