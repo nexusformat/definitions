@@ -132,13 +132,16 @@ the following table lists the suffixes reserved by NeXus.
 =================  =========================  =================================
 suffix             reference                  meaning
 =================  =========================  =================================
-`_axes`            :ref:`NXdata`              (!NXDL not yet changed from @axes!) String array naming data fields for each axis of ``DATASET``
 `_end`             :ref:`NXtransformations`   end points of the motions that start with ``DATASET``
 `_errors`          :ref:`NXdata`              uncertainties (a.k.a., errors)
 `_increment_set`   :ref:`NXtransformations`   intended average range through which the corresponding axis moves during the exposure of a frame
 `_indices`         :ref:`NXdata`              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
 `_set`             :ref:`target_value`        Target value of ``DATASET``
 =================  =========================  =================================
+
+.. Note that the following line might be added to the above table pending discussion:
+
+   `_axes`            :ref:`NXdata`              String array naming data fields for each axis of ``DATASET``
 
 
 .. _Design-Variants:
