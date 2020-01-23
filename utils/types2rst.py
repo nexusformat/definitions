@@ -12,7 +12,7 @@ import units2rst
 
 
 if __name__ == '__main__':
-    units2rst.worker('NAPI', section = 'data')
+    units2rst.worker('primitiveType', section = 'data')
 
 
 # NeXus - Neutron and X-ray Common Data Format
