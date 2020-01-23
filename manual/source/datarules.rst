@@ -119,6 +119,62 @@ value is stored with a name built by appending _set to the normal NeXus field na
 The temperature field will hold the readback from the cryostat/furnace/whatever. The field temperature_set will hold 
 the target value for the temperature as set by the experiment control software. 
 
+
+.. _Design-Variants:
+
+
+Variants
+#########
+
+Sometimes it is necessary to store alternate values of a NeXus dataset 
+in a NeXus file. A common example may be the beam center of which a 
+rough value is available at data acquisition. But later on, a better beam 
+center is calculated as part of the data reduction. In order to store 
+this without losing the historical information, the original field can be given a variant attribute that points to 
+a new dataset containing the obsolete value. If even better values 
+become available, further datasets can be inserted into the chain of variant attributes 
+pointing to the preceeding value for the dataset. A reader can thus 
+keep the best value in the pre-defined dataset, and also be able to 
+follow the variant chain and locate older variants. 
+
+A little example is in order to illustrate the scheme:
+
+.. code-block:: text
+
+		beam_center_x
+		     @variant=beam_center_x_refined
+		beam_center_x_refined
+		     @variant=beam_center_x_initial_guess
+		beam_center_x_initial_guess
+
+NeXus borrowed this scheme from CIF. In this way all the different
+variants of a dataset can be preserved. The expectation is that
+variants will be rarely used and NXprocess groups with the results of
+data reduction will be written instead. 
+
+
+Uncertainties or Errors
+########################
+
+It is desirable to store experimental errors together with the data. NeXus supports this through 
+a convention: uncertainties or experimental errors on data are stored in a separate field which has a name 
+consisting of the original name of the data with _errors appended to it. These uncertainties fields have the 
+sampe shape as the original data field.
+
+An example, from NXdetector:
+
+.. code-block:: text
+               data
+               data_errors
+               beam_center_x
+               beam_center_x_errors
+
+Where data errors would contain the erros on data, and beam_center_x_errors the error on 
+the beam center for x. 
+
+
+-- _Design-Uncertainties:
+
 .. _Design-ArrayStorageOrder:
 
 NeXus Array Storage Order
