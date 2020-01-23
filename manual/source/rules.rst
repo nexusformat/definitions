@@ -377,7 +377,7 @@ possibly together with detector data. Another use case is the logging of paramet
 running data collection is in progress. NeXus covers this case too. There is one simple rule for structuring such files:
 
 Just use the standard NeXus raw data file structure for such data. But replace the streamed or logged data element 
-in its place in the hierarchy through a :ref:`NXlog` or a :ref:`NXevent_data` structure of the same name. 
+with an :ref:`NXlog` or :ref:`NXevent_data` structure of the same name. 
 
 For example, consider your instrument is streaming detector images against a magnetic_field on the sample. In this case both 
 NXsample/magnetic_field and NXdetector/data would become NXlog structures instead of simple arrays. The NXlog structure will 
