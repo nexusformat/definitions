@@ -183,7 +183,7 @@ Obviously in this simple example this does not gain us a lot, but it is easy to 
 large dataset having appropriately placed cues can save significant computational time when looking 
 up values in a certain time-stamp range. NeXus has actually borrowed the cueing table concept 
 from video file formats where it allows viewing software to quickly access your most favourite scene. 
-Correspondingly, cueing in NeXus allows you to quickly access your most favourate morsel of time stamped 
+Correspondingly, cueing in NeXus allows you to quickly access your favourite morsel of time stamped 
 data.  
 
 
