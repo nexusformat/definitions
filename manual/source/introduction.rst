@@ -23,7 +23,7 @@ data format has three purposes:
    the case of streaming data acquisition, where time stamped data are logged. 
 #. *processed data*:
    NeXus also defines standards for processed data. This is data which has underwent some form of data 
-   reduction or data analysis. NeXus allows to store the results of such processing together with 
+   reduction or data analysis. NeXus allows storing the results of such processing together with 
    documentation about how the processed data was generated. 
 #. *standards*:
    NeXus defines standards in 
