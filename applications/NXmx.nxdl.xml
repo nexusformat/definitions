@@ -3,7 +3,7 @@
 <!--
   # NeXus - Neutron and X-ray Common Data Format
   #
-  # Copyright (C) 2013-2018 NeXus International Advisory Committee (NIAC)
+  # Copyright (C) 2013-2020 NeXus International Advisory Committee (NIAC)
   #
   # This library is free software; you can redistribute it and/or
   # modify it under the terms of the GNU Lesser General Public
@@ -29,14 +29,11 @@
 		>
 
 		<symbols>
-			<!-- TODO define options for most fields to allow them to be either scalar
-				or arrays indexed by np, i, j, k, ...,
-			-->
 			<doc>
 				These symbols will be used below to coordinate datasets
 				with the same shape.  Most MX x-ray detectors will produce
 				two-dimensional images.  Some will produce three-dimensional
-				images, using one of the indices to select a detector element.
+				images, using one of the indices to select a detector module.
 			</doc>
 			<symbol name="dataRank">
 				<doc>rank of the ``data`` field</doc>
@@ -52,6 +49,9 @@
 			</symbol>
 			<symbol name="k">
 				<doc>number of detector pixels in the third slowest direction</doc>
+			</symbol>
+			<symbol name="m">
+				<doc>number of channels in the incident beam spectrum, if known</doc>
 			</symbol>
 		</symbols>
 
@@ -223,7 +223,7 @@
 								dataset with indices (np, i, j, k) will be an array with indices
 								(i, j, k).
 
-								The order of indices (i, j or i, j, k) is slow to fast.
+								The :ref:`order &lt;Design-ArrayStorageOrder&gt;` of indices (i, j or i, j, k) is slow to fast.
 							</doc>
 						</field>
 						<field name="data_size" type="NX_INT">
@@ -261,7 +261,7 @@
 						</field>
 						<field name="fast_pixel_direction" units="NX_LENGTH" type="NX_NUMBER">
 							<doc>
-								Values along the direction of fastest varying pixel direction.
+								Values along the direction of :ref:`fastest varying &lt;Design-ArrayStorageOrder&gt;` pixel direction.
 								The direction itself is given through the vector attribute
 							</doc>
 							<attribute name="transformation_type">
@@ -278,7 +278,7 @@
 						</field>
 						<field name="slow_pixel_direction" type="NX_NUMBER" units="NX_LENGTH">
 							<doc>
-								Values along the direction of slow varying pixel direction. The
+								Values along the direction of :ref:`slowest varying &lt;Design-ArrayStorageOrder&gt;` pixel direction. The
 								direction itself is given through the vector attribute
 							</doc>
 							<attribute name="transformation_type">
@@ -568,17 +568,41 @@
 							In the case of a monchromatic beam this is the scalar
 							wavelength.
 
+							Several other use cases are permitted, depending on the
+							presence or absence of other incident_wavelength_X
+							fields.
+
 							In the case of a polychromatic beam this is an array of
-							the wavelengths with the relative weights in
-							incident_wavelength_weight.
+							length **m** of wavelengths, with the relative weights
+							in incident_wavelength_weight.
+
+							In the case of a monochromatic beam that varies shot-
+							to-shot, this is an array of wavelengths, one for each
+							recorded shot. Here, incident_wavelength_weight and 
+							incident_wavelength_spread are not set.
+
+							In the case of a polychromatic beam that varies shot-to-
+							shot, this is an array of length **m** with the relative
+							weights in incident_wavelength_weight as a 2D array.
+
+							In the case of a polychromatic beam that varies shot-to-
+							shot and where the channels also vary, this is a 2D array
+							of dimensions **np** by **m** (slow to fast) with the
+							relative weights in incident_wavelength_weight as a 2D
+							array.
 						</doc>
 					</field>
 
 					<field name="incident_wavelength_weight" type="NX_FLOAT" minOccurs="0" >
 						<doc>
-							In the case of a polychromatic beam this is an array of the
-							relative weights of the corresponding wavelengths in
-							incident_wavelength.
+							In the case of a polychromatic beam this is an array of 
+							length **m** of the relative weights of the corresponding
+							wavelengths in incident_wavelength.
+
+							In the case of a polychromatic beam that varies shot-to-
+							shot, this is a 2D array of dimensions **np** by **m** 
+							(slow to fast) of the relative weights of the
+							corresponding wavelengths in incident_wavelength.
 						</doc>
 					</field>
 
@@ -587,6 +611,11 @@
 						<doc>
 							The wavelength spread FWHM for the corresponding
 							wavelength(s) in incident_wavelength.
+
+							In the case of shot-to-shot variation in the wavelength
+							spread, this is a 2D array of dimension **np** by
+							**m** (slow to fast) of the spreads of the
+							corresponding wavelengths in incident_wavelength.
 						</doc>
 					</field>
 
@@ -595,14 +624,20 @@
 
 					<field name="flux" type="NX_FLOAT" units="NX_FLUX" minOccurs="0">
 						<doc>
-							flux incident on beam plane area in photons
+							flux density incident on beam plane area in photons
 							per second per unit area
+
+							In the case of a beam that varies in flux shot-to-shot,
+							this is an array of values, one for each recorded shot.
 						</doc>
 					</field>
 
 					<field name="total_flux" type="NX_FLOAT" units="NX_FREQUENCY" minOccurs="0">
 						<doc>
 							flux incident on beam plane in photons per second
+
+							In the case of a beam that varies in total flux shot-to-shot,
+							this is an array of values, one for each recorded shot.
 						</doc>
 					</field>
 
@@ -642,150 +677,17 @@
 			</group>
 
                         <group type="NXsource">
-				<doc>The neutron or x-ray storage ring/facility.</doc>
-				<field name="distance" type="NX_FLOAT" units="NX_LENGTH">
-					<doc>
-						Effective distance from sample
-						Distance as seen by radiation from sample. This number should be negative
-						to signify that it is upstream of the sample.
-					</doc>
-				</field>
+				<doc>
+					The neutron or x-ray storage ring/facility. Note, the NXsource base class
+					as many more fields available, but at present we only require the name.
+				</doc>
 				<field name="name" minOccurs="1">
 					<doc>Name of source</doc>
 					<attribute name="short_name">
 						<doc>short name for source, perhaps the acronym</doc>
 					</attribute>
 				</field>
-				<field name="type">
-					<doc>type of radiation source (pick one from the enumerated list and spell exactly)</doc>
-					<enumeration>
-						<item value="Spallation Neutron Source" />
-						<item value="Pulsed Reactor Neutron Source" />
-						<item value="Reactor Neutron Source" />
-						<item value="Synchrotron X-ray Source" />
-						<item value="Pulsed Muon Source" />
-						<item value="Rotating Anode X-ray" />
-						<item value="Fixed Tube X-ray" />
-						<item value="UV Laser" />
-						<item value="Free-Electron Laser" />
-						<item value="Optical Laser" />
-						<item value="Ion Source" />
-						<item value="UV Plasma Source" />
-					</enumeration>
-				</field>
-				<field name="probe">
-					<doc>type of radiation probe (pick one from the enumerated list and spell exactly)</doc>
-					<enumeration>
-						<item value="neutron" />
-						<item value="x-ray" />
-						<item value="muon" />
-						<item value="electron" />
-						<item value="ultraviolet" />
-						<item value="visible light" />
-						<item value="positron" />
-						<item value="proton" />
-					</enumeration>
-				</field>
-				<field name="power" type="NX_FLOAT" units="NX_POWER">
-					<doc>Source power</doc>
-				</field>
-				<field name="emittance_x" type="NX_FLOAT" units="NX_EMITTANCE">
-					<doc>Source emittance (nm-rad) in X (horizontal) direction.</doc>
-				</field>
-				<field name="emittance_y" type="NX_FLOAT" units="NX_EMITTANCE">
-					<doc>Source emittance (nm-rad) in Y (horizontal) direction.</doc>
-				</field>
-				<field name="sigma_x" type="NX_FLOAT" units="NX_LENGTH">
-					<doc>particle beam size in x</doc>
-				</field>
-				<field name="sigma_y" type="NX_FLOAT" units="NX_LENGTH">
-					<doc>particle beam size in y</doc>
-				</field>
-				<field name="flux" type="NX_FLOAT" units="NX_FLUX">
-					<doc>Source intensity/area (example: s-1 cm-2)</doc>
-				</field>
-				<field name="energy" type="NX_FLOAT" units="NX_ENERGY">
-					<doc>
-						Source energy.
-						For storage rings, this would be the particle beam energy.
-						For X-ray tubes, this would be the excitation voltage.
-					</doc>
-				</field>
-				<field name="current" type="NX_FLOAT" units="NX_CURRENT">
-					<doc>Accelerator, X-ray tube, or storage ring current</doc>
-				</field>
-				<field name="voltage" type="NX_FLOAT" units="NX_VOLTAGE">
-					<doc>Accelerator voltage</doc>
-				</field>
-				<field name="frequency" type="NX_FLOAT" units="NX_FREQUENCY">
-					<doc>Frequency of pulsed source</doc>
-				</field>
-				<field name="period" type="NX_FLOAT" units="NX_PERIOD">
-					<doc>Period of pulsed source</doc>
-				</field>
-				<field name="target_material">
-					<doc>Pulsed source target material</doc>
-					<enumeration>
-						<item value="Ta" />
-						<item value="W" />
-						<item value="depleted_U" />
-						<item value="enriched_U" />
-						<item value="Hg" />
-						<item value="Pb" />
-						<item value="C" />
-					</enumeration>
-				</field>
-				<group name="notes" type="NXnote">
-					<doc>
-						any source/facility related messages/events that
-						occurred during the experiment
-					</doc>
-				</group>
-				<group name="bunch_pattern" type="NXdata">
-					<doc>
-						For storage rings, description of the bunch pattern.
-						This is useful to describe irregular bunch patterns.
-					</doc>
-					<field name="title"><doc>name of the bunch pattern</doc></field>
-				</group>
-				<field name="number_of_bunches" type="NX_INT">
-					<doc>For storage rings, the number of bunches in use.</doc>
-				</field>
-				<field name="bunch_length" type="NX_FLOAT" units="NX_TIME">
-					<doc>For storage rings, temporal length of the bunch</doc>
-				</field>
-				<field name="bunch_distance" type="NX_FLOAT" units="NX_TIME">
-					<doc>For storage rings, time between bunches</doc>
-				</field>
-				<field name="pulse_width" type="NX_FLOAT" units="NX_TIME">
-					<doc>temporal width of source pulse</doc><!-- pulsed sources or storage rings could use this -->
-				</field>
-				<group name="pulse_shape" type="NXdata">
-					<doc>source pulse shape</doc><!-- pulsed sources or storage rings could use this -->
-				</group>
-				<field name="mode">
-					<doc>source operating mode</doc>
-					<enumeration>
-						<item value="Single Bunch"><doc>for storage rings</doc></item>
-						<item value="Multi Bunch"><doc>for storage rings</doc></item>
-						<!-- other sources could add to this -->
-					</enumeration>
-				</field>
-				<field name="top_up" type="NX_BOOLEAN">
-					<doc>Is the synchrotron operating in top_up mode?</doc>
-				</field>
-				<field name="last_fill" type="NX_NUMBER" units="NX_CURRENT">
-					<doc>For storage rings, the current at the end of the most recent injection.</doc>
-					<attribute name="time" type="NX_DATE_TIME"><doc>date and time of the most recent injection.</doc></attribute>
-				</field>
-				<group name="geometry" type="NXgeometry">
-					<doc>"Engineering" location of source</doc>
-				</group>
-				<group type="NXdata" name="distribution">
-				  <doc>The wavelength or energy distribution of the source</doc>
-				</group>
-                        </group>
-
+			</group>
 			<group type="NXdata" />
 		</group>
 </definition>

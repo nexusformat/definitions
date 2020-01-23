@@ -44,7 +44,7 @@ described by the following :index:`rules <rules; naming>`:
 
    .. _RegExpName:
    
-   .. rubric:: Regular expression pattern for NXDL group and field names
+   .. rubric:: Regular expression pattern for NeXus group and field names
    
    It is recommended that all group and field names 
    contain only these characters:
@@ -177,6 +177,8 @@ variants will be rarely used and NXprocess groups with the results of
 data reduction will be written instead. 
 
 
+.. _Design-Uncertainties:
+
 Uncertainties or Errors
 ########################
 
@@ -197,8 +199,6 @@ Where data errors would contain the erros on data, and beam_center_x_errors the 
 the beam center for x. 
 
 
--- _Design-Uncertainties:
-
 .. _Design-ArrayStorageOrder:
 
 NeXus Array Storage Order
@@ -206,8 +206,11 @@ NeXus Array Storage Order
 
 NeXus stores :index:`multi-dimensional <dimension; storage order>` 
 arrays of physical values in C language storage order,
-where the last dimension is the fastest varying. This is the rule.
+where the first dimension has the :index:`slowest varying <dimension; slowest varying>` index when iterating through the array in storage order,
+and the last dimension is the :index:`fastest varying <dimension; fastest varying>`. This is the rule.
 *Good reasons are required to deviate from this rule.*
+
+Where the array contains data from a detector, the array dimensions may correspond to physical directions or axes. The slowest, slow, fast, fastest qualifiers can then apply to these axes too.
 
 It is possible to store data in storage orders other than C language order.
 
@@ -943,12 +946,12 @@ is specified using attributes attached to the :ref:`NXdata` group.
    "strict writer, liberal reader". 
 
 .. [#] Summary of the discussion at NIAC2014 to revise how to find default data: 
-       http://www.nexusformat.org/2014_How_to_find_default_data.html
+       https://www.nexusformat.org/2014_How_to_find_default_data.html
 .. [#aa]  Note on array attributes:
           Attributes potentially containing multiple values 
           (axes and _indices) are to be written as string or integer arrays, 
           to avoid string parsing in reading applications.
-.. [#axes] NIAC2014 proposition: http://www.nexusformat.org/2014_axes_and_uncertainties.html
+.. [#axes] NIAC2014 proposition: https://www.nexusformat.org/2014_axes_and_uncertainties.html
 
 
 Examples
@@ -1100,7 +1103,7 @@ attribute for the other scales is optional.
 
 .. 2016-01-23,PRJ: not necessary
    Perhaps substitute with the discussion from NIAC2014?
-   http://www.nexusformat.org/2014_axes_and_uncertainties.html
+   https://www.nexusformat.org/2014_axes_and_uncertainties.html
    
    .. _Design-Linking-Discussion:
    

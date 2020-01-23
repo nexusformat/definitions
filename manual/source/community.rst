@@ -35,7 +35,7 @@ NeXus Webpage
 =============
 
 First of all, there is the NeXus webpage,
-http://www.nexusformat.org/,
+https://www.nexusformat.org/,
 which provides all kinds of information, including membership, minutes, and 
 discussions from the meetings of the NIAC, Code Camps, and Tele Conferences, 
 as well as some proposed designs for consideration by NeXus.

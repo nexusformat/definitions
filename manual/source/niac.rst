@@ -52,5 +52,5 @@ plan:
 
 .. [#]
     For more details about the NIAC :index:`constitution`, procedures, and meetings, refer to
-    the NIAC web page: http://www.nexusformat.org/NIAC.html
+    the NIAC web page: https://www.nexusformat.org/NIAC.html
     The members of the NIAC may be reached by email: nexus-committee@nexusformat.org
