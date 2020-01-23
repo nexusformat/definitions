@@ -80,6 +80,7 @@ described by the following :index:`rules <rules; naming>`:
    
    will be flagged as a warning during data file validation.
 	
+.. _use-underscore:
 
 .. rubric:: Use of underscore in descriptive names
 
@@ -105,6 +106,7 @@ adequately documented.
 	    Terms with other names are permitted but might not be recognized by standard software. 
 	    Rather than persist in using names not specified in the standard, please suggest additions to the :ref:`NIAC`.
 
+.. _target_value:
 
 The data stored in NeXus fields must be readback values. This means values as read from the detector, other hardware etc. 
 There are occasions where it is sensible to store the target value the variable was supposed to have. In this case the target 
@@ -118,6 +120,25 @@ value is stored with a name built by appending _set to the normal NeXus field na
 
 The temperature field will hold the readback from the cryostat/furnace/whatever. The field temperature_set will hold 
 the target value for the temperature as set by the experiment control software. 
+
+.. _reserved_suffixes:
+
+.. rubric:: Reserved field name suffixes
+
+When naming a field (or dataset), NeXus has reserved certain suffixes to the names
+so that a specific meaning may be attached.  Consider a field named ``DATASET``,
+the following table lists the suffixes reserved by NeXus.
+
+=================  =========================  =================================
+suffix             reference                  meaning
+=================  =========================  =================================
+`_axes`            :ref:`NXdata`              (!NXDL not yet changed from @axes!) String array naming data fields for each axis of ``DATASET``
+`_end`             :ref:`NXtransformations`   end points of the motions that start with ``DATASET``
+`_errors`          :ref:`NXdata`              uncertainties (a.k.a., errors)
+`_increment_set`   :ref:`NXtransformations`   intended average range through which the corresponding axis moves during the exposure of a frame
+`_indices`         :ref:`NXdata`              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
+`_set`             :ref:`target_value`        Target value of ``DATASET``
+=================  =========================  =================================
 
 
 .. _Design-Variants:
