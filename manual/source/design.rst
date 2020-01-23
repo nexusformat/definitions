@@ -672,8 +672,7 @@ any prior knowledge of the chosen coordinate system.
 
 .. note:: The NeXus definition of *+z* is opposite to that
           in the :index:`IUCr <coordinate systems; IUCr>`
-          International Tables for Crystallography, volume G,
-          and consequently, *+x* is also reversed.
+          International Tables for Crystallography, volume G.
 
 .. _CoordinateTransformations:
 
