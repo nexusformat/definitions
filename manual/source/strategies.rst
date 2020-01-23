@@ -149,10 +149,17 @@ which also allows "energy" to be specified if one is so inclined.
 Strategies: Time-stamped data
 #############################
 *How should I store time-stamped data?*
-Time-stamped data can stored in both :ref:`NXlog` and :ref:`NXevent_data`. 
-:ref:`NXevent_data` is used for storing neutron event data and :ref:`NXlog` would be used 
-for storing any other time-stamped data, e.g. sample temperature, chopper 
-top-dead-centre, motor position etc.
+
+Time-stamped data can be stored in both :ref:`NXlog` and :ref:`NXevent_data` structures. 
+Of the two, :ref:`NXlog` is the most important one, :ref:`NXevent_data` is used only for storing neutron event data 
+and :ref:`NXlog` would be used for storing any other time-stamped data, e.g. sample temperature, chopper top-dead-centre, 
+motor position, detector data etc.
+
+Regarding the NeXus file structure to use, there is one simple rule: just use the standard NeXus file structure but replace 
+the fields for streamed data elements through :ref:`NXlog` or :ref:`NXevent_data` structures. For example, consider the 
+collection of detector images against a change in the magnetic field on the sample. Then, both NXsample/magnetic_field and 
+NXdetector/data would be :ref:`NXlog` structures containing the time stamped data. 
+
 
 Both :ref:`NXlog` and :ref:`NXevent_data` have additional support for storing time-stamped 
 data in the form of cues; cues can be used to place markers in the data that allow one to 
@@ -174,7 +181,11 @@ to grab the data between 20 seconds and 40 seconds, and then trim that data to g
 want.
 Obviously in this simple example this does not gain us a lot, but it is easy to see that in a 
 large dataset having appropriately placed cues can save significant computational time when looking 
-up values in a certain time-stamp range.
+up values in a certain time-stamp range. NeXus has actually borrowed the cueing table concept 
+from video file formats where it allows viewing software to quickly access your most favourite scene. 
+Correspondingly, cueing in NeXus allows you to quickly access your most favourate morsel of time stamped 
+data.  
+
 
 In the NeXus Features repository, the feature `ECB064453EDB096D <https://github.com/nexusformat/features/tree/b0f4862f267844a3f66efa701953e684978b0959/src/recipes/ECB064453EDB096D>`_ 
 shows example code that uses cues to select time-stamped data.

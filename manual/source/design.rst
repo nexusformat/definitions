@@ -121,6 +121,9 @@ an array of several dimensions.
 		``data`` (*NX_NUMBER*)
 			Data values from the detector, ``units="NX_ANY"``
 
+In the case of streaming data acquisition, when time stamped values of data are collected, fields can be replaced with :ref:`NXlog` structures of 
+the same name. For example, if time stamped data for wavelength is being streamed, wavelength would not be an array but a :ref:`NXlog` structure.  
+
 
 .. index::
    ! single: field attribute
