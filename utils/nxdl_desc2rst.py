@@ -137,9 +137,9 @@ DATATYPE_DICT = {
                  }
 
 ELEMENT_PREAMBLE = '''
-===============================
+=============================
 NXDL Elements and Field Types
-===============================
+=============================
 
 The documentation in this section has been obtained directly 
 from the NXDL Schema file:  *nxdl.xsd*.
@@ -168,7 +168,7 @@ and  *validNXClassName*.
 .. _NXDL.elements:
 
 NXDL Elements
-=================
+=============
 
     '''
 
@@ -177,7 +177,7 @@ DATATYPE_PREAMBLE = '''
 .. _NXDL.data.types.internal:
 
 NXDL Field Types (internal)
-============================
+===========================
 
 Field types that define the NXDL language are described here.
 These data types are defined in the XSD Schema (``nxdl.xsd``)

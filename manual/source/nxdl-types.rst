@@ -9,7 +9,7 @@ NXDL Field Types and Units
 .. _nxdl-types:
 		
 Field Types allowed in NXDL specifications
-#########################################
+##########################################
 
 Field types for use in NXDL
 describe the expected type of data for a NeXus field. These terms are very
