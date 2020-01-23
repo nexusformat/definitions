@@ -150,7 +150,7 @@ Strategies: Time-stamped data
 #############################
 *How should I store time-stamped data?*
 
-Time-stamped data can be stored in both :ref:`NXlog` and :ref:`NXevent_data` structures. 
+Time-stamped data can be stored in either :ref:`NXlog` and :ref:`NXevent_data` structures. 
 Of the two, :ref:`NXlog` is the most important one, :ref:`NXevent_data` is used only for storing neutron event data 
 and :ref:`NXlog` would be used for storing any other time-stamped data, e.g. sample temperature, chopper top-dead-centre, 
 motor position, detector data etc.
