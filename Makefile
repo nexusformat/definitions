@@ -7,7 +7,7 @@
 
 SUBDIRS = manual impatient-guide
 
-.PHONY: subdirs $(SUBDIRS) builddir pdfdoc
+.PHONY: subdirs $(SUBDIRS) builddir all
 
 subdirs: $(SUBDIRS)
 
@@ -16,6 +16,20 @@ subdirs: $(SUBDIRS)
 
 manual :: nxdl2rst
 	$(MAKE) html -C $@
+
+all :: 
+	$(MAKE) rmbuilddir builddir
+	$(MAKE) impatient-guide manual -C build
+	# expect next make (PDF) to fail (thus exit 0) since nexus.ind not found first time
+	# extra option needed to satisfy "levels nested too deeply" error
+	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode" -C build/manual || exit 0)
+	# make that missing file
+	makeindex build/manual/build/latex/nexus.idx
+	# build the PDF, still a failure will be noted but we can ignore it without problem
+	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode" -C build/manual || exit 0)
+	# finally, report what was built
+	@echo "HTML built: `ls -lAFgh build/manual/build/html/index.html`"
+	@echo "PDF built: `ls -lAFgh build/manual/build/latex/nexus.pdf`"
 
 impatient-guide ::
 	$(MAKE) html -C $@
