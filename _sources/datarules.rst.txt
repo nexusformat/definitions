@@ -108,9 +108,14 @@ adequately documented.
 
 .. _target_value:
 
-The data stored in NeXus fields must be readback values. This means values as read from the detector, other hardware etc. 
-There are occasions where it is sensible to store the target value the variable was supposed to have. In this case the target 
-value is stored with a name built by appending _set to the normal NeXus field name.  An example:
+The data stored in NeXus fields must be *readback* values. 
+This means values as read from the detector, other hardware, etc. 
+There are occasions where it is sensible to store the target value 
+the variable was supposed to have. In such cases, the 
+*target* value is stored with a name built by appending 
+``_set`` to the NeXus (readback) field name.  
+
+Consider this example:
 
 .. code-block:: text
     :linenos:
@@ -118,8 +123,10 @@ value is stored with a name built by appending _set to the normal NeXus field na
     temperature
     temperature_set
 
-The temperature field will hold the readback from the cryostat/furnace/whatever. The field temperature_set will hold 
-the target value for the temperature as set by the experiment control software. 
+The ``temperature`` field will hold the readback from the 
+cryostat/furnace/whatever. The field ``temperature_set`` will hold 
+the target value for the temperature as set by the 
+experiment control software. 
 
 .. _reserved_suffixes:
 
@@ -129,15 +136,15 @@ When naming a field (or dataset), NeXus has reserved certain suffixes to the nam
 so that a specific meaning may be attached.  Consider a field named ``DATASET``,
 the following table lists the suffixes reserved by NeXus.
 
-=================  =========================  =================================
-suffix             reference                  meaning
-=================  =========================  =================================
-`_end`             :ref:`NXtransformations`   end points of the motions that start with ``DATASET``
-`_errors`          :ref:`NXdata`              uncertainties (a.k.a., errors)
-`_increment_set`   :ref:`NXtransformations`   intended average range through which the corresponding axis moves during the exposure of a frame
-`_indices`         :ref:`NXdata`              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
-`_set`             :ref:`target_value`        Target value of ``DATASET``
-=================  =========================  =================================
+==================  =========================================  =================================
+suffix              reference                                  meaning
+==================  =========================================  =================================
+``_end``            :ref:`NXtransformations`                   end points of the motions that start with ``DATASET``
+``_errors``         :ref:`NXdata`                              uncertainties (a.k.a., errors)
+``_increment_set``  :ref:`NXtransformations`                   intended average range through which the corresponding axis moves during the exposure of a frame
+``_indices``        :ref:`NXdata`                              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
+``_set``            :ref:`target values <target_value>`        Target value of ``DATASET``
+==================  =========================================  =================================
 
 .. Note that the following line might be added to the above table pending discussion:
 
@@ -164,12 +171,13 @@ follow the variant chain and locate older variants.
 A little example is in order to illustrate the scheme:
 
 .. code-block:: text
+    :linenos:
 
-		beam_center_x
-		     @variant=beam_center_x_refined
-		beam_center_x_refined
-		     @variant=beam_center_x_initial_guess
-		beam_center_x_initial_guess
+    beam_center_x
+            @variant=beam_center_x_refined
+    beam_center_x_refined
+            @variant=beam_center_x_initial_guess
+    beam_center_x_initial_guess
 
 NeXus borrowed this scheme from CIF. In this way all the different
 variants of a dataset can be preserved. The expectation is that
@@ -182,18 +190,22 @@ data reduction will be written instead.
 Uncertainties or Errors
 ########################
 
-It is desirable to store experimental errors together with the data. NeXus supports this through 
-a convention: uncertainties or experimental errors on data are stored in a separate field which has a name 
-consisting of the original name of the data with _errors appended to it. These uncertainties fields have the 
-sampe shape as the original data field.
+It is desirable to store experimental errors (also known as 
+*uncertainties*) together with the data. NeXus supports this through 
+a convention: uncertainties or experimental errors on data are 
+stored in a separate field which has a name consisting of the 
+original name of the data with ``_errors`` appended to it. 
+These uncertainties fields have the same shape as the original data field.
 
 An example, from NXdetector:
 
 .. code-block:: text
-               data
-               data_errors
-               beam_center_x
-               beam_center_x_errors
+    :linenos:
+
+    data
+    data_errors
+    beam_center_x
+    beam_center_x_errors
 
 Where data errors would contain the erros on data, and beam_center_x_errors the error on 
 the beam center for x. 
