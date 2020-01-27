@@ -5,11 +5,14 @@
  *
  * scan:NXentry
  *      data:NXdata
+ *         @signal = counts
+ *         @axes = two_theta
+ *         @two_theta_indices = 0
  *         counts[]
- *            @signal=1
+ *            @units=counts
  *         two_theta[]
  *            @units=degrees
- *
+*
  *  WARNING: each of the HDF function below needs to be 
  *  wrapped into something like:
  *
@@ -27,14 +30,44 @@
 #include <stdlib.h>
 #include <string.h>
 
+static void write_string_attr(hid_t hid, const char* name, const char* value)
+{
+  /* HDF-5 handles */
+  hid_t atts, atttype, attid;
+
+  atts = H5Screate(H5S_SCALAR);
+  atttype = H5Tcopy(H5T_C_S1);
+  H5Tset_size(atttype, strlen(value));
+  attid = H5Acreate(hid,name, atttype, atts, H5P_DEFAULT, H5P_DEFAULT);
+  H5Awrite(attid, atttype, value);
+  H5Sclose(atts);
+  H5Tclose(atttype);
+  H5Aclose(attid);
+}
+
+static void write_int_attr(hid_t hid, const char* name, int value)
+{
+  /* HDF-5 handles */
+  hid_t atts, atttype, attid;
+
+  atts = H5Screate(H5S_SCALAR);
+  atttype = H5Tcopy(H5T_NATIVE_INT);
+  H5Tset_size(atttype,1);
+  attid = H5Acreate(hid,name, atttype, atts, H5P_DEFAULT, H5P_DEFAULT);
+  H5Awrite(attid, atttype, &value);
+  H5Sclose(atts);
+  H5Tclose(atttype);
+  H5Aclose(attid);
+}
+
 #define LENGTH 400
 int main(int argc, char *argv[])
 {
   float two_theta[LENGTH];
-  int counts[LENGTH], i, rank, signal;
+  int counts[LENGTH], i, rank;
 
   /* HDF-5 handles */
-  hid_t fid, fapl, gid, atts, atttype, attid;
+  hid_t fid, fapl, gid;
   hid_t datatype, dataspace, dataprop, dataid;
   hsize_t dim[1], maxdim[1];
 
@@ -63,33 +96,25 @@ int main(int argc, char *argv[])
   /*
    * create scan:NXentry
    */
-  gid = H5Gcreate(fid, (const char *)"scan",0);
+  gid = H5Gcreate(fid, "scan",H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
   /*
    * store the NX_class attribute. Notice that you
    * have to take care to close those hids after use
    */
-  atts = H5Screate(H5S_SCALAR);
-  atttype = H5Tcopy(H5T_C_S1);
-  H5Tset_size(atttype, strlen("NXentry"));
-  attid = H5Acreate(gid,"NX_class", atttype, atts, H5P_DEFAULT);
-  H5Awrite(attid, atttype, (char *)"NXentry");
-  H5Sclose(atts);
-  H5Tclose(atttype);
-  H5Aclose(attid);
+  write_string_attr(gid, "NX_class", "NXentry");
 
   /*
    * same thing for data:Nxdata in scan:NXentry.
-   * A subroutine would be nice to have here.......
    */
-  gid = H5Gcreate(fid, (const char *)"/scan/data",0);
-  atts = H5Screate(H5S_SCALAR);
-  atttype = H5Tcopy(H5T_C_S1);
-  H5Tset_size(atttype, strlen("NXdata"));
-  attid = H5Acreate(gid,"NX_class", atttype, atts, H5P_DEFAULT);
-  H5Awrite(attid, atttype, (char *)"NXdata");
-  H5Sclose(atts);
-  H5Tclose(atttype);
-  H5Aclose(attid);
+  gid = H5Gcreate(fid, "/scan/data",H5P_DEFAULT,H5P_DEFAULT,H5P_DEFAULT);
+  write_string_attr(gid, "NX_class", "NXdata");
+
+  /*
+   * define axes.
+   */
+  write_string_attr(gid, "signal", "counts");
+  write_string_attr(gid, "axes", "two_theta");
+  write_int_attr(gid, "two_theta_indices", 0);
 
   /*
    * store the counts dataset
@@ -97,23 +122,15 @@ int main(int argc, char *argv[])
   dataspace = H5Screate_simple(rank,dim,maxdim);
   datatype = H5Tcopy(H5T_NATIVE_INT);  
   dataprop = H5Pcreate(H5P_DATASET_CREATE);
-  dataid = H5Dcreate(gid,(char *)"counts",datatype,dataspace,dataprop);
+  dataid = H5Dcreate(gid,"counts",datatype,dataspace,H5P_DEFAULT,dataprop,H5P_DEFAULT);
   H5Dwrite(dataid, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT, counts);
   H5Sclose(dataspace);
   H5Tclose(datatype);
   H5Pclose(dataprop);  
   /*
-   * set the signal=1 attribute 
+   * set the units attribute
    */
-  atts = H5Screate(H5S_SCALAR);
-  atttype = H5Tcopy(H5T_NATIVE_INT);
-  H5Tset_size(atttype,1);
-  attid = H5Acreate(dataid,"signal", atttype, atts, H5P_DEFAULT);
-  signal = 1;
-  H5Awrite(attid, atttype, &signal);
-  H5Sclose(atts);
-  H5Tclose(atttype);
-  H5Aclose(attid);
+  write_string_attr(dataid, "units", "counts");
 
   H5Dclose(dataid);
 
@@ -123,7 +140,7 @@ int main(int argc, char *argv[])
   dataspace = H5Screate_simple(rank,dim,maxdim);
   datatype = H5Tcopy(H5T_NATIVE_FLOAT);  
   dataprop = H5Pcreate(H5P_DATASET_CREATE);
-  dataid = H5Dcreate(gid,(char *)"two_theta",datatype,dataspace,dataprop);
+  dataid = H5Dcreate(gid,"two_theta",datatype,dataspace,H5P_DEFAULT,dataprop,H5P_DEFAULT);
   H5Dwrite(dataid, datatype, H5S_ALL, H5S_ALL, H5P_DEFAULT, two_theta);
   H5Sclose(dataspace);
   H5Tclose(datatype);
@@ -132,26 +149,12 @@ int main(int argc, char *argv[])
   /*
    * set the units attribute
    */
-  atttype = H5Tcopy(H5T_C_S1);
-  H5Tset_size(atttype, strlen("degrees"));
-  atts = H5Screate(H5S_SCALAR);
-  attid = H5Acreate(dataid,"units", atttype, atts, H5P_DEFAULT);
-  H5Awrite(attid, atttype, (char *)"degrees");
-  H5Sclose(atts);
-  H5Tclose(atttype);
-  H5Aclose(attid);
- /*
+  write_string_attr(dataid, "units", "degrees");
+
+  /*
    * set the target attribute for linking
    */
-  atttype = H5Tcopy(H5T_C_S1);
-  H5Tset_size(atttype, strlen("/scan/data/two_theta"));
-  atts = H5Screate(H5S_SCALAR);
-  attid = H5Acreate(dataid,"target", atttype, atts, H5P_DEFAULT);
-  H5Awrite(attid, atttype, (char *)"/scan/data/two_theta");
-  H5Sclose(atts);
-  H5Tclose(atttype);
-  H5Aclose(attid);
-
+  write_string_attr(dataid, "target", "/scan/data/two_theta");
 
   H5Dclose(dataid);
 
