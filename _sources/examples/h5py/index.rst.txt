@@ -17,7 +17,7 @@ and read as a text block from a file by the Python source code.
 Our examples will start with the simplest case and add only mild complexity with each new case
 since these examples are meant for those who are unfamiliar with NeXus.
 
-.. [#] *h5py*: http://code.google.com/p/h5py
+.. [#] *h5py*: https://www.h5py.org/
 .. [#] *SPEC*: http://certif.com/spec.html
 
 
