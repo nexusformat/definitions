@@ -427,7 +427,7 @@ Language API: *Java*
 Language API: *Python*
 ++++++++++++++++++++++
 
-* **Dials** [#]_ has code for reading :ref:`NXmx` [#]_
+* **Dials** [#]_ has python (and some C++) code for reading :ref:`NXmx` [#]_
 
   .. [#] https://dials.github.io/
   .. [#] read: https://github.com/cctbx/dxtbx/blob/master/format/nexus.py
