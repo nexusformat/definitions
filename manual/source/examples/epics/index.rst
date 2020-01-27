@@ -294,11 +294,11 @@ file                             description
 Footnotes
 *********
 
-.. [#] EPICS: http://www.aps.anl.gov/epics/
-.. [#] EPICS Area Detector: http://cars9.uchicago.edu/software/epics/areaDetector.html
-.. [#] HDF5 File Writer: http://cars9.uchicago.edu/software/epics/NDFileHDF5.html
-.. [#] EPICS SimDetector: http://cars9.uchicago.edu/software/epics/simDetectorDoc.html
-.. [#] NeXus manual: http://download.nexusformat.org/doc/html/index.html
+.. [#] EPICS: https://epics-controls.org/
+.. [#] EPICS Area Detector: https://areadetector.github.io/master/index.html
+.. [#] HDF5 File Writer: https://areadetector.github.io/master/ADCore/NDFileHDF5.html
+.. [#] EPICS SimDetector: https://github.com/areaDetector/ADSimDetector
+.. [#] NeXus manual: https://manual.nexusformat.org/
 .. [#] caQtDM: http://epics.web.psi.ch/software/caqtdm/
 .. [#] h5py: http://docs.h5py.org
 .. [#] nexusformat: This Python package is described on the NeXPy web site

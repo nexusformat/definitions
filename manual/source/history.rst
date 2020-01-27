@@ -33,7 +33,7 @@ Two things to note about the development and history of NeXus:
     and the NXentry and NXdata groups. 
     See the description in :ref:`Design-FindPlottable-NIAC2014`
     and the proposal:
-    http://www.nexusformat.org/2014_How_to_find_default_data.html
+    https://www.nexusformat.org/2014_How_to_find_default_data.html
 
 2012-05:
     first release (3.1.0) of NXDL (NeXus Definition Language)
@@ -127,7 +127,7 @@ Two things to note about the development and history of NeXus:
 
 1994-10:
     :index:`Ray Osborn <single: Osborn, Raymond>` convened a series of three workshops called
-    *SoftNeSS*. [#softness]_
+    *SoftNeSS*.
     In the first meeting,
     Mark Könnecke and Jon Tischler were invited to meet with representatives
     from all the major U.S. neutron scattering laboratories
@@ -145,13 +145,11 @@ Two things to note about the development and history of NeXus:
     for the European neutron scattering community while working at ISIS
 
 
-.. [#NeXus_Proposal] http://www.nexusformat.org/pdfs/NeXus_Proposal.pdf
+.. [#NeXus_Proposal] https://www.nexusformat.org/pdfs/NeXus_Proposal.pdf
 
-.. [#softness] http://www.neutron.anl.gov/softness
+.. [#aps] https://www.nexusformat.org/pdfs/Proposed_Data_Standard_for_the_APS.pdf
 
-.. [#aps] http://www.nexusformat.org/pdfs/Proposed_Data_Standard_for_the_APS.pdf
-
-.. [#netCDF] http:/wwww.nexusformat.org/pdfs/European-Formats.pdf
+.. [#netCDF] https://www.nexusformat.org/pdfs/European-Formats.pdf
 
 
 .. comment from here moved to file: history-unpublished-comment.txt

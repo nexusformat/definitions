@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 '''
-Read the the NeXus NXDL types specification and find
+Read the NXDL field types specification and find
 all the valid data types.  Write a restructured
 text (.rst) document for use in the NeXus manual in 
 the NXDL chapter.
@@ -137,9 +137,9 @@ DATATYPE_DICT = {
                  }
 
 ELEMENT_PREAMBLE = '''
-===============================
-NXDL Elements and Data Types
-===============================
+=============================
+NXDL Elements and Field Types
+=============================
 
 The documentation in this section has been obtained directly 
 from the NXDL Schema file:  *nxdl.xsd*.
@@ -168,7 +168,7 @@ and  *validNXClassName*.
 .. _NXDL.elements:
 
 NXDL Elements
-=================
+=============
 
     '''
 
@@ -176,10 +176,10 @@ DATATYPE_PREAMBLE = '''
 
 .. _NXDL.data.types.internal:
 
-NXDL Data Types (internal)
-============================
+NXDL Field Types (internal)
+===========================
 
-Data types that define the NXDL language are described here.
+Field types that define the NXDL language are described here.
 These data types are defined in the XSD Schema (``nxdl.xsd``)
 and are used in various parts of the Schema to define common structures
 or to simplify a complicated entry.  While the data types are not intended for
@@ -191,7 +191,7 @@ DATATYPE_POSTAMBLE = '''
 **The** ``xs:string`` **data type**
     The ``xs:string`` data type can contain characters, 
     line feeds, carriage returns, and tab characters.
-    See http://www.w3schools.com/Schema/schema_dtypes_string.asp 
+    See https://www.w3schools.com/xml/schema_dtypes_string.asp 
     for more details.
 
 **The** ``xs:token`` **data type**
@@ -201,7 +201,7 @@ DATATYPE_POSTAMBLE = '''
     The ``xs:token`` data type also contains characters, 
     but the XML processor will remove line feeds, carriage returns, tabs, 
     leading and trailing spaces, and multiple spaces.
-    See http://www.w3schools.com/Schema/schema_dtypes_string.asp 
+    See https://www.w3schools.com/xml/schema_dtypes_string.asp 
     for more details.
 '''
 
@@ -384,6 +384,17 @@ def getDocFromNode(ns, node, retval=None):
             if not len(line[:indent].strip()) == 0:
                 raise "Something wrong with indentation on this line:\n" + line
             text += '\n' + line[indent:]
+
+    # substitute HTML entities in markup: "<" for "&lt;"
+    # thanks: http://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
+    try:		# see #661
+        import html
+        text = html.unescape(text)
+    except (ImportError, AttributeError):
+        from six.moves import html_parser as HTMLParser
+        htmlparser = HTMLParser.HTMLParser()
+        text = htmlparser.unescape(text)
+
     return text.lstrip()
 
 
@@ -488,7 +499,7 @@ if __name__ == '__main__':
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2018 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

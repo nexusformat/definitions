@@ -6,6 +6,4 @@
 NAPI Fortran 77 Interface
 ==========================================
 
-Doxygen documentation is provided for the f77 NAPI.
-(http://download.nexusformat.org/doxygen/html-f77/)
-        
+The bindings are listed at https://github.com/nexusformat/code/tree/master/bindings/f77 and can be built as part of the API distribution https://github.com/nexusformat/code/releases

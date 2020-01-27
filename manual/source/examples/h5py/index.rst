@@ -279,8 +279,8 @@ Here is an example of the structure:
         two_theta --> file="external_angles.hdf5", path="/angles"
 
 .. [#] see these URLs for further guidance on HDF5 external links:
-   http://www.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateExternal, 
-   http://www.h5py.org/docs-1.3/guide/group.html#external-links
+   https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_EXTERNAL, 
+   http://docs.h5py.org/en/stable/high/group.html#external-links
 
 file: external_master.hdf5
 ==========================
@@ -351,15 +351,15 @@ file                                         description
 :download:`BasicWriter.py`                   python code to write example *prj_test.nexus.hdf5*
 :download:`external_angles_h5dump.txt`       *h5dump* analysis of *external_angles.hdf5*
 :download:`external_angles.hdf5`             HDF5 file written by *externalExample*
-:download:`external_angles_structure.txt`    *h5toText* analysis of *external_angles.hdf5*
+:download:`external_angles_structure.txt`    *punx tree* analysis of *external_angles.hdf5*
 :download:`external_counts_h5dump.txt`       *h5dump* analysis of *external_counts.hdf5*
 :download:`external_counts.hdf5`             HDF5 file written by *externalExample*
-:download:`external_counts_structure.txt`    *h5toText* analysis of *external_counts.hdf5*
+:download:`external_counts_structure.txt`    *punx tree* analysis of *external_counts.hdf5*
 :download:`externalExample.py`               python code to write external linking examples
 :download:`external_master_h5dump.txt`       *h5dump* analysis of *external_master.hdf5*
 :download:`external_master.hdf5`             NeXus file written by *externalExample*
-:download:`external_master_structure.txt`    *h5toText* analysis of *external_master.hdf5*
+:download:`external_master_structure.txt`    *punx tree* analysis of *external_master.hdf5*
 :download:`prj_test.nexus_h5dump.txt`        *h5dump* analysis of the NeXus file
 :download:`prj_test.nexus.hdf5`              NeXus file written by *BasicWriter*
-:download:`prj_test.nexus_structure.txt`     *h5toText* analysis of the NeXus file
+:download:`prj_test.nexus_structure.txt`     *punx tree* analysis of the NeXus file
 ===========================================  =============================================
