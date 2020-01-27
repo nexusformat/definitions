@@ -40,13 +40,13 @@ nxdata.attrs[u"two_theta_indices"] = [0,]
 source_addr = u"/entry/instrument/detector/two_theta"   # existing data
 target_addr = u"two_theta"                              # new location
 ds_tth.attrs[u"target"] = source_addr                   # a NeXus API convention for links
-f[target_addr] = f[source_addr]                         # hard link
+nxdata[target_addr] = f[source_addr]                    # hard link
 # nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)
 
 source_addr = u"/entry/instrument/detector/counts"      # existing data
 target_addr = u"counts"                                 # new location
 ds_counts.attrs[u"target"] = source_addr                # a NeXus API convention for links
-f[target_addr] = f[source_addr]                         # hard link
+nxdata[target_addr] = f[source_addr]                    # hard link
 # nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)
 
 f.close()	# be CERTAIN to close the file
