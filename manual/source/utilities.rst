@@ -363,6 +363,8 @@ listed in the section :ref:`language.apis.mixed`.
 
 .. [#] https://github.com/nexusformat/definitions/issues/630
 
+Note these example listed in addition to the many examples described
+here in the manual, in section :`Examples`.
 
 .. _language.apis.f77:
 
