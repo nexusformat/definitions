@@ -49,6 +49,14 @@ def findGitConfigFile():
     logger.error(msg)
     raise ValueError(msg)
 
+def parse_git_url(url):
+    """
+    return (organization, repository) tuple from url line of .git/config file
+    """
+    if url.startswith("git@"): # deal with git@github.com:org/repo.git
+        url = url.split(":")[1]
+    org, repo = url.rstrip(".git").split("/")[-2:]
+    return org, repo
 
 def getRepositoryInfo():
     """
@@ -70,9 +78,7 @@ def getRepositoryInfo():
                     msg = "Not a GitHub repo: " + url
                     logger.error(msg)
                     raise ValueError(msg)
-                org, repo = url.rstrip(".git").split("/")[-2:]
-                return org, repo
-
+                return parse_git_url(url)
 
 def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
     """mine the Github API for information about this release"""
