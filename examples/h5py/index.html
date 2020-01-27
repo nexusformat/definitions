@@ -49,7 +49,10 @@
 <li><a class="reference internal" href="#writing-the-simplest-data-using-h5py">2.1.2.1. Writing the simplest data using <code class="docutils literal notranslate"><span class="pre">h5py</span></code></a></li>
 <li><a class="reference internal" href="#complete-h5py-example-writing-and-reading-a-nexus-data-file">2.1.2.2. Complete <code class="docutils literal notranslate"><span class="pre">h5py</span></code> example writing and reading a NeXus data file</a><ul>
 <li><a class="reference internal" href="#writing-the-hdf5-file-using-h5py">Writing the HDF5 file using <strong>h5py</strong></a></li>
-<li><a class="reference internal" href="#reading-the-hdf5-file-using-h5py">Reading the HDF5 file using <strong>h5py</strong></a></li>
+<li><a class="reference internal" href="#reading-the-hdf5-file-using-h5py">Reading the HDF5 file using <strong>h5py</strong></a><ul>
+<li><a class="reference internal" href="#finding-the-default-plottable-data">Finding the default plottable data</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#plotting-the-hdf5-file">Plotting the HDF5 file</a></li>
 </ul>
 </li>
@@ -541,6 +544,149 @@ instrument: APS USAXS at 32ID-B
 30  17.9211 1321
 </pre></div>
 </td></tr></table></div>
+</div>
+<div class="section" id="finding-the-default-plottable-data">
+<span id="finding-default-data-python"></span><h4>Finding the default plottable data<a class="headerlink" href="#finding-the-default-plottable-data" title="Permalink to this headline">¶</a></h4>
+<p>Let’s make a new reader that follows the chain of
+attributes (<code class="docutils literal notranslate"><span class="pre">&#64;default</span></code>, <code class="docutils literal notranslate"><span class="pre">&#64;signal</span></code>, and <code class="docutils literal notranslate"><span class="pre">&#64;axes</span></code>)
+to find the default plottable data.  We’ll use the
+same data file as the previous example.
+Our demo here assumes one-dimensional data.
+(For higher dimensionality data,
+we’ll need more complexity when handling the
+<code class="docutils literal notranslate"><span class="pre">&#64;axes</span></code> attribute as well as checking the
+field sizes.)</p>
+<div class="compound">
+<p class="compound-first rubric"><em>reader_attributes_trail.py</em>: Read a NeXus HDF5 file using Python with h5py</p>
+<div class="compound-last highlight-python notranslate" id="example-h5py-reader-attributes-trail"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26</pre></div></td><td class="code"><div class="highlight"><pre><span></span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s2">&quot;prj_test.nexus.hdf5&quot;</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">nx</span><span class="p">:</span>
+    <span class="c1"># find the default NXentry group</span>
+    <span class="n">nx_entry</span> <span class="o">=</span> <span class="n">nx</span><span class="p">[</span><span class="n">nx</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]]</span>
+    <span class="c1"># find the default NXdata group</span>
+    <span class="n">nx_data</span> <span class="o">=</span> <span class="n">nx_entry</span><span class="p">[</span><span class="n">nx_entry</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]]</span>
+    <span class="c1"># find the signal field</span>
+    <span class="n">signal</span> <span class="o">=</span> <span class="n">nx_data</span><span class="p">[</span><span class="n">nx_data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">]]</span>
+    <span class="c1"># find the axes field(s)</span>
+    <span class="n">attr_axes</span> <span class="o">=</span> <span class="n">nx_data</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;axes&quot;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">attr_axes</span><span class="p">,</span> <span class="p">(</span><span class="nb">set</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">,</span> <span class="nb">list</span><span class="p">)):</span>
+        <span class="c1">#  but check that attr_axes only describes 1-D data</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">attr_axes</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">attr_axes</span> <span class="o">=</span> <span class="n">attr_axes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;expected 1-D data but @axes={attr_axes}&quot;</span><span class="p">)</span>
+    <span class="n">axes</span> <span class="o">=</span> <span class="n">nx_data</span><span class="p">[</span><span class="n">attr_axes</span><span class="p">]</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;file: {nx.filename}&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;signal: {signal.name}&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;axes: {axes.name}&quot;</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;{axes.name} {signal.name}&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">axes</span><span class="p">,</span> <span class="n">signal</span><span class="p">):</span>
+        <span class="k">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+</div>
+<p>Output from <code class="docutils literal notranslate"><span class="pre">reader_attributes_trail.py</span></code> is shown next.</p>
+<div class="compound">
+<p class="compound-first rubric">Output from <code class="docutils literal notranslate"><span class="pre">reader_attributes_trail.py</span></code></p>
+<div class="compound-last highlight-text notranslate"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35</pre></div></td><td class="code"><div class="highlight"><pre><span></span>file: prj_test.nexus.hdf5
+signal: /entry/mr_scan/I00
+axes: /entry/mr_scan/mr
+/entry/mr_scan/mr /entry/mr_scan/I00
+17.92608 1037
+17.92591 1318
+17.92575 1704
+17.92558 2857
+17.92541 4516
+17.92525 9998
+17.92508 23819
+17.92491 31662
+17.92475 40458
+17.92458 49087
+17.92441 56514
+17.92425 63499
+17.92408 66802
+17.92391 66863
+17.92375 66599
+17.92358 66206
+17.92341 65747
+17.92325 65250
+17.92308 64129
+17.92291 63044
+17.92275 60796
+17.92258 56795
+17.92241 51550
+17.92225 43710
+17.92208 29315
+17.92191 19782
+17.92175 12992
+17.92158 6622
+17.92141 4198
+17.92125 2248
+17.92108 1321
+</pre></div>
+</td></tr></table></div>
+</div>
 </div>
 </div>
 <div class="section" id="plotting-the-hdf5-file">
