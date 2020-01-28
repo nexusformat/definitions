@@ -203,8 +203,9 @@ same data file as the previous example.
 Our demo here assumes one-dimensional data.  
 (For higher dimensionality data,
 we'll need more complexity when handling the 
-``@axes`` attribute as well as checking the
-field sizes.)
+``@axes`` attribute and we'll to check the
+field sizes. See section :ref:`Find-Plottable-Data`, 
+subsection :ref:`Find-Plottable-Data-v3`, for the details.)
 
 .. compound::
 
