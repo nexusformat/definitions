@@ -202,3 +202,49 @@ This is a list of commonly asked questions concerning the NeXus data format.
    See the many examples in the NeXus exampledata repository. 
    (https://github.com/nexusformat/exampledata)
 
+#. Can instances of classes inside definitions require 
+   new fields that were previously optional?
+
+   Yes. That is one of the motivations to have 
+   application definitions. By default, all content 
+   in an application definition is required.
+
+   For example, the ``radiation`` field in :ref:`NXcanSAS`
+   requires 1 (and only 1) instance.
+
+#. Can instances of classes inside definitions make 
+   optional new fields that were previously not mentioned?
+
+   Yes. To make it optional, set attribute ``minOccurs="0"``.
+
+   For example, see the ``Idev`` field in :ref:`NXcanSAS`.
+
+#. Can instances of classes inside definitions require 
+   new fields that were previously not mentioned?
+
+   Yes.
+
+   For example, see the ``qx`` field in :ref:`NXiqproc`.
+
+#. Can we view the process of defining classes within 
+   an application definition as defining a subclass of 
+   the original class? That is, all instances of the 
+   class within the definition are valid instances of 
+   the original class, but not vice-versa?
+
+   Keep in mind that NeXus is not specifically object oriented. 
+   The putative super class might be either 
+   :ref:`NXentry` (for single-technique data, such as SAXS) 
+   or :ref:`NXsubentry` (for multi-technique data 
+   such as SAXS/WAXS/USAXS/GIWAXS or SAXS/SANS). 
+   
+   If you are thinking of a new application definition that uses 
+   another as a starting point (like a super class), then there 
+   is an ``extends`` attribute in the definition element of the 
+   NXDL file (example here from :ref:`NXarpes`)::
+
+       <definition name="NXarpes" extends="NXobject" type="group"
+
+   which describes this relationship. For most (?all?) all NXDL 
+   files to date, they extend the :ref:`NXobject` base class
+   (the base object of NeXus).
