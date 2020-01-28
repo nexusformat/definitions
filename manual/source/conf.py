@@ -36,7 +36,7 @@ if nxdl_version is not None:
 # -- General configuration ---------------------------------------------------
 
 # https://github.com/nexusformat/definitions/issues/659#issuecomment-577438319
-needs_sphinx = '2.3'
+needs_sphinx = '1.8'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
