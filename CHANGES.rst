@@ -12,12 +12,9 @@
 Change History
 ##############
 
-:v2019.10:  expected *2019-10-15*
+:v2020.1:  released *202-01-31*
 
-    * `#628 <https://github.com/nexusformat/definitions/issues/628>`_
-       new: contributed_definitions/NXcxi_ptycho
-    * `#614 <https://github.com/nexusformat/definitions/pull/614>`_
-       new: base/NXpdb
+    * see Release Notes wiki: https://github.com/nexusformat/definitions/wiki/releasenotes_v2020.1
 
 :v2018.5:  released *2018-05-15*
 
