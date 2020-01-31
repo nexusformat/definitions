@@ -15,6 +15,8 @@ Change History
 :v2020.1:  released *2020-01-31*
 
     * see Release Notes wiki: https://github.com/nexusformat/definitions/wiki/releasenotes_v2020.1
+    * The manual is now published through GitHub Pages: https://manual.nexusformat.org
+    * We have a DOI (with zenodo https://zenodo.org/record/3629571) that updates with each release of the definitions repository.  The DOI link is noted on our GitHub home page.
 
 :v2018.5:  released *2018-05-15*
 
