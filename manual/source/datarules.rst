@@ -344,6 +344,7 @@ matches the data type specifier.
     Refer to :ref:`Design-Dates-Times`.
 
 .. index:: ! strings
+.. index:: ! UTF-8
 
 **strings**
    ``NX_CHAR``:
