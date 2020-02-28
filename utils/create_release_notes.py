@@ -115,8 +115,12 @@ def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
         if t.commit.sha in commits:
             tags[t.name] = t
         elif t.name == base_tag_name:
-            base_commit = repo.get_commit(t.commit.sha)
-            earliest = str2time(base_commit.last_modified)
+            # PyGitHub oddity:
+            #   t.commit == commit
+            #   t.commit.last_modified != commit.last_modified
+            commit = repo.get_commit(t.commit.sha)
+            dt = str2time(commit.last_modified)
+            earliest = min(dt, earliest or dt)
     logger.debug(f"# tags: {len(tags)}")
 
     pulls = {
@@ -137,7 +141,7 @@ def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
     }
     logger.debug(f"# issues: {len(issues)}")
 
-    return milestone, tags, pulls, issues, commits
+    return repo, milestone, tags, pulls, issues, commits
 
 
 def parse_command_line():
@@ -185,7 +189,7 @@ def str2time(time_string):
         "%a, %d %b %Y %H:%M:%S %Z")
 
 
-def report(title, milestone, tags, pulls, issues, commits):
+def report(title, repo, milestone, tags, pulls, issues, commits):
     print(f"## {title}")
     print("")
     print(f"* **date/time**: {datetime.datetime.now()}")
@@ -203,38 +207,51 @@ def report(title, milestone, tags, pulls, issues, commits):
     print("")
     print("### Tags")
     print("")
-    print("tag | date | name")
-    print("-"*5, " | ", "-"*5, " | ", "-"*5)
-    for k, tag in sorted(tags.items()):
-        when = str2time(tag.last_modified).strftime("%Y-%m-%d")
-        print(f"[{tag.commit.sha[:7]}]({tag.commit.html_url}) | {when} | {k}")
+    if len(tags) == 0:
+        print("-- none --")
+    else:
+        print("tag | date | name")
+        print("-"*5, " | ", "-"*5, " | ", "-"*5)
+        for k, tag in sorted(tags.items()):
+            commit = repo.get_commit(tag.commit.sha)
+            when = str2time(commit.last_modified).strftime("%Y-%m-%d")
+            print(f"[{tag.commit.sha[:7]}]({tag.commit.html_url}) | {when} | {k}")
     print("")
     print("### Pull Requests")
     print("")
-    print("pull request | date | state | title")
-    print("-"*5, " | ", "-"*5, " | ", "-"*5, " | ", "-"*5)
-    for k, pull in sorted(pulls.items()):
-        state = {True: "merged", False: "closed"}[pull.merged]
-        when = str2time(pull.last_modified).strftime("%Y-%m-%d")
-        print(f"[#{pull.number}]({pull.html_url}) | {when} | {state} | {pull.title}")
+    if len(pulls) == 0:
+        print("-- none --")
+    else:
+        print("pull request | date | state | title")
+        print("-"*5, " | ", "-"*5, " | ", "-"*5, " | ", "-"*5)
+        for k, pull in sorted(pulls.items()):
+            state = {True: "merged", False: "closed"}[pull.merged]
+            when = str2time(pull.last_modified).strftime("%Y-%m-%d")
+            print(f"[#{pull.number}]({pull.html_url}) | {when} | {state} | {pull.title}")
     print("")
     print("### Issues")
     print("")
-    print("issue | date | title")
-    print("-"*5, " | ", "-"*5, " | ", "-"*5)
-    for k, issue in sorted(issues.items()):
-        if k not in pulls:
-            when = issue.closed_at.strftime("%Y-%m-%d")
-            print(f"[#{issue.number}]({issue.html_url}) | {when} | {issue.title}")
+    if len(issues) == 0:
+        print("-- none --")
+    else:
+        print("issue | date | title")
+        print("-"*5, " | ", "-"*5, " | ", "-"*5)
+        for k, issue in sorted(issues.items()):
+            if k not in pulls:
+                when = issue.closed_at.strftime("%Y-%m-%d")
+                print(f"[#{issue.number}]({issue.html_url}) | {when} | {issue.title}")
     print("")
     print("### Commits")
     print("")
-    print("commit | date | message")
-    print("-"*5, " | ", "-"*5, " | ", "-"*5)
-    for k, commit in commits.items():
-        message = commit.commit.message.splitlines()[0]
-        when = commit.raw_data['commit']['committer']['date'].split("T")[0]
-        print(f"[{k[:7]}]({commit.html_url}) | {when} | {message}")
+    if len(commits) == 0:
+        print("-- none --")
+    else:
+        print("commit | date | message")
+        print("-"*5, " | ", "-"*5, " | ", "-"*5)
+        for k, commit in commits.items():
+            message = commit.commit.message.splitlines()[0]
+            when = commit.raw_data['commit']['committer']['date'].split("T")[0]
+            print(f"[{k[:7]}]({commit.html_url}) | {when} | {message}")
 
 
 def main(base=None, head=None, milestone=None, token=None, debug=False):
@@ -253,7 +270,7 @@ def main(base=None, head=None, milestone=None, token=None, debug=False):
 
     info = get_release_info(
         token, base_tag_name, head_branch_name, milestone_name)
-    milestone, tags, pulls, issues, commits = info
+    # milestone, repo, tags, pulls, issues, commits = info
     report(milestone_name, *info)
 
 
