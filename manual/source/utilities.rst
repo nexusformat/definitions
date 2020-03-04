@@ -9,6 +9,25 @@ are provided by the NeXus technical group while others are provided by the commu
 other tools listed here can read or write one of the low-level file formats used by NeXus (HDF5,
 HDF4, or XML).
 
+Furthermore, there are specific examples of code
+that can read, write, (or both) NeXus data files, 
+given in the section :ref:`language.apis`.
+
+
+The NIAC welcomes your continued contributions to 
+this documentation.
+
+Please note that NeXus maintains a repository of
+example data files [#]_ which you may browse and 
+download.  There is a cursory analysis [#]_ of every file
+in this repository as to whether it can be read as HDF5
+or NeXus HDF5.  The analysis code [#]_, which serves as yet
+another example reader, is made using python and h5py.
+
+.. [#] https://github.com/nexusformat/exampledata
+.. [#] https://github.com/nexusformat/exampledata/blob/master/critique.md
+.. [#] https://github.com/nexusformat/exampledata/blob/master/critique.py
+
 ..  =============================
     section: Utilities from NeXus
     =============================
@@ -153,7 +172,10 @@ The list is not intended to be a complete list of all available packages.
     
    NOTE: project is under initial construction, 
    not yet released for public use, but is useful in its 
-   present form (version 0.0.9).  
+   present form (version 0.2.3).
+
+   **punx** can show the tree structure of any HDF5 file.
+   The output is more concise than that from *h5dump*.
     
    See the program documentation for more details:
    https://punx.readthedocs.io
@@ -193,7 +215,7 @@ as a data format.  It is not intended to be a complete list of all available pac
 .. index:: 
 	Gumtree (data analysis software)
 
-**Gumtree** (http://docs.codehaus.org/display/GUMTREE)
+**Gumtree** (https://archive.ansto.gov.au/ResearchHub/OurInfrastructure/ACNS/Facilities/Computing/GumTree/index.htm)
     Gumtree  is an open source project, providing a graphical user 
     interface for instrument status and control, data acquisition 
     and data reduction.
@@ -201,7 +223,7 @@ as a data format.  It is not intended to be a complete list of all available pac
 .. index:: 
 	IDL (data analysis software)
 
-**IDL** (http://www.ittvis.com/)
+**IDL** (https://www.harrisgeospatial.com/docs/using_idl_home.html)
     IDL is a high-level technical computing language and interactive 
     environment for algorithm development, data visualization, 
     data analysis, and numeric computation.
@@ -281,10 +303,13 @@ as a data format.  It is not intended to be a complete list of all available pac
 .. index:: 
 	spec2nexus
 
-**spec2nexus** (http://spec2nexus.readthedocs.io)
+**spec2nexus** (https://spec2nexus.readthedocs.io)
     (Python code) Converts SPEC data files and scans into NeXus HDF5 files.
-    Provides *h5toText* utility program to inspect HDF5 file content.
-    Provides libraries:
+    (Note the *h5toText* tool mentioned here previously is no longer
+    available from the *spec2nexus* project.  The code has been moved
+    into the *punx* project: https://punx.readthedocs.io/.)
+    
+    *spec2nexus* provides libraries:
 
     * *spec2nexus.spec*: python binding to read SPEC [#]_ data files
     * *spec2nexus.eznx*: (Easy NeXus) supports writing NeXus HDF5 files using h5py
@@ -322,10 +347,130 @@ low level programmatic access to the data structures.
 **HDFview** (http://www.hdfgroup.org)
     A Java based GUI for browsing (and some basic plotting) of HDF files.
 
-Language APIs
--------------
+.. _language.apis:
 
-**h5py** (http://docs.h5py.org/)
+Language APIs for NeXus and HDF5
+################################
+
+Collected here are some of the tools identified [#]_ as a result
+of a simple question asked at the 2018 Nobugs conference:
+*Are there examples of code that reads NeXus data?*
+Some of these are very specific to an instrument or application
+definition while others are more generic.
+The lists below are organized by programming language,
+yet some collections span several languages so they are
+listed in the section :ref:`language.apis.mixed`.
+
+.. [#] https://github.com/nexusformat/definitions/issues/630
+
+Note these example listed in addition to the many examples described
+here in the manual, in section :`Examples`.
+
+.. _language.apis.f77:
+
+Language API: *F77*
++++++++++++++++++++
+
+* **POLDI**: ``poldi.zip`` [#]_ contains:
+  - A F77 reading routine using NAPI for POLDI at SINQ PSI
+  - an example of a file which it reads
+
+  .. [#] https://github.com/nexusformat/definitions/files/4107360/poldi.zip
+
+
+.. _language.apis.idl:
+
+Language API: *IDL*
++++++++++++++++++++
+
+* **aXis2000** [#]_, with the NeXus-specific IDL code 
+  in the ``read_nexus.pro`` [#]_, reads :ref:`NXstxm`
+
+  .. [#] http://unicorn.chemistry.mcmaster.ca/aXis2000.html
+  .. [#] ``read_nexus.pro``: http://unicorn.chemistry.mcmaster.ca/axis/aXis2000.zip
+
+
+.. _language.apis.igorpro:
+
+Language API: *IgorPro*
++++++++++++++++++++++++
+
+* **HDF5gateway** [#]_ makes it easy to read a HDF5 file (including NeXus) into an 
+  IgorPro [#]_ folder, including group and dataset attributes, 
+  such as a NeXus data file, modify it, and then write 
+  the folder structure back out.
+
+  .. [#] https://github.com/prjemian/hdf5gateway
+  .. [#] IgorPro: https://wavemetrics.com
+
+.. _language.apis.java:
+
+Language API: *Java*
+++++++++++++++++++++
+
+* **Dawn** [#]_ has java code to read [#]_ and write [#]_ 
+  HDF5 NeXus files (generic NeXus, not tied to 
+  specific application definitions). 
+
+  .. [#] https://dawnsci.org/
+  .. [#] read: https://github.com/DawnScience/scisoft-core/blob/master/uk.ac.diamond.scisoft.analysis/src/uk/ac/diamond/scisoft/analysis/io/NexusHDF5Loader.java
+  .. [#] write: https://github.com/DawnScience/dawnsci/blob/master/org.eclipse.dawnsci.hdf5/src/org/eclipse/dawnsci/hdf5/nexus/NexusFileHDF5.java
+
+* ``NXreader.zip`` [#]_ is java code which reads NeXus files into **ImageJ.** 
+  It uses the Java-hdf interface to HDF5. It tries to do a good 
+  job locating the image dataset by NeXus conventions. 
+  But it uses the old style conventions. 
+
+  .. [#] https://github.com/nexusformat/definitions/files/4107439/NXreader.zip
+
+
+.. _language.apis.python:
+
+Language API: *Python*
+++++++++++++++++++++++
+
+* **Dials** [#]_ has python (and some C++) code for reading :ref:`NXmx` [#]_
+
+  .. [#] https://dials.github.io/
+  .. [#] read: https://github.com/cctbx/dxtbx/blob/master/format/nexus.py
+
+  - *cctbx.xfel* code for writing [#]_ :ref:`NXmx` master files for JF16M at SwissFEL
+
+    .. [#] write: https://github.com/cctbx/cctbx_project/blob/master/xfel/swissfel/jf16m_cxigeom2nexus.py
+
+* **h5py** (http://docs.h5py.org/)
 	HDF5 for Python (h5py) is a general-purpose Python interface to HDF5.
 
-.. TODO: list more APIs
+* **Mantis** [#]_, with NeXus-specific python code [#]_, reads :ref:`NXstxm`
+
+  .. [#] Mantis: http://spectromicroscopy.com/
+  .. [#] python code: https://bitbucket.org/mlerotic/spectromicroscopy/src/default/
+
+* **SasView** [#]_ has python code to read [#]_ and write [#]_ :ref:`NXcanSAS`
+
+  .. [#] https://www.sasview.org/
+  .. [#] read: https://github.com/SasView/sasview/blob/master/src/sas/sascalc/dataloader/readers/cansas_reader_HDF5.py
+  .. [#] write: https://github.com/SasView/sasview/blob/master/src/sas/sascalc/file_converter/nxcansas_writer.py
+
+
+.. _language.apis.mixed:
+
+Language API: *mixed*
++++++++++++++++++++++
+
+* **FOCUS**: ``focus.zip`` [#]_  contains:
+
+  - An example FOCUS file
+  - focusreport: A h5py program which skips through a list of files and prints statistics
+  - focusreport.tcl, same as above but in Tcl using the Swig generated binding to NAPI
+  - i80.f contains a F77 routine for reading FOCUS files into Ida. The routine is RRT_in_Foc.
+
+  .. [#] https://github.com/nexusformat/definitions/files/4107386/focus.zip
+
+* **ZEBRA**: ``zebra.zip`` [#]_  contains:
+
+  - an example file
+  - zebra-to-ascii, a h5py script which dumps a zebra file to ASCII
+  - ``TRICSReader.*`` for reading ZEBRA files in C++ using C-NAPI calls
+
+  .. [#] https://github.com/nexusformat/definitions/files/4107416/zebra.zip

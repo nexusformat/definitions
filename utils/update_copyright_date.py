@@ -50,7 +50,7 @@ def update(filename):
         text_r = text[pos:]
 
         try:
-            years = map(int, text[:pos].split('-'))
+            years = list(map(int, text[:pos].split('-')))
             if len(years) in (1, 2):
                 if len(years) == 1:
                     years.append(YEAR)
@@ -58,7 +58,7 @@ def update(filename):
                     years[1] = YEAR
                 line_new = text_l + '-'.join(map(str, years)) + text_r
                 changes.append(list((number, line_new)))
-        except Exception, _exc:
+        except Exception as _exc:
             print(number, filename, str(_exc))
     for number, line in changes:
         buf[number] = line
@@ -171,7 +171,7 @@ if __name__ == '__main__':
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2017 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

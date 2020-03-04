@@ -113,9 +113,9 @@ basic NeXus data components:
   
   .. code-block:: c
 
-	  # --tba--
-	  # TODO: write some text about HDF5 hard links
-	  # until then, see the h5dump example below
+     NXmakelink (fileid, &itemid);
+     # -or-
+     NXmakenamedlink (fileid, "linked_name", &itemid);
 
 See the sections :ref:`example.napi.simple.2d.write`
 and  :ref:`example.napi.simple.3d.write.python` in the :ref:`Examples`
@@ -130,7 +130,7 @@ chapter for examples that use the native HDF5 calls to write NeXus data files.
     .. literalinclude:: examples/h5dump_group.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 .. compound::
 
@@ -141,7 +141,7 @@ chapter for examples that use the native HDF5 calls to write NeXus data files.
     .. literalinclude:: examples/h5dump_field.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 .. compound::
 
@@ -152,7 +152,7 @@ chapter for examples that use the native HDF5 calls to write NeXus data files.
     .. literalinclude:: examples/h5dump_attribute.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 .. compound::
 
@@ -163,7 +163,7 @@ chapter for examples that use the native HDF5 calls to write NeXus data files.
     .. literalinclude:: examples/h5dump_link.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 
 ..	XML is no longer a supported backend file format
@@ -197,7 +197,7 @@ chapter for examples that use the native HDF5 calls to write NeXus data files.
 		.. literalinclude:: examples/mapping1.xml.txt
 			:tab-width: 4
 			:linenos:
-			:language: guess
+			:language: xml
 
 	NeXus data sets are encoded as XML elements with
 	the name of the data. An attribute ``NAPItype`` defines the type and
@@ -216,7 +216,7 @@ chapter for examples that use the native HDF5 calls to write NeXus data files.
 		.. literalinclude:: examples/mapping2.xml.txt
 			:tab-width: 4
 			:linenos:
-			:language: guess
+			:language: xml
 
 	.. index::
 	   attribute; XML

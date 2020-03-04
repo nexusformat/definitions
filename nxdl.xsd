@@ -10,7 +10,7 @@
 			..
 				NeXus - Neutron and X-ray Common Data Format
 
-				Copyright (C) 2008-2017 NeXus International Advisory Committee (NIAC)
+				Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
 				 
 				This library is free software; you can redistribute it and/osr
 				modify it under the terms of the GNU Lesser General Public
@@ -117,8 +117,7 @@
 		<xs:restriction base="xs:token">
 			<xs:annotation>
 				<xs:documentation>
-					From the HDF5 documentation 
-					(http://www.hdfgroup.org/HDF5/doc/UG/UG_frame09Groups.html):
+					From the HDF5 documentation:
 					
 						*Note that relative path names in HDF5 do not employ the ``../`` notation, 
 						the UNIX notation indicating a parent directory, to indicate a parent group.*
@@ -227,18 +226,6 @@
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="version" use="required">
-			<xs:annotation>
-				<xs:documentation>
-					Version of *this* NXDL definition.  
-					Each NXDL specification
-					may have a different version to facilitate software maintenance.
-					This value is modified by the person who edits this file when
-					this NXDL specification has changed significantly (in a way that
-					downstream software should be aware).
-				</xs:documentation>
-			</xs:annotation>
-		</xs:attribute>
 		<xs:attribute name="type" use="required" type="nx:definitionTypeAttr">
 			<xs:annotation>
 				<xs:documentation>Must be ``type="group"``</xs:documentation>
@@ -271,7 +258,6 @@
 					(2014-08-19: deprecated since switch to GitHub version control)
 					The identifier string from the subversion revision control system.
 					This reports the time stamp and the revision number of this file.
-					(Updated automatically, unlike the ``version`` attribute.)
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -364,6 +350,41 @@
 			<xs:enumeration value="definition" />
 		</xs:restriction>
 	</xs:simpleType>
+	
+	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	
+	<xs:complexType name="choiceType">
+		<xs:annotation>
+			<xs:documentation>
+				A ``choice`` element is used when a named group might take one
+				of several possible NeXus base classes.  Logically, it must
+				have at least two group children.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+		  <xs:element name="group" type="nx:groupType" minOccurs="2" maxOccurs="unbounded">
+		  	<xs:annotation>
+		  		<xs:documentation>
+		  			NeXus base class that could be used here.
+		  			The group will take the ``@name`` attribute 
+		  			defined by the parent ``choice`` element
+		  			so do not specify the ``@name`` attribute of
+		  			the group here.
+		  		</xs:documentation>
+		  		<!-- TODO: How to enforce the name rule in the schema? -->
+		  	</xs:annotation>
+		  </xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" use="required" type="nx:validItemName">
+			<xs:annotation>
+				<xs:documentation>
+					The name to be applied to the selected child group.  
+					None of the child groups should define a 
+					``@name`` attribute.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:complexType>
 	
 	<!-- +++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
 	
@@ -471,6 +492,14 @@
 					<xs:documentation>
 						Use an ``attribute`` if additional information 
 						needs to be associated with a ``group``.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="choice" type="nx:choiceType" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						Use a ``choice`` if a named group could be either
+						of a defined list of base classes.
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
@@ -694,11 +723,12 @@
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
-				<xs:attribute name="type" type="nx:NAPI" default="NX_CHAR">
+				<xs:attribute name="type" type="nx:primitiveType" default="NX_CHAR">
 					<xs:annotation>
 						<xs:documentation>
-							Defines the type of the element as allowed by the NAPI (NeXus Application Programmer Interface).
-							See elsewhere for the complete list of allowed NAPI types.
+							Defines the type of the element as allowed by NeXus.
+
+							See :ref:`here&lt;Design-DataTypes&gt;` and :ref:`elsewhere&lt;nxdl-types&gt;` for the complete list of allowed types.
 						</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
@@ -741,9 +771,9 @@
 							positive to move forward or negative to step backward.
 							A value of zero will not step (and is of no particular use).
 							
-							See http://davis.lbl.gov/Manuals/HDF5-1.4.3/Tutor/phypereg.html
+							See https://support.hdfgroup.org/HDF5/Tutor/phypereg.html
 							or *4. Dataspace Selection Operations* in
-							http://www.hdfgroup.org/HDF5/doc1.6/Dataspaces.html.
+							https://portal.hdfgroup.org/display/HDF5/Dataspaces
 							
 
 							The ``stride`` attribute contains a 
@@ -773,9 +803,9 @@
 							determines the starting coordinates of the data array
 							for each dimension.
 							
-							See http://davis.lbl.gov/Manuals/HDF5-1.4.3/Tutor/phypereg.html
+							See https://support.hdfgroup.org/HDF5/Tutor/phypereg.html
 							or *4. Dataspace Selection Operations* in
-							http://www.hdfgroup.org/HDF5/doc1.6/Dataspaces.html.
+							https://portal.hdfgroup.org/display/HDF5/Dataspaces
 							
 							The ``data_offset`` attribute contains a 
 							comma-separated list of integers. 
@@ -872,6 +902,13 @@
 					</xs:documentation>
 				</xs:annotation>
 			</xs:element>
+			<xs:element name="dimensions" type="nx:dimensionsType" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						dimensions of an attribute with data value(s) in a NeXus file
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
 		</xs:sequence>
 		<xs:attribute name="name" use="required" type="nx:validItemName">
 			<xs:annotation>
@@ -886,7 +923,7 @@
 					Type of the attribute.
 					For ``group`` specifications, the class name.
 					For ``field`` or ``attribute`` specifications, 
-					the NXDL data type.
+					the NXDL field type.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
@@ -938,10 +975,11 @@
 				<xs:attribute name="target" use="required" type="nx:validTargetName">
 					<xs:annotation>
 						<xs:documentation>
-							A link to another item, represented as an
-							absolute path to an existing field or group such as
-							``/NXentry/NXinstrument/NXdetector/polar_angle``
-							or ``/NXentry/NXdata``.
+							Declares the absolute HDF5 address of an existing field or group.
+							
+							The target attribute is added for NeXus to distinguish the 
+							HDF5 path to the original dataset.
+							
 							Could contain these elements:
 							
 							* ``doc``
@@ -950,8 +988,34 @@
 							
 								(/[a-zA-Z_][\w_]*(:[a-zA-Z_][\w_]*)?)+
 								
+							For example, given a
+							``/entry/instrument/detector/polar_angle`` field,
+							link it into the ``NXdata`` group
+							(at ``/entry/data/polar_angle``).
+							This would be the NeXus data file structure::
+							
+								/: NeXus/HDF5 data file
+									/entry:NXentry
+										/data:NXdata
+											/polar_angle:NX_NUMBER
+												@target="/entry/instrument/detector/polar_angle"
+										/instrument:NXinstrument
+											/detector:NXdetector
+												/polar_angle:NX_NUMBER
+													@target="/entry/instrument/detector/polar_angle"
+											
 						</xs:documentation>
 					</xs:annotation>					
+				</xs:attribute>
+				<xs:attribute name="napimount" use="optional" type="xs:string">
+					<xs:annotation>
+						<xs:documentation>
+							Group attribute that provides a URL to a group in another file.  
+							More information is described in the *NeXus Programmers Reference*.
+							
+							http://manual.nexusformat.org/pdf/NeXusIntern.pdf
+						</xs:documentation>
+					</xs:annotation>
 				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
@@ -1235,11 +1299,14 @@
 		<xs:attribute name="rank" type="nx:NX_CHAR">
 			<xs:annotation>
 				<xs:documentation>
-					Rank (number of dimensions) of the data structure.  
+					Rank (number of dimensions) of the data structure.
+					
+					Value could be either an unsigned integer or a symbol
+					as defined in the *symbol* table of the NXDL file.
+					
 					For example: ``a[5]`` has ``rank="1"`` while 
 					``b[8,5,6,4]`` has ``rank="4"``.  
-					See http://en.wikipedia.org/wiki/Rank_(computer_programming) 
-					for more details.
+					See https://en.wikipedia.org/wiki/Rank_%28computer_programming%29 for more details.
 				</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>

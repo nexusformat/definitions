@@ -32,7 +32,7 @@ NAPI C Example: write simple NeXus file
 .. literalinclude:: napi-example.c
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: c
 
 NAPI F77 Example: write simple NeXus file
 +++++++++++++++++++++++++++++++++++++++++
@@ -42,7 +42,7 @@ NAPI F77 Example: write simple NeXus file
 .. literalinclude:: napi-example.f77
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: fortran
 
 NAPI F90 Example: write simple NeXus file
 +++++++++++++++++++++++++++++++++++++++++
@@ -54,7 +54,7 @@ NAPI F90 Example: write simple NeXus file
 .. literalinclude:: napi-example.f90
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: fortran
 
 
 .. _example.napi.simple.3d.write.python:
@@ -75,7 +75,7 @@ NAPI Python Example: write simple NeXus file
 .. literalinclude:: simple3D.py
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: python
 
 View a NeXus HDF5 file using *h5dump*
 #####################################
@@ -93,26 +93,27 @@ NAPI Python Example: ``h5dump`` output of NeXus HDF5 file
 .. literalinclude:: simple3D.h5dump.txt
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: text
 
 
-View a NeXus HDF5 file using *h5toText.py*
-##########################################
+View a NeXus HDF5 file using *punx tree*
+########################################
 
 The output of ``h5dump`` contains a lot of structural information
 about the HDF5 file that can distract us from the actual content we added to the file.
-Next, we show the output from a custom Python tool (``h5toText.py``) built for
-this documentation and later moved into the **spec2nexus** package. [#]_
-This tool was developed to show the actual data content of an
+Next, we show the output from a custom Python tool (``punx tree``) built for
+NeXus data file validation and view. [#]_
+The *tree* option of this tool [#]_ was developed to show the actual data content of an
 HDF5 file that we create.
 
-.. [#] **spec2nexus** : http://spec2nexus.readthedocs.org
+.. [#] **punx** : https://punx.readthedocs.io/
+.. [#] **punx tree** : https://punx.readthedocs.io/en/latest/source_code/h5tree.html#how-to-use-h5tree
 
-NAPI Python Example: ``h5toText`` output of NeXus HDF5 file
-+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+NAPI Python Example: ``punx tree simple3D.h5`` output of NeXus HDF5 file
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. literalinclude:: simple3D.xture.txt
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: text
     

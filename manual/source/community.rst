@@ -35,7 +35,7 @@ NeXus Webpage
 =============
 
 First of all, there is the NeXus webpage,
-http://www.nexusformat.org/,
+https://www.nexusformat.org/,
 which provides all kinds of information, including membership, minutes, and 
 discussions from the meetings of the NIAC, Code Camps, and Tele Conferences, 
 as well as some proposed designs for consideration by NeXus.
@@ -50,7 +50,7 @@ code are always welcome!
 .. _community.Contributed.Definitions:
 
 Contributed Definitions
-========================
+=======================
 
 The community is encouraged to provide new definitions 
 (:ref:`base.class.definitions` or :ref:`application.definitions`) for consideration
@@ -59,7 +59,7 @@ will be entered in the :ref:`contributed.definitions`
 and will be curated according to procedures set forth by the :ref:`NIAC`.
 
 Other Ways NeXus Coordinates with the Scientific Community
-============================================================
+==========================================================
 
 .. toctree::
    :maxdepth: 1

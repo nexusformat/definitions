@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2008-2017 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -22,37 +22,36 @@
 # For further information, see http://www.nexusformat.org
 -->
 <definition
-	name="NXlog" 
-	version="1.1" 
-    type="group" 
+	name="NXlog"
+    type="group"
     extends="NXobject"
 	category="base"
-	xmlns="http://definition.nexusformat.org/nxdl/3.1" 
+	xmlns="http://definition.nexusformat.org/nxdl/3.1"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
     >
     <doc>
 		Information recorded as a function of time.
-		
+
 		Description of information that is recorded against
 		time. There are two common use cases for this:
 
 		- When logging data such as temperature during a run
 		- When data is taken in streaming mode data acquisition,
 		  i.e. just timestamp, value pairs are stored and
-		  correlated later in data reduction with other data, 
+		  correlated later in data reduction with other data,
 
-		
-		It both cases NXlog contains 
+
+		In both cases, NXlog contains
 		the logged or streamed  values and the times at which they were measured as elapsed time since a starting
 		time recorded in ISO8601 format. The time units are
 		specified in the units attribute. An optional scaling attribute
-		can be used to accomodate non standard clocks. 
+		can be used to accomodate non standard clocks.
 
-		
+
 		This method of storing logged data helps to distinguish
 		instances in which a variable is a dimension scale of the data, in which case it is stored
-		in an :ref:`NXdata` group, and instances in which it is logged during the 
+		in an :ref:`NXdata` group, and instances in which it is logged during the
 		run, when it should be stored in an :ref:`NXlog` group.
 
 		In order to make random access to timestamped data faster there is an optional array pair of
@@ -60,18 +59,22 @@
 		contain coarser timestamps than in the time array, say
 		every five minutes. The ``cue_index`` will then contain the
 		index into the time,value pair of arrays for that
-		coarser ``cue_timestamp_zero``. 
+		coarser ``cue_timestamp_zero``.
 
     </doc>
-	<field name="time" type="NX_FLOAT" units="NX_TIME">
+	<field name="time" type="NX_NUMBER" units="NX_TIME">
 		<doc>
-			Time of logged entry. The times are relative to the "start" attribute 
+			Time of logged entry. The times are relative to the "start" attribute
 			and in the units specified in the "units"
 			attribute. Please note that absolute
 			timestamps under unix are relative to ``1970-01-01T:00:00``.
-        </doc>
-        <attribute name="start" type="NX_DATE_TIME" />
-	<attribute name="scaling" type="NX_NUMBER"/>
+
+			The scaling_factor, when present, has to be applied to the time values in order
+			to arrive at the units specified in the units attribute. The scaling_factor allows
+			for arbitrary time units such as ticks of some hardware clock.
+		</doc>
+		<attribute name="start" type="NX_DATE_TIME" />
+		<attribute name="scaling_factor" type="NX_NUMBER" />
 	</field>
 	<field name="value" units="NX_ANY" type="NX_NUMBER">
 	  <doc>
@@ -79,7 +82,7 @@
 	    a single value the dimensionality is
 	    nEntries. However, NXlog can also be used to store
 	    multi dimensional time stamped data such as images. In
-	    this example the dimensionality of values would be value[nEntries,xdim,ydim].   
+	    this example the dimensionality of values would be value[nEntries,xdim,ydim].
 	  </doc>
 	</field>
 	<field name="raw_value" units="NX_ANY" type="NX_NUMBER">
@@ -97,18 +100,22 @@
 	<field name="duration" type="NX_FLOAT" units="NX_ANY">
 		<doc>Total time log was taken</doc>
 	</field>
-	<field name="cue_timestamp_zero"  type="NX_DATE_TIME"
-	       units="NX_TIME">
+	<field name="cue_timestamp_zero" type="NX_NUMBER" units="NX_TIME">
 	  <doc>
 	    Timestamps matching the corresponding cue_index into the
 	    time, value pair.
 	  </doc>
-	  <attribute name="start" type="NX_DATE_TIME" />
+	  <attribute name="start" type="NX_DATE_TIME">
+			<doc>If missing start is assumed to be the same as for "time".</doc>
+          </attribute>
+          <attribute name="scaling_factor" type="NX_NUMBER">
+		  <doc>If missing start is assumed to be the same as for "time".</doc>
+  	  </attribute>
 	</field>
 	<field name="cue_index" type="NX_INT">
 	  <doc>
 	    Index into the time, value pair matching the corresponding
-	    cue_timestamp. 
+	    cue_timestamp_zero.
 	  </doc>
 	</field>
 </definition>

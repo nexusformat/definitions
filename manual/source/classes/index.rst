@@ -4,7 +4,7 @@
 .. _all.class.definitions:
 
 NeXus Class Definitions
-#########################
+#######################
 
 Definitions of NeXus classes. These are split into base_classes (low level objects), 
 application definitions (groupings of objects for a particular technique) and 
@@ -29,7 +29,7 @@ contributed_definitions (proposed definitions from the community)
     
     Validation procedures should treat such additional items 
     (not covered by a base class specification) as notes or warnings
-    rather than errors.  
+    rather than errors. 
 
 :ref:`application definitions <application.definitions>`
     NeXus application definitions define the *minimum*
@@ -39,8 +39,48 @@ contributed_definitions (proposed definitions from the community)
     are optional in the NeXus data file.
     
     As in base classes (see above), additional terms that are
-    not described by the application definition, may be added to
-    data files that incorporate or adhere to application definitions.
+    not described by the application definition may be added to
+    data files that incorporate or adhere to application definitions. 
+    
+    .. index:: link
+    
+    Use NeXus links liberally in data files to reduce duplication of data.
+    In application definitions involving raw data,
+    write the raw data in the :ref:`NXinstrument` tree and then link to it
+    from the location(s) defined in the relevant application definition.
+    See figure :ref:`NeXus Multi Method Hierarchy <table.NXsubentry>`
+    for an example.
+    
+    .. index:: subentry; NXsubentry, use of, multi-modal data
+    
+    To write a data file with an application definition, start with either
+    a :ref:`NXentry` (or :ref:`NXsubentry`) group [#]_ and write the name of the
+    application definition in the ``definition`` field.  Then write data into 
+    this group according to the specifications of the application definition.
+    
+    .. [#] For data files involving just an application definition, use
+       the :ref:`NXentry` group.  Such as this structure::
+       
+         entry:NXentry
+            definition="NXsas"
+       
+       For files that describe multi-modal
+       data and require use of two or more application definitions
+       (such as :ref:`NXsas` *and* :ref:`NXcanSAS`), you must place each
+       application definition in a :ref:`NXsubentry` of the :ref:`NXentry` group.
+       Such as this structure::
+       
+         entry:NXentry
+            raw:NXsubentry
+               definition="NXsas"
+            reduced:NXsubentry
+               definition="NXcanSAS"
+            fluo:NXsubentry
+               definition="NXfluo"
+       
+       If you anticipate your data file will eventually require an additional
+       application definition, you should start with each application definition
+       in a :ref:`NXsubentry` group.
 
 :ref:`contributed definitions <contributed.definitions>`
     NXDL files in the NeXus contributed definitions include propositions from

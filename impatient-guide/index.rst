@@ -13,9 +13,9 @@ Why NeXus?
 .. seealso:: 
 
    This document is available online in 
-   `HTML <http://download.nexusformat.org/doc/impatient>`_
+   `HTML <https://manual.nexusformat.org/impatient>`_
    and
-   `PDF <http://download.nexusformat.org/doc/NXImpatient.pdf>`_
+   `PDF <https://manual.nexusformat.org/pdf/NXImpatient.pdf>`_
    formats.
 
 The NeXus data format [#NeXus]_ is a tool which has been designed to
@@ -337,7 +337,7 @@ for storing such data:
       reduction:NXprocess
          program_name = "pyDataProc2010"
          version = "1.0a"
-         input:NXparameter
+         input:NXparameters
             filename = "sn2013287.nxs"
       sample:NXsample
       data:NXdata
@@ -361,8 +361,8 @@ Here the ``NXentry`` contains:
     This group is used to document what kind of processing occurred to
     obtain the results stored in this ``NXentry``. Here NeXus documents the name
     and version of the program used to do the reduction.
-``input:NXparameter``
-    The ``NXparameter`` groups describe the input and output
+``input:NXparameters``
+    The ``NXparameters`` groups describe the input and output
     parameters of the data reduction program. NeXus does not provide
     standard names here but rather provides containers to store this
     information which is important to make results reproducible.
@@ -445,9 +445,8 @@ Any program whose aim is to identify plottable data should use the following pro
 #. Plot the *signal* data, given *axes* and *AXISNAME_indices*.
 
 For details of this process, consult this 
-`section <http://download.nexusformat.org/doc/html/datarules.html#version-3>`_ 
+`section <https://manual.nexusformat.org/datarules.html#version-3>`_ 
 of the NeXus manual. [#v3]_
-
 
 NeXus Benefits
 ==============
@@ -692,7 +691,7 @@ More Information
 ================
 
 Did we get you interested? Here is where you can get more information.
-Our main entry point is the NeXus WWW-site at http://www.nexusformat.org
+Our main entry point is the NeXus WWW-site at https://www.nexusformat.org/
 where you can find more information, download the NeXus API, 
 NeXus User Manual [#Manual]_ and
 NeXus Reference Documentation. [#RefDoc]_
@@ -717,22 +716,23 @@ which meets once a  year. The NIAC strives to have a representative for
 each participating facility. The NIAC has a constitution which you can
 find on the NeXus WWW site.
 
-.. [#NeXus] NeXus: http://www.nexusformat.org/
+.. [#NeXus] NeXus: https://www.nexusformat.org/
 
   .. shameless self-promotion
 
 .. [#HDF5] HDF-5: http://www.hdfgroup.org/HDF5/
 
-.. [#h5py] *h5py*: http://code.google.com/p/h5py/
+.. [#h5py] *h5py*: https://www.h5py.org/
 
 .. [#lrcs3701] ``lrcs3701.nx5`` (NeXus HDF-5 data file):
    http://svn.nexusformat.org/definitions/exampledata/IPNS/LRMECS/lrcs3701.nx5
 
 .. [#Manual] NeXus User Manual:
-   http://download.nexusformat.org/doc/html/UserManual.html
+   https://manual.nexusformat.org/user_manual.html
 
 .. [#RefDoc] NeXus Reference Documentation:
-   http://download.nexusformat.org/doc/html/ReferenceDocumentation.html
+   https://manual.nexusformat.org/ref_doc.html
 
 .. [#v3] Finding the plottable data:
-   http://download.nexusformat.org/doc/html/datarules.html#version-3
+   https://manual.nexusformat.org/datarules.html#version-3
+

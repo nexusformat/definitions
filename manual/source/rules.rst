@@ -103,7 +103,7 @@ In the case of processed data, the ``NXdata`` group holds the
 result of the processing together with the associated axis data.
 The ``NXprocess``
 group holds the name and version of the program used for this processing
-step and further ``NXparameter`` groups. These groups ought to contain the
+step and further ``NXparameters`` groups. These groups ought to contain the
 parameters used for this data processing step in suitable detail so that
 the processing step can be reproduced.
 
@@ -367,6 +367,22 @@ dimensions ``xraster, yraster, xsize, ysize``.
 
 .. warning:: Be warned: if you use the 2D rasterisation method with ``xraster, yraster`` you may end up with
              invalid data if the scan is aborted prematurely. This cannot happen if the first method is used.
+
+
+Streaming Data Acquisition And Logging
+======================================
+
+More and more data is collected in streaming mode. This means that time stamped data is logged for one or more inputs, 
+possibly together with detector data. Another use case is the logging of parameters, for example temperature, while a long 
+running data collection is in progress. NeXus covers this case too. There is one simple rule for structuring such files:
+
+Just use the standard NeXus raw data file structure, but replace the corresponding data object 
+with an :ref:`NXlog` or :ref:`NXevent_data` structure of the same name. 
+
+For example, consider your instrument is streaming detector images against a magnetic_field on the sample. In this case both 
+NXsample/magnetic_field and NXdetector/data would become NXlog structures instead of simple arrays i.e. the NXlog structure will 
+have the same name as the NeXus field involved.        
+ 
 
 NXcollection
 ============

@@ -3,7 +3,7 @@
 <!--
   # NeXus - Neutron and X-ray Common Data Format
   #
-  # Copyright (C) 2013-2017 NeXus International Advisory Committee (NIAC)
+  # Copyright (C) 2013-2020 NeXus International Advisory Committee (NIAC)
   #
   # This library is free software; you can redistribute it and/or
   # modify it under the terms of the GNU Lesser General Public
@@ -22,21 +22,18 @@
   # For further information, see http://www.nexusformat.org
 -->
 <definition name="NXmx" extends="NXobject" type="group"
-		version="1.5" category="application"
+		category="application"
 		xmlns="http://definition.nexusformat.org/nxdl/3.1"
 		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
 		>
 
 		<symbols>
-			<!-- TODO define options for most fields to allow them to be either scalar
-				or arrays indexed by np, i, j, k, ...,
-			-->
 			<doc>
 				These symbols will be used below to coordinate datasets
 				with the same shape.  Most MX x-ray detectors will produce
 				two-dimensional images.  Some will produce three-dimensional
-				images, using one of the indices to select a detector element.
+				images, using one of the indices to select a detector module.
 			</doc>
 			<symbol name="dataRank">
 				<doc>rank of the ``data`` field</doc>
@@ -53,6 +50,9 @@
 			<symbol name="k">
 				<doc>number of detector pixels in the third slowest direction</doc>
 			</symbol>
+			<symbol name="m">
+				<doc>number of channels in the incident beam spectrum, if known</doc>
+			</symbol>
 		</symbols>
 
 		<doc>
@@ -60,6 +60,13 @@
 		</doc>
 
 		<group type="NXentry">
+
+			<doc>
+				Note, it is recommended that ``file_name`` and ``file_time`` are included
+				as attributes at the root of a file that includes :ref:`NXmx`. See
+				:ref:`NXroot`.
+			</doc>
+
 			<field name="title" type="NX_CHAR" minOccurs="0" />
 
 			<field name="start_time" type="NX_DATE_TIME" minOccurs="0" />
@@ -74,6 +81,13 @@
 			</field>
 
 			<group type="NXinstrument">
+			        <field name="name" minOccurs="1">
+                                       <doc>Name of instrument</doc>
+                                       <attribute name="short_name">
+                                               <doc>short name for instrument, perhaps the acronym</doc>
+                                       </attribute>
+                                </field>
+
 				<group type="NXattenuator" minOccurs="0">
 					<field name="attenuator_transmission" type="NX_NUMBER" units="NX_UNITLESS"
 						minOccurs="0" />
@@ -145,7 +159,14 @@
 						However, in the case of multiple detector elements, each element
 						needs a uniquely named NXdetector group.
 					</doc>
-					<field name="depends_on" type="NX_CHAR" /> <!-- better type for paths needed  -->
+					<field name="depends_on" type="NX_CHAR"> <!-- better type for paths needed  -->
+						<doc>
+							NeXus path to the detector positioner axis that most directly
+							supports the detector.  In the case of a multi-module detector,
+							this should be the most common axis, or ``.`` if no axes are in
+							common.
+						</doc>
+					</field>
 
 					<group type="NXtransformations" minOccurs="0">
 						<doc>
@@ -164,6 +185,7 @@
 
 					<field name="data" type="NX_NUMBER">
 						<doc>
+							The pixel data recorded, if available.
 							For a dimension-2 detector, the rank of the data array will be 3.
 							For a dimension-3 detector, the rank of the data array will be 4.
 							This allows for the introduction of the frame number as the
@@ -204,20 +226,26 @@
 						</doc>
 						<field name="data_origin" type="NX_INT">
 							<doc>
-								A dimension-2 or dimension-3  field which gives the indices
+								A dimension-2 or dimension-3 field which gives the indices
 								of the origin of the hyperslab of data for this module in the
 								main area detector image in the parent NXdetector module.
 
 								The data_origin is 0-based.
 
-								The frame number dimension (np) is omitted.  The order
-								of indices is i, j or i, j, k, i.e. slow to fast.
+								The frame number dimension (np) is omitted.  Thus the
+								data_origin field for a dimension-2 dataset with indices (np, i, j)
+								will be an array with indices (i, j), and for a dimension-3
+								dataset with indices (np, i, j, k) will be an array with indices
+								(i, j, k).
+
+								The :ref:`order &lt;Design-ArrayStorageOrder&gt;` of indices (i, j or i, j, k) is slow to fast.
 							</doc>
 						</field>
 						<field name="data_size" type="NX_INT">
 							<doc>
 								Two or three values for the size of the module in pixels in
-								each direction.
+								each direction. Dimensionality and order of indices is the
+								same as for data_origin.
 							</doc>
 						</field>
 						<field name="data_stride" type="NX_INT" minOccurs="0">
@@ -248,8 +276,8 @@
 						</field>
 						<field name="fast_pixel_direction" units="NX_LENGTH" type="NX_NUMBER">
 							<doc>
-								Values along the direction of fastest varying pixel direction.The
-								direction itself is given through the vector attribute
+								Values along the direction of :ref:`fastest varying &lt;Design-ArrayStorageOrder&gt;` pixel direction.
+								The direction itself is given through the vector attribute
 							</doc>
 							<attribute name="transformation_type">
 								<enumeration>
@@ -265,7 +293,7 @@
 						</field>
 						<field name="slow_pixel_direction" type="NX_NUMBER" units="NX_LENGTH">
 							<doc>
-								Values along the direction of slow varying pixel direction. The
+								Values along the direction of :ref:`slowest varying &lt;Design-ArrayStorageOrder&gt;` pixel direction. The
 								direction itself is given through the vector attribute
 							</doc>
 							<attribute name="transformation_type">
@@ -375,7 +403,10 @@
 
 					<field name="pixel_mask" type="NX_INT" minOccurs="0">
 						<doc>
-							The 32-bit pixel mask for the detector.
+							The 32-bit pixel mask for the detector. Can be either one mask
+							for the whole dataset (i.e. an array with indices i, j) or
+							each frame can have its own mask (in which case it would be
+							an array with indices np, i, j).
 							Contains a bit field
 							for each pixel to signal dead,
 							blind or high or otherwise unwanted
@@ -406,6 +437,15 @@
 
 							If the full bit depths is not required, providing a
 							mask with fewer bits is permissible.
+
+							If needed, additional pixel masks can be specified by
+							including additional entries named pixel_mask_N, where
+							N is an integer. For example, a general bad pixel mask
+							could be specified in pixel_mask that indicates noisy
+							and dead pixels, and an additional pixel mask from
+							experiment-specific shadowing could be specified in
+							pixel_mask_2. The cumulative mask is the bitwise OR
+							of pixel_mask and any pixel_mask_N entries.
 						</doc>
 						<dimensions rank="dataRank">
 							<dim index="1" value="i" />
@@ -413,7 +453,6 @@
 							<dim index="3" value="k" required="false"/>
 						</dimensions>
 					</field>
-
 					<field name="countrate_correction_applied" type="NX_BOOLEAN"
 						minOccurs="0">
 						<doc>
@@ -544,17 +583,41 @@
 							In the case of a monchromatic beam this is the scalar
 							wavelength.
 
+							Several other use cases are permitted, depending on the
+							presence or absence of other incident_wavelength_X
+							fields.
+
 							In the case of a polychromatic beam this is an array of
-							the wavelengths with the relative weights in
-							incident_wavelength_weight.
+							length **m** of wavelengths, with the relative weights
+							in incident_wavelength_weight.
+
+							In the case of a monochromatic beam that varies shot-
+							to-shot, this is an array of wavelengths, one for each
+							recorded shot. Here, incident_wavelength_weight and 
+							incident_wavelength_spread are not set.
+
+							In the case of a polychromatic beam that varies shot-to-
+							shot, this is an array of length **m** with the relative
+							weights in incident_wavelength_weight as a 2D array.
+
+							In the case of a polychromatic beam that varies shot-to-
+							shot and where the channels also vary, this is a 2D array
+							of dimensions **np** by **m** (slow to fast) with the
+							relative weights in incident_wavelength_weight as a 2D
+							array.
 						</doc>
 					</field>
 
 					<field name="incident_wavelength_weight" type="NX_FLOAT" minOccurs="0" >
 						<doc>
-							In the case of a polychromatic beam this is an array of the
-							relative weights of the corresponding wavelengths in
-							incident_wavelength.
+							In the case of a polychromatic beam this is an array of 
+							length **m** of the relative weights of the corresponding
+							wavelengths in incident_wavelength.
+
+							In the case of a polychromatic beam that varies shot-to-
+							shot, this is a 2D array of dimensions **np** by **m** 
+							(slow to fast) of the relative weights of the
+							corresponding wavelengths in incident_wavelength.
 						</doc>
 					</field>
 
@@ -563,6 +626,11 @@
 						<doc>
 							The wavelength spread FWHM for the corresponding
 							wavelength(s) in incident_wavelength.
+
+							In the case of shot-to-shot variation in the wavelength
+							spread, this is a 2D array of dimension **np** by
+							**m** (slow to fast) of the spreads of the
+							corresponding wavelengths in incident_wavelength.
 						</doc>
 					</field>
 
@@ -571,14 +639,20 @@
 
 					<field name="flux" type="NX_FLOAT" units="NX_FLUX" minOccurs="0">
 						<doc>
-							flux incident on beam plane area in photons
+							flux density incident on beam plane area in photons
 							per second per unit area
+
+							In the case of a beam that varies in flux shot-to-shot,
+							this is an array of values, one for each recorded shot.
 						</doc>
 					</field>
 
 					<field name="total_flux" type="NX_FLOAT" units="NX_FREQUENCY" minOccurs="0">
 						<doc>
 							flux incident on beam plane in photons per second
+
+							In the case of a beam that varies in total flux shot-to-shot,
+							this is an array of values, one for each recorded shot.
 						</doc>
 					</field>
 
@@ -617,6 +691,26 @@
 				</group>
 			</group>
 
-			<group type="NXdata" />
+                        <group type="NXsource">
+				<doc>
+					The neutron or x-ray storage ring/facility. Note, the NXsource base class
+					as many more fields available, but at present we only require the name.
+				</doc>
+				<field name="name" minOccurs="1">
+					<doc>Name of source</doc>
+					<attribute name="short_name">
+						<doc>short name for source, perhaps the acronym</doc>
+					</attribute>
+				</field>
+			</group>
+			<group type="NXdata" minOccurs="0">
+				<doc>
+					The pixel data recorded, if available.
+					For a dimension-2 detector, the rank of the data array will be 3.
+					For a dimension-3 detector, the rank of the data array will be 4.
+					This allows for the introduction of the frame number as the
+					first index.
+				</doc>
+			</group>
 		</group>
 </definition>

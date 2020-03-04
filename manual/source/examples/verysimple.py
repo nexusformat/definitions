@@ -25,10 +25,10 @@ nxdata.attrs['two_theta_indices'] = [0,]
 
 tth = nxdata.create_dataset('two_theta', data=angle)
 tth.attrs['units'] = 'degrees'
-tth.attrs['long_name'] = 'photodiode counts'
+tth.attrs['long_name'] = 'two_theta (degrees)'
 
 counts = nxdata.create_dataset('counts', data=diode)
 counts.attrs['units'] = 'counts'
-counts.attrs['long_name'] = 'two_theta (degrees)'
+counts.attrs['long_name'] = 'photodiode counts'
 
 f.close()
