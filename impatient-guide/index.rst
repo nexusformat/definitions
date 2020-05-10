@@ -722,7 +722,7 @@ find on the NeXus WWW site.
 
 .. [#HDF5] HDF-5: http://www.hdfgroup.org/HDF5/
 
-.. [#h5py] *h5py*: http://code.google.com/p/h5py/
+.. [#h5py] *h5py*: https://www.h5py.org/
 
 .. [#lrcs3701] ``lrcs3701.nx5`` (NeXus HDF-5 data file):
    http://svn.nexusformat.org/definitions/exampledata/IPNS/LRMECS/lrcs3701.nx5

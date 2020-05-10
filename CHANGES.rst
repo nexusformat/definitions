@@ -12,12 +12,11 @@
 Change History
 ##############
 
-:v2019.10:  expected *2019-10-15*
+:v2020.1:  released *2020-01-31*
 
-    * `#628 <https://github.com/nexusformat/definitions/issues/628>`_
-       new: contributed_definitions/NXcxi_ptycho
-    * `#614 <https://github.com/nexusformat/definitions/pull/614>`_
-       new: base/NXpdb
+    * see Release Notes wiki: https://github.com/nexusformat/definitions/wiki/releasenotes_v2020.1
+    * The manual is now published through GitHub Pages: https://manual.nexusformat.org
+    * We have a DOI (with zenodo https://zenodo.org/record/3629571) that updates with each release of the definitions repository.  The DOI link is noted on our GitHub home page.
 
 :v2018.5:  released *2018-05-15*
 
