@@ -128,6 +128,8 @@ cryostat/furnace/whatever. The field ``temperature_set`` will hold
 the target value for the temperature as set by the 
 experiment control software. 
 
+.. index:: ! reserved suffixes
+
 .. _reserved_suffixes:
 
 .. rubric:: Reserved field name suffixes
@@ -135,6 +137,15 @@ experiment control software.
 When naming a field (or dataset), NeXus has reserved certain suffixes to the names
 so that a specific meaning may be attached.  Consider a field named ``DATASET``,
 the following table lists the suffixes reserved by NeXus.
+
+.. index::
+    reserved suffixes; end
+    reserved suffixes; errors
+    reserved suffixes; increment_set
+    reserved suffixes; indices
+    reserved suffixes; set
+    reserved suffixes; weights
+
 
 ==================  =========================================  =================================
 suffix              reference                                  meaning
@@ -144,7 +155,11 @@ suffix              reference                                  meaning
 ``_increment_set``  :ref:`NXtransformations`                   intended average range through which the corresponding axis moves during the exposure of a frame
 ``_indices``        :ref:`NXdata`                              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
 ``_set``            :ref:`target values <target_value>`        Target value of ``DATASET``
+``_weights``        ..                                         divide ``DATASET`` by these weights [#]_
 ==================  =========================================  =================================
+
+.. [#] If ``DATASET_weights`` exists and has the same shape as the dataset, 
+   you are supposed to divide ``DATASET`` by the weights.
 
 .. Note that the following line might be added to the above table pending discussion:
 
@@ -344,6 +359,7 @@ matches the data type specifier.
     Refer to :ref:`Design-Dates-Times`.
 
 .. index:: ! strings
+.. index:: ! UTF-8
 
 **strings**
    ``NX_CHAR``:

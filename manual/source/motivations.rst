@@ -93,6 +93,11 @@ group so that any program that is used to browse NeXus data files can provide a
 A description of how simple plotting is facilitated in NeXus is
 shown in the section titled :ref:`Find-Plottable-Data`.
 
+NeXus is about how to find and annotate the data to be plotted 
+but not to describe how the data is to be plotted.
+(https://www.nexusformat.org/NIAC2018Minutes.html#nxdata-plottype--attribute)
+
+
 .. _UnifiedFormat:
 
 Unified format for reduction and analysis

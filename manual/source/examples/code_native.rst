@@ -19,9 +19,8 @@ Compare these code examples with :ref:`NAPI-Examples`.
 Writing a simple NeXus file using native HDF5 commands in C
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-.. note:: This example uses the signal/axes attributes applied to the
-   data field, as described in :ref:`Design-FindPlottable-ByName`.
-   New code should use the method described in :ref:`Design-FindPlottable-NIAC2014`.
+.. note:: This example uses the new method described
+   in :ref:`Design-FindPlottable-NIAC2014` for indicating plottable data.
 
 .. literalinclude:: nxh5write.c
     :tab-width: 4

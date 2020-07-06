@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
   int *counts = NULL,  rank, i;
   hid_t fid, dataid, fapl;
   hsize_t *dim = NULL;
-  hid_t datatype, dataspace, memdataspace;
+  hid_t dataspace, memdataspace;
 
   /*
    * Open file, thereby enforcing proper file close
@@ -31,7 +31,7 @@ int main(int argc, char *argv[])
   /*
    * open and read the counts dataset
    */
-  dataid = H5Dopen(fid,"/scan/data/counts");
+  dataid = H5Dopen(fid,"/scan/data/counts",H5P_DEFAULT);
   dataspace = H5Dget_space(dataid);
   rank = H5Sget_simple_extent_ndims(dataspace);
   dim = malloc(rank*sizeof(hsize_t));
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
   /*
    * open and read the two_theta data set
    */
-  dataid = H5Dopen(fid,"/scan/data/two_theta");
+  dataid = H5Dopen(fid,"/scan/data/two_theta",H5P_DEFAULT);
   dataspace = H5Dget_space(dataid);
   rank = H5Sget_simple_extent_ndims(dataspace);
   dim = malloc(rank*sizeof(hsize_t));

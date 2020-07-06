@@ -287,6 +287,8 @@ path [#absolute_address]_ to the *original* dataset.
    .. [#hdf5_hard_link] HDF5 hard link:
       https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_HARD
 
+.. index:: !class path
+
 NeXus links are best understood with an example.
 The canonical location (expressed as a NeXus class path) to store wavelength
 (see :ref:`Strategies-wavelength`) has been::
