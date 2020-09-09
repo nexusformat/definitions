@@ -633,7 +633,7 @@ plottable data is as follows:
       naming the field **in this group** to be used as 
       dimension scales of the default plottable data.  
       The number of values given must be equal to the 
-      *rank* of the *signal* data.  These are the *abcissae*
+      *rank* of the *signal* data.  These are the *abscissae*
       of the plottable *signal* data.
       
       *If* no field is available to provide a dimension scale
@@ -657,7 +657,7 @@ plottable data is as follows:
       
       It is possible there may be more than one ``AXISNAME_indices`` attribute
       with the same value or values.  This indicates the possibilty of using
-      alternate abcissae along this (these) dimension(s).  The
+      alternate abscissae along this (these) dimension(s).  The
       field named in the ``axes`` attribute indicates the intention of
       the data file writer as to which field should be used by default.
 
