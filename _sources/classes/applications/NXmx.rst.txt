@@ -41,14 +41,14 @@ NXmx
 **Groups cited**:
   :ref:`NXattenuator`, :ref:`NXbeam`, :ref:`NXcollection`, :ref:`NXdata`, :ref:`NXdetector_group`, :ref:`NXdetector_module`, :ref:`NXdetector`, :ref:`NXentry`, :ref:`NXinstrument`, :ref:`NXsample`, :ref:`NXsource`, :ref:`NXtransformations`
 
-.. index:: NXentry (base class); used in application definition, NXinstrument (base class); used in application definition, NXattenuator (base class); used in application definition, NXdetector_group (base class); used in application definition, NXdetector (base class); used in application definition, NXtransformations (base class); used in application definition, NXcollection (base class); used in application definition, NXdetector_module (base class); used in application definition, NXsample (base class); used in application definition, NXbeam (base class); used in application definition, NXdata (base class); used in application definition, NXsource (base class); used in application definition
+.. index:: NXentry (base class); used in application definition, NXdata (base class); used in application definition, NXsample (base class); used in application definition, NXtransformations (base class); used in application definition, NXinstrument (base class); used in application definition, NXattenuator (base class); used in application definition, NXdetector_group (base class); used in application definition, NXdetector (base class); used in application definition, NXcollection (base class); used in application definition, NXdetector_module (base class); used in application definition, NXbeam (base class); used in application definition, NXsource (base class); used in application definition
 
 **Structure**:
 
   **ENTRY**: (required) :ref:`NXentry`
 
     Note, it is recommended that ``file_name`` and ``file_time`` are included
-    as attributes at the root of a file that includes :ref:`NXmx`. See
+    as attributes at the root of a file that includes  :ref:`NXmx`. See
     :ref:`NXroot`.
 
     .. index:: title (field)
@@ -58,13 +58,34 @@ NXmx
 
     .. index:: start_time (field)
 
-    **start_time**: (optional) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
+    **start_time**: (required) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
 
+      ISO 8601 time/date of the first data point collected in UTC,
+      using the Z suffix to avoid confusion with local time.
+      Note that the time zone of the beamline should be provided in
+      NXentry/NXinstrument/time_zone.
 
     .. index:: end_time (field)
 
     **end_time**: (optional) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
 
+      ISO 8601 time/date of the last data point collected in UTC,
+      using the Z suffix to avoid confusion with local time.
+      Note that the time zone of the beamline should be provided in
+      NXentry/NXinstrument/time_zone. This field should only be 
+      filled when the value is accurately observed. If the data 
+      collection aborts or otherwise prevents accurate recording of
+      the end_time, this field should be omitted.
+
+    .. index:: end_time_estimated (field)
+
+    **end_time_estimated**: (required) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
+
+      ISO 8601 time/date of the last data point collected in UTC,
+      using the Z suffix to avoid confusion with local time.
+      Note that the time zone of the beamline should be provided in
+      NXentry/NXinstrument/time_zone.  This field may be filled
+      with a value estimated before an observed value is available.
 
     .. index:: definition (field)
 
@@ -74,20 +95,86 @@ NXmx
 
       Obligatory value:  ``NXmx``
 
-    **INSTRUMENT**: (required) :ref:`NXinstrument`
+    **DATA**: (required) :ref:`NXdata`
+
+
+      .. index:: data (field)
+
+      **data[np, i, j, k]**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>`
+
+        For a dimension-2 detector, the rank of the data array will be 3.
+        For a dimension-3 detector, the rank of the data array will be 4.
+        This allows for the introduction of the frame number as the
+        first index.
+
+    **SAMPLE**: (required) :ref:`NXsample`
 
 
       .. index:: name (field)
 
       **name**: (required) :ref:`NX_CHAR <NX_CHAR>`
 
-        Name of instrument
+        Descriptive name of sample
+
+      .. index:: depends_on (field)
+
+      **depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>`
+
+        This is a requirement to describe for any scan experiment.
+
+        The axis on which the sample position depends may be stored
+        anywhere, but is normally stored in the NXtransformations
+        group within the NXsample group.
+
+        If there is no goniometer, e.g. with a jet, depends_on
+        should be set to "."
+
+      .. index:: temperature (field)
+
+      **temperature**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_TEMPERATURE <NX_TEMPERATURE>`}
+
+
+      **TRANSFORMATIONS**: (optional) :ref:`NXtransformations`
+
+        This is the recommended location for sample goniometer
+        and other related axes.
+
+        This is a requirement to describe for any scan experiment.
+        The reason it is optional is mainly to accommodate XFEL
+        single shot exposures.
+
+        Use of the depends_on field and the NXtransformations group is
+        strongly recommended.  As noted above this should be an absolute
+        requirement to have for any scan experiment.
+
+        The reason it is optional is mainly to accommodate XFEL
+        single shot exposures.
+
+    **INSTRUMENT**: (required) :ref:`NXinstrument`
+
+
+      .. index:: name (field)
+
+      **name**: (required) NXchar
+
+        Name of instrument.  Consistency with the controlled 
+        vocabulary beamline naming in http://mmcif.wwpdb.org
+        /dictionaries/mmcif_pdbx_v50.dic/Items
+        /_diffrn_source.pdbx_synchrotron_beamline.html
+        and http://mmcif.wwpdb.org/dictionaries/mmcif_pdbx_v50.dic
+        /Items/_diffrn_source.type.html} is highly recommended.
 
         .. index:: short_name (field attribute)
 
         **@short_name**: (required) :ref:`NX_CHAR <NX_CHAR>`
 
-          short name for instrument, perhaps the acronym
+          Short name for instrument, perhaps the acronym.
+
+      .. index:: time_zone (field)
+
+      **time_zone**: (recommended) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
+
+        ISO 8601 time_zone offset from UTC.
 
       **ATTENUATOR**: (optional) :ref:`NXattenuator`
 
@@ -97,7 +184,7 @@ NXmx
         **attenuator_transmission**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_UNITLESS <NX_UNITLESS>`}
 
 
-      **DETECTOR_GROUP**: (optional) :ref:`NXdetector_group`
+      **DETECTOR_GROUP**: (recommended) :ref:`NXdetector_group`
 
         Optional logical grouping of detector elements.
 
@@ -118,14 +205,14 @@ NXmx
 
         We could have::
 
-        	 group_names: ["DET", "DTL", "DTR", "DLL", "DLR"]
-        	 group_index: [1, 2, 3, 4, 5]
-        	 group_parent:  [-1, 1, 1, 1, 1]
+        	group_names: ["DET", "DTL", "DTR", "DLL", "DLR"]
+         	group_index: [1, 2, 3, 4, 5]
+         	group_parent:  [-1, 1, 1, 1, 1]
 
 
         .. index:: group_names (field)
 
-        **group_names[ref(group_index)]**: (required) :ref:`NX_CHAR <NX_CHAR>`
+        **group_names**: (required) :ref:`NX_CHAR <NX_CHAR>`
 
           An array of the names of the detector elements or hierarchical
           groupings of detector elements.
@@ -146,12 +233,12 @@ NXmx
 
         .. index:: group_parent (field)
 
-        **group_parent[ref(group_index)]**: (required) :ref:`NX_INT <NX_INT>`
+        **group_parent[group_index]**: (required) :ref:`NX_INT <NX_INT>`
 
           An array of the hierarchical levels of the parents of detector
           elements or groupings of detector elements.
 
-          A top-level element or grouping has parent level -1
+          A top-level element or grouping has parent level -1.
 
       **DETECTOR**: (required) :ref:`NXdetector`
 
@@ -161,18 +248,16 @@ NXmx
 
         .. index:: depends_on (field)
 
-        **depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>`
+        **depends_on**: (optional) :ref:`NX_CHAR <NX_CHAR>`
 
-          NeXus path to the detector positioner axis that most directly
-          supports the detector.  In the case of a multi-module detector,
-          this should be the most common axis, or ``.`` if no axes are in
-          common.
+          NeXus path to the detector positioner axis that most directly 
+          supports the detector.  In the case of a single-module
+          detector, the detector axis chain may start here.
 
         .. index:: data (field)
 
-        **data[np, i, j, k]**: (required) :ref:`NX_NUMBER <NX_NUMBER>`
+        **data[np, i, j, k]**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>`
 
-          The pixel data recorded, if available.
           For a dimension-2 detector, the rank of the data array will be 3.
           For a dimension-3 detector, the rank of the data array will be 4.
           This allows for the introduction of the frame number as the
@@ -180,71 +265,80 @@ NXmx
 
         .. index:: description (field)
 
-        **description**: (optional) :ref:`NX_CHAR <NX_CHAR>`
+        **description**: (recommended) :ref:`NX_CHAR <NX_CHAR>`
 
-          name/manufacturer/model/etc. information
+          name/manufacturer/model/etc. information.
 
         .. index:: time_per_channel (field)
 
         **time_per_channel**: (optional) :ref:`NX_CHAR <NX_CHAR>` {units=\ :ref:`NX_TIME <NX_TIME>`}
 
-          todo: define more clearly
+          For a time-of-flight detector this is the scaling 
+          factor to convert from the numeric value reported to 
+          the flight time for a given measurement.
 
         .. index:: distance (field)
 
-        **distance**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
+        **distance**: (recommended) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
 
           Distance from the sample to the beam center.
-          This value is a
-          guidance only, the proper geometry can be
-          found following the
-          depends_on axis chain.
+          Normally this value is for guidance only, the proper 
+          geometry can be found following the depends_on axis chain,
+          But in appropriate cases where the dectector distance
+          to the sample is observable independent of the axis
+          chain, that may take precedence over the axis chain
+          calculation.
+
+        .. index:: distance_derived (field)
+
+        **distance_derived**: (recommended) :ref:`NX_BOOLEAN <NX_BOOLEAN>`
+
+          Boolean to indicate if the distance is a derived, rather than
+          a primary observation.  If distance_derived true or is not specified,
+          the distance is assumed to be derived from delector axis
+          specifications.
 
         .. index:: dead_time (field)
 
         **dead_time**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_TIME <NX_TIME>`}
 
-          Detector dead time
+          Detector dead time.
 
         .. index:: count_time (field)
 
-        **count_time**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_TIME <NX_TIME>`}
+        **count_time**: (recommended) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_TIME <NX_TIME>`}
 
-          Elapsed actual counting time
+          Elapsed actual counting time.
+
+        .. index:: beam_center_derived (field)
+
+        **beam_center_derived**: (optional) :ref:`NX_BOOLEAN <NX_BOOLEAN>`
+
+          Boolean to indicate if the distance is a derived, rather than
+          a primary observation.  If true or not provided, that value of
+          beam_center_derived is assumed to be true.
 
         .. index:: beam_center_x (field)
 
-        **beam_center_x**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
+        **beam_center_x**: (recommended) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
 
           This is the x position where the direct beam would hit the
           detector. This is a length and can be outside of the actual
           detector. The length can be in physical units or pixels as
-          documented by the units attribute.
-
-          The depends_on field has priority over this field and is
-          designed to fully specify the geometry of an arbitrarily
-          positioned detector. However, if the depends_on attribute is
-          not set, then beam_center_x, beam_center_y, and distance are
-          used to position the detector, given the following
-          conventions (all in the NeXus coordinate system):
-
-          Assume the detector is orthogonal to the beam without any
-          rotation around the beam.  Given the vectors 'fast'
-          (-1,0,0), 'slow'  (0,-1,0), and 'beam' (0, 0, 1), the origin
-          pixel of the detector (the 0th pixel) will be at
-
-          -(beam_center_x * fast) - (beam_center_y * slow) + (distance * beam)
+          documented by the units attribute.  Normally, this should
+          be derived from the axis chain, but the direct specification
+          may take precendence if it is not a derived quantity.
 
         .. index:: beam_center_y (field)
 
-        **beam_center_y**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
+        **beam_center_y**: (recommended) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
 
           This is the y position where the direct beam would hit the
           detector. This is a length and can be outside of the actual
           detector. The length can be in physical units or pixels as
-          documented by the units attribute.
-
-          See beam_center_x.
+          documented by the units attribute.  Normally, this should
+          be derived from the axis chain, but the direct specification
+          may take precendence if it is not a derived quantity.
 
         .. index:: angular_calibration_applied (field)
 
@@ -268,15 +362,25 @@ NXmx
 
         .. index:: flatfield (field)
 
-        **flatfield[i, j, k]**: (optional) :ref:`NX_FLOAT <NX_FLOAT>`
+        **flatfield[i, j, k]**: (optional) :ref:`NX_NUMBER <NX_NUMBER>`
 
-          Flat field correction data.
+          Flat field correction data.  If provided, it is recommended
+          that it be compressed.
 
         .. index:: flatfield_error (field)
 
-        **flatfield_error[i, j, k]**: (optional) :ref:`NX_FLOAT <NX_FLOAT>`
+        **flatfield_error[i, j, k]**: (optional) :ref:`NX_NUMBER <NX_NUMBER>`
 
-          Errors of the flat field correction data.
+          *** Deprecated form.  Use plural form ***
+          Errors of the flat field correction data.  If provided, it is recommended
+          that it be compressed.
+
+        .. index:: flatfield_errors (field)
+
+        **flatfield_errors[i, j, k]**: (optional) :ref:`NX_NUMBER <NX_NUMBER>`
+
+          Errors of the flat field correction data.  If provided, it is recommended
+          that it be compressed.
 
         .. index:: pixel_mask_applied (field)
 
@@ -287,38 +391,34 @@ NXmx
 
         .. index:: pixel_mask (field)
 
-        **pixel_mask[i, j, k]**: (optional) :ref:`NX_INT <NX_INT>`
+        **pixel_mask[i, j]**: (recommended) :ref:`NX_INT <NX_INT>`
 
           The 32-bit pixel mask for the detector. Can be either one mask
           for the whole dataset (i.e. an array with indices i, j) or
           each frame can have its own mask (in which case it would be
           an array with indices np, i, j).
-          Contains a bit field
-          for each pixel to signal dead,
-          blind or high or otherwise unwanted
-          or undesirable pixels.
+
+          Contains a bit field for each pixel to signal dead,
+          blind, high or otherwise unwanted or undesirable pixels.
           They have the following meaning:
 
-          * bit 0: gap (pixel with no sensor)
-          * bit 1: dead
-          * bit 2: under responding
-          * bit 3: over responding
-          * bit 4: noisy
-          * bit 5: -undefined-
-          * bit 6: pixel is part of a cluster of problematic pixels (bit set in addition to others)
-          * bit 7: -undefined-
-          * bit 8: user defined mask (e.g. around beamstop)
-          * bits 9-30: -undefined-
-          * bit 31: virtual pixel (corner pixel with interpolated value)
+          	* bit 0: gap (pixel with no sensor)
+          	* bit 1: dead
+          	* bit 2: under-responding
+          	* bit 3: over-responding
+          	* bit 4: noisy
+          	* bit 5: -undefined-
+          	* bit 6: pixel is part of a cluster of 
+          		problematic pixels (bit set in addition to others)
+          	* bit 7: -undefined-
+          	* bit 8: user defined mask (e.g. around beamstop)
+          	* bits 9-30: -undefined-
+          	* bit 31: virtual pixel (corner pixel with interpolated value)
 
-          Normal data analysis software would
-          not take pixels into account
-          when a bit in (mask & 0x0000FFFF) is
-          set. Tag bit in the upper
-          two bytes would indicate special pixel
-          properties that normally
-          would not be a sole reason to reject the
-          intensity value (unless
+          Normal data analysis software would not take pixels into account
+          when a bit in (mask & 0x0000FFFF) is set. Tag bit in the upper
+          two bytes would indicate special pixel properties that normally
+          would not be a sole reason to reject the intensity value (unless
           lower bits are set.
 
           If the full bit depths is not required, providing a
@@ -333,6 +433,8 @@ NXmx
           pixel_mask_2. The cumulative mask is the bitwise OR
           of pixel_mask and any pixel_mask_N entries.
 
+          If provided, it is recommended that it be compressed.
+
         .. index:: countrate_correction_applied (field)
 
         **countrate_correction_applied**: (optional) :ref:`NX_BOOLEAN <NX_BOOLEAN>`
@@ -342,7 +444,7 @@ NXmx
 
         .. index:: bit_depth_readout (field)
 
-        **bit_depth_readout**: (optional) :ref:`NX_INT <NX_INT>`
+        **bit_depth_readout**: (recommended) :ref:`NX_INT <NX_INT>`
 
           How many bits the electronics record per pixel.
 
@@ -371,29 +473,40 @@ NXmx
         **saturation_value**: (optional) :ref:`NX_INT <NX_INT>`
 
           The value at which the detector goes into saturation.
-          Data
-          above this value is known to be invalid.
+          Data above this value is known to be invalid.
+
+          For example, given a saturation_value and an underload_value,
+          the valid pixels are those less than or equal to the 
+          saturation_value and greater than or equal to the underload_value.
+
+        .. index:: underload_value (field)
+
+        **underload_value**: (optional) :ref:`NX_INT <NX_INT>`
+
+          The lowest value at which pixels for this detector
+          would be reasonably be measured.
+
+          For example, given a saturation_value and an underload_value,
+          the valid pixels are those less than or equal to the 
+          saturation_value and greater than or equal to the underload_value.
 
         .. index:: sensor_material (field)
 
-        **sensor_material**: (optional) :ref:`NX_CHAR <NX_CHAR>`
+        **sensor_material**: (required) :ref:`NX_CHAR <NX_CHAR>`
 
           At times, radiation is not directly sensed by the detector.
           Rather, the detector might sense the output from some
-          converter
-          like a scintillator.
+          converter like a scintillator.
           This is the name of this converter material.
 
         .. index:: sensor_thickness (field)
 
-        **sensor_thickness**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
+        **sensor_thickness**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
 
           At times, radiation is not directly sensed by the detector.
           Rather, the detector might sense the output from some
-          converter
-          like a scintillator. This is the thickness of this
-          converter
-          material.
+          converter like a scintillator. This is the thickness of this
+          converter material.
 
         .. index:: threshold_energy (field)
 
@@ -401,7 +514,8 @@ NXmx
 
           Single photon counter detectors can be adjusted for a certain
           energy range in which they work optimally. This is the energy
-          setting for this.
+          setting for this.  If the detector supports multiple thresholds,
+          this is an array.
 
         .. index:: type (field)
 
@@ -413,8 +527,9 @@ NXmx
 
         **TRANSFORMATIONS**: (optional) :ref:`NXtransformations`
 
-          Suggested location for axes (transformations) to do with the
-          detector
+          Location for axes (transformations) to do with the
+          detector.  In the case of a single-module detector, the
+          axes of the detector axis chain may be stored here.
 
         **COLLECTION**: (optional) :ref:`NXcollection`
 
@@ -453,7 +568,8 @@ NXmx
             dataset with indices (np, i, j, k) will be an array with indices
             (i, j, k).
 
-            The :ref:`order <Design-ArrayStorageOrder>` of indices (i, j or i, j, k) is slow to fast.
+            The :ref:`order <Design-ArrayStorageOrder>` of indices (i, j 
+            or i, j, k) is slow to fast.
 
           .. index:: data_size (field)
 
@@ -474,7 +590,7 @@ NXmx
 
           .. index:: module_offset (field)
 
-          **module_offset**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
+          **module_offset**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
 
             Offset of the module in regards to the origin of the detector in an
             arbitrary direction.
@@ -488,12 +604,12 @@ NXmx
 
             .. index:: vector (field attribute)
 
-            **@vector**: (required) :ref:`NX_CHAR <NX_CHAR>`
+            **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>`
 
 
             .. index:: offset (field attribute)
 
-            **@offset**: (required) :ref:`NX_CHAR <NX_CHAR>`
+            **@offset**: (required) :ref:`NX_NUMBER <NX_NUMBER>`
 
 
             .. index:: depends_on (field attribute)
@@ -505,8 +621,9 @@ NXmx
 
           **fast_pixel_direction**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
 
-            Values along the direction of :ref:`fastest varying <Design-ArrayStorageOrder>` pixel direction.
-            The direction itself is given through the vector attribute
+            Values along the direction of :ref:`fastest varying <Design-ArrayStorageOrder>`
+            pixel direction.  The direction itself is given through the vector
+            attribute.
 
             .. index:: transformation_type (field attribute)
 
@@ -517,12 +634,12 @@ NXmx
 
             .. index:: vector (field attribute)
 
-            **@vector**: (required) :ref:`NX_CHAR <NX_CHAR>`
+            **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>`
 
 
             .. index:: offset (field attribute)
 
-            **@offset**: (required) :ref:`NX_CHAR <NX_CHAR>`
+            **@offset**: (required) :ref:`NX_NUMBER <NX_NUMBER>`
 
 
             .. index:: depends_on (field attribute)
@@ -534,8 +651,9 @@ NXmx
 
           **slow_pixel_direction**: (required) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
 
-            Values along the direction of :ref:`slowest varying <Design-ArrayStorageOrder>` pixel direction. The
-            direction itself is given through the vector attribute
+            Values along the direction of :ref:`slowest varying <Design-ArrayStorageOrder>`
+            pixel direction. The direction itself is given through the vector
+            attribute.
 
             .. index:: transformation_type (field attribute)
 
@@ -546,12 +664,12 @@ NXmx
 
             .. index:: vector (field attribute)
 
-            **@vector**: (required) :ref:`NX_CHAR <NX_CHAR>`
+            **@vector**: (required) :ref:`NX_NUMBER <NX_NUMBER>`
 
 
             .. index:: offset (field attribute)
 
-            **@offset**: (required) :ref:`NX_CHAR <NX_CHAR>`
+            **@offset**: (required) :ref:`NX_NUMBER <NX_NUMBER>`
 
 
             .. index:: depends_on (field attribute)
@@ -559,56 +677,12 @@ NXmx
             **@depends_on**: (required) :ref:`NX_CHAR <NX_CHAR>`
 
 
-    **SAMPLE**: (required) :ref:`NXsample`
+      **BEAM**: (required) :ref:`NXbeam`
 
-
-      .. index:: name (field)
-
-      **name**: (optional) :ref:`NX_CHAR <NX_CHAR>`
-
-        Descriptive name of sample
-
-      .. index:: depends_on (field)
-
-      **depends_on**: (optional) :ref:`NX_CHAR <NX_CHAR>`
-
-        This is a requirement to describe for any scan experiment.
-        The reason it is optional is mainly to accommodate XFEL
-        single shot exposures.
-
-        The axis on which the sample position depends may be stored
-        anywhere, but is normally stored in the NXtransformations
-        NXtransformations group within the NXsample group.
-
-      .. index:: temperature (field)
-
-      **temperature**: (optional) :ref:`NX_CHAR <NX_CHAR>` {units=\ :ref:`NX_TEMPERATURE <NX_TEMPERATURE>`}
-
-
-      **TRANSFORMATIONS**: (optional) :ref:`NXtransformations`
-
-        This is the recommended location for sample goniometer
-        and other related axes.
-
-        This is a requirement to describe for any scan experiment.
-        The reason it is optional is mainly to accommodate XFEL
-        single shot exposures.
-
-        Use of the depends_on field and the NXtransformations group is
-        strongly recommended.  As noted above this should be an absolute
-        requirement to have for any scan experiment.
-
-        The reason it is optional is mainly to accommodate XFEL
-        single shot exposures.
-
-      **BEAM**: (optional) :ref:`NXbeam`
-
-        NXbeam is also allowed as a group on NXinstrument but should be
-        specified on one of these two locations.
 
         .. index:: incident_wavelength (field)
 
-        **incident_wavelength**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_WAVELENGTH <NX_WAVELENGTH>`}
+        **incident_wavelength**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_WAVELENGTH <NX_WAVELENGTH>`}
 
           In the case of a monchromatic beam this is the scalar
           wavelength.
@@ -671,32 +745,32 @@ NXmx
 
         **flux**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_FLUX <NX_FLUX>`}
 
-          flux density incident on beam plane area in photons
-          per second per unit area
+          Flux density incident on beam plane area in photons
+          per second per unit area.
 
           In the case of a beam that varies in flux shot-to-shot,
           this is an array of values, one for each recorded shot.
 
         .. index:: total_flux (field)
 
-        **total_flux**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_FREQUENCY <NX_FREQUENCY>`}
+        **total_flux**: (required) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_FREQUENCY <NX_FREQUENCY>`}
 
-          flux incident on beam plane in photons per second
+          Flux incident on beam plane in photons per second.
 
           In the case of a beam that varies in total flux shot-to-shot,
           this is an array of values, one for each recorded shot.
 
         .. index:: incident_beam_size (field)
 
-        **incident_beam_size[2]**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
+        **incident_beam_size[2]**: (recommended) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_LENGTH <NX_LENGTH>`}
 
           Two-element array of FWHM (if Gaussian or Airy function) or
-          diameters (if top hat) or widths (if rectangular) of beam
+          diameters (if top hat) or widths (if rectangular) of the beam
           in the order x, y
 
         .. index:: profile (field)
 
-        **profile**: (optional) :ref:`NX_CHAR <NX_CHAR>`
+        **profile**: (recommended) :ref:`NX_CHAR <NX_CHAR>`
 
           The beam profile, Gaussian, Airy function, top-hat or
           rectangular.  The profile is given in the plane of
@@ -706,7 +780,7 @@ NXmx
 
         .. index:: incident_polarisation_stokes (field)
 
-        **incident_polarisation_stokes[np, 4]**: (optional) :ref:`NX_CHAR <NX_CHAR>`
+        **incident_polarisation_stokes[np, 4]**: (recommended) :ref:`NX_CHAR <NX_CHAR>`
 
 
         **incident_wavelength_spectrum**: (optional) :ref:`NXdata`
@@ -715,27 +789,22 @@ NXmx
     **SOURCE**: (required) :ref:`NXsource`
 
       The neutron or x-ray storage ring/facility. Note, the NXsource base class
-      as many more fields available, but at present we only require the name.
+      has many more fields available, but at present we only require the name.
 
       .. index:: name (field)
 
       **name**: (required) :ref:`NX_CHAR <NX_CHAR>`
 
-        Name of source
+        Name of source.  Consistency with the naming in
+        http://mmcif.wwpdb.org/dictionaries/mmcif_pdbx_v50.dic/Items
+        /_diffrn_source.pdbx_synchrotron_site.html controlled 
+        vocabulary is highly recommended.
 
         .. index:: short_name (field attribute)
 
-        **@short_name**: (required) :ref:`NX_CHAR <NX_CHAR>`
+        **@short_name**: (optional) :ref:`NX_CHAR <NX_CHAR>`
 
           short name for source, perhaps the acronym
-
-    **DATA**: (optional) :ref:`NXdata`
-
-      The pixel data recorded, if available.
-      For a dimension-2 detector, the rank of the data array will be 3.
-      For a dimension-3 detector, the rank of the data array will be 4.
-      This allows for the introduction of the frame number as the
-      first index.
 
 **NXDL Source**:
   https://github.com/nexusformat/definitions/blob/master/applications/NXmx.nxdl.xml
