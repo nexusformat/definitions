@@ -27,37 +27,55 @@
     name="NXdetector_group" 
 	type="group" extends="NXobject">
 	<doc>
-		Logical grouping of several detectors.  When used, describes array of NXdetectors.
-		
-		This class is used to allow a logical
-		grouping of several detectors (e.g. which tube, bank or group of banks) to be
-		recorded in the file. As well as allowing you to e.g just select the "left" or
-		"east" detectors, it may also be useful for determining which elements belong to the
-		same PSD tube and hence have e.g. the same dead time.
-		
-		For example, if we had "bank1" composed
-		of "tube1", "tube2" and "tube3" then group_names would be the string "bank1,
-		bank1/tube1, bank1/tube2,bank1/tube3" group_index would be {1,2,3,4} group_parent
-		would be {-1,1,1,1}
-		
-		The mapping array is interpreted as
-		group 1 is a top level group containing groups 2, 3 and 4
-		
-		A ``group_index`` array in
-		``NXdetector`` gives the base group for a detector.
+		Optional logical grouping of detectors. When used, describes 
+		a group of NXdetectors.
+
+		Each detector is represented as a NXdetector 
+		with its own detector data array.  Each detector data array
+		may be further decomposed into array sections by use of
+		NXdetector_module groups.  Detectors can be grouped logically
+		together using NXdetector_group. Groups can be further grouped
+		hierarchically in a single NXdetector_group (for example, if
+		there are multiple detectors at an endstation or multiple 
+		endstations at a facility).  Alternatively, multiple 
+		NXdetector_groups can be provided.
+
+		The groups are defined hierarchically, with names given
+		in the group_names field, unique identifing indices given
+		in the field group_index, and the level in the hierarchy
+		given in the group_parent field.  For example if an x-ray
+		detector group, DET, consists of four detectors in a
+		rectangular array::
+						
+				 DTL	DTR
+				 DLL	DLR
+						
+		We could have::
+					
+			group_names: ["DET", "DTL", "DTR", "DLL", "DLR"]
+		 	group_index: [1, 2, 3, 4, 5]
+		 	group_parent:  [-1, 1, 1, 1, 1]
 	</doc>
-	<field name="group_names">
-	 	<doc>Comma separated list of name</doc>
+	<field name="group_names" type="NX_CHAR">
+	 	<doc>An array of the names of the detectors or the names of
+		hierarchical groupings of detectors.</doc>
 	</field>
 	<field name="group_index" type="NX_INT">
 	 	<doc>
-	 	Unique ID for group. A group_index array
-	 	in ``NXdetector`` gives the base group for a detector element. 
+	 	An array of unique indices for detectors or groupings
+		of detectors.
+						
+		Each ID is a unique ID for the corresponding detector or group
+		named in the field group_names.  The IDs are positive integers
+		starting with 1.nt. 
 	 	</doc>
 		<dimensions><dim index="1" value="i"/></dimensions>
 	</field>
 	<field name="group_parent" type="NX_INT">
-	 	<doc>Index of group parent in the hierarchy: -1 means no parent (i.e. a top level) group</doc>
+	 	<doc>An array of the hierarchical levels of the parents of detectors
+		or groupings of detectors.
+						
+		A top-level grouping has parent level -1.</doc>
 	    <dimensions><dim index="1" ref="group_index"/></dimensions>
 	</field>
 	<field name="group_type" type="NX_INT">
