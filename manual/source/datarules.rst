@@ -151,13 +151,13 @@ lists the prefixes reserved by NeXus.
 ==========  ==========  ==========================================  ==============
 prefix 	    use 	    meaning 	                                URL
 ==========  ==========  ==========================================  ==============
-``IDF_`` 	attributes 	reserved for use by ISIS Muon Facility 	    www.isis.stfc.ac.uk
-``NDAttr`` 	attributes 	reserved for use by EPICS area detector     https://github.com/areaDetector
-``NX`` 	    NXDL class 	For the class names used with NeXus groups 	www.nexusformat.org
-``NX_`` 	attributes 	reserved for use by NeXus 	                www.nexusformat.org
-``PDBX_`` 	attributes 	reserved for the US protein data bank 	    www.rcsb.org
-``SAS_`` 	attributes 	reserved for use by canSAS 	                www.cansas.org
-``SILX_`` 	attributes 	reserved for use by silx 	                www.silx.org
+``IDF_``    attributes 	reserved for use by ISIS Muon Facility 	    https://www.isis.stfc.ac.uk
+``NDAttr``  attributes 	reserved for use by EPICS area detector     https://github.com/areaDetector
+``NX``      NXDL class 	For the class names used with NeXus groups 	https://www.nexusformat.org
+``NX_``     attributes 	reserved for use by NeXus 	                https://www.nexusformat.org
+``PDBX_``   attributes 	reserved for the US protein data bank 	    https://www.rcsb.org
+``SAS_``    attributes 	reserved for use by canSAS 	                http://www.cansas.org
+``SILX_``   attributes 	reserved for use by silx 	                https://www.silx.org
 ==========  ==========  ==========================================  ==============
 
 .. index:: ! reserved suffixes
