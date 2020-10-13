@@ -28,7 +28,7 @@ described by the following :index:`rules <rules; naming>`:
   as described below.
 
 * For the class names [#]_ of NeXus *group* items,
-  the prefix *NX* is reserved. 
+  the prefix *NX* is reserved as shown in the :ref:`table <reserved_prefixes>` below. 
   Thus all NeXus class names start with NX.
   The chapter titled :ref:`ReferenceDocumentation` lists the 
   available NeXus class names as either *base classes*, 
@@ -128,6 +128,38 @@ cryostat/furnace/whatever. The field ``temperature_set`` will hold
 the target value for the temperature as set by the 
 experiment control software. 
 
+.. index:: ! reserved prefixes
+
+.. _reserved_prefixes:
+
+.. rubric:: Reserved field name prefixes
+
+When naming a field (or dataset), NeXus has reserved certain prefixes to
+the names to ensure that names written in NeXus files will not conflict
+with future releases as the NeXus standard evolves.  The following table
+lists the prefixes reserved by NeXus.
+
+.. index::
+    reserved prefixes; NX
+    reserved prefixes; NX_
+    reserved prefixes; IDF_
+    reserved prefixes; NDAttr
+    reserved prefixes; PDBX_
+    reserved prefixes; SAS_
+    reserved prefixes; SILX_
+
+==========  ==========  ==========================================  ==============
+prefix 	    use 	    meaning 	                                URL
+==========  ==========  ==========================================  ==============
+``IDF_`` 	attributes 	reserved for use by ISIS Muon Facility 	    www.isis.stfc.ac.uk
+``NDAttr`` 	attributes 	reserved for use by EPICS area detector     https://github.com/areaDetector
+``NX`` 	    NXDL class 	For the class names used with NeXus groups 	www.nexusformat.org
+``NX_`` 	attributes 	reserved for use by NeXus 	                www.nexusformat.org
+``PDBX_`` 	attributes 	reserved for the US protein data bank 	    www.rcsb.org
+``SAS_`` 	attributes 	reserved for use by canSAS 	                www.cansas.org
+``SILX_`` 	attributes 	reserved for use by silx 	                www.silx.org
+==========  ==========  ==========================================  ==============
+
 .. index:: ! reserved suffixes
 
 .. _reserved_suffixes:
@@ -145,7 +177,6 @@ the following table lists the suffixes reserved by NeXus.
     reserved suffixes; indices
     reserved suffixes; set
     reserved suffixes; weights
-
 
 ==================  =========================================  =================================
 suffix              reference                                  meaning
