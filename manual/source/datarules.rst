@@ -128,6 +128,26 @@ cryostat/furnace/whatever. The field ``temperature_set`` will hold
 the target value for the temperature as set by the 
 experiment control software. 
 
+.. 2020-10-13, added per NIAC 2020
+   https://github.com/nexusformat/definitions/issues/791
+   We'll leave existing names as-is, 
+   but make this recommendation for the future.
+
+Some fields represent a parent:child relationship where a parent name
+might have fields that represent children.  For example, a ``unit_cell``
+might have ``abc``, ``alphabetagamma``, and ``volume`` children.  It is
+recommended to write the child name *after* the parent item, separating
+them with an underscore (``_``).  In this way, the fields will sort
+alphabetically on the parent's name. So, in this example:
+
+.. code-block:: text
+    :linenos:
+
+    unit_cell_abc
+    unit_cell_alphabetagamma
+    unit_cell_volume
+
+
 .. index:: ! reserved suffixes
 
 .. _reserved_suffixes:
