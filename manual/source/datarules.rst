@@ -133,12 +133,13 @@ experiment control software.
    We'll leave existing names as-is, 
    but make this recommendation for the future.
 
-Some fields represent a parent:child relationship where a parent name
-might have fields that represent children.  For example, a ``unit_cell``
-might have ``abc``, ``alphabetagamma``, and ``volume`` children.  It is
-recommended to write the child name *after* the parent item, separating
-them with an underscore (``_``).  In this way, the fields will sort
-alphabetically on the parent's name. So, in this example:
+Some fields share a common part of their name and an additional part
+name that makes the whole name specific.  For example, a ``unit_cell``
+might have parts named ``abc``, ``alphabetagamma``, and ``volume``.  It
+is recommended to write them with the common part first, an underscore
+(``_``), and then the specific part, such as (``common_specific``).  In
+this way, the fields will sort alphabetically on the common name. So, in
+this example:
 
 .. code-block:: text
     :linenos:
