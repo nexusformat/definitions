@@ -134,7 +134,7 @@ experiment control software.
 
 .. rubric:: Reserved field name prefixes
 
-When naming a field (or dataset), NeXus has reserved certain prefixes to
+When naming a field, NeXus has reserved certain prefixes to
 the names to ensure that names written in NeXus files will not conflict
 with future releases as the NeXus standard evolves.  The following table
 lists the prefixes reserved by NeXus.
@@ -153,7 +153,7 @@ prefix 	    use 	    meaning 	                                URL
 ==========  ==========  ==========================================  ==============
 ``IDF_``    attributes 	reserved for use by ISIS Muon Facility 	    https://www.isis.stfc.ac.uk
 ``NDAttr``  attributes 	reserved for use by EPICS area detector     https://github.com/areaDetector
-``NX``      NXDL class 	For the class names used with NeXus groups 	https://www.nexusformat.org
+``NX``      NXDL class 	for the class names used with NeXus groups 	https://www.nexusformat.org
 ``NX_``     attributes 	reserved for use by NeXus 	                https://www.nexusformat.org
 ``PDBX_``   attributes 	reserved for the US protein data bank 	    https://www.rcsb.org
 ``SAS_``    attributes 	reserved for use by canSAS 	                http://www.cansas.org
