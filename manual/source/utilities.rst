@@ -160,6 +160,8 @@ The list is not intended to be a complete list of all available packages.
    file; validate
    punx (utility)
 
+.. _punx:
+
 **punx**
    Python Utilities for NeXus HDF5 files
    
@@ -462,7 +464,7 @@ Language API: *Python*
 .. index:: API; Python; nexusformat
 
 * **nexusformat** [#]_ NeXus package for Python
-    Provides an API to open, create, and manipulate NeXus data.
+    Provides an API to open, create, plot, and manipulate NeXus data.
 
   .. [#] https://github.com/nexpy/nexusformat
 
