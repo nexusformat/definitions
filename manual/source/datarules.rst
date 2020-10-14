@@ -74,7 +74,7 @@ described by the following :index:`rules <rules; naming>`:
    .. code-block:: text
        :linenos:
    
-       ^(?!_+$)[A-Za-z0-9_](?:[A-Za-z0-9_.]*[A-Za-z0-9_])?$
+       ^[a-zA-Z0-9_]{1}(([a-zA-Z0-9_]|\.)*[a-zA-Z0-9_]{1})?$
    
    Note: This regular expression is named *validItemName* 
    in the XML Schema file: *nxdl.xsd*.
@@ -332,7 +332,7 @@ description      matching regular expression
 integer          ``NX_INT(8|16|32|64)``
 floating-point   ``NX_FLOAT(32|64)``
 array            ``(\\[0-9\\])?``
-valid item name  ``^(?!_+$)[A-Za-z0-9_](?:[A-Za-z0-9_.]*[A-Za-z0-9_])?$``
+valid item name  ``^[a-zA-Z0-9_]{1}(([a-zA-Z0-9_]|\.)*[a-zA-Z0-9_]{1})?$``
 valid class name ``^NX[A-Za-z0-9_]*$``
 ================ ============================
 
