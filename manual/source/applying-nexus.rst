@@ -91,7 +91,7 @@ the following steps are required:
     .. literalinclude:: examples/NXshell.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 Decide which parameters need to be stored
 =========================================
@@ -124,7 +124,7 @@ the basic NeXus file, the file looks like in the next figure:
     .. literalinclude:: examples/NXshellMono.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 If a parameter or even a whole group is missing in order to describe your experiment, do not despair! Contact the
 NIAC and suggest to add the group or parameter. Give a little documentation what it is for. The NIAC will check that your
@@ -391,7 +391,7 @@ file. As always, the start is an empty template file. This looks like the XML co
     .. literalinclude:: examples/NX__template__.nxdl.xml
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: xml
 
 .. index::
    ! single: NXDL template file

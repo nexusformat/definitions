@@ -121,6 +121,9 @@ an array of several dimensions.
 		``data`` (*NX_NUMBER*)
 			Data values from the detector, ``units="NX_ANY"``
 
+In the case of streaming data acquisition, when time stamped values of data are collected, fields can be replaced with :ref:`NXlog` structures of 
+the same name. For example, if time stamped data for wavelength is being streamed, wavelength would not be an array but a :ref:`NXlog` structure.  
+
 
 .. index::
    ! single: field attribute
@@ -282,7 +285,9 @@ path [#absolute_address]_ to the *original* dataset.
       such as: ``detector/polar_angle``).
 
    .. [#hdf5_hard_link] HDF5 hard link:
-      https://support.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateHard
+      https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_HARD
+
+.. index:: !class path
 
 NeXus links are best understood with an example.
 The canonical location (expressed as a NeXus class path) to store wavelength
@@ -355,7 +360,7 @@ showing an external file link in HDF5:
 
 		.. rubric:: Example of linking to data in an external HDF5 file
 
-		.. code-block:: guess
+		.. code-block:: text
 			:linenos:
 
 			 EXTERNAL_LINK "data" {
@@ -378,7 +383,7 @@ a URL to a group in another file.  More information about the
 ``@napimount`` attribute is described in the
 *NeXus Programmers Reference*. [#]_
 
-.. [#] http://download.nexusformat.org/doc/NeXusIntern.pdf
+.. [#] https://manual.nexusformat.org/pdf/NeXusIntern.pdf
 
 .. index:: link; external file, NeXus link
 
@@ -443,7 +448,7 @@ NXmonochromator base class describes all the possible field names which NeXus al
 monochromator.
 
 Most NeXus base classes represent instrument components. Some are used as containers to structure information in a
-file (``NXentry``, ``NXcollection``, ``NXinstrument``, ``NXprocess``, ``NXparameter``).
+file (``NXentry``, ``NXcollection``, ``NXinstrument``, ``NXprocess``, ``NXparameters``).
 But there are some base classes which have special uses which need to be mentioned here:
 
 :ref:`NXdata`
@@ -672,8 +677,7 @@ any prior knowledge of the chosen coordinate system.
 
 .. note:: The NeXus definition of *+z* is opposite to that
           in the :index:`IUCr <coordinate systems; IUCr>`
-          International Tables for Crystallography, volume G,
-          and consequently, *+x* is also reversed.
+          International Tables for Crystallography, volume G.
 
 .. _CoordinateTransformations:
 

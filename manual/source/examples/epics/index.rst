@@ -67,7 +67,7 @@ default in a *default location*.
 .. literalinclude:: attributes-reformatted.xml
    :tab-width: 4
    :linenos:
-   :language: guess
+   :language: xml
 
 If you want to add additional EPICS process variables (PVs) 
 to be written in the HDF5 file, 
@@ -89,7 +89,7 @@ even if you add PVs (a.k.a. *ndattribute*) to the attributes.xml file.
 .. literalinclude:: layout.xml
    :tab-width: 4
    :linenos:
-   :language: guess
+   :language: xml
 
 If you do not specify where in the file to write an *ndattribute* from the 
 attributes file, it will be written within the group that has
@@ -220,7 +220,7 @@ This example uses the *h5py* [#]_ package to write the HDF5 file.
 .. literalinclude:: write_nexus_file.py
    :tab-width: 4
    :linenos:
-   :language: guess
+   :language: python
 
 
 The output from that code is given in the 
@@ -230,7 +230,7 @@ example.h5 file.  It has this tree structure:
 .. literalinclude:: tree_structure.txt
    :tab-width: 4
    :linenos:
-   :language: guess
+   :language: text
 
 .. note::  Alternatively, the metadata shown in this example might 
    be placed in the ``/entry/instrument/detector`` (*NXdetector*)
@@ -252,7 +252,7 @@ using *nexusformat*:
 .. literalinclude:: write_nexus_file2.py
    :tab-width: 4
    :linenos:
-   :language: guess
+   :language: python
 
 
 Visualization
@@ -294,11 +294,11 @@ file                             description
 Footnotes
 *********
 
-.. [#] EPICS: http://www.aps.anl.gov/epics/
-.. [#] EPICS Area Detector: http://cars9.uchicago.edu/software/epics/areaDetector.html
-.. [#] HDF5 File Writer: http://cars9.uchicago.edu/software/epics/NDFileHDF5.html
-.. [#] EPICS SimDetector: http://cars9.uchicago.edu/software/epics/simDetectorDoc.html
-.. [#] NeXus manual: http://download.nexusformat.org/doc/html/index.html
+.. [#] EPICS: https://epics-controls.org/
+.. [#] EPICS Area Detector: https://areadetector.github.io/master/index.html
+.. [#] HDF5 File Writer: https://areadetector.github.io/master/ADCore/NDFileHDF5.html
+.. [#] EPICS SimDetector: https://github.com/areaDetector/ADSimDetector
+.. [#] NeXus manual: https://manual.nexusformat.org/
 .. [#] caQtDM: http://epics.web.psi.ch/software/caqtdm/
 .. [#] h5py: http://docs.h5py.org
 .. [#] nexusformat: This Python package is described on the NeXPy web site

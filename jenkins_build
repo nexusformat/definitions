@@ -1,7 +1,6 @@
 #!/bin/sh
 set -o errexit -x
 
-
 # jenkins job name
 job_name="$1"
 
@@ -19,35 +18,61 @@ make
 # publish
 if test "${job_name}" = "master branch"; then
 
-    export WWW_ROOT=/isis/www/nexus
-    mkdir -p ${WWW_ROOT}/doc/examples
+    ## new gh-pages stuff
 
-    # delete after first run
-    rm -fr ${WWW_ROOT}/doc/nxvalidate
+    git_rev=`git rev-parse --short HEAD`
+    export DIST_ROOT=`pwd`/dist
 
+    rm -fr ${DIST_ROOT}
+    git clone https://github.com/nexusformat/definitions.git --branch gh-pages ${DIST_ROOT}
+
+    ## need to preserve CNAME file for custom github domain
+	
+    [ -f ${DIST_ROOT}/CNAME ] && cp -f ${DIST_ROOT}/CNAME /tmp/CNAME.$$
+    rm -fr ${DIST_ROOT}/*
+    [ -f /tmp/CNAME.$$ ] && mv /tmp/CNAME.$$ ${DIST_ROOT}/CNAME
+
+    mkdir ${DIST_ROOT}/pdf
+	
     cd manual
     cd source
 
-    rm -fr ${WWW_ROOT}/doc/examples
-    cp -fr examples ${WWW_ROOT}/doc
+    cp -fr examples ${DIST_ROOT}
 
     cd ..
-    make latexpdf
-    cd build
+    # be more deliberate about building the PDF
+    # first, build all intermediate content, indices, etc.
+    make latex
+    cd build/latex/
+    # next, build the PDF
+    # extra option needed to satisfy "levels nested too deeply" error
+    # expect it to fail (thus exit 0) since nexus.ind not found first time
+    ( pdflatex --interaction=nonstopmode nexus.tex || exit 0 )
+    # make the .ind file now
+    makeindex nexus.idx
+    # run again with fresh nexus.ind
+    ( pdflatex --interaction=nonstopmode nexus.tex || exit 0 )
+    cd ..
 
     #pdf
-    cp -f latex/nexus.pdf ${WWW_ROOT}/doc/NeXusManual.pdf
+    cp -f latex/nexus.pdf ${DIST_ROOT}/pdf/NeXusManual.pdf
+    wget https://github.com/nexusformat/code/raw/master/doc/api/NeXusIntern.pdf -O ${DIST_ROOT}/pdf/NeXusIntern.pdf
+    wget https://github.com/nexusformat/code/raw/master/applications/NXtranslate/docs/NXtranslate.pdf -O ${DIST_ROOT}/pdf/NXtranslate.pdf
 
     #html
-    rm -fr ${WWW_ROOT}/doc/html
-    cp -fr html ${WWW_ROOT}/doc
+    cp -fr html/* ${DIST_ROOT}
 
     cd ../../..
 
-    ( cd www/download.nexusformat.org; cp -rf * ${WWW_ROOT} )
+    cp -fr /isis/www/nexus/doxygen ${DIST_ROOT}
 
+    ( cd impatient-guide && cp -f _build/latex/NXImpatient.pdf ${DIST_ROOT}/pdf/NXImpatient.pdf && cp -rf _build/html ${DIST_ROOT}/impatient )
 
-    ( cd impatient-guide && cp -f _build/latex/NXImpatient.pdf ${WWW_ROOT}/doc/NXImpatient.pdf && rm -rf ${WWW_ROOT}/doc/impatient && cp -rf _build/html ${WWW_ROOT}/doc/impatient )
+    cd ${DIST_ROOT}
+    git add .
+    git commit -m "Update docs for ${git_rev}"
+    git push origin gh-pages
+
 fi
 
 exit 0

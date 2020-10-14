@@ -17,7 +17,7 @@ and read as a text block from a file by the Python source code.
 Our examples will start with the simplest case and add only mild complexity with each new case
 since these examples are meant for those who are unfamiliar with NeXus.
 
-.. [#] *h5py*: http://code.google.com/p/h5py
+.. [#] *h5py*: https://www.h5py.org/
 .. [#] *SPEC*: http://certif.com/spec.html
 
 
@@ -56,7 +56,7 @@ chapter except that the names will be different, as shown below:
 	.. literalinclude:: input.dat
 	    :tab-width: 4
 	    :linenos:
-	    :language: guess
+	    :language: text
 
 Writing the simplest data using ``h5py``
 ########################################
@@ -149,7 +149,7 @@ corrupt the file when the program quits.
     .. literalinclude:: BasicWriter.py
 	    :tab-width: 4
 	    :linenos:
-	    :language: guess
+	    :language: python
 
 .. _Example-H5py-Reading:
 
@@ -178,7 +178,7 @@ extracting other useful stuff from the file.
     .. literalinclude:: BasicReader.py
 	    :tab-width: 4
 	    :linenos:
-	    :language: guess
+	    :language: python
 
 Output from ``BasicReader.py`` is shown next.
 
@@ -190,6 +190,46 @@ Output from ``BasicReader.py`` is shown next.
 	    :tab-width: 4
 	    :linenos:
 	    :language: text
+
+.. _finding.default.data.python:
+
+Finding the default plottable data
+----------------------------------
+
+Let's make a new reader that follows the chain of
+attributes (``@default``, ``@signal``, and ``@axes``)
+to find the default plottable data.  We'll use the
+same data file as the previous example.
+Our demo here assumes one-dimensional data.  
+(For higher dimensionality data,
+we'll need more complexity when handling the 
+``@axes`` attribute and we'll to check the
+field sizes. See section :ref:`Find-Plottable-Data`, 
+subsection :ref:`Find-Plottable-Data-v3`, for the details.)
+
+.. compound::
+
+    .. rubric:: *reader_attributes_trail.py*: Read a NeXus HDF5 file using Python with h5py
+    
+    .. _Example-H5py-Reader_attributes_trail:
+
+    .. literalinclude:: reader_attributes_trail.py
+	    :tab-width: 4
+	    :linenos:
+	    :language: python
+
+Output from ``reader_attributes_trail.py`` is shown next.
+
+.. compound::
+
+    .. rubric:: Output from ``reader_attributes_trail.py``
+
+    .. literalinclude:: reader_attributes_trail.txt
+	    :tab-width: 4
+	    :linenos:
+	    :language: text
+
+
 
 .. _Example-H5py-Plotting:
 
@@ -279,8 +319,8 @@ Here is an example of the structure:
         two_theta --> file="external_angles.hdf5", path="/angles"
 
 .. [#] see these URLs for further guidance on HDF5 external links:
-   http://www.hdfgroup.org/HDF5/doc/RM/RM_H5L.html#Link-CreateExternal, 
-   http://www.h5py.org/docs-1.3/guide/group.html#external-links
+   https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_EXTERNAL, 
+   http://docs.h5py.org/en/stable/high/group.html#external-links
 
 file: external_master.hdf5
 ==========================
@@ -335,7 +375,7 @@ to write a NeXus-compliant HDF5 file with links to data in other HDF5 files.
     .. literalinclude:: externalExample.py
        :tab-width: 4
        :linenos:
-       :language: guess
+       :language: python
 
        
 downloads
@@ -351,15 +391,15 @@ file                                         description
 :download:`BasicWriter.py`                   python code to write example *prj_test.nexus.hdf5*
 :download:`external_angles_h5dump.txt`       *h5dump* analysis of *external_angles.hdf5*
 :download:`external_angles.hdf5`             HDF5 file written by *externalExample*
-:download:`external_angles_structure.txt`    *h5toText* analysis of *external_angles.hdf5*
+:download:`external_angles_structure.txt`    *punx tree* analysis of *external_angles.hdf5*
 :download:`external_counts_h5dump.txt`       *h5dump* analysis of *external_counts.hdf5*
 :download:`external_counts.hdf5`             HDF5 file written by *externalExample*
-:download:`external_counts_structure.txt`    *h5toText* analysis of *external_counts.hdf5*
+:download:`external_counts_structure.txt`    *punx tree* analysis of *external_counts.hdf5*
 :download:`externalExample.py`               python code to write external linking examples
 :download:`external_master_h5dump.txt`       *h5dump* analysis of *external_master.hdf5*
 :download:`external_master.hdf5`             NeXus file written by *externalExample*
-:download:`external_master_structure.txt`    *h5toText* analysis of *external_master.hdf5*
+:download:`external_master_structure.txt`    *punx tree* analysis of *external_master.hdf5*
 :download:`prj_test.nexus_h5dump.txt`        *h5dump* analysis of the NeXus file
 :download:`prj_test.nexus.hdf5`              NeXus file written by *BasicWriter*
-:download:`prj_test.nexus_structure.txt`     *h5toText* analysis of the NeXus file
+:download:`prj_test.nexus_structure.txt`     *punx tree* analysis of the NeXus file
 ===========================================  =============================================

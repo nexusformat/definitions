@@ -12,12 +12,12 @@ import units2rst
 
 
 if __name__ == '__main__':
-    units2rst.worker('NAPI', section = 'data')
+    units2rst.worker('primitiveType', section = 'data')
 
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2018 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

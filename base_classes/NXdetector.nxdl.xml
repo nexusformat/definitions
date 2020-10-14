@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2008-2018 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -33,9 +33,9 @@
   <symbols>
     <doc>These symbols will be used below to coordinate datasets with the same shape.</doc>
     <symbol name="np"><doc>number of scan points (only present in scanning measurements)</doc></symbol>
-    <symbol name="i"><doc>number of detector pixels in the first (X, slowest) direction</doc></symbol>
-    <symbol name="j"><doc>number of detector pixels in the second (Y, faster) direction</doc></symbol>
-    <symbol name="k"><doc>number of detector pixels in the third (Z, if necessary, fastest) direction</doc></symbol>
+    <symbol name="i"><doc>number of detector pixels in the first (slowest) direction</doc></symbol>
+    <symbol name="j"><doc>number of detector pixels in the second (faster) direction</doc></symbol>
+    <symbol name="k"><doc>number of detector pixels in the third (if necessary, fastest) direction</doc></symbol>
     <symbol name="tof"><doc>number of bins in the time-of-flight histogram</doc></symbol>
   </symbols>
 
@@ -108,11 +108,11 @@
 
   </field>
 
-  <field name="data_error" type="NX_NUMBER" units="NX_ANY">
+  <field name="data_errors" type="NX_NUMBER" units="NX_ANY">
     <doc>
       The best estimate of the uncertainty in the data value. Where
       possible, this should be the standard deviation, which has the same units
-      as the data.
+      as the data. The form data_error is deprecated.
     </doc>
 
     <dimensions rank="4">
@@ -122,6 +122,7 @@
       <dim index="4" value="tof" />
     </dimensions>
   </field>
+
 
   <field name="x_pixel_offset" type="NX_FLOAT" units="NX_LENGTH">
     <doc>
@@ -572,8 +573,11 @@
       <dim index="2" value="j"/>
     </dimensions>
   </field>
-  <field name="flatfield_error" type="NX_FLOAT" >
-    <doc>Errors of the flat field correction data.</doc>
+  <field name="flatfield_errors" type="NX_FLOAT" >
+    <doc>
+        Errors of the flat field correction data.
+        The form flatfield_error is deprecated.
+    </doc>
     <dimensions rank="2">
       <dim index="1" value="i"/>
       <dim index="2" value="j"/>
@@ -588,8 +592,9 @@
   <field name="pixel_mask" type="NX_INT" >
     <doc>
       The 32-bit pixel mask for the detector. Can be either one mask
-      for the whole dataset (rank i, j) or each frame can have its own
-      mask (rank np, i, j).
+      for the whole dataset (i.e. an array with indices i, j) or
+      each frame can have its own mask (in which case it would be
+      an array with indices np, i, j).
 
       Contains a bit field for each pixel to signal dead,
       blind or high or otherwise unwanted or undesirable pixels.
@@ -622,13 +627,21 @@
       If the full bit depths is not required, providing a
       mask with fewer bits is permissible.
 
+      If needed, additional pixel masks can be specified by
+      including additional entries named pixel_mask_N, where
+      N is an integer. For example, a general bad pixel mask
+      could be specified in pixel_mask that indicates noisy
+      and dead pixels, and an additional pixel mask from
+      experiment-specific shadowing could be specified in
+      pixel_mask_2. The cumulative mask is the bitwise OR
+      of pixel_mask and any pixel_mask_N entries.
     </doc>
     <dimensions rank="2">
       <dim index="1" value="i"/>
       <dim index="2" value="j"/>
     </dimensions>
   </field>
-  <field name="countrate_correction__applied" type="NX_BOOLEAN" >
+  <field name="countrate_correction_applied" type="NX_BOOLEAN" >
     <doc>
       True when a count-rate correction has already been applied in the
       electronics, false otherwise.

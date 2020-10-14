@@ -37,7 +37,7 @@ LRMECS ``lrcs3701`` data: ``h5dump`` output
 .. literalinclude:: dump-histogram1-data.txt
     :tab-width: 4
     :linenos:
-    :language: guess
+    :language: text
 
 
 Visualize Using *HDFview*
@@ -45,7 +45,7 @@ Visualize Using *HDFview*
 
 For many, the simplest way to view the data content 
 of an HDF5 file is to use the  *HDFview* program 
-(http://www.hdfgroup.org/hdf-java-html/hdfview)
+(https://portal.hdfgroup.org/display/HDFVIEW/HDFView)
 from The HDF Group.  After starting *HDFview*, the data file 
 may be loaded by dragging it into the main HDF window.
 On opening up to the first ``NXdata`` group */Histogram1/data*

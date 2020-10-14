@@ -40,7 +40,7 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
     def test_base_class_NXentry(self):
         expected_lines = '''
         **definition**: (optional) :ref:`NX_CHAR <NX_CHAR>`
-        **(data)**: (optional) :ref:`NXdata`
+        **DATA**: (optional) :ref:`NXdata`
         **notes**: (optional) :ref:`NXnote`
         **@default**: (optional) :ref:`NX_CHAR <NX_CHAR>`
         '''.strip().splitlines()
@@ -64,14 +64,14 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
         **Idev**: (optional) :ref:`NX_NUMBER <NX_NUMBER>`
         **dQw**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_PER_LENGTH <NX_PER_LENGTH>`}
         **dQl**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_PER_LENGTH <NX_PER_LENGTH>`}
-        **(entry)**: (required) :ref:`NXentry`
-        **(data)**: (required) :ref:`NXdata`
-        **(data)**: (optional) :ref:`NXdata`
-        **(sample)**: (optional) :ref:`NXsample`
-        **(instrument)**: (optional) :ref:`NXinstrument`
-        **(note)**: (optional) :ref:`NXnote`
-        **(process)**: (optional) :ref:`NXprocess`
-        **(source)**: (optional) :ref:`NXsource`
+        **ENTRY**: (required) :ref:`NXentry`
+        **DATA**: (required) :ref:`NXdata`
+        **DATA**: (optional) :ref:`NXdata`
+        **SAMPLE**: (optional) :ref:`NXsample`
+        **INSTRUMENT**: (optional) :ref:`NXinstrument`
+        **NOTE**: (optional) :ref:`NXnote`
+        **PROCESS**: (optional) :ref:`NXprocess`
+        **SOURCE**: (optional) :ref:`NXsource`
         **@default**: (optional) :ref:`NX_CHAR <NX_CHAR>`
         **@timestamp**: (optional) :ref:`NX_DATE_TIME <NX_DATE_TIME>`
         **@canSAS_class**: (required) :ref:`NX_CHAR <NX_CHAR>`
@@ -91,7 +91,8 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
         
         printed_lines = [_.strip() for _ in printed_lines]
         for line in expected_lines:
-            self.assertTrue(line.strip() in printed_lines, line.strip())
+            expected = line.strip()
+            self.assertTrue(expected in printed_lines, line.strip())
 
 
 def suite(*args, **kw):

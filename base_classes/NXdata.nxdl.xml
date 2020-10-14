@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2018 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -229,6 +229,29 @@
 		  * The oldest method uses the ``axis`` attribute on each
 		    *dimension scale* to identify
 		    with an integer the axis whose value is the number of the dimension.
+
+		.. index: !plot; axis label
+		   plot, axis units
+		   units
+		   dimension scale
+
+		Each axis of the plot may be labeled with information from the 
+		dimension scale for that axis.  The optional ``@long_name`` attribute
+		is provided as the axis label default.  If ``@long_name`` is not
+		defined, then use the name of the dimension scale.  A ``@units`` attribute,
+		if available, may be added to the axis label for further description.
+		See the section :ref:`Design-Units` for more information.
+
+		.. index: !plot; axis title
+
+		The optional ``title`` field, if available, provides a suggested
+		title for the plot.  If no ``title`` field is found in the :ref:`NXdata`
+		group, look for a ``title`` field in the parent :ref:`NXentry` group,
+		with a fallback to displaying the path to the :ref:`NXdata` group.
+
+		NeXus is about how to find and annotate the data to be plotted 
+		but not to describe how the data is to be plotted.
+		(https://www.nexusformat.org/NIAC2018Minutes.html#nxdata-plottype--attribute)
 	</doc>
 	<field name="VARIABLE" type="NX_NUMBER" nameType="any">
 		<doc>
@@ -266,11 +289,16 @@
 	</field>
 	<field name="VARIABLE_errors" type="NX_NUMBER" nameType="any">
 		<doc>
-			Errors (uncertainties) associated with axis ``VARIABLE``.
+			"Errors" (actually *uncertainties*) associated with axis ``VARIABLE``.
 			Client is responsible for defining the dimensions of the data.
 			The name of this field may be changed to fit the circumstances 
-			but is matched with the *VARIABLE*
-			field with ``_errors`` appended.
+			but is matched with the *VARIABLE* field with ``_errors`` appended.
+			
+			This pattern of using ``VARIABLE_errors`` can be used 
+			throughout a NeXus data file to associate uncertainties 
+			with a dataset named ``VARIABLE``.  This pattern also 
+			applies to other relationships such as ``VARIABLE_resolutions``
+			to connect additional data with a certain dataset. 
 		</doc>
 		<dimensions rank="1">
 			<doc>
@@ -321,29 +349,10 @@
 				Do not use the ``axes`` attribute with the ``axis`` attribute.
 			</doc>
 		</attribute>
-		<attribute name="uncertainties">
-			<!-- 
-				see http://wiki.nexusformat.org/2014_axes_and_uncertainties
-				not accepted at NIAC2014
-				"NIAC will see a proposal when experience has been gained with all variations."
-			-->
-			<doc>
-				Specify the name (or names) of the uncertainties (errors) 
-				of the dependent axes as plottable data.
-				NOTE: The ``uncertainties`` attribute uses the same syntax
-				as the ``axes`` attribute, a string or an array of strings 
-				for multiple uncertainties.
-				
-				Examples::
-				
-					@uncertainties="data_errors"
-				
-					@uncertainties="Idev"
-					
-					@uncertainties=["dQw", "dQl"]
-		
-			</doc>
-		</attribute>
+		<!--
+			NIAC2018 voted to use VARIABLE_errors, not @uncertainties
+			https://github.com/nexusformat/definitions/issues/634
+		-->
 		<attribute name="long_name">
 			<doc>data label</doc>
 		</attribute>
@@ -379,6 +388,11 @@
 			An optional offset to apply to the values in data.
 		</doc>
 	</field>
+	<field name="title">
+		<doc>
+			Title for the plot.
+		</doc>
+	</field>
 	<field name="x" type="NX_FLOAT" units="NX_ANY">
 		<doc>
 			This is an array holding the values to use for the x-axis of
@@ -407,4 +421,3 @@
 		</dimensions>
 	</field>
 </definition>
-
