@@ -339,7 +339,7 @@ valid class name ``^NX[A-Za-z0-9_]*$``
 NeXus supports numeric data as either integer or floating-point
 numbers.  A number follows that indicates the number of bits in the word.
 The table above shows the regular expressions that
-matches the data type specifier.
+match the data type specifier.
 
 .. index::
     ! integers
