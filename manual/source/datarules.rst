@@ -137,9 +137,8 @@ Some fields share a common part of their name and an additional part
 name that makes the whole name specific.  For example, a ``unit_cell``
 might have parts named ``abc``, ``alphabetagamma``, and ``volume``.  It
 is recommended to write them with the common part first, an underscore
-(``_``), and then the specific part, such as (``common_specific``).  In
-this way, the fields will sort alphabetically on the common name. So, in
-this example:
+(``_``), and then the specific part.  In this way, the fields will sort
+alphabetically on the common name. So, in this example:
 
 .. code-block:: text
     :linenos:
