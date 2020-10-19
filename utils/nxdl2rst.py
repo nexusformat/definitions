@@ -59,7 +59,11 @@ def getDocBlocks( ns, node ):
     # substitute HTML entities in markup: "<" for "&lt;"
     # thanks: http://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
     htmlparser = HTMLParser.HTMLParser()
-    text = htmlparser.unescape(text)
+    try:		# see #661
+        import html
+        text = html.unescape(text)
+    except (ImportError, AttributeError):
+        text = htmlparser.unescape(text)
 
     # Blocks are separated by whitelines
     blocks = re.split( '\n\s*\n', text )
@@ -128,9 +132,14 @@ def get_required_or_optional_text(node, use_application_defaults):
     tag = node.tag.split('}')[-1]
     nm = node.get('name')
     if tag in ('field', 'group'):
+        optional_default = not use_application_defaults
+        optional = node.get('optional', optional_default) in (True, 'true', '1', 1)
+        recommended = node.get('recommended', None) in (True, 'true', '1', 1)
         minOccurs = get_minOccurs(node, use_application_defaults)
-        if minOccurs in ('0', 0):
+        if minOccurs in ('0', 0) or optional:
             optional_text = '(optional) '
+        elif recommended:
+            optional_text = '(recommended) '
         elif minOccurs in ('1', 1):
             optional_text = '(required) '
         else:
@@ -140,7 +149,10 @@ def get_required_or_optional_text(node, use_application_defaults):
     elif tag in ('attribute',):
         optional_default = not use_application_defaults
         optional = node.get('optional', optional_default) in (True, 'true', '1', 1)
+        recommended = node.get('recommended', None) in (True, 'true', '1', 1)
         optional_text = {True: '(optional) ', False: '(required) '}[optional]
+        if recommended:
+            optional_text = '(recommended) '
     else:
         optional_text = '(unknown tag: ' + str(tag) + ') '
     return optional_text
@@ -275,8 +287,8 @@ def printFullTree(ns, parent, name, indent):
 
         optional_text = get_required_or_optional_text(node, use_application_defaults)
         if typ.startswith('NX'):
-            if name is '':
-                name = '(%s)' % typ.lstrip('NX')
+            if name == '':
+                name = typ.lstrip('NX').upper()
             typ = ':ref:`%s`' % typ
         print( '%s**%s**: %s%s\n' % (indent, name, optional_text, typ ) )
 
@@ -347,7 +359,7 @@ def print_rst_from_nxdl(nxdl_file):
     print( title )
     print( '='*len(title) )
 
-    # print category, version, parent class
+    # print category & parent class
     extends = root.get('extends')
     if extends is None:
         extends = 'none'
@@ -356,10 +368,9 @@ def print_rst_from_nxdl(nxdl_file):
 
     print('')
     print( '**Status**:\n' )
-    print( '  %s, extends %s, version %s' %
+    print( '  %s, extends %s' %
            ( listing_category.strip(),
-             extends,
-             root.get('version').strip() ) )
+             extends ) )
 
     printIfDeprecated(ns, root, '')
 
@@ -460,7 +471,7 @@ if __name__ == '__main__':
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2017 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

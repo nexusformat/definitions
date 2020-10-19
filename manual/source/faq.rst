@@ -19,7 +19,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     This is not easy to say, not all facilities using NeXus actively
     participate in the committee. Some facilities have reported their
-    adoption status on the `Facilities web page <http://www.nexusformat.org/Facilities.html>`_.
+    adoption status on the `Facilities web page <https://www.nexusformat.org/Facilities.html>`_.
     Please have a look at this list. Keep in mind that it is never fully complete or up to date.
 
 #. NeXus files are binary? This is crazy! How am I supposed to see my data?
@@ -28,7 +28,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     NeXus data files.  The easiest graphical tool to use is
     *HDFview* which can open any HDF file.  Other tools such as *PyMCA*
     and *NeXPy* provide visualization of scientific data while *h5dump*
-    and *h5toText* provide text renditions of content and structure.
+    and *punx tree* provide text renditions of content and structure.
     If you want to try, for example
     ``nxbrowse``
     is a utility provided by the NeXus community that can be very
@@ -78,7 +78,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     If you encounter any problems because the classes are not
     sufficient to describe your experiment, please contact the
-    `mailing list <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
+    :ref:`mailing list<NeXus.mailinglist.main>`.
     Pull requests for the defintions repository (for example adding contributed defintions) 
     are also welcome (see next question).
     The NIAC is always willing to consider new proposals.
@@ -88,7 +88,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
     Read the :index:`NXDL` Tutorial in :ref:`NXDL_Tutorial-CreatingNxdlSpec`
     and have a try. You can ask for help on the 
-    `mailing lists <http://download.nexusformat.org/doc/html/MailingLists.html>`_.
+    :ref:`mailing lists<NeXus.mailinglist.main>`.
     Once you have a definition that is working well for at least your case,
     you can submit it to the NIAC for acceptance as a standard.
     The procedures for acceptance are defined in the NIAC :index:`constitution`. [#]_
@@ -97,7 +97,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
 	.. [#]
 	    Refer to the most recent version of the NIAC constitution on the
 	    NIAC web page:
-	    http://www.nexusformat.org/NIAC.html#constitution
+	    https://www.nexusformat.org/NIAC.html#constitution
 
 
 #. What is the purpose of ``NXdata``?
@@ -194,3 +194,57 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
    See the :ref:`where.to.store.metadata` section.
 
+#. What file extension should I use when writing a NeXus data file?
+
+   Any extension is permitted. 
+   Common extensions are `.h5`, `.hdf`, `.hdf5`, and `.nxs` 
+   while others are possible. 
+   See the many examples in the NeXus exampledata repository. 
+   (https://github.com/nexusformat/exampledata)
+
+#. Can instances of classes inside definitions require 
+   new fields that were previously optional?
+
+   Yes. That is one of the motivations to have 
+   application definitions. By default, all content 
+   in an application definition is required.
+
+   For example, the ``radiation`` field in :ref:`NXcanSAS`
+   requires 1 (and only 1) instance.
+
+#. Can instances of classes inside definitions make 
+   optional new fields that were previously not mentioned?
+
+   Yes. To make it optional, set attribute ``minOccurs="0"``.
+
+   For example, see the ``Idev`` field in :ref:`NXcanSAS`.
+
+#. Can instances of classes inside definitions require 
+   new fields that were previously not mentioned?
+
+   Yes.
+
+   For example, see the ``qx`` field in :ref:`NXiqproc`.
+
+#. Can we view the process of defining classes within 
+   an application definition as defining a subclass of 
+   the original class? That is, all instances of the 
+   class within the definition are valid instances of 
+   the original class, but not vice-versa?
+
+   Keep in mind that NeXus is not specifically object oriented. 
+   The putative super class might be either 
+   :ref:`NXentry` (for single-technique data, such as SAXS) 
+   or :ref:`NXsubentry` (for multi-technique data 
+   such as SAXS/WAXS/USAXS/GIWAXS or SAXS/SANS). 
+   
+   If you are thinking of a new application definition that uses 
+   another as a starting point (like a super class), then there 
+   is an ``extends`` attribute in the definition element of the 
+   NXDL file (example here from :ref:`NXarpes`)::
+
+       <definition name="NXarpes" extends="NXobject" type="group"
+
+   which describes this relationship. For most (?all?) all NXDL 
+   files to date, they extend the :ref:`NXobject` base class
+   (the base object of NeXus).

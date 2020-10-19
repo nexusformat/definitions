@@ -1,5 +1,6 @@
-* NeXus: http://www.nexusformat.org/
-* documentation: http://download.nexusformat.org/doc/html/index.html
+* NeXus: https://www.nexusformat.org/
+* citation: [![DOI](https://zenodo.org/badge/19377430.svg)](https://zenodo.org/badge/latestdoi/19377430) (DOI: 10.5281/zenodo.1472392)
+* documentation: https://manual.nexusformat.org/
 * Release Notes: https://github.com/nexusformat/definitions/wiki/Release-Notes
 * build server: http://build.nexusformat.org/
 * travis-ci: syntax check of every NXDL file [![Build Status](https://travis-ci.org/nexusformat/definitions.svg)](https://travis-ci.org/nexusformat/definitions)
@@ -10,6 +11,7 @@ in the development directory.
 component                      | description
 -------------------------------|------------------------
 [BUILDING.rst](BUILDING.rst)   | how to build the documentation
+[CHANGES.rst](CHANGES.rst)     | Change History
 [LGPL.txt](LGPL.txt)           | one proposed license model
 [NXDL_VERSION](NXDL_VERSION)   | the current NXDL version number
 [README.md](README.md)         | this file

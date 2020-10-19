@@ -1,132 +1,151 @@
 #!/usr/bin/env python
 
-# Coded for both python2 and python3.
+"""
+Create release notes for a new release of this GitHub repository.
+"""
 
-'''
-Create release notes for a new relase of the GitHub repository.
-'''
+# Requires: 
+#
+# * assumes current directory is within a repository clone
+# * pyGithub (conda or pip install) - https://pygithub.readthedocs.io/
+# * Github personal access token (https://github.com/settings/tokens)
+#
+# Github token access is needed or the GitHub API limit 
+# will likely interfere with making a complete report 
+# of the release.
 
-from __future__ import print_function
-from datetime import datetime
-import os, sys
-import github
-import collections
 import argparse
+import datetime
+import github
+import logging
+import os
 
 
-CREDS_FILE_NAME = "__github_creds__.txt"
-GITHUB_NXDL_ORGANIZATION = "nexusformat"
-GITHUB_NXDL_REPOSITORY = "definitions"
-GITHUB_PER_PAGE = 30
+logging.basicConfig(level=logging.WARNING)
+logger = logging.getLogger('create_release_notes')
 
 
-def str2time(time_string):
-    # Tue, 20 Dec 2016 17:35:40 GMT
-    fmt = "%a, %d %b %Y %H:%M:%S %Z"
-    return datetime.strptime(time_string, fmt)
-
-
-class ReleaseNotes(object):
+def findGitConfigFile():
+    """
+    return full path to .git/config file
     
-    def __init__(self, base, head=None, milestone=None):
-        self.base = base
-        self.head = head or "master"
-        self.milestone_title = milestone
-        self.milestone = None
-
-        self.commit_db = {}
-        self.db = dict(tags={}, pulls={}, issues={}, commits={})
-        self.creds_file_name = os.path.join(
-            os.path.dirname(__file__), 
-            CREDS_FILE_NAME)
-        if not os.path.exists(self.creds_file_name):
-            raise ValueError('Missing file: ' + self.creds_file_name)
+    must be in current working directory or some parent directory
     
-    def connect(self):
-        uname, pwd = open(self.creds_file_name, 'r').read().split()
-        self.gh = github.Github(uname, password=pwd, per_page=GITHUB_PER_PAGE)
-        self.user = self.gh.get_user(GITHUB_NXDL_ORGANIZATION)
-        self.repo = self.user.get_repo(GITHUB_NXDL_REPOSITORY)
+    This is a simplistic search that could be improved by using 
+    an open source package.
     
-    def learn(self):
-        base_commit = None
-        earliest = None
-        compare = self.repo.compare(self.base, self.head)
-        commits = self.db["commits"] = collections.OrderedDict()
-        for commit in compare.commits:
-            commits[commit.sha] = commit
-#         commits = self.db["commits"] = {commit.sha: commit for commit in compare.commits}
+    Needs testing for when things are wrong.
+    """
+    path = os.getcwd()
+    for i in range(99):
+        config_file = os.path.join(path, ".git", "config")
+        if os.path.exists(config_file):
+            return config_file      # found it!
         
-        for milestone in self.repo.get_milestones():
-            if milestone.title == self.milestone_title:
-                self.milestone = milestone
+        # next, look in the parent directory
+        path = os.path.abspath(os.path.join(path, ".."))
 
-        tags = self.db["tags"]
-        for tag in self.repo.get_tags():
-            if tag.commit.sha in commits:
-                tags[tag.name] = tag
-            elif tag.name == self.base:
-                base_commit = self.repo.get_commit(tag.commit.sha)
-                earliest = str2time(base_commit.last_modified)
+    msg = "Could not find .git/config file in any parent directory."
+    logger.error(msg)
+    raise ValueError(msg)
 
-        pulls = self.db["pulls"]
-        for pull in self.repo.get_pulls(state="closed"):
-            if pull.closed_at > earliest:
-                pulls[pull.number] = pull
+def parse_git_url(url):
+    """
+    return (organization, repository) tuple from url line of .git/config file
+    """
+    if url.startswith("git@"): # deal with git@github.com:org/repo.git
+        url = url.split(":")[1]
+    org, repo = url.rstrip(".git").split("/")[-2:]
+    return org, repo
 
-        issues = self.db["issues"]
-        for issue in self.repo.get_issues(milestone=self.milestone, state="closed"):
-            if self.milestone is not None or issue.closed_at > earliest:
-                if issue.number not in pulls:
-                    issues[issue.number] = issue
+def getRepositoryInfo():
+    """
+    return (organization, repository) tuple from .git/config file
+    
+    This is a simplistic search that could be improved by using 
+    an open source package.
+    
+    Needs testing for when things are wrong.
+    """
+    config_file = findGitConfigFile()
+        
+    with open(config_file, "r") as f:
+        for line in f.readlines():
+            line = line.strip()
+            if line.startswith("url"):
+                url = line.split("=")[-1].strip()
+                if url.find("github.com") < 0:
+                    msg = "Not a GitHub repo: " + url
+                    logger.error(msg)
+                    raise ValueError(msg)
+                return parse_git_url(url)
 
-    def print_report(self):
-        print("## " + self.milestone_title)
-        print("")
-        if self.milestone is not None:
-            print("**milestone**: [%s](%s)" % (self.milestone.title, self.milestone.url))
-            print("")
-        print("section | number")
-        print("-"*5, " | ", "-"*5)
-        print("New Tags | ", len(self.db["tags"]))
-        print("Pull Requests | ", len(self.db["pulls"]))
-        print("Issues | ", len(self.db["issues"]))
-        print("Commits | ", len(self.db["commits"]))
-        print("")
-        print("### Tags")
-        print("")
-        for k, tag in sorted(self.db["tags"].items()):
-            print("* [%s](%s) %s" % (tag.commit.sha[:7], tag.commit.html_url, k))
-        print("")
-        print("### Pull Requests")
-        print("")
-        for k, pull in sorted(self.db["pulls"].items()):
-            state = {True: "merged", False: "closed"}[pull.merged]
-            print("* [#%d](%s) (%s) %s" % (pull.number, pull.html_url, state, pull.title))
-        print("")
-        print("### Issues")
-        print("")
-        for k, issue in sorted(self.db["issues"].items()):
-            if k not in self.db["pulls"]:
-                print("* [#%d](%s) %s" % (issue.number, issue.html_url, issue.title))
-        print("")
-        print("### Commits")
-        print("")
-        for k, commit in self.db["commits"].items():
-            message = commit.commit.message.splitlines()[0]
-            print("* [%s](%s) %s" % (k[:7], commit.html_url, message))
-        print("")
+def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
+    """mine the Github API for information about this release"""
+    organization_name, repository_name = getRepositoryInfo()
+    gh = github.Github(token)   # GitHub Personal Access Token
 
+    user = gh.get_user(organization_name)
+    logger.debug(f"user: {user}")
 
-def main(base="v3.2", head="master", milestone="NXDL 3.3"):
-    # github.enable_console_debug_logging()
-    notes = ReleaseNotes(base, head=head, milestone=milestone)
-    notes.connect()
-    notes.learn()
-    notes.print_report()
+    repo = user.get_repo(repository_name)
+    logger.debug(f"repo: {repo}")
+
+    milestones = [
+        m
+        for m in repo.get_milestones(state="all")
+        if m.title == milestone_name
+    ]
+    if len(milestones) == 0:
+        msg = f"Could not find milestone: {milestone_name}"
+        logger.error(msg)
+        raise ValueError(msg)
+    milestone = milestones[0]
+    logger.debug(f"milestone: {milestone}")
+
+    compare = repo.compare(base_tag_name, head_branch_name)
+    logger.debug(f"compare: {compare}")
+
+    commits = {c.sha: c for c in compare.commits}
+    logger.debug(f"# commits: {len(commits)}")
+
+    tags = {}
+    earliest = None
+    for t in repo.get_tags():
+        if t.commit.sha in commits:
+            tags[t.name] = t
+        elif t.name == base_tag_name:
+            # PyGitHub oddity:
+            #   t.commit == commit
+            #   t.commit.last_modified != commit.last_modified
+            commit = repo.get_commit(t.commit.sha)
+            dt = str2time(commit.last_modified)
+            earliest = min(dt, earliest or dt)
+    logger.debug(f"# tags: {len(tags)}")
+
+    pulls = {
+        p.number: p
+        for p in repo.get_pulls(state="closed")
+        if p.closed_at > earliest
+    }
+    logger.debug(f"# pulls: {len(pulls)}")
+
+    issues = {
+        i.number: i
+        for i in repo.get_issues(milestone=milestone, state="closed")
+        if (
+            (milestone is not None or i.closed_at > earliest)
+            and
+            i.number not in pulls
+        )
+    }
+    logger.debug(f"# issues: {len(issues)}")
+
+    return repo, milestone, tags, pulls, issues, commits
 
 
 def parse_command_line():
+    """command line argument parser"""
     doc = __doc__.strip()
     parser = argparse.ArgumentParser(description=doc)
 
@@ -135,6 +154,13 @@ def parse_command_line():
 
     help_text = "name of milestone"
     parser.add_argument('milestone', action='store', help=help_text)
+
+    parser.add_argument(
+        'token', 
+        action='store', 
+        help=(
+            "personal access token "
+            "(see: https://github.com/settings/tokens)"))
 
     help_text = "name of tag, branch, SHA to end the range"
     help_text += ' (default="master")'
@@ -149,14 +175,112 @@ def parse_command_line():
     return parser.parse_args()
 
 
+def str2time(time_string):
+    """convert date/time string to datetime object
+    
+    input string example: ``Tue, 20 Dec 2016 17:35:40 GMT``
+    """
+    if time_string is None:
+        msg = f"need valid date/time string, not: {time_string}"
+        logger.error(msg)
+        raise ValueError(msg)
+    return datetime.datetime.strptime(
+        time_string, 
+        "%a, %d %b %Y %H:%M:%S %Z")
+
+
+def report(title, repo, milestone, tags, pulls, issues, commits):
+    print(f"## {title}")
+    print("")
+    print(f"* **date/time**: {datetime.datetime.now()}")
+    print("* **release**: ")
+    print("* **documentation**: [PDF]()")
+    if milestone is not None:
+        print(f"* **milestone**: [{milestone.title}]({milestone.url})")
+        print("")
+    print("section | quantity")
+    print("-"*5, " | ", "-"*5)
+    print(f"[New Tags](#tags) | {len(tags)}")
+    print(f"[Pull Requests](#pull-requests) | {len(pulls)}")
+    print(f"[Issues](#issues) | {len(issues)}")
+    print(f"[Commits](#commits) | {len(commits)}")
+    print("")
+    print("### Tags")
+    print("")
+    if len(tags) == 0:
+        print("-- none --")
+    else:
+        print("tag | date | name")
+        print("-"*5, " | ", "-"*5, " | ", "-"*5)
+        for k, tag in sorted(tags.items()):
+            commit = repo.get_commit(tag.commit.sha)
+            when = str2time(commit.last_modified).strftime("%Y-%m-%d")
+            print(f"[{tag.commit.sha[:7]}]({tag.commit.html_url}) | {when} | {k}")
+    print("")
+    print("### Pull Requests")
+    print("")
+    if len(pulls) == 0:
+        print("-- none --")
+    else:
+        print("pull request | date | state | title")
+        print("-"*5, " | ", "-"*5, " | ", "-"*5, " | ", "-"*5)
+        for k, pull in sorted(pulls.items()):
+            state = {True: "merged", False: "closed"}[pull.merged]
+            when = str2time(pull.last_modified).strftime("%Y-%m-%d")
+            print(f"[#{pull.number}]({pull.html_url}) | {when} | {state} | {pull.title}")
+    print("")
+    print("### Issues")
+    print("")
+    if len(issues) == 0:
+        print("-- none --")
+    else:
+        print("issue | date | title")
+        print("-"*5, " | ", "-"*5, " | ", "-"*5)
+        for k, issue in sorted(issues.items()):
+            if k not in pulls:
+                when = issue.closed_at.strftime("%Y-%m-%d")
+                print(f"[#{issue.number}]({issue.html_url}) | {when} | {issue.title}")
+    print("")
+    print("### Commits")
+    print("")
+    if len(commits) == 0:
+        print("-- none --")
+    else:
+        print("commit | date | message")
+        print("-"*5, " | ", "-"*5, " | ", "-"*5)
+        for k, commit in commits.items():
+            message = commit.commit.message.splitlines()[0]
+            when = commit.raw_data['commit']['committer']['date'].split("T")[0]
+            print(f"[{k[:7]}]({commit.html_url}) | {when} | {message}")
+
+
+def main(base=None, head=None, milestone=None, token=None, debug=False):
+    if debug:
+        base_tag_name = base
+        head_branch_name = head
+        milestone_name = milestone
+        logger.setLevel(logging.DEBUG)
+    else:
+        cmd = parse_command_line()
+        base_tag_name = cmd.base
+        head_branch_name = cmd.head
+        milestone_name = cmd.milestone
+        token = cmd.token
+        logger.setLevel(logging.WARNING)
+
+    info = get_release_info(
+        token, base_tag_name, head_branch_name, milestone_name)
+    # milestone, repo, tags, pulls, issues, commits = info
+    report(milestone_name, *info)
+
+
 if __name__ == '__main__':
-    cmd = parse_command_line()
-    main(cmd.base, head=cmd.head, milestone=cmd.milestone)
+    main()
 
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2017 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

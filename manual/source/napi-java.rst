@@ -59,7 +59,7 @@ Installation under Windows
 
 Note that the location or the naming of these files in the binary Nexus distributions 
 have changed over the years. 
-In the Nexus 4.3.0 Windows 64-bit distribution (http://download.nexusformat.org/kits/4.3.0/win64/), 
+In the Nexus 4.3.0 Windows 64-bit distribution (see Assets in https://github.com/nexusformat/code/releases/tag/4.3.0), 
 By default, the DLL is at: ``C:\Program Files\NeXus Data Format\bin\libjnexus-0.dll``. 
 Please rename this file to ``jnexus.dll`` before making it available in your path. 
 This is important, otherwise, JVM runtime will not be able to locate this file. 
@@ -130,7 +130,7 @@ Here are examples for a UNIX shell and the Windows shell.
     .. literalinclude:: examples/napi-java-jnexus.sh
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: sh
 
 .. compound::
 
@@ -139,7 +139,7 @@ Here are examples for a UNIX shell and the Windows shell.
     .. literalinclude:: examples/napi-java-jnexus.bat
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: bat
 
 .. _NAPI-java-general-Programming:
 
@@ -173,7 +173,7 @@ to get a feeling for the API:
     .. literalinclude:: examples/napi-java-prog1.java
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: java
 
 Some notes on this little example:
 
@@ -214,7 +214,7 @@ Again a code sample which shows how this looks like:
     .. literalinclude:: examples/napi-java-datarw1.java
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: java
 
 The dataset is created as usual with ``makedata()`` and opened
 with ``putdata()``. The trick is in ``putdata()``.
@@ -240,7 +240,7 @@ converted to and from bytes when reading string data. See a writing example:
     .. literalinclude:: examples/napi-java-datarw2.java
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: java
 
 And reading:
 
@@ -251,7 +251,7 @@ And reading:
     .. literalinclude:: examples/napi-java-datarw2.java
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: java
 
 The aforementioned holds for all strings written as SDS content or as an
 attribute. SDS or vGroup names do not need this treatment.
@@ -271,7 +271,7 @@ Let us compare the C-API and Java-API signatures of the
     .. literalinclude:: examples/frag-c-api-sig-getinfo.c
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: c
 
 .. compound::
 
@@ -280,7 +280,7 @@ Let us compare the C-API and Java-API signatures of the
     .. literalinclude:: examples/frag-c-api-sig-getinfo.java
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: java
 
 The problem is that Java passes arguments only by value, which means they cannot
 be modified by the method. Only array arguments can be modified.
@@ -300,7 +300,7 @@ stored object for the key. Thus the code for a vGroup search looks like this:
     .. literalinclude:: examples/napi-java-inquiry1.java
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: java
 
 For an attribute search both at global or SDS level the returned Hashtable
 will hold the name as the key and a little class holding the type and size
@@ -313,7 +313,7 @@ information as value. Thus an attribute search looks like this in the Java-API:
     .. literalinclude:: examples/napi-java-inquiry2.java
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: java
 
 For more information about the usage of the API routines see the reference
 or the NeXus C-API reference pages. Another good source of information is
@@ -357,7 +357,7 @@ On-line Documentation
 
 The following documentation is browsable online:
 
-#. The Doxygen API documentation [#doxygen_api_URL]_
+#. `The API source code <https://github.com/nexusformat/code/blob/master/bindings/java/>`_
 
 #. A verbose tutorial for the NeXus for Java API.
 
@@ -366,4 +366,3 @@ The following documentation is browsable online:
 #. Finally, the source code for the test driver for the API
    which also serves as a documented usage example.
 
-.. [#doxygen_api_URL] http://download.nexusformat.org/doxygen/html-java/

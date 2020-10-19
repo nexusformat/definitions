@@ -44,7 +44,7 @@ described by the following :index:`rules <rules; naming>`:
 
    .. _RegExpName:
    
-   .. rubric:: Regular expression pattern for NXDL group and field names
+   .. rubric:: Regular expression pattern for NeXus group and field names
    
    It is recommended that all group and field names 
    contain only these characters:
@@ -80,6 +80,7 @@ described by the following :index:`rules <rules; naming>`:
    
    will be flagged as a warning during data file validation.
 	
+.. _use-underscore:
 
 .. rubric:: Use of underscore in descriptive names
 
@@ -105,6 +106,125 @@ adequately documented.
 	    Terms with other names are permitted but might not be recognized by standard software. 
 	    Rather than persist in using names not specified in the standard, please suggest additions to the :ref:`NIAC`.
 
+.. _target_value:
+
+The data stored in NeXus fields must be *readback* values. 
+This means values as read from the detector, other hardware, etc. 
+There are occasions where it is sensible to store the target value 
+the variable was supposed to have. In such cases, the 
+*target* value is stored with a name built by appending 
+``_set`` to the NeXus (readback) field name.  
+
+Consider this example:
+
+.. code-block:: text
+    :linenos:
+
+    temperature
+    temperature_set
+
+The ``temperature`` field will hold the readback from the 
+cryostat/furnace/whatever. The field ``temperature_set`` will hold 
+the target value for the temperature as set by the 
+experiment control software. 
+
+.. index:: ! reserved suffixes
+
+.. _reserved_suffixes:
+
+.. rubric:: Reserved field name suffixes
+
+When naming a field (or dataset), NeXus has reserved certain suffixes to the names
+so that a specific meaning may be attached.  Consider a field named ``DATASET``,
+the following table lists the suffixes reserved by NeXus.
+
+.. index::
+    reserved suffixes; end
+    reserved suffixes; errors
+    reserved suffixes; increment_set
+    reserved suffixes; indices
+    reserved suffixes; set
+    reserved suffixes; weights
+
+
+==================  =========================================  =================================
+suffix              reference                                  meaning
+==================  =========================================  =================================
+``_end``            :ref:`NXtransformations`                   end points of the motions that start with ``DATASET``
+``_errors``         :ref:`NXdata`                              uncertainties (a.k.a., errors)
+``_increment_set``  :ref:`NXtransformations`                   intended average range through which the corresponding axis moves during the exposure of a frame
+``_indices``        :ref:`NXdata`                              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
+``_set``            :ref:`target values <target_value>`        Target value of ``DATASET``
+``_weights``        ..                                         divide ``DATASET`` by these weights [#]_
+==================  =========================================  =================================
+
+.. [#] If ``DATASET_weights`` exists and has the same shape as the dataset, 
+   you are supposed to divide ``DATASET`` by the weights.
+
+.. Note that the following line might be added to the above table pending discussion:
+
+   `_axes`            :ref:`NXdata`              String array naming data fields for each axis of ``DATASET``
+
+
+.. _Design-Variants:
+
+
+Variants
+#########
+
+Sometimes it is necessary to store alternate values of a NeXus dataset 
+in a NeXus file. A common example may be the beam center of which a 
+rough value is available at data acquisition. But later on, a better beam 
+center is calculated as part of the data reduction. In order to store 
+this without losing the historical information, the original field can be given a variant attribute that points to 
+a new dataset containing the obsolete value. If even better values 
+become available, further datasets can be inserted into the chain of variant attributes 
+pointing to the preceeding value for the dataset. A reader can thus 
+keep the best value in the pre-defined dataset, and also be able to 
+follow the variant chain and locate older variants. 
+
+A little example is in order to illustrate the scheme:
+
+.. code-block:: text
+    :linenos:
+
+    beam_center_x
+            @variant=beam_center_x_refined
+    beam_center_x_refined
+            @variant=beam_center_x_initial_guess
+    beam_center_x_initial_guess
+
+NeXus borrowed this scheme from CIF. In this way all the different
+variants of a dataset can be preserved. The expectation is that
+variants will be rarely used and NXprocess groups with the results of
+data reduction will be written instead. 
+
+
+.. _Design-Uncertainties:
+
+Uncertainties or Errors
+########################
+
+It is desirable to store experimental errors (also known as 
+*uncertainties*) together with the data. NeXus supports this through 
+a convention: uncertainties or experimental errors on data are 
+stored in a separate field which has a name consisting of the 
+original name of the data with ``_errors`` appended to it. 
+These uncertainties fields have the same shape as the original data field.
+
+An example, from NXdetector:
+
+.. code-block:: text
+    :linenos:
+
+    data
+    data_errors
+    beam_center_x
+    beam_center_x_errors
+
+Where data errors would contain the erros on data, and beam_center_x_errors the error on 
+the beam center for x. 
+
 
 .. _Design-ArrayStorageOrder:
 
@@ -113,8 +233,11 @@ NeXus Array Storage Order
 
 NeXus stores :index:`multi-dimensional <dimension; storage order>` 
 arrays of physical values in C language storage order,
-where the last dimension is the fastest varying. This is the rule.
+where the first dimension has the :index:`slowest varying <dimension; slowest varying>` index when iterating through the array in storage order,
+and the last dimension is the :index:`fastest varying <dimension; fastest varying>`. This is the rule.
 *Good reasons are required to deviate from this rule.*
+
+Where the array contains data from a detector, the array dimensions may correspond to physical directions or axes. The slowest, slow, fast, fastest qualifiers can then apply to these axes too.
 
 It is possible to store data in storage orders other than C language order.
 
@@ -236,15 +359,26 @@ matches the data type specifier.
     Refer to :ref:`Design-Dates-Times`.
 
 .. index:: ! strings
+.. index:: ! UTF-8
 
 **strings**
    ``NX_CHAR``:
-   All strings are to be encoded in UTF-8. Since most strings in a
-   NeXus file are restricted to a small set of characters 
-   and the first 128 characters are standard across encodings,
-   the encoding of most of the strings in a NeXus file will be a moot point.
-   Encoding in UTF-8 will be important when recording people's names 
-   in ``NXuser`` and text notes in ``NXnotes``.
+   The preferred string representation is UTF-8. 
+   Both fixed-length strings and variable-length strings are valid. 
+   String arrays cannot be used where only a string is expected 
+   (title, start_time, end_time, ``NX_class`` attribute,...). 
+   Fields or attributes requiring the use of string arrays will be 
+   clearly marked as such (like the ``NXdata`` attribute auxiliary_signals).
+   
+   .. https://github.com/nexusformat/NIAC/issues/31#issuecomment-433481024
+
+   ..
+      All strings are to be encoded in UTF-8. Since most strings in a
+      NeXus file are restricted to a small set of characters 
+      and the first 128 characters are standard across encodings,
+      the encoding of most of the strings in a NeXus file will be a moot point.
+      Encoding in UTF-8 will be important when recording people's names 
+      in ``NXuser`` and text notes in ``NXnotes``.
    
    .. https://github.com/nexusformat/NIAC/issues/23#issuecomment-308773465
    
@@ -253,15 +387,17 @@ matches the data type specifier.
    .. index:: strings; arrays
    
    .. https://github.com/nexusformat/definitions/issues/281
-   
-   NeXus accepts both variable and fixed length strings, 
-   as well as arrays of strings.
-   Software that reads NeXus data files should support 
-   all of these.
 
-   Some file writers write strings as a string array
-   of rank 1 and length 1.
-   Clients should be prepared to handle such strings.
+
+   ..
+      NeXus accepts both variable and fixed length strings, 
+      as well as arrays of strings.
+      Software that reads NeXus data files should support 
+      all of these.
+
+      Some file writers write strings as a string array
+      of rank 1 and length 1.
+      Clients should be prepared to handle such strings.
 
 .. index:: binary data
 
@@ -497,7 +633,7 @@ plottable data is as follows:
       naming the field **in this group** to be used as 
       dimension scales of the default plottable data.  
       The number of values given must be equal to the 
-      *rank* of the *signal* data.  These are the *abcissae*
+      *rank* of the *signal* data.  These are the *abscissae*
       of the plottable *signal* data.
       
       *If* no field is available to provide a dimension scale
@@ -521,7 +657,7 @@ plottable data is as follows:
       
       It is possible there may be more than one ``AXISNAME_indices`` attribute
       with the same value or values.  This indicates the possibilty of using
-      alternate abcissae along this (these) dimension(s).  The
+      alternate abscissae along this (these) dimension(s).  The
       field named in the ``axes`` attribute indicates the intention of
       the data file writer as to which field should be used by default.
 
@@ -838,12 +974,12 @@ is specified using attributes attached to the :ref:`NXdata` group.
    "strict writer, liberal reader". 
 
 .. [#] Summary of the discussion at NIAC2014 to revise how to find default data: 
-       http://www.nexusformat.org/2014_How_to_find_default_data.html
+       https://www.nexusformat.org/2014_How_to_find_default_data.html
 .. [#aa]  Note on array attributes:
           Attributes potentially containing multiple values 
           (axes and _indices) are to be written as string or integer arrays, 
           to avoid string parsing in reading applications.
-.. [#axes] NIAC2014 proposition: http://www.nexusformat.org/2014_axes_and_uncertainties.html
+.. [#axes] NIAC2014 proposition: https://www.nexusformat.org/2014_axes_and_uncertainties.html
 
 
 Examples
@@ -995,7 +1131,7 @@ attribute for the other scales is optional.
 
 .. 2016-01-23,PRJ: not necessary
    Perhaps substitute with the discussion from NIAC2014?
-   http://www.nexusformat.org/2014_axes_and_uncertainties.html
+   https://www.nexusformat.org/2014_axes_and_uncertainties.html
    
    .. _Design-Linking-Discussion:
    

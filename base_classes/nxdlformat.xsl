@@ -170,8 +170,7 @@ line breaks are VERY TRICKY here, be careful how you edit!
                <xsl:when test="@category='base'">base class</xsl:when>
                <xsl:when test="@category='application'">application definition</xsl:when>
                <xsl:when test="@category='contributed'">contributed definition</xsl:when>
-          </xsl:choose><xsl:if test="count(@version)">, version <xsl:value-of
-               select="@version"/></xsl:if>)<xsl:text><!-- tricky line break here -->
+          </xsl:choose>)<xsl:text><!-- tricky line break here -->
 </xsl:text></xsl:template>
      
 </xsl:stylesheet>
@@ -179,7 +178,7 @@ line breaks are VERY TRICKY here, be careful how you edit!
 <!--
      # NeXus - Neutron and X-ray Common Data Format
      # 
-     # Copyright (C) 2008-2017 NeXus International Advisory Committee (NIAC)
+     # Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
      # 
      # This library is free software; you can redistribute it and/or
      # modify it under the terms of the GNU Lesser General Public

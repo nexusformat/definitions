@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2017 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,6 @@
 # For further information, see http://www.nexusformat.org
 -->
 <definition name="NXdata" 
-	version="1.0"
 	type="group" 
 	extends="NXobject"
 	category="base"
@@ -63,7 +62,7 @@
 		</doc>
 	</attribute>
 	<attribute name="axes">
-		<!-- http://wiki.nexusformat.org/2014_axes_and_uncertainties -->
+		<!-- http://www.nexusformat.org/2014_axes_and_uncertainties -->
 		<doc>
 			.. index:: plotting
 			
@@ -80,7 +79,7 @@
 			of the plottable data, use a "." in that position.  
 			Such as::
 			
-				@axes="time", ".", "."
+				@axes=["time", ".", "."]
 			
 			In this example, since there are three items in the list, the 
 			*signal* field must must be a three-dimensional array (rank=3).  The 
@@ -91,7 +90,7 @@
 			corresponding array index.
 			
 			See examples provided on the NeXus wiki:
-			http://wiki.nexusformat.org/2014_axes_and_uncertainties
+			http://www.nexusformat.org/2014_axes_and_uncertainties
 			
 			If there are no axes at all (such as with a stack of images), 
 			the axes attribute can be omitted.
@@ -123,7 +122,7 @@
 			
 			  data_2d:NXdata
 				@signal="data"
-				@axes="time","pressure"
+				@axes=["time", "pressure"]
 				@time_indices=0
 				@pressure_indices=1
 				data: float[1000,20]
@@ -206,7 +205,7 @@
 
 		  data_2d:NXdata
 		    @signal="data"
-		    @axes="time","pressure"
+		    @axes=["time", "pressure"]
 		    @pressure_indices=1
 		    @temperature_indices=1
 		    @time_indices=0
@@ -231,6 +230,29 @@
 		  * The oldest method adds an ``axis`` attribute to each
 		    *dimension scale* set to an integer corresponding to the 
 		    corresponding dimension.
+
+		.. index: !plot; axis label
+		   plot, axis units
+		   units
+		   dimension scale
+
+		Each axis of the plot may be labeled with information from the 
+		dimension scale for that axis.  The optional ``@long_name`` attribute
+		is provided as the axis label default.  If ``@long_name`` is not
+		defined, then use the name of the dimension scale.  A ``@units`` attribute,
+		if available, may be added to the axis label for further description.
+		See the section :ref:`Design-Units` for more information.
+
+		.. index: !plot; axis title
+
+		The optional ``title`` field, if available, provides a suggested
+		title for the plot.  If no ``title`` field is found in the :ref:`NXdata`
+		group, look for a ``title`` field in the parent :ref:`NXentry` group,
+		with a fallback to displaying the path to the :ref:`NXdata` group.
+
+		NeXus is about how to find and annotate the data to be plotted 
+		but not to describe how the data is to be plotted.
+		(https://www.nexusformat.org/NIAC2018Minutes.html#nxdata-plottype--attribute)
 	</doc>
 	<field name="AXIS" type="NX_NUMBER" nameType="any">
 		<doc>
@@ -327,29 +349,10 @@
 				used in writing new files.  
 			</doc>
 		</attribute>
-		<attribute name="uncertainties">
-			<!-- 
-				see http://wiki.nexusformat.org/2014_axes_and_uncertainties
-				not accepted at NIAC2014
-				"NIAC will see a proposal when experience has been gained with all variations."
-			-->
-			<doc>
-				Specify the name (or names) of the uncertainties (errors) 
-				of the dependent axes as plottable data.
-				NOTE: The ``uncertainties`` attribute uses the same syntax
-				as the ``axes`` attribute, a string or an array of strings 
-				for multiple uncertainties.
-				
-				Examples::
-				
-					@uncertainties="data_errors"
-				
-					@uncertainties="Idev"
-					
-					@uncertainties="dQw", "dQl"		
-		
-			</doc>
-		</attribute>
+		<!--
+			NIAC2018 voted to use VARIABLE_errors, not @uncertainties
+			https://github.com/nexusformat/definitions/issues/634
+		-->
 		<attribute name="long_name">
 			<doc>data label</doc>
 		</attribute>
@@ -403,5 +406,9 @@
 			An optional offset to apply to the values in data.
 		</doc>
 	</field>
+	<field name="title">
+		<doc>
+			Title for the plot.
+		</doc>
+	</field>
 </definition>
-

@@ -91,7 +91,7 @@ the following steps are required:
     .. literalinclude:: examples/NXshell.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 Decide which parameters need to be stored
 =========================================
@@ -124,7 +124,7 @@ the basic NeXus file, the file looks like in the next figure:
     .. literalinclude:: examples/NXshellMono.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 If a parameter or even a whole group is missing in order to describe your experiment, do not despair! Contact the
 NIAC and suggest to add the group or parameter. Give a little documentation what it is for. The NIAC will check that your
@@ -391,7 +391,7 @@ file. As always, the start is an empty template file. This looks like the XML co
     .. literalinclude:: examples/NX__template__.nxdl.xml
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: xml
 
 .. index::
    ! single: NXDL template file
@@ -401,7 +401,6 @@ file. As always, the start is an empty template file. This looks like the XML co
    single: name (NXDL attribute)
    single: extends (NXDL attribute)
    single: type (NXDL attribute)
-   single: version (NXDL attribute)
    single: xmlns (NXDL attribute)
    single: xsi:schemaLocation (NXDL attribute)
 
@@ -410,8 +409,6 @@ Then, locate the XML root element ``definition`` and change the
 ``name attribute`` (the XML shorthand for this attribute is
 ``/definition/@name``) to ``NXwoni``.
 Change the ``doc`` as well.
-Also consider keeping track of ``/definition/@version``
-as suits your development of this NXDL file.
 
 The next thing which needs to be done is adding groups into the definition.
 A group is defined by some XML, as in this example:

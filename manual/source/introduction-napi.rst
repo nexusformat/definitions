@@ -26,7 +26,7 @@ in the :ref:`NAPI <NAPI>` chapter and may be downloaded
 from the NeXus development site. [#]_
 
 For an even more detailed description of the internal workings of NAPI
-see :download:`NeXusIntern.pdf`, copied from the NeXus code repository.
+see the `NeXus Internals manual <https://manual.nexusformat.org/pdf/NeXusIntern.pdf>`_, copied from the NeXus code repository.
 That document is written for programmers who want to work on the NAPI itself.
 If you are new to NeXus and just want to implement basic file reading or writing
 you should not start by reading that.
@@ -145,7 +145,7 @@ created in the :ref:`example above <fig.ex-c-write>`.
     .. literalinclude:: examples/ex-c-read.c
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
 .. _Introduction-HowToBrowse:
 
@@ -171,7 +171,7 @@ is an example session of :index:`nxbrowse`
     .. literalinclude:: examples/ex-unix-using-nxbrowse.txt
         :tab-width: 4
         :linenos:
-        :language: guess
+        :language: text
 
     .. _fig.using.nxbrowse:
 
@@ -198,7 +198,7 @@ The test programs included in the :ref:`NeXus
 API <Introduction-NAPI>` may also be useful to study.
 
 
-.. [#] http://download.nexusformat.org
+.. [#] https://github.com/nexusformat/code/releases/
 
 .. [#] :ref:`NAPI`
 
