@@ -806,7 +806,8 @@ in the table: :ref:`Actions of standard NeXus fields<tb.table-transform>`.
 The rule is to always give the attributes to make perfectly clear how the axes work. The :index:`CIF` scheme
 also allows to store and use arbitrarily named axes in a NeXus file.
 
-CIF is the preferred method for expressing geometry in NeXus.
+The CIF scheme (see :ref:NXtransformations`) is the preferred method
+for expressing geometry in NeXus.
 
 ..  2012-10-25,PRJ:
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
