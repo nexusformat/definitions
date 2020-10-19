@@ -67,7 +67,7 @@ decided by the ``h5py`` support package.
        :language: text
 
 Since the output of ``h5dump`` is verbose (see the *Downloads* section below), 
-the *punx tree* tool [#]_ was used to
+the :ref:`punx tree <punx>` tool [#]_ was used to
 print out the structure of HDF5 data files.  This tool provides a simplified view
 of the NeXus file.  Here is the output:
 
