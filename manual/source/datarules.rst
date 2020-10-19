@@ -425,6 +425,7 @@ NeXus  :index:`dates and times <date and time>`
 should be stored using the `ISO 8601`_ [#]_  format,
 e.g. ``1996-07-31T21:15:22+0600`` (which includes
 a time zone offset of ``+0600``).
+Note:  The time zone offset is always numeric or ``Z`` (which means UTC).
 The standard also allows for time intervals in fractional seconds
 with *1 or more digits of precision*.
 This avoids confusion, e.g. between U.S. and European conventions,
@@ -436,8 +437,8 @@ local time, however, when a file moves from one country to
 another it is undefined. If the local time zone is written,
 the ambiguity is gone.
 
-.. _ISO 8601: http://www.w3.org/TR/NOTE-datetime
-.. [#] ISO 8601: http://www.w3.org/TR/NOTE-datetime
+.. _ISO 8601: https://www.w3.org/TR/NOTE-datetime
+.. [#] ISO 8601: https://www.w3.org/TR/NOTE-datetime
 
 
 .. compound::
