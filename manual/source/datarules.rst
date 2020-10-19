@@ -685,6 +685,8 @@ plottable data is as follows:
       If no ``AXISNAME_indices`` attribute is provided, a programmer is encouraged 
       to make best efforts assuming the intent of this ``NXdata`` group
       to provide a default plot.
+      The ``AXISNAME_indices`` attribute is only required when necessary to 
+      resolve ambiguity. 
       
       It is possible there may be more than one ``AXISNAME_indices`` attribute
       with the same value or values.  This indicates the possibilty of using
