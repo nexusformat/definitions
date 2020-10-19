@@ -141,19 +141,18 @@ The list is not intended to be a complete list of all available packages.
 .. index::
    validation
    file; validate
-   nxvalidate (utility)
+   cnxvalidate (utility)
 
-.. _nxvalidate:
+.. _cnxvalidate:
 
-**nxvalidate**
-   From the source code documentation: 
+**cnxvalidate**
+   NeXus validation tool written in C (not via NAPI).
     
-   *"This is the first version of nxvalidate written in C. 
-   Its dependencies are libxml2 and the HDF5 libraries, 
-   version 1.8.9 or better. Its purpose is to validate HDF5 
-   data files against NeXus application definitions."*
-    
-   Note: this tool is lives in its own GitHub repository **cnxvalidate**:
+   Its dependencies are libxml2 and the HDF5 libraries, version 1.8.9 or
+   better. Its purpose is to validate HDF5 files against NeXus
+   application definitions. 
+
+   See the program documentation for more details:
    https://github.com/nexusformat/cnxvalidate.git
 
 .. index::
@@ -166,16 +165,14 @@ The list is not intended to be a complete list of all available packages.
 **punx**
    Python Utilities for NeXus HDF5 files
    
-   **punx** can validate
-   both NXDL files and NeXus HDF5 data files, as well as print
-   the structure of any HDF5 file, even non-NeXus files.
+   **punx** can validate both NXDL files and NeXus HDF5 data files, as
+   well as print the structure of any HDF5 file, even non-NeXus files.
     
-   NOTE: project is under initial construction, 
-   not yet released for public use, but is useful in its 
-   present form (version 0.2.3).
+   NOTE: project is under initial construction, not yet released for
+   public use, but is useful in its present form (version 0.2.5).
 
-   **punx** can show the tree structure of any HDF5 file.
-   The output is more concise than that from *h5dump*.
+   **punx** can show the tree structure of any HDF5 file. The output is
+   more concise than that from *h5dump*.
     
    See the program documentation for more details:
    https://punx.readthedocs.io
@@ -371,6 +368,8 @@ here in the manual, in section :`Examples`.
 Language API: *F77*
 +++++++++++++++++++
 
+.. index:: API; F77; POLDI
+
 * **POLDI**: ``poldi.zip`` [#]_ contains:
   - A F77 reading routine using NAPI for POLDI at SINQ PSI
   - an example of a file which it reads
@@ -383,6 +382,8 @@ Language API: *F77*
 Language API: *IDL*
 +++++++++++++++++++
 
+.. index:: API; IDL; aXis2000
+
 * **aXis2000** [#]_, with the NeXus-specific IDL code 
   in the ``read_nexus.pro`` [#]_, reads :ref:`NXstxm`
 
@@ -394,6 +395,8 @@ Language API: *IDL*
 
 Language API: *IgorPro*
 +++++++++++++++++++++++
+
+.. index:: API; IgorPro; HDF5gateway
 
 * **HDF5gateway** [#]_ makes it easy to read a HDF5 file (including NeXus) into an 
   IgorPro [#]_ folder, including group and dataset attributes, 
@@ -408,6 +411,8 @@ Language API: *IgorPro*
 Language API: *Java*
 ++++++++++++++++++++
 
+.. index:: API; java; Dawn
+
 * **Dawn** [#]_ has java code to read [#]_ and write [#]_ 
   HDF5 NeXus files (generic NeXus, not tied to 
   specific application definitions). 
@@ -415,6 +420,8 @@ Language API: *Java*
   .. [#] https://dawnsci.org/
   .. [#] read: https://github.com/DawnScience/scisoft-core/blob/master/uk.ac.diamond.scisoft.analysis/src/uk/ac/diamond/scisoft/analysis/io/NexusHDF5Loader.java
   .. [#] write: https://github.com/DawnScience/dawnsci/blob/master/org.eclipse.dawnsci.hdf5/src/org/eclipse/dawnsci/hdf5/nexus/NexusFileHDF5.java
+
+.. index:: API; java; NXreader.zip
 
 * ``NXreader.zip`` [#]_ is java code which reads NeXus files into **ImageJ.** 
   It uses the Java-hdf interface to HDF5. It tries to do a good 
@@ -429,6 +436,8 @@ Language API: *Java*
 Language API: *Python*
 ++++++++++++++++++++++
 
+.. index:: API; Python; Dials
+
 * **Dials** [#]_ has python (and some C++) code for reading :ref:`NXmx` [#]_
 
   .. [#] https://dials.github.io/
@@ -438,13 +447,28 @@ Language API: *Python*
 
     .. [#] write: https://github.com/cctbx/cctbx_project/blob/master/xfel/swissfel/jf16m_cxigeom2nexus.py
 
-* **h5py** (http://docs.h5py.org/)
+.. index:: API; Python; h5py
+
+* **h5py** [#]_
 	HDF5 for Python (h5py) is a general-purpose Python interface to HDF5.
+
+  .. [#] http://docs.h5py.org
+
+.. index:: API; Python; Mantis
 
 * **Mantis** [#]_, with NeXus-specific python code [#]_, reads :ref:`NXstxm`
 
   .. [#] Mantis: http://spectromicroscopy.com/
   .. [#] python code: https://bitbucket.org/mlerotic/spectromicroscopy/src/default/
+
+.. index:: API; Python; nexusformat
+
+* **nexusformat** [#]_ NeXus package for Python
+    Provides an API to open, create, plot, and manipulate NeXus data.
+
+  .. [#] https://github.com/nexpy/nexusformat
+
+.. index:: API; Python; SasView
 
 * **SasView** [#]_ has python code to read [#]_ and write [#]_ :ref:`NXcanSAS`
 
@@ -458,6 +482,8 @@ Language API: *Python*
 Language API: *mixed*
 +++++++++++++++++++++
 
+.. index:: API; mixed; FOCUS
+
 * **FOCUS**: ``focus.zip`` [#]_  contains:
 
   - An example FOCUS file
@@ -466,6 +492,8 @@ Language API: *mixed*
   - i80.f contains a F77 routine for reading FOCUS files into Ida. The routine is RRT_in_Foc.
 
   .. [#] https://github.com/nexusformat/definitions/files/4107386/focus.zip
+
+.. index:: API; mixed; ZEBRA
 
 * **ZEBRA**: ``zebra.zip`` [#]_  contains:
 
