@@ -198,14 +198,16 @@ attributes can be found in the next table:
 			(`n x m x 3`).
 			Allowed values include:
 
-			* ``scaler`` (0-D data)
+			* ``scalar`` (0-D data)
+			* ``scaler`` DEPRECATED, use ``scalar``
 			* ``spectrum`` (1-D data)
 			* ``image`` (2-D data)
+			* ``rgb-image`` (3-D data)
 			* ``rgba-image`` (3-D data)
+			* ``hsl-image`` (3-D data)
 			* ``hsla-image`` (3-D data)
 			* ``cmyk-image`` (3-D data)
 			* ``vertex`` (3-D data)
-
 
 .. index::
    ! single: file attribute
