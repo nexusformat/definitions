@@ -49,11 +49,8 @@ described by the following :index:`rules <rules; naming>`:
    contain only these characters (the names *must* match 
    the regular expression below):
    
-   * start with ``_``, digit, or letter (upper or lower case)
-   * upper or lower case letters
-   * digits
-   * ``_`` (underscore character)
-   * ``.`` (period) but not at the start or end of the word
+   * underscore (``_``), period (``.``), digit, or letter (upper or lower case)
+   * but no period at the start or end of the word
 
    .. _RegExpName:
 
@@ -74,7 +71,7 @@ described by the following :index:`rules <rules; naming>`:
    .. code-block:: text
        :linenos:
    
-       ^[a-zA-Z0-9_]{1}(([a-zA-Z0-9_]|\.)*[a-zA-Z0-9_]{1})?$
+       ^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_]+)?$
    
    Note: This regular expression is named *validItemName* 
    in the XML Schema file: *nxdl.xsd*.
@@ -332,7 +329,7 @@ description      matching regular expression
 integer          ``NX_INT(8|16|32|64)``
 floating-point   ``NX_FLOAT(32|64)``
 array            ``(\\[0-9\\])?``
-valid item name  ``^[a-zA-Z0-9_]{1}(([a-zA-Z0-9_]|\.)*[a-zA-Z0-9_]{1})?$``
+valid item name  ``^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_]+)?$``
 valid class name ``^NX[A-Za-z0-9_]*$``
 ================ ============================
 
