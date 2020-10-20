@@ -87,6 +87,22 @@
 	Can be multidimensional, if needed
    </doc>
   </field>
+	
+  <field name="depends_on" type="NX_CHAR">
+    <doc>
+        NeXus path to the detector positioner axis that most directly 
+        supports the detector.  In the case of a single-module
+        detector, the detector axis chain may start here.
+    </doc>
+  </field>
+	
+  <group type="NXtransformations">
+    <doc>
+        Location for axes (transformations) to do with the
+        detector.  In the case of a single-module detector, the
+        axes of the detector axis chain may be stored here. 
+    </doc>
+  </group>
 
   <field name="data" type="NX_NUMBER" units="NX_ANY">
     <doc>Data values from the detector.</doc>
@@ -202,21 +218,27 @@
 
   <field name="distance" type="NX_FLOAT" units="NX_LENGTH">
     <doc>
-      This is the distance to the previous component in the
-      instrument; most often the sample. The usage depends on the
-      nature of the detector: Most often it is the distance of the
-      detector assembly. But there are irregular detectors. In this
-      case the distance must be specified for each detector pixel.
+      Distance from the sample to the beam center.
+      Normally this value is for guidance only, the proper 
+      geometry can be found following the depends_on axis chain,
+      But in appropriate cases where the dectector distance
+      to the sample is observable independent of the axis
+      chain, that may take precedence over the axis chain
+      calculation.  
     </doc>
-
-    <dimensions rank="3">
-      <dim index="1" value="np" />
-      <dim index="2" value="i" />
-      <dim index="3" value="j" />
-    </dimensions>
   </field>
 
-  <field name="polar_angle" type="NX_FLOAT" units="NX_ANGLE">
+  <field name="distance_derived" type="NX_BOOLEAN" recommended="true">
+    <doc>
+      Boolean to indicate if the distance is a derived, rather than
+      a primary observation.  If distance_derived true or is not specified,
+      the distance is assumed to be derived from delector axis
+      specifications.
+    </doc>
+  </field>
+
+  <field name="polar_angle" type="NX_FLOAT" units="NX_ANGLE"
+    deprecated="see: https://github.com/nexusformat/definitions/issues/830">
     <doc>
       This is the polar angle of the detector towards the previous
       component in the instrument; most often the sample.
@@ -235,7 +257,8 @@
     </dimensions>
   </field>
 
-  <field name="azimuthal_angle" type="NX_FLOAT" units="NX_ANGLE">
+  <field name="azimuthal_angle" type="NX_FLOAT" units="NX_ANGLE"
+    deprecated="see: https://github.com/nexusformat/definitions/issues/830">
     <doc>
       This is the azimuthal angle angle of the detector towards
       the previous component in the instrument; most often the sample.
@@ -266,7 +289,8 @@
     <doc>Local name for the detector</doc>
   </field>
 
-  <group type="NXgeometry">
+  <group type="NXgeometry"
+    deprecated="see: https://github.com/nexusformat/definitions/issues/830">
     <doc>Position and orientation of detector</doc>
   </group>
 
@@ -474,6 +498,7 @@
       <item value="point"/>
       <item value="linear"/>
       <item value="area"/>
+      <item value="volume"/>
     </enumeration>
   </field>
 
@@ -503,6 +528,14 @@
     <dimensions rank="1">
       <dim index="1" value="nBrightFrames" />
     </dimensions>
+  </field>
+
+  <field name="beam_center_derived" type="NX_BOOLEAN" optional="true">
+    <doc>
+      Boolean to indicate if the beam center is a derived, rather than
+      a primary observation.  If true or not provided, the value of
+      beam_center_derived is assumed to be true.
+    </doc>
   </field>
 
   <field name="beam_center_x" type="NX_FLOAT" units="NX_LENGTH">
@@ -763,12 +796,24 @@
   </field>
   <group type="NXdetector_module">
     <doc>
-      For use in special cases where the data in NXdetector
-      is represented in several parts, each with a separate geometry.
+      Many detectors consist of multiple smaller modules that are
+      operated in sync and store their data in a common dataset.
+      To allow consistent parsing of the experimental geometry,
+      it is highly recommended that all detectors to define a 
+      detector module, even if there is only one.  The NXmx
+      application definition explicitly requires it.
+	    
+      This group specifies the hyperslab of data in the data
+      array associated with the detector that contains the
+      data for this module.  If the module is associated with
+      a full data array, rather than with a hyperslab within
+      a larger array, then a single module should be defined,
+      spanning the entire array.
 
       Use one or more instances of the NXdetector_module
       group to declare regions of interest or some other
-      subdivision of a detector.
+      subdivision of a detector.    
+
     </doc>
   </group>
   <choice name="pixel_shape">
