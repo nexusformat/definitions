@@ -48,6 +48,22 @@ used by NeXus. These are:
 
 In the following sections these elements of NeXus files will be defined in more detail.
 
+.. _tree.structure:
+
+.. note:: Notation used to describe a NeXus data file
+
+   In various places in the NeXus manual, contents of a NeXus
+   data file are described using a tree structure, such as
+   in the :ref:`Introduction<fig.verysimple-structure>`.
+
+   The tree syntax is a very condensed version (with high information density) meant to convey the structure of the HDF file.
+
+   * Groups have a ``/`` appended to their name (with NeXus class name shown)
+   * Indentation shows membership in the lesser indented parent above.
+   * Fields have a data type and value appended (for arrays, this may be an abbreviated view)
+   * Attributes (of groups or fields) are prefixed with ``@``.
+   * NeXus-style links are described with some sort of arrow notation such as ``-->``.
+
 
 .. index::
    ! single: group
@@ -141,7 +157,9 @@ groups or fields. They are used to annotate data, e.g. with physical
 :index:`units` or calibration offsets, and may be scalar numbers or character
 strings. In addition, NeXus uses attributes to identify
 :index:`plottable data <plotting>`
-and their axes, etc. A description of some of the many possible
+and their axes, etc. In a :ref:`tree structure<tree.structure>`,
+an attribute is usually shown with a ``@`` prefix, such as ``@units``.
+A description of some of the many possible
 attributes can be found in the next table:
 
 	.. compound::
