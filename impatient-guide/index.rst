@@ -725,7 +725,7 @@ find on the NeXus WWW site.
 .. [#h5py] *h5py*: https://www.h5py.org/
 
 .. [#lrcs3701] ``lrcs3701.nx5`` (NeXus HDF-5 data file):
-   http://svn.nexusformat.org/definitions/exampledata/IPNS/LRMECS/lrcs3701.nx5
+   https://github.com/nexusformat/exampledata/blob/master/IPNS/LRMECS/hdf5/lrcs3701.nx5
 
 .. [#Manual] NeXus User Manual:
    https://manual.nexusformat.org/user_manual.html
