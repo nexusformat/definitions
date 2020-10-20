@@ -48,47 +48,51 @@ described by the following :index:`rules <rules; naming>`:
    The names of NeXus *group* and *field* items
    are validated according to these boundaries:
 
-   * recommended (passes validation) [#lc]_
+   * *recommended* (passes validation) [#lc]_
+
      - lower case words separated by underscores and, if needed, with a trailing number
-     - NOTE: this rule is used by the NeXus base classes
-   * allowed (validation gives a warning)
+     - NOTE: this is used by the NeXus base classes
+
+   * *allowed* (validation gives a warning)
+
      - any combination of upper and lower case letter, numbers, underscores and periods, except that periods cannot be at the start or end of the string
-     - this matches the regular expression below
-   * not allowed (validation gives an error)
+     - NOTE: this matches the regular expression below
+
+   * *not allowed* (validation gives an error)
 
    .. _RegExpName:
 
    .. rubric:: Regular expression pattern for NXDL group and field names
    
    The names of NeXus *group* and *field* items must match
-   this regular expression:
+   this regular expression (named *validItemName* in the
+   XML Schema file: *nxdl.xsd*):
 
    ..
      To understand this complicated RegExp, see
      https://github.com/nexusformat/definitions/pull/671#issuecomment-708395846
 
      Also, an online test is shown here:
-     https://regex101.com/r/Yknm4v/1
+     https://regex101.com/r/Yknm4v/3
     
    .. code-block:: text
        :linenos:
    
        ^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_])?$
    
-   Note: This regular expression is named *validItemName* 
-   in the XML Schema file: *nxdl.xsd*.
-   
    The length should be limited to no more than 
    63 characters (imposed by the HDF5 :index:`rules <rules; HDF5>` for names).
    
-   It is recognized that some facilities will construct group and field
-   names with upper case letters. [#lc]_ Group and field names that
-   match the regular expression but contain upper case characters may be
-   flagged as a warning during data file validation.
+   It is recognized that some facilities will construct data files with
+   group and field names with upper case letters or start names with a
+   number or include a period in a name. [#lc]_
 
-   .. [#lc] NeXus data files with upper case characters in the group 
+   .. [#lc] NeXus data files with group or field names
+      that match the regular expression but contain upper case
+      characters, start with a digit, or include a period in the group
       or field names might not be accepted by all software that reads
-      NeXus data files.
+      NeXus data files.  These names will be flagged as a warning during
+      data file validation.
 	
 .. _use-underscore:
 
