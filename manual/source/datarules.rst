@@ -45,21 +45,23 @@ described by the following :index:`rules <rules; naming>`:
 
 .. compound::
    
-   The names of NeXus *group* and *field* items must 
-   contain only these characters (the names *must* match 
-   the regular expression below):
-   
-   * underscore (``_``), period (``.``), digit, or letter (upper or lower case)
-   * but no period at the start or end of the word
+   The names of NeXus *group* and *field* items
+   are validated according to these boundaries:
+
+   * recommended (passes validation) [#lc]_
+     - lower case words separated by underscores and, if needed, with a trailing number
+     - NOTE: this rule is used by the NeXus base classes
+   * allowed (validation gives a warning)
+     - any combination of upper and lower case letter, numbers, underscores and periods, except that periods cannot be at the start or end of the string
+     - this matches the regular expression below
+   * not allowed (validation gives an error)
 
    .. _RegExpName:
 
    .. rubric:: Regular expression pattern for NXDL group and field names
    
    The names of NeXus *group* and *field* items must match
-   this regular expression. Note: It is *preferred* [#lc]_ to
-   use lower case for all field and group names.
-   All NeXus base class definitions will use lower case.:
+   this regular expression:
 
    ..
      To understand this complicated RegExp, see
@@ -71,7 +73,7 @@ described by the following :index:`rules <rules; naming>`:
    .. code-block:: text
        :linenos:
    
-       ^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_]+)?$
+       ^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_])?$
    
    Note: This regular expression is named *validItemName* 
    in the XML Schema file: *nxdl.xsd*.
@@ -329,7 +331,7 @@ description      matching regular expression
 integer          ``NX_INT(8|16|32|64)``
 floating-point   ``NX_FLOAT(32|64)``
 array            ``(\\[0-9\\])?``
-valid item name  ``^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_]+)?$``
+valid item name  ``^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_])?$``
 valid class name ``^NX[A-Za-z0-9_]*$``
 ================ ============================
 
