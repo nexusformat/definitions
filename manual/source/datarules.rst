@@ -155,7 +155,7 @@ suffix              reference                                  meaning
 ``_errors``         :ref:`NXdata`                              uncertainties (a.k.a., errors)
 ``_increment_set``  :ref:`NXtransformations`                   intended average range through which the corresponding axis moves during the exposure of a frame
 ``_indices``        :ref:`NXdata`                              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
-``_mask``           ..                                         General way to specify a mask. We use the conventions as described for :ref:`NXdetector` ``pixel_mask`` with the option to use less than 32 bit.
+``_mask``           ..                                         Field containing a signal mask, where 0 means the pixel is not masked. If required, bit masks are defined in :ref:`NXdetector` ``pixel_mask``.
 ``_set``            :ref:`target values <target_value>`        Target value of ``DATASET``
 ``_weights``        ..                                         divide ``DATASET`` by these weights [#]_
 ==================  =========================================  =================================
