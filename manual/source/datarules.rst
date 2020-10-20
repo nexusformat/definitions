@@ -143,6 +143,7 @@ the following table lists the suffixes reserved by NeXus.
     reserved suffixes; errors
     reserved suffixes; increment_set
     reserved suffixes; indices
+    reserved suffixes; mask
     reserved suffixes; set
     reserved suffixes; weights
 
@@ -154,6 +155,7 @@ suffix              reference                                  meaning
 ``_errors``         :ref:`NXdata`                              uncertainties (a.k.a., errors)
 ``_increment_set``  :ref:`NXtransformations`                   intended average range through which the corresponding axis moves during the exposure of a frame
 ``_indices``        :ref:`NXdata`                              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
+``_mask``           ..                                         General way to specify a mask. We use the conventions as described for :ref:`NXdetector` ``pixel_mask`` with the option to use less than 32 bit.
 ``_set``            :ref:`target values <target_value>`        Target value of ``DATASET``
 ``_weights``        ..                                         divide ``DATASET`` by these weights [#]_
 ==================  =========================================  =================================
