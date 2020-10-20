@@ -284,6 +284,10 @@ path [#absolute_address]_ to the *original* dataset.
       rather than a **relative** address (starting from the current group,
       such as: ``detector/polar_angle``).
 
+      .. note:: The ``target`` attribute does not work for
+         :ref:`external file links<design.external_file_link>`.
+         The NIAC is working at resolving the technical limitations
+
    .. [#hdf5_hard_link] HDF5 hard link:
       https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_HARD
 
@@ -340,6 +344,7 @@ This requirement can be satisifed easily::
         ...
         lambda --> "/entry/instrument/crystal/wavelength"
 
+.. _design.external_file_link:
 
 .. index:: link; external file
 
@@ -371,6 +376,7 @@ showing an external file link in HDF5:
 .. note:: The NAPI code [#]_ makes no ``target`` attribute assignment for
    links to external files.  It is best to avoid using the
    ``target`` attribute with external file links.
+   The NIAC is working at resolving the technical limitations
 
    .. Q: So what happens if the object in the external file
       has a ``@target`` attribute?
