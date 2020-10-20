@@ -202,19 +202,24 @@
 	
 				<group type="NXdetector_group" recommended="true">
 					<doc>
-						Optional logical grouping of detector elements.
+						Optional logical grouping of detectors.
 
-						Each detector element is represented as an NXdetector group
+						Each detector is represented as an NXdetector 
 						with its own detector data array.  Each detector data array
 						may be further decomposed into array sections by use of
-						NXdetector_module groups.  The names are given in the
-						group names field.
+						NXdetector_module groups.  Detectors can be grouped logically
+						together using NXdetector_group. Groups can be further grouped
+						hierarchically in a single NXdetector_group (for example, if
+						there are multiple detectors at an endstation or multiple 
+						endstations at a facility).  Alternatively, multiple 
+						NXdetector_groups can be provided.
 
 						The groups are defined hierarchically, with names given
-						in the group_names field, unique identifiing indices given
+						in the group_names field, unique identifying indices given
 						in the field group_index, and the level in the hierarchy
 						given in the group_parent field.  For example if an x-ray
-						detector, DET, consists of four elements in a rectangular array::
+						detector group, DET, consists of four detectors in a
+						rectangular array::
 						
 								 DTL	DTR
 								 DLL	DLR
@@ -229,32 +234,29 @@
 
 					<field name="group_names" type="NX_CHAR">
 						<doc>
-							An array of the names of the detector elements or hierarchical
-							groupings of detector elements.
-					
-							Specified in the base classes as comma separated list of names,
-							but new code should use an array of names as quoted strings.
+							An array of the names of the detectors or the names of
+							hierarchical groupings of detectors.
 						</doc>
 					</field>
 
 					<field name="group_index" type="NX_INT">
 						<doc>
-							An array of unique indices for detector elements or groupings
-							of detector elements.
+							An array of unique identifiers for detectors or groupings
+							of detectors.
 						
-							Each element is a unique ID for the corresponding group named
-							in the field group_names.  The IDs are positive integers starting
-							with 1.
+							Each ID is a unique ID for the corresponding detector or group
+							named in the field group_names.  The IDs are positive integers
+							starting with 1.
 						</doc>
 						<dimensions rank="1"><dim index="1" value="i"/></dimensions>
 					</field>
 
 					<field name="group_parent" type="NX_INT">
 						<doc>
-							An array of the hierarchical levels of the parents of detector
-							elements or groupings of detector elements.
+							An array of the hierarchical levels of the parents of detectors
+							or groupings of detectors.
 						
-							A top-level element or grouping has parent level -1.
+							A top-level grouping has parent level -1.
 						</doc>
 						<dimensions rank="1"><dim index="1" value="groupIndex"/></dimensions>
 					</field>
@@ -262,8 +264,8 @@
 				<group type="NXdetector">
 					<doc>
 						Normally the detector group will have the name ``detector``.
-						However, in the case of multiple detector elements, each element
-						needs a uniquely named NXdetector group.
+						However, in the case of multiple detectors, each detector
+						needs a uniquely named NXdetector.
 					</doc>
 
 					<field name="depends_on" minOccurs="0" type="NX_CHAR">
@@ -474,7 +476,7 @@
 							detector. The length can be in physical units or pixels as
 							documented by the units attribute.  Normally, this should
 							be derived from the axis chain, but the direct specification
-							may take precendence if it is not a derived quantity.
+							may take precedence if it is not a derived quantity.
 						</doc>
 					</field>
 
@@ -486,7 +488,7 @@
 							detector. The length can be in physical units or pixels as
 							documented by the units attribute.  Normally, this should
 							be derived from the axis chain, but the direct specification
-							may take precendence if it is not a derived quantity.
+							may take precedence if it is not a derived quantity.
 						</doc>
 					</field>
 
@@ -716,21 +718,21 @@
 
 							In the case of a polychromatic beam this is an array of
 							length **m** of wavelengths, with the relative weights
-							in incident_wavelength_weight.
+							in ``incident_wavelength_weights``.
 
 							In the case of a monochromatic beam that varies shot-
 							to-shot, this is an array of wavelengths, one for each
-							recorded shot. Here, incident_wavelength_weight and 
+							recorded shot. Here, ``incident_wavelength_weights`` and 
 							incident_wavelength_spread are not set.
 
 							In the case of a polychromatic beam that varies shot-to-
 							shot, this is an array of length **m** with the relative
-							weights in incident_wavelength_weight as a 2D array.
+							weights in ``incident_wavelength_weights`` as a 2D array.
 
 							In the case of a polychromatic beam that varies shot-to-
 							shot and where the channels also vary, this is a 2D array
 							of dimensions **nP** by **m** (slow to fast) with the
-							relative weights in incident_wavelength_weight as a 2D
+							relative weights in ``incident_wavelength_weights`` as a 2D
 							array.
 							
 							Note, :ref:`variants &lt;Design-Variants&gt;` are a good way
@@ -741,7 +743,8 @@
 						</doc>
 					</field>
 
-					<field name="incident_wavelength_weight" type="NX_FLOAT" minOccurs="0" >
+					<field name="incident_wavelength_weight" type="NX_FLOAT" minOccurs="0" 
+						deprecated="use incident_wavelength_weights, see https://github.com/nexusformat/definitions/issues/837">
 						<doc>
 							In the case of a polychromatic beam this is an array of 
 							length **m** of the relative weights of the corresponding
@@ -751,6 +754,18 @@
 							shot, this is a 2D array of dimensions **nP** by **m** 
 							(slow to fast) of the relative weights of the
 							corresponding wavelengths in incident_wavelength.
+						</doc>
+					</field>
+					<field name="incident_wavelength_weights" type="NX_FLOAT" minOccurs="0" >
+						<doc>
+							In the case of a polychromatic beam this is an array of 
+							length **m** of the relative weights of the corresponding
+							wavelengths in ``incident_wavelength``.
+
+							In the case of a polychromatic beam that varies shot-to-
+							shot, this is a 2D array of dimensions **np** by **m** 
+							(slow to fast) of the relative weights of the
+							corresponding wavelengths in ``incident_wavelength``.
 						</doc>
 					</field>
 

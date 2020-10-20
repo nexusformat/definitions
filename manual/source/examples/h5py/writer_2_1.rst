@@ -73,7 +73,7 @@ has been made and shows the HDF5 path to the description.
 NeXus recognizes this behavior of the HDF5 library and adds an additional structure
 when building hard links, the ``target`` attribute,
 to preserve the original location of the data.  Not that it actually matters.
-The ``punx tree`` tool knows about the additional NeXus
+the :ref:`punx tree <punx>` tool knows about the additional NeXus
 ``target`` attribute and shows the data to appear in its original
 location, in the ``NXdetector`` group.
 
