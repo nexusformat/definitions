@@ -48,22 +48,32 @@ described by the following :index:`rules <rules; naming>`:
    The names of NeXus *group* and *field* items
    are validated according to these boundaries:
 
-   * *recommended* (passes validation) [#lc]_
+   * *Recommended* names [#lc]_
 
      - lower case words separated by underscores and, if needed, with a trailing number
      - NOTE: this is used by the NeXus base classes
 
-   * *allowed* (validation gives a warning)
+   * *Allowed* names
 
      - any combination of upper and lower case letter, numbers, underscores and periods, except that periods cannot be at the start or end of the string
-     - NOTE: this matches the regular expression below
+     - NOTE: this matches the *validItemName* regular expression :ref:`below<validItemName>`
 
-   * *not allowed* (validation gives an error)
+   * *Invalid* names
+
+     - NOTE: does not match the *validItemName* regular expression :ref:`below<validItemName>`
 
    .. _RegExpName:
 
    .. rubric:: Regular expression pattern for NXDL group and field names
    
+   The NIAC recognises that the majority of the world uses characters
+   outside of the basic latin (a.k.a US-ASCII, 7-bit ASCII) set
+   currently included in the allowed names. The restriction given here
+   reflects current technical issues and we expect to revisit the issue
+   and relax such restrictions in future.
+
+   .. [#7bit-ASCII] https://en.wikipedia.org/wiki/ASCII
+
    The names of NeXus *group* and *field* items must match
    this regular expression (named *validItemName* in the
    XML Schema file: *nxdl.xsd*):
@@ -75,6 +85,8 @@ described by the following :index:`rules <rules; naming>`:
      Also, an online test is shown here:
      https://regex101.com/r/Yknm4v/3
     
+   .. _validItemName:
+
    .. code-block:: text
        :linenos:
    
