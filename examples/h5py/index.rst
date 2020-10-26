@@ -342,7 +342,7 @@ group attributes that describe the default plottable data:
 
     data:NXdata
       @signal = counts
-      @axes = two_theta
+      @axes = "two_theta"
       @two_theta_indices = 0
 
 Here is (the basic structure of) :download:`external_master.hdf5`, an example:
@@ -355,7 +355,7 @@ Here is (the basic structure of) :download:`external_master.hdf5`, an example:
       instrument --> file="external_counts.hdf5", path="/entry/instrument"
       data:NXdata
       	@signal = counts
-      	@axes = two_theta
+      	@axes = "two_theta"
          @two_theta = 0
        	counts --> file="external_counts.hdf5", path="/entry/instrument/detector/counts"
        	two_theta --> file="external_angles.hdf5", path="/angles"

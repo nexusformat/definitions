@@ -967,7 +967,7 @@ is specified using attributes attached to the :ref:`NXdata` group.
    
       data_2d:NXdata
           @signal="data"
-          @axes="time","pressure"
+          @axes=["time","pressure"]
           @time_indices=0
           @pressure_indices=1
           data: float[1000,20]
@@ -1038,7 +1038,7 @@ More examples are available in the NeXus webpage ([#axes]_).
              @default="data_2d"
              data_2d:NXdata
                @signal="data"
-               @axes="time","pressure"
+               @axes=["time","pressure"]
                @pressure_indices=1
                @temperature_indices=1
                @time_indices=0
