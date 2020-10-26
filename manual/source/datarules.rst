@@ -136,7 +136,11 @@ experiment control software.
 
 When naming a field, NeXus has reserved certain prefixes to
 the names to ensure that names written in NeXus files will not conflict
-with future releases as the NeXus standard evolves.  The following table
+with future releases as the NeXus standard evolves.
+Prefixes should follow a naming scheme of uppercase letters followed by
+an underscore, but exceptions will be made for cases already in wide
+use.
+The following table
 lists the prefixes reserved by NeXus.
 
 .. index::
