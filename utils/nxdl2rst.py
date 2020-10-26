@@ -303,7 +303,7 @@ def printFullTree(ns, parent, name, indent):
         printFullTree(ns, node, nodename, indent+INDENTATION_UNIT)
 
     for node in parent.xpath('nx:link', namespaces=ns):
-        print( '%s**%s** --> %s\n' % (
+        print( '%s**%s**: :ref:`link<Design-Links>` (suggested target: ``%s``)\n' % (
             indent, node.get('name'), node.get('target') ) )
         printDoc(indent+INDENTATION_UNIT, ns, node)
 

@@ -143,6 +143,7 @@ the following table lists the suffixes reserved by NeXus.
     reserved suffixes; errors
     reserved suffixes; increment_set
     reserved suffixes; indices
+    reserved suffixes; mask
     reserved suffixes; set
     reserved suffixes; weights
 
@@ -154,6 +155,7 @@ suffix              reference                                  meaning
 ``_errors``         :ref:`NXdata`                              uncertainties (a.k.a., errors)
 ``_increment_set``  :ref:`NXtransformations`                   intended average range through which the corresponding axis moves during the exposure of a frame
 ``_indices``        :ref:`NXdata`                              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
+``_mask``           ..                                         Field containing a signal mask, where 0 means the pixel is not masked. If required, bit masks are defined in :ref:`NXdetector` ``pixel_mask``.
 ``_set``            :ref:`target values <target_value>`        Target value of ``DATASET``
 ``_weights``        ..                                         divide ``DATASET`` by these weights [#]_
 ==================  =========================================  =================================
@@ -423,14 +425,22 @@ NeXus dates and times
 
 NeXus  :index:`dates and times <date and time>`
 should be stored using the `ISO 8601`_ [#]_  format,
-e.g. ``1996-07-31T21:15:22+0600``.
+e.g. ``1996-07-31T21:15:22+0600`` (which includes
+a time zone offset of ``+0600``).
+Note:  The time zone offset is always numeric or ``Z`` (which means UTC).
 The standard also allows for time intervals in fractional seconds
 with *1 or more digits of precision*.
 This avoids confusion, e.g. between U.S. and European conventions,
 and is appropriate for machine sorting.
+It is recommended to add an explicit time zone,
+otherwise the local time zone is assumed per ISO8601.
+The norm is that if there is no time zone, it is assumed
+local time, however, when a file moves from one country to
+another it is undefined. If the local time zone is written,
+the ambiguity is gone.
 
-.. _ISO 8601: http://www.w3.org/TR/NOTE-datetime
-.. [#] ISO 8601: http://www.w3.org/TR/NOTE-datetime
+.. _ISO 8601: https://www.w3.org/TR/NOTE-datetime
+.. [#] ISO 8601: https://www.w3.org/TR/NOTE-datetime
 
 
 .. compound::
@@ -957,7 +967,7 @@ is specified using attributes attached to the :ref:`NXdata` group.
    
       data_2d:NXdata
           @signal="data"
-          @axes="time","pressure"
+          @axes=["time","pressure"]
           @time_indices=0
           @pressure_indices=1
           data: float[1000,20]
@@ -1028,7 +1038,7 @@ More examples are available in the NeXus webpage ([#axes]_).
              @default="data_2d"
              data_2d:NXdata
                @signal="data"
-               @axes="time","pressure"
+               @axes=["time","pressure"]
                @pressure_indices=1
                @temperature_indices=1
                @time_indices=0

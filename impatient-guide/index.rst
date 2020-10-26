@@ -406,13 +406,13 @@ sample is rotated and data is collected in an area detector:
          data[NP]
       data:NXdata
          @signal = 1
-         @axes = rotation_angle . .
+         @axes = ["rotation_angle", ".", "."]
          @rotation_angle_indices = 0
          data --> /entry/instrument/detector/data
          rotation_angle --> /entry/sample/rotation_angle
 
 The default data to be plotted has more dimensions and requires
-additional description.  The attribute ``@axes = rotation_angle . .``
+additional description.  The attribute ``@axes = ["rotation_angle", ".", "."]``
 implies that the "signal data" (``data``) has three dimensions.
 The first dimension is provided by the ``rotation_angle`` field, 
 while the ``.`` for the other two dimensions indicates they each
@@ -725,7 +725,7 @@ find on the NeXus WWW site.
 .. [#h5py] *h5py*: https://www.h5py.org/
 
 .. [#lrcs3701] ``lrcs3701.nx5`` (NeXus HDF-5 data file):
-   http://svn.nexusformat.org/definitions/exampledata/IPNS/LRMECS/lrcs3701.nx5
+   https://github.com/nexusformat/exampledata/blob/master/IPNS/LRMECS/hdf5/lrcs3701.nx5
 
 .. [#Manual] NeXus User Manual:
    https://manual.nexusformat.org/user_manual.html

@@ -48,6 +48,22 @@ used by NeXus. These are:
 
 In the following sections these elements of NeXus files will be defined in more detail.
 
+.. _tree.structure:
+
+.. note:: Notation used to describe a NeXus data file
+
+   In various places in the NeXus manual, contents of a NeXus
+   data file are described using a tree structure, such as
+   in the :ref:`Introduction<fig.verysimple-structure>`.
+
+   The tree syntax is a very condensed version (with high information density) meant to convey the structure of the HDF file.
+
+   * Groups have a ``/`` appended to their name (with NeXus class name shown)
+   * Indentation shows membership in the lesser indented parent above.
+   * Fields have a data type and value appended (for arrays, this may be an abbreviated view)
+   * Attributes (of groups or fields) are prefixed with ``@``.
+   * NeXus-style links are described with some sort of arrow notation such as ``-->``.
+
 
 .. index::
    ! single: group
@@ -141,7 +157,9 @@ groups or fields. They are used to annotate data, e.g. with physical
 :index:`units` or calibration offsets, and may be scalar numbers or character
 strings. In addition, NeXus uses attributes to identify
 :index:`plottable data <plotting>`
-and their axes, etc. A description of some of the many possible
+and their axes, etc. In a :ref:`tree structure<tree.structure>`,
+an attribute is usually shown with a ``@`` prefix, such as ``@units``.
+A description of some of the many possible
 attributes can be found in the next table:
 
 	.. compound::
@@ -180,14 +198,16 @@ attributes can be found in the next table:
 			(`n x m x 3`).
 			Allowed values include:
 
-			* ``scaler`` (0-D data)
+			* ``scalar`` (0-D data)
+			* ``scaler`` DEPRECATED, use ``scalar``
 			* ``spectrum`` (1-D data)
 			* ``image`` (2-D data)
+			* ``rgb-image`` (3-D data)
 			* ``rgba-image`` (3-D data)
+			* ``hsl-image`` (3-D data)
 			* ``hsla-image`` (3-D data)
 			* ``cmyk-image`` (3-D data)
 			* ``vertex`` (3-D data)
-
 
 .. index::
    ! single: file attribute
@@ -284,6 +304,10 @@ path [#absolute_address]_ to the *original* dataset.
       rather than a **relative** address (starting from the current group,
       such as: ``detector/polar_angle``).
 
+      .. note:: The ``target`` attribute does not work for
+         :ref:`external file links<design.external_file_link>`.
+         The NIAC is working at resolving the technical limitations
+
    .. [#hdf5_hard_link] HDF5 hard link:
       https://portal.hdfgroup.org/display/HDF5/H5L_CREATE_HARD
 
@@ -340,6 +364,7 @@ This requirement can be satisifed easily::
         ...
         lambda --> "/entry/instrument/crystal/wavelength"
 
+.. _design.external_file_link:
 
 .. index:: link; external file
 
@@ -371,6 +396,7 @@ showing an external file link in HDF5:
 .. note:: The NAPI code [#]_ makes no ``target`` attribute assignment for
    links to external files.  It is best to avoid using the
    ``target`` attribute with external file links.
+   The NIAC is working at resolving the technical limitations
 
    .. Q: So what happens if the object in the external file
       has a ``@target`` attribute?
@@ -805,6 +831,9 @@ The type and direction of the NeXus standard operations is documented below
 in the table: :ref:`Actions of standard NeXus fields<tb.table-transform>`.
 The rule is to always give the attributes to make perfectly clear how the axes work. The :index:`CIF` scheme
 also allows to store and use arbitrarily named axes in a NeXus file.
+
+The CIF scheme (see :ref:`NXtransformations`) is the preferred method
+for expressing geometry in NeXus.
 
 ..  2012-10-25,PRJ:
     !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
