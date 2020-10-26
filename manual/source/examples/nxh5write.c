@@ -5,13 +5,13 @@
  *
  * scan:NXentry
  *      data:NXdata
- *         @signal = counts
- *         @axes = two_theta
+ *         @signal = "counts"
+ *         @axes = "two_theta"
  *         @two_theta_indices = 0
  *         counts[]
- *            @units=counts
+ *            @units="counts"
  *         two_theta[]
- *            @units=degrees
+ *            @units="degrees"
 *
  *  WARNING: each of the HDF function below needs to be 
  *  wrapped into something like:
