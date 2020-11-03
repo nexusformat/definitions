@@ -22,7 +22,8 @@ described by the following :index:`rules <rules; naming>`:
 
 * The names of NeXus *group* and *field* items
   must only contain a restricted set of characters.
-  This set may be described by a regular expression 
+  
+  This set is described by a regular expression 
   syntax :index:`regular expression`
   :ref:`regular expression syntax <RegExpName>`,
   as described below.
@@ -40,45 +41,70 @@ described by the following :index:`rules <rules; naming>`:
    This is important when not using the NAPI to either read or write
    the HDF5 data file.
 
+.. rubric:: NXDL group and field names
+
 .. compound::
+   
+   The names of NeXus *group* and *field* items
+   are validated according to these boundaries:
+
+   * *Recommended* names [#lc]_
+
+     - lower case words separated by underscores and, if needed, with a trailing number
+     - NOTE: this is used by the NeXus base classes
+
+   * *Allowed* names
+
+     - any combination of upper and lower case letter, numbers, underscores and periods, except that periods cannot be at the start or end of the string
+     - NOTE: this matches the *validItemName* regular expression :ref:`below<validItemName>`
+
+   * *Invalid* names
+
+     - NOTE: does not match the *validItemName* regular expression :ref:`below<validItemName>`
 
    .. _RegExpName:
+
+   .. rubric:: Regular expression pattern for NXDL group and field names
    
-   .. rubric:: Regular expression pattern for NeXus group and field names
-   
-   It is recommended that all group and field names 
-   contain only these characters:
-   
-   * lower case letters
-   * digits
-   * "_" (underscore character)
-   
-   and that they begin with a lower case letter.
-   This is the regular expression used to check 
-   this recommendation.
+   The NIAC recognises that the majority of the world uses characters
+   outside of the basic latin (a.k.a US-ASCII, 7-bit ASCII) set
+   currently included in the allowed names. The restriction given here
+   reflects current technical issues and we expect to revisit the issue
+   and relax such restrictions in future.
+
+   .. [#7bit-ASCII] https://en.wikipedia.org/wiki/ASCII
+
+   The names of NeXus *group* and *field* items must match
+   this regular expression (named *validItemName* in the
+   XML Schema file: *nxdl.xsd*):
+
+   ..
+     To understand this complicated RegExp, see
+     https://github.com/nexusformat/definitions/pull/671#issuecomment-708395846
+
+     Also, an online test is shown here:
+     https://regex101.com/r/Yknm4v/3
     
+   .. _validItemName:
+
    .. code-block:: text
        :linenos:
    
-       [a-z_][a-z\d_]*
+       ^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_])?$
    
    The length should be limited to no more than 
    63 characters (imposed by the HDF5 :index:`rules <rules; HDF5>` for names).
    
-   It is recognized that some facilities will construct
-   group and field names with upper case letters.  *NeXus data 
-   files with upper case characters in the group or field 
-   names might not be accepted by all software that reads NeXus 
-   data files.*  Hence, group and field names that do not
-   pass the regular expression above but pass this
-   expression (named *validItemName* in the XML Schema file: *nxdl.xsd*):
-   
-   .. code-block:: text
-       :linenos:
-   
-       [A-Za-z_][\w_]*
-   
-   will be flagged as a warning during data file validation.
+   It is recognized that some facilities will construct data files with
+   group and field names with upper case letters or start names with a
+   number or include a period in a name. [#lc]_
+
+   .. [#lc] NeXus data files with group or field names
+      that match the regular expression but contain upper case
+      characters, start with a digit, or include a period in the group
+      or field names might not be accepted by all software that reads
+      NeXus data files.  These names will be flagged as a warning during
+      data file validation.
 	
 .. _use-underscore:
 
@@ -323,14 +349,14 @@ description      matching regular expression
 integer          ``NX_INT(8|16|32|64)``
 floating-point   ``NX_FLOAT(32|64)``
 array            ``(\\[0-9\\])?``
-valid item name  ``^[A-Za-z_][A-Za-z0-9_]*$``
+valid item name  ``^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_])?$``
 valid class name ``^NX[A-Za-z0-9_]*$``
 ================ ============================
 
 NeXus supports numeric data as either integer or floating-point
 numbers.  A number follows that indicates the number of bits in the word.
 The table above shows the regular expressions that
-matches the data type specifier.
+match the data type specifier.
 
 .. index::
     ! integers
