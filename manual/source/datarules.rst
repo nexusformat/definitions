@@ -22,13 +22,14 @@ described by the following :index:`rules <rules; naming>`:
 
 * The names of NeXus *group* and *field* items
   must only contain a restricted set of characters.
-  This set may be described by a regular expression 
+  
+  This set is described by a regular expression 
   syntax :index:`regular expression`
   :ref:`regular expression syntax <RegExpName>`,
   as described below.
 
 * For the class names [#]_ of NeXus *group* items,
-  the prefix *NX* is reserved. 
+  the prefix *NX* is reserved as shown in the :ref:`table <reserved_prefixes>` below. 
   Thus all NeXus class names start with NX.
   The chapter titled :ref:`ReferenceDocumentation` lists the 
   available NeXus class names as either *base classes*, 
@@ -40,45 +41,70 @@ described by the following :index:`rules <rules; naming>`:
    This is important when not using the NAPI to either read or write
    the HDF5 data file.
 
+.. rubric:: NXDL group and field names
+
 .. compound::
+   
+   The names of NeXus *group* and *field* items
+   are validated according to these boundaries:
+
+   * *Recommended* names [#lc]_
+
+     - lower case words separated by underscores and, if needed, with a trailing number
+     - NOTE: this is used by the NeXus base classes
+
+   * *Allowed* names
+
+     - any combination of upper and lower case letter, numbers, underscores and periods, except that periods cannot be at the start or end of the string
+     - NOTE: this matches the *validItemName* regular expression :ref:`below<validItemName>`
+
+   * *Invalid* names
+
+     - NOTE: does not match the *validItemName* regular expression :ref:`below<validItemName>`
 
    .. _RegExpName:
+
+   .. rubric:: Regular expression pattern for NXDL group and field names
    
-   .. rubric:: Regular expression pattern for NeXus group and field names
-   
-   It is recommended that all group and field names 
-   contain only these characters:
-   
-   * lower case letters
-   * digits
-   * "_" (underscore character)
-   
-   and that they begin with a lower case letter.
-   This is the regular expression used to check 
-   this recommendation.
+   The NIAC recognises that the majority of the world uses characters
+   outside of the basic latin (a.k.a US-ASCII, 7-bit ASCII) set
+   currently included in the allowed names. The restriction given here
+   reflects current technical issues and we expect to revisit the issue
+   and relax such restrictions in future.
+
+   .. [#7bit-ASCII] https://en.wikipedia.org/wiki/ASCII
+
+   The names of NeXus *group* and *field* items must match
+   this regular expression (named *validItemName* in the
+   XML Schema file: *nxdl.xsd*):
+
+   ..
+     To understand this complicated RegExp, see
+     https://github.com/nexusformat/definitions/pull/671#issuecomment-708395846
+
+     Also, an online test is shown here:
+     https://regex101.com/r/Yknm4v/3
     
+   .. _validItemName:
+
    .. code-block:: text
        :linenos:
    
-       [a-z_][a-z\d_]*
+       ^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_])?$
    
    The length should be limited to no more than 
    63 characters (imposed by the HDF5 :index:`rules <rules; HDF5>` for names).
    
-   It is recognized that some facilities will construct
-   group and field names with upper case letters.  *NeXus data 
-   files with upper case characters in the group or field 
-   names might not be accepted by all software that reads NeXus 
-   data files.*  Hence, group and field names that do not
-   pass the regular expression above but pass this
-   expression (named *validItemName* in the XML Schema file: *nxdl.xsd*):
-   
-   .. code-block:: text
-       :linenos:
-   
-       [A-Za-z_][\w_]*
-   
-   will be flagged as a warning during data file validation.
+   It is recognized that some facilities will construct data files with
+   group and field names with upper case letters or start names with a
+   number or include a period in a name. [#lc]_
+
+   .. [#lc] NeXus data files with group or field names
+      that match the regular expression but contain upper case
+      characters, start with a digit, or include a period in the group
+      or field names might not be accepted by all software that reads
+      NeXus data files.  These names will be flagged as a warning during
+      data file validation.
 	
 .. _use-underscore:
 
@@ -148,6 +174,40 @@ alphabetically on the common name. So, in this example:
     unit_cell_volume
 
 
+.. index:: ! reserved prefixes
+
+.. _reserved_prefixes:
+
+.. rubric:: Reserved field name prefixes
+
+When naming a field, NeXus has reserved certain prefixes to the names to
+ensure that names written in NeXus files will not conflict with future
+releases as the NeXus standard evolves. Prefixes should follow a naming
+scheme of uppercase letters followed by an underscore, but exceptions
+will be made for cases already in wide use. The following table lists
+the prefixes reserved by NeXus.
+
+.. index::
+    reserved prefixes; NX
+    reserved prefixes; NX_
+    reserved prefixes; IDF_
+    reserved prefixes; NDAttr
+    reserved prefixes; PDBX_
+    reserved prefixes; SAS_
+    reserved prefixes; SILX_
+
+==========  ==========  ==========================================  ==============
+prefix 	    use 	    meaning 	                                URL
+==========  ==========  ==========================================  ==============
+``IDF_``    attributes 	reserved for use by ISIS Muon Facility 	    https://www.isis.stfc.ac.uk
+``NDAttr``  attributes 	reserved for use by EPICS area detector     https://github.com/areaDetector
+``NX``      NXDL class 	for the class names used with NeXus groups 	https://www.nexusformat.org
+``NX_``     attributes 	reserved for use by NeXus 	                https://www.nexusformat.org
+``PDBX_``   attributes 	reserved for the US protein data bank 	    https://www.rcsb.org
+``SAS_``    attributes 	reserved for use by canSAS 	                http://www.cansas.org
+``SILX_``   attributes 	reserved for use by silx 	                https://www.silx.org
+==========  ==========  ==========================================  ==============
+
 .. index:: ! reserved suffixes
 
 .. _reserved_suffixes:
@@ -163,9 +223,9 @@ the following table lists the suffixes reserved by NeXus.
     reserved suffixes; errors
     reserved suffixes; increment_set
     reserved suffixes; indices
+    reserved suffixes; mask
     reserved suffixes; set
     reserved suffixes; weights
-
 
 ==================  =========================================  =================================
 suffix              reference                                  meaning
@@ -174,6 +234,7 @@ suffix              reference                                  meaning
 ``_errors``         :ref:`NXdata`                              uncertainties (a.k.a., errors)
 ``_increment_set``  :ref:`NXtransformations`                   intended average range through which the corresponding axis moves during the exposure of a frame
 ``_indices``        :ref:`NXdata`                              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
+``_mask``           ..                                         Field containing a signal mask, where 0 means the pixel is not masked. If required, bit masks are defined in :ref:`NXdetector` ``pixel_mask``.
 ``_set``            :ref:`target values <target_value>`        Target value of ``DATASET``
 ``_weights``        ..                                         divide ``DATASET`` by these weights [#]_
 ==================  =========================================  =================================
@@ -341,14 +402,14 @@ description      matching regular expression
 integer          ``NX_INT(8|16|32|64)``
 floating-point   ``NX_FLOAT(32|64)``
 array            ``(\\[0-9\\])?``
-valid item name  ``^[A-Za-z_][A-Za-z0-9_]*$``
+valid item name  ``^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_])?$``
 valid class name ``^NX[A-Za-z0-9_]*$``
 ================ ============================
 
 NeXus supports numeric data as either integer or floating-point
 numbers.  A number follows that indicates the number of bits in the word.
 The table above shows the regular expressions that
-matches the data type specifier.
+match the data type specifier.
 
 .. index::
     ! integers
@@ -443,14 +504,22 @@ NeXus dates and times
 
 NeXus  :index:`dates and times <date and time>`
 should be stored using the `ISO 8601`_ [#]_  format,
-e.g. ``1996-07-31T21:15:22+0600``.
+e.g. ``1996-07-31T21:15:22+0600`` (which includes
+a time zone offset of ``+0600``).
+Note:  The time zone offset is always numeric or ``Z`` (which means UTC).
 The standard also allows for time intervals in fractional seconds
 with *1 or more digits of precision*.
 This avoids confusion, e.g. between U.S. and European conventions,
 and is appropriate for machine sorting.
+It is recommended to add an explicit time zone,
+otherwise the local time zone is assumed per ISO8601.
+The norm is that if there is no time zone, it is assumed
+local time, however, when a file moves from one country to
+another it is undefined. If the local time zone is written,
+the ambiguity is gone.
 
-.. _ISO 8601: http://www.w3.org/TR/NOTE-datetime
-.. [#] ISO 8601: http://www.w3.org/TR/NOTE-datetime
+.. _ISO 8601: https://www.w3.org/TR/NOTE-datetime
+.. [#] ISO 8601: https://www.w3.org/TR/NOTE-datetime
 
 
 .. compound::
@@ -674,6 +743,8 @@ plottable data is as follows:
       If no ``AXISNAME_indices`` attribute is provided, a programmer is encouraged 
       to make best efforts assuming the intent of this ``NXdata`` group
       to provide a default plot.
+      The ``AXISNAME_indices`` attribute is only required when necessary to 
+      resolve ambiguity. 
       
       It is possible there may be more than one ``AXISNAME_indices`` attribute
       with the same value or values.  This indicates the possibilty of using
@@ -977,7 +1048,7 @@ is specified using attributes attached to the :ref:`NXdata` group.
    
       data_2d:NXdata
           @signal="data"
-          @axes="time","pressure"
+          @axes=["time","pressure"]
           @time_indices=0
           @pressure_indices=1
           data: float[1000,20]
@@ -1048,7 +1119,7 @@ More examples are available in the NeXus webpage ([#axes]_).
              @default="data_2d"
              data_2d:NXdata
                @signal="data"
-               @axes="time","pressure"
+               @axes=["time","pressure"]
                @pressure_indices=1
                @temperature_indices=1
                @time_indices=0

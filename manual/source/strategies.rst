@@ -55,14 +55,14 @@ positioner arrays        detector arrays
       :linenos:
 
       file.nxs: NeXus HDF5 data file
-         @default = entry
+         @default = "entry"
          entry: NXentry
-            @NX_class = NXentry
-            @default = data
+            @NX_class = "NXentry"
+            @default = "data"
             data: NXdata
-               @NX_class = NXdata
-               @signal = photodiode
-               @axes = ar
+               @NX_class = "NXdata"
+               @signal = "photodiode"
+               @axes = "ar"
                ar: NX_FLOAT[]
                ay: NX_FLOAT[]
                dy: NX_FLOAT[]

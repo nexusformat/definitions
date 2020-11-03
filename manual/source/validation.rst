@@ -43,15 +43,14 @@ a laboratory, or even an entire user facility.
 nxvalidate
 ##########
 
-The :ref:`cnxvalidate <nxvalidate>` utility [#]_, 
-new in 2016, is available for testing.
-Refer to the GitHub location for the most recent information. 
+NeXus validation tool written in C (not via NAPI).
+   
+Its dependencies are libxml2 and the HDF5 libraries, version 1.8.9 or
+better. Its purpose is to validate HDF5 files against NeXus
+application definitions. 
 
-This utility only works on HDF5 files and is aimed 
-to be faster, simpler, more portable and robust than 
-previous programmes for NeXus file validation.
-
-.. [#] :ref:`cnxvalidate <nxvalidate>`: from https://github.com/nexusformat/cnxvalidate
+See the program documentation for more details:
+https://github.com/nexusformat/cnxvalidate.git
 
 
 
@@ -62,13 +61,14 @@ punx
 
 Python Utilities for NeXus HDF5 files
 
-**punx** can validate
-both NXDL files and NeXus HDF5 data files, as well as print
-the structure of any HDF5 file, even non-NeXus files.
- 
-NOTE: project is under initial construction, 
-not yet released for public use, but is useful in its 
-present form (version 0.0.9).  
- 
+**punx** can validate both NXDL files and NeXus HDF5 data files, as
+well as print the structure of any HDF5 file, even non-NeXus files.
+   
+NOTE: project is under initial construction, not yet released for
+public use, but is useful in its present form (version 0.2.5).
+
+**punx** can show the tree structure of any HDF5 file. The output is
+more concise than that from *h5dump*.
+   
 See the program documentation for more details:
 https://punx.readthedocs.io
