@@ -67,7 +67,7 @@ described by the following :index:`rules <rules; naming>`:
    .. rubric:: Regular expression pattern for NXDL group and field names
    
    The NIAC recognises that the majority of the world uses characters
-   outside of the basic latin (a.k.a US-ASCII, 7-bit ASCII) set
+   outside of the basic latin (a.k.a. US-ASCII, 7-bit ASCII) set
    currently included in the allowed names. The restriction given here
    reflects current technical issues and we expect to revisit the issue
    and relax such restrictions in future.
@@ -154,20 +154,38 @@ cryostat/furnace/whatever. The field ``temperature_set`` will hold
 the target value for the temperature as set by the 
 experiment control software. 
 
+.. 2020-10-13, added per NIAC 2020
+   https://github.com/nexusformat/definitions/issues/791
+   We'll leave existing names as-is, 
+   but make this recommendation for the future.
+
+Some fields share a common part of their name and an additional part
+name that makes the whole name specific.  For example, a ``unit_cell``
+might have parts named ``abc``, ``alphabetagamma``, and ``volume``.  It
+is recommended to write them with the common part first, an underscore
+(``_``), and then the specific part.  In this way, the fields will sort
+alphabetically on the common name. So, in this example:
+
+.. code-block:: text
+    :linenos:
+
+    unit_cell_abc
+    unit_cell_alphabetagamma
+    unit_cell_volume
+
+
 .. index:: ! reserved prefixes
 
 .. _reserved_prefixes:
 
-.. rubric:: Reserved field name prefixes
+.. rubric:: Reserved prefixes
 
-When naming a field, NeXus has reserved certain prefixes to
-the names to ensure that names written in NeXus files will not conflict
-with future releases as the NeXus standard evolves.
-Prefixes should follow a naming scheme of uppercase letters followed by
-an underscore, but exceptions will be made for cases already in wide
-use.
-The following table
-lists the prefixes reserved by NeXus.
+When naming a field, NeXus has reserved certain prefixes to the names to
+ensure that names written in NeXus files will not conflict with future
+releases as the NeXus standard evolves. Prefixes should follow a naming
+scheme of uppercase letters followed by an underscore, but exceptions
+will be made for cases already in wide use. The following table lists
+the prefixes reserved by NeXus.
 
 .. index::
     reserved prefixes; NX
@@ -194,7 +212,7 @@ prefix 	    use 	    meaning 	                                URL
 
 .. _reserved_suffixes:
 
-.. rubric:: Reserved field name suffixes
+.. rubric:: Reserved suffixes
 
 When naming a field (or dataset), NeXus has reserved certain suffixes to the names
 so that a specific meaning may be attached.  Consider a field named ``DATASET``,
