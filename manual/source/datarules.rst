@@ -29,7 +29,7 @@ described by the following :index:`rules <rules; naming>`:
   as described below.
 
 * For the class names [#]_ of NeXus *group* items,
-  the prefix *NX* is reserved. 
+  the prefix *NX* is reserved as shown in the :ref:`table <reserved_prefixes>` below. 
   Thus all NeXus class names start with NX.
   The chapter titled :ref:`ReferenceDocumentation` lists the 
   available NeXus class names as either *base classes*, 
@@ -154,6 +154,42 @@ cryostat/furnace/whatever. The field ``temperature_set`` will hold
 the target value for the temperature as set by the 
 experiment control software. 
 
+.. index:: ! reserved prefixes
+
+.. _reserved_prefixes:
+
+.. rubric:: Reserved field name prefixes
+
+When naming a field, NeXus has reserved certain prefixes to
+the names to ensure that names written in NeXus files will not conflict
+with future releases as the NeXus standard evolves.
+Prefixes should follow a naming scheme of uppercase letters followed by
+an underscore, but exceptions will be made for cases already in wide
+use.
+The following table
+lists the prefixes reserved by NeXus.
+
+.. index::
+    reserved prefixes; NX
+    reserved prefixes; NX_
+    reserved prefixes; IDF_
+    reserved prefixes; NDAttr
+    reserved prefixes; PDBX_
+    reserved prefixes; SAS_
+    reserved prefixes; SILX_
+
+==========  ==========  ==========================================  ==============
+prefix 	    use 	    meaning 	                                URL
+==========  ==========  ==========================================  ==============
+``IDF_``    attributes 	reserved for use by ISIS Muon Facility 	    https://www.isis.stfc.ac.uk
+``NDAttr``  attributes 	reserved for use by EPICS area detector     https://github.com/areaDetector
+``NX``      NXDL class 	for the class names used with NeXus groups 	https://www.nexusformat.org
+``NX_``     attributes 	reserved for use by NeXus 	                https://www.nexusformat.org
+``PDBX_``   attributes 	reserved for the US protein data bank 	    https://www.rcsb.org
+``SAS_``    attributes 	reserved for use by canSAS 	                http://www.cansas.org
+``SILX_``   attributes 	reserved for use by silx 	                https://www.silx.org
+==========  ==========  ==========================================  ==============
+
 .. index:: ! reserved suffixes
 
 .. _reserved_suffixes:
@@ -172,7 +208,6 @@ the following table lists the suffixes reserved by NeXus.
     reserved suffixes; mask
     reserved suffixes; set
     reserved suffixes; weights
-
 
 ==================  =========================================  =================================
 suffix              reference                                  meaning
@@ -690,6 +725,8 @@ plottable data is as follows:
       If no ``AXISNAME_indices`` attribute is provided, a programmer is encouraged 
       to make best efforts assuming the intent of this ``NXdata`` group
       to provide a default plot.
+      The ``AXISNAME_indices`` attribute is only required when necessary to 
+      resolve ambiguity. 
       
       It is possible there may be more than one ``AXISNAME_indices`` attribute
       with the same value or values.  This indicates the possibilty of using
