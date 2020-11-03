@@ -178,7 +178,7 @@ alphabetically on the common name. So, in this example:
 
 .. _reserved_prefixes:
 
-.. rubric:: Reserved field name prefixes
+.. rubric:: Reserved prefixes
 
 When naming a field, NeXus has reserved certain prefixes to the names to
 ensure that names written in NeXus files will not conflict with future
@@ -212,7 +212,7 @@ prefix 	    use 	    meaning 	                                URL
 
 .. _reserved_suffixes:
 
-.. rubric:: Reserved field name suffixes
+.. rubric:: Reserved suffixes
 
 When naming a field (or dataset), NeXus has reserved certain suffixes to the names
 so that a specific meaning may be attached.  Consider a field named ``DATASET``,
