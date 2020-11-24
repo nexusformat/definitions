@@ -28,11 +28,24 @@
     xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
     >
     <symbols>
-        <doc>These symbols will be used below to coordinate the shapes of the datasets.</doc>
-        <symbol name="numP"><doc>total number of scan points</doc></symbol>
-        <symbol name="numE"><doc>number of photon energies scanned</doc></symbol>
-        <symbol name="numY"><doc>number of pixels in Y direction</doc></symbol>
-        <symbol name="numX"><doc>number of pixels in X direction</doc></symbol>
+        <doc>
+            These symbols will be used below to coordinate the shapes of the datasets.
+        </doc>
+        <symbol name="nP">
+            <doc>Total number of scan points</doc>
+        </symbol>
+        <symbol name="nE">
+            <doc>Number of photon energies scanned</doc>
+        </symbol>
+        <symbol name="nX">
+            <doc>Number of pixels in X direction</doc>
+        </symbol>
+        <symbol name="nY">
+            <doc>Number of pixels in Y direction</doc>
+        </symbol>
+        <symbol name="detectorRank">
+            <doc>Rank of data array provided by the detector for a single measurement</doc>
+        </symbol>
     </symbols>
     <doc>
           Application definition for a STXM instrument. 
@@ -43,7 +56,7 @@
           within the NXinstrument group as lists of values stored in 
           chronological order. The NXdata group then holds another version
           of the data in a regular 3D array (NumE by NumY by NumX, for a
-          total of NumP points in a sample image stack type scan). The former
+          total of nP points in a sample image stack type scan). The former
           data values should be stored with a minimum loss of precision, while
           the latter values can be simplified and/or approximated in order to
           fit the constraints of a regular 3D array. 'Line scans' and 'point spectra'
@@ -69,21 +82,23 @@
             <group type="NXmonochromator" name="monochromator" minOccurs="1" maxOccurs="1">
               <field name="energy" minOccurs="1" maxOccurs="1" type="NX_FLOAT">
                 <dimensions rank="1">
-                  <dim index="1" value="NumP" />
+                  <dim index="1" value="nP" />
                 </dimensions>
               </field>
             </group>
             <group type="NXdetector" minOccurs="1">
                 <field name="data" type="NX_NUMBER">
-                  <dimensions>
+                  <dimensions rank="1+detectorRank">
                     <doc> Detector data should be presented with the first dimension corresponding to the
                     scan point and subsequent dimensions corresponding to the output of the detector.
                     Detectors that provide more than one value per scan point should have
                     a data array of rank 1+d, where d is the dimensions of the array provided per
                     scan point. For example, an area detector should have an NXdetector data array
                     of 3 dimensions, with the first being the set of scan points and the latter 
-                    two being the x- and y- extent of the detector </doc>
-                    <dim index="1" value="NumP" />
+                    two being the x- and y- extent of the detector.
+                        NOTE: For each dimension > 1 there must exist a dim section such as:
+                            <dim index="(dimension index value)" value="(size of dimension)" /></doc>
+                    <dim index="1" value="nP" />
                   </dimensions>
                 </field>
             </group>
@@ -91,7 +106,7 @@
                 <doc> Measurements of the sample position from the x-axis interferometer.</doc>
                 <field name="data" type="NX_FLOAT">
                   <dimensions rank="1">
-                    <dim index="1" value="NumP" />
+                    <dim index="1" value="nP" />
                   </dimensions>
                 </field>
             </group>
@@ -99,7 +114,7 @@
                 <doc> Measurements of the sample position from the y-axis interferometer.</doc>
                 <field name="data" type="NX_FLOAT">
                   <dimensions rank="1">
-                    <dim index="1" value="NumP" />
+                    <dim index="1" value="nP" />
                   </dimensions>
                 </field>
             </group>
@@ -107,7 +122,7 @@
                 <doc> Measurements of the sample position from the z-axis interferometer.</doc>
                 <field name="data" type="NX_FLOAT">
                   <dimensions rank="1">
-                    <dim index="1" value="NumP" />
+                    <dim index="1" value="nP" />
                   </dimensions>
                 </field>
             </group>
@@ -159,21 +174,21 @@
               <doc> List of photon energies of the X-ray beam. If scanned through multiple values,
               then an 'axis' attribute will be required to link the field to the appropriate data array dimension.</doc>
               <dimensions rank="1">
-                <dim index="1" value="NumE" />
+                <dim index="1" value="nE" />
               </dimensions>
             </field>
             <field name="sample_y" type="NX_FLOAT" minOccurs="1" maxOccurs="1">
               <doc> List of Y positions on the sample. If scanned through multiple values,
               then an 'axis' attribute will be required to link the field to the appropriate data array dimension.</doc>
               <dimensions rank="1">
-                <dim index="1" value="NumY" />
+                <dim index="1" value="nY" />
               </dimensions>
             </field>
             <field name="sample_x" type="NX_FLOAT" minOccurs="1" maxOccurs="1">
               <doc> List of X positions on the sample. If scanned through multiple values,
               then an 'axis' attribute will be required to link the field to the appropriate data array dimension.</doc>
               <dimensions rank="1">
-                <dim index="1" value="NumX" />
+                <dim index="1" value="nX" />
               </dimensions>
             </field>
         </group>
