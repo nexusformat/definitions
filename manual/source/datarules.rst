@@ -190,6 +190,7 @@ the prefixes reserved by NeXus.
 .. index::
     reserved prefixes; NX
     reserved prefixes; NX_
+    reserved prefixes; BLUESKY_
     reserved prefixes; IDF_
     reserved prefixes; NDAttr
     reserved prefixes; PDBX_
@@ -199,6 +200,7 @@ the prefixes reserved by NeXus.
 ==========  ==========  ==========================================  ==============
 prefix 	    use 	    meaning 	                                URL
 ==========  ==========  ==========================================  ==============
+``BLUESKY_``    attributes 	reserved for use by Bluesky project 	    https://blueskyproject.io
 ``IDF_``    attributes 	reserved for use by ISIS Muon Facility 	    https://www.isis.stfc.ac.uk
 ``NDAttr``  attributes 	reserved for use by EPICS area detector     https://github.com/areaDetector
 ``NX``      NXDL class 	for the class names used with NeXus groups 	https://www.nexusformat.org
