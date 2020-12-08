@@ -197,18 +197,18 @@ the prefixes reserved by NeXus.
     reserved prefixes; SAS_
     reserved prefixes; SILX_
 
-==========  ==========  ==========================================  ==============
-prefix 	    use 	    meaning 	                                URL
-==========  ==========  ==========================================  ==============
-``BLUESKY_``    attributes 	reserved for use by Bluesky project 	    https://blueskyproject.io
-``IDF_``    attributes 	reserved for use by ISIS Muon Facility 	    https://www.isis.stfc.ac.uk
-``NDAttr``  attributes 	reserved for use by EPICS area detector     https://github.com/areaDetector
-``NX``      NXDL class 	for the class names used with NeXus groups 	https://www.nexusformat.org
-``NX_``     attributes 	reserved for use by NeXus 	                https://www.nexusformat.org
-``PDBX_``   attributes 	reserved for the US protein data bank 	    https://www.rcsb.org
-``SAS_``    attributes 	reserved for use by canSAS 	                http://www.cansas.org
-``SILX_``   attributes 	reserved for use by silx 	                https://www.silx.org
-==========  ==========  ==========================================  ==============
+============  ==========  ==========================================  ===============================
+prefix 	      use 	    meaning 	                                URL
+============  ==========  ==========================================  ===============================
+``BLUESKY_``  attributes  reserved for use by Bluesky project 	      https://blueskyproject.io
+``IDF_``      attributes  reserved for use by ISIS Muon Facility      https://www.isis.stfc.ac.uk
+``NDAttr``    attributes  reserved for use by EPICS area detector     https://github.com/areaDetector
+``NX``        NXDL class  for the class names used with NeXus groups  https://www.nexusformat.org
+``NX_``       attributes  reserved for use by NeXus 	              https://www.nexusformat.org
+``PDBX_``     attributes  reserved for the US protein data bank       https://www.rcsb.org
+``SAS_``      attributes  reserved for use by canSAS 	              http://www.cansas.org
+``SILX_``     attributes  reserved for use by silx 	              https://www.silx.org
+============  ==========  ==========================================  ===============================
 
 .. index:: ! reserved suffixes
 
