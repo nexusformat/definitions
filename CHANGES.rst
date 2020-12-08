@@ -12,6 +12,10 @@
 Change History
 ##############
 
+:v2020.10:  released *2020-12-08*
+
+    * see Release Notes wiki: https://github.com/nexusformat/definitions/wiki/releasenotes_v2020.10
+
 :v2020.1:  released *2020-01-31*
 
     * see Release Notes wiki: https://github.com/nexusformat/definitions/wiki/releasenotes_v2020.1
