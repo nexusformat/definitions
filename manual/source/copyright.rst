@@ -9,7 +9,7 @@ Copyright and Licenses
 Published by NeXus International Advisory Committee, 
 https://www.nexusformat.org
 
-Copyright (C) 1996-2020 NeXus International Advisory Committee (NIAC)
+Copyright (C) 1996-2021 NeXus International Advisory Committee (NIAC)
 
 .. index:: FDL
 
