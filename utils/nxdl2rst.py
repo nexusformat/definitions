@@ -174,6 +174,15 @@ def analyzeDimensions( ns, parent ):
     return '[%s]' % ( ', '.join(dims) )
 
 
+def hyperlinkTarget(parent_path, name, nxtype):
+    """Return internal hyperlink target for HTML anchor."""
+    if nxtype == "attribute":
+        sep = "@"
+    else:
+        sep = "/"
+    return f".. _{parent_path}{sep}{name}-{nxtype}:\n"
+
+
 def printEnumeration( indent, ns, parent ):
     node_list = parent.xpath('nx:item', namespaces=ns)
     if len(node_list) == 0:
@@ -221,9 +230,13 @@ def printDoc( indent, ns, node, required=False):
             print()
 
 
-def printAttribute( ns, kind, node, optional, indent ):
+def printAttribute( ns, kind, node, optional, indent, parent_path ):
     name = node.get('name')
     index_name = name
+    print(
+        f"{indent}"
+        f"{hyperlinkTarget(parent_path, name, 'attribute')}"
+    )
     print( '%s.. index:: %s (%s attribute)\n' %
            ( indent, index_name, kind ) )
     print( '%s**@%s**: %s%s%s\n' % (
@@ -242,7 +255,7 @@ def printIfDeprecated( ns, node, indent ):
         print( fmt % (indent, deprecated ) )
 
 
-def printFullTree(ns, parent, name, indent):
+def printFullTree(ns, parent, name, indent, parent_path):
     '''
     recursively print the full tree structure
 
@@ -250,6 +263,7 @@ def printFullTree(ns, parent, name, indent):
     :param lxml_element_node parent: parent node to be documented
     :param str name: name of elements, such as NXentry/NXuser
     :param indent: to keep track of indentation level
+    :param parent_path: NX class path of parent nodes
     '''
     global listing_category
 
@@ -263,6 +277,10 @@ def printFullTree(ns, parent, name, indent):
         dims = analyzeDimensions(ns, node)
 
         optional_text = get_required_or_optional_text(node, use_application_defaults)
+        print(
+            f"{indent}"
+            f"{hyperlinkTarget(parent_path, name, 'field')}"
+        )
         print( '%s.. index:: %s (field)\n' %
                ( indent, index_name ) )
         print(
@@ -279,7 +297,7 @@ def printFullTree(ns, parent, name, indent):
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
             optional = get_required_or_optional_text(subnode, use_application_defaults)
-            printAttribute( ns, 'field', subnode, optional, indent+INDENTATION_UNIT )
+            printAttribute( ns, 'field', subnode, optional, indent+INDENTATION_UNIT, f"{parent_path}/{name}" )
 
     for node in parent.xpath('nx:group', namespaces=ns):
         name = node.get('name', '')
@@ -290,6 +308,10 @@ def printFullTree(ns, parent, name, indent):
             if name == '':
                 name = typ.lstrip('NX').upper()
             typ = ':ref:`%s`' % typ
+        print(
+            f"{indent}"
+            f"{hyperlinkTarget(parent_path, name, 'group')}"
+        )
         print( '%s**%s**: %s%s\n' % (indent, name, optional_text, typ ) )
 
         printIfDeprecated(ns, node, indent+INDENTATION_UNIT)
@@ -297,14 +319,19 @@ def printFullTree(ns, parent, name, indent):
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
             optional = get_required_or_optional_text(subnode, use_application_defaults)
-            printAttribute( ns, 'group', subnode, optional, indent+INDENTATION_UNIT )
+            printAttribute( ns, 'group', subnode, optional, indent+INDENTATION_UNIT, f"{parent_path}/{name}" )
 
         nodename = '%s/%s' % (name, node.get('type'))
-        printFullTree(ns, node, nodename, indent+INDENTATION_UNIT)
+        printFullTree(ns, node, nodename, indent+INDENTATION_UNIT, f"{parent_path}/{name}")
 
     for node in parent.xpath('nx:link', namespaces=ns):
+        name = node.get('name')
+        print(
+            f"{indent}"
+            f"{hyperlinkTarget(parent_path, name, 'link')}"
+        )
         print( '%s**%s**: :ref:`link<Design-Links>` (suggested target: ``%s``)\n' % (
-            indent, node.get('name'), node.get('target') ) )
+            indent, name, node.get('target') ) )
         printDoc(indent+INDENTATION_UNIT, ns, node)
 
 
@@ -325,6 +352,7 @@ def print_rst_from_nxdl(nxdl_file):
     root = tree.getroot()
     name = root.get('name')
     title = name
+    parent_path = f"/{name}"  # absolute path of parent nodes, no trailing /
     if len(name)<2 or name[0:2]!='NX':
         raise Exception( 'Unexpected class name "%s"; does not start with NX' %
                          ( name ) )
@@ -422,8 +450,8 @@ def print_rst_from_nxdl(nxdl_file):
     print( '**Structure**:\n' )
     for subnode in root.xpath('nx:attribute', namespaces=ns):
         optional = get_required_or_optional_text(subnode, use_application_defaults)
-        printAttribute( ns, 'file', subnode, optional, INDENTATION_UNIT )
-    printFullTree(ns, root, name, INDENTATION_UNIT)
+        printAttribute( ns, 'file', subnode, optional, INDENTATION_UNIT, f"{parent_path}/{name}" )
+    printFullTree(ns, root, name, INDENTATION_UNIT, parent_path)
 
     # print NXDL source location
     subdir_map = {
