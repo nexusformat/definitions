@@ -66,7 +66,7 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
         **dQl**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_PER_LENGTH <NX_PER_LENGTH>`}
         **ENTRY**: (required) :ref:`NXentry`
         **DATA**: (required) :ref:`NXdata`
-        **DATA**: (optional) :ref:`NXdata`
+        **TRANSMISSION_SPECTRUM**: (optional) :ref:`NXdata`
         **SAMPLE**: (optional) :ref:`NXsample`
         **INSTRUMENT**: (optional) :ref:`NXinstrument`
         **NOTE**: (optional) :ref:`NXnote`
