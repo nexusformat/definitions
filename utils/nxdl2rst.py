@@ -180,7 +180,9 @@ def hyperlinkTarget(parent_path, name, nxtype):
         sep = "@"
     else:
         sep = "/"
-    return f".. _{parent_path}{sep}{name}-{nxtype}:\n"
+    return ".. _%s%s%s-%s:\n" % (
+            parent_path, sep, name, nxtype
+        )
 
 
 def printEnumeration( indent, ns, parent ):
@@ -233,9 +235,7 @@ def printDoc( indent, ns, node, required=False):
 def printAttribute( ns, kind, node, optional, indent, parent_path ):
     name = node.get('name')
     index_name = name
-    print(
-        f"{indent}"
-        f"{hyperlinkTarget(parent_path, name, 'attribute')}"
+    print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'attribute'))
     )
     print( '%s.. index:: %s (%s attribute)\n' %
            ( indent, index_name, kind ) )
@@ -277,10 +277,7 @@ def printFullTree(ns, parent, name, indent, parent_path):
         dims = analyzeDimensions(ns, node)
 
         optional_text = get_required_or_optional_text(node, use_application_defaults)
-        print(
-            f"{indent}"
-            f"{hyperlinkTarget(parent_path, name, 'field')}"
-        )
+        print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'field')))
         print( '%s.. index:: %s (field)\n' %
                ( indent, index_name ) )
         print(
@@ -297,7 +294,7 @@ def printFullTree(ns, parent, name, indent, parent_path):
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
             optional = get_required_or_optional_text(subnode, use_application_defaults)
-            printAttribute( ns, 'field', subnode, optional, indent+INDENTATION_UNIT, f"{parent_path}/{name}" )
+            printAttribute( ns, 'field', subnode, optional, indent+INDENTATION_UNIT, parent_path+"/"+name )
 
     for node in parent.xpath('nx:group', namespaces=ns):
         name = node.get('name', '')
@@ -308,10 +305,7 @@ def printFullTree(ns, parent, name, indent, parent_path):
             if name == '':
                 name = typ.lstrip('NX').upper()
             typ = ':ref:`%s`' % typ
-        print(
-            f"{indent}"
-            f"{hyperlinkTarget(parent_path, name, 'group')}"
-        )
+        print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'group')))
         print( '%s**%s**: %s%s\n' % (indent, name, optional_text, typ ) )
 
         printIfDeprecated(ns, node, indent+INDENTATION_UNIT)
@@ -319,17 +313,14 @@ def printFullTree(ns, parent, name, indent, parent_path):
 
         for subnode in node.xpath('nx:attribute', namespaces=ns):
             optional = get_required_or_optional_text(subnode, use_application_defaults)
-            printAttribute( ns, 'group', subnode, optional, indent+INDENTATION_UNIT, f"{parent_path}/{name}" )
+            printAttribute( ns, 'group', subnode, optional, indent+INDENTATION_UNIT, parent_path+"/"+name )
 
         nodename = '%s/%s' % (name, node.get('type'))
-        printFullTree(ns, node, nodename, indent+INDENTATION_UNIT, f"{parent_path}/{name}")
+        printFullTree(ns, node, nodename, indent+INDENTATION_UNIT, parent_path+"/"+name)
 
     for node in parent.xpath('nx:link', namespaces=ns):
         name = node.get('name')
-        print(
-            f"{indent}"
-            f"{hyperlinkTarget(parent_path, name, 'link')}"
-        )
+        print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'link')))
         print( '%s**%s**: :ref:`link<Design-Links>` (suggested target: ``%s``)\n' % (
             indent, name, node.get('target') ) )
         printDoc(indent+INDENTATION_UNIT, ns, node)
@@ -352,7 +343,7 @@ def print_rst_from_nxdl(nxdl_file):
     root = tree.getroot()
     name = root.get('name')
     title = name
-    parent_path = f"/{name}"  # absolute path of parent nodes, no trailing /
+    parent_path = "/"+name  # absolute path of parent nodes, no trailing /
     if len(name)<2 or name[0:2]!='NX':
         raise Exception( 'Unexpected class name "%s"; does not start with NX' %
                          ( name ) )
@@ -450,7 +441,7 @@ def print_rst_from_nxdl(nxdl_file):
     print( '**Structure**:\n' )
     for subnode in root.xpath('nx:attribute', namespaces=ns):
         optional = get_required_or_optional_text(subnode, use_application_defaults)
-        printAttribute( ns, 'file', subnode, optional, INDENTATION_UNIT, f"{parent_path}/{name}" )
+        printAttribute( ns, 'file', subnode, optional, INDENTATION_UNIT, parent_path+"/"+name )
     printFullTree(ns, root, name, INDENTATION_UNIT, parent_path)
 
     # print NXDL source location
