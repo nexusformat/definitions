@@ -1,16 +1,24 @@
 ..
   This file describes user-visible changes between the versions.
-  
-  This human-composed file has been useful in other projects 
-  useful to point out specific issues and pull requests that 
-  contribute to a release. It can be composed as issues/PRs 
+
+  This human-composed file has been useful in other projects
+  useful to point out specific issues and pull requests that
+  contribute to a release. It can be composed as issues/PRs
   are resolved and then cited from the release page documentation.
 
-  Highlights from the Change History, especially new releases, 
+  Highlights from the Change History, especially new releases,
   should be added to manual/source/history.rst.
 
 Change History
 ##############
+
+:v2021.10:  expected *2021-10*
+
+    * `#878 <https://github.com/nexusformat/definitions/issues/878>`_
+       Minimum Python requirement now:  3.6
+
+       * All classes provide a list of reST & HTML anchors to
+         every defined item (groups, fields, attributes, & links).
 
 :v2020.10:  released *2020-12-08*
 
