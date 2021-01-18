@@ -11,15 +11,74 @@ the NeXus NXDL Classes chapter.
 # testing:  see file dev_nxdl2rst.py
 
 from __future__ import print_function
-import os, sys, re
 from collections import OrderedDict
-import lxml.etree
 from six.moves import html_parser as HTMLParser
+import lxml.etree
+import os
+import pyRestTable
+import re
+import sys
 from local_utilities import printf, replicate
 
 
 INDENTATION_UNIT = '  '
 listing_category = None
+anchor_list = []  # list of all hypertext anchors
+
+
+def addAnchor(anchor):
+    """Add a hypertext anchor to the list."""
+    anchor_list.append(anchor)
+
+
+def printAnchorList():
+    """Print the list of hypertext anchors."""
+
+    def sorter(key):
+        return key.lower()
+
+    if len(anchor_list) > 0:
+        print("")
+        print("Hypertext Anchors")
+        print("-----------------\n")
+        print(
+            "Table of hypertext anchors for all groups, fields,\n"
+            "attributes, and links defined in this class.\n\n"
+        )
+        table = pyRestTable.Table()
+        table.addLabel("documentation (reST source) anchor")
+        table.addLabel("web page (HTML) anchor")
+        for ref in sorted(anchor_list, key=sorter):
+            # fmt: off
+            anchor = (
+                ref
+                .lower()
+                .lstrip("/")
+                .replace("_", "-")
+                .replace("@", "-")
+                .replace("/", "-")
+            )
+            table.addRow(
+                (
+                    ":ref:`%s <%s>`" % (ref, ref),
+                    ":ref:`#%s <%s>`" % (anchor, ref),
+                )
+            )
+            # fmt: on
+        print(table)
+        print(
+            ".. tip::\n"
+            "   Use the reST anchors when writing documentation in\n"
+            "   NXDL source files.\n"
+            "   Since the anchors have no title or caption associated,\n"
+            "   you will need to supply text with the reference, such as::\n\n"
+            "       :ref:`this text will appear <anchor>`\n\n"
+            "   Since these anchors are absolute references, they may be\n"
+            "   used anywhere in the documentation source \n"
+            "   (that is, within XML ``<doc>`` structures \n"
+            "   in `.nxdl.xml` files or in ``.rst`` files).\n"
+            # &lt;doc&gt;
+        )
 
 
 def fmtTyp( node ):
@@ -110,7 +169,7 @@ def getDocLine( ns, node ):
 def get_minOccurs(node, use_application_defaults):
     '''
     get the value for the ``minOccurs`` attribute
-    
+
     :param obj node: instance of lxml.etree._Element
     :param bool use_application_defaults: use special case value
     :returns str: value of the attribute (or its default)
@@ -124,7 +183,7 @@ def get_minOccurs(node, use_application_defaults):
 def get_required_or_optional_text(node, use_application_defaults):
     '''
     make clear if a reported item is required or optional
-    
+
     :param obj node: instance of lxml.etree._Element
     :param bool use_application_defaults: use special case value
     :returns: formatted text
@@ -180,9 +239,11 @@ def hyperlinkTarget(parent_path, name, nxtype):
         sep = "@"
     else:
         sep = "/"
-    return ".. _%s%s%s-%s:\n" % (
-            parent_path, sep, name, nxtype
-        )
+    target = "%s%s%s-%s" % (
+        parent_path, sep, name, nxtype
+    )
+    addAnchor(target)
+    return ".. _%s:\n" % target
 
 
 def printEnumeration( indent, ns, parent ):
@@ -268,7 +329,7 @@ def printFullTree(ns, parent, name, indent, parent_path):
     global listing_category
 
     use_application_defaults = listing_category in (
-        'application definition', 
+        'application definition',
         'contributed definition')
 
     for node in parent.xpath('nx:field', namespaces=ns):
@@ -360,7 +421,7 @@ def print_rst_from_nxdl(nxdl_file):
                  }[subdir]
 
     use_application_defaults = listing_category in (
-        'application definition', 
+        'application definition',
         'contributed definition')
 
     # print ReST comments and section header
@@ -433,7 +494,6 @@ def print_rst_from_nxdl(nxdl_file):
         txt = ', '.join(out)
         print( '.. index:: %s\n' % ( txt ) )
 
-
     # TODO: change instances of \t to proper indentation
     html_root = 'https://github.com/nexusformat/definitions/blob/master'
 
@@ -441,8 +501,10 @@ def print_rst_from_nxdl(nxdl_file):
     print( '**Structure**:\n' )
     for subnode in root.xpath('nx:attribute', namespaces=ns):
         optional = get_required_or_optional_text(subnode, use_application_defaults)
-        printAttribute( ns, 'file', subnode, optional, INDENTATION_UNIT, parent_path+"/"+name )
+        printAttribute( ns, 'file', subnode, optional, INDENTATION_UNIT, parent_path) # FIXME: +"/"+name )
     printFullTree(ns, root, name, INDENTATION_UNIT, parent_path)
+
+    printAnchorList()
 
     # print NXDL source location
     subdir_map = {
@@ -450,6 +512,7 @@ def print_rst_from_nxdl(nxdl_file):
                   'application': 'applications',
                   'contributed': 'contributed_definitions',
                   }
+    print("")
     print( '**NXDL Source**:' )
     print( '  %s/%s/%s.nxdl.xml' % (
         html_root, subdir_map[subdir], name) )
@@ -489,9 +552,9 @@ if __name__ == '__main__':
 
 
 # NeXus - Neutron and X-ray Common Data Format
-# 
+#
 # Copyright (C) 2008-2021 NeXus International Advisory Committee (NIAC)
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
