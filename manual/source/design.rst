@@ -31,20 +31,20 @@ used by NeXus. These are:
     Levels in the NeXus hierarchy. May contain fields and other groups.
 
 :ref:`Design-Fields`
-    Multidimensional arrays and scalars representing the actual data to be stored
+    Multidimensional arrays and scalars representing the actual data to be stored.
 
 :ref:`Design-Attributes`
     Attributes containing additional metadata can be assigned to groups, fields,
     or :ref:`files <Design-FileAttributes>`.
 
 :ref:`Design-Links`
-    Elements which point to data stored in another place in the file hierarchy
+    Elements which point to data stored in another place in the file hierarchy.
 
 :ref:`Design-NeXusClasses`
-    Dictionaries of names possible in the various types of NeXus groups
+    Dictionaries of names possible in the various types of NeXus groups.
 
 :ref:`Design-NeXusApplications`
-    Describe the minimum content of a NeXus file for a particular usage case
+    Describe the minimum content of a NeXus file for a particular usage case.
 
 In the following sections these elements of NeXus files will be defined in more detail.
 
@@ -58,9 +58,9 @@ In the following sections these elements of NeXus files will be defined in more 
 
    The tree syntax is a very condensed version (with high information density) meant to convey the structure of the HDF file.
 
-   * Groups have a ``/`` appended to their name (with NeXus class name shown)
+   * Groups have a ``/`` appended to their name (with NeXus class name shown).
    * Indentation shows membership in the lesser indented parent above.
-   * Fields have a data type and value appended (for arrays, this may be an abbreviated view)
+   * Fields have a data type and value appended (for arrays, this may be an abbreviated view).
    * Attributes (of groups or fields) are prefixed with ``@``.
    * NeXus-style links are described with some sort of arrow notation such as ``-->``.
 
@@ -126,7 +126,7 @@ expected to be an array of several dimensions.
 			Errors (uncertainties) associated with axis ``variable``.
 
 		``wavelength`` (*NX_FLOAT*)
-			wavelength of radiation, ``units="NX_FLOAT"``
+			wavelength of radiation, ``units="NX_FLOAT"``.
 
 		``chemical_formula`` (*NX_CHAR*)
 			The chemical formula specified using CIF conventions.
@@ -135,7 +135,7 @@ expected to be an array of several dimensions.
 			Name of user responsible for this entry.
 
 		``data`` (*NX_NUMBER*)
-			Data values from the detector, ``units="NX_ANY"``
+			Data values from the detector, ``units="NX_ANY"``.
 
 See the sections :ref:`nxdl-types` and :ref:`nxdl-units` for complete lists of
 the data types and engineering units types, respectively.
