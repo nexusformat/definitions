@@ -111,7 +111,7 @@ information associated with the experiment (start and end times, user names,
 etc). Fields are identified by their names, which must be unique within the
 group in which they are stored.  Some fields have engineering units to be specified.
 In some cases, such as :ref:`/NXdata/DATA </NXdata/DATA-field>`, a field is
-expected to have be an array of several dimensions.
+expected to be an array of several dimensions.
 
 	.. compound::
 
