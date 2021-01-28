@@ -441,7 +441,7 @@ Data groups often describe objects in the experiment (monitors, detectors,
 monochromators, etc.), so that the contents (both fields and/or other
 groups) comprise the properties of that object. NeXus has defined a set of standard
 objects, or :ref:`base classes <base.class.definitions>`,
-out of which a NeXus file can be constructed. This is each data group
+out of which a NeXus file can be constructed. Each data group
 is identified by a name and a class. The group class, defines the type of object
 and the properties that it can contain, whereas the group name defines a unique instance
 of that class. These classes are
