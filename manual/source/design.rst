@@ -106,9 +106,9 @@ Fields (also called data fields, data items or data sets)
 contain the essential information stored in a NeXus file. They can
 be scalar values or multidimensional arrays of a variety of sizes (1-byte,
 2-byte, 4-byte, 8-byte) and types (integers, floats, characters). The fields may
-store both experimental results (counts, detector angles, etc), and other
+store both experimental results (counts, detector angles, etc.), and other
 information associated with the experiment (start and end times, user names,
-etc). Fields are identified by their names, which must be unique within the
+etc.). Fields are identified by their names, which must be unique within the
 group in which they are stored.  Some fields have engineering units to be specified.
 In some cases, such as :ref:`/NXdata/DATA </NXdata/DATA-field>`, a field is
 expected to be an array of several dimensions.
