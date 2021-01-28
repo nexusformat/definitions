@@ -483,8 +483,8 @@ But there are some base classes which have special uses which need to be mention
 :ref:`NXdata`
     ``NXdata`` is used to identify the default
     :index:`plottable data <plotting>`.
-    The notion of a default plot of data is a basic motivation of NeXus.
-    (see :ref:`SimplePlotting`)
+    The notion of a default plot of data is a basic motivation of NeXus
+    (see :ref:`SimplePlotting`).
 
 :ref:`NXlog`
     ``NXlog`` is used to store time stamped data like the log of a temperature controller.
