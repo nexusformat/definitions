@@ -926,8 +926,8 @@ edges must be present but does not need to be correct
    :linenos:
    :language: text
 
-Following the initial line are the xyz coordinates of each vertex. Proceeding
-which is the list of faces. Each line defining a face starts with the number of
+Following the initial line are the xyz coordinates of each vertex, followed
+by the list of faces. Each line defining a face starts with the number of
 vertices in that face followed by the sequence number of the composing vertices,
 indexed from zero. The vertex indices form a winding order by defining the face
 normal by the right-hand rule. The number of vertices in each face need not be
