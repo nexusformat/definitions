@@ -163,14 +163,14 @@ def parse_command_line():
             "(see: https://github.com/settings/tokens)"))
 
     help_text = "name of tag, branch, SHA to end the range"
-    help_text += ' (default="master")'
+    help_text += ' (default="main")'
     parser.add_argument(
         "--head", 
         action='store', 
         dest='head',
         nargs='?', 
         help = help_text, 
-        default="master")
+        default="main")
 
     return parser.parse_args()
 
