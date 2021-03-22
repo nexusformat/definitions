@@ -14,6 +14,9 @@ Change History
 
 :v2021.10:  expected *2021-10*
 
+    * `#884 <https://github.com/nexusformat/definitions/issues/884>`_
+       switch repository default branch from master to main
+
     * `#878 <https://github.com/nexusformat/definitions/issues/878>`_
        Minimum Python requirement now:  3.6
 

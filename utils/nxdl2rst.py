@@ -495,7 +495,7 @@ def print_rst_from_nxdl(nxdl_file):
         print( '.. index:: %s\n' % ( txt ) )
 
     # TODO: change instances of \t to proper indentation
-    html_root = 'https://github.com/nexusformat/definitions/blob/master'
+    html_root = 'https://github.com/nexusformat/definitions/blob/main'
 
     # print full tree
     print( '**Structure**:\n' )
