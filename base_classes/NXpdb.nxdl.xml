@@ -165,6 +165,8 @@
 			  pdbx_seq_one_letter_code_can:["GIVEQCCTSICSLYQLENYCN","FVNQHLCGSHLVEALYLVCGERGFFYTPKA"]
 			  type:["polypeptide(L)", "polypeptide(L)"]
 
+		**imgCIF AXIS category vs. NeXus NXtransformations base class**
+
 		Special attention is needed when using CIF categories that may duplicate
 		information carried elsewhere in the same NeXus entry.  For example, the
 		imgCIF AXIS category and the NeXus NXtransformations base class both
@@ -239,6 +241,152 @@
 		In the other common case in which the beam is orthogonal to the
 		principal goniometer axis and the imgCIF/CBF Y-axis points
 		downwards, the transformation inverts the Y and Z axes.
+
+		For example consider this annotated partial imgCIF axis category ::
+
+			loop_
+			_axis.id
+			_axis.depends_on
+			_axis.equipment
+			   _axis.offset[1]  _axis.offset[2]  _axis.offset[3]
+			_axis.type
+			   _axis.vector[1]  _axis.vector[2]  _axis.vector[3]
+			 DETECTOR_X DETECTOR_Y detector
+			    0                0                0  # DETECTOR_X offset
+			   translation
+			    1                0                0  # DETECTOR_X vector
+			 DETECTOR_Y DETECTOR_Z detector
+			    0                0                0  # DETECTOR_Y offset
+			   translation
+			    0                -1               0  # DETECTOR_Y vector
+			 DETECTOR_Z DETECTOR_2THETA detector 
+			    0                0                0  # DETECTOR_Z offset
+			   translation
+			    0                0                -1 # DETECTOR_Z vector
+			 DETECTOR_2THETA '.' detector
+			    0                0                0  # DETECTOR_2THETA offset
+			   rotation
+			    1                0                0  # DETECTOR_2THETA vector
+			 GONIOMETER_PHI GONIOMETER_KAPPA goniometer 
+			    0                0                0  # GONIOMETER_PHI offset
+			   rotation
+			    1                0                0  # GONIOMETER_PHI vector
+			 GONIOMETER_KAPPA GONIOMETER_OMEGA goniometer 
+			    0                0                0  # GONIOMETER_KAPPA offset
+			   rotation
+			    0.642788         -0.766044        0  # GONIOMETER_KAPPA vector
+			 GONIOMETER_OMEGA '.' goniometer 
+			    0                0                0  # GONIOMETER_OMEGA offset
+			   rotation
+			    1                0                0  # GONIOMETER_OMEGA vector
+			 GRAVITY '.' gravity 
+			    0                0                0  # GRAVITY offset
+			   general
+			    0                -1               0  # GRAVITY vector
+			 SOURCE '.' source 
+			    0                0                0  # SOURCE offset
+			   general
+			    0                0                1  # SOURCE vector
+
+		Ie translating from imgCIF to NeXus, these axes are distributed to appropriate NeXus
+		NXtransformations groups, for example putting the general axes under NXinstrument,
+		the detector axes under NXdetector, and the samples goniometer axes under
+		NXsample.  Note that extra axes have been added to help document the conversion ::
+
+			   entry:NXentry
+			      instrument:NXinstrument
+			         transformations:NXtransformations
+			            BEAM:
+			               @depends_on:.
+			               @transformation_type:general
+			               @vector [0, 0, 1]
+			            CBF_X_:
+			               @depends_on:.
+			               @transformation_type:general
+			               @vector:[-1, 0, 0]
+			            CBF_Y_:
+			               @depends_on:.
+			               @transformation_type:general
+			               @vector:[0, 1, 0]
+			            CBF_Z_:
+			               @depends_on:.
+			               @transformation_type:general
+			               @vector:[0, 0, -1]
+			            GRAVITY:
+			               @depends_on:.
+			               @transformation_type:general
+			               @vector:[0, -1, 0]
+			            SOURCE:
+			               @depends_on:.
+			               @transformation_type:general
+			               @vector:[0, 0, -1]
+			            UP:
+			               @depends_on:.
+			               @transformation_type:general
+			               @vector:[0, 1, 0]
+
+		Here are the detector/transformations axes::
+
+			         detector:NXdetector"
+			            depends_on: "/entry/instrument/detector/transformations/DETECTOR_X"
+			            transformations:NXtransformations
+			               DETECTOR_2THETA:119
+			                  @depends_on:.
+			                  @offset:[0, 0, 0]
+			                  @offset_units:mm
+			                  @transformation_type:rotation
+			                  @units:degrees
+			                  @vector:[-1, 0, 0]
+			               DETECTOR_X:0
+			                  @depends_on: "/entry/instrument/detector/transformations/DETECTOR_Y"
+			                  @offset:[0, 0, 0]
+			                  @offset_units:mm
+			                  @transformation_type:translation
+			                  @units:mm
+			                  @vector:[-1, 0, 0]
+			               DETECTOR_Y:0
+			                  @depends_on: "/entry/instrument/detector/transformations/DETECTOR_Z"
+			                  @offset:[0, 0, 0]
+			                  @offset_units:mm
+			                  @transformation_type:translation
+			                  @units:mm
+			                  @vector:[0, -1, 0]
+			               DETECTOR_Z:104: "/entry/instrument/detector/transformations/DETECTOR_2THETA"
+			                  @offset:[0, 0, 0]
+			                  @offset_units:mm
+			                  @transformation_type:translation
+			                  @units:mm
+			                  @vector:[0, 0, 1]
+
+		Here are the sample goniometer axes::
+
+			      sample:"NXsample"
+			         depends_on: "/entry/sample/transformations/GONIOMETER_PHI"
+			         transformations:NXtransformations
+			            GONIOMETER_KAPPA: 70
+			               @depends_on": "/entry/sample/transformations/GONIOMETER_OMEGA"
+			               @offset:[0, 0, 0]
+			               @offset_units:mm"
+			               @transformation_type:rotation
+			               @units:degrees
+			               @vector:[-0.642788, -0.766044, 0]
+			            GONIOMETER_OMEGA:23
+			               @depends_on:.
+			               @offset:[0, 0, 0]
+			               @offset_units:mm
+			               @transformation_type:rotation
+			               @units: "degrees"
+			               @vector:[-1, 0, 0]
+			            GONIOMETER_PHI:-179
+			               @depends_on: "/entry/sample/transformations/GONIOMETER_KAPPA"
+			               @offset:[0, 0, 0]
+			               @offset_units:mm
+			               @transformation_type:rotation
+			               @units:degrees
+			               @vector:[-1, 0, 0]
+ 
+
+
 
 	</doc>
 	<!--
