@@ -2,21 +2,21 @@
 
 .. _Example-H5py:
 
-==============================
-Python Examples using ``h5py``
-==============================
+==============================================================
+Python Examples using the ``nexusformat`` or ``h5py`` packages
+==============================================================
 
 One way to gain a quick familiarity with NeXus is to start working with some data. For at least the
 first few examples in this section, we have a simple two-column set of 1-D data, collected as part of a
 series of alignment scans by the APS USAXS instrument during the time it was stationed at
 beam line 32ID. We will show how to write this
-data using the Python language and the ``h5py`` package [#]_
-(:index:`using <h5py>`  ``h5py`` calls directly rather than using the NeXus NAPI). The
+data using the Python language and either the :index:`using <nexusformat>` ``nexusformat`` [#]_ or the :index:`using <h5py>` ``h5py`` package [#]_. The
 actual data to be written was extracted (elsewhere) from a ``spec`` [#]_ data file 
 and read as a text block from a file by the Python source code.
 Our examples will start with the simplest case and add only mild complexity with each new case
 since these examples are meant for those who are unfamiliar with NeXus.
 
+.. [#] *nexusformat*: http://nexpy.github.io/nexpy/
 .. [#] *h5py*: https://www.h5py.org/
 .. [#] *SPEC*: http://certif.com/spec.html
 
@@ -38,10 +38,13 @@ chapter except that the names will be different, as shown below:
 	
 	.. rubric:: our h5py example
 	
-	.. literalinclude:: data-model.txt
-	    :tab-width: 4
+	.. code-block:: text
 	    :linenos:
-	    :language: text
+	    
+	    /entry:NXentry
+	      /data:NXdata
+	        mr : float64[31]
+	        I00 : int32[31]
 	
 	.. _Example-H5py-Plot:
 	
@@ -58,7 +61,7 @@ chapter except that the names will be different, as shown below:
 	    :linenos:
 	    :language: text
 
-Writing the simplest data using ``h5py``
+Writing the simplest data using Python
 ########################################
 
 These two examples show how to write the simplest data (above).
@@ -75,30 +78,13 @@ and then creates a soft link to that data in ``NXdata``.
 
 .. _Example-H5py-complete:
 
-Complete ``h5py`` example writing and reading a NeXus data file
+Complete Python example writing and reading a NeXus data file
 ###############################################################
 
-.. _Example-H5py-Writing:
+.. _Example-Python-Writing:
 
-Writing the HDF5 file using **h5py**
-====================================
-
-In the main code section of :ref:`BasicWriter.py <Example-H5py-BasicWriter>`, 
-a current time stamp
-is written in the format of *ISO 8601* (``yyyy-mm-ddTHH:MM:SS``).
-For simplicity of this code example, we use a text string for the time, rather than
-computing it directly from Python support library calls.  It is easier this way to
-see the exact type of string formatting for the time.  When using the Python
-``datetime`` package, one way to write the time stamp is:
-
-.. code-block:: python
-    :linenos:
-
-    timestamp = "T".join( str( datetime.datetime.now() ).split() )
-
-.. 2016-02-16,PRJ:
-   ISO8601 now allows the "T" to be replaced by " " which is more readable
-   We won't change now.  Shows a pedantic case, for sure.
+Writing the HDF5 file
+=====================
 
 The data (``mr`` is similar to "two_theta" and
 ``I00`` is similar to "counts") is collated into two Python lists. We use the
@@ -106,52 +92,48 @@ The data (``mr`` is similar to "two_theta" and
 
 The new HDF5 file is opened (and created if not already existing) for writing,
 setting common NeXus attributes in the same command from our support library.
-Proper HDF5+NeXus groups are created for ``/entry:NXentry/mr_scan:NXdata``.
-Since we are not using the NAPI, our
-support library must create and set the ``NX_class`` attribute on each group.
+Proper HDF5+NeXus groups are created for ``/entry:NXentry/data:NXdata``.
+While the ``nexusformat`` support library automatically creates and sets the
+``NX_class`` attribute on each group, we must do this work manually if we are
+just using the h5py package directly.
 
 .. note:: We want to create the desired structure of
-          ``/entry:NXentry/mr_scan:NXdata/``. 
+          ``/entry:NXentry/data:NXdata/``. 
           
-	  #. First, our support library calls 
-             ``f = h5py.File()`` 
-             to create the file and root level NeXus structure.
-	  #. Then, it calls 
-             ``nxentry = f.create_group("entry")`` 
-             to create the ``NXentry`` group called
-             ``entry`` at the root level. 
-	  #. Then, it calls 
-             ``nxdata = nxentry.create_group("mr_scan")`` 
-             to create the ``NXentry`` group called
-             ``entry`` as a child of the ``NXentry`` group.
-
-Next, we create a dataset called ``title`` to hold a title string that can
-appear on the default plot.
-
 Next, we create datasets for ``mr`` and ``I00`` using our support library.
 The data type of each, as represented in ``numpy``, will be recognized by
 ``h5py`` and automatically converted to the proper HDF5 type in the file.
-A Python dictionary of attributes is given, specifying the engineering units and other
+A set of attributes is given, specifying the engineering units and other
 values needed by NeXus to provide a default plot of this data.  By setting ``signal="I00"``
 as an attribute on the group, NeXus recognizes ``I00`` as the default
 *y* axis for the plot.  The ``axes="mr"`` attribute on the :ref:`NXdata` 
 group connects the dataset to be used as the *x* axis.
-
-Finally, we *must* remember to call ``f.close()`` or we might
-corrupt the file when the program quits.
+Next, we create a dataset called ``title`` to hold a title string that can
+appear on the default plot. Finally, we mark the :ref:`NXdata` group as the 
+default plottable data for the file.
 
 .. compound::
 
-    .. rubric:: *BasicWriter.py*: Write a NeXus HDF5 file using Python with h5py
+    .. rubric:: *BasicWriter*: Write a NeXus HDF5 file with Python
     
-    .. _Example-H5py-BasicWriter:
+    .. _Example-Python-BasicWriter:
+    
+    .. tabs::
+        .. group-tab:: Python (nexusformat)
+        
+            .. literalinclude:: BasicWriter_nexusformat.py
+                :tab-width: 4
+                :linenos:
+                :language: python
+                
+        .. group-tab:: Python (h5py)
+        
+            .. literalinclude:: BasicWriter_h5py.py
+                :tab-width: 4
+                :linenos:
+                :language: python
 
-    .. literalinclude:: BasicWriter.py
-	    :tab-width: 4
-	    :linenos:
-	    :language: python
-
-.. _Example-H5py-Reading:
+.. _Example-Python-Reading:
 
 Reading the HDF5 file using **h5py**
 ====================================
@@ -171,14 +153,25 @@ extracting other useful stuff from the file.
 
 .. compound::
 
-    .. rubric:: *BasicReader.py*: Read a NeXus HDF5 file using Python with h5py
+    .. rubric:: *BasicReader*: Read a NeXus HDF5 file with Python
     
     .. _Example-H5py-Reader:
 
-    .. literalinclude:: BasicReader.py
-	    :tab-width: 4
-	    :linenos:
-	    :language: python
+    .. tabs::
+        .. group-tab:: Python (nexusformat)
+        
+            .. literalinclude:: BasicReader_nexusformat.py
+                :tab-width: 4
+                :linenos:
+                :language: python
+                
+        .. group-tab:: Python (h5py)
+        
+            .. literalinclude:: BasicReader_h5py.py
+                :tab-width: 4
+                :linenos:
+                :language: python
+
 
 Output from ``BasicReader.py`` is shown next.
 
@@ -387,8 +380,10 @@ The Python code and files related to this section may be downloaded from the fol
 file                                         description
 ===========================================  =============================================
 :download:`input.dat`                        2-column ASCII data used in this section
-:download:`BasicReader.py`                   python code to read example *prj_test.nexus.hdf5*
-:download:`BasicWriter.py`                   python code to write example *prj_test.nexus.hdf5*
+:download:`BasicReader_nexusformat.py`              python code to read example *prj_test.nexus.hdf5*
+:download:`BasicReader_h5py.py`              python code to read example *prj_test.nexus.hdf5*
+:download:`BasicWriter_nexusformat.py`              python code to write example *prj_test.nexus.hdf5*
+:download:`BasicWriter_h5py.py`              python code to write example *prj_test.nexus.hdf5*
 :download:`external_angles_h5dump.txt`       *h5dump* analysis of *external_angles.hdf5*
 :download:`external_angles.hdf5`             HDF5 file written by *externalExample*
 :download:`external_angles_structure.txt`    *punx tree* analysis of *external_angles.hdf5*
