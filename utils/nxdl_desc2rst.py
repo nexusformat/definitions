@@ -411,13 +411,14 @@ def addFigure(name, indentLevel=0):
         Graphical representation of the NXDL ``%s`` element
 
     .. Images of NXDL structure are generated from nxdl.xsd source
-        using the oXygen XML Editor.  Open the nxdl.xsd file and choose the
-        "Design" tab.  Identify the structure to be documented and expand
-        as needed to show the detail.  Right click and select "Save as Image ..."
-        Set the name: "nxdl_%s.jpg" and move the file into the correct location using
+        using the Eclipse XML Schema Editor (Web Tools Platform).  Open the nxdl.xsd file and choose the
+        "Design" tab.  Identify the structure to be documented and double-click to expand
+        as needed to show the detail.  Use the XSD > "Export Diagram as Image ..." menu item (also available
+        as button in top toolbar).
+        Set the name: "nxdl_%s.png" and move the file into the correct location using
         your operating system's commands.  Commit the revision to version control.
     '''
-    imageFile = 'img/nxdl/nxdl_%s.jpg' % name
+    imageFile = 'img/nxdl/nxdl_%s.png' % name
     figure_id = 'fig.nxdl_%s' % name
     if not os.path.exists(os.path.abspath(imageFile)):
         return
