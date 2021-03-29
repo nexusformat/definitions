@@ -47,7 +47,7 @@
 		rather than in NeXus.
 
 		Use :ref:`NXpdb` to incorporate the information in an arbitrary
-		PDB into a NeXus file.
+		PDB or other CIF file into a NeXus file.
 
 		The main suggestion is to use this as a container
 		class for a PDB entry to describe a sample in NXsample,
@@ -180,6 +180,8 @@
 		X-axis is orthogonal to the Z-axis in the horizontal plane and pointing
 		left as seen from the source and the Y-axis points upwards.  The
 		origin is in the sample.
+        
+		.. image:: ../img/nxpdb_mcstas.png
 
 		The standard coordinate frame in imgCIF/CBF aligns the X-axis to the
 		principal goniometer axis, and chooses the Z-axis to point from the sample
@@ -187,6 +189,8 @@
 		is the component of the vector that points into the beam orthogonal to the
 		X-axis.  The Y-axis is chosen to complete a right-handed axis system.
 
+		.. image:: ../img/nxpdb_cbf_axes.png
+        
 		Let us call the NeXus coordinate axes, X_nx, Y_nx and Z_nx, the
 		imgCIF/CBF coordinate axes, X_cbf, Y_cbf and Z_cbf and the direction
 		of gravity, Gravity.  In order to translate a vector v_nx = ( x, y, z)
@@ -288,7 +292,7 @@
 			   general
 			    0                0                1  # SOURCE vector
 
-		Ie translating from imgCIF to NeXus, these axes are distributed to appropriate NeXus
+		In translating from imgCIF to NeXus, these axes are distributed to appropriate NeXus
 		NXtransformations groups, for example putting the general axes under NXinstrument,
 		the detector axes under NXdetector, and the samples goniometer axes under
 		NXsample.  Note that extra axes have been added to help document the conversion ::
@@ -384,10 +388,109 @@
 			               @transformation_type:rotation
 			               @units:degrees
 			               @vector:[-1, 0, 0]
+
+		**JungFrau Detector Module Axes in NeXus and CBF/imgcif**
+		
+		As noted in (H. J. Bernstein, A. Foerster, A. Bhowmick. A. S. Brewster,
+		S. Brockhauser, L. Gelisio, D. R. Hall, F. Leonarski, V. Mariani, G. Santoni,
+		C. Vonrhein, G. Winter (2020). *Gold Standard for macromolecular
+		crystallography diffraction data* IUCrJ 7:5 784-792)
+		
+		The JUNGFRAU 16M (JF16M) represents a complex detector geometry.... The
+		following example shows the depends_on chain for the JF16M SwissFEL data
+		set for the zeroth (first) panel. The chain starts with the NXdetector_module
+		group at /entry/instrument/ELE_D0/ARRAY_D0Q0M0A0. The group is named after
+		its hierarchy, referring to the fact that it is ASIC (application specific
+		integrated chip) zero, of module zero, of quadrant zero, of detector zero.
+		It has two fields that define the orientation of the panel by specifying
+		the fast and slow readout directions for the raw pixel data::
+		
+		  fast_pixel_direction
+		    @offset=0,0,0
+		    @vector=-0.9999984140169291,-0.0017810007373656254,0.0
+		    @depends_on = /entry/instrument/ELE_D0/transformations/AXIS_D0Q0M0A0
+		  slow_pixel_direction
+		    @offset=0,0,0
+		    @vector=-0.0017810007373656254,0.9999984140169291,0.0
+		    @depends_on = /entry/instrument/ELE_D0/transformations/AXIS_D0Q0M0A0
+		
+		Both the fast and slow pixel directions depend on the AXIS_D0Q0M0A0 field of
+		the NXtransformations group at /entry/instrument/ELE_D0/transformations, and
+		this field continues the dependency chain of detector groups until the
+		final group, which is the detector rail::
+		
+		  AXIS_D0Q0M0A0
+		    @depends_on = AXIS_D0Q0M0
+		    @offset = 38.58423053508638,-19.131359799099098,0.0
+		    @vector = 0.0,0.0,-1.0
+		  AXIS_D0Q0M0
+		    @offset = 38.310714303741115,-61.1137814011917,0.0
+		    @vector = 0.0,0.0,-1.0
+		    @depends_on = AXIS_D0Q0
+		  AXIS_D0Q0
+		    @offset = 75.1333334212039,-84.65967506456187,0.0
+		    @vector = 0.0,0.0,-1.0
+		    @depends_on = AXIS_D0
+		  AXIS_D0
+		    @offset = -0.4290327180241036,0.12102061135945519,-0.294
+		    @vector = 0.0,0.0,-1.0
+		    @depends_on = AXIS_RAIL
+		  AXIS_RAIL
+		    @vector = 0.0,0.0,1.0
+		    @depends_on = .
+
+		.. image:: ../img/nxpdb_jungfrau16Mschematic.png
+		
+		Each of the other panels defines a similar set of transforms. We note here
+		that this hierarchical arrangement of axes is similar to work performed
+		previously for the CSPAD CBF format (A. S. Brewster, J. Hattne, J. M. Parkhurst,
+		D. G. Waterman, H. J. Bernstein,G. Winter, N. K. Sauter,(2014). '
+		*Comput. Crystallogr. Newsl.* 5, 19-25.]). Aaron Brewster and Asmit Bhowmick
+		at LBL, together with Yury Kirienko, Fabio Dall'Antonia and Sandor Brockhauser '
+		at EuXFEL, have also worked on similar NeXus master files for the EuXFEL
+		AGIPD detector (to be discussed in a future publication).
+
+		In imgCIF, the equivalent information with "# ..." for other axis information
+		would appear in the AXIS category as::
+		
+		  loop_
+		 _axis.id
+		 _axis.type
+		 _axis.equipment
+		 _axis.depends_on
+		 _axis.vector[1]
+		 _axis.vector[2]
+		 _axis.vector[3]
+		 _axis.offset[1]
+		 _axis.offset[2]
+		 _axis.offset[3]
+		 _axis.equipment_component
+		 # ...
+
+		 AXIS_RAIL general detector . 0 0 1 . . .
+		         detector_rail
+		 AXIS_D0 general detector AXIS_RAIL 0 0 1
+		     0.4290327180241036,0.12102061135945519,0.294
+		         detector
+		 AXIS_D0Q0 general detector AXIS_D0 0 0 1
+		     -75.1333334212039,-84.65967506456187,0.0
+		         detector_quadrant
+		 AXIS_D0Q0M0 general detector AXIS_D0Q0 0 0 1
+		     -38.310714303741115,-61.1137814011917,0.0
+		         detector_module
+		 AXIS_D0Q0M0A0 general detector AXIS_D0Q0M0 0 0 1
+		     -38.58423053508638,-19.131359799099098,0.0
+		         detector_asic
+		 AXIS_D0Q0M0A0_F translation detector AXIS_D0Q0M0A0
+		     0.9999984140169291,-0.0017810007373656254,0.0 0 0 0
+		         detector_asic
+		 AXIS_D0Q0M0A0_S translation detector AXIS_D0Q0M0A0
+		     0.0017810007373656254,0.9999984140169291,0.0 0 0 0
+		         detector_asic
+		 # ...
+		
  
-
-
-
+ 
 	</doc>
 	<!--
 	   NOTE
