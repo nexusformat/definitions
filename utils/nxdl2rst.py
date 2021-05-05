@@ -66,19 +66,19 @@ def printAnchorList():
             )
             # fmt: on
         print(table)
-        print(
-            ".. tip::\n"
-            "   Use the reST anchors when writing documentation in\n"
-            "   NXDL source files.\n"
-            "   Since the anchors have no title or caption associated,\n"
-            "   you will need to supply text with the reference, such as::\n\n"
-            "       :ref:`this text will appear <anchor>`\n\n"
-            "   Since these anchors are absolute references, they may be\n"
-            "   used anywhere in the documentation source \n"
-            "   (that is, within XML ``<doc>`` structures \n"
-            "   in `.nxdl.xml` files or in ``.rst`` files).\n"
-            # &lt;doc&gt;
-        )
+        # print(
+        #     ".. tip::\n"
+        #     "   Use the reST anchors when writing documentation in\n"
+        #     "   NXDL source files.\n"
+        #     "   Since the anchors have no title or caption associated,\n"
+        #     "   you will need to supply text with the reference, such as::\n\n"
+        #     "       :ref:`this text will appear <anchor>`\n\n"
+        #     "   Since these anchors are absolute references, they may be\n"
+        #     "   used anywhere in the documentation source \n"
+        #     "   (that is, within XML ``<doc>`` structures \n"
+        #     "   in `.nxdl.xml` files or in ``.rst`` files).\n"
+        #     # &lt;doc&gt;
+        # )
 
 
 def fmtTyp( node ):
