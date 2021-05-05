@@ -76,6 +76,22 @@ to validate NeXus data files.  In fact, all of the tables in the
 :ref:`Class Definitions <ClassDefinitions>` Chapter
 have been generated directly from the NXDL files.
 
+.. sidebar:: Writing references and anchors in the documentation.
+
+   .. tip::
+
+      Use the reST anchors when writing documentation in
+      NXDL source files.
+      Since the anchors have no title or caption associated,
+      you will need to supply text with the reference, such as::
+
+          :ref:`this text will appear <anchor>`
+
+      Since these anchors are absolute references, they may be
+      used anywhere in the documentation source 
+      (that is, within XML ``<doc>`` structures 
+      in `.nxdl.xml` files or in ``.rst`` files).
+
 The language of NXDL files is intentionally quite small,
 to provide only that which is necessary to describe
 scientific data structures (or to establish the
