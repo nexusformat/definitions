@@ -305,7 +305,7 @@ An example, from NXdetector:
     beam_center_x
     beam_center_x_errors
 
-Where data errors would contain the erros on data, and beam_center_x_errors the error on 
+Where data errors would contain the errors on data, and beam_center_x_errors the error on 
 the beam center for x. 
 
 
