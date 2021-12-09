@@ -209,7 +209,7 @@ DATATYPE_POSTAMBLE = '''
 def _tagMatch(ns, parent, match_list):
     '''match this tag to a list'''
     if parent is None:
-        raise "Must supply a valid parent node"
+        raise ValueError("Must supply a valid parent node")
     parent_tag = parent.tag
     tag_found = False
     for item in match_list:
@@ -335,7 +335,7 @@ def applyTemplates(ns, parent, path, indentLevel, handler=generalHandler):
             if name in ('nx:groupGroup',):
                 print(">"*45, name)
             if name in db:
-                raise "Duplicate name found: " + name
+                raise KeyError("Duplicate name found: " + name)
             db[name] = node
     for name in sorted(db):
         node = db[name]
@@ -382,7 +382,9 @@ def getDocFromNode(ns, node, retval=None):
             text = lines[0][indent:]
         for line in lines[1:]:
             if not len(line[:indent].strip()) == 0:
-                raise "Something wrong with indentation on this line:\n" + line
+                raise IndentationError(
+                    "Something wrong with indentation on this line:\n" + line
+                )
             text += '\n' + line[indent:]
 
     # substitute HTML entities in markup: "<" for "&lt;"
