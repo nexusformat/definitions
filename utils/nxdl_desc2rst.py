@@ -10,6 +10,7 @@ the NXDL chapter.
 
 import os, sys
 import lxml.etree
+import textwrap
 
 
 TITLE_MARKERS = '- + ~ ^ * @'.split()  # used for underscoring section titles
@@ -353,39 +354,19 @@ def printDocs(ns, parent, indentLevel=0):
 
 
 def getDocFromNode(ns, node, retval=None):
-    docnodes = node.xpath('xs:annotation/xs:documentation', namespaces=ns)
-    if docnodes == None:
+    annotation_node = node.find('xs:annotation', ns)
+    if annotation_node is None:
         return retval
-    if not len(docnodes) == 1:
+    documentation_node = annotation_node.find('xs:documentation', ns)
+    if documentation_node is None:
         return retval
     
-    # be sure to grab _all_ content in the documentation
-    # it might look like XML
-    s = lxml.etree.tostring(docnodes[0], pretty_print=True)
-    p1 = s.decode().find('>')+1
-    p2 = s.decode().rfind('</')
-    text = s[p1:p2].decode().lstrip('\n')    # cut off the enclosing tag
-    
-    lines = text.splitlines()
-    if len(lines) > 1:
-        indent0 = len(lines[0]) - len(lines[0].lstrip())
-        indent1 = len(lines[1]) - len(lines[1].lstrip())
-        if len(lines) > 2:
-            indent2 = len(lines[2]) - len(lines[2].lstrip())
-        else:
-            indent2 = 0
-        if indent0 == 0:
-            indent = max(indent1, indent2)
-            text = lines[0]
-        else:
-            indent = indent0
-            text = lines[0][indent:]
-        for line in lines[1:]:
-            if not len(line[:indent].strip()) == 0:
-                raise IndentationError(
-                    "Something wrong with indentation on this line:\n" + line
-                )
-            text += '\n' + line[indent:]
+    # Be sure to grab _all_ content in the <xs:documentation> node.
+    # The content might look like XML.
+    s = lxml.etree.tostring(documentation_node, method="text", pretty_print=True)
+    rst = s.decode().lstrip('\n')  # remove any leading blank lines
+    rst = rst.rstrip()  # remove any trailing white space
+    text = textwrap.dedent(rst)  # remove common leading space
 
     # substitute HTML entities in markup: "<" for "&lt;"
     # thanks: http://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
@@ -483,7 +464,8 @@ if __name__ == '__main__':
     developermode = True
     developermode = False
     if developermode and len(sys.argv) != 2:
-        NXDL_SCHEMA_FILE = os.path.join('..', 'nxdl.xsd')
+        path = os.path.dirname(__file__)
+        NXDL_SCHEMA_FILE = os.path.join(path, '..', 'nxdl.xsd')
     else:
         if len(sys.argv) != 2:
             print("usage: %s nxdl.xsd" % sys.argv[0])
