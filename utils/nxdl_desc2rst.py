@@ -362,7 +362,8 @@ def getDocFromNode(ns, node, retval=None):
         return retval
     
     # Be sure to grab _all_ content in the <xs:documentation> node.
-    # The content might look like XML.
+    # In the documentation nodes, use XML entities ("&lt;"" instead of "<")
+    # for documentation characters that would otherwise be considered as XML.
     s = lxml.etree.tostring(documentation_node, method="text", pretty_print=True)
     rst = s.decode().lstrip('\n')  # remove any leading blank lines
     rst = rst.rstrip()  # remove any trailing white space
