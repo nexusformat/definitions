@@ -1,0 +1,33 @@
+name: Publish Sphinx Docs to GitHub Pages
+on: [push]
+
+# see: https://sphinx-notes.github.io/pages/
+# see: https://github.com/marketplace/actions/sphinx-to-github-pages
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+        fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+
+    - name: Install sphinx-rtd-theme
+      run: |
+        pip install sphinx-rtd-theme
+
+    - name: Build and Commit
+      uses: sphinx-notes/pages@master
+      with:
+        # path to conf.py directory
+        documentation_path: docs/source
+
+    - name: Push changes if refs/tags
+      if: startsWith(github.ref, 'refs/tags')
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: gh-pages
