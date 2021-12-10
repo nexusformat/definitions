@@ -37,13 +37,33 @@ jobs:
       run: |
         ls -lAFGh
         ls -lAFGh ./build
-        ls -lAFgh ./build/manual/build/
 
-    - name: Build and Commit
-      uses: sphinx-notes/pages@master
-      with:
-        # path to conf.py directory
-        documentation_path: build/manual/source
+    - name: Build impatient guide
+      run: |
+        ls -lAFGh
+        ls -lAFGh ./build
+
+        # expect next make (PDF) to fail (thus exit 0) since nexus.ind not found first time
+        # extra option needed to satisfy "levels nested too deeply" error
+        (make latexpdf LATEXOPTS="--interaction=nonstopmode" -C build/manual || exit 0)
+        # make that missing file
+        makeindex build/manual/build/latex/nexus.idx
+        # build the PDF, still a failure will be noted but we can ignore it without problem
+        (make latexpdf LATEXOPTS="--interaction=nonstopmode" -C build/manual || exit 0)
+        # finally, report what was built
+        @echo "HTML built: `ls -lAFgh build/manual/build/html/index.html`"
+        @echo "PDF built: `ls -lAFgh build/manual/build/latex/nexus.pdf`"
+
+    - name: Diagnostic
+      run: |
+        ls -lAFGh
+        ls -lAFGh ./build/manual/build
+
+    # - name: Build and Commit
+    #   uses: sphinx-notes/pages@master
+    #   with:
+    #     # path to conf.py directory
+    #     documentation_path: build/manual/source
 
     # - name: Push changes if refs/tags
     #   if: startsWith(github.ref, 'refs/tags')
