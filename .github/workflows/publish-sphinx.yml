@@ -23,11 +23,27 @@ jobs:
       run: |
         pip list
 
-    # - name: Build and Commit
-    #   uses: sphinx-notes/pages@master
-    #   with:
-    #     # path to conf.py directory
-    #     documentation_path: docs/source
+    - name: Run the test suite
+      run: |
+        python utils/test_suite.py
+
+    - name: Prepare for out-of-source Sphinx build
+      run: |
+        rm -rf ./build
+        mkdir ./build
+        python ./utils/build_preparation.py . ./build
+
+    - name: Diagnostic
+      run: |
+        ls -lAFGh
+        ls -lAFGh ./build
+        ls -lAFgh ./build/manual/build/
+
+    - name: Build and Commit
+      uses: sphinx-notes/pages@master
+      with:
+        # path to conf.py directory
+        documentation_path: build/manual/source
 
     # - name: Push changes if refs/tags
     #   if: startsWith(github.ref, 'refs/tags')
