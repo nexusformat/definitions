@@ -11,7 +11,7 @@ DATASET_TYPE_MATCH = "<class 'h5py.highlevel.Dataset'>"
 
 
 def print_attr(parent, label):
-    for k, v in parent.attrs.iteritems():
+    for k, v in parent.attrs.items():
         print("%s.attrs[%s]=%s" % (label, k, v))
 
 
