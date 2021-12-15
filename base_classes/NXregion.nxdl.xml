@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2013-2021 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition 
+	category="base" 
+	xmlns="http://definition.nexusformat.org/nxdl/3.1"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
+	name="NXregion" 
+	type="group" extends="NXobject">
+	<symbols>
+		<doc>
+			These symbols will denote the shape of the parent's data array which has rank ``S+D`` for
+			``S`` scan dimensions and ``D`` detector dimensions
+		</doc>
+		<symbol name="S"><doc>Scan rank</doc></symbol>
+		<symbol name="D"><doc>Detector rank</doc></symbol>
+	</symbols>
+	<doc>
+		Geometry and logical description of a region of detector data. When used, child group to NXdetector.
+		
+		This can be used to describe a subset of data used to create downsampled data or to derive
+		some data from that subset.
+
+		Note, the fields for the rectangular region specifiers follow HDF5’s dataspace hyperslab parameters
+		(see https://portal.hdfgroup.org/display/HDF5/H5S_SELECT_HYPERSLAB).
+	</doc>
+	<attribute name="type" optional="false">
+		<doc>
+			This is ``rectangular`` to describe the region as a hyper-rectangle in
+			the index space of its parent group's data array
+		</doc>
+		<enumeration>
+			<item value="rectangular" />
+		</enumeration>
+	</attribute>
+	<field name="start" type="NX_NUMBER" optional="false">
+		<doc>
+			The starting position for region in detector data array. The first ``S`` dimensions are omitted
+		</doc>
+		<dimensions rank="D">
+		</dimensions>
+	</field>
+	<field name="count" type="NX_INT" optional="false">
+		<doc>
+			The number of blocks or items in hyperslab selection. The first ``S`` dimensions are omitted
+		</doc>
+		<dimensions rank="D">
+		</dimensions>
+	</field>
+	<field name="stride" type="NX_INT" optional="true">
+		<doc>
+			An optional field to define striding used to downsample data. If omitted then defined as an array of ones
+		</doc>
+		<dimensions rank="D">
+		</dimensions>
+	</field>
+	<field name="block" type="NX_INT" optional="true">
+		<doc>
+			An optional field to define binning used to downsample data. If omitted then defined as an array of ones
+		</doc>
+		<dimensions rank="D">
+		</dimensions>
+	</field>
+	<field name="scale" type="NX_NUMBER" optional="true">
+		<doc>
+			An optional field to define scaling of binned data. If omitted then defined as an array of ones
+		</doc>
+		<dimensions rank="D">
+		</dimensions>
+	</field>
+	<group name="downsampled_data" type="NXdata" optional="true">
+		<doc>
+			An optional group containing data sliced/downsampled from parent group’s data
+		</doc>
+	</group>
+	<group name="region_statistics" type="NXdata" optional="true">
+		<doc>
+			An optional group containing any statistics derived from the region in parent group’s data
+			such as sum, minimum, maximum, mean, mode, median, rms, variance, etc. Where more than one
+			statistical dataset is written (specified with ``@signal``) then add ``@auxiliary_signals``
+			listing the others
+		</doc>
+	</group>
+</definition>
