@@ -23,7 +23,6 @@ The target directory is assumed to be the current directory.
 # Re-run this code to bring in any changed files (for incremental build)
 # Be sure to properly specify the source and target directories.
 
-from __future__ import print_function
 import os, sys
 import local_utilities
 

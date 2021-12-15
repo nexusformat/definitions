@@ -12,7 +12,6 @@ This is the bash command to find all matching lines::
 See copyright text at bottom of this file for example.
 '''
 
-from __future__ import print_function
 import os, sys
 import mimetypes
 import local_utilities
