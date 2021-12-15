@@ -10,7 +10,6 @@ the NeXus NXDL Classes chapter.
 
 # testing:  see file dev_nxdl2rst.py
 
-from __future__ import print_function
 from collections import OrderedDict
 from html import parser as HTMLParser
 import lxml.etree
