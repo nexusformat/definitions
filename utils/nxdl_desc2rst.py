@@ -375,7 +375,7 @@ def getDocFromNode(ns, node, retval=None):
         import html
         text = html.unescape(text)
     except (ImportError, AttributeError):
-        from six.moves import html_parser as HTMLParser
+        from html import parser as HTMLParser
         htmlparser = HTMLParser.HTMLParser()
         text = htmlparser.unescape(text)
 

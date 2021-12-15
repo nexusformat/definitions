@@ -12,7 +12,7 @@ the NeXus NXDL Classes chapter.
 
 from __future__ import print_function
 from collections import OrderedDict
-from six.moves import html_parser as HTMLParser
+from html import parser as HTMLParser
 import lxml.etree
 import os
 import pyRestTable
