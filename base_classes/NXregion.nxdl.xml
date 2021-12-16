@@ -30,22 +30,27 @@
 	type="group" extends="NXobject">
 	<symbols>
 		<doc>
-			These symbols will denote how the shape of the parent group's data field could be
-			split into a left set of ``O`` outer dimensions and a right set of ``R`` region
-			dimensions where the data field has rank ``O+D``. Note ``O >= 0``.
+			These symbols will denote how the shape of the parent group's data field,
+
+			.. math:: (D_0, ..., D_{\mathbf{O}-1}, d_0, ..., d_{\mathbf{R}-1})
+
+			could be split into a left set of **O** outer dimensions, :math:`\boldsymbol{D}`,
+			and a right set of **R** region dimensions, :math:`\boldsymbol{d}`,
+			where the data field has rank **O** + **R**. Note **O** :math:`>= 0`.
 		</doc>
 		<symbol name="O"><doc>Outer rank</doc></symbol>
 		<symbol name="R"><doc>Region rank</doc></symbol>
 	</symbols>
 	<doc>
-		Geometry and logical description of a region of detector data. When used, it could
-		be a child group to NXdetector.
+		Geometry and logical description of a region of data in a parent group. When used, it could
+		be a child group to, say, :ref:`NXdetector`.
 		
 		This can be used to describe a subset of data used to create downsampled data or to derive
 		some data from that subset.
 
 		Note, the fields for the rectangular region specifiers follow HDF5’s dataspace hyperslab parameters
-		(see https://portal.hdfgroup.org/display/HDF5/H5S_SELECT_HYPERSLAB).
+		(see https://portal.hdfgroup.org/display/HDF5/H5S_SELECT_HYPERSLAB). Note when **block** :math:`= 1`,
+		then **stride** :math:`\equiv` **step** in Python slicing
 	</doc>
 	<attribute name="type" optional="false">
 		<doc>
@@ -58,58 +63,81 @@
 	</attribute>
 	<field name="parent">
 		<doc>
-			The name of the data field or NXdata group in the parent group
+			The name of the data field or :ref:`NXdata` group in the parent group. A
+			non-signal data field in a group can be chosen by appending a ``/`` character
+			and that field's name to the group name
+		</doc>
+	</field>
+	<field name="parent_mask">
+		<doc>
+			The name of an optional mask field in the parent group
 		</doc>
 	</field>
 	<field name="start" type="NX_NUMBER" recommended="true">
 		<doc>
-			The starting position for region in detector data array. This is recommended as it
-			also defines the region rank. If omitted then defined as an array of zeros
+			The starting position for region in detector data array.
+			This is recommended as it also defines the region rank.
+			If omitted then defined as an array of zeros
 		</doc>
-		<dimensions rank="R">
+		<dimensions rank="1">
+			<dim index="1" value="R"/>
 		</dimensions>
 	</field>
 	<field name="count" type="NX_INT" recommended="true">
 		<doc>
 			The number of blocks or items in hyperslab selection.
-			If omitted then defined as an array of dimensions that take into account the parent
-			data field's shape and the ``start`` field
+			If omitted then defined as an array of dimensions that take into account
+			the other hyper-slab selection fields to span the parent data field's shape
 		</doc>
-		<dimensions rank="R">
+		<dimensions rank="1">
+			<dim index="1" value="R"/>
 		</dimensions>
 	</field>
 	<field name="stride" type="NX_INT">
 		<doc>
-			An optional field to define striding used to downsample data. If omitted then defined as an array of ones
+			An optional field to define striding used to downsample data.
+			If omitted then defined as an array of ones
 		</doc>
-		<dimensions rank="R">
+		<dimensions rank="1">
+			<dim index="1" value="R"/>
 		</dimensions>
 	</field>
 	<field name="block" type="NX_INT">
 		<doc>
-			An optional field to define binning used to downsample data. If omitted then defined as an array of ones
+			An optional field to define binning used to downsample data.
+			If omitted then defined as an array of ones
 		</doc>
-		<dimensions rank="R">
+		<dimensions rank="1">
+			<dim index="1" value="R"/>
 		</dimensions>
 	</field>
 	<field name="scale" type="NX_NUMBER">
 		<doc>
-			An optional field to define scaling of binned data. If omitted then defined as an array of ones
+			An optional field to define multiplication factor for scaling of binned data.
+			This can also be **O** + **R** in length so that each other dimension's region
+			can be multiplied by a different scale.
+			If omitted then defined as an array of ones
 		</doc>
-		<dimensions rank="R">
+		<dimensions rank="1">
+			<dim index="1" value="R"/>
 		</dimensions>
 	</field>
-	<group name="downsampled_data" type="NXdata" optional="true">
+	<group name="downsampled" type="NXdata">
 		<doc>
-			An optional group containing data sliced/downsampled from parent group’s data
+			An optional group containing data selected/downsampled from parent group’s data. Its signal name
+			must reflect how the downsampling is done over each block. So it could be
+			sum, minimum, maximum, mean, mode, median, etc.
+			If downsampling is merely selecting each block then use "data" as the name. In this latter case,
+			the field should have a shape of :math:`(D_0, ..., D_{\mathbf{O}-1}, \mathbf{block}[0] * \mathbf{count}[0], ..., \mathbf{block}[\mathbf{R}-1] * \mathbf{count}[\mathbf{R}-1])`,
+			otherwise the expected shape is :math:`(D_0, ..., D_{\mathbf{O}-1}, \mathbf{count}[0], ..., \mathbf{count}[\mathbf{R}-1])`
 		</doc>
 	</group>
-	<group name="region_statistics" type="NXdata" optional="true">
+	<group name="statistics" type="NXdata">
 		<doc>
 			An optional group containing any statistics derived from the region in parent group’s data
 			such as sum, minimum, maximum, mean, mode, median, rms, variance, etc. Where more than one
 			statistical dataset is written (specified with ``@signal``) then add ``@auxiliary_signals``
-			listing the others
+			listing the others. All data fields should have shapes of :math:`\boldsymbol{D}`
 		</doc>
 	</group>
 </definition>
