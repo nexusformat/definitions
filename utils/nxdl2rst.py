@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# Tested under both python2 and python3.
-
 '''
 Read the NeXus NXDL class specification and describe it.
 Write a restructured text (.rst) document for use in the NeXus manual in
@@ -238,9 +236,9 @@ def printEnumeration( indent, ns, parent ):
         return ''
 
     if len(node_list) == 1:
-        printf( '%sObligatory value: ' % ( indent ) )
+        printf('%sObligatory value:', indent)
     else:
-        printf( '%sAny of these values:' % ( indent ) )
+        printf('%sAny of these values:', indent)
 
     docs = OrderedDict()
     for item in node_list:
@@ -256,9 +254,9 @@ def printEnumeration( indent, ns, parent ):
         # print one item per line
         print('\n')
         for name, doc in docs.items():
-            printf( '%s  * %s' % ( indent, show_as_typed_text(name) ) )
+            printf('%s  * %s', indent, show_as_typed_text(name))
             if doc:
-                printf( ': %s' % ( doc ) )
+                printf(': %s', doc)
             print('\n')
     else:
         # print all items in one line
@@ -457,9 +455,9 @@ def print_rst_from_nxdl(nxdl_file):
         printDoc( INDENTATION_UNIT, ns, node_list[0] )
         for node in node_list[0].xpath('nx:symbol', namespaces=ns):
             doc = getDocLine(ns, node)
-            printf( '  **%s**' % node.get('name') )
+            printf('  **%s**', node.get('name'))
             if doc:
-                printf( ': %s' % doc )
+                printf(': %s', doc)
             print('\n')
 
     # print group references
