@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 
-# Coded for both python2 and python3.
-
 '''
 Common code for NeXus definitions Python tools
 
 ======================  ==================================
 tool                    description
 ======================  ==================================
-:meth:`printf`          wrapper for Python 2.x and 3.x
+:meth:`printf`          formatted print without newline
 :meth:`mtime`           return file modification time
-:meth:`replicate_tree`  copy directory stack or file
+:meth:`replicate`       copy directory stack or file
+:meth:`replicate_tree`  copy directory stack
 ======================  ==================================
 
 '''
@@ -21,7 +20,7 @@ import shutil
 
 
 def printf(str, *args):
-    '''wrapper for Python 2.x and 3.x'''
+    '''formatted print without automatic newline'''
     print(str % args, end='')
 
 

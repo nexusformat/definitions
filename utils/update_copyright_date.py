@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# Coded for both python2 and python3.
-
 '''
 update the copyright date in all NeXus text files
 
