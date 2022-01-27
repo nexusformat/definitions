@@ -1,0 +1,233 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xslt"?>
+<definition category="application" extends="NXobject" name="NXmpes" type="group" xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+	<doc>This is the most general application definition for multidimensional photoelectron spectroscopy.</doc>
+	<symbols>
+		<doc>The symbols used in the schema to specify e.g. dimensions of arrays</doc>
+		<symbol doc="Number of fast axes (acquired simutaneously) e.g. emission angle, kinetic energy" name="nfa"/>
+		<symbol doc="Number of slow axes (acquired scanning a physical quantity) e.g. lens voltage, photon energy or temperature" name="nsa"/>
+		<symbol doc="Number of points in the first angular direction" name="nx"/>
+		<symbol doc="Number of points in the energy dispersion direction" name="ne"/>
+	</symbols>
+	<group type="NXentry">
+		<field name="title" type="NX_CHAR">
+			<doc>Title describing the entry.</doc>
+		</field>
+		<field name="start_time" type="NX_DATE_TIME">
+			<doc>ISO8601 formatted date time of the start of the measurement.</doc>
+		</field>
+		<field name="definition" type="NX_CHAR">
+			<doc>Official NeXus NXDL schema to which this file conforms.</doc>
+			<enumeration>
+				<item value="NXmpes"/>
+			</enumeration>
+			<attribute name="version" type="NX_CHAR">
+				<doc>Version specifier enabling to document modification of the schema.</doc>
+			</attribute>
+		</field>
+		<group type="NXinstrument">
+			<group type="NXsource">
+				<field name="type" type="NX_CHAR">
+					<doc>Type of source. Any of these values: - Synchrotron X-ray Source - Rotating Anode X-ray - Fixed Tube X-ray - UV Laser - Free-Electron Laser - Optical Laser - UV Plasma Source - Metal Jet X-ray</doc>
+					<enumeration>
+						<item value="Synchrotron X-ray Source"/>
+						<item value="Rotating Anode X-ray"/>
+						<item value="Fixed Tube X-ray"/>
+						<item value="UV Laser"/>
+						<item value="Free-Electron Laser"/>
+						<item value="Optical Laser"/>
+						<item value="UV Plasma Source"/>
+						<item value="Metal Jet X-ray"/>
+					</enumeration>
+				</field>
+				<field name="name" type="NX_CHAR">
+					<doc>Free text name of the source.</doc>
+				</field>
+				<field name="probe" type="NX_CHAR">
+					<doc>Type of probe. In photoemission it's always photons, any of these values: - x-ray - ultraviolet - visible light</doc>
+					<enumeration>
+						<item value="x-ray"/>
+						<item value="ultraviolet"/>
+						<item value="visible light"/>
+					</enumeration>
+				</field>
+			</group>
+			<group type="NXbeam">
+				<doc>Properties of the beam at the sample.</doc>
+				<field name="distance" type="NX_NUMBER" units="NX_LENGTH">
+					<doc>Distance of the point of evaluation of the beam from the sample.</doc>
+				</field>
+				<field name="incident_energy" type="NX_NUMBER" units="NX_ENERGY">
+					<doc>Incident photon energy.</doc>
+				</field>
+				<field name="incident_energy_spread" recommended="true" type="NX_NUMBER" units="NX_ENERGY">
+					<doc>FWHM energy linewidth of the incident photons.</doc>
+				</field>
+				<field name="incident_polarization" recommended="true" type="NX_NUMBER" units="NX_ANY">
+					<doc>Incident polarization specified as a Stokes vector.</doc>
+					<dimensions rank="1">
+						<dim index="1" value="4"/>
+					</dimensions>
+				</field>
+			</group>
+			<group type="NXelectronanalyser">
+				<field name="description" type="NX_CHAR">
+					<doc>Free text description of the type of detector.</doc>
+				</field>
+				<field name="energy_resolution" type="NX_NUMBER" units="NX_ENERGY">
+					<doc>Energy resolution of the analyser with the current setting.</doc>
+				</field>
+				<field name="fast_axes" optional="true" type="NX_CHAR">
+					<doc>List of the axes that are acquired symultaneously by the detector.</doc>
+					<dimensions rank="1">
+						<dim index="1" value="nfa"/>
+					</dimensions>
+				</field>
+				<field name="slow_axes" optional="true" type="NX_CHAR">
+					<doc>List of the axes that are acquired by scanning a physical parameter, listed in order of decreasing speed.</doc>
+					<dimensions rank="1">
+						<dim index="1" value="nsa"/>
+					</dimensions>
+				</field>
+				<group type="NXcollectioncolumn">
+					<field name="scheme" type="NX_CHAR">
+						<doc>Scheme of the electron collection column.</doc>
+						<enumeration>
+							<item value="Standard"/>
+							<item value="Deflector"/>
+							<item value="PEEM"/>
+							<item value="Momentum Microscope"/>
+						</enumeration>
+					</field>
+					<field name="mode" recommended="true" type="NX_CHAR">
+						<doc>Labelling of the lens setting in use.</doc>
+					</field>
+					<field name="projection" recommended="true" type="NX_CHAR">
+						<doc>The space projected in the angularly dispersive directions, i.e. real or reciprocal.</doc>
+						<enumeration>
+							<item value="real"/>
+							<item value="reciprocal"/>
+						</enumeration>
+					</field>
+				</group>
+				<group type="NXenergydispersion">
+					<field name="scheme" type="NX_CHAR">
+						<doc>Energy dispersion scheme employed.</doc>
+						<enumeration>
+							<item value="tof"/>
+							<item value="hemispherical"/>
+							<item value="cylindrical mirror"/>
+							<item value="display mirror"/>
+							<item value="retarding grid"/>
+						</enumeration>
+					</field>
+					<field name="pass_energy" type="NX_NUMBER" units="NX_ENERGY">
+						<doc>energy of the electrons on the mean path of the analyser.</doc>
+					</field>
+					<field name="energy_scan_mode" type="NX_CHAR">
+						<doc>Way of scanning the energy axis (fixed or sweep).</doc>
+						<enumeration>
+							<item value="fixed"/>
+							<item value="sweep"/>
+						</enumeration>
+					</field>
+<!--
+					<group recommended="true" type="NXaperture">
+						<doc>Aperture generating the momentum and/or energy filtering.</doc>
+						<field name="description" type="NX_CHAR">
+							<doc>Type of aperture inserted in the beam. One of the following: - slit - pinhole - iris</doc>
+							<enumeration>
+								<item value="slit"/>
+								<item value="pinhole"/>
+								<item value="iris"/>
+							</enumeration>
+						</field>
+						<field name="shape" type="NX_CHAR">
+							<doc>Description of the shape of the active part of the aperture, curved or straight for horizontal slits, square or round for pinhole etc.</doc>
+							<enumeration>
+								<item value="curved"/>
+								<item value="straight"/>
+								<item value="circle"/>
+								<item value="square"/>
+								<item value="hexagon"/>
+								<item value="octagon"/>
+								<item value="bladed"/>
+							</enumeration>
+						</field>
+						<field name="size" type="NX_NUMBER" units="NX_LENGTH">
+							<doc>The relevant dimension for the aperture (slit width, pinhole diameter etc).</doc>
+						</field>
+					</group>
+-->
+				</group>
+				<group type="NXdetector">
+					<field name="amplifier_type" type="NX_CHAR">
+						<doc>Type of electron amplifier.</doc>
+						<enumeration>
+							<item value="MCP"/>
+							<item value="channeltron"/>
+						</enumeration>
+					</field>
+					<field name="detector_type" type="NX_CHAR">
+						<doc>Description of the detector type.</doc>
+						<enumeration>
+							<item value="DLD"/>
+							<item value="Phosphor+CCD"/>
+							<item value="Phosphor+CMOS"/>
+							<item value="ECMOS"/>
+						</enumeration>
+					</field>
+<!--
+					<group recommended="true" type="NXdata">
+						<field name="raw" type="NX_NUMBER">
+							<doc>Raw data before calibration.</doc>
+						</field>
+					</group>
+-->
+				</group>
+			</group>
+		</group>
+		<group type="NXprocess">
+			<field name="calculated_energy" recommended="true" type="NX_FLOAT" units="NX_ENERGY">
+				<doc>Calibrated energy axis</doc>
+				<dimensions rank="1">
+					<dim index="1" value="ne"/>
+				</dimensions>
+			</field>
+			<group name="energy_calibration" type="NXcalibration">
+				<field name="applied" type="NX_BOOLEAN">
+					<doc>Has an energy calibration been applied?</doc>
+				</field>
+			</group>
+		</group>
+		<group type="NXsample">
+			<field name="name" type="NX_CHAR">
+				<doc>Simple and descriptive name of the sample.</doc>
+			</field>
+			<field name="chemical_formula" type="NX_CHAR">
+				<doc>Chemical formula of the sample.</doc>
+			</field>
+			<field name="sample_history" optional="true" type="NX_CHAR">
+				<doc>Ideally, a reference to the location or a unique identifier or other metadata file. In the case that is not available, free-text description.</doc>
+			</field>
+			<field name="preparation_date" recommended="true" type="NX_DATE_TIME">
+				<doc>ISO 8601 date of preparation of the sample for the ARPES experiment (i.e. cleaving, last annealing).</doc>
+			</field>
+			<field name="description" type="NX_CHAR">
+				<doc>Free-text surface preparation technique for the ARPES experiment, i.e. UHV cleaving, in-situ growth, sputtering/annealing etc.</doc>
+			</field>
+			<field name="temperature" type="NX_NUMBER" units="NX_TEMPERATURE">
+				<doc>Temperature of the sample.</doc>
+			</field>
+			<field name="situation" type="NX_CHAR"/>
+			<field name="pressure" type="NX_NUMBER" units="NX_PRESSURE">
+				<doc>Residual gas pressure at the sample.</doc>
+			</field>
+		</group>
+		<group type="NXdata">
+			<field name="data" type="NX_NUMBER">
+				<doc>Processed plottable data.</doc>
+			</field>
+		</group>
+	</group>
+</definition>
