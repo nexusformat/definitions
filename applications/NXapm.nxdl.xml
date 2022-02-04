@@ -344,7 +344,7 @@
 					</dimensions>
 				</field>
 			</group>
-			<group name="reconstruction" recommended="true" type="NXprocess">
+			<group name="reconstruction" type="NXprocess">
 				<doc>Data post-processing step to create a tomographic reconstruction of the specimen based on selected calibrated ion hit positions, the evaporation sequence, and voltage curve data. Very often scientists use own software scripts according to published, so-called reconstruction protocols, i.e. numerical recipes how to compute x, y, z atomic positions.</doc>
 				<field name="program" type="NX_CHAR">
 					<doc>Given name of the program that was used to perform this computation. Similar comments as voltage_and_bowl_correction apply.</doc>
@@ -374,6 +374,61 @@
 				<group name="reconstruction_parameter" recommended="true" type="NXcollection">
 					<doc>Different models and associated algorithms, i.e. (numerical) protocols exist to reconstruct atom probe data. Although these approaches are qualitatively similar, each protocol uses different parameters (and interprets these differently). The source code to IVAS/APSuite is not open. For now we store the reconstruction parameter in a collection.</doc>
 				</group>
+				<group name="naive_point_cloud_density_map" type="NXprocess">
+					<doc>To get a first overview of the reconstructed dataset, the format conversion computes a simple 3d histogram of the ion density using one nanometer cubic bins an no smoothing of the histogram.</doc>
+					<field name="program" type="NX_CHAR">
+						<doc>Given name of the program that was used to perform this computation. Similar comments as voltage_and_bowl_correction apply.</doc>
+						<attribute name="version" type="NX_CHAR">
+							<doc>Ideally program version plus build number, or commit hash or description of ever persistent resources where the source code of the program and build instructions can be found so that the program can be configured ideally in such a manner that the result of this computational process is recreatable in the same deterministic manner.</doc>
+						</attribute>
+					</field>
+					<group type="NXdata">
+						<symbols>
+							<symbol doc="Number of bins in the x direction." name="n_x"/>
+							<symbol doc="Number of bins in the y direction." name="n_y"/>
+							<symbol doc="Number of bins in the z direction." name="n_z"/>
+						</symbols>
+						<doc>A default three-dimensional histogram of the total number of ions in each bin.</doc>
+						<attribute name="signal">
+							<doc>Which is the dependent signal to plot, here the counts.</doc>
+						</attribute>
+						<attribute name="axes">
+							<doc>Which axes are plotted, here the three principal coordinate directions.</doc>
+						</attribute>
+						<field name="counts" type="NX_NUMBER" units="NX_UNITLESS">
+							<doc>Array of counts for each bin.</doc>
+							<dimensions rank="3">
+								<dim index="0" value="n_x"/>
+								<dim index="1" value="n_y"/>
+								<dim index="2" value="n_z"/>
+							</dimensions>
+						</field>
+						<field name="xpos" type="NX_NUMBER" units="NX_LENGTH">
+							<doc>Bin positions along the x axis.</doc>
+							<attribute name="units" type="NX_CHAR"/>
+						</field>
+						<attribute name="xpos_indices">
+							<doc>Bin edge end along x.</doc>
+						</attribute>
+						<field name="ypos" type="NX_NUMBER" units="NX_LENGTH">
+							<doc>Bin positions along the y axis.</doc>
+							<attribute name="units" type="NX_CHAR"/>
+						</field>
+						<attribute name="ypos_indices">
+							<doc>Bin edge end along y.</doc>
+						</attribute>
+						<field name="zpos" type="NX_NUMBER" units="NX_LENGTH">
+							<doc>Bin positions along the z axis.</doc>
+							<attribute name="units" type="NX_CHAR"/>
+						</field>
+						<attribute name="zpos_indices">
+							<doc>Bin edge end along z.</doc>
+						</attribute>
+						<attribute name="long_name">
+							<doc>Title of the diagram.</doc>
+						</attribute>
+					</group>
+				</group>
 			</group>
 			<group name="ranging" recommended="true" type="NXprocess">
 				<doc>Data post-processing step in which elemental, isotopic, and/or molecular identities are assigned to the ions. The documentation of these steps is based on ideas described in the literature (M. K&quot;uhbach et al. 2021, Microsc. Microanal.).</doc>
@@ -389,7 +444,7 @@
 				<field name="maximum_number_of_atoms_per_molecular_ion" type="NX_UINT" units="NX_UNITLESS">
 					<doc>Assumed maximum value that suffices to store all relevant molecular ions even the most complicated ones. Usually a value of 32 suffices well.</doc>
 				</field>
-				<group name="mass_to_charge_distribution" recommended="true" type="NXprocess">
+				<group name="mass_to_charge_distribution" type="NXprocess">
 					<doc>Specifies the computation of the mass-to-charge histogram. Usually mass-to-charge values are studied as an ensemble quantity and binned so document here settings related to (eventual) binning.</doc>
 					<field name="program" type="NX_CHAR">
 						<doc>Given name of the program that was used to perform this binning. If the computation is a integrated into the ranging tool, type .</doc>
@@ -406,6 +461,34 @@
 					<field name="range_increment" type="NX_FLOAT" units="NX_ANY">
 						<doc>Binning width</doc>
 					</field>
+					<group name="mass_spectrum" type="NXdata">
+						<doc>A default histogram aka mass spectrum of the mass-to-charge-state ratio values.</doc>
+						<symbols>
+							<symbol doc="Number of bins." name="Nbins"/>
+						</symbols>
+						<attribute name="signal">
+							<doc>Which is the dependent signal to plot.</doc>
+						</attribute>
+						<attribute name="axes">
+							<doc>Which axes are plotted, here counts over bins.</doc>
+						</attribute>
+						<field name="counts" type="NX_NUMBER" units="NX_UNITLESS">
+							<doc>Array of counts for each bin.</doc>
+							<dimensions rank="1">
+								<dim index="0" value="Nbins"/>
+							</dimensions>
+						</field>
+						<field name="bin_ends" type="NX_NUMBER" units="NX_ANY">
+							<doc>End of mass-to-charge-state ratio bin.</doc>
+							<attribute name="units" type="NX_CHAR"/>
+						</field>
+						<attribute name="bin_ends_indices">
+							<doc>Label of the mass-to-charge-state ratio bin axis.</doc>
+						</attribute>
+						<attribute name="long_name">
+							<doc>Title of the diagram.</doc>
+						</attribute>
+					</group>
 				</group>
 				<group name="background_quantification" recommended="true" type="NXprocess">
 					<doc>Details of the background model which was used to correct the total counts per bin into used counts.</doc>
