@@ -690,12 +690,12 @@ any prior knowledge of the chosen coordinate system.
 		+----------------------------------------------------------+----------------------------------------------------------+
 		| Coordinate System, as viewed from source                 | Coordinate System, as viewed from detector               |
 		+==========================================================+==========================================================+
-		| .. figure:: img/translation-orientation-geometry.jpg     | .. figure:: img/translation-orientation-geometry-2.jpg   |
+		| .. figure:: img/translation-orientation-geometry.png     | .. figure:: img/translation-orientation-geometry-2.png   |
 		|       :alt: fig.coord.source.view                        |        :alt: fig.coord.detector.view                     |
 		|       :width: 33%                                        |        :width: 33%                                       |
 		+----------------------------------------------------------+----------------------------------------------------------+
 
-	.. figure:: img/translation-orientation-geometry-2.jpg
+	.. figure:: img/translation-orientation-geometry-2.png
 	      :alt: fig.coord.detector.view
 	      :width: 33%
 
