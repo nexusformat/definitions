@@ -1,28 +1,10 @@
-The GNU "make" program and Python are used to build the 
-NeXus documentation.  The default build assembles
-the HTML version.  You have the choice to 
-build the documentation in two places:
+The documentation relies on Sphinx (a Python package) for its organization. The
+GNU ``make`` program and Python are used to build the NeXus documentation.  The
+default build assembles the HTML version.  You have the choice to build the
+documentation in two places:
 
 * in the source tree
 * out of the source tree
-
-.. TODO: documentation how to build PDF version
-
-In-Tree documentation
-=====================
-
-To build the NeXus documentation within the
-source tree, go to the root directory
-(the directory where this README file is located),
-and type::
-
-    make clean
-    make
-
-The HTML documentation is located in this folder::
-
-    ./manual/build/html/
-
 
 Out-of-Tree documentation
 =========================
@@ -84,28 +66,17 @@ The HTML documentation is located in this folder::
 
     $(SOURCE_DIR)/build/manual/build/html/
 
+In-Tree documentation
+=====================
 
-Windows
-=======
+To build the NeXus documentation within the
+source tree, go to the root directory
+(the directory where this README file is located),
+and type::
 
-Windows development needs more instructions.
-Use the *cmd.exe* shell to build the documentation, not 
-the Windows powershell or there will be Python problems.
+    make clean
+    make
 
-Python errors
--------------
+The HTML documentation is located in this folder::
 
-On Windows, if the following error is output to the console 
-after typing ``make html`` in the ``$(SOURCE_DIR)/manual`` directory:
-
-  'python' is not recognized as an internal or external command,
-  operable program or batch file.
-
-it may be necessary to add Python to the ``PATH`` environment 
-variable, such as one of these lines::
-
-	set PATH=C:\Python27;%PATH%
-	set PATH=D:\Apps\Anaconda;%PATH%
-
-Try to avoid installing Python on a directory path that has 
-embedded spaces.  Long series of tedious problems with that.
+    ./manual/build/html/
