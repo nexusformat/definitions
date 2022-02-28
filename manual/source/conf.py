@@ -19,10 +19,10 @@ import sys, os, datetime
 
 # -- Project information -----------------------------------------------------
 
-project = 'nexus'
-author = 'NIAC, https://www.nexusformat.org'
-copyright = u'1996-{}, {}'.format(datetime.datetime.now().year, author)
-description = u'NeXus: A Common Data Format for Neutron, X-ray, and Muon Science'
+project = 'NeXus-FAIRmat'
+author = 'The FAIRmat collaboration'
+copyright = u'2022-{}, {}'.format(datetime.datetime.now().year, author)
+description = u'Proposal of NeXus expansion for FAIRmat data'
 
 # The full version, including alpha/beta/rc tags
 version = u'unknown NXDL version'
@@ -46,6 +46,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx_comments'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -62,26 +63,77 @@ exclude_patterns = []
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'alabaster'
-html_theme = 'sphinxdoc'
+html_theme = 'alabaster'
+# html_theme = 'sphinxdoc'
+# html_theme = 'sphinx_rtd_theme'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+html_logo = 'img/FAIRmat.png'
 
-html_sidebars = {
+if html_theme== 'sphinx_rtd_theme':
+    html_theme_options = {
+        'logo_only': False,
+        'collapse_navigation': True,
+        'sticky_navigation': True,
+        'navigation_depth': 4,
+        'includehidden': True,
+        'titles_only': False
+    }
+    def setup(app):
+        app.add_css_file('to_rtd.css')
+elif html_theme== 'alabaster': # Alabaster allows a very high degree of control form Sphinx conf.py
+    html_sidebars = {
+    '**': [
+        'about.html', 
+        'navigation.html',
+        'relations.html', 
+        'searchbox.html', 
+        'google_search.html'
+        ],
+    }
+    html_theme_options = {
+        'body_text_align': 'justify',
+        'logo_name': True,
+        'github_button': True,
+        'github_type': 'watch',
+        'github_repo': 'nexus_definitions/tree/fairmat',
+        'github_user': 'FAIRmat-Experimental',
+        'github_count': 'false', # We don't get the cute counter baloon if we want to point to the branch
+        'sidebar_width': '235px',
+        'page_width': '1000px',
+        'font_size': '12pt',
+        'font_family': 'Arial',
+        'description': 'Proposal of NeXus expansion for FAIRmat data.',
+        'show_powered_by': True,
+        'sidebar_header': '#ffffff',
+        'sidebar_hr': '#ffffff',
+        'sidebar_link': '#ffffff',
+        'sidebar_list': '#ffffff',
+        'sidebar_link_underscore': '#ffffff',
+        'sidebar_text': '#ffffff'
+    }
+    def setup(app):
+        app.add_css_file('to_alabaster.css')
+else:
+    html_sidebars = {
     '**': [
         'localtoc.html', 
         'relations.html', 
         'sourcelink.html', 
         'searchbox.html', 
         'google_search.html'
-    ],
-}
+        ],
+    }
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'NeXusManualdoc'
+
+comments_config = {
+    "hypothesis": True
+ }
 
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {

@@ -43,10 +43,10 @@ all :: index.rst $(RSTs) $(TARGET_NXDLs)
 
 index.rst :: 
 	echo "Adding summaries to contributed_definitions/index.rst"
-	python $(NXDLSUMMARY) contributed_definitions
+	python3 $(NXDLSUMMARY) contributed_definitions
 
 %.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
-	python $(NXDL2RST) $< > $@
+	python3 $(NXDL2RST) $< > $@
 
 clean ::
 	$(RM) NX*.rst NX*.nxdl.xml

@@ -43,10 +43,10 @@ all :: index.rst $(RSTs) $(TARGET_NXDLs)
 
 index.rst :: 
 	echo "Adding summaries to applications/index.rst"
-	python $(NXDLSUMMARY) applications
+	python3 $(NXDLSUMMARY) applications
 
 %.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
-	python $(NXDL2RST) $< > $@
+	python3 $(NXDL2RST) $< > $@
 
 clean ::
 	$(RM) NX*.rst NX*.nxdl.xml

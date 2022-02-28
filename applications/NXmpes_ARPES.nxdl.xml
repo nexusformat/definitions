@@ -1,0 +1,274 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<definition category="application" extends="NXobject" name="NXmpes_ARPES" type="group" xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+	<doc>This is the most general application definition for multidimensional ARPES.</doc>
+	<symbols>
+		<doc>The symbols used in the schema to specify e.g. dimensions of arrays</doc>
+		<symbol doc="Number of fast axes (acquired simutaneously) e.g. emission angle, kinetic energy" name="nfa"/>
+		<symbol doc="Number of slow axes (acquired scanning a physical quantity) e.g. lens voltage, spin direction" name="nsa"/>
+		<symbol doc="Number of points in the first angular direction" name="nx"/>
+		<symbol doc="Number of points in the energy dispersion direction" name="ne"/>
+	</symbols>
+	<group type="NXentry">
+		<attribute name="entry">
+			<doc>NeXus convention is to use &quot;entry1&quot;, &quot;entry2&quot;, for analysis software to locate each entry.</doc>
+		</attribute>
+		<attribute name="default" optional="true"/>
+		<field name="title" type="NX_CHAR"/>
+		<field name="start_time" type="NX_DATE_TIME">
+			<doc>ISO8601 formatted date time of the start of the measurement.</doc>
+		</field>
+		<field name="definition" type="NX_CHAR">
+			<attribute name="version" type="NX_CHAR"/>
+			<enumeration>
+				<item value="NXmpes"/>
+				<item value="NXmpes_ARPES"/>
+			</enumeration>
+		</field>
+		<group type="NXinstrument">
+			<group type="NXsource">
+				<doc>The source used to generate the primary photons. Properties refer strictly to parameters of the source, not of the output beam. For example, the energy of the source is not the optical power of the beam, but the energy of the electron beam in a synchrotron and so on.</doc>
+				<field name="type" type="NX_CHAR">
+					<enumeration>
+						<item value="Synchrotron X-ray Source"/>
+						<item value="Rotating Anode X-ray"/>
+						<item value="Fixed Tube X-ray"/>
+						<item value="UV Laser"/>
+						<item value="Free-Electron Laser"/>
+						<item value="Optical Laser"/>
+						<item value="UV Plasma Source"/>
+						<item value="Metal Jet X-ray"/>
+						<item value="HHG laser"/>
+					</enumeration>
+				</field>
+				<field name="name" type="NX_CHAR"/>
+				<field name="probe" type="NX_CHAR">
+					<doc>Type of probe. In photoemission it's always photons, so the full NIAC list is restricted.</doc>
+					<enumeration>
+						<item value="x-ray"/>
+						<item value="ultraviolet"/>
+						<item value="visible light"/>
+					</enumeration>
+				</field>
+			</group>
+			<group type="NXbeam">
+				<field name="distance" type="NX_NUMBER" units="NX_LENGTH">
+					<doc>Distance of the point of evaluation of the beam from the sample surface.</doc>
+				</field>
+				<field name="incident_energy" type="NX_NUMBER" units="NX_ENERGY">
+					<doc>In the case of a monchromatic beam this is the scalar energy. Several other use cases are permitted, depending on the presence of other incident_energy_X fields. In the case of a polychromatic beam this is an array of length m of energies, with the relative weights in incident_energy_weights. In the case of a monochromatic beam that varies shot-to-shot, this is an array of energies, one for each recorded shot. Here, incident_energy_weights and incident_energy_spread are not set. In the case of a polychromatic beam that varies shot-to-shot, this is an array of length m with the relative weights in incident_energy_weights as a 2D array. In the case of a polychromatic beam that varies shot-to-shot and where the channels also vary, this is a 2D array of dimensions nP by m (slow to fast) with the relative weights in incident_energy_weights as a 2D array. Note, variants are a good way to represent several of these use cases in a single dataset, e.g. if a calibrated, single-value energy value is available along with the original spectrum from which it was calibrated.</doc>
+				</field>
+				<field name="incident_energy_spread" recommended="true" type="NX_NUMBER" units="NX_ENERGY">
+					<doc>The energy spread FWHM for the corresponding energy(ies) in incident_energy. In the case of shot-to-shot variation in the energy spread, this is a 2D array of dimension nP by m (slow to fast) of the spreads of the corresponding energy in incident_energy.</doc>
+				</field>
+				<field name="incident_energy_weights" optional="true" type="NX_NUMBER" units="NX_ENERGY">
+					<doc>In the case of a polychromatic beam this is an array of length m of the relative weights of the corresponding energies in incident_energy. In the case of a polychromatic beam that varies shot-to-shot, this is a 2D array of dimensions np by m (slow to fast) of the relative weights of the corresponding energies in incident_energy.</doc>
+				</field>
+				<field name="incident_polarization" recommended="true" type="NX_NUMBER" units="NX_ANY">
+					<doc>Incident polarization specified as a Stokes vector.</doc>
+					<attribute name="units" type="NX_CHAR">
+						<doc>The units for this observable are not included in the NIAC list. Responsibility on correct formatting and parsing is handed to the user by using 'NX_ANY'. Correct parsing can still be implemented by using this attribute. Fill with: The unit unidata symbol if the unit has one (Example: 'T' for the unit of magnetic flux density tesla). The unit unidata name if the unit has a name (Example: 'farad' for capacitance). A string describing the units according to unidata unit operation notation, if the unit is a complex combination of named units and does not have a name. Example: for lightsource brilliance (SI) '1/(s.mm2.mrad2)'. Here: SI units are 'V2/m2'.</doc>
+					</attribute>
+					<dimensions rank="1">
+						<dim index="1" value="4"/>
+					</dimensions>
+				</field>
+			</group>
+			<group type="NXelectronanalyser">
+				<field name="description" type="NX_CHAR">
+					<doc>Free text description of the type of detector.</doc>
+				</field>
+				<field name="energy_resolution" type="NX_NUMBER" units="NX_ENERGY">
+					<doc>Energy resolution of the analyser with the current setting. May be linked from a NXcalibration.</doc>
+				</field>
+				<field name="angular_resolution" type="NX_NUMBER" units="NX_ANGLE">
+					<doc>Angular resolution of the analyser with the current setting.  May be linked from a NXcalibration.</doc>
+				</field>
+				<field name="fast_axes" optional="true" type="NX_CHAR">
+					<doc>List of the axes that are acquired symultaneously by the detector. These refer only to the experimental variables recorded by the electron analyser. Other variables such as temperature, manipulator angles etc. are labeled as fast or slow in the data. Examples: Hemispherical in ARPES mode: fast_axes: [energy,kx] Hemispherical with channeltron, sweeping energy mode: slow_axes: [energy] Tof: fast_axes: [energy, kx, ky] Momentum microscope, spin-resolved: fast_axes: [energy, kx, ky] slow_axes: [spin up-down, spin left-right] axes can be less abstract than this, i.e. [detector_x, detector_y] If energy_scan_mode=sweep, fast_axes: [energy, kx]; slow_axes: [energy] is allowed.</doc>
+					<dimensions rank="1">
+						<dim index="1" value="nfa"/>
+					</dimensions>
+				</field>
+				<field name="slow_axes" optional="true" type="NX_CHAR">
+					<doc>List of the axes that are acquired by scanning a physical parameter, listed in order of decreasing speed. See fast_axes for examples.</doc>
+					<dimensions rank="1">
+						<dim index="1" value="nsa"/>
+					</dimensions>
+				</field>
+				<group type="NXcollectioncolumn">
+					<field name="scheme" type="NX_CHAR">
+						<doc>Scheme of the electron collection column.</doc>
+						<enumeration>
+							<item value="Standard"/>
+							<item value="Deflector"/>
+							<item value="PEEM"/>
+							<item value="Momentum Microscope"/>
+						</enumeration>
+					</field>
+					<field name="mode" recommended="true" type="NX_CHAR">
+						<doc>Labelling of the lens setting in use.</doc>
+					</field>
+					<field name="projection" recommended="true" type="NX_CHAR">
+						<doc>The space projected in the angularly dispersive directions, i.e. real or reciprocal.</doc>
+						<enumeration>
+							<item value="real"/>
+							<item value="reciprocal"/>
+						</enumeration>
+					</field>
+				</group>
+				<group type="NXenergydispersion">
+					<field name="scheme" type="NX_CHAR">
+						<doc>Energy dispersion scheme employed.</doc>
+						<enumeration>
+							<item value="tof"/>
+							<item value="hemispherical"/>
+							<item value="double hemispherical"/>
+							<item value="cylindrical mirror"/>
+							<item value="display mirror"/>
+							<item value="retarding grid"/>
+						</enumeration>
+					</field>
+					<field name="pass_energy" type="NX_NUMBER" units="NX_ENERGY">
+						<doc>energy of the electrons on the mean path of the analyser. Pass energy for hemispherics, drift energy for tofs.</doc>
+					</field>
+					<field name="energy_scan_mode" type="NX_CHAR">
+						<doc>Way of scanning the energy axis (fixed or sweep).</doc>
+						<enumeration>
+							<item value="fixed"/>
+							<item value="sweep"/>
+						</enumeration>
+					</field>
+					<group recommended="true" type="NXaperture">
+						<doc>Aperture generating the momentum and/or energy filtering.</doc>
+						<field name="description" type="NX_CHAR">
+							<doc>Type of aperture inserted in the beam.</doc>
+							<enumeration>
+								<item value="slit"/>
+								<item value="pinhole"/>
+								<item value="iris"/>
+							</enumeration>
+						</field>
+						<field name="shape" type="NX_CHAR">
+							<doc>Description of the shape of the active part of the aperture, curved or straight for horizontal slits, square or round for pinhole etc.</doc>
+							<enumeration>
+								<item value="curved"/>
+								<item value="straight"/>
+								<item value="circle"/>
+								<item value="square"/>
+								<item value="hexagon"/>
+								<item value="octagon"/>
+								<item value="bladed"/>
+							</enumeration>
+						</field>
+						<field name="size" type="NX_NUMBER" units="NX_LENGTH">
+							<doc>The relevant dimension for the aperture (slit width, pinhole diameter etc).</doc>
+						</field>
+					</group>
+				</group>
+				<group type="NXdetector">
+					<field name="amplifier_type" recommended="true" type="NX_CHAR">
+						<doc>Type of electron amplifier in the first amplification step.</doc>
+						<enumeration>
+							<item value="MCP"/>
+							<item value="channeltron"/>
+						</enumeration>
+					</field>
+					<field name="detector_type" type="NX_CHAR">
+						<doc>Description of the detector type.</doc>
+						<enumeration>
+							<item value="DLD"/>
+							<item value="Phosphor+CCD"/>
+							<item value="Phosphor+CMOS"/>
+							<item value="ECMOS"/>
+							<item value="Anode"/>
+							<item value="Multi-anode"/>
+						</enumeration>
+					</field>
+					<group recommended="true" type="NXdata">
+						<attribute name="signal">
+							<enumeration>
+								<item value="raw"/>
+							</enumeration>
+						</attribute>
+						<field name="raw" type="NX_NUMBER">
+							<doc>Raw data before calibration.</doc>
+						</field>
+					</group>
+				</group>
+			</group>
+		</group>
+		<group type="NXprocess">
+			<field name="calculated_kx" recommended="true" type="NX_FLOAT" units="NX_WAVENUMBER">
+				<doc>Calibrated kx momentum axis.</doc>
+				<dimensions rank="1">
+					<dim index="1" value="nx"/>
+				</dimensions>
+			</field>
+			<field name="calculated_energy" recommended="true" type="NX_FLOAT" units="NX_ENERGY">
+				<doc>Calibrated energy axis.</doc>
+				<dimensions rank="1">
+					<dim index="1" value="ne"/>
+				</dimensions>
+			</field>
+			<group name="distortion_correction" type="NXdistortion">
+				<field name="applied" type="NX_BOOLEAN">
+					<doc>Has a distortion correction been applied?</doc>
+				</field>
+			</group>
+			<group name="energy_calibration" type="NXcalibration">
+				<field name="applied" type="NX_BOOLEAN">
+					<doc>Has an energy calibration been applied?</doc>
+				</field>
+			</group>
+			<group name="momentum_calibration" optional="true" type="NXcalibration">
+				<field name="applied" type="NX_BOOLEAN">
+					<doc>Has a momentum calibration been applied?</doc>
+				</field>
+			</group>
+		</group>
+		<group type="NXsample">
+			<field name="name" type="NX_CHAR"/>
+			<field name="chemical_formula" type="NX_CHAR"/>
+			<group name="sample_history" recommended="true" type="NXnote">
+				<doc>A descriptor to keep track of the treatment of the sample before entering the photoemission experiment. Ideally, a full report of the previous operations, in any format (NXnote allows to add pictures, audio, movies). Alternatively, a reference to the location or a unique identifier or other metadata file. In the case these are not available, free-text description.</doc>
+			</group>
+			<field name="preparation_date" recommended="true" type="NX_DATE_TIME">
+				<doc>ISO 8601 date of preparation of the sample for the XPS experiment (i.e. cleaving, last annealing).</doc>
+			</field>
+			<group name="preparation_description" type="NXnote">
+				<doc>Description of the surface preparation technique for the XPS experiment, i.e. UHV cleaving, in-situ growth, sputtering/annealing etc. Ideally, a full report of the previous operations, in any format(NXnote allows to add pictures, audio, movies). Alternatively, a reference to the location or a unique identifier or other metadata file. In the case these are not available, free-text description.</doc>
+			</group>
+			<field name="temperature" type="NX_NUMBER" units="NX_TEMPERATURE">
+				<doc>In the case of a fixed temperature measurement this is the scalar temperature of the sample. In the case of an experiment in which the temperature is changed and recoded, this is an array of length m of temperatures.</doc>
+			</field>
+			<field name="situation" type="NX_CHAR"/>
+			<field name="pressure" type="NX_NUMBER" units="NX_PRESSURE">
+				<doc>In the case of a fixed pressure measurement this is the scalar pressure. In the case of an experiment in which pressure changes, or anyway it is recorded, this is an array of length m of pressures.</doc>
+			</field>
+		</group>
+		<group type="NXdata">
+			<attribute name="signal">
+				<enumeration>
+					<item value="data"/>
+				</enumeration>
+			</attribute>
+			<attribute name="axes">
+				<enumeration>
+					<item value="['energy', 'kpar']"/>
+				</enumeration>
+			</attribute>
+			<attribute name="energy_indices"/>
+			<attribute name="kpar_indices"/>
+			<field name="data" type="NX_NUMBER">
+				<doc>Processed plottable data.</doc>
+			</field>
+			<field name="energy" type="NX_NUMBER" units="NX_ENERGY">
+				<doc>Data containing the energy axis</doc>
+			</field>
+			<field name="kpar" type="NX_NUMBER" units="NX_WAVENUMBER">
+				<doc>Data containing the k parallel axis</doc>
+			</field>
+		</group>
+	</group>
+</definition>

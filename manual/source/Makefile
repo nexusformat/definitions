@@ -24,13 +24,13 @@
 all :: types.table units.table nxdl_desc.rst subdirs
 
 types.table: ../../utils/types2rst.py ../../utils/units2rst.py ../../nxdlTypes.xsd
-	python ../../utils/types2rst.py ../../nxdlTypes.xsd > $@
+	python3 ../../utils/types2rst.py ../../nxdlTypes.xsd > $@
 
 units.table: ../../utils/units2rst.py ../../nxdlTypes.xsd
-	python ../../utils/units2rst.py ../../nxdlTypes.xsd > $@
+	python3 ../../utils/units2rst.py ../../nxdlTypes.xsd > $@
 
 nxdl_desc.rst: ../../utils/nxdl_desc2rst.py ../../nxdl.xsd
-	python ../../utils/nxdl_desc2rst.py ../../nxdl.xsd > $@
+	python3 ../../utils/nxdl_desc2rst.py ../../nxdl.xsd > $@
 
 clean ::
 	$(RM) types.table units.table nxdl_desc.rst
