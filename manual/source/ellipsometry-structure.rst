@@ -6,8 +6,8 @@ Ellipsometry Structure
 
 .. index::
    IntroductionEllipsometry
-   NewAppDef
-   ExtendedBC
+   EllNewAppDef
+   EllExtendedBC
 
 
 .. _IntroductionEllipsometry:
@@ -19,7 +19,7 @@ Ellipsometry is an optical characterization method to describe optical propertie
 
 In the application definition we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
 
-.. _NewAppDef:
+.. _EllNewAppDef:
 
 New Application Definitions
 ############################
@@ -31,8 +31,8 @@ We created one application definition:
 
 .. .. _NewBC:
 
-.. New Base Classes
-.. #################
+.. EllNew Base Classes
+.. ####################
 
 .. We developed entirely new base classes:
 

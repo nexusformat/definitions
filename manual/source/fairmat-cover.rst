@@ -24,11 +24,11 @@ Experimentalists face the challenge that these pieces of information come at dif
 of granularity and format, of which many need to be better documented. You have very likely experienced 
 yourself how file and data formats are routinely encountered tasks to master in your daily 
 research practice and you might have questioned how these formats are currently handled 
-when you want to produce FAIR research data and publications. 
+when you want to produce FAIR research data and publications.
 
 The NeXus-FAIRmat proposal is an interdisciplinary data science activity initiated by scientists of the 
 condensed-matter physics community which strives to develop community-maintained open file and data formats
- for describing specific experimental techniques, their numerical data and metadata, 
+for describing specific experimental techniques, their numerical data and metadata, 
 and strategies how to exchange these pieces of information.
 
 .. _IntroductionCover:
@@ -164,14 +164,14 @@ for the following macro-areas of experimental physics
        :ref:`NXsource`
 
 :ref:`Ellipsometry <Ellipsometry-Structure>`:
-  Set of data storage objects to describe ….. Carola, Tamas.
+    Set of data storage objects to describe ellipsometry, follow the link for a more extensive description.
      New application definitions:
        :ref:`NXellipsometry`
-     New base classes:
-     Extended base classes:
+     .. New base classes:
+     .. Extended base classes:
 
 :ref:`Electron Microscopy <Em-Structure>`:
-   Set of data storage objects to describe electron microscopy experiments, follow the link for a more extensive description.
+    Set of data storage objects to describe electron microscopy experiments, follow the link for a more extensive description.
      New application definitions:
        :ref:`NXem_nion`
      New base classes:
@@ -180,10 +180,10 @@ for the following macro-areas of experimental physics
        :ref:`NXlens_em`
        :ref:`NXscanbox_em`
        :ref:`NXstage_lab`
-     Extended base classes:
+     .. Extended base classes:
 
 :ref:`Atom Probe Microscopy <Apm-Structure>`:
-   Set of data storage objects to describe atom probe tomography and field-ion microscopy experiments, follow the link for a more extensive description.
+    Set of data storage objects to describe atom probe tomography and field-ion microscopy experiments, follow the link for a more extensive description.
      New application definitions:
        :ref:`NXapm`
      New base classes:
@@ -192,6 +192,5 @@ for the following macro-areas of experimental physics
        :ref:`NXpeak`
        :ref:`NXpulser_apm`
        :ref:`NXstage_lab`
-     Extended base classes:
-
+     .. Extended base classes:
 

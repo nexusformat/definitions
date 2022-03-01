@@ -1,14 +1,14 @@
 .. _Em-Structure:
 
-=======================
-Electron Microscopy (EM) Structure
-=======================
+==================================
+Electron Microscopy Structure
+==================================
 
 .. index::
    IntroductionEM
-   NewAppDef
-   NewBC
-   NewCommonBC
+   EmNewAppDef
+   EmNewBC
+   EmNewCommonBC
 
 
 
@@ -21,7 +21,7 @@ Set of data storage objects to describe components of an electron microscope and
 
 Electron microscopes are functionally very customizable tools: Examples include multi-signal/-modal analyses which are frequently realized as on-the-fly computational analyses, regularly switching between GUI-based instrument control, computational steps, and more and more using high-throughput stream-based processing. Also artificial intelligence methods get increasingly used and become closer interconnected with those classical instrument control and data processing. A challenge in electron microscopy is that these steps are often executed within commercial integrated control and analysis software, which makes it additionally difficult to keep track of workflows and identify what conceptually the specific quantities in the control software display represent and how these can be connected to the development of ontologies for electron microscopy experiments.
 
-.. _NewAppDef:
+.. _EmNewAppDef:
 
 New Application Definitions
 ############################
@@ -31,7 +31,7 @@ We acknowledge that it can be difficult to agree on a single application definit
     :ref:`NXem_nion`:
        A general application definition which explores the possibilities of scanning transmission electron microscopes that use an open instrument control and analysis software. Specifically, we draft the application for users of Nion microscopes. An extension to supporting multi-signal sources is currently explored and will be implemented with the next release of the application definition.
 
-.. _NewBC:
+.. _EmNewBC:
 
 New Base Classes
 #################
@@ -53,7 +53,7 @@ We developed entirely new base classes:
     :ref:`NXstage_lab`:
         As it was mentioned for atom probe microscopy this is a base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities which modern stages of electron microscopes frequently offer.
 
-.. _NewCommonBC:
+.. _EmNewCommonBC:
 
 New Common Base Classes
 #######################
