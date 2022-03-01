@@ -45,12 +45,13 @@ These examples illustrate the use of the NAPI
 
 .. _Examples.readers:
 
-Code that reads NeXus data files
+Code Projects that work with NeXus data files
 ################################
 
 The number of tools that read NeXus data files,
 either for general use or to read a specific
-application definition, is growing.  In the section
+application definition, is growing.  Many of these
+are open source and so also serve as code examples. In the section
 :ref:`Utilities`, we describe many applications
 and software packages that can read, write, browse,
 and use NeXus data files. Examples of code (mostly 
