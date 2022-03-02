@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# Tested under both python2 and python3.
-
 '''
 Read the NeXus NXDL class specification and describe it.
 Write a restructured text (.rst) document for use in the NeXus manual in
@@ -10,9 +8,8 @@ the NeXus NXDL Classes chapter.
 
 # testing:  see file dev_nxdl2rst.py
 
-from __future__ import print_function
 from collections import OrderedDict
-from six.moves import html_parser as HTMLParser
+from html import parser as HTMLParser
 import lxml.etree
 import os
 import pyRestTable
@@ -239,9 +236,9 @@ def printEnumeration( indent, ns, parent ):
         return ''
 
     if len(node_list) == 1:
-        printf( '%sObligatory value: ' % ( indent ) )
+        printf('%sObligatory value:', indent)
     else:
-        printf( '%sAny of these values:' % ( indent ) )
+        printf('%sAny of these values:', indent)
 
     docs = OrderedDict()
     for item in node_list:
@@ -257,9 +254,9 @@ def printEnumeration( indent, ns, parent ):
         # print one item per line
         print('\n')
         for name, doc in docs.items():
-            printf( '%s  * %s' % ( indent, show_as_typed_text(name) ) )
+            printf('%s  * %s', indent, show_as_typed_text(name))
             if doc:
-                printf( ': %s' % ( doc ) )
+                printf(': %s', doc)
             print('\n')
     else:
         # print all items in one line
@@ -458,9 +455,9 @@ def print_rst_from_nxdl(nxdl_file):
         printDoc( INDENTATION_UNIT, ns, node_list[0] )
         for node in node_list[0].xpath('nx:symbol', namespaces=ns):
             doc = getDocLine(ns, node)
-            printf( '  **%s**' % node.get('name') )
+            printf('  **%s**', node.get('name'))
             if doc:
-                printf( ': %s' % doc )
+                printf(': %s', doc)
             print('\n')
 
     # print group references
@@ -540,7 +537,7 @@ if __name__ == '__main__':
 
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2008-2021 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

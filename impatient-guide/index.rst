@@ -15,7 +15,7 @@ Why NeXus?
    This document is available online in 
    `HTML <https://manual.nexusformat.org/impatient>`_
    and
-   `PDF <https://manual.nexusformat.org/pdf/NXImpatient.pdf>`_
+   `PDF <https://manual.nexusformat.org/_static/NXImpatient.pdf>`_
    formats.
 
 The NeXus data format [#NeXus]_ is a tool which has been designed to

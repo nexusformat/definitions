@@ -1,28 +1,26 @@
 #!/usr/bin/env python
 
-# Coded for both python2 and python3.
-
 '''
 Common code for NeXus definitions Python tools
 
 ======================  ==================================
 tool                    description
 ======================  ==================================
-:meth:`printf`          wrapper for Python 2.x and 3.x
+:meth:`printf`          formatted print without newline
 :meth:`mtime`           return file modification time
-:meth:`replicate_tree`  copy directory stack or file
+:meth:`replicate`       copy directory stack or file
+:meth:`replicate_tree`  copy directory stack
 ======================  ==================================
 
 '''
 
-from __future__ import print_function
 import os, sys, re
 import shutil
 
 
 
 def printf(str, *args):
-    '''wrapper for Python 2.x and 3.x'''
+    '''formatted print without automatic newline'''
     print(str % args, end='')
 
 
@@ -64,7 +62,7 @@ def replicate_tree(source, target):
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2021 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# Coded for both python2 and python3.
-
 '''
 update the copyright date in all NeXus text files
 
@@ -12,7 +10,6 @@ This is the bash command to find all matching lines::
 See copyright text at bottom of this file for example.
 '''
 
-from __future__ import print_function
 import os, sys
 import mimetypes
 import local_utilities
@@ -171,7 +168,7 @@ if __name__ == '__main__':
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2021 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
