@@ -46,7 +46,7 @@ These examples illustrate the use of the NAPI
 .. _Examples.readers:
 
 Code Projects that work with NeXus data files
-################################
+#############################################
 
 The number of tools that read NeXus data files,
 either for general use or to read a specific
