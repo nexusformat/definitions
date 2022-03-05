@@ -701,9 +701,9 @@ plottable data is as follows:
    Open the ``NXdata`` group selected above.
    If it has an attribute ``signal``, then its value
    is the name of the field (dataset) to be plotted.
-   If no ``signal`` attribute is not present on the 
-   ``NXdata`` group, then proceed to try an 
-   :ref:`older NeXus method<Find-Plottable-Data-v2>` 
+   If no ``signal`` attribute is present on the
+   ``NXdata`` group, then proceed to try an
+   :ref:`older NeXus method<Find-Plottable-Data-v2>`
    to find the default plottable data.
 
    .. compound::
