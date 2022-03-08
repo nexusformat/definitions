@@ -3,9 +3,8 @@
 * Documentation: https://manual.nexusformat.org/
 * Release Notes: https://github.com/nexusformat/definitions/wiki/Release-Notes
 * License: [![License](https://img.shields.io/badge/License-LGPL_v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
-* Continuous Integration: [![Syntax Checking](https://github.com/nexusformat/definitions/actions/workflows/syntax-checks.yml/badge.svg)](https://github.com/nexusformat/definitions/actions/workflows/syntax-checks.yml) [![Travis CI Status](https://travis-ci.org/nexusformat/definitions.svg)](https://travis-ci.org/nexusformat/definitions)
+* Continuous Integration: [![Syntax Checking](https://github.com/nexusformat/definitions/actions/workflows/syntax-checks.yml/badge.svg)](https://github.com/nexusformat/definitions/actions/workflows/syntax-checks.yml)
 * Continuous Deployment: [![Publish Documentation](https://github.com/nexusformat/definitions/actions/workflows/publish-sphinx.yml/badge.svg)](https://github.com/nexusformat/definitions/actions/workflows/publish-sphinx.yml)
-* Build Server: http://build.nexusformat.org/
 
 These are the components that define the structure of NeXus data files 
 in the development directory.
