@@ -555,7 +555,7 @@ NeXus Data Units
 Given the plethora of possible applications of NeXus, it is difficult to
 define units to use. Therefore, the general rule is that you are free to
 store data in any unit you find fit. However, any field must have a
-units attribute which describes the units, Wherever possible, SI units are
+units attribute which describes the units. Wherever possible, SI units are
 preferred. NeXus units are written as a string attribute (``NX_CHAR``)
 and describe the engineering units. The string
 should be appropriate for the value.
