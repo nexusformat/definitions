@@ -84,10 +84,10 @@ We developed two classes that are common to other techniques:
 
 .. _ExtendedBC:
 
-Extended Base Classes
-#######################
+Base Classes Extended in Application Definitions
+###################################################
 
-We added descriptors to existing NeXus base classes:
+We use existent base classes in application definitions and add descriptors:
 
     :ref:`NXaperture`
        Added fileds to describe analyser apertures and slits.

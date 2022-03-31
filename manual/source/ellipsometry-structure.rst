@@ -50,10 +50,10 @@ We created one application definition:
 
 .. _ExtendedBC:
 
-Extended Base Classes
-#######################
+Base Classes Extended in Application Definitions
+###################################################
 
-We added descriptors to existing NeXus base classes:
+We use existent base classes in application definitions and add descriptors:
 
     :ref:`NXinstrument`
        Added fields to add information that is important for an ellipsometry setup, such as the ellipsometer type, the light source, the type of the sample stage, or the angle(s) of incidence, as well as information on calibration, focussing probes, data correction etc. 
