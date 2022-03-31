@@ -106,6 +106,6 @@ We use existent base classes in application definitions and add descriptors:
 
     :ref:`NXsample`
        Added descriptors specific to photoemission experiments.
-       
+
     :ref:`NXsource`
        Added descriptors for laboratory sources (X-ray, UV lamps) but mostly for ultrafat lasers with complex time structures.

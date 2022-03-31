@@ -58,4 +58,4 @@ We developed entirely new base classes:
 New Common Base Classes
 #######################
 
-We support the proposal of our colleagues from photoemission spectroscopy that the :ref:`NXlens_em`, :ref:`NXlens`, and :ref:`NXxraylens have similarities. It should be discussed with the NIAC if these classes can be consolidated/harmonized further e.g. eventually become a child class of a more general base class lenses.
+We support the proposal of our colleagues from photoemission spectroscopy that the :ref:`NXlens_em`, :ref:`NXlens`, and :ref:`NXxraylens` have similarities. It should be discussed with the NIAC if these classes can be consolidated/harmonized further e.g. eventually become a child class of a more general base class lenses.
