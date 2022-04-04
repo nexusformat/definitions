@@ -1,9 +1,10 @@
 * NeXus: https://www.nexusformat.org/
-* citation: [![DOI](https://zenodo.org/badge/19377430.svg)](https://zenodo.org/badge/latestdoi/19377430) (DOI: 10.5281/zenodo.1472392)
-* documentation: https://manual.nexusformat.org/
+* Citation: [![Zenodo DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.1472392.svg)](https://doi.org/10.5281/zenodo.1472392)
+* Documentation: https://manual.nexusformat.org/
 * Release Notes: https://github.com/nexusformat/definitions/wiki/Release-Notes
-* build server: http://build.nexusformat.org/
-* travis-ci: syntax check of every NXDL file [![Build Status](https://travis-ci.org/nexusformat/definitions.svg)](https://travis-ci.org/nexusformat/definitions)
+* License: [![License](https://img.shields.io/badge/License-LGPL_v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
+* Continuous Integration: [![Syntax Checking](https://github.com/nexusformat/definitions/actions/workflows/syntax-checks.yml/badge.svg)](https://github.com/nexusformat/definitions/actions/workflows/syntax-checks.yml)
+* Continuous Deployment: [![Publish Documentation](https://github.com/nexusformat/definitions/actions/workflows/publish-sphinx.yml/badge.svg)](https://github.com/nexusformat/definitions/actions/workflows/publish-sphinx.yml)
 
 These are the components that define the structure of NeXus data files 
 in the development directory.
