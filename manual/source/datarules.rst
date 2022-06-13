@@ -764,20 +764,18 @@ plottable data is as follows:
 
 
 When all the ``default`` and ``signal`` attributes are present, this
-Python code will identify directly the default plottable data
+Python code example will identify directly the default plottable data
 (assuming a ``plot()`` function has been defined by some code::
 
-    root = h5py.File(hdf5_file_name, "r")
+    group = h5py.File(hdf5_file_name, "r")
 
-    default_nxentry_group_name = root.attrs["default"]
-    nxentry = root[default_nxentry_group_name]
-    # TODO: consider additional NXsubentry group
+    while "default" in group.attrs:
+        child_group_name = group.attrs["default"]
+        group = group[child_group_name]
 
-    default_nxdata_group_name = nxentry.attrs["default"]
-    nxdata = nxentry[default_nxdata_group_name]
-
-    signal_dataset_name = nxdata.attrs["signal"]
-    data = nxdata[signal_dataset_name]
+    # assumes group.attrs["NX_class"] == "NXdata"
+    signal_dataset_name = group.attrs["signal"]
+    data = group[signal_dataset_name]
 
     plot(data)
 
