@@ -1,7 +1,7 @@
-.. _Example-writer_1_3:
+.. _Example-simple_example_write1:
 
-``h5py`` example writing the simplest NeXus data file
-#####################################################
+Write a NeXus HDF5 file
+#######################
 
 In this example, the 1-D scan data will be written into the simplest
 possible NeXus HDF5 data file, containing only the required NeXus components.
@@ -17,14 +17,14 @@ as shown in the next figure.
 
     .. _fig.simple-example-h5py:
 
-    .. figure:: ../../img/ex_writer_1_3.png
+    .. figure:: ../../../img/simple_example_write1.png
         :alt: fig.simple-example-h5py
         :width: 50%
 
         Simple Example
 
 In the :ref:`above figure <fig.simple-example-h5py>`, 
-the data file (``writer_1_3_h5py.hdf5``) contains
+the data file (``simple_example_write1_h5py.hdf5``) contains
 a hierarchy of items, starting with an ``NXentry`` named ``entry``.
 (The full HDF5 path reference, ``/entry`` in this case, is shown to the right of each
 component in the data structure.)  The next ``h5py`` code
@@ -37,11 +37,11 @@ In this example, you can see how the HDF5 file is created, how
 are created, and how :ref:`Design-Attributes` are assigned.
 Note particularly the ``NX_class`` attribute on each HDF5 group that
 describes which of the NeXus :ref:`base.class.definitions` is being used.
-When the next Python program (``writer_1_3_h5py.py``) is run from the
-command line (and there are no problems), the ``writer_1_3_h5py.hdf5``
+When the next Python program (``simple_example_write1_h5py.py``) is run from the
+command line (and there are no problems), the ``simple_example_write1_h5py.hdf5``
 file is generated.
 
-.. literalinclude:: writer_1_3.py
+.. literalinclude:: simple_example_write1.py
     :tab-width: 4
     :linenos:
     :language: python
@@ -51,7 +51,7 @@ the ``h5dump`` command, a command-line tool to print out the
 contents of an HDF5 data file.  With no better tool in place (the
 output is verbose), this is a good tool to investigate what has been
 written to the HDF5 file.  View this output from the command line
-using ``h5dump writer_1_3.hdf5``.  Compare the data contents with
+using ``h5dump simple_example_write1.hdf5``.  Compare the data contents with
 the numbers shown above.  Note that the various HDF5 data types have all been
 decided by the ``h5py`` support package.
 
@@ -61,7 +61,7 @@ decided by the ``h5py`` support package.
           about the software involved.
 
 .. leave this out
-   .. literalinclude:: writer_1_3_h5dump.txt
+   .. literalinclude:: simple_example_write1_h5dump.txt
        :tab-width: 4
        :linenos:
        :language: text
@@ -71,7 +71,7 @@ the :ref:`punx tree <punx>` tool [#]_ was used to
 print out the structure of HDF5 data files.  This tool provides a simplified view
 of the NeXus file.  Here is the output:
 
-.. literalinclude:: writer_1_3_structure.txt
+.. literalinclude:: simple_example_write1_structure.txt
     :tab-width: 4
     :linenos:
     :language: text
@@ -82,15 +82,16 @@ the information density provided by *punx tree*.
 .. [#] *punx tree* : https://punx.readthedocs.io/en/latest/source_code/h5tree.html#how-to-use-h5tree
 
 downloads
-*********
+=========
 
 The Python code and files related to this section may be downloaded from the following table.
 
-=====================================  =============================================
-file                                   description
-=====================================  =============================================
-:download:`writer_1_3.py`              python code to write example *writer_1_3*
-:download:`writer_1_3.hdf5`            NeXus file written by this code
-:download:`writer_1_3_h5dump.txt`      *h5dump* analysis of the NeXus file
-:download:`writer_1_3_structure.txt`   *punx tree* analysis of the NeXus file
-=====================================  =============================================
+================================================  =============================================
+file                                              description
+================================================  =============================================
+:download:`../simple_example.dat`                 2-column ASCII data used in this section
+:download:`simple_example_write1.py`              python code to write example *simple_example_write1*
+:download:`simple_example_write1.hdf5`            NeXus file written by this code
+:download:`simple_example_write1_h5dump.txt`      *h5dump* analysis of the NeXus file
+:download:`simple_example_write1_structure.txt`   *punx tree* analysis of the NeXus file
+================================================  =============================================

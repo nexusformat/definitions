@@ -1,10 +1,9 @@
+"""Reads NeXus HDF5 files using h5py and prints the contents"""
 
-'''Reads NeXus HDF5 files using h5py and prints the contents'''
-
-import h5py    # HDF5 support
+import h5py  # HDF5 support
 
 
-testFiles = ("prj_test.nexus.hdf5",)
+testFiles = ("simple_example_test.nexus.hdf5",)
 
 GROUP_TYPE_MATCH = "<class 'h5py.highlevel.Group'>"
 DATASET_TYPE_MATCH = "<class 'h5py.highlevel.Dataset'>"
@@ -16,18 +15,18 @@ def print_attr(parent, label):
 
 
 def print_child(item, label):
-    print("#" + "-"*40)
+    print("#" + "-" * 40)
     print("%s  %s" % (label, type(item)))
     print_attr(item, label)
-    if (repr(type(item)) == GROUP_TYPE_MATCH):
+    if repr(type(item)) == GROUP_TYPE_MATCH:
         base = label
         if "NX_class" in item.attrs:
             base += ":" + item.attrs["NX_class"]
         for k in item.keys():
             key = "%s/%s" % (base, k)
             print_child(item[k], key)
-    if (repr(type(item)) == DATASET_TYPE_MATCH):
-        #print label, item.value
+    if repr(type(item)) == DATASET_TYPE_MATCH:
+        # print label, item.value
         print(label)
         print("shape:", item.shape)
         print("size:", len(item.shape))
@@ -37,7 +36,7 @@ def print_child(item, label):
 def process(fileName):
     try:
         f = h5py.File(fileName, "r")
-    except:
+    except Exception:
         return False
     print(f.filename)
     print("keys: ", f.keys())
@@ -48,8 +47,8 @@ def process(fileName):
     return True
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     for fileName in testFiles:
-        print("#" + "="*60)
-        if not process( fileName ):
+        print("#" + "=" * 60)
+        if not process(fileName):
             print("Could not open:", fileName)

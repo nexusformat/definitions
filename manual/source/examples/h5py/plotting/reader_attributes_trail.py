@@ -1,7 +1,13 @@
-
+import os
 import h5py
 
-with h5py.File("prj_test.nexus.hdf5", "r") as nx:
+filename = os.path.join(
+    os.path.dirname(__file__),
+    "..",
+    "simple_example_basic",
+    "simple_example_basic.nexus.hdf5",
+)
+with h5py.File(filename, "r") as nx:
     # find the default NXentry group
     nx_entry = nx[nx.attrs["default"]]
     # find the default NXdata group

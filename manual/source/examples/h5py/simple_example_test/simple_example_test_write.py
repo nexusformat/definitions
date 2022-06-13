@@ -1,7 +1,7 @@
-'''Writes a NeXus HDF5 file using h5py'''
+"""Writes a NeXus HDF5 file using h5py"""
 
-import h5py    # HDF5 support
-import time
+import datetime
+import h5py  # HDF5 support
 
 
 RAW_MR_SCAN = """
@@ -39,18 +39,10 @@ RAW_MR_SCAN = """
 """
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     print("Write a NeXus HDF5 file")
-    fileName = "prj_test.nexus.hdf5"
-    tzsecs = abs(time.timezone)
-    if time.timezone < 0:
-        tzhhmm = "+"    # reverse logic, it seems
-    else:
-        tzhhmm = "-"
-    if time.daylight:
-        tzsecs -= 3600
-    tzhhmm += "%02d%02d" % (tzsecs / 3600, (tzsecs % 3600)/60)
-    timestamp = time.strftime("%Y-%m-%dT%H:%M:%S") + tzhhmm
+    fileName = "simple_example_test.nexus.hdf5"
+    timestamp = datetime.datetime.now().astimezone().isoformat()
 
     # prepare the data
     data = {"mr": [], "I00": []}
@@ -69,17 +61,17 @@ if __name__ == '__main__':
     f.attrs["h5py_version"] = h5py.version.version
     f.attrs["file_time"] = timestamp
     f.attrs["file_update_time"] = timestamp
-    f.attrs["default"] = "entry"    # identify default NXentry group
+    f.attrs["default"] = "entry"  # identify default NXentry group
 
     nxentry = f.create_group("entry")
-    nxentry.attrs["NX_class"] = "NXentry"   # identify NeXus base class
-    nxentry.attrs["default"] = "mr_scan"    # identify default NXdata group
+    nxentry.attrs["NX_class"] = "NXentry"  # identify NeXus base class
+    nxentry.attrs["default"] = "mr_scan"  # identify default NXdata group
 
     # store the scan data
     nxdata = nxentry.create_group("mr_scan")
-    nxdata.attrs["NX_class"] = "NXdata"   # identify NeXus base class
-    nxdata.attrs["signal"] = "I00"        # identify default data to plot
-    nxdata.attrs["axes"] = "mr"           # identify default dimension scale to plot
+    nxdata.attrs["NX_class"] = "NXdata"  # identify NeXus base class
+    nxdata.attrs["signal"] = "I00"  # identify default data to plot
+    nxdata.attrs["axes"] = "mr"  # identify default dimension scale to plot
 
     mr = nxdata.create_dataset("mr", data=data["mr"])
     mr.attrs["units"] = "degrees"
@@ -88,14 +80,13 @@ if __name__ == '__main__':
     i00.attrs["units"] = "counts"
 
     # fill in some optional metadata
-    nxentry.create_dataset("title", 
-    	data="APS USAXS instrument MR (alignment) scan")
+    nxentry.create_dataset("title", data="APS USAXS instrument MR (alignment) scan")
     nxentry.create_dataset("start_time", data="2010-04-25T10:20:56-0500")
     nxentry.create_dataset("end_time", data="2010-04-25T10:21:16-0500")
-    nxentry.create_dataset("experiment_identifier", 
-       data="spec file 04_25.dat, scan #8")
-    nxentry.create_dataset("experiment_description", 
-       data="alignment scan of the USAXS collimating optics")
+    nxentry.create_dataset("experiment_identifier", data="spec file 04_25.dat, scan #8")
+    nxentry.create_dataset(
+        "experiment_description", data="alignment scan of the USAXS collimating optics"
+    )
 
     # be CERTAIN to close the file
     f.close()

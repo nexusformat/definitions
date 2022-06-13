@@ -1,8 +1,7 @@
-.. _Example-writer_2_1:
+.. _Example-simple_example_write2:
 
-============================================================
-``h5py`` example writing a simple NeXus data file with links
-============================================================
+Write a NeXus HDF5 file with plottable data
+###########################################
 
 Building on the previous example, we wish to identify our measured data with
 the detector on the instrument where it was generated.
@@ -25,10 +24,10 @@ Links are made from that data to the ``/entry/data`` group.
 
 .. compound::
 
-    .. _fig.writer_2_1:
+    .. _fig.simple_example_write2:
 
-    .. figure:: ../../img/ex_writer_2_1.png
-        :alt: fig.writer_2_1
+    .. figure:: ../../../img/simple_example_write2.png
+        :alt: fig.simple_example_write2
         :width: 80%
 
         h5py example showing linking in a NeXus file
@@ -36,17 +35,17 @@ Links are made from that data to the ``/entry/data`` group.
 The Python code to build an HDF5 data file with that structure (using
 numerical data from the previous example) is shown below.
 
-.. literalinclude:: writer_2_1.py
+.. literalinclude:: simple_example_write2.py
     :tab-width: 4
     :linenos:
     :language: python
 
 It is interesting to compare the output of the ``h5dump``
-of the data file ``writer_2_1.hdf5`` with our Python instructions.
+of the data file ``simple_example_write2.hdf5`` with our Python instructions.
 See the *downloads* section below.
 
 .. leave this out
-   .. literalinclude:: writer_2_1_h5dump.txt
+   .. literalinclude:: simple_example_write2_h5dump.txt
        :tab-width: 4
        :linenos:
        :language: text
@@ -77,22 +76,23 @@ the :ref:`punx tree <punx>` tool knows about the additional NeXus
 ``target`` attribute and shows the data to appear in its original
 location, in the ``NXdetector`` group.
 
-.. literalinclude:: writer_2_1_structure.txt
+.. literalinclude:: simple_example_write2_structure.txt
     :tab-width: 4
     :linenos:
     :language: text
 
 downloads
-*********
+=========
 
 The Python code and files related to this section may be downloaded from the following table.
 
-=====================================  =============================================
-file                                   description
-=====================================  =============================================
-:download:`writer_2_1.py`              python code to write example *writer_2_1*
-:download:`writer_2_1.hdf5`            NeXus file written by this code
-:download:`writer_2_1_h5dump.txt`      *h5dump* analysis of the NeXus file
-:download:`writer_2_1_structure.txt`   *punx tree* analysis of the NeXus file
-=====================================  =============================================
+================================================  =============================================
+file                                              description
+================================================  =============================================
+:download:`../simple_example.dat`                 2-column ASCII data used in this section
+:download:`simple_example_write2.py`              python code to write example *simple_example_write2*
+:download:`simple_example_write2.hdf5`            NeXus file written by this code
+:download:`simple_example_write2_h5dump.txt`      *h5dump* analysis of the NeXus file
+:download:`simple_example_write2_structure.txt`   *punx tree* analysis of the NeXus file
+================================================  =============================================
     
