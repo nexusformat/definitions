@@ -771,6 +771,7 @@ Python code will identify directly the default plottable data
 
     default_nxentry_group_name = root.attrs["default"]
     nxentry = root[default_nxentry_group_name]
+    # TODO: consider additional NXsubentry group
 
     default_nxdata_group_name = nxentry.attrs["default"]
     nxdata = nxentry[default_nxdata_group_name]
