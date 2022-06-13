@@ -664,11 +664,11 @@ plottable data is as follows:
 
 #. Pick the :index:`!default` :ref:`NXentry` group.
 
-   If the *root* has an attribute ``default``, then its value is the name of the
-   ``NXentry`` group to be used.  (The value of the attribute ``default`` must
-   be the name of a child of the current group and that child must be a NeXus group or link
-   to a NeXus group. The value must match the :ref:`regular expression pattern
-   for NXDL group and field names <validItemName>`.) Otherwise, pick any
+   If the *root* has an attribute ``default``, the attribute's value is the name of the
+   ``NXentry`` group to be used.
+   (The value of the ``default`` attribute must :ref:`name <validItemName>` an
+   existing child of this group. The child group must itself be a NeXus group.)
+   If no `default` attribute exists, pick any
    ``NXentry`` group.  This is trivial if there is only one ``NXentry`` group.
 
    .. compound::
@@ -684,12 +684,11 @@ plottable data is as follows:
 #. Pick the default :ref:`NXdata` group.
 
    Open the ``NXentry`` group selected above. If it has an attribute
-   ``default``, then its value is the name of the ``NXdata`` group to be used.
-   (The value of the attribute ``default`` must be the name of a child of the current group
-   and that child must be a NeXus group or link to a NeXus group. The value must
-   match the :ref:`regular expression pattern for NXDL group and field names
-   <validItemName>`.) Otherwise, pick any ``NXdata`` group. This is trivial if
-   there is only one ``NXdata`` group.
+   ``default``, the attribute's value is the name of the ``NXdata`` group to be used.
+   (The value of the ``default`` attribute must :ref:`name <validItemName>` an
+   existing child of this group. The child group must itself be a NeXus group.)
+   If no `default` attribute exists, pick any ``NXdata`` group. This is trivial
+   if there is only one ``NXdata`` group.
 
    .. compound::
 
@@ -705,12 +704,11 @@ plottable data is as follows:
 
 #. Pick the default plottable field (the *signal* data).
 
-   Open the ``NXdata`` group selected above. If it has an attribute ``signal``,
-   then its value is the name of the field (dataset) to be plotted. (The value
-   of the attribute ``signal`` must be the name of a child of the current group and that
-   child must be a NeXus field or link to a NeXus field. The value must match
-   the :ref:`regular expression pattern for NXDL group and field names
-   <validItemName>`.) If no ``signal`` attribute is present on the ``NXdata``
+   Open the ``NXdata`` group selected above. If it has a ``signal`` attribute,
+   the attribute's value is the name of the field (dataset) to be plotted.
+   (The value of the ``signal`` attribute must :ref:`name <validItemName>` an
+   existing child of this group. The child group must itself be a NeXus field.)
+   If no ``signal`` attribute is present on the ``NXdata``
    group, then proceed to try an :ref:`older NeXus
    method<Find-Plottable-Data-v2>` to find the default plottable data.
 
