@@ -27,7 +27,7 @@ Please be aware that not all examples are up to date with the latest format reco
 
    code_native
    h5py/index
-   nexpy
+   nexusformat/index
    matlab/index
 
 Code Examples for Specific Instruments
