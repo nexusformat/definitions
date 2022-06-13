@@ -1,11 +1,10 @@
-import os
+from pathlib import Path
 import h5py
 
-filename = os.path.join(
-    os.path.dirname(__file__),
-    "..",
-    "simple_example_basic",
-    "simple_example_basic.nexus.hdf5",
+filename = str(
+    Path(__file__).parent.parent
+    / "simple_example_basic"
+    / "simple_example_basic.nexus.hdf5"
 )
 with h5py.File(filename, "r") as nx:
     # find the default NXentry group

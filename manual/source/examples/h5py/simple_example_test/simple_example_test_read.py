@@ -38,12 +38,14 @@ def process(fileName):
         f = h5py.File(fileName, "r")
     except Exception:
         return False
-    print(f.filename)
-    print("keys: ", f.keys())
-    print_attr(f, "f")
-    for k in f.keys():
-        print_child(f[k], "%s://%s" % (fileName, k))
-    f.close()
+    try:
+        print(f.filename)
+        print("keys: ", f.keys())
+        print_attr(f, "f")
+        for k in f.keys():
+            print_child(f[k], "%s://%s" % (fileName, k))
+    finally:
+        f.close()
     return True
 
 
