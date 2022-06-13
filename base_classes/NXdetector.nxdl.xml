@@ -31,13 +31,15 @@
             >
 
   <symbols>
-    <doc>These symbols will be used below to illustrate the coordination of the shapes of datasets and the 
-	    preferred ordering of the dimensions. Each of these are optional (so the rank of the datasets 
-	    will vary according to the situation) and the general ordering principle is slowest to fastest.</doc>
-    <symbol name="np"><doc>number of scan points (only present in scanning measurements)</doc></symbol>
+    <doc>These symbols will be used below to illustrate the coordination of the rank and sizes of datasets and the 
+	  preferred ordering of the dimensions. Each of these are optional (so the rank of the datasets 
+	  will vary according to the situation) and the general ordering principle is slowest to fastest.
+	  The type of each dimension should follow the order of scan points, detector pixels,
+	  then time-of-flight (i.e. spectroscopy, spectrometry).</doc>
+	  
+    <symbol name="nP"><doc>number of scan points (only present in scanning measurements)</doc></symbol>
     <symbol name="i"><doc>number of detector pixels in the first (slowest) direction</doc></symbol>
     <symbol name="j"><doc>number of detector pixels in the second (faster) direction</doc></symbol>
-    <symbol name="k"><doc>number of detector pixels in the third (if necessary, fastest) direction</doc></symbol>
     <symbol name="tof"><doc>number of bins in the time-of-flight histogram</doc></symbol>
   </symbols>
 
@@ -92,12 +94,14 @@
 
   <field name="data" type="NX_NUMBER" units="NX_ANY">
     <doc>Data values from the detector. The rank and dimension ordering should follow a principle of
-	  slowest to fastest measurement axes and may be explicitly specified in the application definitions.
+	  slowest to fastest measurement axes and may be explicitly specified in application definitions.
 	  The type of each dimension should should follow the order of scan points, detector pixels 
-	  (slowest readout to fastest readout), time-of-flight (i.e.spectroscopy, spectrometry).</doc>
+	  (slowest readout to fastest readout), then time-of-flight (i.e. spectroscopy, spectrometry).
+	  The rank and dimension sizes (see symbol list) shown here are merely illustrative of coordination
+	  between related datasets.</doc>
 
     <dimensions rank="4">
-      <dim index="1" value="np" />
+      <dim index="1" value="nP" />
       <dim index="2" value="i" />
       <dim index="3" value="j" />
       <dim index="4" value="tof" />
@@ -115,13 +119,13 @@
 
   <field name="data_errors" type="NX_NUMBER" units="NX_ANY">
     <doc>
-      The best estimate of the uncertainty in the data value. Where
+      The best estimate of the uncertainty in the data value (array size should match the data field). Where
       possible, this should be the standard deviation, which has the same units
       as the data. The form data_error is deprecated.
     </doc>
 
     <dimensions rank="4">
-      <dim index="1" value="np" />
+      <dim index="1" value="nP" />
       <dim index="2" value="i" />
       <dim index="3" value="j" />
       <dim index="4" value="tof" />
@@ -152,6 +156,11 @@
     <attribute name="long_name">
       <doc>x-axis offset from detector center</doc>
     </attribute>
+
+    <dimensions rank="2">
+      <dim index="1" value="i" />
+      <dim index="2" value="j" />
+    </dimensions>
   </field>
 
   <field name="y_pixel_offset" type="NX_FLOAT" units="NX_LENGTH">
@@ -177,6 +186,11 @@
     <attribute name="long_name">
       <doc>y-axis offset from detector center</doc>
     </attribute>
+
+    <dimensions rank="2">
+      <dim index="1" value="i" />
+      <dim index="2" value="j" />
+    </dimensions>
   </field>
 
 
@@ -203,6 +217,11 @@
     <attribute name="long_name">
       <doc>y-axis offset from detector center</doc>
     </attribute>
+
+    <dimensions rank="2">
+      <dim index="1" value="i" />
+      <dim index="2" value="j" />
+    </dimensions>
   </field>
 
   <field name="distance" type="NX_FLOAT" units="NX_LENGTH">
@@ -215,7 +234,7 @@
     </doc>
 
     <dimensions rank="3">
-      <dim index="1" value="np" />
+      <dim index="1" value="nP" />
       <dim index="2" value="i" />
       <dim index="3" value="j" />
     </dimensions>
@@ -234,7 +253,7 @@
     </doc>
 
     <dimensions rank="3">
-      <dim index="1" value="np" />
+      <dim index="1" value="nP" />
       <dim index="2" value="i" />
       <dim index="3" value="j" />
     </dimensions>
@@ -253,7 +272,7 @@
     </doc>
 
     <dimensions rank="3">
-      <dim index="1" value="np" />
+      <dim index="1" value="nP" />
       <dim index="2" value="i" />
       <dim index="3" value="j" />
     </dimensions>
@@ -308,7 +327,7 @@
     <doc>Detector dead time</doc>
 
     <dimensions rank="3">
-      <dim index="1" value="np" />
+      <dim index="1" value="nP" />
       <dim index="2" value="i" />
       <dim index="3" value="j" />
     </dimensions>
@@ -401,10 +420,9 @@
     <field name="efficiency" type="NX_FLOAT" units="NX_DIMENSIONLESS">
       <doc>efficiency of the detector</doc>
 
-      <dimensions rank="3">
+      <dimensions rank="2">
         <dim index="1" value="i" />
         <dim index="2" value="j" />
-        <dim index="3" value="k" />
       </dimensions>
     </field>
 
@@ -423,10 +441,9 @@
            have the same dimensionality.
       </doc>
 
-      <dimensions rank="3">
+      <dimensions rank="2">
         <dim index="1" value="i" />
         <dim index="2" value="j" />
-        <dim index="3" value="k" />
       </dimensions>
     </field>
   </group>
@@ -443,7 +460,7 @@
       the rank of this field should be less than or equal to (detector rank + 1).
     </doc>
     <dimensions rank="3">
-      <dim index="1" value="np" />
+      <dim index="1" value="nP" />
       <dim index="2" value="i" />
       <dim index="3" value="j" />
     </dimensions>
@@ -452,14 +469,14 @@
   <field name="start_time" type="NX_FLOAT" units="NX_TIME">
     <doc>start time for each frame, with the ``start`` attribute as absolute reference</doc>
     <dimensions rank="1">
-       <dim index="1" value="np"/>
+       <dim index="1" value="nP"/>
     </dimensions>
     <attribute name="start" type="NX_DATE_TIME" />
   </field>
   <field name="stop_time" type="NX_FLOAT" units="NX_TIME">
     <doc>stop time for each frame, with the ``start`` attribute as absolute reference</doc>
     <dimensions rank="1">
-      <dim index="1" value="np"/>
+      <dim index="1" value="nP"/>
     </dimensions>
     <attribute name="start" type="NX_DATE_TIME" />
   </field>
@@ -491,7 +508,7 @@
     <doc>Elapsed actual counting time</doc>
 
     <dimensions rank="1">
-      <dim index="1" value="np" />
+      <dim index="1" value="nP" />
     </dimensions>
   </field>
 
@@ -511,6 +528,7 @@
     </doc>
 
     <dimensions rank="1">
+      <!-- TODO: Should this be nP, or should the symbol be added to the list -->
       <dim index="1" value="nBrightFrames" />
     </dimensions>
   </field>
@@ -535,7 +553,7 @@
 
   <field name="frame_start_number" type="NX_INT">
     <doc>
-      This is the start number of the first frame of a scan. In PX one
+      This is the start number of the first frame of a scan. In protein crystallography measurements one
       often scans a couple of frames on a give sample, then does something else,
       then returns to the same sample and scans some more frames. Each time with
       a new data file. This number helps concatenating such measurements.
@@ -706,7 +724,7 @@
      This is time for each frame. This is exposure_time + readout time.
    </doc>
    <dimensions rank="1">
-      <dim index="1" value="NP" />
+      <dim index="1" value="nP" />
     </dimensions>
   </field>
   <field name="gain_setting" type="NX_CHAR">
