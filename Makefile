@@ -11,9 +11,6 @@ SUBDIRS = manual impatient-guide
 
 subdirs: $(SUBDIRS)
 
-#$(SUBDIRS):
-#	$(MAKE) -C $@
-
 manual :: nxdl2rst
 	$(MAKE) html -C $@
 
@@ -38,7 +35,9 @@ impatient-guide ::
 #	$(MAKE) latexpdf -C $(SUBDIRS)
 
 clean:
-	$(MAKE) clean -C $(SUBDIRS)
+	for dir in $(SUBDIRS); do \
+	    $(MAKE) -C $$dir clean; \
+	done
 
 nxdl2rst:
 	$(MAKE) -C manual/source
