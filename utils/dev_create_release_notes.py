@@ -17,7 +17,7 @@ with open(CREDS_FILE, "r") as cf:
 from create_release_notes import main
 main(
     base="v2018.5", 
-    head="master", 
+    head="main", 
     milestone="NXDL 2020.1", 
     token=token,
     debug=True)
