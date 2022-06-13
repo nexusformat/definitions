@@ -8,8 +8,7 @@ import os
 import sys
 import unittest
 import lxml.etree
-from six import with_metaclass
-from six import StringIO
+from io import StringIO
 
 import nxdl2rst
 

@@ -1,7 +1,6 @@
 '''Writes a NeXus HDF5 file using h5py'''
 
 import h5py    # HDF5 support
-import six
 import time
 
 
@@ -54,49 +53,49 @@ if __name__ == '__main__':
     timestamp = time.strftime("%Y-%m-%dT%H:%M:%S") + tzhhmm
 
     # prepare the data
-    data = {u"mr": [], u"I00": []}
+    data = {"mr": [], "I00": []}
     buffer = RAW_MR_SCAN.strip().split("\n")
     for row in buffer:
         (x, y) = row.split()
-        data[u"mr"].append(float(x))
-        data[u"I00"].append(float(y))
+        data["mr"].append(float(x))
+        data["I00"].append(float(y))
 
     # create the HDF5 NeXus file
     f = h5py.File(fileName, "w")
-    f.attrs[u"file_name"] = fileName
-    f.attrs[u"creator"] = "Pete R. Jemian <jemian@anl.gov> using h5py"
-    f.attrs[u"HDF5_Version"] = six.u()h5py.version.hdf5_version
-    f.attrs[u"NeXus_version"] = u"4.2.1"
-    f.attrs[u"h5py_version"] = six.u(h5py.version.version)
-    f.attrs[u"file_time"] = six.u(timestamp)
-    f.attrs[u"file_update_time"] = six.u(timestamp)
-    f.attrs[u"default"] = u"entry"    # identify default NXentry group
+    f.attrs["file_name"] = fileName
+    f.attrs["creator"] = "Pete R. Jemian <jemian@anl.gov> using h5py"
+    f.attrs["HDF5_Version"] = h5py.version.hdf5_version
+    f.attrs["NeXus_version"] = "4.2.1"
+    f.attrs["h5py_version"] = h5py.version.version
+    f.attrs["file_time"] = timestamp
+    f.attrs["file_update_time"] = timestamp
+    f.attrs["default"] = "entry"    # identify default NXentry group
 
-    nxentry = f.create_group(u"entry")
-    nxentry.attrs[u"NX_class"] = u"NXentry"   # identify NeXus base class
-    nxentry.attrs[u"default"] = u"mr_scan"    # identify default NXdata group
+    nxentry = f.create_group("entry")
+    nxentry.attrs["NX_class"] = "NXentry"   # identify NeXus base class
+    nxentry.attrs["default"] = "mr_scan"    # identify default NXdata group
 
     # store the scan data
-    nxdata = nxentry.create_group(u"mr_scan")
-    nxdata.attrs[u"NX_class"] = u"NXdata"   # identify NeXus base class
-    nxdata.attrs[u"signal"] = u"I00"        # identify default data to plot
-    nxdata.attrs[u"axes"] = u"mr"           # identify default dimension scale to plot
+    nxdata = nxentry.create_group("mr_scan")
+    nxdata.attrs["NX_class"] = "NXdata"   # identify NeXus base class
+    nxdata.attrs["signal"] = "I00"        # identify default data to plot
+    nxdata.attrs["axes"] = "mr"           # identify default dimension scale to plot
 
-    mr = nxdata.create_dataset(u"mr", data=data[u"mr"])
-    mr.attrs[u"units"] = u"degrees"
+    mr = nxdata.create_dataset("mr", data=data["mr"])
+    mr.attrs["units"] = "degrees"
 
-    i00 = nxdata.create_dataset(u"I00", data=data[u"I00"])
-    i00.attrs[u"units"] = u"counts"
+    i00 = nxdata.create_dataset("I00", data=data["I00"])
+    i00.attrs["units"] = "counts"
 
     # fill in some optional metadata
-    nxentry.create_dataset(u"title", 
-    	data=u"APS USAXS instrument MR (alignment) scan")
-    nxentry.create_dataset(u"start_time", data=u"2010-04-25T10:20:56-0500")
-    nxentry.create_dataset(u"end_time", data=u"2010-04-25T10:21:16-0500")
-    nxentry.create_dataset(u"experiment_identifier", 
-       data=u"spec file 04_25.dat, scan #8")
-    nxentry.create_dataset(u"experiment_description", 
-       data=u"alignment scan of the USAXS collimating optics")
+    nxentry.create_dataset("title", 
+    	data="APS USAXS instrument MR (alignment) scan")
+    nxentry.create_dataset("start_time", data="2010-04-25T10:20:56-0500")
+    nxentry.create_dataset("end_time", data="2010-04-25T10:21:16-0500")
+    nxentry.create_dataset("experiment_identifier", 
+       data="spec file 04_25.dat, scan #8")
+    nxentry.create_dataset("experiment_description", 
+       data="alignment scan of the USAXS collimating optics")
 
     # be CERTAIN to close the file
     f.close()

@@ -26,7 +26,7 @@ in the :ref:`NAPI <NAPI>` chapter and may be downloaded
 from the NeXus development site. [#]_
 
 For an even more detailed description of the internal workings of NAPI
-see the `NeXus Internals manual <https://manual.nexusformat.org/pdf/NeXusIntern.pdf>`_, copied from the NeXus code repository.
+see the `NeXus Internals manual <https://manual.nexusformat.org/_static/NeXusIntern.pdf>`_, copied from the NeXus code repository.
 That document is written for programmers who want to work on the NAPI itself.
 If you are new to NeXus and just want to implement basic file reading or writing
 you should not start by reading that.

@@ -8,7 +8,6 @@ import os
 import sys
 import unittest
 import lxml.etree
-from six import with_metaclass
 
 # xmllint --noout --schema nxdl.xsd base_classes/NXentry.nxdl.xml 
 # base_classes/NXentry.nxdl.xml validates
@@ -91,8 +90,7 @@ class TestMaker(type):
             self.assertRaises(NXDL_Valid, validate_xml, nxdl_file_name)
         return test_wrap
 
-
-class Individual_NXDL_Tests(with_metaclass(TestMaker, unittest.TestCase)):
+class Individual_NXDL_Tests(unittest.TestCase, metaclass=TestMaker):
     '''
     run all tests created in TestMaker() class, called by suite()
     '''

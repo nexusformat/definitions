@@ -10,6 +10,7 @@ the NXDL chapter.
 
 import os, sys
 import lxml.etree
+import textwrap
 
 
 TITLE_MARKERS = '- + ~ ^ * @'.split()  # used for underscoring section titles
@@ -209,7 +210,7 @@ DATATYPE_POSTAMBLE = '''
 def _tagMatch(ns, parent, match_list):
     '''match this tag to a list'''
     if parent is None:
-        raise "Must supply a valid parent node"
+        raise ValueError("Must supply a valid parent node")
     parent_tag = parent.tag
     tag_found = False
     for item in match_list:
@@ -335,7 +336,7 @@ def applyTemplates(ns, parent, path, indentLevel, handler=generalHandler):
             if name in ('nx:groupGroup',):
                 print(">"*45, name)
             if name in db:
-                raise "Duplicate name found: " + name
+                raise KeyError("Duplicate name found: " + name)
             db[name] = node
     for name in sorted(db):
         node = db[name]
@@ -353,37 +354,20 @@ def printDocs(ns, parent, indentLevel=0):
 
 
 def getDocFromNode(ns, node, retval=None):
-    docnodes = node.xpath('xs:annotation/xs:documentation', namespaces=ns)
-    if docnodes == None:
+    annotation_node = node.find('xs:annotation', ns)
+    if annotation_node is None:
         return retval
-    if not len(docnodes) == 1:
+    documentation_node = annotation_node.find('xs:documentation', ns)
+    if documentation_node is None:
         return retval
     
-    # be sure to grab _all_ content in the documentation
-    # it might look like XML
-    s = lxml.etree.tostring(docnodes[0], pretty_print=True)
-    p1 = s.decode().find('>')+1
-    p2 = s.decode().rfind('</')
-    text = s[p1:p2].decode().lstrip('\n')    # cut off the enclosing tag
-    
-    lines = text.splitlines()
-    if len(lines) > 1:
-        indent0 = len(lines[0]) - len(lines[0].lstrip())
-        indent1 = len(lines[1]) - len(lines[1].lstrip())
-        if len(lines) > 2:
-            indent2 = len(lines[2]) - len(lines[2].lstrip())
-        else:
-            indent2 = 0
-        if indent0 == 0:
-            indent = max(indent1, indent2)
-            text = lines[0]
-        else:
-            indent = indent0
-            text = lines[0][indent:]
-        for line in lines[1:]:
-            if not len(line[:indent].strip()) == 0:
-                raise "Something wrong with indentation on this line:\n" + line
-            text += '\n' + line[indent:]
+    # Be sure to grab _all_ content in the <xs:documentation> node.
+    # In the documentation nodes, use XML entities ("&lt;"" instead of "<")
+    # for documentation characters that would otherwise be considered as XML.
+    s = lxml.etree.tostring(documentation_node, method="text", pretty_print=True)
+    rst = s.decode().lstrip('\n')  # remove any leading blank lines
+    rst = rst.rstrip()  # remove any trailing white space
+    text = textwrap.dedent(rst)  # remove common leading space
 
     # substitute HTML entities in markup: "<" for "&lt;"
     # thanks: http://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
@@ -391,7 +375,7 @@ def getDocFromNode(ns, node, retval=None):
         import html
         text = html.unescape(text)
     except (ImportError, AttributeError):
-        from six.moves import html_parser as HTMLParser
+        from html import parser as HTMLParser
         htmlparser = HTMLParser.HTMLParser()
         text = htmlparser.unescape(text)
 
@@ -411,13 +395,14 @@ def addFigure(name, indentLevel=0):
         Graphical representation of the NXDL ``%s`` element
 
     .. Images of NXDL structure are generated from nxdl.xsd source
-        using the oXygen XML Editor.  Open the nxdl.xsd file and choose the
-        "Design" tab.  Identify the structure to be documented and expand
-        as needed to show the detail.  Right click and select "Save as Image ..."
-        Set the name: "nxdl_%s.jpg" and move the file into the correct location using
+        using the Eclipse XML Schema Editor (Web Tools Platform).  Open the nxdl.xsd file and choose the
+        "Design" tab.  Identify the structure to be documented and double-click to expand
+        as needed to show the detail.  Use the XSD > "Export Diagram as Image ..." menu item (also available
+        as button in top toolbar).
+        Set the name: "nxdl_%s.png" and move the file into the correct location using
         your operating system's commands.  Commit the revision to version control.
     '''
-    imageFile = 'img/nxdl/nxdl_%s.jpg' % name
+    imageFile = 'img/nxdl/nxdl_%s.png' % name
     figure_id = 'fig.nxdl_%s' % name
     if not os.path.exists(os.path.abspath(imageFile)):
         return
@@ -480,7 +465,8 @@ if __name__ == '__main__':
     developermode = True
     developermode = False
     if developermode and len(sys.argv) != 2:
-        NXDL_SCHEMA_FILE = os.path.join('..', 'nxdl.xsd')
+        path = os.path.dirname(__file__)
+        NXDL_SCHEMA_FILE = os.path.join(path, '..', 'nxdl.xsd')
     else:
         if len(sys.argv) != 2:
             print("usage: %s nxdl.xsd" % sys.argv[0])
@@ -499,7 +485,7 @@ if __name__ == '__main__':
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2021 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
