@@ -666,7 +666,7 @@ plottable data is as follows:
 
    If the *root* has an attribute ``default``, the attribute's value is the name of the
    ``NXentry`` group to be used.
-   (The value of the ``default`` attribute must :ref:`name <validItemName>` an
+   (The value of the ``default`` attribute :ref:`names <validItemName>` an
    existing child of this group. The child group must itself be a NeXus group.)
    If no `default` attribute exists, pick any
    ``NXentry`` group.  This is trivial if there is only one ``NXentry`` group.
@@ -685,7 +685,7 @@ plottable data is as follows:
 
    Open the ``NXentry`` group selected above. If it has an attribute
    ``default``, the attribute's value is the name of the ``NXdata`` group to be used.
-   (The value of the ``default`` attribute must :ref:`name <validItemName>` an
+   (The value of the ``default`` attribute :ref:`names <validItemName>` an
    existing child of this group. The child group must itself be a NeXus group.)
    If no `default` attribute exists, pick any ``NXdata`` group. This is trivial
    if there is only one ``NXdata`` group.
@@ -706,7 +706,7 @@ plottable data is as follows:
 
    Open the ``NXdata`` group selected above. If it has a ``signal`` attribute,
    the attribute's value is the name of the field (dataset) to be plotted.
-   (The value of the ``signal`` attribute must :ref:`name <validItemName>` an
+   (The value of the ``signal`` attribute :ref:`names <validItemName>` an
    existing child of this group. The child group must itself be a NeXus field.)
    If no ``signal`` attribute is present on the ``NXdata``
    group, then proceed to try an :ref:`older NeXus
