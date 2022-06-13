@@ -1,5 +1,3 @@
-.. index:: !EPICS; examples
-
 .. _EPICS_Area_Detector.examples.HDF5:
 
 EPICS Area Detector Examples

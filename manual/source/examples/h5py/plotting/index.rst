@@ -46,9 +46,6 @@ Output from ``reader_attributes_trail.py`` is shown next.
 Plotting the HDF5 file
 ======================
 
-.. index:: 
-	NeXpy
-
 Now that we are certain our file conforms to the NeXus
 standard, let's plot it using the ``NeXpy`` [#]_
 client tool.  To help label the plot, we added the

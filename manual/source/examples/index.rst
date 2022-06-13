@@ -22,12 +22,12 @@ Please be aware that not all exmples are up to date with the latest format recom
 
 .. toctree::
    :maxdepth: 1
-   
+
    code_native
    h5py/index
    matlab/index
    lrmecs/index
-   epics/index
+   epics
 
 .. _Examples.NAPI:
 

@@ -1,3 +1,5 @@
+.. index:: !LRMECS; examples
+
 .. _Example-Viewing-LRMECS-Data:
 
 Viewing 2-D Data from LRMECS

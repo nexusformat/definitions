@@ -1,4 +1,4 @@
-.. index:: h5py
+.. index:: h5py; examples
 
 .. _Example-H5py:
 
@@ -19,6 +19,19 @@ since these examples are meant for those who are unfamiliar with NeXus.
 
 .. [#] *h5py*: https://www.h5py.org/
 .. [#] *SPEC*: http://certif.com/spec.html
+
+Code examples
+=============
+
+.. toctree::
+	:maxdepth: 1
+
+	simple_example_basic/index
+	simple_example_write1/index
+	simple_example_write2/index
+	external_example_write/index
+	plotting/index
+	epics/index
 
 Example data used
 =================
@@ -56,15 +69,3 @@ chapter except that the names will be different, as shown below:
 	    :tab-width: 4
 	    :linenos:
 	    :language: text
-
-Code examples
-=============
-
-.. toctree::
-	:maxdepth: 1
-	
-	simple_example_basic/index
-	simple_example_write1/index
-	simple_example_write2/index
-	external_example_write/index
-	plotting/index
