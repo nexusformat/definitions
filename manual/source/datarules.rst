@@ -180,7 +180,8 @@ alphabetically on the common name. So, in this example:
 
 .. rubric:: Reserved prefixes
 
-When naming a field, NeXus has reserved certain prefixes to the names to
+When naming an attribute, field, or group,
+NeXus has reserved certain prefixes to the names to
 ensure that names written in NeXus files will not conflict with future
 releases as the NeXus standard evolves. Prefixes should follow a naming
 scheme of uppercase letters followed by an underscore, but exceptions
@@ -191,24 +192,26 @@ the prefixes reserved by NeXus.
     reserved prefixes; NX
     reserved prefixes; NX_
     reserved prefixes; BLUESKY_
+    reserved prefixes; DECTRIS_
     reserved prefixes; IDF_
     reserved prefixes; NDAttr
     reserved prefixes; PDBX_
     reserved prefixes; SAS_
     reserved prefixes; SILX_
 
-============  ==========  ==========================================  ===============================
-prefix 	      use 	    meaning 	                                URL
-============  ==========  ==========================================  ===============================
-``BLUESKY_``  attributes  reserved for use by Bluesky project 	      https://blueskyproject.io
-``IDF_``      attributes  reserved for use by ISIS Muon Facility      https://www.isis.stfc.ac.uk
-``NDAttr``    attributes  reserved for use by EPICS area detector     https://github.com/areaDetector
-``NX``        NXDL class  for the class names used with NeXus groups  https://www.nexusformat.org
-``NX_``       attributes  reserved for use by NeXus 	              https://www.nexusformat.org
-``PDBX_``     attributes  reserved for the US protein data bank       https://www.rcsb.org
-``SAS_``      attributes  reserved for use by canSAS 	              http://www.cansas.org
-``SILX_``     attributes  reserved for use by silx 	              https://www.silx.org
-============  ==========  ==========================================  ===============================
+============  ==================  ==========================================  ===============================
+prefix        use                 meaning                                       URL
+============  ==================  ============================================  =============================================================
+``BLUESKY_``  attributes          reserved for use by Bluesky project           https://blueskyproject.io
+``DECTRIS_``  attributes, fields  reserved for use by Dectris                   https://www.dectris.com
+``IDF_``      attributes          reserved for use by pulsedTD Muon definition  https://www.isis.stfc.ac.uk/Pages/nexus-definition-v27924.pdf
+``NDAttr``    attributes          reserved for use by EPICS area detector       https://github.com/areaDetector
+``NX``        NXDL class          for the class names used with NeXus groups    https://www.nexusformat.org
+``NX_``       attributes          reserved for use by NeXus                     https://www.nexusformat.org
+``PDBX_``     attributes          reserved for the US protein data bank         https://www.rcsb.org
+``SAS_``      attributes          reserved for use by canSAS                    https://www.cansas.org
+``SILX_``     attributes          reserved for use by silx                      https://www.silx.org
+============  ==================  ============================================  =============================================================
 
 .. index:: ! reserved suffixes
 
@@ -555,7 +558,7 @@ NeXus Data Units
 Given the plethora of possible applications of NeXus, it is difficult to
 define units to use. Therefore, the general rule is that you are free to
 store data in any unit you find fit. However, any field must have a
-units attribute which describes the units, Wherever possible, SI units are
+units attribute which describes the units. Wherever possible, SI units are
 preferred. NeXus units are written as a string attribute (``NX_CHAR``)
 and describe the engineering units. The string
 should be appropriate for the value.

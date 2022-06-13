@@ -25,7 +25,7 @@ def write_nexus_file(fname, image, md={}):
 	# /entry
 	nxentry = nexus.create_group("entry")
 	nxentry.attrs["NX_class"] = "NXentry"
-	nexus.attrs["default"] = nxentry.name.split("/")[-1]
+	nexus.attrs["default"] = nxentry.name
 
 	# /entry/instrument
 	nxinstrument = nxentry.create_group("instrument")
@@ -43,7 +43,7 @@ def write_nexus_file(fname, image, md={}):
 	# /entry/data
 	nxdata = nxentry.create_group("data")
 	nxdata.attrs["NX_class"] = "NXdata"
-	nxentry.attrs["default"] = nxdata.name.split("/")[-1]
+	nxentry.attrs["default"] = nxdata.name
 
 	# /entry/data/data --> /entry/instrument/detector/image
 	nxdata["data"] = nexus["/entry/instrument/detector/image"]
