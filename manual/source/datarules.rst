@@ -216,7 +216,7 @@ prefix 	      use 	    meaning 	                                URL
 
 .. rubric:: Reserved suffixes
 
-When naming a field (or dataset), NeXus has reserved certain suffixes to the names
+When naming a field, NeXus has reserved certain suffixes to the names
 so that a specific meaning may be attached.  Consider a field named ``DATASET``,
 the following table lists the suffixes reserved by NeXus.
 
@@ -241,7 +241,7 @@ suffix              reference                                  meaning
 ``_weights``        ..                                         divide ``DATASET`` by these weights [#]_
 ==================  =========================================  =================================
 
-.. [#] If ``DATASET_weights`` exists and has the same shape as the dataset,
+.. [#] If ``DATASET_weights`` exists and has the same shape as the field,
    you are supposed to divide ``DATASET`` by the weights.
 
 .. Note that the following line might be added to the above table pending discussion:
@@ -255,15 +255,15 @@ suffix              reference                                  meaning
 Variants
 #########
 
-Sometimes it is necessary to store alternate values of a NeXus dataset
+Sometimes it is necessary to store alternate values of a NeXus field
 in a NeXus file. A common example may be the beam center of which a
 rough value is available at data acquisition. But later on, a better beam
 center is calculated as part of the data reduction. In order to store
 this without losing the historical information, the original field can be given a variant attribute that points to
-a new dataset containing the obsolete value. If even better values
-become available, further datasets can be inserted into the chain of variant attributes
-pointing to the preceeding value for the dataset. A reader can thus
-keep the best value in the pre-defined dataset, and also be able to
+a new field containing the obsolete value. If even better values
+become available, further fields can be inserted into the chain of variant attributes
+pointing to the preceeding value for the field. A reader can thus
+keep the best value in the pre-defined field, and also be able to
 follow the variant chain and locate older variants.
 
 A little example is in order to illustrate the scheme:
@@ -278,7 +278,7 @@ A little example is in order to illustrate the scheme:
     beam_center_x_initial_guess
 
 NeXus borrowed this scheme from CIF. In this way all the different
-variants of a dataset can be preserved. The expectation is that
+variants of a field can be preserved. The expectation is that
 variants will be rarely used and NXprocess groups with the results of
 data reduction will be written instead.
 
@@ -705,7 +705,7 @@ plottable data is as follows:
 #. Pick the default plottable field (the *signal* data).
 
    Open the ``NXdata`` group selected above. If it has a ``signal`` attribute,
-   the attribute's value is the name of the field (dataset) to be plotted.
+   the attribute's value is the name of the field to be plotted.
    (The value of the ``signal`` attribute :ref:`names <validItemName>` an
    existing child of this group. The child group must itself be a NeXus field.)
    If no ``signal`` attribute is present on the ``NXdata``
@@ -774,8 +774,8 @@ Python code example will identify directly the default plottable data
         group = group[child_group_name]
 
     # assumes group.attrs["NX_class"] == "NXdata"
-    signal_dataset_name = group.attrs["signal"]
-    data = group[signal_dataset_name]
+    signal_field_name = group.attrs["signal"]
+    data = group[signal_field_name]
 
     plot(data)
 
@@ -838,12 +838,12 @@ plottable data is as follows:
          associated with the plottable data.
          Such as:  ``axes="polar_angle:time_of_flight"``
 
-      #. Parse ``axes`` and open the datasets to describe your
+      #. Parse ``axes`` and open the fields to describe your
          :index:`dimension scales <dimension scale>`
 
    #. If this field has no attribute ``axes``:
 
-      #. Search for datasets with attributes ``axis=1``, ``axis=2``, etc.
+      #. Search for fields with attributes ``axis=1``, ``axis=2``, etc.
 
       #. These are the fields describing your axis. There may be
          several fields for any axis, i.e. there may be multiple
@@ -989,11 +989,11 @@ The default data to be plotted (and any associated axes)
 is specified using attributes attached to the :ref:`NXdata` group.
 
 :``signal``:
-   Defines the name of the default dataset *in the NXdata group*.
-   A field of this name *must* exist (either as dataset or link to dataset).
+   Defines the name of the default field *in the NXdata group*.
+   A field of this name *must* exist (either as field or link to field).
 
    It is recommended to use this attribute
-   rather than adding a signal attribute to the dataset.  [#]_
+   rather than adding a signal attribute to the field.  [#]_
    The procedure to identify the default data to be plotted is quite simple.
    Given any NeXus data file, any ``NXentry``, or any ``NXdata``,
    follow the chain as it is described from that point.
@@ -1044,7 +1044,7 @@ is specified using attributes attached to the :ref:`NXdata` group.
 
    Integer array [#aa]_ that defines the indices of the *signal* field
    (that field will be a multidimensional array)
-   which need to be used in the ``AXISNAME`` dataset in
+   which need to be used in the ``AXISNAME`` field in
    order to reference the corresponding axis value.
 
    The first index of an array is ``0`` (zero).
