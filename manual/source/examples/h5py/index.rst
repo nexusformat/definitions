@@ -46,24 +46,24 @@ chapter except that the names will be different, as shown below:
 	
 	.. figure:: ../../img/Simple.png
 		:width: 60%
-		:alt: data structure
+		:alt: simple data structure
 		
-		Example data structure
+		data structure of the simple example
 	
-	.. rubric:: Example data types
-
 	.. literalinclude:: simple_example.txt
 	    :tab-width: 4
 	    :linenos:
 	    :language: text
 	
-	.. _Example-H5py-Plot: 
+	.. _simple-example-plot:
 	
 	.. figure:: simple_example.png
-	    :alt: Example-H5py-Plot
+	    :alt: simple-example-plot
 	    :width: 80%
 	
-	.. rubric:: Values of the example data
+	    plot of the simple example data
+	
+	.. rubric:: Simple example values
 	
 	.. literalinclude:: simple_example.dat
 	    :tab-width: 4

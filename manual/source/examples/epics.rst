@@ -3,4 +3,4 @@
 EPICS Area Detector Examples
 ############################
 
-:ref:`_EPICS_Area_Detector.examples.HDF5`
+:ref:`h5py-example-epics`

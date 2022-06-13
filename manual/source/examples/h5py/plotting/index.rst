@@ -52,7 +52,7 @@ client tool.  To help label the plot, we added the
 ``long_name`` attributes to each of our datasets.
 We also added metadata to the root level of our HDF5 file
 similar to that written by the NAPI.  It seemed to be a useful addition.
-Compare this with :ref:`Example-H5py-Plot`
+Compare this with :ref:`simple-example-plot`
 and note that the horizontal axis of this plot is mirrored from that above.
 This is because the data is stored in the file in descending
 ``mr`` order and ``NeXpy`` has plotted

@@ -1,4 +1,4 @@
-.. _EPICS_Area_Detector.examples.HDF5:
+.. _h5py-example-epics:
 
 EPICS Area Detector Examples
 ############################
