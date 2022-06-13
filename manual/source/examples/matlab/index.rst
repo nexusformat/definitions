@@ -4,9 +4,9 @@
 
 .. _matlab.examples:
 
-===============
-MATLAB Examples
-===============
+==============
+HDF5 in MATLAB
+==============
 
 :author: Paul Kienzle, NIST
 

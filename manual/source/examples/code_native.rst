@@ -2,9 +2,9 @@
 
 .. _native-HDF5-Examples:
 
-===================================================
-Example NeXus C programs using native HDF5 commands
-===================================================
+==========================
+HDF5 in C with ``libhdf5``
+==========================
 
 C-language code examples are provided for
 writing and reading NeXus-compliant files

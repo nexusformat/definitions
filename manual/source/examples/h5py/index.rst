@@ -2,9 +2,9 @@
 
 .. _Example-H5py:
 
-==============================
-Python Examples using ``h5py``
-==============================
+=======================
+HDF5 in C with ``h5py``
+=======================
 
 One way to gain a quick familiarity with NeXus is to start working with some data. For at least the
 first few examples in this section, we have a simple two-column set of 1-D data, collected as part of a

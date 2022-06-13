@@ -1,7 +1,7 @@
 .. _h5py-example-plotting:
 
-Plot NeXus HDF5 Files
-#####################
+Read and plot a NeXus HDF5 file
+###############################
 
 .. _finding.default.data.python:
 

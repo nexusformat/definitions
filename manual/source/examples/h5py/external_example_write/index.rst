@@ -1,7 +1,7 @@
 .. _h5py-example-external-links:
 
-Write HDF5 Files with links to external data
-############################################
+Write a NeXuS HDF5 File with links to external data
+###################################################
 
 HDF5 files may contain links to data (or groups) in other files.  
 This can be used to advantage to refer to data in existing HDF5 files
