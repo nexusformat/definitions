@@ -6,6 +6,7 @@
 # ref: http://www/gnu.org/software/make/manual/make.html
 
 SUBDIRS = manual impatient-guide
+PYTHON = python3
 
 .PHONY: subdirs $(SUBDIRS) builddir all
 
@@ -41,11 +42,11 @@ clean:
 	$(MAKE) clean -C $(SUBDIRS)
 
 nxdl2rst:
-	$(MAKE) -C manual/source
+	$(MAKE) -C manual/source PYTHON=$(PYTHON)
 
 builddir :: 
 	mkdir -p build
-	python utils/build_preparation.py . build
+	$(PYTHON) utils/build_preparation.py . build
 
 makebuilddir :: builddir
 	$(MAKE) -C build
@@ -62,10 +63,10 @@ rmbuilddir ::
 
 # for developer's use on local build host
 local ::
-	python utils/test_suite.py
+	$(PYTHON) utils/test_suite.py
 	$(RM) -r build
 	mkdir -p build
-	python utils/build_preparation.py . build
+	$(PYTHON) utils/build_preparation.py . build
 	$(MAKE) -C build
 
 # NeXus - Neutron and X-ray Common Data Format
