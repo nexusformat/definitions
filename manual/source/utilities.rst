@@ -177,6 +177,23 @@ The list is not intended to be a complete list of all available packages.
    See the program documentation for more details:
    https://punx.readthedocs.io
 
+Other Utilities
+###############
+
+.. index:: 
+	NeXus Constructor
+
+**NeXus Constructor** (https://github.com/ess-dmsc/nexus-constructor)
+    The NeXus Constructor facilitates constructing NeXus files in which to record data from
+    experiments at neutron science facilities. This includes all supporting metadata typically
+    required to perform analysis of such experiments, including instrument geometry information.
+
+.. index:: 
+	nxdl_to_hdf5.py
+
+**nxdl_to_hdf5.py** (https://github.com/nexusformat/exampledata/tree/master/nxdl)
+    nxdl_to_hdf5.py is a python script that creates hdf5 files from the NeXus definition files  (i.e. nxdl.xml). Currently, only application definitions and some contributed_definitions are supported as the code depends on the existance of an NXentry in the definition.
+
 Data Analysis
 #############
 
