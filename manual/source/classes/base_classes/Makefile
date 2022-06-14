@@ -46,7 +46,7 @@ index.rst ::
 	$(PYTHON) $(NXDLSUMMARY) base_classes
 
 %.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
-	$(PYTHON) $(NXDL2RST) $< > $@
+	$(PYTHON) -u $(NXDL2RST) $< > $@
 
 clean ::
 	$(RM) NX*.rst NX*.nxdl.xml
