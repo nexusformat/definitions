@@ -546,7 +546,11 @@ may be required to store multiple related data sets of the results of data analy
 into the same data file. In this case create more entries. Each entry should be
 interpretable standalone, i.e. contain all the information of a complete ``NXentry``
 class. Please keep in mind that groups or data items which stay constant across
-entries can always be linked in.
+entries can always be linked to save space. Application definitions describe only 
+what is included within an ``NXentry`` and so have no power to enforce any particular 
+usage of ``NXentry`` groups. However, documentation within and accompanying an 
+application definition can provide guidance and recommendations on situations where
+the use of multiple ``NXentry`` groups would be appropriate.
 
 ..  =======================
     section: Processed Data
