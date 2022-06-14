@@ -12,12 +12,12 @@
 Change History
 ##############
 
-:v2021.10:  expected *2021-10*
+:v2022.03:  expected *2022-03*
 
     * `#955 <https://github.com/nexusformat/definitions/issues/955>`_
        Documentation built and published from GitHub Actions workflow
 
-    * `#951 <https://github.com/nexusformat/definitions/issues/951>`_
+    * `#952 <https://github.com/nexusformat/definitions/issues/952>`_
        - drop support for Python <3.7 when building documentation & testing NXDL files
        - included PDF file subdirectory changed from `pdf/` to `_static/`
 
