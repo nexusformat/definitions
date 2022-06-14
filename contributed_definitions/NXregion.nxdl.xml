@@ -31,9 +31,9 @@
 	<symbols>
 		<doc>
 			These symbols will denote how the shape of the parent group's data field,
-
+			
 			.. math:: (D_0, ..., D_{\mathbf{O}-1}, d_0, ..., d_{\mathbf{R}-1})
-
+			
 			could be split into a left set of **O** outer dimensions, :math:`\boldsymbol{D}`,
 			and a right set of **R** region dimensions, :math:`\boldsymbol{d}`,
 			where the data field has rank **O** + **R**. Note **O** :math:`>= 0`.
@@ -44,13 +44,48 @@
 	<doc>
 		Geometry and logical description of a region of data in a parent group. When used, it could
 		be a child group to, say, :ref:`NXdetector`.
-		
+
 		This can be used to describe a subset of data used to create downsampled data or to derive
 		some data from that subset.
 
 		Note, the fields for the rectangular region specifiers follow HDF5’s dataspace hyperslab parameters
 		(see https://portal.hdfgroup.org/display/HDF5/H5S_SELECT_HYPERSLAB). Note when **block** :math:`= 1`,
-		then **stride** :math:`\equiv` **step** in Python slicing
+		then **stride** :math:`\equiv` **step** in Python slicing.
+		
+		For example, a ROI sum of an area starting at index of [20,50] and shape [220,120] in image data::
+
+			detector:NXdetector/
+				data[60,256,512]
+				region:NXregion/
+					@type  = "rectangular"
+					parent = "data"
+					start  = [20,50]
+					count  = [220,120]
+					statistics:NXdata/
+						@signal = "sum"
+						sum[60]
+
+		the ``sum`` dataset contains the summed areas in each frame.
+		Another example, a hyperspectral image downsampled 16-fold in energy::
+
+			detector:NXdetector/
+				data[128,128,4096]
+				region:NXregion/
+					@type  = "rectangular"
+					parent = "data"
+					start  = [2]
+					count  = [20]
+					stride = [32]
+					block  = [16]
+					downsampled:NXdata/
+						@signal = "maximum"
+						@auxiliary_signals = "copy"
+						maximum[128,128,20]
+						copy[128,128,320]
+
+		the ``copy`` dataset selects 20 16-channel blocks that start 32 channels apart,
+		the ``maximum`` dataset will show maximum values in each 16-channel bin
+		in every spectra.
 	</doc>
 	<attribute name="type" optional="false">
 		<doc>
@@ -104,7 +139,10 @@
 	</field>
 	<field name="block" type="NX_INT">
 		<doc>
-			An optional field to define binning used to downsample data.
+			An optional field to define binning used to downsample data. In the
+			:math:`i`-th dimension, if :math:`\mathbf{block}[i] \lt \mathbf{stride}[i]`
+			then the downsampling bins have gaps between them; when ``block`` matches ``stride``
+			then the bins are contiguous; otherwise the bins overlap.
 			If omitted then defined as an array of ones
 		</doc>
 		<dimensions rank="1">
@@ -124,12 +162,22 @@
 	</field>
 	<group name="downsampled" type="NXdata">
 		<doc>
-			An optional group containing data selected/downsampled from parent group’s data. Its signal name
-			must reflect how the downsampling is done over each block. So it could be
-			sum, minimum, maximum, mean, mode, median, etc.
-			If downsampling is merely selecting each block then use "data" as the name. In this latter case,
+			An optional group containing data copied/downsampled from parent group’s data. Its dataset name
+			must reflect how the downsampling is done over each block. So it could be a reduction operation
+			such as sum, minimum, maximum, mean, mode, median, etc. If downsampling is merely copying each
+			block then use "copy" as the name. Where more than one downsample dataset is written
+			(specified with ``@signal``) then add ``@auxiliary_signals`` listing the others. In the copy case,
 			the field should have a shape of :math:`(D_0, ..., D_{\mathbf{O}-1}, \mathbf{block}[0] * \mathbf{count}[0], ..., \mathbf{block}[\mathbf{R}-1] * \mathbf{count}[\mathbf{R}-1])`,
-			otherwise the expected shape is :math:`(D_0, ..., D_{\mathbf{O}-1}, \mathbf{count}[0], ..., \mathbf{count}[\mathbf{R}-1])`
+			otherwise the expected shape is :math:`(D_0, ..., D_{\mathbf{O}-1}, \mathbf{count}[0], ..., \mathbf{count}[\mathbf{R}-1])`.
+			
+			The following figure shows how blocks are used in downsampling:
+			
+			.. figure:: region/NXregion-example.png
+				:width: 60%
+				
+				A selection with :math:`\mathbf{start}=2, \mathbf{count}=4, \mathbf{stride}=3, \mathbf{block}=2` from
+				a dataset with shape [13] will result in the ``reduce`` dataset of shape [4] and a ``copy`` dataset of shape [8]
+			
 		</doc>
 	</group>
 	<group name="statistics" type="NXdata">
@@ -137,7 +185,7 @@
 			An optional group containing any statistics derived from the region in parent group’s data
 			such as sum, minimum, maximum, mean, mode, median, rms, variance, etc. Where more than one
 			statistical dataset is written (specified with ``@signal``) then add ``@auxiliary_signals``
-			listing the others. All data fields should have shapes of :math:`\boldsymbol{D}`
+			listing the others. All data fields should have shapes of :math:`\boldsymbol{D}`.
 		</doc>
 	</group>
 </definition>
