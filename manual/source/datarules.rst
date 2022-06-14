@@ -651,11 +651,11 @@ any of these methods, we present the algorithm for each method
 to find the default plottable data.  It is recommended to start
 with the most recent method, :ref:`Find-Plottable-Data-v3`, first.
 
-.. _Find-Plottable-Data-v3:
-
 .. index:: ! find the default plottable data
 .. index:: ! default attribute value
 .. index:: ! signal attribute value
+
+.. _Find-Plottable-Data-v3:
 
 Version 3
 =========
