@@ -41,9 +41,9 @@
 	-->
 
 	<symbols>
-		<doc>These symbols will be used below to coordinate datasets with the same shape.</doc>
-		<symbol name="dataRank"><doc>rank of the ``data`` field</doc></symbol>
-		<symbol name="n"><doc>length of the ``variable`` field</doc></symbol>
+		<doc>These symbols will be used below to coordinate fields with the same shape.</doc>
+		<symbol name="dataRank"><doc>rank of the ``DATA`` field</doc></symbol>
+		<symbol name="n"><doc>length of the ``VARIABLE`` field</doc></symbol>
 		<symbol name="nx"><doc>length of the ``x`` field</doc></symbol>
 		<symbol name="ny"><doc>length of the ``y`` field</doc></symbol>
 		<symbol name="nz"><doc>length of the ``z`` field</doc></symbol>
@@ -64,15 +64,17 @@
 	</attribute>
 	<attribute name="signal">
 		<doc>
+			.. index:: find the default plottable data
 			.. index:: plotting
+			.. index:: signal attribute value
 			
-			Declares which dataset is the default. 
-			The value is the name of the dataset to be plotted.
-			A field of this name *must* exist (either as dataset 
-			or as a link to a dataset).
+			Declares which NeXus field is the default. 
+			The value is the name of the NeXus field to be plotted.
+			(The value :ref:`names &lt;validItemName>` an existing child
+			of this group. The child group must itself be a NeXus group.)
 			
 			It is recommended (as of NIAC2014) to use this attribute
-			rather than adding a signal attribute to the dataset.
+			rather than adding a signal attribute to the field.
 			See https://www.nexusformat.org/2014_How_to_find_default_data.html
 			for a summary of the discussion.
 		</doc>
@@ -110,7 +112,7 @@
 			the axes attribute can be omitted.
 		</doc>
 	</attribute>
-	<attribute name="AXISNAME_indices">
+	<attribute name="AXISNAME_indices" type="NX_INT">
 		<!-- 
 			nxdl.xsd rules do not allow us to show this as a variable name 
 			- we'll use ALL CAPS (see #562)
@@ -124,7 +126,7 @@
 		
 			Integer array that defines the indices of the *signal* field 
 			(that field will be a multidimensional array)
-			which need to be used in the *AXISNAME* dataset in 
+			which need to be used in the *AXISNAME* field in 
 			order to reference the corresponding axis value.
 			
 			The first index of an array is ``0`` (zero).
@@ -162,10 +164,11 @@
 		
 		.. index:: plotting
 		
-		It is mandatory  that there is at least one :ref:`NXdata` group 
-		in each :ref:`NXentry` group.  
-		Note that the ``variable`` and ``data`` 
+		It is strongly recommended that there is at least one :ref:`NXdata`
+		group in each :ref:`NXentry` group.
+		Note that the fields named ``VARIABLE`` and ``DATA`` 
 		can be defined with different names.  
+		(Upper case is used to indicate that the actual name is left to the user.)
 		The ``signal`` and ``axes`` attributes of the 
 		``data`` group define which items 
 		are plottable data and which are *dimension scales*, respectively.
@@ -174,12 +177,14 @@
 		to provide a default plot for the data of this :ref:`NXentry`.  The actual data
 		might be stored in another group and (hard) linked to the :ref:`NXdata` group.
 
-		* Each :ref:`NXdata` group will define only one data set
-		  containing plottable data, dimension scales, and 
-		  possibly associated standard deviations.
-		  Other data sets may be present in the group.
+		* Each :ref:`NXdata` group will define one field as the default
+		  plottable data.  The value of the ``signal`` attribute names this field.
+		  Additional fields may be used to describe the dimension scales and 
+		  uncertainities.
+		  The ``auxiliary_signals`` attribute is a list of the other fields
+		  to be plotted with the ``signal`` data.
 		* The plottable data may be of arbitrary rank up to a maximum
-		  of ``NX_MAXRANK=32``.
+		  of ``NX_MAXRANK=32`` (for compatibility with backend file formats).
 		* The plottable data will be named as the value of 
 		  the group ``signal`` attribute, such as::
 		  
@@ -191,7 +196,7 @@
 		      mr: float[100]  --> the default independent data
 		  
 		  The field named in the ``signal`` attribute **must** exist, either
-		  directly as a dataset or defined through a link.
+		  directly as a NeXus field or defined through a link.
 		
 		* The group ``axes`` attribute will name the
 		  *dimension scale* associated with the plottable data.
@@ -308,14 +313,14 @@
 			
 			This pattern of using ``VARIABLE_errors`` can be used 
 			throughout a NeXus data file to associate uncertainties 
-			with a dataset named ``VARIABLE``.  This pattern also 
+			with a field named ``VARIABLE``.  This pattern also 
 			applies to other relationships such as ``VARIABLE_resolutions``
-			to connect additional data with a certain dataset. 
+			to connect additional data with a certain field. 
 		</doc>
 		<dimensions rank="1">
 			<doc>
 				A dimension scale must have a rank of 1 and has length ``n``, 
-				same as ``variable``.
+				same as ``VARIABLE``.
 			</doc>
 			<dim index="1" value="n"/>
 		</dimensions>

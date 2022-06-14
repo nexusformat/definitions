@@ -192,7 +192,6 @@ line breaks are VERY TRICKY here, be careful how you edit!
           <xsl:value-of select="@name"/> (<xsl:choose>
                <xsl:when test="@category='base'">base class</xsl:when>
                <xsl:when test="@category='application'">application definition</xsl:when>
-               <xsl:when test="@category='contributed'">contributed definition</xsl:when>
           </xsl:choose>)<xsl:text><!-- tricky line break here -->
 </xsl:text></xsl:template>
      
