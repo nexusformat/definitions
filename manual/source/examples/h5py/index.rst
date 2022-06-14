@@ -1,4 +1,4 @@
-.. index:: h5py; examples
+.. index:: !h5py; code examples
 
 .. _Example-H5py:
 

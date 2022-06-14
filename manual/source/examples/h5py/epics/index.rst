@@ -1,3 +1,5 @@
+.. index:: !EPICS; code examples
+
 .. _h5py-example-epics:
 
 EPICS Area Detector Examples

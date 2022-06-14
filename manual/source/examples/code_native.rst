@@ -1,4 +1,4 @@
-.. index:: HDF5; examples
+.. index:: !C; code examples
 
 .. _native-HDF5-Examples:
 

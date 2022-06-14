@@ -1,4 +1,4 @@
-.. index:: nexusformat; examples
+.. index:: !nexusformat; code examples
 
 .. _Example-nexusformat:
 

@@ -1,5 +1,3 @@
-.. index:: !EPICS; examples
-
 EPICS Area Detector Examples
 ############################
 

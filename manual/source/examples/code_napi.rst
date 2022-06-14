@@ -1,4 +1,4 @@
-.. index:: NAPI; examples
+.. index:: !NAPI; code examples
 
 .. _NAPI-Examples:
 
