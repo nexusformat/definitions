@@ -62,8 +62,8 @@ Examples of working with data from specific instruments.
 
 .. _Examples.tools:
 
-Code Projects that work with NeXus data files
-#############################################
+Other tools to handle NeXus data files
+######################################
 
 The number of tools that read NeXus data files,
 either for general use or to read a specific
