@@ -12,7 +12,6 @@ using the native HDF5 interfaces.  These examples are derived from the simple
 NAPI examples for :ref:`writing <fig.ex-c-write>`
 and :ref:`reading <fig.ex-c-read>` given in the
 :ref:`Introduction <Introduction>` chapter.
-Compare these code examples with :ref:`NAPI-Examples`.
 
 .. _code_native.writing:
 

@@ -11,11 +11,7 @@ given. As an example a hypothetical instrument named WONI will be used.
 .. note:: 
           If you are looking for a tutorial on reading or writing NeXus data files
           using the NeXus API, consult the :ref:`NAPI` chapter.
-          For code examples, refer to :ref:`Examples.NAPI` chapter.
-          Alternatively, there are examples in the :ref:`native-HDF5-Examples`
-          chapter of writing and reading NeXus data files using the native HDF5 interfaces in C.
-          Further, there are also some Python examples using the ``h5py`` package
-          in the :ref:`Example-H5py` section.
+          For code examples (with or without NAPI), refer to the :ref:`Examples.code` chapter.
 
 ..  ======================================================
     section: Basic organization within the NeXus hierarchy

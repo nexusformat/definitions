@@ -10,7 +10,7 @@ Simple examples of reading and writing NeXus data files
 are provided in the :ref:`Introduction` chapter and also
 in the :ref:`NAPI` chapter.
 
-.. _Examples.nonNAPI:
+.. _Examples.code:
 
 Code Examples in Various Languages
 ##################################
@@ -29,6 +29,23 @@ Please be aware that not all examples are up to date with the latest format reco
    h5py/index
    nexusformat/index
    matlab/index
+   napi/c
+   napi/fortran
+   napi/python
+
+.. _Examples.view:
+
+Visualization tools
+###################
+
+Tools to print or visualize NeXus HDF5 files
+
+.. toctree::
+
+   view/h5dump
+   view/punx
+
+.. _Examples.instruments:
 
 Examples for Specific Instruments
 #################################
@@ -39,21 +56,7 @@ Examples for Specific Instruments
    lrmecs/index
    epics
 
-.. _Examples.NAPI:
-
-Code Examples that use the NeXus API (NAPI)
-###########################################
-
-These examples illustrate the use of the NAPI
-:ref:`NAPI`. Please refer to the linked section in the manual for the status of NAPI.
-
-.. toctree::
-	:maxdepth: 1
-	
-	code_napi
-
-
-.. _Examples.readers:
+.. _Examples.tools:
 
 Code Projects that work with NeXus data files
 #############################################
