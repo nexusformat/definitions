@@ -54,7 +54,7 @@ Examples for Specific Instruments
    :maxdepth: 1
 
    lrmecs/index
-   epics
+   epics/index
 
 .. _Examples.tools:
 

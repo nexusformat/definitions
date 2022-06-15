@@ -1,6 +1,6 @@
-.. index:: !LRMECS; examples
+.. index:: !LRMECS; instrument examples
 
-.. _Example-Viewing-LRMECS-Data:
+.. Example-LRMECS:
 
 Viewing 2-D Data from LRMECS
 ############################
