@@ -192,7 +192,12 @@ Other Utilities
 	nxdl_to_hdf5.py
 
 **nxdl_to_hdf5.py** (https://github.com/nexusformat/exampledata/tree/master/nxdl)
-    nxdl_to_hdf5.py is a python script that creates hdf5 files from the NeXus definition files  (i.e. nxdl.xml). Currently, only application definitions and some contributed_definitions are supported as the code depends on the existance of an NXentry in the definition.
+    ``nxdl_to_hdf5.py`` is a Python script that reads the NeXus definition files
+    (files ending with ``.nxdl.xml``) and creates example Python scripts as well
+    as HDF5 files for each definition. There are generated example scripts of
+    each application definition for both *h5py* and *nexusformat*. Currently, only
+    application definitions and some contributed_definitions are supported as
+    the code depends on the existence of an :ref:`NXentry` in the definition.
 
 Data Analysis
 #############
