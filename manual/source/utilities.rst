@@ -280,6 +280,15 @@ as a data format.  It is not intended to be a complete list of all available pac
     would be adopted in the future by NeXus and be part of the distribution)
 
 .. index:: 
+	silx (data analysis software)
+
+**silx** (http://www.silx.org/doc/silx/latest/)
+    The silx project aims to provide a collection of Python packages to support
+    the development of data assessment, reduction and analysis at synchrotron
+    radiation facilities.
+    In particular it provides tools to read, write and visualize NeXus HDF5 files.
+
+.. index:: 
 	OpenGENIE (data analysis software)
 
 **OpenGENIE** (http://www.opengenie.org/)

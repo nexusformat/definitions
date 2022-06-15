@@ -1,12 +1,12 @@
-.. index:: !MATLAB; examples
+.. index:: !MATLAB; code examples
 
 .. TODO: needs a proper write-up using actual MATLAB session and graphics
 
 .. _matlab.examples:
 
-===============
-MATLAB Examples
-===============
+==============
+HDF5 in MATLAB
+==============
 
 :author: Paul Kienzle, NIST
 
