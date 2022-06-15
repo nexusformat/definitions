@@ -88,29 +88,29 @@ guidelines are strongly encouraged:
 		  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		  xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
 		>
-		<symbols>
-		  <doc>
-		    These symbols will be used below to coordinate datasets with the same shape.
-		  </doc>
-		  <symbol name="nFrames">
-		    <doc>Number of frames</doc>
-		  </symbol>
-		  <symbol name="xSize">
-		    <doc>Number of pixels in X direction</doc>
-		  </symbol>
-		  <symbol name="ySize">
-		    <doc>Number of pixels in Y direction</doc>
-		  </symbol>
-		</symbols>
-		<doc>
-		  This is the application definition for x-ray or neutron tomography raw data. 
-		  
-		  In tomography 
-		  a number of dark field images are measured, some bright field images and, of course the sample. 
-		  In order to distinguish between them images carry a image_key.
-		</doc>
-		<group type="NXentry" name="entry">
-		  <field name="title"  minOccurs="0" maxOccurs="1"/>  	
+			<symbols>
+				<doc>
+					These symbols will be used below to coordinate datasets with the same shape.
+				</doc>
+				<symbol name="nFrames">
+					<doc>Number of frames</doc>
+				</symbol>
+				<symbol name="xSize">
+					<doc>Number of pixels in X direction</doc>
+				</symbol>
+				<symbol name="ySize">
+					<doc>Number of pixels in Y direction</doc>
+				</symbol>
+			</symbols>
+			<doc>
+				This is the application definition for x-ray or neutron tomography raw data. 
+				
+				In tomography 
+				a number of dark field images are measured, some bright field images and, of course the sample. 
+				In order to distinguish between them images carry a image_key.
+			</doc>
+			<group type="NXentry" name="entry">
+			<field name="title"  minOccurs="0" maxOccurs="1"/>  	
 		...
 							
 
