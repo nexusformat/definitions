@@ -30,8 +30,8 @@ Please be aware that not all examples are up to date with the latest format reco
    nexusformat/index
    matlab/index
 
-Code Examples for Specific Instruments
-######################################
+Examples for Specific Instruments
+#################################
 
 .. toctree::
    :maxdepth: 1

@@ -1,4 +1,4 @@
-.. index:: !LRMECS; code examples
+.. index:: !LRMECS; examples
 
 .. _Example-Viewing-LRMECS-Data:
 
