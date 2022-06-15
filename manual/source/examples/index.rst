@@ -16,9 +16,9 @@ Code Examples in Various Languages
 ##################################
 
 Each example in this section demonstrates writing and reading NeXus compliant files
-in various languages with different libraries. Currently all examples are using the
-HDF5 file format. Other container formats like the legacy format HDF4 or XML can also
-be used to store NeXus compliant data.
+in various languages with different libraries. Most examples are using the HDF5 file
+format. Note however that other container formats like the legacy format HDF4 or XML
+can also be used to store NeXus compliant data.
 
 Please be aware that not all examples are up to date with the latest format recommendations.
 
@@ -38,17 +38,20 @@ Please be aware that not all examples are up to date with the latest format reco
 Visualization tools
 ###################
 
-Tools to print or visualize NeXus HDF5 files
+Tools to visualize NeXus HDF5 files graphically or in text form.
 
 .. toctree::
 
    view/h5dump
    view/punx
+   view/nexpy
 
 .. _Examples.instruments:
 
 Examples for Specific Instruments
 #################################
+
+Examples of working with data from specific instruments.
 
 .. toctree::
    :maxdepth: 1

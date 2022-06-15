@@ -1,12 +1,7 @@
 .. _h5py-example-plotting:
 
-Read and plot a NeXus HDF5 file
-###############################
-
-.. _finding.default.data.python:
-
-Finding the default plottable data
-==================================
+Find plottable data in a NeXus HDF5 file
+########################################
 
 Let's make a new reader that follows the chain of
 attributes (``@default``, ``@signal``, and ``@axes``)
@@ -41,34 +36,10 @@ Output from ``reader_attributes_trail.py`` is shown next.
 	    :linenos:
 	    :language: text
 
-.. _Example-H5py-Plotting:
+For plotting tools we added the ``long_name`` attributes to each of our datasets.
 
-Plotting the HDF5 file
-======================
-
-Now that we are certain our file conforms to the NeXus
-standard, let's plot it using the ``NeXpy`` [#]_
-client tool.  To help label the plot, we added the
-``long_name`` attributes to each of our datasets.
-We also added metadata to the root level of our HDF5 file
-similar to that written by the NAPI.  It seemed to be a useful addition.
-Compare this with :ref:`simple-example-plot`
-and note that the horizontal axis of this plot is mirrored from that above.
-This is because the data is stored in the file in descending
-``mr`` order and ``NeXpy`` has plotted
-it that way (in order of appearance) by default.
-
-.. [#] *NeXpy*:    http://nexpy.github.io/nexpy/
-
-.. compound::
-
-    .. _fig-Example-H5py-nexpy-plot:
-
-    .. figure:: nexpy.png
-        :alt: fig-Example-H5py-nexpy-plot
-        :width: 80%
-
-        plot of our *mr_scan* using NeXpy
+We also added metadata to the root level of our HDF5 file similar to that written
+by the NAPI.It seemed to be a useful addition.
 
 downloads
 =========
