@@ -248,7 +248,7 @@ And reading:
 
     .. rubric:: String reading
 
-    .. literalinclude:: examples/napi/napi-java-datarw2.java
+    .. literalinclude:: examples/napi/napi-java-datarw3.java
         :tab-width: 4
         :linenos:
         :language: java
