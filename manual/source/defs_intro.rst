@@ -57,11 +57,62 @@ General documentation if this NXDL file.
 Symbols table
 =============
 
-The symbols table describes 
-keywords used in this NXDL file to designate array dimensions. 
-At present, this list is not guaranteed to be complete 
-(some array dimension names appear only in a *Structure* 
-description and not here).
+The ``Symbols`` table describes keywords used in this NXDL file to designate 
+array dimensions. For reasons of avoiding naming collisions and to facilitate 
+readbility and comprehension for those whom are new to an NXDL file, the following
+guidelines are strongly encouraged:
+
+* All symbols used in the application definition are defined in a single ``Symbols`` table.
+* The :ref:`name <validItemName>` of a symbol uses camel case without any white space or underscores.
+
+  examples: 
+
+ 		**nP**: Total number of scan points
+
+ 		**nE**: Number of photon energies scanned
+
+ 		**nFrames**: Number of frames
+
+ 		**detectorRank**: Rank of data array provided by the detector for a single measurement
+
+* the ``Symbols`` table appears early in the .nxdl file above the ``NXentry`` group
+
+ example from `NXtomo.nxdl.xml <https://github.com/nexusformat/definitions/blob/main/applications/NXtomo.nxdl.xml>`_
+
+.. code-block:: xml	
+		:linenos:
+
+		<definition name="NXtomo" extends="NXobject" type="group"
+		  category="application"
+		  xmlns="http://definition.nexusformat.org/nxdl/3.1"
+		  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		  xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
+		>
+			<symbols>
+				<doc>
+					These symbols will be used below to coordinate datasets with the same shape.
+				</doc>
+				<symbol name="nFrames">
+					<doc>Number of frames</doc>
+				</symbol>
+				<symbol name="xSize">
+					<doc>Number of pixels in X direction</doc>
+				</symbol>
+				<symbol name="ySize">
+					<doc>Number of pixels in Y direction</doc>
+				</symbol>
+			</symbols>
+			<doc>
+				This is the application definition for x-ray or neutron tomography raw data. 
+				
+				In tomography 
+				a number of dark field images are measured, some bright field images and, of course the sample. 
+				In order to distinguish between them images carry a image_key.
+			</doc>
+			<group type="NXentry" name="entry">
+			<field name="title"  minOccurs="0" maxOccurs="1"/>  	
+		...
+							
 
 Annotated Structure
 ===================
