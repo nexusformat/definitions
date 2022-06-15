@@ -47,6 +47,8 @@ def worker(nodeMatchString, section = 'units'):
     # get the definition of each type of units
     for node in node_list:
         node_name = node.get('name')
+        if node_name is None:
+            continue
         if 'nxdl:' + node_name in members:
             words = node.xpath('xs:annotation/xs:documentation', namespaces=ns)[0]
             examples = []
