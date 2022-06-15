@@ -36,11 +36,6 @@ Output from ``reader_attributes_trail.py`` is shown next.
 	    :linenos:
 	    :language: text
 
-For plotting tools we added the ``long_name`` attributes to each of our datasets.
-
-We also added metadata to the root level of our HDF5 file similar to that written
-by the NAPI.It seemed to be a useful addition.
-
 downloads
 =========
 
