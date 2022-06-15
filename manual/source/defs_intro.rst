@@ -62,9 +62,11 @@ array dimensions. For reasons of avoiding naming collisions and to facilitate
 readbility and comprehension for those whom are new to an NXDL file, the following
 guidelines are strongly encouraged:
 
-* all symbols used in the application definition are defined in a single ``Symbols`` table
-* the :ref:`name <validItemName>` of a symbol uses camel case without any white space or underscores 
- examples: 
+* All symbols used in the application definition are defined in a single ``Symbols`` table.
+* The :ref:`name <validItemName>` of a symbol uses camel case without any white space or underscores.
+
+  examples: 
+
  		**nP**: Total number of scan points
 
  		**nE**: Number of photon energies scanned
