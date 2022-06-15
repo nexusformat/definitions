@@ -2,7 +2,7 @@ from pathlib import Path
 import h5py
 
 filename = str(
-    Path(__file__).parent.parent
+    Path(__file__).absolute().parent.parent
     / "simple_example_basic"
     / "simple_example_basic.nexus.hdf5"
 )

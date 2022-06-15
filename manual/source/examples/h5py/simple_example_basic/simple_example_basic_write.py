@@ -11,7 +11,7 @@ fileName = "simple_example_basic.nexus.hdf5"
 timestamp = datetime.datetime.now().astimezone().isoformat()
 
 # load data from two column format
-data_filename = str(Path(__file__).parent.parent / "simple_example.dat")
+data_filename = str(Path(__file__).absolute().parent.parent / "simple_example.dat")
 data = numpy.loadtxt(data_filename).T
 mr_arr = data[0]
 i00_arr = numpy.asarray(data[1], "int32")

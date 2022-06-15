@@ -16,7 +16,7 @@ FILE_HDF5_COUNTS = "external_counts.hdf5"
 # ---------------------------
 
 # get some data
-filename = str(Path(__file__).parent.parent / "simple_example.dat")
+filename = str(Path(__file__).absolute().parent.parent / "simple_example.dat")
 buffer = numpy.loadtxt(filename).T
 tthData = buffer[0]  # float[]
 countsData = numpy.asarray(buffer[1], "int32")  # int[]
