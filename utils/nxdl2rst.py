@@ -232,7 +232,7 @@ def analyzeDimensions(ns, parent):
           <dim index="0" value="n" />
         </dimensions>
 
-    4. Dimensions defined in another field called `field_name` which should have rank 1
+    4. Rank and dimensions equal to that of another field called `field_name`
 
         <dimensions rank="dataRank">
           <dim index="1" ref="field_name" />
@@ -245,7 +245,7 @@ def analyzeDimensions(ns, parent):
     node_list = node.xpath('nx:dim', namespaces=ns)
 
     dims = []
-    dims_from_field = False
+    optional = False
     for subnode in node_list:
         # Dimension index (starts from index 1)
         index = subnode.get('index')
@@ -264,28 +264,23 @@ def analyzeDimensions(ns, parent):
             dims += ["."] * nadd
 
         # Dimension symbol
-        dim = subnode.get('value')
+        dim = subnode.get('value')  # integer or symbol from the table
         if not dim:
-            dim = subnode.get('ref')
-            if dim:
-                dims_from_field = True
-                dims = dim
-                break
-            else:
-                dim = "."
+            ref = subnode.get('ref')
+            if ref:
+                return ' (Rank: same as field %s, Dimensions: same as field %s)' % (ref, ref)
+            dim = "."
 
         # Dimension is optional
-        required = subnode.get('required', '').lower()
-        if required == "false":
+        optional |= subnode.get('required', '').lower() == "false"
+        if optional:
             dim = '[%s]' % dim
 
         dims[index] = dim
 
     rank = node.get('rank', None)
     if rank is None:
-        if dims_from_field:
-            rank = "Length of %s" % dims
-        elif dims:
+        if dims:
             # the rank is variable because of one or more
             # dimensions are optional
             rank = len(dims)
@@ -294,9 +289,7 @@ def analyzeDimensions(ns, parent):
             # were specified
             rank = "."
 
-    if dims_from_field:
-        return ' (Rank: %s, Dimensions: %s)' % (rank, dims)
-    elif dims:
+    if dims:
         dims = ', '.join(dims)
         return ' (Rank: %s, Dimensions: [%s])' % (rank, dims)
     else:
