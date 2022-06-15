@@ -295,10 +295,10 @@ def analyzeDimensions(ns, parent):
             rank = "."
 
     if dims_from_field:
-        return ' (Rank: %s, Dimensions:%s)' % (rank, dims)
+        return ' (Rank: %s, Dimensions: %s)' % (rank, dims)
     elif dims:
         dims = ', '.join(dims)
-        return ' (Rank: %s, Dimensions:[%s])' % (rank, dims)
+        return ' (Rank: %s, Dimensions: [%s])' % (rank, dims)
     else:
         return ' (Rank: %s)' % rank
 
