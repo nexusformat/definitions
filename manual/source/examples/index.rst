@@ -45,6 +45,7 @@ Tools to visualize NeXus HDF5 files graphically or in text form.
    view/h5dump
    view/punx
    view/nexpy
+   view/silx
 
 .. _Examples.instruments:
 

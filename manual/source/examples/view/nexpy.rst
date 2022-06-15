@@ -10,10 +10,10 @@ can be plotted by ``NeXpy`` [#]_.
 
 .. compound::
 
-    .. _fig-Example-H5py-nexpy-plot:
+    .. _fig-Example-nexpy-plot:
 
     .. figure:: nexpy.png
-        :alt: fig-Example-H5py-nexpy-plot
+        :alt: fig-Example-nexpy-plot
         :width: 80%
 
         plot the simple example using NeXpy
