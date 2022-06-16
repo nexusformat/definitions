@@ -10,16 +10,17 @@ In order for the XML machinery to find and link the code in the various files, t
 .. code-block:: xml
    :caption: NXarbitrary_example.nxdl.xml
    
-   <definition name="NXarbitrary_example" ... />
+   <definition name="NXarbitrary_example">
    
    <!-- later -->
    
-           <field name="definition">
-               <doc>Official NeXus NXDL schema to which this file conforms.</doc>
-               <enumeration>
-                   <item value="NXarbitrary_example"/>                
-               </enumeration>
-           </field>
+      <field name="definition">
+         <doc>Official NeXus NXDL schema to which this file conforms.</doc>
+         <enumeration>
+            <item value="NXarbitrary_example"/>                
+         </enumeration>
+      </field>
+   </definition>
 
 Documentation Images
 ####################
