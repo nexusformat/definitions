@@ -26,7 +26,7 @@ def printf(str, *args):
 
 def mtime(file_name):
     '''return file modification time'''
-    return os.stat(file_name)[stat.ST_MTIME]
+    return os.stat(file_name)[os.stat.ST_MTIME]
 
 
 def replicate(source, target):
