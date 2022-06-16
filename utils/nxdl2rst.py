@@ -15,7 +15,7 @@ import os
 import pyRestTable
 import re
 import sys
-from local_utilities import printf, replicate
+from local_utilities import replicate
 
 
 INDENTATION_UNIT = '  '
@@ -315,9 +315,9 @@ def printEnumeration( indent, ns, parent ):
         return ''
 
     if len(node_list) == 1:
-        printf('%sObligatory value:', indent)
+        print(f'{indent}Obligatory value:', end='')
     else:
-        printf('%sAny of these values:', indent)
+        print(f'{indent}Any of these values:', end='')
 
     docs = OrderedDict()
     for item in node_list:
@@ -333,9 +333,9 @@ def printEnumeration( indent, ns, parent ):
         # print one item per line
         print("\n")
         for name, doc in docs.items():
-            printf('%s  * %s', indent, show_as_typed_text(name))
+            print(f'{indent}  * {show_as_typed_text(name)}', end='')
             if doc:
-                printf(': %s', doc)
+                print(f': {doc}', end='')
             print("\n")
     else:
         # print all items in one line
@@ -539,9 +539,9 @@ def print_rst_from_nxdl(nxdl_file):
         printDoc( INDENTATION_UNIT, ns, node_list[0] )
         for node in node_list[0].xpath('nx:symbol', namespaces=ns):
             doc = getDocLine(ns, node)
-            printf('  **%s**', node.get('name'))
+            print(f"  **{node.get('name')}**", end='')
             if doc:
-                printf(': %s', doc)
+                print(f': {doc}', end='')
             print("\n")
 
     # print group references
