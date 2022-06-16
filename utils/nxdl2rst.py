@@ -12,20 +12,73 @@ from collections import OrderedDict
 from html import parser as HTMLParser
 import lxml.etree
 import os
+import pathlib
 import pyRestTable
 import re
 import sys
+import yaml
 from local_utilities import printf, replicate
 
 
 INDENTATION_UNIT = '  '
 listing_category = None
 anchor_list = []  # list of all hypertext anchors
+repo_root_path = pathlib.Path(__file__).parent.parent
+USE_ANCHOR_REGISTRY = False
 
 
 def addAnchor(anchor):
     """Add a hypertext anchor to the list."""
     anchor_list.append(anchor)
+
+
+class AnchorRegistry:
+
+    def __init__(self) -> None:
+        path = repo_root_path
+        self.all_anchors = path / "all_anchors.txt"
+        self.filename = path / "anchors.yml"
+        self.registry = self._read()
+    
+    def _read(self):
+        registry = None
+        if self.filename.exists():
+            registry = yaml.load(
+                open(self.filename, "r").read(),
+                Loader=yaml.Loader
+            )
+        return registry or {}
+    
+    def write(self, anchor_list):
+        self._add_anchors(anchor_list)
+        with open(self.filename, "w") as f:
+            # yaml.dump(self.registry, f)
+            for k, v in sorted(self.registry.items()):
+                if k.startswith("@"):
+                    k = f'\"{k}\"'
+                f.write(f"{k}:\n")
+                for item in sorted(v):
+                    f.write(f"  - {item}\n")
+
+        # compendium
+        with open(self.all_anchors, "a") as f:
+            for anchor in sorted(anchor_list):
+                f.write(f"{anchor}\n")
+    
+    def _add_anchors(self, anchor_list):
+        for anchor in anchor_list:
+            self._add(anchor)
+    
+    def _add(self, anchor):
+        key = anchor.lower().split("/")[-1].split("@")[-1].split("-")[0]
+        if "@" in anchor:
+            # restore preceding "@" symbol
+            key = "@" + key
+        
+        if key not in self.registry:
+            self.registry[key] = []
+        if anchor not in self.registry[key]:
+            self.registry[key].append(anchor)
 
 
 def printAnchorList():
@@ -35,6 +88,10 @@ def printAnchorList():
         return key.lower()
 
     if len(anchor_list) > 0:
+        if USE_ANCHOR_REGISTRY:
+            # ONLY in the build directory
+            AnchorRegistry().write(anchor_list)
+
         print("")
         print("Hypertext Anchors")
         print("-----------------\n")
@@ -611,6 +668,7 @@ def main():
 
 
 if __name__ == '__main__':
+    USE_ANCHOR_REGISTRY = True
     main()
 
 
