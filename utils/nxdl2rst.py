@@ -405,9 +405,12 @@ def printFullTree(ns, parent, name, indent, parent_path):
         print( '%s.. index:: %s (field)\n' %
                ( indent, index_name ) )
         print(
-            '%s**%s**: %s%s%s%s\n' % (
-                indent, name, optional_text, fmtTyp(node), dims, fmtUnits(node)
-                ))
+            f"{indent}**{name}**:"
+            f" {optional_text}"
+            f"{fmtTyp(node)}"
+            f"{dims}"
+            f"{fmtUnits(node)}"
+        )
 
         printIfDeprecated( ns, node, indent+INDENTATION_UNIT )
         printDoc(indent+INDENTATION_UNIT, ns, node)
