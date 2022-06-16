@@ -201,20 +201,99 @@ def get_required_or_optional_text(node, use_application_defaults):
     return optional_text
 
 
-def analyzeDimensions( ns, parent ):
+def analyzeDimensions(ns, parent):
+    """These are the different dimensions that can occur:
+
+    1. Fixed rank
+
+        <dimensions rank="dataRank">
+          <dim index="1" value="a" />
+          <dim index="2" value="b" />
+          <dim index="3" value="c" />
+        </dimensions>
+
+    2. Variable rank because of optional dimensions
+
+        <dimensions rank="dataRank">
+          <dim index="1" value="a" />
+          <dim index="2" value="b" />
+          <dim index="3" value="c" />
+          <dim index="4" value="d" required="false"/>
+        </dimensions>
+
+    3. Variable rank because no dimensions specified
+
+        <dimensions rank="dataRank">
+        </dimensions>
+
+    The legacy way of doing this (still supported)
+
+        <dimensions rank="dataRank">
+          <dim index="0" value="n" />
+        </dimensions>
+
+    4. Rank and dimensions equal to that of another field called `field_name`
+
+        <dimensions rank="dataRank">
+          <dim index="1" ref="field_name" />
+        </dimensions>
+    """
     node_list = parent.xpath('nx:dimensions', namespaces=ns)
     if len(node_list) != 1:
         return ''
     node = node_list[0]
-    # rank = node.get('rank') # ignore this
     node_list = node.xpath('nx:dim', namespaces=ns)
+
     dims = []
+    optional = False
     for subnode in node_list:
-        value = subnode.get('value')
-        if not value:
-            value = 'ref(%s)' % subnode.get('ref')
-        dims.append( value )
-    return '[%s]' % ( ', '.join(dims) )
+        # Dimension index (starts from index 1)
+        index = subnode.get('index')
+        if not index or not index.isdigit():
+            continue
+        index = int(index)
+        if index == 0:
+            # No longer needed: legacy way to specify that the
+            # rank is variable
+            continue
+
+        # Expand dimensions when needed
+        index -= 1
+        nadd = max(index-len(dims)+1, 0)
+        if nadd:
+            dims += ["."] * nadd
+
+        # Dimension symbol
+        dim = subnode.get('value')  # integer or symbol from the table
+        if not dim:
+            ref = subnode.get('ref')
+            if ref:
+                return ' (Rank: same as field %s, Dimensions: same as field %s)' % (ref, ref)
+            dim = "."
+
+        # Dimension is optional
+        optional |= subnode.get('required', '').lower() == "false"
+        if optional:
+            dim = '[%s]' % dim
+
+        dims[index] = dim
+
+    rank = node.get('rank', None)
+    if rank is None:
+        if dims:
+            # the rank is variable because of one or more
+            # dimensions are optional
+            rank = len(dims)
+        else:
+            # the rank is variable because no dimensions
+            # were specified
+            rank = "."
+
+    if dims:
+        dims = ', '.join(dims)
+        return ' (Rank: %s, Dimensions: [%s])' % (rank, dims)
+    else:
+        return ' (Rank: %s)' % rank
 
 
 def hyperlinkTarget(parent_path, name, nxtype):
@@ -326,8 +405,8 @@ def printFullTree(ns, parent, name, indent, parent_path):
         print( '%s.. index:: %s (field)\n' %
                ( indent, index_name ) )
         print(
-            '%s**%s%s**: %s%s%s\n' % (
-                indent, name, dims, optional_text, fmtTyp(node), fmtUnits(node)
+            '%s**%s**: %s%s%s%s\n' % (
+                indent, name, optional_text, fmtTyp(node), dims, fmtUnits(node)
                 ))
 
         printIfDeprecated( ns, node, indent+INDENTATION_UNIT )
