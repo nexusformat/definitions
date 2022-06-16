@@ -401,15 +401,18 @@ def printFullTree(ns, parent, name, indent, parent_path):
         dims = analyzeDimensions(ns, node)
 
         optional_text = get_required_or_optional_text(node, use_application_defaults)
-        print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'field')))
-        print( '%s.. index:: %s (field)\n' %
-               ( indent, index_name ) )
+        print(
+            f"{indent}"
+            f"{hyperlinkTarget(parent_path, name, 'field')}"
+        )
+        print(f"{indent}.. index:: {index_name} (field)\n")
         print(
             f"{indent}**{name}**:"
             f" {optional_text}"
             f"{fmtTyp(node)}"
             f"{dims}"
             f"{fmtUnits(node)}"
+            "\n"
         )
 
         printIfDeprecated( ns, node, indent+INDENTATION_UNIT )
