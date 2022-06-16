@@ -14,7 +14,7 @@ tool                    description
 
 '''
 
-import os, sys, re
+import os
 import shutil
 
 
