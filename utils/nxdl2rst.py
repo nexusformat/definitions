@@ -304,8 +304,7 @@ def analyzeDimensions(ns, parent):
     elif dims:
         dims = ', '.join(dims)
         return ' (Dimensions: [%s])' % dims
-    else:
-        return ''
+    return ''
 
 
 def hyperlinkTarget(parent_path, name, nxtype):
