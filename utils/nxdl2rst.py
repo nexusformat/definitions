@@ -24,45 +24,94 @@ from local_utilities import replicate
 
 INDENTATION_UNIT = '  '
 listing_category = None
-anchor_list = []  # list of all hypertext anchors
 repo_root_path = pathlib.Path(__file__).parent.parent
-USE_ANCHOR_REGISTRY = False
-
-
-def addAnchor(anchor):
-    """Add a hypertext anchor to the list."""
-    anchor_list.append(anchor)
+WRITE_ANCHOR_REGISTRY = False
+HTML_ROOT = 'https://github.com/nexusformat/definitions/blob/main'
+SUBDIR_MAP = {
+    'base': 'base_classes',
+    'application': 'applications',
+    'contributed': 'contributed_definitions',
+}
 
 
 class AnchorRegistry:
+    """Record all anchors created by NXDL files."""
 
     def __init__(self) -> None:
         path = repo_root_path / "manual" / "source" / "_static"
-        self.all_anchors = path / "all_anchors.txt"
+        self.txt_anchors = path / "anchors.txt"
         self.json_file = path / "anchors.json"
         self.xml_file = path / "anchors.xml"
         self.yaml_file = path / "anchors.yml"
         self.registry = self._read()
+        self.local_anchors = []  # anchors from current NXDL file
     
-    def write(self, anchor_list):
-        self._add_anchors(anchor_list)
+    @property
+    def all_anchors(self):
+        result = []
+        for v in self.registry.values():
+            result += list(v.keys())
+        return result
+
+    def add(self, anchor):
+        if anchor not in self.local_anchors:
+            self.local_anchors.append(anchor)
+
+        key = self.key_from_anchor(anchor)
+        
+        if key not in self.registry:
+            self.registry[key] = {}
+        
+        reg = self.registry[key]
+        if anchor not in reg:
+            reg[anchor] = dict(
+                anchor=anchor,
+                html=self._html_anchor(anchor),
+                # TODO: HTML anchor (#nxdata-variable-last-good-attribute)
+                # TODO URL
+            )
+    
+    def key_from_anchor(self, anchor):
+        key = anchor.lower().split("/")[-1].split("@")[-1].split("-")[0]
+        if "@" in anchor:
+            # restore preceding "@" symbol
+            key = "@" + key
+        return key
+
+    def write(self):
         contents = dict(
-            anchors = self.registry,
             _metadata = dict(
                 datetime=datetime.datetime.utcnow().isoformat(),
                 title="Anchors for all entities in NeXus NXDL files.",
                 subtitle="Anchors for all fields, groups, attributes, and links .",
             ),
+            anchors = self.registry,
         )
 
         self._write_yaml(contents)
         self._write_xml(contents)
         self._write_json(contents)
+        self._write_txt()
 
-        # compendium (dump the list of anchors in raw form)
-        with open(self.all_anchors, "a") as f:
-            f.write("\n".join(sorted(anchor_list)))
-    
+    def _html_anchor(self, anchor):
+        """
+        Create HTML anchor from reST anchor.
+
+        Example:
+
+        * reST anchor: /NXcanSAS/ENTRY/TRANSMISSION_SPECTRUM@timestamp-attribute
+        * HTML anchor: #nxcansas-entry-transmission-spectrum-timestamp-attribute
+        """
+        html_anchor = (
+            anchor
+            .lower()
+            .lstrip("/")
+            .replace("_", "-")
+            .replace("@", "-")
+            .replace("/", "-")
+        )
+        return f"#{html_anchor}"
+
     def _read(self):
         """The YAML file will record anchors from all NXDL files."""
         registry = None
@@ -76,9 +125,15 @@ class AnchorRegistry:
         return registry or {}
     
     def _write_json(self, contents):
-        # with open(self.json_file, "w") as f:
-        #     json.dump(contents, f, indent=4)
-        pass
+        with open(self.json_file, "w") as f:
+            json.dump(contents, f, indent=4)
+    
+    def _write_txt(self):
+        """Compendium (dump the list of all known anchors in raw form)."""
+        anchors = self.all_anchors
+        with open(self.txt_anchors, "w") as f:
+            f.write("\n".join(sorted(anchors)))
+            f.write("\n")
     
     def _write_xml(self, contents):
         pass  # TODO:
@@ -86,31 +141,9 @@ class AnchorRegistry:
     def _write_yaml(self, contents):
         with open(self.yaml_file, "w") as f:
             yaml.dump(contents, f)
-    
-    def _add_anchors(self, anchor_list):
-        for anchor in anchor_list:
-            self._add(anchor)
 
-    def _add(self, anchor):
-        key = self.key_from_anchor(anchor)
-        
-        if key not in self.registry:
-            self.registry[key] = {}
-        
-        reg = self.registry[key]
-        if anchor not in reg:
-            reg[anchor] = dict(
-                anchor=anchor,
-                # TODO: HTML anchor (#nxdata-variable-last-good-attribute)
-                # TODO URL
-            )
-    
-    def key_from_anchor(self, anchor):
-        key = anchor.lower().split("/")[-1].split("@")[-1].split("-")[0]
-        if "@" in anchor:
-            # restore preceding "@" symbol
-            key = "@" + key
-        return key
+
+anchor_registry = AnchorRegistry()
 
 
 def printAnchorList():
@@ -119,10 +152,10 @@ def printAnchorList():
     def sorter(key):
         return key.lower()
 
-    if len(anchor_list) > 0:
-        if USE_ANCHOR_REGISTRY:
+    if len(anchor_registry.local_anchors) > 0:
+        if WRITE_ANCHOR_REGISTRY:
             # ONLY in the build directory
-            AnchorRegistry().write(anchor_list)
+            anchor_registry.write()
 
         print("")
         print("Hypertext Anchors")
@@ -134,20 +167,13 @@ def printAnchorList():
         table = pyRestTable.Table()
         table.addLabel("documentation (reST source) anchor")
         table.addLabel("web page (HTML) anchor")
-        for ref in sorted(anchor_list, key=sorter):
+        for ref in sorted(anchor_registry.local_anchors, key=sorter):
             # fmt: off
-            anchor = (
-                ref
-                .lower()
-                .lstrip("/")
-                .replace("_", "-")
-                .replace("@", "-")
-                .replace("/", "-")
-            )
+            anchor = anchor_registry._html_anchor(ref)
             table.addRow(
                 (
                     ":ref:`%s <%s>`" % (ref, ref),
-                    ":ref:`#%s <%s>`" % (anchor, ref),
+                    ":ref:`%s <%s>`" % (anchor, ref),
                 )
             )
             # fmt: on
@@ -405,7 +431,7 @@ def hyperlinkTarget(parent_path, name, nxtype):
     target = "%s%s%s-%s" % (
         parent_path, sep, name, nxtype
     )
-    addAnchor(target)
+    anchor_registry.add(target)
     return ".. _%s:\n" % target
 
 
@@ -663,7 +689,6 @@ def print_rst_from_nxdl(nxdl_file):
         print(f'.. index:: {txt}\n')
 
     # TODO: change instances of \t to proper indentation
-    html_root = 'https://github.com/nexusformat/definitions/blob/main'
 
     # print full tree
     print( '**Structure**:\n' )
@@ -675,14 +700,9 @@ def print_rst_from_nxdl(nxdl_file):
     printAnchorList()
 
     # print NXDL source location
-    subdir_map = {
-                  'base': 'base_classes',
-                  'application': 'applications',
-                  'contributed': 'contributed_definitions',
-                  }
     print("")
     print( '**NXDL Source**:' )
-    print(f'  {html_root}/{subdir_map[subdir]}/{name}.nxdl.xml')
+    print(f'  {HTML_ROOT}/{SUBDIR_MAP[subdir]}/{name}.nxdl.xml')
 
 
 def main():
@@ -715,7 +735,7 @@ def main():
 
 
 if __name__ == '__main__':
-    USE_ANCHOR_REGISTRY = True
+    WRITE_ANCHOR_REGISTRY = True
     main()
 
 
