@@ -32,10 +32,6 @@ units.table: ../../utils/units2rst.py ../../nxdlTypes.xsd
 nxdl_desc.rst: ../../utils/nxdl_desc2rst.py ../../nxdl.xsd
 	$(PYTHON) -u ../../utils/nxdl_desc2rst.py ../../nxdl.xsd > $@
 
-clean ::
-	$(RM) types.table units.table nxdl_desc.rst
-	$(MAKE) clean -C $(SUBDIRS)
-
 SUBDIRS = classes
 
 .PHONY: subdirs $(SUBDIRS)
@@ -44,3 +40,9 @@ subdirs: $(SUBDIRS)
 
 $(SUBDIRS):
 	$(MAKE) -C $@
+
+clean:
+	$(RM) types.table units.table nxdl_desc.rst
+	for dir in $(SUBDIRS); do \
+	    $(MAKE) -C $$dir clean; \
+	done

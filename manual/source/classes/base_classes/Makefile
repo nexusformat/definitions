@@ -49,7 +49,7 @@ index.rst ::
 	$(PYTHON) -u $(NXDL2RST) $< > $@
 
 clean ::
-	$(RM) NX*.rst NX*.nxdl.xml
+	$(RM) index.rst NX*.rst NX*.nxdl.xml
 
 test ::
 	# $(SRCs)

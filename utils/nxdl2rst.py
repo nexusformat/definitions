@@ -17,7 +17,7 @@ import pyRestTable
 import re
 import sys
 import yaml
-from local_utilities import printf, replicate
+from local_utilities import replicate
 
 
 INDENTATION_UNIT = '  '
@@ -372,9 +372,9 @@ def printEnumeration( indent, ns, parent ):
         return ''
 
     if len(node_list) == 1:
-        printf('%sObligatory value:', indent)
+        print(f'{indent}Obligatory value:', end='')
     else:
-        printf('%sAny of these values:', indent)
+        print(f'{indent}Any of these values:', end='')
 
     docs = OrderedDict()
     for item in node_list:
@@ -388,16 +388,16 @@ def printEnumeration( indent, ns, parent ):
     if ( any( doc for doc in docs.values() ) or
          len( oneliner ) > ENUMERATION_INLINE_LENGTH ):
         # print one item per line
-        print('\n')
+        print("\n")
         for name, doc in docs.items():
-            printf('%s  * %s', indent, show_as_typed_text(name))
+            print(f'{indent}  * {show_as_typed_text(name)}', end='')
             if doc:
-                printf(': %s', doc)
-            print('\n')
+                print(f': {doc}', end='')
+            print("\n")
     else:
         # print all items in one line
-        print(' %s' % ( oneliner ) )
-    print('')
+        print(f" {oneliner}")
+    print("")
 
 
 def printDoc( indent, ns, node, required=False):
@@ -405,23 +405,23 @@ def printDoc( indent, ns, node, required=False):
     if len(blocks)==0:
         if required:
             raise Exception( 'No documentation for: ' + node.get('name') )
-        print('')
+        print("")
     else:
         for block in blocks:
             for line in block.splitlines():
-                print( '%s%s' % ( indent, line ) )
+                print(f"{indent}{line}")
             print()
 
 
 def printAttribute( ns, kind, node, optional, indent, parent_path ):
     name = node.get('name')
     index_name = name
-    print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'attribute'))
+    print(
+        f"{indent}"
+        f"{hyperlinkTarget(parent_path, name, 'attribute')}"
     )
-    print( '%s.. index:: %s (%s attribute)\n' %
-           ( indent, index_name, kind ) )
-    print( '%s**@%s**: %s%s%s\n' % (
-        indent, name, optional, fmtTyp(node), fmtUnits(node) ) )
+    print(f"{indent}.. index:: {index_name} ({kind} attribute)\n")
+    print(f"{indent}**@{name}**: {optional}{fmtTyp(node)}{fmtUnits(node)}\n")
     printDoc(indent+INDENTATION_UNIT, ns, node)
     node_list = node.xpath('nx:enumeration', namespaces=ns)
     if len(node_list) == 1:
@@ -431,9 +431,8 @@ def printAttribute( ns, kind, node, optional, indent, parent_path ):
 def printIfDeprecated( ns, node, indent ):
     deprecated = node.get('deprecated', None)
     if deprecated is not None:
-        print( '\n%s.. index:: deprecated\n' % indent)
-        fmt = '\n%s**DEPRECATED**: %s\n'
-        print( fmt % (indent, deprecated ) )
+        print(f"\n{indent}.. index:: deprecated\n")
+        print(f"\n{indent}**DEPRECATED**: {deprecated}\n")
 
 
 def printFullTree(ns, parent, name, indent, parent_path):
@@ -458,13 +457,16 @@ def printFullTree(ns, parent, name, indent, parent_path):
         dims = analyzeDimensions(ns, node)
 
         optional_text = get_required_or_optional_text(node, use_application_defaults)
-        print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'field')))
-        print( '%s.. index:: %s (field)\n' %
-               ( indent, index_name ) )
+        print(f"{indent}{hyperlinkTarget(parent_path, name, 'field')}")
+        print(f"{indent}.. index:: {index_name} (field)\n")
         print(
-            '%s**%s**: %s%s%s%s\n' % (
-                indent, name, optional_text, fmtTyp(node), dims, fmtUnits(node)
-                ))
+            f"{indent}**{name}**: "
+            f"{optional_text}"
+            f"{fmtTyp(node)}"
+            f"{dims}"
+            f"{fmtUnits(node)}"
+            "\n"
+        )
 
         printIfDeprecated( ns, node, indent+INDENTATION_UNIT )
         printDoc(indent+INDENTATION_UNIT, ns, node)
@@ -486,8 +488,8 @@ def printFullTree(ns, parent, name, indent, parent_path):
             if name == '':
                 name = typ.lstrip('NX').upper()
             typ = ':ref:`%s`' % typ
-        print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'group')))
-        print( '%s**%s**: %s%s\n' % (indent, name, optional_text, typ ) )
+        print(f"{indent}{hyperlinkTarget(parent_path, name, 'group')}")
+        print(f"{indent}**{name}**: {optional_text}{typ}\n")
 
         printIfDeprecated(ns, node, indent+INDENTATION_UNIT)
         printDoc(indent+INDENTATION_UNIT, ns, node)
@@ -501,9 +503,13 @@ def printFullTree(ns, parent, name, indent, parent_path):
 
     for node in parent.xpath('nx:link', namespaces=ns):
         name = node.get('name')
-        print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'link')))
-        print( '%s**%s**: :ref:`link<Design-Links>` (suggested target: ``%s``)\n' % (
-            indent, name, node.get('target') ) )
+        print(f"{indent}{hyperlinkTarget(parent_path, name, 'link')}")
+        print(
+            f"{indent}**{name}**: "
+            ":ref:`link<Design-Links>` "
+            f"(suggested target: ``{node.get('target')}``"
+            "\n"
+        )
         printDoc(indent+INDENTATION_UNIT, ns, node)
 
 
@@ -545,16 +551,17 @@ def print_rst_from_nxdl(nxdl_file):
         'contributed definition')
 
     # print ReST comments and section header
-    print( '.. auto-generated by script %s from the NXDL source %s' %
-           (sys.argv[0], sys.argv[1]) )
-    print('')
+    print(
+        f".. auto-generated by script {sys.argv[0]} "
+        f"from the NXDL source {sys.argv[1]}"
+    )
+    print("")
     print( '.. index::' )
-    print( '    ! %s (%s)' % (name,listing_category) )
-    print( '    ! %s (%s)' % (lexical_name,listing_category) )
-    print( '    see: %s (%s); %s' %
-           (lexical_name,listing_category, name) )
-    print('')
-    print( '.. _%s:\n' % name )
+    print(f"    ! {name} ({listing_category})")
+    print(f"    ! {lexical_name} ({listing_category})")
+    print(f"    see: {lexical_name} ({listing_category}); {name}")
+    print("")
+    print(f".. _{name}:\n")
     print( '='*len(title) )
     print( title )
     print( '='*len(title) )
@@ -566,16 +573,14 @@ def print_rst_from_nxdl(nxdl_file):
     else:
         extends = ':ref:`%s`' % extends
 
-    print('')
+    print("")
     print( '**Status**:\n' )
-    print( '  %s, extends %s' %
-           ( listing_category.strip(),
-             extends ) )
+    print(f'  {listing_category.strip()}, extends {extends}')
 
     printIfDeprecated(ns, root, '')
 
     # print official description of this class
-    print('')
+    print("")
     print( '**Description**:\n' )
     printDoc(INDENTATION_UNIT, ns, root, required=True)
 
@@ -591,10 +596,10 @@ def print_rst_from_nxdl(nxdl_file):
         printDoc( INDENTATION_UNIT, ns, node_list[0] )
         for node in node_list[0].xpath('nx:symbol', namespaces=ns):
             doc = getDocLine(ns, node)
-            printf('  **%s**', node.get('name'))
+            print(f"  **{node.get('name')}**", end='')
             if doc:
-                printf(': %s', doc)
-            print('\n')
+                print(f': {doc}', end='')
+            print("\n")
 
     # print group references
     print( '**Groups cited**:' )
@@ -609,10 +614,10 @@ def print_rst_from_nxdl(nxdl_file):
     else:
         out = [ (':ref:`%s`' % g) for g in groups ]
         txt = ', '.join(sorted(out))
-        print( '  %s\n' % ( txt ) )
+        print(f"  {txt}\n")
         out = [ ('%s (base class); used in %s' % (g, listing_category)) for g in groups ]
         txt = ', '.join(out)
-        print( '.. index:: %s\n' % ( txt ) )
+        print(f'.. index:: {txt}\n')
 
     # TODO: change instances of \t to proper indentation
     html_root = 'https://github.com/nexusformat/definitions/blob/main'
@@ -634,8 +639,7 @@ def print_rst_from_nxdl(nxdl_file):
                   }
     print("")
     print( '**NXDL Source**:' )
-    print( '  %s/%s/%s.nxdl.xml' % (
-        html_root, subdir_map[subdir], name) )
+    print(f'  {html_root}/{subdir_map[subdir]}/{name}.nxdl.xml')
 
 
 def main():
@@ -649,7 +653,7 @@ def main():
     nxdl_file = results.nxdl_file
 
     if not os.path.exists(nxdl_file):
-        print( 'Cannot find %s' % nxdl_file )
+        print(f'Cannot find {nxdl_file}' )
         exit()
 
     print_rst_from_nxdl(nxdl_file)

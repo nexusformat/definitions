@@ -29,8 +29,7 @@ subdirs: $(SUBDIRS)
 $(SUBDIRS):
 	$(MAKE) -C $@
 
-clean ::
-	$(MAKE) clean -C base_classes
-	$(MAKE) clean -C applications
-	$(MAKE) clean -C contributed_definitions
-#	$(MAKE) clean -C $(SUBDIRS)
+clean:
+	for dir in $(SUBDIRS); do \
+	    $(MAKE) -C $$dir clean; \
+	done
