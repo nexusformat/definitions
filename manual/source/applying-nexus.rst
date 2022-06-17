@@ -11,11 +11,7 @@ given. As an example a hypothetical instrument named WONI will be used.
 .. note:: 
           If you are looking for a tutorial on reading or writing NeXus data files
           using the NeXus API, consult the :ref:`NAPI` chapter.
-          For code examples, refer to :ref:`Examples.NAPI` chapter.
-          Alternatively, there are examples in the :ref:`native-HDF5-Examples`
-          chapter of writing and reading NeXus data files using the native HDF5 interfaces in C.
-          Further, there are also some Python examples using the ``h5py`` package
-          in the :ref:`Example-H5py` section.
+          For code examples (with or without NAPI), refer to the :ref:`Examples.code` chapter.
 
 ..  ======================================================
     section: Basic organization within the NeXus hierarchy
@@ -546,7 +542,11 @@ may be required to store multiple related data sets of the results of data analy
 into the same data file. In this case create more entries. Each entry should be
 interpretable standalone, i.e. contain all the information of a complete ``NXentry``
 class. Please keep in mind that groups or data items which stay constant across
-entries can always be linked in.
+entries can always be linked to save space. Application definitions describe only 
+what is included within an ``NXentry`` and so have no power to enforce any particular 
+usage of ``NXentry`` groups. However, documentation within and accompanying an 
+application definition can provide guidance and recommendations on situations where
+the use of multiple ``NXentry`` groups would be appropriate.
 
 ..  =======================
     section: Processed Data

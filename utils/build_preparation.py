@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# Coded for both python2 and python3.
-
 '''
 Copy all resources for out-of-source documentation build
 
@@ -23,9 +21,8 @@ The target directory is assumed to be the current directory.
 # Re-run this code to bring in any changed files (for incremental build)
 # Be sure to properly specify the source and target directories.
 
-from __future__ import print_function
 import os, sys
-import local_utilities
+from local_utilities import replicate
 
 
 MTIME_TOLERANCE = 0.001   # ignore mtime differences <= 1 ms
@@ -135,22 +132,22 @@ def update(source_path, target_path):
     qualify_inputs(source_path, target_path)
     
     paths, files = get_source_items(REPLICATED_RESOURCES, source_path)
-    local_utilities.printf('source has  %d directories   and   %d files\n', len(paths), len(files))
+    print('source has  %d directories   and   %d files' % (len(paths), len(files)))
     
     # create all the directories / subdirectories
     for source in sorted(paths):
         relative_name = source[len(source_path):].lstrip(os.sep)
         target = standardize_name(target_path, relative_name)
         if not os.path.exists(target):
-            local_utilities.printf('create directory %s\n', target)
+            print('create directory %s' % target)
             os.mkdir(target, os.stat(source_path).st_mode)
     # check if the files need to be updated
     for source in sorted(files):
         relative_name = source[len(source_path):].lstrip(os.sep)
         target = standardize_name(target_path, relative_name)
         if not identical(source, target):
-            local_utilities.printf('update file %s\n', target)
-            local_utilities.replicate(source, target)
+            print('update file %s' % target)
+            replicate(source, target)
 
 
 def main():

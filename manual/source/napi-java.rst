@@ -127,7 +127,7 @@ Here are examples for a UNIX shell and the Windows shell.
 
     .. rubric:: UNIX example shell script to start ``jnexus.jar``
 
-    .. literalinclude:: examples/napi-java-jnexus.sh
+    .. literalinclude:: examples/napi/napi-java-jnexus.sh
         :tab-width: 4
         :linenos:
         :language: sh
@@ -136,7 +136,7 @@ Here are examples for a UNIX shell and the Windows shell.
 
     .. rubric:: Windows 32 example batch file to start ``jnexus.jar``
 
-    .. literalinclude:: examples/napi-java-jnexus.bat
+    .. literalinclude:: examples/napi/napi-java-jnexus.bat
         :tab-width: 4
         :linenos:
         :language: bat
@@ -170,7 +170,7 @@ to get a feeling for the API:
 
     .. rubric:: fragment for opening and closing
 
-    .. literalinclude:: examples/napi-java-prog1.java
+    .. literalinclude:: examples/napi/napi-java-prog1.java
         :tab-width: 4
         :linenos:
         :language: java
@@ -211,7 +211,7 @@ Again a code sample which shows how this looks like:
 
     .. rubric:: fragment for writing and reading
 
-    .. literalinclude:: examples/napi-java-datarw1.java
+    .. literalinclude:: examples/napi/napi-java-datarw1.java
         :tab-width: 4
         :linenos:
         :language: java
@@ -237,7 +237,7 @@ converted to and from bytes when reading string data. See a writing example:
 
     .. rubric:: String writing
 
-    .. literalinclude:: examples/napi-java-datarw2.java
+    .. literalinclude:: examples/napi/napi-java-datarw2.java
         :tab-width: 4
         :linenos:
         :language: java
@@ -248,7 +248,7 @@ And reading:
 
     .. rubric:: String reading
 
-    .. literalinclude:: examples/napi-java-datarw2.java
+    .. literalinclude:: examples/napi/napi-java-datarw3.java
         :tab-width: 4
         :linenos:
         :language: java
@@ -297,7 +297,7 @@ stored object for the key. Thus the code for a vGroup search looks like this:
 
     .. rubric:: vGroup search
 
-    .. literalinclude:: examples/napi-java-inquiry1.java
+    .. literalinclude:: examples/napi/napi-java-inquiry1.java
         :tab-width: 4
         :linenos:
         :language: java
@@ -310,7 +310,7 @@ information as value. Thus an attribute search looks like this in the Java-API:
 
     .. rubric:: attribute search
 
-    .. literalinclude:: examples/napi-java-inquiry2.java
+    .. literalinclude:: examples/napi/napi-java-inquiry2.java
         :tab-width: 4
         :linenos:
         :language: java
