@@ -27,6 +27,7 @@ listing_category = None
 repo_root_path = pathlib.Path(__file__).parent.parent
 WRITE_ANCHOR_REGISTRY = False
 HTML_ROOT = 'https://github.com/nexusformat/definitions/blob/main'
+MANUAL_ROOT = "https://manual.nexusformat.org/classes/"
 SUBDIR_MAP = {
     'base': 'base_classes',
     'application': 'applications',
@@ -45,6 +46,8 @@ class AnchorRegistry:
         self.yaml_file = path / "anchors.yml"
         self.registry = self._read()
         self.local_anchors = []  # anchors from current NXDL file
+        self.nxdl_file = None
+        self.category = None
     
     @property
     def all_anchors(self):
@@ -64,11 +67,13 @@ class AnchorRegistry:
         
         reg = self.registry[key]
         if anchor not in reg:
+            hanchor = self._html_anchor(anchor)
+            fnxdl = "/".join(pathlib.Path(self.nxdl_file).parts[-2:]).split(".")[0]
+            url = f"{MANUAL_ROOT}{self.category}/{fnxdl}.html{hanchor}"
             reg[anchor] = dict(
                 anchor=anchor,
-                html=self._html_anchor(anchor),
-                # TODO: HTML anchor (#nxdata-variable-last-good-attribute)
-                # TODO URL
+                html=hanchor,
+                url=url,
             )
     
     def key_from_anchor(self, anchor):
@@ -95,7 +100,7 @@ class AnchorRegistry:
 
     def _html_anchor(self, anchor):
         """
-        Create HTML anchor from reST anchor.
+        Create (internal hyperlink target for) HTML anchor from reST anchor.
 
         Example:
 
@@ -587,6 +592,7 @@ def print_rst_from_nxdl(nxdl_file):
     print restructured text from the named .nxdl.xml file
     '''
     global listing_category
+
     # parse input file into tree
     tree = lxml.etree.parse(nxdl_file)
 
@@ -608,6 +614,11 @@ def print_rst_from_nxdl(nxdl_file):
     # retrieve category from directory
     #subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
     subdir = root.attrib["category"]
+
+    # Pass these terms to construct the full URL
+    anchor_registry.nxdl_file = nxdl_file
+    anchor_registry.category = SUBDIR_MAP[subdir]
+
     # TODO: check for consistency with root.get('category')
     listing_category = {
                  'base': 'base class',
