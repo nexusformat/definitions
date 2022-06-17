@@ -26,6 +26,7 @@ NXDLSUMMARY= $(ROOTDIR)/utils/nxdl_summary.py
 NXDL_SUFFIX = nxdl.xml
 
 SRCDIR = $(ROOTDIR)/contributed_definitions
+SUBDIRS = container
 
 SRCs = $(wildcard $(SRCDIR)/NX*.$(NXDL_SUFFIX) )
 RSTs := $(SRCs:.$(NXDL_SUFFIX)=.rst)
@@ -46,10 +47,11 @@ index.rst ::
 	$(PYTHON) $(NXDLSUMMARY) contributed_definitions
 
 %.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
-	$(PYTHON) $(NXDL2RST) $< > $@
+	$(PYTHON) -u $(NXDL2RST) $< > $@
 
 clean ::
-	$(RM) NX*.rst NX*.nxdl.xml
+	$(RM) index.rst NX*.rst NX*.nxdl.xml
+	$(RM) -rf $(SUBDIRS)
 
 test ::
 	# $(SRCs)

@@ -45,8 +45,6 @@ Python, C++, and IDL.
 
 The API uses a very simple *state*
 model to navigate through a NeXus file.
-(Compare this example with :ref:`example.napi.simple.2d.write`,
-in the :ref:`NAPI <NAPI>` chapter, using the native HDF5 commands.)
 When you open a file,
 the API provides a file *handle*, which stores the
 current location, i.e. which group and/or field is currently open. 

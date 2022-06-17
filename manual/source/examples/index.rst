@@ -10,43 +10,60 @@ Simple examples of reading and writing NeXus data files
 are provided in the :ref:`Introduction` chapter and also
 in the :ref:`NAPI` chapter.
 
-.. _Examples.nonNAPI:
+.. _Examples.code:
 
 Code Examples in Various Languages
 ##################################
 
-Each example in this section demonstrates either reading NeXus files in
-one of the supported storage containers (HDF5 or one of the legacy container formats: HDF4 or XML)
-or writing compliant NeXus files in the HDF5 storage containers.
-Please be aware that not all exmples are up to date with the latest format recommendations.
+Each example in this section demonstrates writing and reading NeXus compliant files
+in various languages with different libraries. Most examples are using the HDF5 file
+format. Note however that other container formats like the legacy format HDF4 or XML
+can also be used to store NeXus compliant data.
+
+Please be aware that not all examples are up to date with the latest format recommendations.
 
 .. toctree::
    :maxdepth: 1
-   
+
    code_native
    h5py/index
+   nexusformat/index
    matlab/index
+   napi/c
+   napi/fortran
+   napi/python
+
+.. _Examples.view:
+
+Visualization tools
+###################
+
+Tools to visualize NeXus HDF5 files graphically or in text form.
+
+.. toctree::
+
+   view/h5dump
+   view/punx
+   view/nexpy
+   view/silx
+
+.. _Examples.instruments:
+
+Examples for Specific Instruments
+#################################
+
+Examples of working with data from specific instruments.
+
+.. toctree::
+   :maxdepth: 1
+
    lrmecs/index
    epics/index
 
-.. _Examples.NAPI:
+.. _Examples.tools:
 
-Code Examples that use the NeXus API (NAPI)
-###########################################
-
-These examples illustrate the use of the NAPI
-:ref:`NAPI`. Please refer to the linked section in the manual for the status of NAPI.
-
-.. toctree::
-	:maxdepth: 1
-	
-	code_napi
-
-
-.. _Examples.readers:
-
-Code Projects that work with NeXus data files
-#############################################
+Other tools to handle NeXus data files
+######################################
 
 The number of tools that read NeXus data files,
 either for general use or to read a specific

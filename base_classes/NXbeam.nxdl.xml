@@ -55,7 +55,7 @@
         by the presense of and shape of accompanying fields, such as incident_wavelength_weights for a polychromatic beam.
         </doc>
     <field name="distance" type="NX_FLOAT" units="NX_LENGTH">
-        <doc>Distance from sample</doc>
+        <doc>Distance from sample. Note, it is recommended to use NXtransformations instead.</doc>
     </field>
     <field name="incident_energy" type="NX_FLOAT" units="NX_ENERGY">
         <doc>Energy carried by each particle of the beam on entering the beamline component</doc>
@@ -261,4 +261,77 @@
             for a summary of the discussion.
         </doc>
     </attribute>
+
+    <field name="depends_on" minOccurs="0" type="NX_CHAR">
+        <doc>
+            The NeXus coordinate system defines the Z axis to be along the nominal beam
+            direction. This is the same as the McStas coordinate system (see :ref:Design-CoordinateSystem).
+            However, the additional transformations needed to represent an altered beam
+            direction can be provided using this depends_on field that contains the path
+            to a NXtransformations group. This could represent redirection of the beam,
+            or a refined beam direction.
+        </doc>
+    </field>
+
+    <group type="NXtransformations" minOccurs="0">
+        <doc>
+            Direction (and location) for the beam. The location of the beam can be given by
+            any point which it passes through as its offset attribute.
+        </doc>
+        <field name="DIRECTION" nameType="any" units="NX_TRANSFORMATION" type="NX_NUMBER">
+            <doc>
+                Direction of beam vector, its value is ignored. If missing, then the beam direction is defined as [0,0,1]
+                and passes through the origin
+            </doc>
+            <attribute name="transformation_type">
+                <enumeration>
+                    <item value="translation" />
+                </enumeration>
+            </attribute>
+            <attribute name="vector" type="NX_NUMBER">
+                <doc>
+                    Three values that define the direction of beam vector
+                </doc>
+            </attribute>
+            <attribute name="offset" type="NX_NUMBER">
+                <doc>
+                    Three values that define the location of a point through which the beam passes
+                </doc>
+            </attribute>
+            <attribute name="depends_on" type="NX_CHAR">
+                <doc>
+                    Points to the path to a field defining the location on which this
+                    depends or the string "." for origin.
+                </doc>
+            </attribute>
+        </field>
+        <field name="reference_plane" nameType="any" units="NX_TRANSFORMATION" type="NX_NUMBER">
+            <doc>
+                Direction of normal to reference plane used to measure azimuth relative to the beam, its value is ignored.
+                This also defines the parallel and perpendicular components of the beam's polarization.
+                If missing, then the reference plane normal is defined as [0,1,0] and passes through the origin
+            </doc>
+            <attribute name="transformation_type">
+                <enumeration>
+                    <item value="translation" />
+                </enumeration>
+            </attribute>
+            <attribute name="vector" type="NX_NUMBER">
+                <doc>
+                    Three values that define the direction of reference plane normal
+                </doc>
+            </attribute>
+            <attribute name="offset" type="NX_NUMBER">
+                <doc>
+                    Not required as beam direction offset locates the plane
+                </doc>
+            </attribute>
+            <attribute name="depends_on" type="NX_CHAR">
+                <doc>
+                    Points to the path to a field defining the location on which this
+                    depends or the string "." for origin.
+                </doc>
+            </attribute>
+        </field>
+    </group>
 </definition>
