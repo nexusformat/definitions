@@ -8,5 +8,6 @@ import sys
 from units2rst import worker
 
 
-sys.argv.append("../nxdlTypes.xsd")
+# sys.argv.append("../nxdlTypes.xsd")
+sys.argv.append("nxdlTypes.xsd")
 worker('anyUnitsAttr')

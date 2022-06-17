@@ -14,19 +14,13 @@ tool                    description
 
 '''
 
-import os, sys, re
+import os
 import shutil
-
-
-
-def printf(str, *args):
-    '''formatted print without automatic newline'''
-    print(str % args, end='')
 
 
 def mtime(file_name):
     '''return file modification time'''
-    return os.stat(file_name)[stat.ST_MTIME]
+    return os.stat(file_name)[os.stat.ST_MTIME]
 
 
 def replicate(source, target):
