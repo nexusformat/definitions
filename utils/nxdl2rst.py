@@ -248,9 +248,9 @@ def analyzeDimensions(ns, parent):
     optional = False
     for subnode in node_list:
         # Dimension index (starts from index 1)
-        index = subnode.get('index')
-        if not index or not index.isdigit():
-            continue
+        index = subnode.get('index', '')
+        if not index.isdigit():
+            raise RuntimeError("A dimension must have an index")
         index = int(index)
         if index == 0:
             # No longer needed: legacy way to specify that the
@@ -269,31 +269,42 @@ def analyzeDimensions(ns, parent):
             ref = subnode.get('ref')
             if ref:
                 return ' (Rank: same as field %s, Dimensions: same as field %s)' % (ref, ref)
-            dim = "."
+            dim = "."  # dimension has no symbol
 
-        # Dimension is optional
-        optional |= subnode.get('required', '').lower() == "false"
+        # Dimension might be optional
+        if subnode.get('required', 'true').lower() == "false":
+            optional = True
+        elif optional:
+            raise RuntimeError("A required dimension cannot come after an optional dimension")
         if optional:
             dim = '[%s]' % dim
 
         dims[index] = dim
 
+    # When the rank is missing, set to the number of dimensions when
+    # there are dimensions specified and none of them are optional.
+    ndims = len(dims)
     rank = node.get('rank', None)
-    if rank is None:
-        if dims:
-            # the rank is variable because of one or more
-            # dimensions are optional
-            rank = len(dims)
-        else:
-            # the rank is variable because no dimensions
-            # were specified
-            rank = "."
+    if rank is None and not optional and ndims:
+        rank = str(ndims)
 
-    if dims:
+    # Validate rank and dimensions
+    rank_is_fixed = rank and rank.isdigit()
+    if optional and rank_is_fixed:
+        raise RuntimeError("A fixed rank cannot have optional dimensions")
+    if rank_is_fixed and ndims and int(rank) != ndims:
+        raise RuntimeError("The rank and the number of dimensions do not correspond")
+
+    # Omit rank and/or dimensions when not specified
+    if rank and dims:
         dims = ', '.join(dims)
         return ' (Rank: %s, Dimensions: [%s])' % (rank, dims)
-    else:
+    elif rank:
         return ' (Rank: %s)' % rank
+    elif dims:
+        dims = ', '.join(dims)
+        return ' (Dimensions: [%s])' % dims
+    return ''
 
 
 def hyperlinkTarget(parent_path, name, nxtype):
