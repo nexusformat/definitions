@@ -32,9 +32,6 @@ We created two new application definitions:
     :ref:`NXmpes`:
        A general appdef with minimalistic metadata requirements, apt to describe all photemission experiments.
 
-    :ref:`NXmpes_ARPES`:
-       A specialized appdef with metadata parameters to describe all ARPES experiments.
-
 .. _NewBC:
 
 New Base Classes
@@ -76,7 +73,7 @@ New Common Base Classes
 
 We developed two classes that are common to other techniques:
 
-    :ref:`NXlens`:
+    :ref:`NXlens_em`:
        A class to describe all types of lenses. Includes electrostatic lenses for electron energy analysers.
 
     :ref:`NXdeflector`
@@ -108,4 +105,7 @@ We use existent base classes in application definitions and add descriptors:
        Added descriptors specific to photoemission experiments.
 
     :ref:`NXsource`
-       Added descriptors for laboratory sources (X-ray, UV lamps) but mostly for ultrafat lasers with complex time structures.
+       Added descriptors for laboratory sources (X-ray, UV lamps) but mostly for ultrafast lasers with complex time structures.
+
+    :ref:`NXinstrument`
+      Added descriptors for the overall resolutions of the experiment (energy, momentum, angular, spatial, temporal).
