@@ -1,0 +1,168 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<definition category="base" extends="NXobject" name="NXevent_data_em" type="group" xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.w3.org/2001/XMLSchema-instance">
+    <doc>
+         A container to store metadata and settings of the instrument which are
+         specific for scans, images, and metadata. The need for such a structuring
+         of data is evident from the fact that electron microscopes are dynamic.
+         
+         Oftentimes it suffices to calibrate the instrument at the start of the 
+         session. Subsequently, data (images, spectra, etc.) can be collected. 
+         Users may wish to take a single data item after which their session is complete.
+         
+         For this use case one may argue that the need for an additional grouping 
+         is redundant. Instead, the metadata could equally have been stored inside
+         the respective groups of the top-level mandatory NXinstrument group. 
+         On the flip side, even for a session with a single image it would also not 
+         harm to nest the data.
+         
+         Frequently users spend much longer at the microscope in the course of which
+         the recalibrate and take data items with each calibration.
+         
+         In fact, oftentimes scientists feel that there is a need to store details 
+         about eventual drift of the specimen in its holder (if such data is available)
+         or record changes the lens excitations or apertures used. 
+         Although, current microscopes are usually equipped with stabilization 
+         systems for many of the individual components, it can still be useful 
+         to store time-dependent data more seriously.
+         
+         Another reason if not a need for a more finely granularizable options for 
+         storing time-dependent data, is that over the course of a session one may
+         reconfigure the microscope. What is a reconfiguration? This could be the
+         change of an aperture mode because a scientist may first collect an image
+         with some aperture and then choose a different mode before taking the next
+         image. As the aperture affects the electron beam it will affect the system.
+         Not necessarily to a level that the microscopy requires a recalibration but
+         at least at the level of each image the application definition has to assure
+         that these specific settings can be stored for each collected signal/image.
+         
+         Let aside for a moment the technology and business models, an EM could be 
+         monitored (and will likely be in the future) for streaming out spatio-temporal
+         details about its components, locations and eventually applied stimuli and 
+         positioning of the specimen. Some snapshot or integrated data from this stream
+         are relevant to understand the signal genesis. In such a generic case
+         it might be necessary to sync these streaming data with those intervals
+         in time when specific measurements are taken (spectra collected, 
+         images taken, diffraction images indexed on-the-fly).
+         
+         Theoretically, an instrument and specimen should be considered as dynamic.
+         Scientists often report or feel (difficult to quantify) observations that
+         microscopes &quot;&quot;&quot;perform differently&quot;&quot;&quot; across sessions, without sometimes a 
+         clear root cause. Users of the instrument may consider such conditions
+         impractical and thus either abort their session or try to bring the 
+         microscope first into a state where conditions are considered stable and
+         of high enough qualiy to collect data.
+         
+         In all these cases it is practical to store time-dependent data of the
+         instrument state not in the respective instrument component groups
+         of the top-level NXinstrument but in a sort of event data log.
+         This is the idea behind this NX&quot;#&quot;em&quot;#&quot;_snapshot.
+         
+         The base class requires a start time and an optional end time. 
+         The end time should be added to represent a time interval
+         (remind the idea of the instrument state stream) during which the 
+         scientist considered the microscope (beam and specimen) as 
+         incrementally stable enough.
+         
+         For specific simulation purposes, mainly in an effort to digitally repeat
+         or simulate the experiment, it is tempting to consider dynamics of the
+         instrument, implemented as time-dependent functional descriptions of
+         e.g. lens excitations, beam shape function, electron trajectories, or
+         detector noise models.
+         
+         For now the preferred strategy to handle these cases is through
+         customizations of the specific fields within NXem_snapshots. Another 
+         alternative could be to sample finer, eventually dissimilarly along the
+         time axis. This may cause situations though where an NXem_snapshot does
+         not contain specific measurements (i.e. images, spectra of scientific
+         relevance).
+         
+         In this case one should better go for a customized application definition
+         with a functional property description inside NXem_snapshot members or
+         resort to a specific application definition which allows to store metadata
+         for tracking explicitly electrons (with ray-tracing based descriptors/
+         computational geometry descriptors) or tracking of wave bundle approaches.
+         
+         This perspective on more subtle time-dependent considerations of electron
+         microscopy can be advantageous also for storing details of time-dependent
+         additional components that are coupled to and synced or not with the 
+         instrument.
+         
+         Examples include cutting-edge experiments where the electron beam gets
+         coupled/excited by e.g. lasers. In this case, the laser unit should be 
+         registered under the top-level NXinstrument section. Its spatio-temporal
+         details could be stored inside respective groups of the NXem_instrument
+    </doc>
+    <field name="start_time" type="NX_DATE_TIME">
+        <doc>
+             ISO 8601 time code with local time zone offset to UTC information included when the snapshot time interval started.
+             If the user wishes to specify an interval of time that the snapshot should represent during which the
+             instrument was stable and configured using specific settings and calibrations, the start_time is the 
+             start (left bound of the time interval) while the end_time specifies the end (right bound) of the time interval.
+        </doc>
+    </field>
+    <field name="end_time" type="NX_DATE_TIME">
+        <doc>
+             ISO 8601 time code with local time zone offset to UTC included when the snapshot time interval ended.
+             If the user does not wish to specify a time interval, end_time should have the same value as start_time.
+        </doc>
+    </field>
+    <field name="event_identifier" type="NX_CHAR">
+        <doc>
+             Reference to a specific state and setting of the microscope components.
+        </doc>
+    </field>
+    <field name="event_type" type="NX_CHAR">
+        <doc>
+             Which specific event/measurement type. Pick one of the following:
+             * in-lens detector, like bse detector usually build from quadrants,
+             can be represented like in NXmx
+             * secondary_electron, image, topography, fractography, overview
+             * backscattered_electron, image, Z contrast, ECCI
+             * bright_field, image, TEM
+             * dark_field, image, crystal defects
+             * adf, image (medium- or high-angle) annular dark field, TEM
+             * diffraction, image, TEM diffraction, or a comparable technique in the SEM
+             * kikuchi, image, SEM EBSD and TEM diffraction
+             * xray, spectrum (point, line, surface, volume), composition,
+             energy-dispersive X-ray spectroscopy (EDS/EDX) in SEM, 
+             EDXS as equivalent techniques in TEM,
+             also for low Z elements with grating technique detectors
+             * eels, spectrum (p, l, s, v), binding, ZLP, plasmons, TEM
+             * auger, spectrum, (low Z contrast)
+             * cathodoluminescence (optical spectra)
+             * ronchigram, image, a utility image to check the alignment specifically in TEM
+             * chamber, image taken with the control monitor from inside
+             the SEM or TEM to check e.g. placing of components or educational
+             purposes
+        </doc>
+    </field>
+    <field name="detector_identifier" type="NX_CHAR">
+        <doc>
+             The detector or set of detectors that was used to collect this signal.
+             The name of the detector has to match the names used for available
+             detectors, i.e. if the instrument has an ebsd_camera
+             the detector for an NXimage_em_kikuchi should be the ebsd_camera
+        </doc>
+    </field>
+    <group type="NXimage_set_em_se"/>
+    <group type="NXimage_set_em_bse"/>
+    <group type="NXimage_set_em_ecci"/>
+    <group type="NXimage_set_em_bf"/>
+    <group type="NXimage_set_em_df"/>
+    <group type="NXimage_set_em_adf"/>
+    <group type="NXimage_set_em_kikuchi"/>
+    <group type="NXimage_set_em_diffrac"/>
+    <group type="NXspectrum_set_em_xray"/>
+    <group type="NXspectrum_set_em_eels"/>
+    <group type="NXspectrum_set_em_auger"/>
+    <group type="NXspectrum_set_em_cathodolum"/>
+    <group type="NXimage_set_em_ronchigram"/>
+    <group type="NXimage_set_em_chamber"/>
+    <group type="NXebeam_column"/>
+    <group type="NXibeam_column"/>
+    <group name="ebeam_deflector" type="NXscanbox_em"/>
+    <group name="ibeam_deflector" type="NXscanbox_em"/>
+    <group type="NXoptical_system"/>
+    <group type="NXuser"/>
+</definition>
