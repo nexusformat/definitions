@@ -562,7 +562,10 @@ def printFullTree(ns, parent, name, indent, parent_path):
             if name == '':
                 name = typ.lstrip('NX').upper()
             typ = ':ref:`%s`' % typ
-        print(f"{indent}{hyperlinkTarget(parent_path, name, 'group')}")
+        hTarget = hyperlinkTarget(parent_path, name, 'group')
+        target = hTarget.replace(".. _", "").replace(":\n", "")
+        # TODO: https://github.com/nexusformat/definitions/issues/1057
+        print(f"{indent}{hTarget}")
         print(f"{indent}**{name}**: {optional_text}{typ}\n")
 
         printIfDeprecated(ns, node, indent+INDENTATION_UNIT)
