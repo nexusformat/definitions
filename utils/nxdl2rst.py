@@ -10,6 +10,8 @@ the NeXus NXDL Classes chapter.
 
 from collections import OrderedDict
 from html import parser as HTMLParser
+import datetime
+import json
 import lxml.etree
 import os
 import pathlib
@@ -35,50 +37,80 @@ def addAnchor(anchor):
 class AnchorRegistry:
 
     def __init__(self) -> None:
-        path = repo_root_path
+        path = repo_root_path / "manual" / "source" / "_static"
         self.all_anchors = path / "all_anchors.txt"
-        self.filename = path / "anchors.yml"
+        self.json_file = path / "anchors.json"
+        self.xml_file = path / "anchors.xml"
+        self.yaml_file = path / "anchors.yml"
         self.registry = self._read()
-    
-    def _read(self):
-        registry = None
-        if self.filename.exists():
-            registry = yaml.load(
-                open(self.filename, "r").read(),
-                Loader=yaml.Loader
-            )
-        return registry or {}
     
     def write(self, anchor_list):
         self._add_anchors(anchor_list)
-        with open(self.filename, "w") as f:
-            # yaml.dump(self.registry, f)
-            for k, v in sorted(self.registry.items()):
-                if k.startswith("@"):
-                    k = f'\"{k}\"'
-                f.write(f"{k}:\n")
-                for item in sorted(v):
-                    f.write(f"  - {item}\n")
+        contents = dict(
+            anchors = self.registry,
+            _metadata = dict(
+                datetime=datetime.datetime.utcnow().isoformat(),
+                title="Anchors for all entities in NeXus NXDL files.",
+                subtitle="Anchors for all fields, groups, attributes, and links .",
+            ),
+        )
 
-        # compendium
+        self._write_yaml(contents)
+        self._write_xml(contents)
+        self._write_json(contents)
+
+        # compendium (dump the list of anchors in raw form)
         with open(self.all_anchors, "a") as f:
-            for anchor in sorted(anchor_list):
-                f.write(f"{anchor}\n")
+            f.write("\n".join(sorted(anchor_list)))
+    
+    def _read(self):
+        """The YAML file will record anchors from all NXDL files."""
+        registry = None
+        if self.yaml_file.exists():
+            contents = yaml.load(
+                open(self.yaml_file, "r").read(),
+                Loader=yaml.Loader
+            )
+            if contents is not None:
+                registry = contents.get("anchors")
+        return registry or {}
+    
+    def _write_json(self, contents):
+        # with open(self.json_file, "w") as f:
+        #     json.dump(contents, f, indent=4)
+        pass
+    
+    def _write_xml(self, contents):
+        pass  # TODO:
+    
+    def _write_yaml(self, contents):
+        with open(self.yaml_file, "w") as f:
+            yaml.dump(contents, f)
     
     def _add_anchors(self, anchor_list):
         for anchor in anchor_list:
             self._add(anchor)
-    
+
     def _add(self, anchor):
+        key = self.key_from_anchor(anchor)
+        
+        if key not in self.registry:
+            self.registry[key] = {}
+        
+        reg = self.registry[key]
+        if anchor not in reg:
+            reg[anchor] = dict(
+                anchor=anchor,
+                # TODO: HTML anchor (#nxdata-variable-last-good-attribute)
+                # TODO URL
+            )
+    
+    def key_from_anchor(self, anchor):
         key = anchor.lower().split("/")[-1].split("@")[-1].split("-")[0]
         if "@" in anchor:
             # restore preceding "@" symbol
             key = "@" + key
-        
-        if key not in self.registry:
-            self.registry[key] = []
-        if anchor not in self.registry[key]:
-            self.registry[key].append(anchor)
+        return key
 
 
 def printAnchorList():
@@ -215,7 +247,7 @@ def get_minOccurs(node, use_application_defaults):
     :param bool use_application_defaults: use special case value
     :returns str: value of the attribute (or its default)
     '''
-    # TODO: can we improve on the default by exmaining nxdl.xsd?
+    # TODO: can we improve on the default by examining nxdl.xsd?
     minOccurs_default = {True: '1', False: '0'}[use_application_defaults]
     minOccurs = node.get('minOccurs', minOccurs_default)
     return minOccurs
