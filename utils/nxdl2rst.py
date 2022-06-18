@@ -197,11 +197,9 @@ def printAnchorList():
         return key.lower()
 
     if len(anchor_registry.local_anchors) > 0:
-        # if WRITE_ANCHOR_REGISTRY:
-        #     # ONLY in the build directory
-        #     anchor_registry.write()
-
-        anchor_registry.write()
+        if WRITE_ANCHOR_REGISTRY:
+            # ONLY in the build directory
+            anchor_registry.write()
 
         print("")
         print("Hypertext Anchors")
