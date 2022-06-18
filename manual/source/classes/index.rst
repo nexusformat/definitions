@@ -18,10 +18,13 @@ table for the different formats available:
 download file                              description
 =========================================  ============================================
 :download:`/_static/nxdl_vocabulary.html`  Human-readable HTML list of anchors, by vocabulary term, with links to the manual.
-:download:`/_static/nxdl_vocabulary.json`  vocabulary list by key in :ref:`JSON <https://www.w3schools.com/whatis/whatis_json.asp>` format
+:download:`/_static/nxdl_vocabulary.json`  vocabulary list by key in JSON format [#json]_
 :download:`/_static/nxdl_vocabulary.txt`   list of all anchors, sorted alphabetically
-:download:`/_static/nxdl_vocabulary.yml`   vocabulary list by key in :ref:`YAML <https://yaml.org>` format
+:download:`/_static/nxdl_vocabulary.yml`   vocabulary list by key in YAML format [#yaml]_
 =========================================  ============================================
+
+.. [#json] JSON: https://www.w3schools.com/whatis/whatis_json.asp
+.. [#yaml] YAML https://yaml.org
 
 Base classes
 ------------------
