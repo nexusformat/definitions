@@ -36,14 +36,15 @@ SUBDIR_MAP = {
 
 
 class AnchorRegistry:
-    """Record all anchors created by NXDL files."""
+    """Document the NXDL vocabulary."""
 
     def __init__(self) -> None:
         path = repo_root_path / "manual" / "source" / "_static"
-        self.txt_anchors = path / "anchors.txt"
-        self.json_file = path / "anchors.json"
-        self.xml_file = path / "anchors.xml"
-        self.yaml_file = path / "anchors.yml"
+        base = "nxdl_vocabulary"
+        self.html_file = path / f"{base}.html"
+        self.txt_file = path / f"{base}.txt"
+        self.json_file = path / f"{base}.json"
+        self.yaml_file = path / f"{base}.yml"
         self.registry = self._read()
         self.local_anchors = []  # anchors from current NXDL file
         self.nxdl_file = None
@@ -71,7 +72,7 @@ class AnchorRegistry:
             fnxdl = "/".join(pathlib.Path(self.nxdl_file).parts[-2:]).split(".")[0]
             url = f"{MANUAL_ROOT}{self.category}/{fnxdl}.html{hanchor}"
             reg[anchor] = dict(
-                anchor=anchor,
+                term=anchor,
                 html=hanchor,
                 url=url,
             )
@@ -87,16 +88,16 @@ class AnchorRegistry:
         contents = dict(
             _metadata = dict(
                 datetime=datetime.datetime.utcnow().isoformat(),
-                title="Anchors for all entities in NeXus NXDL files.",
-                subtitle="Anchors for all fields, groups, attributes, and links .",
+                title="NeXus NXDL vocabulary.",
+                subtitle="Anchors for all NeXus fields, groups, attributes, and links.",
             ),
-            anchors = self.registry,
+            terms = self.registry,
         )
 
         self._write_yaml(contents)
-        self._write_xml(contents)
         self._write_json(contents)
         self._write_txt()
+        self._write_html(contents)
 
     def _html_anchor(self, anchor):
         """
@@ -118,7 +119,7 @@ class AnchorRegistry:
         return f"#{html_anchor}"
 
     def _read(self):
-        """The YAML file will record anchors from all NXDL files."""
+        """The YAML file will record anchors (terms) from all NXDL files."""
         registry = None
         if self.yaml_file.exists():
             contents = yaml.load(
@@ -126,22 +127,52 @@ class AnchorRegistry:
                 Loader=yaml.Loader
             )
             if contents is not None:
-                registry = contents.get("anchors")
+                registry = contents.get("terms")
         return registry or {}
-    
+
+    def _write_html(self, contents):
+        """Write the anchors to an HTML file."""
+        root = lxml.etree.Element("html")
+        body = lxml.etree.SubElement(root, "body")
+        title = lxml.etree.SubElement(body, "h1")
+        subtitle = lxml.etree.SubElement(body, "em")
+        title.text = contents["_metadata"]["title"]
+        subtitle.text = contents["_metadata"]["subtitle"]
+        vocab_list = lxml.etree.SubElement(body, "h2")
+        vocab_list.text = "NXDL Vocabulary"
+
+        dl = lxml.etree.SubElement(body, "dl")
+        for term, termlist in sorted(contents["terms"].items()):
+            dterm = lxml.etree.SubElement(dl, "dt")
+            dterm.text = term
+            for _, itemdict in sorted(termlist.items()):
+                ddef = lxml.etree.SubElement(dterm, "dd")
+                a = lxml.etree.SubElement(ddef, "a")
+                a.attrib["href"] = itemdict["url"]
+                a.text = itemdict["term"]
+
+        lxml.etree.SubElement(body, "hr")
+
+        foot = lxml.etree.SubElement(body, "p")
+        foot_em = lxml.etree.SubElement(foot, "em")
+        foot_em.text = f"written: {contents['_metadata']['datetime']}"
+
+        html = lxml.etree.tostring(root, pretty_print=True).decode()
+        with open(self.html_file, "w") as f:
+            f.write(html)
+            f.write("\n")
+
     def _write_json(self, contents):
         with open(self.json_file, "w") as f:
             json.dump(contents, f, indent=4)
-    
+            f.write("\n")
+
     def _write_txt(self):
         """Compendium (dump the list of all known anchors in raw form)."""
-        anchors = self.all_anchors
-        with open(self.txt_anchors, "w") as f:
-            f.write("\n".join(sorted(anchors)))
+        terms = self.all_anchors
+        with open(self.txt_file, "w") as f:
+            f.write("\n".join(sorted(terms)))
             f.write("\n")
-    
-    def _write_xml(self, contents):
-        pass  # TODO:
     
     def _write_yaml(self, contents):
         with open(self.yaml_file, "w") as f:
@@ -158,9 +189,11 @@ def printAnchorList():
         return key.lower()
 
     if len(anchor_registry.local_anchors) > 0:
-        if WRITE_ANCHOR_REGISTRY:
-            # ONLY in the build directory
-            anchor_registry.write()
+        # if WRITE_ANCHOR_REGISTRY:
+        #     # ONLY in the build directory
+        #     anchor_registry.write()
+
+        anchor_registry.write()
 
         print("")
         print("Hypertext Anchors")
