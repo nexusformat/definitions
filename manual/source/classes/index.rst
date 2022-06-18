@@ -10,17 +10,17 @@ Definitions of NeXus classes. These are split into base_classes (low level objec
 application definitions (groupings of objects for a particular technique) and 
 contributed_definitions (proposed definitions from the community)
 
-The complete :index:`!vocabulary`` of terms (names of groups, fields, attributes, and
-links) used in NeXus NXDL files is available for download.  See this table for
-the different formats available:
+The complete :index:`!vocabulary` of terms used in NeXus NXDL files (names of
+groups, fields, attributes, and links) is available for download.  See this
+table for the different formats available:
 
 =========================================  ============================================
 download file                              description
 =========================================  ============================================
 :download:`/_static/nxdl_vocabulary.html`  Human-readable HTML list of anchors, by vocabulary term, with links to the manual.
-:download:`/_static/nxdl_vocabulary.json`  vocabulary list by key in [JSON](https://www.w3schools.com/whatis/whatis_json.asp) format
+:download:`/_static/nxdl_vocabulary.json`  vocabulary list by key in :ref:`JSON <https://www.w3schools.com/whatis/whatis_json.asp>` format
 :download:`/_static/nxdl_vocabulary.txt`   list of all anchors, sorted alphabetically
-:download:`/_static/nxdl_vocabulary.yml`   vocabulary list by key in [YAML](https://yaml.org/) format
+:download:`/_static/nxdl_vocabulary.yml`   vocabulary list by key in :ref:`YAML <https://yaml.org>` format
 =========================================  ============================================
 
 Base classes
