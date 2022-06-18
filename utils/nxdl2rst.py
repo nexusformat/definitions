@@ -27,7 +27,7 @@ listing_category = None
 repo_root_path = pathlib.Path(__file__).parent.parent
 WRITE_ANCHOR_REGISTRY = False
 HTML_ROOT = 'https://github.com/nexusformat/definitions/blob/main'
-MANUAL_ROOT = "https://manual.nexusformat.org/classes/"
+MANUAL_ROOT = "https://manual.nexusformat.org/"
 SUBDIR_MAP = {
     'base': 'base_classes',
     'application': 'applications',
@@ -70,7 +70,7 @@ class AnchorRegistry:
         if anchor not in reg:
             hanchor = self._html_anchor(anchor)
             fnxdl = "/".join(pathlib.Path(self.nxdl_file).parts[-2:]).split(".")[0]
-            url = f"{MANUAL_ROOT}{self.category}/{fnxdl}.html{hanchor}"
+            url = f"{MANUAL_ROOT}classes/{self.category}/{fnxdl}.html{hanchor}"
             reg[anchor] = dict(
                 term=anchor,
                 html=hanchor,
@@ -136,10 +136,18 @@ class AnchorRegistry:
         body = lxml.etree.SubElement(root, "body")
         title = lxml.etree.SubElement(body, "h1")
         subtitle = lxml.etree.SubElement(body, "em")
-        title.text = contents["_metadata"]["title"]
-        subtitle.text = contents["_metadata"]["subtitle"]
+
+        title.text = contents["_metadata"]["title"].strip(".")
+        subtitle.text = contents["_metadata"]["subtitle"].strip(".")
         vocab_list = lxml.etree.SubElement(body, "h2")
         vocab_list.text = "NXDL Vocabulary"
+
+        p = lxml.etree.SubElement(body, "p")
+        p.text = "This content is also available in these formats: "
+        for ext in "json txt yml".split():
+            a = lxml.etree.SubElement(p, "a")
+            a.attrib["href"] = f"{MANUAL_ROOT}_static/{self.txt_file.stem}.{ext}"
+            a.text = f" {ext}"
 
         dl = lxml.etree.SubElement(body, "dl")
         for term, termlist in sorted(contents["terms"].items()):
