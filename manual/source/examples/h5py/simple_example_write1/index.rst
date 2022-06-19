@@ -41,10 +41,21 @@ When the next Python program (``simple_example_write1_h5py.py``) is run from the
 command line (and there are no problems), the ``simple_example_write1_h5py.hdf5``
 file is generated.
 
-.. literalinclude:: simple_example_write1.py
-    :tab-width: 4
-    :linenos:
-    :language: python
+.. tabs::
+
+    .. tab:: nexusformat
+
+        .. literalinclude:: nexusformat/simple_example_write1.py
+            :tab-width: 4
+            :linenos:
+            :language: python
+
+    .. tab:: h5py
+
+        .. literalinclude:: simple_example_write1.py.py
+	        :tab-width: 4
+	        :linenos:
+	        :language: python
 
 One of the tools provided with the HDF5 support libraries is
 the ``h5dump`` command, a command-line tool to print out the

@@ -55,10 +55,21 @@ corrupt the file when the program quits.
     
     .. _Example-H5py-BasicWriter:
 
-    .. literalinclude:: simple_example_basic_write.py
-	    :tab-width: 4
-	    :linenos:
-	    :language: python
+    .. tabs::
+
+        .. tab:: nexusformat
+
+            .. literalinclude:: nexusformat/simple_example_basic_write.py
+                :tab-width: 4
+                :linenos:
+                :language: python
+
+        .. tab:: h5py
+
+            .. literalinclude:: simple_example_basic_write.py
+	            :tab-width: 4
+	            :linenos:
+	            :language: python
 
 .. _Example-H5py-Reading:
 
@@ -84,10 +95,21 @@ extracting other useful stuff from the file.
     
     .. _Example-H5py-Reader:
 
-    .. literalinclude:: simple_example_basic_read.py
-	    :tab-width: 4
-	    :linenos:
-	    :language: python
+    .. tabs::
+
+        .. tab:: nexusformat
+
+            .. literalinclude:: nexusformat/simple_example_basic_read.py
+                :tab-width: 4
+                :linenos:
+                :language: python
+
+        .. tab:: h5py
+
+            .. literalinclude:: simple_example_basic_read.py.py
+	            :tab-width: 4
+	            :linenos:
+	            :language: python
 
 Output from ``simple_example_basic_read.py`` is shown next.
 

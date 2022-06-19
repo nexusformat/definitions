@@ -105,10 +105,21 @@ to write a NeXus-compliant HDF5 file with links to data in other HDF5 files.
     
     .. _Example-H5py-external_example_write:
 
-    .. literalinclude:: external_example_write.py
-       :tab-width: 4
-       :linenos:
-       :language: python
+    .. tabs::
+
+        .. tab:: nexusformat
+
+            .. literalinclude:: nexusformat/external_example_write.py
+                :tab-width: 4
+                :linenos:
+                :language: python
+
+        .. tab:: h5py
+
+            .. literalinclude:: external_example_write.py
+                :tab-width: 4
+                :linenos:
+                :language: python
 
 downloads
 =========

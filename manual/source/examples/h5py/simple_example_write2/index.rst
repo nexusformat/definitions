@@ -35,10 +35,21 @@ Links are made from that data to the ``/entry/data`` group.
 The Python code to build an HDF5 data file with that structure (using
 numerical data from the previous example) is shown below.
 
-.. literalinclude:: simple_example_write2.py
-    :tab-width: 4
-    :linenos:
-    :language: python
+    .. tabs::
+
+        .. tab:: nexusformat
+
+            .. literalinclude:: nexusformat/simple_example_write2.py
+                :tab-width: 4
+                :linenos:
+                :language: python
+
+        .. tab:: h5py
+
+            .. literalinclude:: simple_example_write2.py
+	            :tab-width: 4
+	            :linenos:
+	            :language: python
 
 It is interesting to compare the output of the ``h5dump``
 of the data file ``simple_example_write2.hdf5`` with our Python instructions.

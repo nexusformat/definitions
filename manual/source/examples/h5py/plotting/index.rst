@@ -20,10 +20,21 @@ subsection :ref:`Find-Plottable-Data-v3`, for the details.)
     
     .. _Example-H5py-Reader_attributes_trail:
 
-    .. literalinclude:: reader_attributes_trail.py
-	    :tab-width: 4
-	    :linenos:
-	    :language: python
+.. tabs::
+
+    .. tab:: nexusformat
+
+        .. literalinclude:: nexusformat/reader_attributes_trail.py
+	        :tab-width: 4
+	        :linenos:
+	        :language: python
+
+    .. tab:: h5py
+
+        .. literalinclude:: reader_attributes_trail.py
+	        :tab-width: 4
+	        :linenos:
+	        :language: python
 
 Output from ``reader_attributes_trail.py`` is shown next.
 

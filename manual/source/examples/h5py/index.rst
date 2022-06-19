@@ -10,13 +10,13 @@ One way to gain a quick familiarity with NeXus is to start working with some dat
 first few examples in this section, we have a simple two-column set of 1-D data, collected as part of a
 series of alignment scans by the APS USAXS instrument during the time it was stationed at
 beam line 32ID. We will show how to write this
-data using the Python language and the ``h5py`` package [#]_
-(:index:`using <h5py>`  ``h5py`` calls directly rather than using the NeXus NAPI). The
+data using the Python language and both the ``nexusformat`` [#]_ and ``h5py`` packages [#]_. The
 actual data to be written was extracted (elsewhere) from a ``spec`` [#]_ data file 
 and read as a text block from a file by the Python source code.
 Our examples will start with the simplest case and add only mild complexity with each new case
 since these examples are meant for those who are unfamiliar with NeXus.
 
+.. [#] *nexusformat*: https://nexpy.github.io/nexpy/
 .. [#] *h5py*: https://www.h5py.org/
 .. [#] *SPEC*: http://certif.com/spec.html
 
