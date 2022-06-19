@@ -110,8 +110,8 @@ store both experimental results (counts, detector angles, etc), and other
 information associated with the experiment (start and end times, user names,
 etc). Fields are identified by their names, which must be unique within the
 group in which they are stored.  Some fields have engineering units to be specified.
-In some cases, such in ``NXdetector/data``, a field is expected to have be
-an array of several dimensions.
+In some cases, such as :ref:`/NXdata/DATA </NXdata/DATA-field>`, a field is
+expected to have be an array of several dimensions.
 
 	.. compound::
 
@@ -137,7 +137,10 @@ an array of several dimensions.
 		``data`` (*NX_NUMBER*)
 			Data values from the detector, ``units="NX_ANY"``
 
-In the case of streaming data acquisition, when time stamped values of data are collected, fields can be replaced with :ref:`NXlog` structures of 
+See the sections :ref:`nxdl-types` and :ref:`nxdl-units` for complete lists of
+the data types and engineering units types, respectively.
+
+In the case of streaming data acquisition, when time-stamped values of data are collected, fields can be replaced with :ref:`NXlog` structures of 
 the same name. For example, if time stamped data for wavelength is being streamed, wavelength would not be an array but a :ref:`NXlog` structure.  
 
 
