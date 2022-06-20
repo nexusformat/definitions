@@ -10,22 +10,184 @@ the NeXus NXDL Classes chapter.
 
 from collections import OrderedDict
 from html import parser as HTMLParser
+import datetime
+import json
 import lxml.etree
 import os
+import pathlib
 import pyRestTable
 import re
 import sys
+import yaml
 from local_utilities import replicate
 
 
 INDENTATION_UNIT = '  '
 listing_category = None
-anchor_list = []  # list of all hypertext anchors
+repo_root_path = pathlib.Path(__file__).parent.parent
+WRITE_ANCHOR_REGISTRY = False
+HTML_ROOT = 'https://github.com/nexusformat/definitions/blob/main'
+MANUAL_ROOT = "https://manual.nexusformat.org/"
+SUBDIR_MAP = {
+    'base': 'base_classes',
+    'application': 'applications',
+    'contributed': 'contributed_definitions',
+}
 
 
-def addAnchor(anchor):
-    """Add a hypertext anchor to the list."""
-    anchor_list.append(anchor)
+class AnchorRegistry:
+    """Document the NXDL vocabulary."""
+
+    def __init__(self) -> None:
+        path = repo_root_path / "manual" / "source" / "_static"
+        base = "nxdl_vocabulary"
+        self.html_file = path / f"{base}.html"
+        self.txt_file = path / f"{base}.txt"
+        self.json_file = path / f"{base}.json"
+        self.yaml_file = path / f"{base}.yml"
+        self.registry = self._read()
+        self.local_anchors = []  # anchors from current NXDL file
+        self.nxdl_file = None
+        self.category = None
+    
+    @property
+    def all_anchors(self):
+        result = []
+        for v in self.registry.values():
+            result += list(v.keys())
+        return result
+
+    def add(self, anchor):
+        if anchor not in self.local_anchors:
+            self.local_anchors.append(anchor)
+
+        key = self.key_from_anchor(anchor)
+        
+        if key not in self.registry:
+            self.registry[key] = {}
+        
+        reg = self.registry[key]
+        if anchor not in reg:
+            hanchor = self._html_anchor(anchor)
+            fnxdl = "/".join(pathlib.Path(self.nxdl_file).parts[-2:]).split(".")[0]
+            url = f"{MANUAL_ROOT}classes/{self.category}/{fnxdl}.html{hanchor}"
+            reg[anchor] = dict(
+                term=anchor,
+                html=hanchor,
+                url=url,
+            )
+    
+    def key_from_anchor(self, anchor):
+        key = anchor.lower().split("/")[-1].split("@")[-1].split("-")[0]
+        if "@" in anchor:
+            # restore preceding "@" symbol
+            key = "@" + key
+        return key
+
+    def write(self):
+        contents = dict(
+            _metadata = dict(
+                datetime=datetime.datetime.utcnow().isoformat(),
+                title="NeXus NXDL vocabulary.",
+                subtitle="Anchors for all NeXus fields, groups, attributes, and links.",
+            ),
+            terms = self.registry,
+        )
+
+        self._write_yaml(contents)
+        self._write_json(contents)
+        self._write_txt()
+        self._write_html(contents)
+
+    def _html_anchor(self, anchor):
+        """
+        Create (internal hyperlink target for) HTML anchor from reST anchor.
+
+        Example:
+
+        * reST anchor: /NXcanSAS/ENTRY/TRANSMISSION_SPECTRUM@timestamp-attribute
+        * HTML anchor: #nxcansas-entry-transmission-spectrum-timestamp-attribute
+        """
+        html_anchor = (
+            anchor
+            .lower()
+            .lstrip("/")
+            .replace("_", "-")
+            .replace("@", "-")
+            .replace("/", "-")
+        )
+        return f"#{html_anchor}"
+
+    def _read(self):
+        """The YAML file will record anchors (terms) from all NXDL files."""
+        registry = None
+        if self.yaml_file.exists():
+            contents = yaml.load(
+                open(self.yaml_file, "r").read(),
+                Loader=yaml.Loader
+            )
+            if contents is not None:
+                registry = contents.get("terms")
+        return registry or {}
+
+    def _write_html(self, contents):
+        """Write the anchors to an HTML file."""
+        root = lxml.etree.Element("html")
+        body = lxml.etree.SubElement(root, "body")
+        title = lxml.etree.SubElement(body, "h1")
+        subtitle = lxml.etree.SubElement(body, "em")
+
+        title.text = contents["_metadata"]["title"].strip(".")
+        subtitle.text = contents["_metadata"]["subtitle"].strip(".")
+        vocab_list = lxml.etree.SubElement(body, "h2")
+        vocab_list.text = "NXDL Vocabulary"
+
+        p = lxml.etree.SubElement(body, "p")
+        p.text = "This content is also available in these formats: "
+        for ext in "json txt yml".split():
+            a = lxml.etree.SubElement(p, "a")
+            a.attrib["href"] = f"{MANUAL_ROOT}_static/{self.txt_file.stem}.{ext}"
+            a.text = f" {ext}"
+
+        dl = lxml.etree.SubElement(body, "dl")
+        for term, termlist in sorted(contents["terms"].items()):
+            dterm = lxml.etree.SubElement(dl, "dt")
+            dterm.text = term
+            for _, itemdict in sorted(termlist.items()):
+                ddef = lxml.etree.SubElement(dterm, "dd")
+                a = lxml.etree.SubElement(ddef, "a")
+                a.attrib["href"] = itemdict["url"]
+                a.text = itemdict["term"]
+
+        lxml.etree.SubElement(body, "hr")
+
+        foot = lxml.etree.SubElement(body, "p")
+        foot_em = lxml.etree.SubElement(foot, "em")
+        foot_em.text = f"written: {contents['_metadata']['datetime']}"
+
+        html = lxml.etree.tostring(root, pretty_print=True).decode()
+        with open(self.html_file, "w") as f:
+            f.write(html)
+            f.write("\n")
+
+    def _write_json(self, contents):
+        with open(self.json_file, "w") as f:
+            json.dump(contents, f, indent=4)
+            f.write("\n")
+
+    def _write_txt(self):
+        """Compendium (dump the list of all known anchors in raw form)."""
+        terms = self.all_anchors
+        with open(self.txt_file, "w") as f:
+            f.write("\n".join(sorted(terms)))
+            f.write("\n")
+    
+    def _write_yaml(self, contents):
+        with open(self.yaml_file, "w") as f:
+            yaml.dump(contents, f)
+
+
+anchor_registry = AnchorRegistry()
 
 
 def printAnchorList():
@@ -34,7 +196,11 @@ def printAnchorList():
     def sorter(key):
         return key.lower()
 
-    if len(anchor_list) > 0:
+    if len(anchor_registry.local_anchors) > 0:
+        if WRITE_ANCHOR_REGISTRY:
+            # ONLY in the build directory
+            anchor_registry.write()
+
         print("")
         print("Hypertext Anchors")
         print("-----------------\n")
@@ -45,7 +211,7 @@ def printAnchorList():
         # fmt: off
         rst = [
             f"* :ref:`{ref} <{ref}>`"
-            for ref in sorted(anchor_list, key=sorter)
+            for ref in sorted(anchor_registry.local_anchors, key=sorter)
         ]
         # fmt: on
         print("\n".join(rst))
@@ -144,7 +310,7 @@ def get_minOccurs(node, use_application_defaults):
     :param bool use_application_defaults: use special case value
     :returns str: value of the attribute (or its default)
     '''
-    # TODO: can we improve on the default by exmaining nxdl.xsd?
+    # TODO: can we improve on the default by examining nxdl.xsd?
     minOccurs_default = {True: '1', False: '0'}[use_application_defaults]
     minOccurs = node.get('minOccurs', minOccurs_default)
     return minOccurs
@@ -302,7 +468,7 @@ def hyperlinkTarget(parent_path, name, nxtype):
     target = "%s%s%s-%s" % (
         parent_path, sep, name, nxtype
     )
-    addAnchor(target)
+    anchor_registry.add(target)
     return ".. _%s:\n" % target
 
 
@@ -428,7 +594,10 @@ def printFullTree(ns, parent, name, indent, parent_path):
             if name == '':
                 name = typ.lstrip('NX').upper()
             typ = ':ref:`%s`' % typ
-        print(f"{indent}{hyperlinkTarget(parent_path, name, 'group')}")
+        hTarget = hyperlinkTarget(parent_path, name, 'group')
+        target = hTarget.replace(".. _", "").replace(":\n", "")
+        # TODO: https://github.com/nexusformat/definitions/issues/1057
+        print(f"{indent}{hTarget}")
         print(f"{indent}**{name}**: {optional_text}{typ}\n")
 
         printIfDeprecated(ns, node, indent+INDENTATION_UNIT)
@@ -458,6 +627,7 @@ def print_rst_from_nxdl(nxdl_file):
     print restructured text from the named .nxdl.xml file
     '''
     global listing_category
+
     # parse input file into tree
     tree = lxml.etree.parse(nxdl_file)
 
@@ -479,6 +649,11 @@ def print_rst_from_nxdl(nxdl_file):
     # retrieve category from directory
     #subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
     subdir = root.attrib["category"]
+
+    # Pass these terms to construct the full URL
+    anchor_registry.nxdl_file = nxdl_file
+    anchor_registry.category = SUBDIR_MAP[subdir]
+
     # TODO: check for consistency with root.get('category')
     listing_category = {
                  'base': 'base class',
@@ -560,7 +735,6 @@ def print_rst_from_nxdl(nxdl_file):
         print(f'.. index:: {txt}\n')
 
     # TODO: change instances of \t to proper indentation
-    html_root = 'https://github.com/nexusformat/definitions/blob/main'
 
     # print full tree
     print( '**Structure**:\n' )
@@ -572,14 +746,9 @@ def print_rst_from_nxdl(nxdl_file):
     printAnchorList()
 
     # print NXDL source location
-    subdir_map = {
-                  'base': 'base_classes',
-                  'application': 'applications',
-                  'contributed': 'contributed_definitions',
-                  }
     print("")
     print( '**NXDL Source**:' )
-    print(f'  {html_root}/{subdir_map[subdir]}/{name}.nxdl.xml')
+    print(f'  {HTML_ROOT}/{SUBDIR_MAP[subdir]}/{name}.nxdl.xml')
 
 
 def main():
@@ -612,6 +781,7 @@ def main():
 
 
 if __name__ == '__main__':
+    WRITE_ANCHOR_REGISTRY = True
     main()
 
 

@@ -27,9 +27,9 @@ BASEDIR = os.path.dirname(__file__)
 # nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXcrystal.nxdl.xml')
 # nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXentry.nxdl.xml')
 # nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXobject.nxdl.xml')
-nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXroot.nxdl.xml')
+# nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXroot.nxdl.xml')
 # nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXuser.nxdl.xml')
-# nxdl = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXarpes.nxdl.xml')
+nxdl = os.path.join(BASEDIR, '..', 'applications', 'NXarpes.nxdl.xml')
 # nxdl = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXmagnetic_kicker.nxdl.xml')
 
 
