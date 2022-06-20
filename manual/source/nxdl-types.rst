@@ -1,6 +1,6 @@
-==========================
-NXDL Field Types and Units
-==========================
+=========================
+NXDL Data Types and Units
+=========================
 
 .. index::
     see: type; data type
@@ -8,10 +8,10 @@ NXDL Field Types and Units
 
 .. _nxdl-types:
 		
-Field Types allowed in NXDL specifications
-##########################################
+Data Types allowed in NXDL specifications
+#########################################
 
-Field types for use in NXDL
+Data types for use in NXDL
 describe the expected type of data for a NeXus field or attribute. These terms are very
 broad. More specific terms are used in actual NeXus data files that describe
 size and array dimensions. In addition to the types in the following table, the
