@@ -39,30 +39,16 @@ def printAnchorList():
         print("Hypertext Anchors")
         print("-----------------\n")
         print(
-            "Table of hypertext anchors for all groups, fields,\n"
+            "List of hypertext anchors for all groups, fields,\n"
             "attributes, and links defined in this class.\n\n"
         )
-        table = pyRestTable.Table()
-        table.addLabel("documentation (reST source) anchor")
-        table.addLabel("web page (HTML) anchor")
-        for ref in sorted(anchor_list, key=sorter):
-            # fmt: off
-            anchor = (
-                ref
-                .lower()
-                .lstrip("/")
-                .replace("_", "-")
-                .replace("@", "-")
-                .replace("/", "-")
-            )
-            table.addRow(
-                (
-                    ":ref:`%s <%s>`" % (ref, ref),
-                    ":ref:`#%s <%s>`" % (anchor, ref),
-                )
-            )
-            # fmt: on
-        print(table)
+        # fmt: off
+        rst = [
+            f"* :ref:`{ref} <{ref}>`"
+            for ref in sorted(anchor_list, key=sorter)
+        ]
+        # fmt: on
+        print("\n".join(rst))
 
 
 def fmtTyp( node ):
