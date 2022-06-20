@@ -4,21 +4,19 @@
     <doc>
          Container to hold different coordinate systems conventions.
          
-         By default NeXus uses the McStas coordinate system, whose axis convention 
-         is so that the z axis is along the neutron propagation axis, 
-         the y axis is vertical up, and the x axis points left when looking along
-         the z-axis, completing a right-handed coordinate system.
-         Assuming the McStas coordinate system as the reference (indicated by &quot;.&quot;),
-         a specific experiment or simulation may defined further coordinate systems.
-         
          It is the purpose of this base class to define these conventions and
-         offer a place to store mappings between coordinate systems.
+         offer a place to store mappings between different coordinate systems
+         which are relevant for the interpretation of the data described
+         by the application definition and base class instances.
          
-         For each coordinate system one should use a set of NXtransformations to define:
-         * The axis conventions
-         * The affine transformations which bring each axis of this coordinate system
-         into registration with the McStas coordinate system.
-         * Equally affine transformations from the inverse mapping should be specified.
+         For each Cartesian coordinate system users should use a set of
+         NXtransformations:
+         
+         * These should define the three base vectors.  
+         * The location of the origin.  
+         * The affine transformations which bring each axis of this coordinate system  
+           into registration with the McStas coordinate system.  
+         * Equally, affine transformations should be given for the inverse mapping.  
          
          As an example one may take an experiment or computer simulation where
          there is a laboratory (lab) coordinate system, a sample/specimen coordinate
@@ -26,16 +24,39 @@
          which are eventually attached to components of the instrument.
          
          If no additional transformation is specified in this group or if an
-         instance of an NXcoordinate_system_set is absent it should be assumed the
-         McStas coordinate system is used.
+         instance of an NXcoordinate_system_set is absent it should be assumed
+         the so-called McStas coordinate system is used.
+         
+         Many application definitions in NeXus refer to this `McStas &lt;https://mailman2.mcstas.org/pipermail/mcstas-users/2021q2/001431.html&gt;`_ coordinate system.
+         This is a Cartesian coordinate system whose z axis points along the neutron 
+         propagation axis. The systems y axis is vertical up, while the x axis points
+         left when looking along the z-axis. Thus, McStas is a right-handed coordinate system.
+         
+         Within each NXtransformations a depends_on section is required. The depends_on
+         field specifies if the coordinate system is the root/reference
+         (which is indicated by writing &quot;.&quot; in the depends_on section.)
     </doc>
     <group type="NXtransformations">
         <doc>
              A group of transformations which specify:
-             * Base vectors of a coordinate system.
-             * How to map each base vector to the McStas coordinate system.
-             * How to map each McStas base vector to the coordinate system,
-             i.e. the inverse mapping.
+             
+             * Three base vectors of the coordinate system.  
+             * Origin of the coordinate system.  
+             * A depends_on keyword. Its value can be &quot;.&quot; or the name of an  
+               NXtransformations instance which needs to exist in the  
+               NXcoordinate_system_set instance.  
+             * If the coordinate system is the reference one it has to be named  
+               reference.  
+             
+             In case of having more than one NXtransformations there has to be for  
+             each additional coordinate system, i.e. the one not the reference:
+             
+             * A set of translations and rotations which map each base vector to the reference.  
+             * A set of translations and rotations which map each reference base vector  
+               to the coordinate system.  
+             
+             The NXtransformations for these mappings need to be formatted
+             according to the descriptions in NXtransformations.
         </doc>
     </group>
 </definition>

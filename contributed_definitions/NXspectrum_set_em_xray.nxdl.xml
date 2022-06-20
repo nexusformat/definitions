@@ -7,11 +7,6 @@
                  Number of scan points
             </doc>
         </symbol>
-        <symbol name="n_photon_energy">
-            <doc>
-                 Number of X-ray photon energy (bins)
-            </doc>
-        </symbol>
         <symbol name="n_y">
             <doc>
                  Number of pixel per Kikuchi pattern in the slow direction
@@ -22,9 +17,19 @@
                  Number of pixel per Kikuchi pattern in the fast direction
             </doc>
         </symbol>
+        <symbol name="n_photon_energy">
+            <doc>
+                 Number of X-ray photon energy (bins)
+            </doc>
+        </symbol>
         <symbol name="n_elements">
             <doc>
                  Number of identified elements
+            </doc>
+        </symbol>
+        <symbol name="n_peaks">
+            <doc>
+                 Number of peaks
             </doc>
         </symbol>
     </symbols>
@@ -34,15 +39,19 @@
          Virtually the most important case is that spectra are collected in 
          a scanning microscope (SEM or STEM) for a collection of points.
          The majority of cases use simple d-dimensional regular scan pattern,
-         such as line profiles or surface mappings.
-         Surface mappings are the most frequently used ones.
+         such as single point, line profiles, or (rectangular) surface mappings.
+         The latter pattern is the most frequently used.
          
-         Often such sets of scan points will be measured with the same settings,
-         i.e. the same binning, energy resolution.
+         For now the base class provides for scans where the settings,
+         binning, and energy resolution is the same for each scan point.
+         
+         `IUPAC instead of Siegbahn notation &lt;https://doi.org/10.1002/xrs.1300200308&gt;`_  should be used.
     </doc>
     <group type="NXdata">
         <doc>
-             Collected X-ray counts.
+             Collected X-ray counts chunked based on rectangular images.
+             
+             This representation supports only rectangular scan pattern.
         </doc>
         <field name="counts" type="NX_UINT" units="NX_UNITLESS">
             <dimensions rank="3">
@@ -50,12 +59,12 @@
                 <dim index="2" value="n_x"/>
                 <dim index="3" value="n_photon_energy"/>
             </dimensions>
-            <attribute name="long_name" type="NX_CHAR">
-                <doc>
-                     X-ray photon counts
-                </doc>
-            </attribute>
         </field>
+        <attribute name="long_name">
+            <doc>
+                 X-ray photon counts
+            </doc>
+        </attribute>
         <field name="ypos" type="NX_NUMBER" units="NX_LENGTH">
             <dimensions rank="1">
                 <dim index="1" value="n_y"/>
@@ -107,7 +116,20 @@
         <group type="NXpeak">
             <doc>
                  Name and location of each X-ray line which was indexed as a known ion.
+                 For each ion an NXion instance should be created which specifies
+                 the origin of the signal. For each ion also the relevant IUPAC notation
+                 X-ray lines should be specified.
             </doc>
+            <group type="NXion">
+                <field name="iupac_line_names" type="NX_CHAR">
+                    <doc>
+                         IUPAC notation identifier of the line which the peak represents.
+                         
+                         This can be a list of IUPAC notations for (the seldom) case that
+                         multiple lines are group with the same peak.
+                    </doc>
+                </field>
+            </group>
         </group>
         <field name="element_names" type="NX_CHAR">
             <doc>
@@ -117,29 +139,77 @@
                 <dim index="1" value="n_elements"/>
             </dimensions>
         </field>
-    </group>
-    <group name="edx_maps" type="NXprocess">
-        <doc>
-             Individual element-specific EDX/EDS/EDXS/SXES mapping
-        </doc>
-        <field name="program" type="NX_CHAR">
+        <group name="composition_map" type="NXprocess">
             <doc>
-                 Given name of the program that was used to perform this computation.
+                 Individual element-specific EDX/EDS/EDXS/SXES mapping
+                 
+                 A composition map is an image whose intensities for each pixel are the
+                 accumulated X-ray quanta *under the curve(s)* of a set of peaks.
             </doc>
-            <attribute name="version" type="NX_CHAR">
+            <field name="program" type="NX_CHAR">
                 <doc>
-                     Program version plus build number, commit hash, or description of an ever persistent resource
-                     where the source code of the program and build instructions can be found so that the program
-                     can be configured in such a manner that the result file is ideally recreatable yielding the
-                     same results.
+                     Given name of the program that was used to perform this computation.
                 </doc>
-            </attribute>
-        </field>
-        <group type="NXdata">
-            <doc>
-                 Individual element-specific maps. Individual maps should
-                 each be a group and be named according to element_names
-            </doc>
+                <attribute name="version" type="NX_CHAR">
+                    <doc>
+                         Program version plus build number, commit hash, or description of an ever persistent resource
+                         where the source code of the program and build instructions can be found so that the program
+                         can be configured in such a manner that the result file is ideally recreatable yielding the
+                         same results.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="peaks" type="NX_CHAR">
+                <doc>
+                     A list of strings of named instances of NXpeak from indexing
+                     whose X-ray quanta where accumulated for each pixel.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_peaks"/>
+                </dimensions>
+            </field>
+            <field name="name" type="NX_CHAR">
+                <doc>
+                     Human-readable, given name to the image.
+                </doc>
+            </field>
+            <group type="NXdata">
+                <doc>
+                     Individual element-specific maps. Individual maps should
+                     each be a group and be named according to element_names.
+                </doc>
+                <field name="counts" type="NX_NUMBER" units="NX_UNITLESS">
+                    <dimensions rank="2">
+                        <dim index="1" value="n_y"/>
+                        <dim index="2" value="n_x"/>
+                    </dimensions>
+                </field>
+                <attribute name="long_name">
+                    <doc>
+                         Accumulated X-ray photon counts
+                    </doc>
+                </attribute>
+                <field name="ypos" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_y"/>
+                    </dimensions>
+                    <attribute name="long_name" type="NX_CHAR">
+                        <doc>
+                             Label for the y axis
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="xpos" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_x"/>
+                    </dimensions>
+                    <attribute name="long_name" type="NX_CHAR">
+                        <doc>
+                             Label for the x axis
+                        </doc>
+                    </attribute>
+                </field>
+            </group>
         </group>
     </group>
 </definition>
