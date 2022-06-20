@@ -205,23 +205,16 @@ def printAnchorList():
         print("Hypertext Anchors")
         print("-----------------\n")
         print(
-            "Table of hypertext anchors for all groups, fields,\n"
+            "List of hypertext anchors for all groups, fields,\n"
             "attributes, and links defined in this class.\n\n"
         )
-        table = pyRestTable.Table()
-        table.addLabel("documentation (reST source) anchor")
-        table.addLabel("web page (HTML) anchor")
-        for ref in sorted(anchor_registry.local_anchors, key=sorter):
-            # fmt: off
-            anchor = anchor_registry._html_anchor(ref)
-            table.addRow(
-                (
-                    ":ref:`%s <%s>`" % (ref, ref),
-                    ":ref:`%s <%s>`" % (anchor, ref),
-                )
-            )
-            # fmt: on
-        print(table)
+        # fmt: off
+        rst = [
+            f"* :ref:`{ref} <{ref}>`"
+            for ref in sorted(anchor_registry.local_anchors, key=sorter)
+        ]
+        # fmt: on
+        print("\n".join(rst))
 
 
 def fmtTyp( node ):
@@ -338,10 +331,10 @@ def get_required_or_optional_text(node, use_application_defaults):
         optional = node.get('optional', optional_default) in (True, 'true', '1', 1)
         recommended = node.get('recommended', None) in (True, 'true', '1', 1)
         minOccurs = get_minOccurs(node, use_application_defaults)
-        if minOccurs in ('0', 0) or optional:
-            optional_text = '(optional) '
-        elif recommended:
+        if recommended:
             optional_text = '(recommended) '
+        elif minOccurs in ('0', 0) or optional:
+            optional_text = '(optional) '
         elif minOccurs in ('1', 1):
             optional_text = '(required) '
         else:
