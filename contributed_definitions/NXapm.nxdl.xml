@@ -54,7 +54,7 @@
         </symbol>
     </symbols>
     <doc>
-         Atom probe tomography and field-ion microscopy experiments.
+         Application definition for atom probe microscopy experiments.
     </doc>
     <group type="NXentry">
         <attribute name="version">
@@ -128,8 +128,8 @@
                  solutions.
                  For AMETEK/Cameca local electrode atom probe (LEAP) instruments the
                  least processed (rawest) numerical results and metadata are stored
-                 in so-called RHIT and HITS files, which are proprietary and whose
-                 specifications are not publicly documented.
+                 in so-called RHIT and HITS files, which are proprietary and the
+                 specifications of which are not publicly documented.
                  
                  Supplementary metadata are kept in a database which is connected
                  to the instrument control software. RHIT and HITS are proprietary
@@ -199,6 +199,10 @@
                  Binary container for a file or a compressed collection of files which 
                  can be used to add further descriptions and details to the experiment.
                  The container can hold a compressed archive.
+                 
+                 Required for operation_mode apt_fim or other to give further details.
+                 Users should not abuse this field to provide free-text information.
+                 Instead, these should be mapped to respective groups and sections.
             </doc>
         </group>
         <group name="thumbnail" recommended="true" type="NXnote">
@@ -215,13 +219,20 @@
         <field name="operation_mode" type="NX_CHAR">
             <doc>
                  What type of atom probe microscope experiment is performed.
-                 This field can be used e.g. by materials database systems to 
+                 This field can be used e.g. by materials database systems to
                  qualitatively filter experiments.
+                 APT are experiments where the analysis_chamber has no imaging gas.
+                 For FIM analyses an imaging gas is used, which should be specified
+                 with the atmosphere in the analysis_chamber group.
+                 Combinations of the two imaging modes are possible. For these apt_fim
+                 or other operation_mode the user should specify details in the
+                 experiment_documentation field.
             </doc>
             <enumeration>
                 <item value="apt"/>
                 <item value="fim"/>
-                <item value="apt_and_fim"/>
+                <item value="apt_fim"/>
+                <item value="other"/>
             </enumeration>
         </field>
         <group maxOccurs="unbounded" minOccurs="1" name="operator" type="NXuser">
@@ -377,63 +388,47 @@
             <doc>
                  Container to hold different coordinate systems conventions.
                  
-                 By default NeXus uses the McStas coordinate system, whose axis 
-                 convention is so that the z axis is along the neutron propagation axis,
-                 the y axis is vertical up, and the x axis points left when looking along
-                 the z-axis, completing a right-handed coordinate system.
-                 Assuming the McStas coordinate system as the reference
-                 (indicated by &quot;.&quot;), a specific experiment or simulation may defined
-                 further coordinate systems.
+                 For the specific idea and conventions to use with the
+                 NXcoordinate_system_set inspect the description of the
+                 NXcoordinate_system_set base class.
                  
-                 It is the purpose of this base class to define these conventions and
-                 offer a place to store mappings between coordinate systems.
+                 Specific details for application in atom probe microscopy follow.
+                 In this research field scientists distinguish usually several
+                 Euclidean coordinate systems (CS):
                  
-                 For each coordinate system one should use a set of NXtransformations to 
-                 define:
-                 * The axis conventions
-                 * The affine transformations which bring each axis of this coordinate 
-                 system into registration with the McStas coordinate system.
-                 * Equally affine transformations from the inverse mapping 
-                 should be specified.
+                 * The laboratory space;  
+                   a CS specifying the room where the instrument is located in or  
+                   a physical landmark on the instrument, e.g. the direction of the  
+                   transfer rod where positive is the direction how the rod  
+                   pushes into the instrument.  
+                 * The specimen space;  
+                   a CS affixed to either the base or the initial apex of the specimen,  
+                   whose z axis points towards the detector.  
+                 * The detector space;  
+                   a CS affixed whose xy plane is usually in the detector and whose  
+                   z axis points towards the specimen.  
+                 * The reconstruction space;  
+                   a CS associated with the tomographic reconstruction.  
+                   Its orientation depends on the commercial software used.  
+                 * Eventually further coordinate systems attached to the  
+                   flight path of individual ions might be defined.  
                  
-                 As an example one may take an experiment or computer simulation where
-                 there is a laboratory (lab) coordinate system, a sample/specimen
-                 coordinate system, a crystal coordinate system, and additional
-                 coordinate systems,
-                 which are eventually attached to components of the instrument.
-                 
-                 If no additional transformation is specified in this group or if an
-                 instance of an NXcoordinate_system_set is absent it should be assumed
-                 the McStas coordinate system is used.
-                 
-                 With atom probe microscopy, several coordinate systems should be
-                 distinguished:
-                 * The usual NeXus (McStas coordinate system). 
-                 * The laboratory space
-                 * The specimen space
-                 * The detector space
-                 * The reconstruction space
-                 * Eventually further coordinate systems attached to the flight path
-                 of the ions might be defined.
-                 
-                 Coordinate systems should be right-handed one.
+                 Coordinate systems should be right-handed ones.
                  Clockwise rotations should be considered positive rotations.
                  
-                 In atom probe microscopy a frequently used choice for the detector space
-                 (coordinate system) is discussed with the so-called detector space image
+                 In atom probe microscopy a frequently used choice for the detector
+                 space (CS) is discussed with the so-called detector space image
                  (stack). This is a stack of two-dimensional histograms of detected ions
                  within a predefined evaporation ID interval. Typically, the set of
                  ion evaporation sequence IDs is grouped into chunks.
                  
-                 For each chunk a histogram of the ion hit positions
-                 on the detector is computed. This leaves the possibility
-                 for inconsistency between the so-called detector
-                 coordinate system and a specimen-affixed coordinate system.
+                 For each chunk a histogram of the ion hit positions on the detector
+                 is computed. This leaves the possibility for inconsistency between
+                 the so-called detector space and the e.g. specimen space.
                  
-                 The transformation here resolves this ambiguity by
-                 specifying how the positive z-axes of either
-                 coordinate systems can be oriented.
-                 Consult the work of A. J. Breen and B. Gault and teams
+                 The transformation here resolves this ambiguity by specifying how
+                 the positive z-axes of either coordinate systems is oriented.
+                 Consult the work of A. J. Breen and B. Gault and team
                  for further details.
             </doc>
         </group>
@@ -445,13 +440,14 @@
                  
                  An atom probe microscope (experiment) is different compared to a large-
                  scale facility or electron accelerator experiments in at least two ways:
-                 * First, ionized atoms and molecular ion(s fragments) 
-                 (in the case of atom probe tomography)
-                 and (primarily) imaging gas ions (in the case of field ion microscopy)
-                 are accelerated towards a position-sensitive and time-of-flight
-                 taking detector system.
-                 Hence, there is no real probe/beam.
-                 * Second, the specimen is the lens of an atom probe microscope.
+                 
+                 * First, ionized atoms and molecular ion(s fragments)  
+                   (in the case of atom probe tomography)  
+                   and (primarily) imaging gas ions (in the case of field ion  
+                   microscopy) are accelerated towards a position-sensitive  
+                   and time-of-flight taking detector system.  
+                   Hence, there is no real probe/beam.  
+                 * Second, the specimen is the lens of an atom probe microscope.  
             </doc>
             <field name="instrument_name" type="NX_CHAR">
                 <doc>
@@ -491,26 +487,31 @@
                 <doc>
                      A local electrode guiding the ion flight path.
                 </doc>
-                <group optional="true" type="NXaperture"/>
+                <field name="name" type="NX_CHAR">
+                    <doc>
+                         Identifier of the local_electrode in an e.g. database.
+                    </doc>
+                </field>
+                <group optional="true" type="NXaperture_em"/>
             </group>
             <group name="ion_detector" type="NXdetector">
                 <doc>
-                     Detector for taking raw time-of-flight nd ion/hit impact positions 
-                     data.
+                     Detector for taking raw time-of-flight and
+                     ion/hit impact positions data.
                 </doc>
                 <field name="type" type="NX_CHAR">
                     <doc>
                          Description of the detector type. Specify if the detector is
-                         not the usual type of delay-line detectors.
+                         not the usual type, i.e. not a delay-line detector.
+                         In the case the detector is a multi-channel plate/
+                         delay line detector, use mcp_dld. In the case the detector is
+                         a phosphor CCD use phosphor_ccd. In other case specify
+                         the detector type via free-text.
                     </doc>
-                    <enumeration>
-                        <item value="mcp_dld"/>
-                        <item value="phosphor_ccd"/>
-                    </enumeration>
                 </field>
                 <field name="name" recommended="true" type="NX_CHAR">
                     <doc>
-                         Given name.
+                         Given name/alias.
                     </doc>
                 </field>
                 <field name="model" recommended="true" type="NX_CHAR">
@@ -557,8 +558,8 @@
             </group>
             <group name="control_software" optional="true" type="NXcollection">
                 <doc>
-                     The majority of atom probe microscopes com from a 
-                     single commercial manufacturer AMETEK (formerly Cameca).
+                     The majority of atom probe microscopes come from a
+                     single commercial manufacturer `AMETEK (formerly Cameca) &lt;https://www.atomprobe.com&gt;`_.
                      Their instruments are controlled via an(/a set) of integrated
                      instrument control system(s) (APSuite/IVAS/DAVis).
                      
@@ -580,10 +581,10 @@
                      community-specific API for getting finely granularized
                      access to such control settings.
                      
-                     These considerations motivated design of NXapm in that
-                     it stores quantities to begin with via an NXcollection.
-                     Holding heterogeneous, not yet standardized but relevant
-                     pieces of information is the purpose of this collection.
+                     These considerations motivated the design of the NXapm
+                     application definition in that it stores quantities in NXcollection.
+                     groups to begin with. Holding heterogeneous, not yet standardized
+                     but relevant pieces of information is the purpose of this collection.
                 </doc>
                 <group name="analysis_chamber" optional="true" type="NXcollection">
                     <doc>
@@ -599,24 +600,24 @@
             </group>
             <group name="specimen_monitoring" optional="true" type="NXcollection">
                 <doc>
-                     A place where details about the initial shape
-                     of the specimen can be stored. Ideally, here
-                     also data about the shape evolution of the specimen
-                     can be stored. There are currently very few techniques which
-                     can measure the shape evolution:
-                     * Correlative electron microscopy 
-                     but this usually evolves an interrupted experiment
-                     in which the specimen is transferred, an image taken,
-                     and a new evaporation sequence initiated.
-                     * Another, less accurate method, though, is to monitor
-                     the specimen evolution via the in-built camera system
-                     (if available) in the instrument.
-                     * Another method is to use correlated scanning force microscopy
-                     methods (pioneered by the imec group, Belgium).
-                     * A continuous monitoring of the specimen in a 
-                     correlative electron microscopy/atom probe experiment
-                     is planned to be developed by T. Kelly, 
-                     R. Dunin-Borkowski, and B. Gault et al.
+                     A place where details about the initial shape of the specimen
+                     can be stored. Ideally, here also data about the shape evolution
+                     of the specimen can be stored. There are currently very few
+                     techniques which can measure the shape evolution:
+                     
+                     * Correlative electron microscopy coupled with modeling  
+                       but this usually takes an interrupted experiment  
+                       in which the specimen is transferred, an image taken,  
+                       and a new evaporation sequence initiated.  
+                       Examples are `I. Mouton et al. &lt;https://doi.org/10.1017/S1431927618016161&gt;`_ and `C. Fletcher &lt;https://doi.org/10.1088/1361-6463/abaaa6&gt;`_.
+                     * Another, less accurate method, though, is to monitor  
+                       the specimen evolution via the in-built camera system  
+                       (if available) in the instrument.  
+                     * Another method is to use correlated scanning force microscopy  
+                       methods like reported in `C. Fleischmann &lt;https://doi.org/10.1016/j.ultramic.2018.08.010&gt;`_.  
+                     * A continuous monitoring of the specimen in a   
+                       correlative electron microscopy/atom probe experiment  
+                       is planned to be developed by `T. Kelly et al. &lt;https://doi.org/10.1017/S1431927620022205&gt;`_  
                 </doc>
                 <field name="initial_radius" type="NX_FLOAT" units="NX_LENGTH">
                     <doc>
@@ -836,8 +837,8 @@
                          
                          For AMETEK LEAP atom probes this should be the place for
                          storing initial calibration values. These values are
-                         accessible normally only by AMETEK service engineers
-                         and used by them for calibrating the detector and instrument.
+                         accessible normally only by AMETEK service engineers.
+                         They use these for calibrating the detector and instrument.
                          
                          Users can also use this NXcollection for storing the
                          iteratively identified calibrations which scientists
@@ -887,8 +888,8 @@
                      Data post-processing step to create a tomographic reconstruction
                      of the specimen based on selected calibrated ion hit positions,
                      the evaporation sequence, and voltage curve data.
-                     Very often scientists use own software scripts according
-                     and published procedures, so-called reconstruction protocols,
+                     Very often scientists use own software scripts according to
+                     published procedures, so-called reconstruction protocols,
                      i.e. numerical recipes how to compute x, y, z atomic positions
                      from the input data.
                 </doc>
@@ -931,7 +932,7 @@
                         <dim index="2" value="3"/>
                     </dimensions>
                 </field>
-                <group name="reconstruction_parameter" recommended="true" type="NXcollection">
+                <group name="parameter" recommended="true" type="NXcollection">
                     <doc>
                          Different reconstruction protocols exist. Although these approaches
                          are qualitatively similar, each protocol uses different parameters
@@ -967,6 +968,36 @@
                         <doc>
                              A default three-dimensional histogram of the total number of ions in each bin.
                         </doc>
+                        <field name="counts" type="NX_NUMBER" units="NX_UNITLESS">
+                            <doc>
+                                 Array of counts for each bin.
+                            </doc>
+                            <dimensions rank="3">
+                                <dim index="1" value="n_z"/>
+                                <dim index="2" value="n_y"/>
+                                <dim index="3" value="n_x"/>
+                            </dimensions>
+                        </field>
+                        <field name="zpos" type="NX_NUMBER" units="NX_LENGTH">
+                            <doc>
+                                 Bin positions along the z axis.
+                            </doc>
+                        </field>
+                        <field name="ypos" type="NX_NUMBER" units="NX_LENGTH">
+                            <doc>
+                                 Bin positions along the y axis.
+                            </doc>
+                        </field>
+                        <field name="xpos" type="NX_NUMBER" units="NX_LENGTH">
+                            <doc>
+                                 Bin positions along the x axis.
+                            </doc>
+                        </field>
+                        <attribute name="long_name">
+                            <doc>
+                                 Naive point cloud density map.
+                            </doc>
+                        </attribute>
                     </group>
                 </group>
             </group>
@@ -976,9 +1007,10 @@
                      and/or molecular identities are assigned to the ions.
                      The documentation of these steps is based on ideas
                      described in the literature:
-                     * [M. K. Miller](https://doi.org/10.1002/sia.1719)
-                     * [D. Haley et al.](https://doi.org/10.1017/S1431927620024290)
-                     * [M. Kühbach et al.](https://doi.org/10.1017/S1431927621012241)
+                     
+                     * `M. K. Miller &lt;https://doi.org/10.1002/sia.1719&gt;`_  
+                     * `D. Haley et al. &lt;https://doi.org/10.1017/S1431927620024290&gt;`_  
+                     * `M. Kühbach et al. &lt;https://doi.org/10.1017/S1431927621012241&gt;`_  
                 </doc>
                 <field name="program" type="NX_CHAR">
                     <doc>
@@ -996,9 +1028,10 @@
                         </doc>
                     </attribute>
                 </field>
-                <field name="number_of_iontypes" type="NX_UINT" units="NX_UNITLESS">
+                <field name="number_of_ion_types" type="NX_POSINT" units="NX_UNITLESS">
                     <doc>
                          How many ion types are distinguished.
+                         If no ranging was performed each ion is of the special unknown type.
                     </doc>
                 </field>
                 <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_UINT" units="NX_UNITLESS">
@@ -1049,6 +1082,24 @@
                              A default histogram aka mass spectrum of
                              the mass-to-charge-state ratio values.
                         </doc>
+                        <field name="counts" type="NX_NUMBER" units="NX_UNITLESS">
+                            <doc>
+                                 Array of counts for each bin.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_bins"/>
+                            </dimensions>
+                        </field>
+                        <field name="bin_ends" type="NX_NUMBER" units="NX_ANY">
+                            <doc>
+                                 End of mass-to-charge-state ratio bin.
+                            </doc>
+                        </field>
+                        <attribute name="long_name">
+                            <doc>
+                                 Mass-to-charge-state histogram.
+                            </doc>
+                        </attribute>
                     </group>
                 </group>
                 <group name="background_quantification" recommended="true" type="NXprocess">
@@ -1099,7 +1150,7 @@
                 <group name="peak_identification" recommended="true" type="NXprocess">
                     <doc>
                          Details about how peaks, with taking into account
-                         error models, were interpreted as an iontype or not.
+                         error models, were interpreted as ion types or not.
                     </doc>
                     <field name="program" type="NX_CHAR">
                         <doc>
@@ -1120,7 +1171,12 @@
                     <group type="NXion">
                         <field name="isotope_vector" type="NX_UINT"/>
                         <field name="charge_state" type="NX_UINT"/>
-                        <field name="mass_to_charge_range" type="NX_FLOAT"/>
+                        <field name="mass_to_charge_range" type="NX_FLOAT">
+                            <dimensions rank="2">
+                                <dim index="1" value="n_ranges"/>
+                                <dim index="2" value="2"/>
+                            </dimensions>
+                        </field>
                     </group>
                 </group>
             </group>
