@@ -249,8 +249,8 @@ symbolic links in a unix filesystem.
 The NeXus definition sometimes requires to
 have access to the same data in different groups
 in the same file. For example: detector data is stored in the
-``NXinstrument/NXdetector`` group
-but may be needed in ``NXdata`` for automatic plotting.
+:ref:`NXinstrument`/:ref:`NXdetector` group
+but may be needed in :ref:`NXdata` for automatic plotting.
 Rather then replicating the data, NeXus uses
 links in such situations. See the :ref:`figure <fig.data-linking>` for
 a more descriptive representation of the concept of linking.
