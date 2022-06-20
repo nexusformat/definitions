@@ -11,20 +11,8 @@ application definitions (groupings of objects for a particular technique) and
 contributed_definitions (proposed definitions from the community)
 
 The complete :index:`!vocabulary` of terms used in NeXus NXDL files (names of
-groups, fields, attributes, and links) is available for download.  See this
-table for the different formats available:
-
-=========================================  ============================================
-download file                              description
-=========================================  ============================================
-:download:`/_static/nxdl_vocabulary.html`  Human-readable HTML list of anchors, by vocabulary term, with links to the manual.
-:download:`/_static/nxdl_vocabulary.json`  vocabulary list by key in JSON format [#json]_
-:download:`/_static/nxdl_vocabulary.txt`   list of all anchors, sorted alphabetically
-:download:`/_static/nxdl_vocabulary.yml`   vocabulary list by key in YAML format [#yaml]_
-=========================================  ============================================
-
-.. [#json] JSON: https://www.w3schools.com/whatis/whatis_json.asp
-.. [#yaml] YAML https://yaml.org
+groups, fields, attributes, and links) is available for :ref:`download
+<classes.vocabulary.downloads>`.
 
 Base classes
 ------------------
@@ -117,3 +105,22 @@ case not for general use.
     base_classes/index
     applications/index
     contributed_definitions/index
+
+.. _classes.vocabulary.downloads:
+
+Downloads
+------------------
+
+See this table for the different formats available:
+
+=========================================  ============================================
+download file                              description
+=========================================  ============================================
+:download:`/_static/nxdl_vocabulary.html`  Human-readable HTML list of anchors, by vocabulary term, with links to the manual.
+:download:`/_static/nxdl_vocabulary.json`  vocabulary list by key in JSON format [#json]_
+:download:`/_static/nxdl_vocabulary.txt`   list of all anchors, sorted alphabetically
+:download:`/_static/nxdl_vocabulary.yml`   vocabulary list by key in YAML format [#yaml]_
+=========================================  ============================================
+
+.. [#json] JSON: https://www.w3schools.com/whatis/whatis_json.asp
+.. [#yaml] YAML https://yaml.org
