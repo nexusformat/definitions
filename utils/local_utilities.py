@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''
+"""
 Common code for NeXus definitions Python tools
 
 ======================  ==================================
@@ -12,52 +12,52 @@ tool                    description
 :meth:`replicate_tree`  copy directory stack
 ======================  ==================================
 
-'''
+"""
 
 import os
 import shutil
 
 
 def mtime(file_name):
-    '''return file modification time'''
+    """return file modification time"""
     return os.stat(file_name)[os.stat.ST_MTIME]
 
 
 def replicate(source, target):
-    '''
+    """
     for directories or files: copy ``source`` to ``target``, replaces ``target``
     
     :param str source: path to source resource
     :param str target: path to target location
-    '''
+    """
     if os.path.isfile(source):
         shutil.copy2(source, target)
     elif os.path.isdir(source):
         replicate_tree(source, target)
     else:
-        msg = 'Do not know how to copy (skipped): ' + source
+        msg = "Do not know how to copy (skipped): " + source
         raise RuntimeWarning(msg)
 
 
 def replicate_tree(source, target):
-    '''
+    """
     for directories: copy ``source`` to ``target``, replaces ``target``
     
     :param str source: path to source resource (a directory)
     :param str target: path to target location (a directory)
-    '''
+    """
     if os.path.exists(source):
         if os.path.exists(target):
             shutil.rmtree(target, ignore_errors=True)
         shutil.copytree(source, target)
     else:
-        raise RuntimeError('Directory not found: ' + source)
+        raise RuntimeError("Directory not found: " + source)
 
 
 # NeXus - Neutron and X-ray Common Data Format
-# 
+#
 # Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
