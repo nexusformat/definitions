@@ -148,9 +148,7 @@ links.
    plotting
    
 :ref:`Design-Links`
-    Links are pointers to existing data somewhere else in the hierarchy. They
-    are used to have the same information be represented in different places
-    (such as defining the default plot) without duplication.
+    Links are used to represent the same information in different places.
 
 In fact, a NeXus file can be viewed as a computer file system. Just as files
 are stored in folders (or subdirectories) to make them easy to locate, so NeXus
