@@ -18,7 +18,7 @@ def write_nexus_file(fname, image, md={}):
 	"""
 	nexus = h5py.File(fname, "w")
 	nexus.attrs["filename"] = fname
-	nexus.attrs["file_time"] = str(datetime.datetime.now())
+	nexus.attrs["file_time"] = datetime.datetime.now().astimezone().isoformat()
 	nexus.attrs["creator"] = "write_nexus_file()"
 	nexus.attrs["H5PY_VERSION"] = h5py.__version__
 

@@ -26,7 +26,7 @@ in the :ref:`NAPI <NAPI>` chapter and may be downloaded
 from the NeXus development site. [#]_
 
 For an even more detailed description of the internal workings of NAPI
-see the `NeXus Internals manual <https://manual.nexusformat.org/pdf/NeXusIntern.pdf>`_, copied from the NeXus code repository.
+see the `NeXus Internals manual <https://manual.nexusformat.org/_static/NeXusIntern.pdf>`_, copied from the NeXus code repository.
 That document is written for programmers who want to work on the NAPI itself.
 If you are new to NeXus and just want to implement basic file reading or writing
 you should not start by reading that.
@@ -45,8 +45,6 @@ Python, C++, and IDL.
 
 The API uses a very simple *state*
 model to navigate through a NeXus file.
-(Compare this example with :ref:`example.napi.simple.2d.write`,
-in the :ref:`NAPI <NAPI>` chapter, using the native HDF5 commands.)
 When you open a file,
 the API provides a file *handle*, which stores the
 current location, i.e. which group and/or field is currently open. 

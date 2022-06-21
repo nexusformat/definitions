@@ -1,5 +1,5 @@
 import numpy as np
-import nexusformat
+from nexusformat.nexus import *
 
 
 def write_nexus_file(fname, image, md={}):

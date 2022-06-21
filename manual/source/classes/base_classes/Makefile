@@ -2,7 +2,7 @@
 
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2021 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -43,13 +43,13 @@ all :: index.rst $(RSTs) $(TARGET_NXDLs)
 
 index.rst :: 
 	echo "Adding summaries to base_classes/index.rst"
-	python $(NXDLSUMMARY) base_classes
+	$(PYTHON) $(NXDLSUMMARY) base_classes
 
 %.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
-	python $(NXDL2RST) $< > $@
+	$(PYTHON) -u $(NXDL2RST) $< > $@
 
 clean ::
-	$(RM) NX*.rst NX*.nxdl.xml
+	$(RM) index.rst NX*.rst NX*.nxdl.xml
 
 test ::
 	# $(SRCs)

@@ -1,7 +1,5 @@
 #!/usr/bin/env python
 
-# Tested under both python2 and python3.
-
 '''
 Read the NeXus NXDL class specification and describe it.
 Write a restructured text (.rst) document for use in the NeXus manual in
@@ -10,25 +8,186 @@ the NeXus NXDL Classes chapter.
 
 # testing:  see file dev_nxdl2rst.py
 
-from __future__ import print_function
 from collections import OrderedDict
-from six.moves import html_parser as HTMLParser
+from html import parser as HTMLParser
+import datetime
+import json
 import lxml.etree
 import os
+import pathlib
 import pyRestTable
 import re
 import sys
-from local_utilities import printf, replicate
+import yaml
+from local_utilities import replicate
 
 
 INDENTATION_UNIT = '  '
 listing_category = None
-anchor_list = []  # list of all hypertext anchors
+repo_root_path = pathlib.Path(__file__).parent.parent
+WRITE_ANCHOR_REGISTRY = False
+HTML_ROOT = 'https://github.com/nexusformat/definitions/blob/main'
+MANUAL_ROOT = "https://manual.nexusformat.org/"
+SUBDIR_MAP = {
+    'base': 'base_classes',
+    'application': 'applications',
+    'contributed': 'contributed_definitions',
+}
 
 
-def addAnchor(anchor):
-    """Add a hypertext anchor to the list."""
-    anchor_list.append(anchor)
+class AnchorRegistry:
+    """Document the NXDL vocabulary."""
+
+    def __init__(self) -> None:
+        path = repo_root_path / "manual" / "source" / "_static"
+        base = "nxdl_vocabulary"
+        self.html_file = path / f"{base}.html"
+        self.txt_file = path / f"{base}.txt"
+        self.json_file = path / f"{base}.json"
+        self.yaml_file = path / f"{base}.yml"
+        self.registry = self._read()
+        self.local_anchors = []  # anchors from current NXDL file
+        self.nxdl_file = None
+        self.category = None
+    
+    @property
+    def all_anchors(self):
+        result = []
+        for v in self.registry.values():
+            result += list(v.keys())
+        return result
+
+    def add(self, anchor):
+        if anchor not in self.local_anchors:
+            self.local_anchors.append(anchor)
+
+        key = self.key_from_anchor(anchor)
+        
+        if key not in self.registry:
+            self.registry[key] = {}
+        
+        reg = self.registry[key]
+        if anchor not in reg:
+            hanchor = self._html_anchor(anchor)
+            fnxdl = "/".join(pathlib.Path(self.nxdl_file).parts[-2:]).split(".")[0]
+            url = f"{MANUAL_ROOT}classes/{self.category}/{fnxdl}.html{hanchor}"
+            reg[anchor] = dict(
+                term=anchor,
+                html=hanchor,
+                url=url,
+            )
+    
+    def key_from_anchor(self, anchor):
+        key = anchor.lower().split("/")[-1].split("@")[-1].split("-")[0]
+        if "@" in anchor:
+            # restore preceding "@" symbol
+            key = "@" + key
+        return key
+
+    def write(self):
+        contents = dict(
+            _metadata = dict(
+                datetime=datetime.datetime.utcnow().isoformat(),
+                title="NeXus NXDL vocabulary.",
+                subtitle="Anchors for all NeXus fields, groups, attributes, and links.",
+            ),
+            terms = self.registry,
+        )
+
+        self._write_yaml(contents)
+        self._write_json(contents)
+        self._write_txt()
+        self._write_html(contents)
+
+    def _html_anchor(self, anchor):
+        """
+        Create (internal hyperlink target for) HTML anchor from reST anchor.
+
+        Example:
+
+        * reST anchor: /NXcanSAS/ENTRY/TRANSMISSION_SPECTRUM@timestamp-attribute
+        * HTML anchor: #nxcansas-entry-transmission-spectrum-timestamp-attribute
+        """
+        html_anchor = (
+            anchor
+            .lower()
+            .lstrip("/")
+            .replace("_", "-")
+            .replace("@", "-")
+            .replace("/", "-")
+        )
+        return f"#{html_anchor}"
+
+    def _read(self):
+        """The YAML file will record anchors (terms) from all NXDL files."""
+        registry = None
+        if self.yaml_file.exists():
+            contents = yaml.load(
+                open(self.yaml_file, "r").read(),
+                Loader=yaml.Loader
+            )
+            if contents is not None:
+                registry = contents.get("terms")
+        return registry or {}
+
+    def _write_html(self, contents):
+        """Write the anchors to an HTML file."""
+        root = lxml.etree.Element("html")
+        body = lxml.etree.SubElement(root, "body")
+        title = lxml.etree.SubElement(body, "h1")
+        subtitle = lxml.etree.SubElement(body, "em")
+
+        title.text = contents["_metadata"]["title"].strip(".")
+        subtitle.text = contents["_metadata"]["subtitle"].strip(".")
+        vocab_list = lxml.etree.SubElement(body, "h2")
+        vocab_list.text = "NXDL Vocabulary"
+
+        p = lxml.etree.SubElement(body, "p")
+        p.text = "This content is also available in these formats: "
+        for ext in "json txt yml".split():
+            a = lxml.etree.SubElement(p, "a")
+            a.attrib["href"] = f"{MANUAL_ROOT}_static/{self.txt_file.stem}.{ext}"
+            a.text = f" {ext}"
+
+        dl = lxml.etree.SubElement(body, "dl")
+        for term, termlist in sorted(contents["terms"].items()):
+            dterm = lxml.etree.SubElement(dl, "dt")
+            dterm.text = term
+            for _, itemdict in sorted(termlist.items()):
+                ddef = lxml.etree.SubElement(dterm, "dd")
+                a = lxml.etree.SubElement(ddef, "a")
+                a.attrib["href"] = itemdict["url"]
+                a.text = itemdict["term"]
+
+        lxml.etree.SubElement(body, "hr")
+
+        foot = lxml.etree.SubElement(body, "p")
+        foot_em = lxml.etree.SubElement(foot, "em")
+        foot_em.text = f"written: {contents['_metadata']['datetime']}"
+
+        html = lxml.etree.tostring(root, pretty_print=True).decode()
+        with open(self.html_file, "w") as f:
+            f.write(html)
+            f.write("\n")
+
+    def _write_json(self, contents):
+        with open(self.json_file, "w") as f:
+            json.dump(contents, f, indent=4)
+            f.write("\n")
+
+    def _write_txt(self):
+        """Compendium (dump the list of all known anchors in raw form)."""
+        terms = self.all_anchors
+        with open(self.txt_file, "w") as f:
+            f.write("\n".join(sorted(terms)))
+            f.write("\n")
+    
+    def _write_yaml(self, contents):
+        with open(self.yaml_file, "w") as f:
+            yaml.dump(contents, f)
+
+
+anchor_registry = AnchorRegistry()
 
 
 def printAnchorList():
@@ -37,35 +196,25 @@ def printAnchorList():
     def sorter(key):
         return key.lower()
 
-    if len(anchor_list) > 0:
+    if len(anchor_registry.local_anchors) > 0:
+        if WRITE_ANCHOR_REGISTRY:
+            # ONLY in the build directory
+            anchor_registry.write()
+
         print("")
         print("Hypertext Anchors")
         print("-----------------\n")
         print(
-            "Table of hypertext anchors for all groups, fields,\n"
+            "List of hypertext anchors for all groups, fields,\n"
             "attributes, and links defined in this class.\n\n"
         )
-        table = pyRestTable.Table()
-        table.addLabel("documentation (reST source) anchor")
-        table.addLabel("web page (HTML) anchor")
-        for ref in sorted(anchor_list, key=sorter):
-            # fmt: off
-            anchor = (
-                ref
-                .lower()
-                .lstrip("/")
-                .replace("_", "-")
-                .replace("@", "-")
-                .replace("/", "-")
-            )
-            table.addRow(
-                (
-                    ":ref:`%s <%s>`" % (ref, ref),
-                    ":ref:`#%s <%s>`" % (anchor, ref),
-                )
-            )
-            # fmt: on
-        print(table)
+        # fmt: off
+        rst = [
+            f"* :ref:`{ref} <{ref}>`"
+            for ref in sorted(anchor_registry.local_anchors, key=sorter)
+        ]
+        # fmt: on
+        print("\n".join(rst))
 
 
 def fmtTyp( node ):
@@ -161,7 +310,7 @@ def get_minOccurs(node, use_application_defaults):
     :param bool use_application_defaults: use special case value
     :returns str: value of the attribute (or its default)
     '''
-    # TODO: can we improve on the default by exmaining nxdl.xsd?
+    # TODO: can we improve on the default by examining nxdl.xsd?
     minOccurs_default = {True: '1', False: '0'}[use_application_defaults]
     minOccurs = node.get('minOccurs', minOccurs_default)
     return minOccurs
@@ -182,10 +331,10 @@ def get_required_or_optional_text(node, use_application_defaults):
         optional = node.get('optional', optional_default) in (True, 'true', '1', 1)
         recommended = node.get('recommended', None) in (True, 'true', '1', 1)
         minOccurs = get_minOccurs(node, use_application_defaults)
-        if minOccurs in ('0', 0) or optional:
-            optional_text = '(optional) '
-        elif recommended:
+        if recommended:
             optional_text = '(recommended) '
+        elif minOccurs in ('0', 0) or optional:
+            optional_text = '(optional) '
         elif minOccurs in ('1', 1):
             optional_text = '(required) '
         else:
@@ -204,20 +353,110 @@ def get_required_or_optional_text(node, use_application_defaults):
     return optional_text
 
 
-def analyzeDimensions( ns, parent ):
+def analyzeDimensions(ns, parent):
+    """These are the different dimensions that can occur:
+
+    1. Fixed rank
+
+        <dimensions rank="dataRank">
+          <dim index="1" value="a" />
+          <dim index="2" value="b" />
+          <dim index="3" value="c" />
+        </dimensions>
+
+    2. Variable rank because of optional dimensions
+
+        <dimensions rank="dataRank">
+          <dim index="1" value="a" />
+          <dim index="2" value="b" />
+          <dim index="3" value="c" />
+          <dim index="4" value="d" required="false"/>
+        </dimensions>
+
+    3. Variable rank because no dimensions specified
+
+        <dimensions rank="dataRank">
+        </dimensions>
+
+    The legacy way of doing this (still supported)
+
+        <dimensions rank="dataRank">
+          <dim index="0" value="n" />
+        </dimensions>
+
+    4. Rank and dimensions equal to that of another field called `field_name`
+
+        <dimensions rank="dataRank">
+          <dim index="1" ref="field_name" />
+        </dimensions>
+    """
     node_list = parent.xpath('nx:dimensions', namespaces=ns)
     if len(node_list) != 1:
         return ''
     node = node_list[0]
-    # rank = node.get('rank') # ignore this
     node_list = node.xpath('nx:dim', namespaces=ns)
+
     dims = []
+    optional = False
     for subnode in node_list:
-        value = subnode.get('value')
-        if not value:
-            value = 'ref(%s)' % subnode.get('ref')
-        dims.append( value )
-    return '[%s]' % ( ', '.join(dims) )
+        # Dimension index (starts from index 1)
+        index = subnode.get('index', '')
+        if not index.isdigit():
+            raise RuntimeError("A dimension must have an index")
+        index = int(index)
+        if index == 0:
+            # No longer needed: legacy way to specify that the
+            # rank is variable
+            continue
+
+        # Expand dimensions when needed
+        index -= 1
+        nadd = max(index-len(dims)+1, 0)
+        if nadd:
+            dims += ["."] * nadd
+
+        # Dimension symbol
+        dim = subnode.get('value')  # integer or symbol from the table
+        if not dim:
+            ref = subnode.get('ref')
+            if ref:
+                return ' (Rank: same as field %s, Dimensions: same as field %s)' % (ref, ref)
+            dim = "."  # dimension has no symbol
+
+        # Dimension might be optional
+        if subnode.get('required', 'true').lower() == "false":
+            optional = True
+        elif optional:
+            raise RuntimeError("A required dimension cannot come after an optional dimension")
+        if optional:
+            dim = '[%s]' % dim
+
+        dims[index] = dim
+
+    # When the rank is missing, set to the number of dimensions when
+    # there are dimensions specified and none of them are optional.
+    ndims = len(dims)
+    rank = node.get('rank', None)
+    if rank is None and not optional and ndims:
+        rank = str(ndims)
+
+    # Validate rank and dimensions
+    rank_is_fixed = rank and rank.isdigit()
+    if optional and rank_is_fixed:
+        raise RuntimeError("A fixed rank cannot have optional dimensions")
+    if rank_is_fixed and ndims and int(rank) != ndims:
+        raise RuntimeError("The rank and the number of dimensions do not correspond")
+
+    # Omit rank and/or dimensions when not specified
+    if rank and dims:
+        dims = ', '.join(dims)
+        return ' (Rank: %s, Dimensions: [%s])' % (rank, dims)
+    elif rank:
+        return ' (Rank: %s)' % rank
+    elif dims:
+        dims = ', '.join(dims)
+        return ' (Dimensions: [%s])' % dims
+    return ''
 
 
 def hyperlinkTarget(parent_path, name, nxtype):
@@ -229,7 +468,7 @@ def hyperlinkTarget(parent_path, name, nxtype):
     target = "%s%s%s-%s" % (
         parent_path, sep, name, nxtype
     )
-    addAnchor(target)
+    anchor_registry.add(target)
     return ".. _%s:\n" % target
 
 
@@ -239,9 +478,9 @@ def printEnumeration( indent, ns, parent ):
         return ''
 
     if len(node_list) == 1:
-        printf( '%sObligatory value: ' % ( indent ) )
+        print(f'{indent}Obligatory value:', end='')
     else:
-        printf( '%sAny of these values:' % ( indent ) )
+        print(f'{indent}Any of these values:', end='')
 
     docs = OrderedDict()
     for item in node_list:
@@ -255,16 +494,16 @@ def printEnumeration( indent, ns, parent ):
     if ( any( doc for doc in docs.values() ) or
          len( oneliner ) > ENUMERATION_INLINE_LENGTH ):
         # print one item per line
-        print('\n')
+        print("\n")
         for name, doc in docs.items():
-            printf( '%s  * %s' % ( indent, show_as_typed_text(name) ) )
+            print(f'{indent}  * {show_as_typed_text(name)}', end='')
             if doc:
-                printf( ': %s' % ( doc ) )
-            print('\n')
+                print(f': {doc}', end='')
+            print("\n")
     else:
         # print all items in one line
-        print(' %s' % ( oneliner ) )
-    print('')
+        print(f" {oneliner}")
+    print("")
 
 
 def printDoc( indent, ns, node, required=False):
@@ -272,23 +511,23 @@ def printDoc( indent, ns, node, required=False):
     if len(blocks)==0:
         if required:
             raise Exception( 'No documentation for: ' + node.get('name') )
-        print('')
+        print("")
     else:
         for block in blocks:
             for line in block.splitlines():
-                print( '%s%s' % ( indent, line ) )
+                print(f"{indent}{line}")
             print()
 
 
 def printAttribute( ns, kind, node, optional, indent, parent_path ):
     name = node.get('name')
     index_name = name
-    print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'attribute'))
+    print(
+        f"{indent}"
+        f"{hyperlinkTarget(parent_path, name, 'attribute')}"
     )
-    print( '%s.. index:: %s (%s attribute)\n' %
-           ( indent, index_name, kind ) )
-    print( '%s**@%s**: %s%s%s\n' % (
-        indent, name, optional, fmtTyp(node), fmtUnits(node) ) )
+    print(f"{indent}.. index:: {index_name} ({kind} attribute)\n")
+    print(f"{indent}**@{name}**: {optional}{fmtTyp(node)}{fmtUnits(node)}\n")
     printDoc(indent+INDENTATION_UNIT, ns, node)
     node_list = node.xpath('nx:enumeration', namespaces=ns)
     if len(node_list) == 1:
@@ -298,9 +537,8 @@ def printAttribute( ns, kind, node, optional, indent, parent_path ):
 def printIfDeprecated( ns, node, indent ):
     deprecated = node.get('deprecated', None)
     if deprecated is not None:
-        print( '\n%s.. index:: deprecated\n' % indent)
-        fmt = '\n%s**DEPRECATED**: %s\n'
-        print( fmt % (indent, deprecated ) )
+        print(f"\n{indent}.. index:: deprecated\n")
+        print(f"\n{indent}**DEPRECATED**: {deprecated}\n")
 
 
 def printFullTree(ns, parent, name, indent, parent_path):
@@ -325,13 +563,16 @@ def printFullTree(ns, parent, name, indent, parent_path):
         dims = analyzeDimensions(ns, node)
 
         optional_text = get_required_or_optional_text(node, use_application_defaults)
-        print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'field')))
-        print( '%s.. index:: %s (field)\n' %
-               ( indent, index_name ) )
+        print(f"{indent}{hyperlinkTarget(parent_path, name, 'field')}")
+        print(f"{indent}.. index:: {index_name} (field)\n")
         print(
-            '%s**%s%s**: %s%s%s\n' % (
-                indent, name, dims, optional_text, fmtTyp(node), fmtUnits(node)
-                ))
+            f"{indent}**{name}**: "
+            f"{optional_text}"
+            f"{fmtTyp(node)}"
+            f"{dims}"
+            f"{fmtUnits(node)}"
+            "\n"
+        )
 
         printIfDeprecated( ns, node, indent+INDENTATION_UNIT )
         printDoc(indent+INDENTATION_UNIT, ns, node)
@@ -353,8 +594,11 @@ def printFullTree(ns, parent, name, indent, parent_path):
             if name == '':
                 name = typ.lstrip('NX').upper()
             typ = ':ref:`%s`' % typ
-        print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'group')))
-        print( '%s**%s**: %s%s\n' % (indent, name, optional_text, typ ) )
+        hTarget = hyperlinkTarget(parent_path, name, 'group')
+        target = hTarget.replace(".. _", "").replace(":\n", "")
+        # TODO: https://github.com/nexusformat/definitions/issues/1057
+        print(f"{indent}{hTarget}")
+        print(f"{indent}**{name}**: {optional_text}{typ}\n")
 
         printIfDeprecated(ns, node, indent+INDENTATION_UNIT)
         printDoc(indent+INDENTATION_UNIT, ns, node)
@@ -368,9 +612,13 @@ def printFullTree(ns, parent, name, indent, parent_path):
 
     for node in parent.xpath('nx:link', namespaces=ns):
         name = node.get('name')
-        print("%s%s" % (indent, hyperlinkTarget(parent_path, name, 'link')))
-        print( '%s**%s**: :ref:`link<Design-Links>` (suggested target: ``%s``)\n' % (
-            indent, name, node.get('target') ) )
+        print(f"{indent}{hyperlinkTarget(parent_path, name, 'link')}")
+        print(
+            f"{indent}**{name}**: "
+            ":ref:`link<Design-Links>` "
+            f"(suggested target: ``{node.get('target')}``"
+            "\n"
+        )
         printDoc(indent+INDENTATION_UNIT, ns, node)
 
 
@@ -379,6 +627,7 @@ def print_rst_from_nxdl(nxdl_file):
     print restructured text from the named .nxdl.xml file
     '''
     global listing_category
+
     # parse input file into tree
     tree = lxml.etree.parse(nxdl_file)
 
@@ -400,6 +649,11 @@ def print_rst_from_nxdl(nxdl_file):
     # retrieve category from directory
     #subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
     subdir = root.attrib["category"]
+
+    # Pass these terms to construct the full URL
+    anchor_registry.nxdl_file = nxdl_file
+    anchor_registry.category = SUBDIR_MAP[subdir]
+
     # TODO: check for consistency with root.get('category')
     listing_category = {
                  'base': 'base class',
@@ -412,16 +666,17 @@ def print_rst_from_nxdl(nxdl_file):
         'contributed definition')
 
     # print ReST comments and section header
-    print( '.. auto-generated by script %s from the NXDL source %s' %
-           (sys.argv[0], sys.argv[1]) )
-    print('')
+    print(
+        f".. auto-generated by script {sys.argv[0]} "
+        f"from the NXDL source {sys.argv[1]}"
+    )
+    print("")
     print( '.. index::' )
-    print( '    ! %s (%s)' % (name,listing_category) )
-    print( '    ! %s (%s)' % (lexical_name,listing_category) )
-    print( '    see: %s (%s); %s' %
-           (lexical_name,listing_category, name) )
-    print('')
-    print( '.. _%s:\n' % name )
+    print(f"    ! {name} ({listing_category})")
+    print(f"    ! {lexical_name} ({listing_category})")
+    print(f"    see: {lexical_name} ({listing_category}); {name}")
+    print("")
+    print(f".. _{name}:\n")
     print( '='*len(title) )
     print( title )
     print( '='*len(title) )
@@ -433,16 +688,14 @@ def print_rst_from_nxdl(nxdl_file):
     else:
         extends = ':ref:`%s`' % extends
 
-    print('')
+    print("")
     print( '**Status**:\n' )
-    print( '  %s, extends %s' %
-           ( listing_category.strip(),
-             extends ) )
+    print(f'  {listing_category.strip()}, extends {extends}')
 
     printIfDeprecated(ns, root, '')
 
     # print official description of this class
-    print('')
+    print("")
     print( '**Description**:\n' )
     printDoc(INDENTATION_UNIT, ns, root, required=True)
 
@@ -458,10 +711,10 @@ def print_rst_from_nxdl(nxdl_file):
         printDoc( INDENTATION_UNIT, ns, node_list[0] )
         for node in node_list[0].xpath('nx:symbol', namespaces=ns):
             doc = getDocLine(ns, node)
-            printf( '  **%s**' % node.get('name') )
+            print(f"  **{node.get('name')}**", end='')
             if doc:
-                printf( ': %s' % doc )
-            print('\n')
+                print(f': {doc}', end='')
+            print("\n")
 
     # print group references
     print( '**Groups cited**:' )
@@ -476,13 +729,12 @@ def print_rst_from_nxdl(nxdl_file):
     else:
         out = [ (':ref:`%s`' % g) for g in groups ]
         txt = ', '.join(sorted(out))
-        print( '  %s\n' % ( txt ) )
+        print(f"  {txt}\n")
         out = [ ('%s (base class); used in %s' % (g, listing_category)) for g in groups ]
         txt = ', '.join(out)
-        print( '.. index:: %s\n' % ( txt ) )
+        print(f'.. index:: {txt}\n')
 
     # TODO: change instances of \t to proper indentation
-    html_root = 'https://github.com/nexusformat/definitions/blob/main'
 
     # print full tree
     print( '**Structure**:\n' )
@@ -494,15 +746,9 @@ def print_rst_from_nxdl(nxdl_file):
     printAnchorList()
 
     # print NXDL source location
-    subdir_map = {
-                  'base': 'base_classes',
-                  'application': 'applications',
-                  'contributed': 'contributed_definitions',
-                  }
     print("")
     print( '**NXDL Source**:' )
-    print( '  %s/%s/%s.nxdl.xml' % (
-        html_root, subdir_map[subdir], name) )
+    print(f'  {HTML_ROOT}/{SUBDIR_MAP[subdir]}/{name}.nxdl.xml')
 
 
 def main():
@@ -516,7 +762,7 @@ def main():
     nxdl_file = results.nxdl_file
 
     if not os.path.exists(nxdl_file):
-        print( 'Cannot find %s' % nxdl_file )
+        print(f'Cannot find {nxdl_file}' )
         exit()
 
     print_rst_from_nxdl(nxdl_file)
@@ -535,12 +781,13 @@ def main():
 
 
 if __name__ == '__main__':
+    WRITE_ANCHOR_REGISTRY = True
     main()
 
 
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2008-2021 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
