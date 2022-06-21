@@ -15,7 +15,6 @@ import json
 import lxml.etree
 import os
 import pathlib
-import pyRestTable
 import re
 import sys
 import yaml
