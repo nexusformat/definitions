@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-'''
+"""
 Read the NeXus NXDL class specification and describe it.
 Write a restructured text (.rst) document for use in the NeXus manual in
 the NeXus NXDL Classes chapter.
-'''
+"""
 
 # testing:  see file dev_nxdl2rst.py
 
@@ -21,16 +21,16 @@ import yaml
 from local_utilities import replicate
 
 
-INDENTATION_UNIT = '  '
+INDENTATION_UNIT = "  "
 listing_category = None
 repo_root_path = pathlib.Path(__file__).parent.parent
 WRITE_ANCHOR_REGISTRY = False
-HTML_ROOT = 'https://github.com/nexusformat/definitions/blob/main'
+HTML_ROOT = "https://github.com/nexusformat/definitions/blob/main"
 MANUAL_ROOT = "https://manual.nexusformat.org/"
 SUBDIR_MAP = {
-    'base': 'base_classes',
-    'application': 'applications',
-    'contributed': 'contributed_definitions',
+    "base": "base_classes",
+    "application": "applications",
+    "contributed": "contributed_definitions",
 }
 
 
@@ -48,7 +48,7 @@ class AnchorRegistry:
         self.local_anchors = []  # anchors from current NXDL file
         self.nxdl_file = None
         self.category = None
-    
+
     @property
     def all_anchors(self):
         result = []
@@ -61,21 +61,17 @@ class AnchorRegistry:
             self.local_anchors.append(anchor)
 
         key = self.key_from_anchor(anchor)
-        
+
         if key not in self.registry:
             self.registry[key] = {}
-        
+
         reg = self.registry[key]
         if anchor not in reg:
             hanchor = self._html_anchor(anchor)
             fnxdl = "/".join(pathlib.Path(self.nxdl_file).parts[-2:]).split(".")[0]
             url = f"{MANUAL_ROOT}classes/{self.category}/{fnxdl}.html{hanchor}"
-            reg[anchor] = dict(
-                term=anchor,
-                html=hanchor,
-                url=url,
-            )
-    
+            reg[anchor] = dict(term=anchor, html=hanchor, url=url,)
+
     def key_from_anchor(self, anchor):
         key = anchor.lower().split("/")[-1].split("@")[-1].split("-")[0]
         if "@" in anchor:
@@ -85,12 +81,12 @@ class AnchorRegistry:
 
     def write(self):
         contents = dict(
-            _metadata = dict(
+            _metadata=dict(
                 datetime=datetime.datetime.utcnow().isoformat(),
                 title="NeXus NXDL vocabulary.",
                 subtitle="Anchors for all NeXus fields, groups, attributes, and links.",
             ),
-            terms = self.registry,
+            terms=self.registry,
         )
 
         self._write_yaml(contents)
@@ -108,8 +104,7 @@ class AnchorRegistry:
         * HTML anchor: #nxcansas-entry-transmission-spectrum-timestamp-attribute
         """
         html_anchor = (
-            anchor
-            .lower()
+            anchor.lower()
             .lstrip("/")
             .replace("_", "-")
             .replace("@", "-")
@@ -121,10 +116,7 @@ class AnchorRegistry:
         """The YAML file will record anchors (terms) from all NXDL files."""
         registry = None
         if self.yaml_file.exists():
-            contents = yaml.load(
-                open(self.yaml_file, "r").read(),
-                Loader=yaml.Loader
-            )
+            contents = yaml.load(open(self.yaml_file, "r").read(), Loader=yaml.Loader)
             if contents is not None:
                 registry = contents.get("terms")
         return registry or {}
@@ -180,7 +172,7 @@ class AnchorRegistry:
         with open(self.txt_file, "w") as f:
             f.write("\n".join(sorted(terms)))
             f.write("\n")
-    
+
     def _write_yaml(self, contents):
         with open(self.yaml_file, "w") as f:
             yaml.dump(contents, f)
@@ -216,139 +208,148 @@ def printAnchorList():
         print("\n".join(rst))
 
 
-def fmtTyp( node ):
-    typ = node.get('type', ':ref:`NX_CHAR <NX_CHAR>`') # per default
-    if typ.startswith('NX_'):
-        typ = ':ref:`%s <%s>`' % (typ, typ)
+def fmtTyp(node):
+    typ = node.get("type", ":ref:`NX_CHAR <NX_CHAR>`")  # per default
+    if typ.startswith("NX_"):
+        typ = ":ref:`%s <%s>`" % (typ, typ)
     return typ
 
 
-def fmtUnits( node ):
-    units = node.get('units', '')
+def fmtUnits(node):
+    units = node.get("units", "")
     if not units:
-        return ''
-    if units.startswith('NX_'):
-        units = '\ :ref:`%s <%s>`' % (units, units)
-    return ' {units=%s}' % units
+        return ""
+    if units.startswith("NX_"):
+        units = "\ :ref:`%s <%s>`" % (units, units)
+    return " {units=%s}" % units
 
 
-def getDocBlocks( ns, node ):
-    docnodes = node.xpath('nx:doc', namespaces=ns)
-    if docnodes is None or len(docnodes)==0:
-        return ''
+def getDocBlocks(ns, node):
+    docnodes = node.xpath("nx:doc", namespaces=ns)
+    if docnodes is None or len(docnodes) == 0:
+        return ""
     if len(docnodes) > 1:
-        raise Exception( 'Too many doc elements: line %d, %s' %
-                         (node.sourceline, os.path.split(node.base)[1]) )
+        raise Exception(
+            "Too many doc elements: line %d, %s"
+            % (node.sourceline, os.path.split(node.base)[1])
+        )
     docnode = docnodes[0]
 
     # be sure to grab _all_ content in the documentation
     # it might look like XML
-    s = lxml.etree.tostring(docnode, pretty_print=True,
-                            method='c14n', with_comments=False).decode('utf-8')
-    m = re.search(r'^<doc[^>]*>\n?(.*)\n?</doc>$', s, re.DOTALL )
+    s = lxml.etree.tostring(
+        docnode, pretty_print=True, method="c14n", with_comments=False
+    ).decode("utf-8")
+    m = re.search(r"^<doc[^>]*>\n?(.*)\n?</doc>$", s, re.DOTALL)
     if not m:
-        raise Exception( 'unexpected docstring [%s] ' % s )
+        raise Exception("unexpected docstring [%s] " % s)
     text = m.group(1)
 
     # substitute HTML entities in markup: "<" for "&lt;"
     # thanks: http://stackoverflow.com/questions/2087370/decode-html-entities-in-python-string
     htmlparser = HTMLParser.HTMLParser()
-    try:		# see #661
+    try:  # see #661
         import html
+
         text = html.unescape(text)
     except (ImportError, AttributeError):
         text = htmlparser.unescape(text)
 
     # Blocks are separated by whitelines
-    blocks = re.split( '\n\s*\n', text )
-    if len(blocks)==1 and len(blocks[0].splitlines())==1:
-        return [ blocks[0].rstrip().lstrip() ]
+    blocks = re.split("\n\s*\n", text)
+    if len(blocks) == 1 and len(blocks[0].splitlines()) == 1:
+        return [blocks[0].rstrip().lstrip()]
 
     # Indentation must be given by first line
-    m = re.match(r'(\s*)(\S+)', blocks[0])
+    m = re.match(r"(\s*)(\S+)", blocks[0])
     if not m:
-        return [ '' ]
+        return [""]
     indent = m.group(1)
 
     # Remove common indentation as determined from first line
-    if indent=="":
-        raise Exception( 'Missing initial indentation in <doc> of %s [%s]' %
-                         ( node.get('name'), blocks[0] ) )
+    if indent == "":
+        raise Exception(
+            "Missing initial indentation in <doc> of %s [%s]"
+            % (node.get("name"), blocks[0])
+        )
 
     out_blocks = []
     for block in blocks:
         lines = block.rstrip().splitlines()
         out_lines = []
         for line in lines:
-            if line[:len(indent)]!=indent:
-                raise Exception( 'Bad indentation in <doc> of %s [%s]: expected "%s" found "%s".' %
-                                 ( node.get('name'), block,
-                                   re.sub(r'\t',"\\\\t", indent ),
-                                   re.sub(r'\t',"\\\\t", line ),
-                            ) )
-            out_lines.append( line[len(indent):] )
-        out_blocks.append( "\n".join(out_lines) )
+            if line[: len(indent)] != indent:
+                raise Exception(
+                    'Bad indentation in <doc> of %s [%s]: expected "%s" found "%s".'
+                    % (
+                        node.get("name"),
+                        block,
+                        re.sub(r"\t", "\\\\t", indent),
+                        re.sub(r"\t", "\\\\t", line),
+                    )
+                )
+            out_lines.append(line[len(indent) :])
+        out_blocks.append("\n".join(out_lines))
     return out_blocks
 
 
-def getDocLine( ns, node ):
-    blocks = getDocBlocks( ns, node )
-    if len(blocks)==0:
-        return ''
-    if len(blocks)>1:
-        raise Exception( 'Unexpected multi-paragraph doc [%s]' %
-                         '|'.join(blocks) )
-    return re.sub(r'\n', " ", blocks[0])
+def getDocLine(ns, node):
+    blocks = getDocBlocks(ns, node)
+    if len(blocks) == 0:
+        return ""
+    if len(blocks) > 1:
+        raise Exception("Unexpected multi-paragraph doc [%s]" % "|".join(blocks))
+    return re.sub(r"\n", " ", blocks[0])
 
 
 def get_minOccurs(node, use_application_defaults):
-    '''
+    """
     get the value for the ``minOccurs`` attribute
 
     :param obj node: instance of lxml.etree._Element
     :param bool use_application_defaults: use special case value
     :returns str: value of the attribute (or its default)
-    '''
+    """
     # TODO: can we improve on the default by examining nxdl.xsd?
-    minOccurs_default = {True: '1', False: '0'}[use_application_defaults]
-    minOccurs = node.get('minOccurs', minOccurs_default)
+    minOccurs_default = {True: "1", False: "0"}[use_application_defaults]
+    minOccurs = node.get("minOccurs", minOccurs_default)
     return minOccurs
 
 
 def get_required_or_optional_text(node, use_application_defaults):
-    '''
+    """
     make clear if a reported item is required or optional
 
     :param obj node: instance of lxml.etree._Element
     :param bool use_application_defaults: use special case value
     :returns: formatted text
-    '''
-    tag = node.tag.split('}')[-1]
-    nm = node.get('name')
-    if tag in ('field', 'group'):
+    """
+    tag = node.tag.split("}")[-1]
+    nm = node.get("name")
+    if tag in ("field", "group"):
         optional_default = not use_application_defaults
-        optional = node.get('optional', optional_default) in (True, 'true', '1', 1)
-        recommended = node.get('recommended', None) in (True, 'true', '1', 1)
+        optional = node.get("optional", optional_default) in (True, "true", "1", 1)
+        recommended = node.get("recommended", None) in (True, "true", "1", 1)
         minOccurs = get_minOccurs(node, use_application_defaults)
         if recommended:
-            optional_text = '(recommended) '
-        elif minOccurs in ('0', 0) or optional:
-            optional_text = '(optional) '
-        elif minOccurs in ('1', 1):
-            optional_text = '(required) '
+            optional_text = "(recommended) "
+        elif minOccurs in ("0", 0) or optional:
+            optional_text = "(optional) "
+        elif minOccurs in ("1", 1):
+            optional_text = "(required) "
         else:
             # this is unexpected and remarkable
             # TODO: add a remark to the log
-            optional_text = '(``minOccurs=%s``) ' % str(minOccurs)
-    elif tag in ('attribute',):
+            optional_text = "(``minOccurs=%s``) " % str(minOccurs)
+    elif tag in ("attribute",):
         optional_default = not use_application_defaults
-        optional = node.get('optional', optional_default) in (True, 'true', '1', 1)
-        recommended = node.get('recommended', None) in (True, 'true', '1', 1)
-        optional_text = {True: '(optional) ', False: '(required) '}[optional]
+        optional = node.get("optional", optional_default) in (True, "true", "1", 1)
+        recommended = node.get("recommended", None) in (True, "true", "1", 1)
+        optional_text = {True: "(optional) ", False: "(required) "}[optional]
         if recommended:
-            optional_text = '(recommended) '
+            optional_text = "(recommended) "
     else:
-        optional_text = '(unknown tag: ' + str(tag) + ') '
+        optional_text = "(unknown tag: " + str(tag) + ") "
     return optional_text
 
 
@@ -389,17 +390,17 @@ def analyzeDimensions(ns, parent):
           <dim index="1" ref="field_name" />
         </dimensions>
     """
-    node_list = parent.xpath('nx:dimensions', namespaces=ns)
+    node_list = parent.xpath("nx:dimensions", namespaces=ns)
     if len(node_list) != 1:
-        return ''
+        return ""
     node = node_list[0]
-    node_list = node.xpath('nx:dim', namespaces=ns)
+    node_list = node.xpath("nx:dim", namespaces=ns)
 
     dims = []
     optional = False
     for subnode in node_list:
         # Dimension index (starts from index 1)
-        index = subnode.get('index', '')
+        index = subnode.get("index", "")
         if not index.isdigit():
             raise RuntimeError("A dimension must have an index")
         index = int(index)
@@ -410,32 +411,37 @@ def analyzeDimensions(ns, parent):
 
         # Expand dimensions when needed
         index -= 1
-        nadd = max(index-len(dims)+1, 0)
+        nadd = max(index - len(dims) + 1, 0)
         if nadd:
             dims += ["."] * nadd
 
         # Dimension symbol
-        dim = subnode.get('value')  # integer or symbol from the table
+        dim = subnode.get("value")  # integer or symbol from the table
         if not dim:
-            ref = subnode.get('ref')
+            ref = subnode.get("ref")
             if ref:
-                return ' (Rank: same as field %s, Dimensions: same as field %s)' % (ref, ref)
+                return " (Rank: same as field %s, Dimensions: same as field %s)" % (
+                    ref,
+                    ref,
+                )
             dim = "."  # dimension has no symbol
 
         # Dimension might be optional
-        if subnode.get('required', 'true').lower() == "false":
+        if subnode.get("required", "true").lower() == "false":
             optional = True
         elif optional:
-            raise RuntimeError("A required dimension cannot come after an optional dimension")
+            raise RuntimeError(
+                "A required dimension cannot come after an optional dimension"
+            )
         if optional:
-            dim = '[%s]' % dim
+            dim = "[%s]" % dim
 
         dims[index] = dim
 
     # When the rank is missing, set to the number of dimensions when
     # there are dimensions specified and none of them are optional.
     ndims = len(dims)
-    rank = node.get('rank', None)
+    rank = node.get("rank", None)
     if rank is None and not optional and ndims:
         rank = str(ndims)
 
@@ -448,14 +454,14 @@ def analyzeDimensions(ns, parent):
 
     # Omit rank and/or dimensions when not specified
     if rank and dims:
-        dims = ', '.join(dims)
-        return ' (Rank: %s, Dimensions: [%s])' % (rank, dims)
+        dims = ", ".join(dims)
+        return " (Rank: %s, Dimensions: [%s])" % (rank, dims)
     elif rank:
-        return ' (Rank: %s)' % rank
+        return " (Rank: %s)" % rank
     elif dims:
-        dims = ', '.join(dims)
-        return ' (Dimensions: [%s])' % dims
-    return ''
+        dims = ", ".join(dims)
+        return " (Dimensions: [%s])" % dims
+    return ""
 
 
 def hyperlinkTarget(parent_path, name, nxtype):
@@ -464,40 +470,39 @@ def hyperlinkTarget(parent_path, name, nxtype):
         sep = "@"
     else:
         sep = "/"
-    target = "%s%s%s-%s" % (
-        parent_path, sep, name, nxtype
-    )
+    target = "%s%s%s-%s" % (parent_path, sep, name, nxtype)
     anchor_registry.add(target)
     return ".. _%s:\n" % target
 
 
-def printEnumeration( indent, ns, parent ):
-    node_list = parent.xpath('nx:item', namespaces=ns)
+def printEnumeration(indent, ns, parent):
+    node_list = parent.xpath("nx:item", namespaces=ns)
     if len(node_list) == 0:
-        return ''
+        return ""
 
     if len(node_list) == 1:
-        print(f'{indent}Obligatory value:', end='')
+        print(f"{indent}Obligatory value:", end="")
     else:
-        print(f'{indent}Any of these values:', end='')
+        print(f"{indent}Any of these values:", end="")
 
     docs = OrderedDict()
     for item in node_list:
-        name = item.get('value')
+        name = item.get("value")
         docs[name] = getDocLine(ns, item)
 
     ENUMERATION_INLINE_LENGTH = 60
+
     def show_as_typed_text(msg):
-        return '``%s``' % msg
-    oneliner = ' | '.join( map(show_as_typed_text, docs.keys()) )
-    if ( any( doc for doc in docs.values() ) or
-         len( oneliner ) > ENUMERATION_INLINE_LENGTH ):
+        return "``%s``" % msg
+
+    oneliner = " | ".join(map(show_as_typed_text, docs.keys()))
+    if any(doc for doc in docs.values()) or len(oneliner) > ENUMERATION_INLINE_LENGTH:
         # print one item per line
         print("\n")
         for name, doc in docs.items():
-            print(f'{indent}  * {show_as_typed_text(name)}', end='')
+            print(f"{indent}  * {show_as_typed_text(name)}", end="")
             if doc:
-                print(f': {doc}', end='')
+                print(f": {doc}", end="")
             print("\n")
     else:
         # print all items in one line
@@ -505,11 +510,11 @@ def printEnumeration( indent, ns, parent ):
     print("")
 
 
-def printDoc( indent, ns, node, required=False):
+def printDoc(indent, ns, node, required=False):
     blocks = getDocBlocks(ns, node)
-    if len(blocks)==0:
+    if len(blocks) == 0:
         if required:
-            raise Exception( 'No documentation for: ' + node.get('name') )
+            raise Exception("No documentation for: " + node.get("name"))
         print("")
     else:
         for block in blocks:
@@ -518,30 +523,27 @@ def printDoc( indent, ns, node, required=False):
             print()
 
 
-def printAttribute( ns, kind, node, optional, indent, parent_path ):
-    name = node.get('name')
+def printAttribute(ns, kind, node, optional, indent, parent_path):
+    name = node.get("name")
     index_name = name
-    print(
-        f"{indent}"
-        f"{hyperlinkTarget(parent_path, name, 'attribute')}"
-    )
+    print(f"{indent}" f"{hyperlinkTarget(parent_path, name, 'attribute')}")
     print(f"{indent}.. index:: {index_name} ({kind} attribute)\n")
     print(f"{indent}**@{name}**: {optional}{fmtTyp(node)}{fmtUnits(node)}\n")
-    printDoc(indent+INDENTATION_UNIT, ns, node)
-    node_list = node.xpath('nx:enumeration', namespaces=ns)
+    printDoc(indent + INDENTATION_UNIT, ns, node)
+    node_list = node.xpath("nx:enumeration", namespaces=ns)
     if len(node_list) == 1:
-        printEnumeration( indent+INDENTATION_UNIT, ns, node_list[0] )
+        printEnumeration(indent + INDENTATION_UNIT, ns, node_list[0])
 
 
-def printIfDeprecated( ns, node, indent ):
-    deprecated = node.get('deprecated', None)
+def printIfDeprecated(ns, node, indent):
+    deprecated = node.get("deprecated", None)
     if deprecated is not None:
         print(f"\n{indent}.. index:: deprecated\n")
         print(f"\n{indent}**DEPRECATED**: {deprecated}\n")
 
 
 def printFullTree(ns, parent, name, indent, parent_path):
-    '''
+    """
     recursively print the full tree structure
 
     :param dict ns: dictionary of namespaces for use in XPath expressions
@@ -549,15 +551,16 @@ def printFullTree(ns, parent, name, indent, parent_path):
     :param str name: name of elements, such as NXentry/NXuser
     :param indent: to keep track of indentation level
     :param parent_path: NX class path of parent nodes
-    '''
+    """
     global listing_category
 
     use_application_defaults = listing_category in (
-        'application definition',
-        'contributed definition')
+        "application definition",
+        "contributed definition",
+    )
 
-    for node in parent.xpath('nx:field', namespaces=ns):
-        name = node.get('name')
+    for node in parent.xpath("nx:field", namespaces=ns):
+        name = node.get("name")
         index_name = name
         dims = analyzeDimensions(ns, node)
 
@@ -573,44 +576,60 @@ def printFullTree(ns, parent, name, indent, parent_path):
             "\n"
         )
 
-        printIfDeprecated( ns, node, indent+INDENTATION_UNIT )
-        printDoc(indent+INDENTATION_UNIT, ns, node)
+        printIfDeprecated(ns, node, indent + INDENTATION_UNIT)
+        printDoc(indent + INDENTATION_UNIT, ns, node)
 
-        node_list = node.xpath('nx:enumeration', namespaces=ns)
+        node_list = node.xpath("nx:enumeration", namespaces=ns)
         if len(node_list) == 1:
-            printEnumeration( indent+INDENTATION_UNIT, ns, node_list[0] )
+            printEnumeration(indent + INDENTATION_UNIT, ns, node_list[0])
 
-        for subnode in node.xpath('nx:attribute', namespaces=ns):
+        for subnode in node.xpath("nx:attribute", namespaces=ns):
             optional = get_required_or_optional_text(subnode, use_application_defaults)
-            printAttribute( ns, 'field', subnode, optional, indent+INDENTATION_UNIT, parent_path+"/"+name )
+            printAttribute(
+                ns,
+                "field",
+                subnode,
+                optional,
+                indent + INDENTATION_UNIT,
+                parent_path + "/" + name,
+            )
 
-    for node in parent.xpath('nx:group', namespaces=ns):
-        name = node.get('name', '')
-        typ = node.get('type', 'untyped (this is an error; please report)')
+    for node in parent.xpath("nx:group", namespaces=ns):
+        name = node.get("name", "")
+        typ = node.get("type", "untyped (this is an error; please report)")
 
         optional_text = get_required_or_optional_text(node, use_application_defaults)
-        if typ.startswith('NX'):
-            if name == '':
-                name = typ.lstrip('NX').upper()
-            typ = ':ref:`%s`' % typ
-        hTarget = hyperlinkTarget(parent_path, name, 'group')
+        if typ.startswith("NX"):
+            if name == "":
+                name = typ.lstrip("NX").upper()
+            typ = ":ref:`%s`" % typ
+        hTarget = hyperlinkTarget(parent_path, name, "group")
         target = hTarget.replace(".. _", "").replace(":\n", "")
         # TODO: https://github.com/nexusformat/definitions/issues/1057
         print(f"{indent}{hTarget}")
         print(f"{indent}**{name}**: {optional_text}{typ}\n")
 
-        printIfDeprecated(ns, node, indent+INDENTATION_UNIT)
-        printDoc(indent+INDENTATION_UNIT, ns, node)
+        printIfDeprecated(ns, node, indent + INDENTATION_UNIT)
+        printDoc(indent + INDENTATION_UNIT, ns, node)
 
-        for subnode in node.xpath('nx:attribute', namespaces=ns):
+        for subnode in node.xpath("nx:attribute", namespaces=ns):
             optional = get_required_or_optional_text(subnode, use_application_defaults)
-            printAttribute( ns, 'group', subnode, optional, indent+INDENTATION_UNIT, parent_path+"/"+name )
+            printAttribute(
+                ns,
+                "group",
+                subnode,
+                optional,
+                indent + INDENTATION_UNIT,
+                parent_path + "/" + name,
+            )
 
-        nodename = '%s/%s' % (name, node.get('type'))
-        printFullTree(ns, node, nodename, indent+INDENTATION_UNIT, parent_path+"/"+name)
+        nodename = "%s/%s" % (name, node.get("type"))
+        printFullTree(
+            ns, node, nodename, indent + INDENTATION_UNIT, parent_path + "/" + name
+        )
 
-    for node in parent.xpath('nx:link', namespaces=ns):
-        name = node.get('name')
+    for node in parent.xpath("nx:link", namespaces=ns):
+        name = node.get("name")
         print(f"{indent}{hyperlinkTarget(parent_path, name, 'link')}")
         print(
             f"{indent}**{name}**: "
@@ -618,13 +637,13 @@ def printFullTree(ns, parent, name, indent, parent_path):
             f"(suggested target: ``{node.get('target')}``"
             "\n"
         )
-        printDoc(indent+INDENTATION_UNIT, ns, node)
+        printDoc(indent + INDENTATION_UNIT, ns, node)
 
 
 def print_rst_from_nxdl(nxdl_file):
-    '''
+    """
     print restructured text from the named .nxdl.xml file
-    '''
+    """
     global listing_category
 
     # parse input file into tree
@@ -633,20 +652,19 @@ def print_rst_from_nxdl(nxdl_file):
     # The following URL is outdated, but that doesn't matter;
     # it won't be accessed; it's just an arbitrary namespace name.
     # It only needs to match the xmlns attribute in the NXDL files.
-    NAMESPACE = 'http://definition.nexusformat.org/nxdl/3.1'
-    ns = {'nx': NAMESPACE}
+    NAMESPACE = "http://definition.nexusformat.org/nxdl/3.1"
+    ns = {"nx": NAMESPACE}
 
     root = tree.getroot()
-    name = root.get('name')
+    name = root.get("name")
     title = name
-    parent_path = "/"+name  # absolute path of parent nodes, no trailing /
-    if len(name)<2 or name[0:2]!='NX':
-        raise Exception( 'Unexpected class name "%s"; does not start with NX' %
-                         ( name ) )
-    lexical_name = name[2:] # without padding 'NX', for indexing
+    parent_path = "/" + name  # absolute path of parent nodes, no trailing /
+    if len(name) < 2 or name[0:2] != "NX":
+        raise Exception('Unexpected class name "%s"; does not start with NX' % (name))
+    lexical_name = name[2:]  # without padding 'NX', for indexing
 
     # retrieve category from directory
-    #subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
+    # subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
     subdir = root.attrib["category"]
 
     # Pass these terms to construct the full URL
@@ -655,14 +673,15 @@ def print_rst_from_nxdl(nxdl_file):
 
     # TODO: check for consistency with root.get('category')
     listing_category = {
-                 'base': 'base class',
-                 'application': 'application definition',
-                 'contributed': 'contributed definition',
-                 }[subdir]
+        "base": "base class",
+        "application": "application definition",
+        "contributed": "contributed definition",
+    }[subdir]
 
     use_application_defaults = listing_category in (
-        'application definition',
-        'contributed definition')
+        "application definition",
+        "contributed definition",
+    )
 
     # print ReST comments and section header
     print(
@@ -670,98 +689,100 @@ def print_rst_from_nxdl(nxdl_file):
         f"from the NXDL source {sys.argv[1]}"
     )
     print("")
-    print( '.. index::' )
+    print(".. index::")
     print(f"    ! {name} ({listing_category})")
     print(f"    ! {lexical_name} ({listing_category})")
     print(f"    see: {lexical_name} ({listing_category}); {name}")
     print("")
     print(f".. _{name}:\n")
-    print( '='*len(title) )
-    print( title )
-    print( '='*len(title) )
+    print("=" * len(title))
+    print(title)
+    print("=" * len(title))
 
     # print category & parent class
-    extends = root.get('extends')
+    extends = root.get("extends")
     if extends is None:
-        extends = 'none'
+        extends = "none"
     else:
-        extends = ':ref:`%s`' % extends
+        extends = ":ref:`%s`" % extends
 
     print("")
-    print( '**Status**:\n' )
-    print(f'  {listing_category.strip()}, extends {extends}')
+    print("**Status**:\n")
+    print(f"  {listing_category.strip()}, extends {extends}")
 
-    printIfDeprecated(ns, root, '')
+    printIfDeprecated(ns, root, "")
 
     # print official description of this class
     print("")
-    print( '**Description**:\n' )
+    print("**Description**:\n")
     printDoc(INDENTATION_UNIT, ns, root, required=True)
 
-
     # print symbol list
-    node_list = root.xpath('nx:symbols', namespaces=ns)
-    print( '**Symbols**:\n' )
+    node_list = root.xpath("nx:symbols", namespaces=ns)
+    print("**Symbols**:\n")
     if len(node_list) == 0:
-        print( '  No symbol table\n' )
+        print("  No symbol table\n")
     elif len(node_list) > 1:
-        raise Exception( 'Invalid symbol table in ' % root.get('name') )
+        raise Exception("Invalid symbol table in " % root.get("name"))
     else:
-        printDoc( INDENTATION_UNIT, ns, node_list[0] )
-        for node in node_list[0].xpath('nx:symbol', namespaces=ns):
+        printDoc(INDENTATION_UNIT, ns, node_list[0])
+        for node in node_list[0].xpath("nx:symbol", namespaces=ns):
             doc = getDocLine(ns, node)
-            print(f"  **{node.get('name')}**", end='')
+            print(f"  **{node.get('name')}**", end="")
             if doc:
-                print(f': {doc}', end='')
+                print(f": {doc}", end="")
             print("\n")
 
     # print group references
-    print( '**Groups cited**:' )
-    node_list = root.xpath('//nx:group', namespaces=ns)
+    print("**Groups cited**:")
+    node_list = root.xpath("//nx:group", namespaces=ns)
     groups = []
     for node in node_list:
-        g = node.get('type')
-        if g.startswith('NX') and g not in groups:
+        g = node.get("type")
+        if g.startswith("NX") and g not in groups:
             groups.append(g)
     if len(groups) == 0:
-        print( '  none\n' )
+        print("  none\n")
     else:
-        out = [ (':ref:`%s`' % g) for g in groups ]
-        txt = ', '.join(sorted(out))
+        out = [(":ref:`%s`" % g) for g in groups]
+        txt = ", ".join(sorted(out))
         print(f"  {txt}\n")
-        out = [ ('%s (base class); used in %s' % (g, listing_category)) for g in groups ]
-        txt = ', '.join(out)
-        print(f'.. index:: {txt}\n')
+        out = [("%s (base class); used in %s" % (g, listing_category)) for g in groups]
+        txt = ", ".join(out)
+        print(f".. index:: {txt}\n")
 
     # TODO: change instances of \t to proper indentation
 
     # print full tree
-    print( '**Structure**:\n' )
-    for subnode in root.xpath('nx:attribute', namespaces=ns):
+    print("**Structure**:\n")
+    for subnode in root.xpath("nx:attribute", namespaces=ns):
         optional = get_required_or_optional_text(subnode, use_application_defaults)
-        printAttribute( ns, 'file', subnode, optional, INDENTATION_UNIT, parent_path) # FIXME: +"/"+name )
+        printAttribute(
+            ns, "file", subnode, optional, INDENTATION_UNIT, parent_path
+        )  # FIXME: +"/"+name )
     printFullTree(ns, root, name, INDENTATION_UNIT, parent_path)
 
     printAnchorList()
 
     # print NXDL source location
     print("")
-    print( '**NXDL Source**:' )
-    print(f'  {HTML_ROOT}/{SUBDIR_MAP[subdir]}/{name}.nxdl.xml')
+    print("**NXDL Source**:")
+    print(f"  {HTML_ROOT}/{SUBDIR_MAP[subdir]}/{name}.nxdl.xml")
 
 
 def main():
-    '''
+    """
     standard command-line processing
-    '''
+    """
     import argparse
-    parser = argparse.ArgumentParser(description='test nxdl2rst code')
-    parser.add_argument('nxdl_file', help='name of NXDL file')
+
+    parser = argparse.ArgumentParser(description="test nxdl2rst code")
+    parser.add_argument("nxdl_file", help="name of NXDL file")
     results = parser.parse_args()
     nxdl_file = results.nxdl_file
 
     if not os.path.exists(nxdl_file):
-        print(f'Cannot find {nxdl_file}' )
+        print(f"Cannot find {nxdl_file}")
         exit()
 
     print_rst_from_nxdl(nxdl_file)
@@ -770,16 +791,16 @@ def main():
     # copy that subdirectory (quietly) to the pwd, such as:
     #  contributed/NXcanSAS.nxdl.xml: cp -a contributed/canSAS ./
     category = os.path.basename(os.getcwd())
-    path = os.path.join('../../../../', category)
+    path = os.path.join("../../../../", category)
     basename = os.path.basename(nxdl_file)
-    corename = basename[2:].split('.')[0]
+    corename = basename[2:].split(".")[0]
     source = os.path.join(path, corename)
     if os.path.exists(source):
-        target = os.path.join('.', corename)
+        target = os.path.join(".", corename)
         replicate(source, target)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     WRITE_ANCHOR_REGISTRY = True
     main()
 

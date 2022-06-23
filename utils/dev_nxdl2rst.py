@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-'''
+"""
 Developers: use this code to develop and test nxdl2rst.py
-'''
+"""
 
 # testing:
 # cd /tmp
@@ -29,7 +29,7 @@ BASEDIR = os.path.dirname(__file__)
 # nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXobject.nxdl.xml')
 # nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXroot.nxdl.xml')
 # nxdl = os.path.join(BASEDIR, '..', 'base_classes', 'NXuser.nxdl.xml')
-nxdl = os.path.join(BASEDIR, '..', 'applications', 'NXarpes.nxdl.xml')
+nxdl = os.path.join(BASEDIR, "..", "applications", "NXarpes.nxdl.xml")
 # nxdl = os.path.join(BASEDIR, '..', 'contributed_definitions', 'NXmagnetic_kicker.nxdl.xml')
 
 
