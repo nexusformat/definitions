@@ -1,6 +1,6 @@
-.. index:: !EPICS; examples
+.. index:: !EPICS; instrument examples
 
-.. _EPICS_Area_Detector.examples.HDF5:
+..Example-EPICS:
 
 EPICS Area Detector Examples
 ############################

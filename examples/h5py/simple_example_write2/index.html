@@ -1,0 +1,313 @@
+
+
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Write a NeXus HDF5 file with plottable data &#8212; nexus v2022.06 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../../_static/sphinxdoc.css" />
+    <link rel="stylesheet" href="../../../_static/blockquote.css" type="text/css" />
+    <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+    <script src="../../../_static/jquery.js"></script>
+    <script src="../../../_static/underscore.js"></script>
+    <script src="../../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="copyright" title="Copyright" href="../../../copyright.html" />
+    <link rel="next" title="Write a NeXuS HDF5 File with links to external data" href="../external_example_write/index.html" />
+    <link rel="prev" title="Write a NeXus HDF5 file" href="../simple_example_write1/index.html" /> 
+    <link rel="stylesheet" href="../../_static/blockquote.css" type="text/css" />
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../external_example_write/index.html" title="Write a NeXuS HDF5 File with links to external data"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../simple_example_write1/index.html" title="Write a NeXus HDF5 file"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">nexus v2022.06 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" ><span class="section-number">2. </span>Examples of writing and reading NeXus data files</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../index.html" accesskey="U"><span class="section-number">2.1.2. </span>HDF5 in Python with <code class="docutils literal notranslate"><span class="pre">h5py</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Write a NeXus HDF5 file with plottable data</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="write-a-nexus-hdf5-file-with-plottable-data">
+<span id="example-simple-example-write2"></span><h1>Write a NeXus HDF5 file with plottable data<a class="headerlink" href="#write-a-nexus-hdf5-file-with-plottable-data" title="Permalink to this heading">¶</a></h1>
+<p>Building on the previous example, we wish to identify our measured data with
+the detector on the instrument where it was generated.
+In this hypothetical case, since the detector was positioned at some
+angle <em>two_theta</em>, we choose to store both datasets,
+<code class="docutils literal notranslate"><span class="pre">two_theta</span></code> and <code class="docutils literal notranslate"><span class="pre">counts</span></code>, in a NeXus group.
+One appropriate NeXus group is <span class="xref std std-ref">NXdetector</span>.
+This group is placed in a <span class="xref std std-ref">NXinstrument</span> group
+which is placed in a <span class="xref std std-ref">NXentry</span> group.
+To support a default plot, we provide a <span class="xref std std-ref">NXdata</span> group.
+Rather than duplicate the same data already placed in the detector group,
+we choose to link to those datasets from the <code class="docutils literal notranslate"><span class="pre">NXdata</span></code> group.
+(Compare the next figure with <a class="reference internal" href="../../../design.html#fig-data-linking"><span class="std std-ref">Linking in a NeXus file</span></a> in the
+<a class="reference internal" href="../../../design.html#design"><span class="std std-ref">NeXus Design</span></a> chapter of the NeXus User Manual.)
+The <a class="reference internal" href="../../../design.html#design"><span class="std std-ref">NeXus Design</span></a> chapter provides a figure
+(<a class="reference internal" href="../../../design.html#fig-data-linking"><span class="std std-ref">Linking in a NeXus file</span></a>) with a small variation from our
+previous example, placing the measured data
+within the <code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector</span></code> group.
+Links are made from that data to the <code class="docutils literal notranslate"><span class="pre">/entry/data</span></code> group.</p>
+<div class="compound">
+<figure class="align-default" id="id1">
+<span id="fig-simple-example-write2"></span><a class="reference internal image-reference" href="../../../_images/simple_example_write2.png"><img alt="fig.simple_example_write2" src="../../../_images/simple_example_write2.png" style="width: 80%;" /></a>
+<figcaption>
+<p><span class="caption-text">h5py example showing linking in a NeXus file</span><a class="headerlink" href="#id1" title="Permalink to this image">¶</a></p>
+</figcaption>
+</figure>
+</div>
+<p>The Python code to build an HDF5 data file with that structure (using
+numerical data from the previous example) is shown below.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="ch">#!/usr/bin/env python</span>
+<span class="lineno"> 2 </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="lineno"> 3 </span><span class="sd">Writes a simple NeXus HDF5 file using h5py with links</span>
+<span class="lineno"> 4 </span><span class="sd">according to the example from Figure 2.1 in the Design chapter</span>
+<span class="lineno"> 5 </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="lineno"> 6 </span>
+<span class="lineno"> 7 </span><span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="lineno"> 8 </span><span class="kn">import</span> <span class="nn">h5py</span>
+<span class="lineno"> 9 </span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="lineno">10 </span>
+<span class="lineno">11 </span><span class="n">filename</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span><span class="o">.</span><span class="n">parent</span> <span class="o">/</span> <span class="s2">&quot;simple_example.dat&quot;</span><span class="p">)</span>
+<span class="lineno">12 </span><span class="nb">buffer</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">T</span>
+<span class="lineno">13 </span><span class="n">tthData</span> <span class="o">=</span> <span class="nb">buffer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># float[]</span>
+<span class="lineno">14 </span><span class="n">countsData</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="nb">buffer</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;int32&quot;</span><span class="p">)</span>  <span class="c1"># int[]</span>
+<span class="lineno">15 </span>
+<span class="lineno">16 </span><span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s2">&quot;simple_example_write2.hdf5&quot;</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>  <span class="c1"># create the HDF5 NeXus file</span>
+<span class="lineno">17 </span>    <span class="n">f</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;entry&quot;</span>
+<span class="lineno">18 </span>
+<span class="lineno">19 </span>    <span class="n">nxentry</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;entry&quot;</span><span class="p">)</span>
+<span class="lineno">20 </span>    <span class="n">nxentry</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;NX_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;NXentry&quot;</span>
+<span class="lineno">21 </span>    <span class="n">nxentry</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;default&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
+<span class="lineno">22 </span>
+<span class="lineno">23 </span>    <span class="n">nxinstrument</span> <span class="o">=</span> <span class="n">nxentry</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;instrument&quot;</span><span class="p">)</span>
+<span class="lineno">24 </span>    <span class="n">nxinstrument</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;NX_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;NXinstrument&quot;</span>
+<span class="lineno">25 </span>
+<span class="lineno">26 </span>    <span class="n">nxdetector</span> <span class="o">=</span> <span class="n">nxinstrument</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;detector&quot;</span><span class="p">)</span>
+<span class="lineno">27 </span>    <span class="n">nxdetector</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;NX_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;NXdetector&quot;</span>
+<span class="lineno">28 </span>
+<span class="lineno">29 </span>    <span class="c1"># store the data in the NXdetector group</span>
+<span class="lineno">30 </span>    <span class="n">ds_tth</span> <span class="o">=</span> <span class="n">nxdetector</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;two_theta&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">tthData</span><span class="p">)</span>
+<span class="lineno">31 </span>    <span class="n">ds_tth</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;degrees&quot;</span>
+<span class="lineno">32 </span>    <span class="n">ds_counts</span> <span class="o">=</span> <span class="n">nxdetector</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;counts&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">countsData</span><span class="p">)</span>
+<span class="lineno">33 </span>    <span class="n">ds_counts</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;units&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;counts&quot;</span>
+<span class="lineno">34 </span>
+<span class="lineno">35 </span>    <span class="c1"># create the NXdata group to define the default plot</span>
+<span class="lineno">36 </span>    <span class="n">nxdata</span> <span class="o">=</span> <span class="n">nxentry</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;data&quot;</span><span class="p">)</span>
+<span class="lineno">37 </span>    <span class="n">nxdata</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;NX_class&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;NXdata&quot;</span>
+<span class="lineno">38 </span>    <span class="n">nxdata</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;signal&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;counts&quot;</span>
+<span class="lineno">39 </span>    <span class="n">nxdata</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;axes&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;two_theta&quot;</span>
+<span class="lineno">40 </span>    <span class="n">nxdata</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;two_theta_indices&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span>
+<span class="lineno">41 </span>        <span class="mi">0</span><span class="p">,</span>
+<span class="lineno">42 </span>    <span class="p">]</span>
+<span class="lineno">43 </span>
+<span class="lineno">44 </span>    <span class="n">source_addr</span> <span class="o">=</span> <span class="s2">&quot;/entry/instrument/detector/two_theta&quot;</span>  <span class="c1"># existing data</span>
+<span class="lineno">45 </span>    <span class="n">target_addr</span> <span class="o">=</span> <span class="s2">&quot;two_theta&quot;</span>  <span class="c1"># new location</span>
+<span class="lineno">46 </span>    <span class="n">ds_tth</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_addr</span>  <span class="c1"># a NeXus API convention for links</span>
+<span class="lineno">47 </span>    <span class="n">nxdata</span><span class="p">[</span><span class="n">target_addr</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">source_addr</span><span class="p">]</span>  <span class="c1"># hard link</span>
+<span class="lineno">48 </span>    <span class="c1"># nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)</span>
+<span class="lineno">49 </span>
+<span class="lineno">50 </span>    <span class="n">source_addr</span> <span class="o">=</span> <span class="s2">&quot;/entry/instrument/detector/counts&quot;</span>  <span class="c1"># existing data</span>
+<span class="lineno">51 </span>    <span class="n">target_addr</span> <span class="o">=</span> <span class="s2">&quot;counts&quot;</span>  <span class="c1"># new location</span>
+<span class="lineno">52 </span>    <span class="n">ds_counts</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">source_addr</span>  <span class="c1"># a NeXus API convention for links</span>
+<span class="lineno">53 </span>    <span class="n">nxdata</span><span class="p">[</span><span class="n">target_addr</span><span class="p">]</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="n">source_addr</span><span class="p">]</span>  <span class="c1"># hard link</span>
+<span class="lineno">54 </span>    <span class="c1"># nxdata._id.link(source_addr, target_addr, h5py.h5g.LINK_HARD)</span>
+</pre></div>
+</div>
+<p>It is interesting to compare the output of the <code class="docutils literal notranslate"><span class="pre">h5dump</span></code>
+of the data file <code class="docutils literal notranslate"><span class="pre">simple_example_write2.hdf5</span></code> with our Python instructions.
+See the <em>downloads</em> section below.</p>
+<p>Look carefully!  It <em>appears</em> in the output of
+<code class="docutils literal notranslate"><span class="pre">h5dump</span></code> that the actual data for <code class="docutils literal notranslate"><span class="pre">two_theta</span></code>
+and <code class="docutils literal notranslate"><span class="pre">counts</span></code> has <em>moved</em> into
+the <code class="docutils literal notranslate"><span class="pre">NXdata</span></code> group at HDF5 path <code class="docutils literal notranslate"><span class="pre">/entry/data</span></code>!  But we stored
+that data in the <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code> group at <code class="docutils literal notranslate"><span class="pre">/entry/instrument/detector</span></code>.
+This is normal for <code class="docutils literal notranslate"><span class="pre">h5dump</span></code> output.</p>
+<p>A bit of explanation is necessary at this point.
+The data is not stored in either HDF5 group directly.  Instead, HDF5
+creates a <code class="docutils literal notranslate"><span class="pre">DATA</span></code> storage element in the file and posts a reference
+to that <code class="docutils literal notranslate"><span class="pre">DATA</span></code> storage element as needed.
+An HDF5 <em>hard link</em>
+requests another reference to that same <code class="docutils literal notranslate"><span class="pre">DATA</span></code> storage element.
+The <code class="docutils literal notranslate"><span class="pre">h5dump</span></code> tool describes in full that <code class="docutils literal notranslate"><span class="pre">DATA</span></code> storage element
+the first time (alphabetically) it is called.  In our case, that is within the
+<code class="docutils literal notranslate"><span class="pre">NXdata</span></code> group.  The next time it is called, within the
+<code class="docutils literal notranslate"><span class="pre">NXdetector</span></code> group, <code class="docutils literal notranslate"><span class="pre">h5dump</span></code> reports that a hard link
+has been made and shows the HDF5 path to the description.</p>
+<p>NeXus recognizes this behavior of the HDF5 library and adds an additional structure
+when building hard links, the <code class="docutils literal notranslate"><span class="pre">target</span></code> attribute,
+to preserve the original location of the data.  Not that it actually matters.
+the <a class="reference internal" href="../../../validation.html#punx"><span class="std std-ref">punx tree</span></a> tool knows about the additional NeXus
+<code class="docutils literal notranslate"><span class="pre">target</span></code> attribute and shows the data to appear in its original
+location, in the <code class="docutils literal notranslate"><span class="pre">NXdetector</span></code> group.</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span>  @default = &quot;entry&quot;
+<span class="lineno"> 2 </span>  entry:NXentry
+<span class="lineno"> 3 </span>    @NX_class = &quot;NXentry&quot;
+<span class="lineno"> 4 </span>    @default = &quot;data&quot;
+<span class="lineno"> 5 </span>    data:NXdata
+<span class="lineno"> 6 </span>      @NX_class = &quot;NXdata&quot;
+<span class="lineno"> 7 </span>      @axes = &quot;two_theta&quot;
+<span class="lineno"> 8 </span>      @signal = &quot;counts&quot;
+<span class="lineno"> 9 </span>      @two_theta_indices = [0]
+<span class="lineno">10 </span>      counts --&gt; /entry/instrument/detector/counts
+<span class="lineno">11 </span>      two_theta --&gt; /entry/instrument/detector/two_theta
+<span class="lineno">12 </span>    instrument:NXinstrument
+<span class="lineno">13 </span>      @NX_class = &quot;NXinstrument&quot;
+<span class="lineno">14 </span>      detector:NXdetector
+<span class="lineno">15 </span>        @NX_class = &quot;NXdetector&quot;
+<span class="lineno">16 </span>        counts:NX_INT32[31] = [1037, 1318, 1704, &#39;...&#39;, 1321]
+<span class="lineno">17 </span>          @target = &quot;/entry/instrument/detector/counts&quot;
+<span class="lineno">18 </span>          @units = &quot;counts&quot;
+<span class="lineno">19 </span>        two_theta:NX_FLOAT64[31] = [17.92608, 17.92591, 17.92575, &#39;...&#39;, 17.92108]
+<span class="lineno">20 </span>          @target = &quot;/entry/instrument/detector/two_theta&quot;
+<span class="lineno">21 </span>          @units = &quot;degrees&quot;
+</pre></div>
+</div>
+<section id="downloads">
+<h2>downloads<a class="headerlink" href="#downloads" title="Permalink to this heading">¶</a></h2>
+<p>The Python code and files related to this section may be downloaded from the following table.</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>file</p></th>
+<th class="head"><p>description</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><a class="reference download internal" download="" href="../../../_downloads/3051790dc09424cbf3850de080acaf92/simple_example.dat"><code class="xref download docutils literal notranslate"><span class="pre">../simple_example.dat</span></code></a></p></td>
+<td><p>2-column ASCII data used in this section</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference download internal" download="" href="../../../_downloads/8cd7c4335b601bc2b783f9394f8f2a8e/simple_example_write2.py"><code class="xref download docutils literal notranslate"><span class="pre">simple_example_write2.py</span></code></a></p></td>
+<td><p>python code to write example <em>simple_example_write2</em></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference download internal" download="" href="../../../_downloads/d3a8a1b636ab3a46a7caac8703d27e1e/simple_example_write2.hdf5"><code class="xref download docutils literal notranslate"><span class="pre">simple_example_write2.hdf5</span></code></a></p></td>
+<td><p>NeXus file written by this code</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference download internal" download="" href="../../../_downloads/6366b92e7e42d98651a03ddf3ca590f6/simple_example_write2_h5dump.txt"><code class="xref download docutils literal notranslate"><span class="pre">simple_example_write2_h5dump.txt</span></code></a></p></td>
+<td><p><em>h5dump</em> analysis of the NeXus file</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference download internal" download="" href="../../../_downloads/bac387ba4bce23f5d1b97f88483dc93e/simple_example_write2_structure.txt"><code class="xref download docutils literal notranslate"><span class="pre">simple_example_write2_structure.txt</span></code></a></p></td>
+<td><p><em>punx tree</em> analysis of the NeXus file</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">Write a NeXus HDF5 file with plottable data</a><ul>
+<li><a class="reference internal" href="#downloads">downloads</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../simple_example_write1/index.html"
+                          title="previous chapter">Write a NeXus HDF5 file</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="../external_example_write/index.html"
+                          title="next chapter">Write a NeXuS HDF5 File with links to external data</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../../_sources/examples/h5py/simple_example_write2/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="google_search" style="display: none">
+	<hr />
+	<h3>Google search</h3>
+	<form method="get" action="https://www.google.com/search">
+		<table border="0" align="center" cellpadding="0">
+			<tr>
+				<td>
+					<input type="text"   name="q" value="" />
+				</td>
+			</tr>
+			<tr>
+				<td align="center" style="font-size:75%">
+					<input type="radio"  name="sitesearch" value="" />global
+					<input type="radio"  name="sitesearch"
+						value="manual.nexusformat.org" 
+						checked />NeXus manual
+					<input type="submit" value="Go" />
+					<br />
+				</td>
+			</tr>
+		</table>
+	</form>                                
+</div>
+<script type="text/javascript">$('#google_search').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../external_example_write/index.html" title="Write a NeXuS HDF5 File with links to external data"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../simple_example_write1/index.html" title="Write a NeXus HDF5 file"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../../index.html">nexus v2022.06 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../../index.html" ><span class="section-number">2. </span>Examples of writing and reading NeXus data files</a> &#187;</li>
+          <li class="nav-item nav-item-2"><a href="../index.html" ><span class="section-number">2.1.2. </span>HDF5 in Python with <code class="docutils literal notranslate"><span class="pre">h5py</span></code></a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href="">Write a NeXus HDF5 file with plottable data</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; <a href="../../../copyright.html">Copyright</a> 1996-2022, NIAC, https://www.nexusformat.org.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>

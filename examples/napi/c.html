@@ -1,0 +1,219 @@
+
+
+
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>2.1.5. HDF5 in C with NAPI &#8212; nexus v2022.06 documentation</title>
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css" />
+    <link rel="stylesheet" href="../../_static/blockquote.css" type="text/css" />
+    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+    <script src="../../_static/jquery.js"></script>
+    <script src="../../_static/underscore.js"></script>
+    <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="../../_static/doctools.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="copyright" title="Copyright" href="../../copyright.html" />
+    <link rel="next" title="2.1.6. HDF5 in Fortran with NAPI" href="fortran.html" />
+    <link rel="prev" title="2.1.4. HDF5 in MATLAB" href="../matlab/index.html" /> 
+    <link rel="stylesheet" href="../../_static/blockquote.css" type="text/css" />
+
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="fortran.html" title="2.1.6. HDF5 in Fortran with NAPI"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../matlab/index.html" title="2.1.4. HDF5 in MATLAB"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">nexus v2022.06 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" accesskey="U"><span class="section-number">2. </span>Examples of writing and reading NeXus data files</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">2.1.5. </span>HDF5 in C with NAPI</a></li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <section id="hdf5-in-c-with-napi">
+<span id="example-napi-c"></span><h1><span class="section-number">2.1.5. </span>HDF5 in C with NAPI<a class="headerlink" href="#hdf5-in-c-with-napi" title="Permalink to this heading">¶</a></h1>
+<p>Code examples are provided in this section that write 2-D data
+to a NeXus HDF5 file in the C language using the <a class="reference internal" href="../../napi.html#napi"><span class="std std-ref">NAPI: NeXus Application Programmer Interface (frozen)</span></a>.</p>
+<p>The following code reads a two-dimensional set <code class="docutils literal notranslate"><span class="pre">counts</span></code>
+with dimension scales of <code class="docutils literal notranslate"><span class="pre">t</span></code> and <code class="docutils literal notranslate"><span class="pre">phi</span></code> using
+local routines, and then writes a NeXus file containing a single
+<code class="docutils literal notranslate"><span class="pre">NXentry</span></code> group and a single <code class="docutils literal notranslate"><span class="pre">NXdata</span></code> group.
+This is the simplest data file that conforms to the NeXus standard.</p>
+<section id="napi-c-example-write-simple-nexus-file">
+<h2><span class="section-number">2.1.5.1. </span>NAPI C Example: write simple NeXus file<a class="headerlink" href="#napi-c-example-write-simple-nexus-file" title="Permalink to this heading">¶</a></h2>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This example uses the signal/axes attributes applied to the
+data field, as described in <a class="reference internal" href="../../datarules.html#design-findplottable-byname"><span class="std std-ref">Associating plottable data by name using the axes attribute</span></a>.
+New code should use the method described in <a class="reference internal" href="../../datarules.html#design-findplottable-niac2014"><span class="std std-ref">Associating plottable data using attributes applied to the NXdata group</span></a>.</p>
+</div>
+<div class="highlight-c notranslate"><div class="highlight"><pre><span></span><span class="lineno"> 1 </span><span class="cp">#include</span> <span class="cpf">&quot;napi.h&quot;</span><span class="cp"></span>
+<span class="lineno"> 2 </span>
+<span class="lineno"> 3 </span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="lineno"> 4 </span><span class="p">{</span>
+<span class="lineno"> 5 </span>    <span class="kt">int</span> <span class="n">counts</span><span class="p">[</span><span class="mi">50</span><span class="p">][</span><span class="mi">1000</span><span class="p">],</span> <span class="n">n_t</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">n_p</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">dims</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">i</span><span class="p">;</span>
+<span class="lineno"> 6 </span>    <span class="kt">float</span> <span class="n">t</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span> <span class="n">phi</span><span class="p">[</span><span class="mi">50</span><span class="p">];</span>
+<span class="lineno"> 7 </span>    <span class="n">NXhandle</span> <span class="n">file_id</span><span class="p">;</span>
+<span class="lineno"> 8 </span><span class="cm">/* </span>
+<span class="lineno"> 9 </span><span class="cm"> * Read in data using local routines to populate phi and counts</span>
+<span class="lineno">10 </span><span class="cm"> *</span>
+<span class="lineno">11 </span><span class="cm"> * for example you may create a getdata() function and call</span>
+<span class="lineno">12 </span><span class="cm"> *</span>
+<span class="lineno">13 </span><span class="cm"> *      getdata (n_t, t, n_p, phi, counts);</span>
+<span class="lineno">14 </span><span class="cm"> */</span>
+<span class="lineno">15 </span><span class="cm">/* Open output file and output global attributes */</span>
+<span class="lineno">16 </span>    <span class="n">NXopen</span> <span class="p">(</span><span class="s">&quot;NXfile.nxs&quot;</span><span class="p">,</span> <span class="n">NXACC_CREATE5</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">file_id</span><span class="p">);</span>
+<span class="lineno">17 </span>      <span class="n">NXputattr</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;user_name&quot;</span><span class="p">,</span> <span class="s">&quot;Joe Bloggs&quot;</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="n">NX_CHAR</span><span class="p">);</span>
+<span class="lineno">18 </span><span class="cm">/* Open top-level NXentry group */</span>
+<span class="lineno">19 </span>      <span class="n">NXmakegroup</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;Entry1&quot;</span><span class="p">,</span> <span class="s">&quot;NXentry&quot;</span><span class="p">);</span>
+<span class="lineno">20 </span>      <span class="n">NXopengroup</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;Entry1&quot;</span><span class="p">,</span> <span class="s">&quot;NXentry&quot;</span><span class="p">);</span>
+<span class="lineno">21 </span><span class="cm">/* Open NXdata group within NXentry group */</span>
+<span class="lineno">22 </span>        <span class="n">NXmakegroup</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;Data1&quot;</span><span class="p">,</span> <span class="s">&quot;NXdata&quot;</span><span class="p">);</span>
+<span class="lineno">23 </span>        <span class="n">NXopengroup</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;Data1&quot;</span><span class="p">,</span> <span class="s">&quot;NXdata&quot;</span><span class="p">);</span>
+<span class="lineno">24 </span><span class="cm">/* Output time channels */</span>
+<span class="lineno">25 </span>          <span class="n">NXmakedata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;time_of_flight&quot;</span><span class="p">,</span> <span class="n">NX_FLOAT32</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">n_t</span><span class="p">);</span>
+<span class="lineno">26 </span>          <span class="n">NXopendata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;time_of_flight&quot;</span><span class="p">);</span>
+<span class="lineno">27 </span>            <span class="n">NXputdata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">t</span><span class="p">);</span>
+<span class="lineno">28 </span>            <span class="n">NXputattr</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;units&quot;</span><span class="p">,</span> <span class="s">&quot;microseconds&quot;</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="n">NX_CHAR</span><span class="p">);</span>
+<span class="lineno">29 </span>          <span class="n">NXclosedata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">);</span>
+<span class="lineno">30 </span><span class="cm">/* Output detector angles */</span>
+<span class="lineno">31 </span>          <span class="n">NXmakedata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;polar_angle&quot;</span><span class="p">,</span> <span class="n">NX_FLOAT32</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">n_p</span><span class="p">);</span>
+<span class="lineno">32 </span>          <span class="n">NXopendata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;polar_angle&quot;</span><span class="p">);</span>
+<span class="lineno">33 </span>            <span class="n">NXputdata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">phi</span><span class="p">);</span>
+<span class="lineno">34 </span>            <span class="n">NXputattr</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;units&quot;</span><span class="p">,</span> <span class="s">&quot;degrees&quot;</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="n">NX_CHAR</span><span class="p">);</span>
+<span class="lineno">35 </span>          <span class="n">NXclosedata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">);</span>
+<span class="lineno">36 </span><span class="cm">/* Output data */</span>
+<span class="lineno">37 </span>          <span class="n">dims</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_t</span><span class="p">;</span>
+<span class="lineno">38 </span>          <span class="n">dims</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">n_p</span><span class="p">;</span>
+<span class="lineno">39 </span>          <span class="n">NXmakedata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;counts&quot;</span><span class="p">,</span> <span class="n">NX_INT32</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">dims</span><span class="p">);</span>
+<span class="lineno">40 </span>          <span class="n">NXopendata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;counts&quot;</span><span class="p">);</span>
+<span class="lineno">41 </span>            <span class="n">NXputdata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="n">counts</span><span class="p">);</span>
+<span class="lineno">42 </span>            <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="lineno">43 </span>            <span class="n">NXputattr</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;signal&quot;</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">i</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">NX_INT32</span><span class="p">);</span>
+<span class="lineno">44 </span>            <span class="n">NXputattr</span> <span class="p">(</span><span class="n">file_id</span><span class="p">,</span> <span class="s">&quot;axes&quot;</span><span class="p">,</span>  <span class="s">&quot;polar_angle:time_of_flight&quot;</span><span class="p">,</span> <span class="mi">26</span><span class="p">,</span> <span class="n">NX_CHAR</span><span class="p">);</span>
+<span class="lineno">45 </span>          <span class="n">NXclosedata</span> <span class="p">(</span><span class="n">file_id</span><span class="p">);</span>
+<span class="lineno">46 </span><span class="cm">/* Close NXentry and NXdata groups and close file */</span>
+<span class="lineno">47 </span>        <span class="n">NXclosegroup</span> <span class="p">(</span><span class="n">file_id</span><span class="p">);</span>
+<span class="lineno">48 </span>      <span class="n">NXclosegroup</span> <span class="p">(</span><span class="n">file_id</span><span class="p">);</span>
+<span class="lineno">49 </span>    <span class="n">NXclose</span> <span class="p">(</span><span class="o">&amp;</span><span class="n">file_id</span><span class="p">);</span>
+<span class="lineno">50 </span>    <span class="k">return</span><span class="p">;</span>
+<span class="lineno">51 </span><span class="p">}</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+            <div class="clearer"></div>
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <div>
+    <h3><a href="../../index.html">Table of Contents</a></h3>
+    <ul>
+<li><a class="reference internal" href="#">2.1.5. HDF5 in C with NAPI</a><ul>
+<li><a class="reference internal" href="#napi-c-example-write-simple-nexus-file">2.1.5.1. NAPI C Example: write simple NeXus file</a></li>
+</ul>
+</li>
+</ul>
+
+  </div>
+  <div>
+    <h4>Previous topic</h4>
+    <p class="topless"><a href="../matlab/index.html"
+                          title="previous chapter"><span class="section-number">2.1.4. </span>HDF5 in MATLAB</a></p>
+  </div>
+  <div>
+    <h4>Next topic</h4>
+    <p class="topless"><a href="fortran.html"
+                          title="next chapter"><span class="section-number">2.1.6. </span>HDF5 in Fortran with NAPI</a></p>
+  </div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../../_sources/examples/napi/c.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+<div id="google_search" style="display: none">
+	<hr />
+	<h3>Google search</h3>
+	<form method="get" action="https://www.google.com/search">
+		<table border="0" align="center" cellpadding="0">
+			<tr>
+				<td>
+					<input type="text"   name="q" value="" />
+				</td>
+			</tr>
+			<tr>
+				<td align="center" style="font-size:75%">
+					<input type="radio"  name="sitesearch" value="" />global
+					<input type="radio"  name="sitesearch"
+						value="manual.nexusformat.org" 
+						checked />NeXus manual
+					<input type="submit" value="Go" />
+					<br />
+				</td>
+			</tr>
+		</table>
+	</form>                                
+</div>
+<script type="text/javascript">$('#google_search').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="fortran.html" title="2.1.6. HDF5 in Fortran with NAPI"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../matlab/index.html" title="2.1.4. HDF5 in MATLAB"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../../index.html">nexus v2022.06 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="../index.html" ><span class="section-number">2. </span>Examples of writing and reading NeXus data files</a> &#187;</li>
+        <li class="nav-item nav-item-this"><a href=""><span class="section-number">2.1.5. </span>HDF5 in C with NAPI</a></li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; <a href="../../copyright.html">Copyright</a> 1996-2022, NIAC, https://www.nexusformat.org.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 5.0.2.
+    </div>
+  </body>
+</html>
