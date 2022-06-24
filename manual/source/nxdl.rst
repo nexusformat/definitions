@@ -129,3 +129,4 @@ neutron, X-ray, or muon instrument.
 	
 	nxdl_desc
 	nxdl-types
+	nxdl-files
