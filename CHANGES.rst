@@ -12,7 +12,9 @@
 Change History
 ##############
 
-:v2022.03:  expected *2022-03*
+:v2022.06:  expected *2022-06*
+
+    .. TODO: document more changes
 
     * `#955 <https://github.com/nexusformat/definitions/issues/955>`_
        Documentation built and published from GitHub Actions workflow
