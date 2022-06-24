@@ -10,10 +10,10 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
 #. Is it Nexus, NeXus or NeXuS?
 
-    NeXus is correct. It is a format for data from **Neutron** and **X-ray** 
-    facilities, hence those first letters are capitalised. The format is also 
-    used for muon experiments, but there is no *mu* (or m) in NeXus and no s 
-    in muon. So the s stays in lower case. 
+    NeXus is correct. It is a format for data from **Neutron** and **X-ray**
+    facilities, hence those first letters are capitalised. The format is also
+    used for muon experiments, but there is no *mu* (or m) in NeXus and no s
+    in muon. So the s stays in lower case.
 
 #. How many facilities use NeXus?
 
@@ -57,7 +57,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     You should really follow the application definition that
     corresponds to your experiment to take full advantage of NeXus.
 
-#. I don't like NeXus. It seems much faster and simpler to develop 
+#. I don't like NeXus. It seems much faster and simpler to develop
    my own file format. Why should I even consider NeXus?
 
     If you consider using an efficient on disk storage format,
@@ -79,7 +79,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     If you encounter any problems because the classes are not
     sufficient to describe your experiment, please contact the
     :ref:`mailing list<NeXus.mailinglist.main>`.
-    Pull requests for the defintions repository (for example adding contributed defintions) 
+    Pull requests for the defintions repository (for example adding contributed defintions)
     are also welcome (see next question).
     The NIAC is always willing to consider new proposals.
 
@@ -87,12 +87,12 @@ This is a list of commonly asked questions concerning the NeXus data format.
     How do I go about it?
 
     Read the :index:`NXDL` Tutorial in :ref:`NXDL_Tutorial-CreatingNxdlSpec`
-    and have a try. You can ask for help on the 
+    and have a try. You can ask for help on the
     :ref:`mailing lists<NeXus.mailinglist.main>`.
     Once you have a definition that is working well for at least your case,
     you can submit it to the NIAC for acceptance as a standard.
     The procedures for acceptance are defined in the NIAC :index:`constitution`. [#]_
-        
+
 
 	.. [#]
 	    Refer to the most recent version of the NIAC constitution on the
@@ -102,24 +102,24 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
 #. What is the purpose of ``NXdata``?
 
-    ``NXdata`` identifies the :index:`default plottable data <plotting>`. 
-    This is one of the basic motivations (see :ref:`SimplePlotting`) for the NeXus standard. 
+    ``NXdata`` identifies the :index:`default plottable data <plotting>`.
+    This is one of the basic motivations (see :ref:`SimplePlotting`) for the NeXus standard.
     The choice of the name ``NXdata`` is historic and does not really reflect its function.
-    The ``NXdata`` group contains data or links to the data stored elsewhere. 
+    The ``NXdata`` group contains data or links to the data stored elsewhere.
 
 #. How do I identify the plottable data?
 
     See the section: :ref:`Find-Plottable-Data`.
 
-.. TODO:  What is the intent of this next question?  What defines "reasonable" in this context?
-   #. How can I specify reasonable axes for my data?
-   
-       ..  Is there a better answer for this?
-       	FIXME: This link leads to the naming rules, not axes specification.  Change it.
-   
-       See the section: :ref:`multi-dimensional-data`.
-       
-       .. :ref:`DataRules`.
+    .. TODO:  What is the intent of this next question?  What defines "reasonable" in this context?
+       #. How can I specify reasonable axes for my data?
+
+           ..  Is there a better answer for this?
+       	    FIXME: This link leads to the naming rules, not axes specification.  Change it.
+
+           See the section: :ref:`multi-dimensional-data`.
+
+           .. :ref:`DataRules`.
 
 #. Why aren't ``NXsample`` and ``NXmonitor`` groups stored in the ``NXinstrument`` group?
 
@@ -139,7 +139,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     specifications to prevent this but it is not implemented in :index:`NAPI`.
     You would need to implement it for yourself.
 
-#. Do I have to use the ``NAPI`` subroutines?  
+#. Do I have to use the ``NAPI`` subroutines?
    Can't I read (or write) the NeXus data files with my own routines?
 
     You are not required to use the NAPI to write valid NeXus
@@ -150,18 +150,18 @@ This is a list of commonly asked questions concerning the NeXus data format.
     strongly encouraged.
 
 
-#. I'm using links to place data in two places. 
+#. I'm using links to place data in two places.
    Which one should be the data and which one is the link?
-    
+
     .. index:: link
-    
+
     .. note:: NeXus uses HDF5 hard links
-    
+
 	    In HDF, a hard link points to a data object.
 	    A soft link points to a directory entry.
 	    Since NeXus uses hard links, there is no need to distinguish
 	    between two (or more) directory entries that point to the same data.
-    
+
     Both places have pointers to the actual data.
     That is the way hard links work in HDF5.
     There is no need for a preference to either location.
@@ -173,8 +173,8 @@ This is a list of commonly asked questions concerning the NeXus data format.
     the original in place, duplicate copies of the data are not
     converted.
 
-#. If I write my data according to the current specification for :ref:`NXsas` 
-    (substitute any other application definition),  
+#. If I write my data according to the current specification for :ref:`NXsas`
+    (substitute any other application definition),
     will other software be able to read my data?
 
     Yes.  :ref:`NXsas`, like other
@@ -196,55 +196,55 @@ This is a list of commonly asked questions concerning the NeXus data format.
 
 #. What file extension should I use when writing a NeXus data file?
 
-   Any extension is permitted. 
-   Common extensions are `.h5`, `.hdf`, `.hdf5`, and `.nxs` 
-   while others are possible. 
-   See the many examples in the NeXus exampledata repository. 
+   Any extension is permitted.
+   Common extensions are `.h5`, `.hdf`, `.hdf5`, and `.nxs`
+   while others are possible.
+   See the many examples in the NeXus exampledata repository.
    (https://github.com/nexusformat/exampledata)
 
-#. Can instances of classes inside definitions require 
+#. Can instances of classes inside definitions require
    new fields that were previously optional?
 
-   Yes. That is one of the motivations to have 
-   application definitions. By default, all content 
+   Yes. That is one of the motivations to have
+   application definitions. By default, all content
    in an application definition is required.
 
    For example, the ``radiation`` field in :ref:`NXcanSAS`
    requires 1 (and only 1) instance.
 
-#. Can instances of classes inside definitions make 
+#. Can instances of classes inside definitions make
    optional new fields that were previously not mentioned?
 
    Yes. To make it optional, set attribute ``minOccurs="0"``.
 
    For example, see the ``Idev`` field in :ref:`NXcanSAS`.
 
-#. Can instances of classes inside definitions require 
+#. Can instances of classes inside definitions require
    new fields that were previously not mentioned?
 
    Yes.
 
    For example, see the ``qx`` field in :ref:`NXiqproc`.
 
-#. Can we view the process of defining classes within 
-   an application definition as defining a subclass of 
-   the original class? That is, all instances of the 
-   class within the definition are valid instances of 
+#. Can we view the process of defining classes within
+   an application definition as defining a subclass of
+   the original class? That is, all instances of the
+   class within the definition are valid instances of
    the original class, but not vice-versa?
 
-   Keep in mind that NeXus is not specifically object oriented. 
-   The putative super class might be either 
-   :ref:`NXentry` (for single-technique data, such as SAXS) 
-   or :ref:`NXsubentry` (for multi-technique data 
-   such as SAXS/WAXS/USAXS/GIWAXS or SAXS/SANS). 
-   
-   If you are thinking of a new application definition that uses 
-   another as a starting point (like a super class), then there 
-   is an ``extends`` attribute in the definition element of the 
+   Keep in mind that NeXus is not specifically object oriented.
+   The putative super class might be either
+   :ref:`NXentry` (for single-technique data, such as SAXS)
+   or :ref:`NXsubentry` (for multi-technique data
+   such as SAXS/WAXS/USAXS/GIWAXS or SAXS/SANS).
+
+   If you are thinking of a new application definition that uses
+   another as a starting point (like a super class), then there
+   is an ``extends`` attribute in the definition element of the
    NXDL file (example here from :ref:`NXarpes`)::
 
        <definition name="NXarpes" extends="NXobject" type="group"
 
-   which describes this relationship. For most (?all?) all NXDL 
+   which describes this relationship. For most (?all?) all NXDL
    files to date, they extend the :ref:`NXobject` base class
    (the base object of NeXus).

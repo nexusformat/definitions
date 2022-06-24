@@ -1,9 +1,9 @@
 # Makefile for NeXus manual custom pages
 
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2008-2021 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -24,17 +24,13 @@
 all :: types.table units.table nxdl_desc.rst subdirs
 
 types.table: ../../utils/types2rst.py ../../utils/units2rst.py ../../nxdlTypes.xsd
-	python3 ../../utils/types2rst.py ../../nxdlTypes.xsd > $@
+	$(PYTHON) -u ../../utils/types2rst.py ../../nxdlTypes.xsd > $@
 
 units.table: ../../utils/units2rst.py ../../nxdlTypes.xsd
-	python3 ../../utils/units2rst.py ../../nxdlTypes.xsd > $@
+	$(PYTHON) -u ../../utils/units2rst.py ../../nxdlTypes.xsd > $@
 
 nxdl_desc.rst: ../../utils/nxdl_desc2rst.py ../../nxdl.xsd
-	python3 ../../utils/nxdl_desc2rst.py ../../nxdl.xsd > $@
-
-clean ::
-	$(RM) types.table units.table nxdl_desc.rst
-	$(MAKE) clean -C $(SUBDIRS)
+	$(PYTHON) -u ../../utils/nxdl_desc2rst.py ../../nxdl.xsd > $@
 
 SUBDIRS = classes
 
@@ -44,3 +40,9 @@ subdirs: $(SUBDIRS)
 
 $(SUBDIRS):
 	$(MAKE) -C $@
+
+clean:
+	$(RM) types.table units.table nxdl_desc.rst
+	for dir in $(SUBDIRS); do \
+	    $(MAKE) -C $$dir clean; \
+	done

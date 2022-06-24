@@ -1,9 +1,9 @@
 # Makefile for NeXus manual custom pages
 
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2008-2021 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -29,8 +29,7 @@ subdirs: $(SUBDIRS)
 $(SUBDIRS):
 	$(MAKE) -C $@
 
-clean ::
-	$(MAKE) clean -C base_classes
-	$(MAKE) clean -C applications
-	$(MAKE) clean -C contributed_definitions
-#$(MAKE) clean -C $(SUBDIRS)
+clean:
+	for dir in $(SUBDIRS); do \
+	    $(MAKE) -C $$dir clean; \
+	done

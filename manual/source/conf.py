@@ -46,8 +46,12 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx_comments'
+    'sphinx_comments',
+    'sphinx.ext.todo'
 ]
+
+# Show `.. todo` directives in the output
+# todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -87,10 +91,10 @@ if html_theme== 'sphinx_rtd_theme':
 elif html_theme== 'alabaster': # Alabaster allows a very high degree of control form Sphinx conf.py
     html_sidebars = {
     '**': [
-        'about.html', 
+        'about.html',
         'navigation.html',
-        'relations.html', 
-        'searchbox.html', 
+        'relations.html',
+        'searchbox.html',
         'google_search.html'
         ],
     }
@@ -120,10 +124,10 @@ elif html_theme== 'alabaster': # Alabaster allows a very high degree of control 
 else:
     html_sidebars = {
     '**': [
-        'localtoc.html', 
-        'relations.html', 
-        'sourcelink.html', 
-        'searchbox.html', 
+        'localtoc.html',
+        'relations.html',
+        'sourcelink.html',
+        'searchbox.html',
         'google_search.html'
         ],
     }
@@ -138,4 +142,5 @@ comments_config = {
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {
     'maxlistdepth':7, # some application definitions are deeply nested
+    'preamble': '\\usepackage{amsbsy}\n'
 }

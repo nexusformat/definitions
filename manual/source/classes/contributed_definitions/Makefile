@@ -1,9 +1,9 @@
 # Makefile for NeXus manual custom pages
 
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2008-2021 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -26,6 +26,7 @@ NXDLSUMMARY= $(ROOTDIR)/utils/nxdl_summary.py
 NXDL_SUFFIX = nxdl.xml
 
 SRCDIR = $(ROOTDIR)/contributed_definitions
+SUBDIRS = container
 
 SRCs = $(wildcard $(SRCDIR)/NX*.$(NXDL_SUFFIX) )
 RSTs := $(SRCs:.$(NXDL_SUFFIX)=.rst)
@@ -41,15 +42,16 @@ all :: index.rst $(RSTs) $(TARGET_NXDLs)
 %.nxdl.xml : $(SRCDIR)/%.$(NXDL_SUFFIX)  Makefile
 	cp $(SRCDIR)/$@   ./$@
 
-index.rst :: 
+index.rst ::
 	echo "Adding summaries to contributed_definitions/index.rst"
-	python3 $(NXDLSUMMARY) contributed_definitions
+	$(PYTHON) $(NXDLSUMMARY) contributed_definitions
 
 %.rst : %.$(NXDL_SUFFIX) $(NXDL2RST) Makefile
-	python3 $(NXDL2RST) $< > $@
+	$(PYTHON) -u $(NXDL2RST) $< > $@
 
 clean ::
-	$(RM) NX*.rst NX*.nxdl.xml
+	$(RM) index.rst NX*.rst NX*.nxdl.xml
+	$(RM) -rf $(SUBDIRS)
 
 test ::
 	# $(SRCs)
