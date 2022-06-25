@@ -8,7 +8,29 @@ PYTHON = python3
 DIR_NAME = "$(shell basename $(realpath .))"
 BUILD_DIR = "build"
 
-.PHONY: $(SUBDIRS)  all clean html pdf nxdl2rst prepare test local
+.PHONY: $(SUBDIRS)  all clean html pdf nxdl2rst prepare test local help
+
+help ::
+	@echo ""
+	@echo "NeXus: Testing the NXDL files and building the documentation:"
+	@echo ""
+	@echo "make all -C .                    Total (re)build of the manual, starting from root directory."
+	@echo "make all -C build                Builds complete web site for the manual (in build directory)."
+	@echo "make clean                       Remove build products from some directories."
+	@echo "make impatient-guide -C build    Build html & PDF versions of the Guide for the Impatient."
+	@echo "make html -C build               Build HTML version of manual, requires nxdl2rst first,"
+	@echo "make nxdl2rst -C build           Document each NXDL class, add to manual source."
+	@echo "make pdf -C build                Build PDF version of manual, requires nxdl2rst first"
+	@echo "make prepare -C .                (Re)create the build directory."
+	@echo "make test                        Apply all Python-coded tests."
+	@echo "make local -C .                  (Developer use) Build nxdl2rst and the html manual."
+	@echo ""
+	@echo "Note:  All builds of the manual will occur in the 'build/' directory."
+	@echo "   For a complete build, run 'make all' in the root directory."
+	@echo "   To delete and then create the 'build/' directory, run 'make prepare' in the root directory."
+	@echo "   For syntax checks of the NXDL files, run 'make test' in either root or 'build/' directory."
+	@echo "   Developers might find it easier to 'make local' to confirm the documentation builds."
+	@echo ""
 
 all ::
 ifneq ($(DIR_NAME), $(BUILD_DIR))
