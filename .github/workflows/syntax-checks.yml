@@ -21,19 +21,28 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Setup Miniconda
-      uses: conda-incubator/setup-miniconda@v2
+    - name: Create Python ${{ matrix.python-version }} environment
+      uses: mamba-org/provision-with-micromamba@main
       with:
-        activate-environment:
-            anaconda-test-env-py-${{ matrix.python-version }}
-        auto-update-conda: true
-        channel-priority: true
-        channels: defaults,conda-forge
-        mamba-version: "*"
-        python-version: ${{ matrix.python-version }}
-        use-only-tar-bz2: true  # required for caching
-    - shell: bash -l {0}
+        environment-file: .github/env-workflow.yml
+        environment-name: anaconda-test-env-py-${{ matrix.python-version }}
+
+    # - name: Setup Miniconda
+    #   uses: conda-incubator/setup-miniconda@v2
+    #   with:
+    #     activate-environment:
+    #         anaconda-test-env-py-${{ matrix.python-version }}
+    #     auto-update-conda: true
+    #     channel-priority: true
+    #     channels: defaults,conda-forge
+    #     mamba-version: "*"
+    #     python-version: ${{ matrix.python-version }}
+    #     use-only-tar-bz2: true  # required for caching
+
+    - name: Diagnostics
+      shell: bash -l {0}
       run: |
+        micromamba env list
         conda info
         conda list
         conda config --show-sources
@@ -41,28 +50,14 @@ jobs:
         conda env list
         printenv | sort
 
-    # $CONDA is an environment variable pointing to the
-    # root of the miniconda directory
-
-    - name: Install dependencies
-      run: |
-        $CONDA/bin/conda env update --file .github/env-workflow.yml --name $ENV_NAME
-        $CONDA/bin/conda list -r --name $ENV_NAME
-      env:
-        PY_VER: ${{ matrix.python-version }}
-        ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
-
     - name: Run tests
+      shell: bash -l {0}
       run: |
-        source $CONDA/bin/activate $ENV_NAME
         make test
-      env:
-        PY_VER: ${{ matrix.python-version }}
-        ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
 
     - name: Build the documentation
+      shell: bash -l {0}
       run: |
-        source $CONDA/bin/activate $ENV_NAME
         make -C build nxdl2rst html
 
         # TODO: why is this needed?
@@ -74,6 +69,3 @@ jobs:
         # popd
 
         ls -lAGh
-      env:
-        PY_VER: ${{ matrix.python-version }}
-        ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
