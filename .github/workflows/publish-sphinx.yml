@@ -32,14 +32,11 @@ jobs:
 
     - name: Run the test suite
       run: |
-        # stops publishing when known problems are found
-        python utils/test_suite.py
+        make test
 
     - name: Prepare for out-of-source Sphinx build
       run: |
-        rm -rf ./build
-        mkdir ./build
-        python ./utils/build_preparation.py . ./build
+        make prepare
 
     - name: Diagnostic
       run: |
@@ -57,7 +54,7 @@ jobs:
 
     - name: Build impatient guide
       run: |
-        make -C ./build/impatient-guide html latexpdf
+        make -C build impatient-guide
         ls -lAFGh ./build/impatient-guide/_build/latex/*.pdf
 
         # Copy to documentation source directory
@@ -67,28 +64,7 @@ jobs:
 
     - name: Build PDF of manual
       run: |
-        # expect next make (PDF) to fail (thus exit 0)
-        # since nexus.ind not found first time
-
-        # extra option for "levels nested too deeply" error
-        ( \
-          make latexpdf \
-            LATEXOPTS="--interaction=nonstopmode" \
-            -C build/manual \
-          || exit 0 \
-        )
-
-        # make that missing file
-        makeindex build/manual/build/latex/nexus.idx
-
-        # build the PDF, still a failure will be noted
-        # but we can ignore it without problem
-        ( \
-          make latexpdf \
-            LATEXOPTS="--interaction=nonstopmode" \
-            -C build/manual \
-          || exit 0\
-        )
+        make -C build nxdl2rst pdf
 
         # Copy to documentation source directory
         cp \
