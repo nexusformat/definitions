@@ -55,8 +55,7 @@ jobs:
     - name: Run tests
       run: |
         source $CONDA/bin/activate $ENV_NAME
-        # pytest -vvv ./utils/test_suite.py
-        python ./utils/test_suite.py
+        make test
       env:
         PY_VER: ${{ matrix.python-version }}
         ENV_NAME: anaconda-test-env-py-${{ matrix.python-version }}
@@ -64,13 +63,16 @@ jobs:
     - name: Build the documentation
       run: |
         source $CONDA/bin/activate $ENV_NAME
-        make makebuilddir
-        pushd build/manual
-        # CI needs latexmk to execute next line
-        # make latexpdf && cp build/latex/nexus.pdf build/html/NeXusManual.pdf
-        cd build
-        tar czf ../../../docs.tar.gz html
-        popd
+        make -C build nxdl2rst html
+
+        # TODO: why is this needed?
+        # pushd build/manual
+        # # CI needs latexmk to execute next line
+        # # make latexpdf && cp build/latex/nexus.pdf build/html/NeXusManual.pdf
+        # cd build
+        # tar czf ../../../docs.tar.gz html
+        # popd
+
         ls -lAGh
       env:
         PY_VER: ${{ matrix.python-version }}
