@@ -3,98 +3,93 @@
 # purpose:
 #	build resources in NeXus definitions tree
 
-# ref: http://www/gnu.org/software/make/manual/make.html
-
 SUBDIRS = manual impatient-guide
 PYTHON = python3
 DIR_NAME = "$(shell basename $(realpath .))"
+BUILD_DIR = "build"
 
-.PHONY: subdirs $(SUBDIRS) builddir all
+.PHONY: $(SUBDIRS)  all clean html pdf nxdl2rst prepare test local
 
-# ------------------------------------
-
-subdirs: $(SUBDIRS)
-
-all :: test
-ifeq ($(DIR_NAME), "build")
-	echo "In build directory, can build $@"
+all ::
+ifneq ($(DIR_NAME), $(BUILD_DIR))
+	# root directory
+	make test
+	make prepare
+	make -C $(BUILD_DIR) all
 else
-	echo "Not in build directory, need to create build directory"
+	# root/build directory
+	make clean
+	make impatient-guide
+	make nxdl2rst
+	make html
+	make pdf
+
+	cp impatient-guide/_build/latex/NXImpatient.pdf manual/build/html/_static/NXImpatient.pdf
+	cp manual/build/latex/nexus.pdf manual/build/html/_static/NeXusManual.pdf
+
+	@echo "HTML built: `ls -lAFgh manual/build/html/index.html`"
+	@echo "PDF built: `ls -lAFgh manual/build/latex/nexus.pdf`"
 endif
 
-# clean:
-# 	for dir in $(SUBDIRS); do \
-# 	    $(MAKE) -C $$dir clean; \
-# 	done
+clean ::
+	for dir in $(SUBDIRS); do \
+	    $(MAKE) -C $$dir clean; \
+	done
 
-# html :: nxdl2rst
-# 	$(MAKE) html -C $@
-
-# impatient-guide ::
-# 	$(MAKE) html -C $@
-
-# nxdl2rst:
-# 	$(MAKE) -C manual/source PYTHON=$(PYTHON)
-
-pdf:
-ifeq ($(DIR_NAME), "build")
-	echo "In build directory, can build $@"
-else
-	echo "Not in build directory, will not build $@"
+impatient-guide ::
+ifeq ($(DIR_NAME), $(BUILD_DIR))
+	$(MAKE) html -C $@
+	$(MAKE) latexpdf -C $@
 endif
 
-prep:
-	echo "TODO:"
+html ::
+ifeq ($(DIR_NAME), $(BUILD_DIR))
+	$(MAKE) html -C manual
+endif
+
+nxdl2rst ::
+ifeq ($(DIR_NAME), $(BUILD_DIR))
+	$(MAKE) -C manual/source PYTHON=$(PYTHON)
+endif
+
+pdf ::
+ifeq ($(DIR_NAME), $(BUILD_DIR))
+	# expect pass to fail (thus exit 0) since nexus.ind not found first time
+	# extra option needed to satisfy "levels nested too deeply" error
+	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode -f" -C manual || exit 0)
+
+	# make that missing file
+	makeindex manual/build/latex/nexus.idx
+
+	# second pass will also fail but we can ignore it without problem
+	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode -f" -C manual || exit 0)
+
+	# third time should be no errors
+	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode -f" -C manual || exit 0)
+endif
+
+prepare ::
+ifneq ($(DIR_NAME), $(BUILD_DIR))
+	echo "In root directory, can $@"
+	$(RM) -rf $(BUILD_DIR)
+	mkdir -p $(BUILD_DIR)
+	$(PYTHON) utils/build_preparation.py . $(BUILD_DIR)
+endif
 
 test ::
 	$(PYTHON) utils/test_suite.py
 
-# all :: 
-# 	$(MAKE) rmbuilddir builddir
-# 	$(MAKE) impatient-guide manual -C build
-# 	# expect next make (PDF) to fail (thus exit 0) since nexus.ind not found first time
-# 	# extra option needed to satisfy "levels nested too deeply" error
-# 	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode" -C build/manual || exit 0)
-# 	# make that missing file
-# 	makeindex build/manual/build/latex/nexus.idx
-# 	# build the PDF, still a failure will be noted but we can ignore it without problem
-# 	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode" -C build/manual || exit 0)
-# 	# finally, report what was built
-# 	@echo "HTML built: `ls -lAFgh build/manual/build/html/index.html`"
-# 	@echo "PDF built: `ls -lAFgh build/manual/build/latex/nexus.pdf`"
-
-# #pdfdoc ::
-# #	$(MAKE) latexpdf -C $(SUBDIRS)
-
-# builddir :: 
-# 	mkdir -p build
-# 	$(PYTHON) utils/build_preparation.py . build
-
-# makebuilddir :: builddir
-# 	$(MAKE) -C build
-
-# remakebuilddir :: makebuilddir
-
-# rebuildall :: rmbuilddir makebuilddir
-
-# cleanbuilddir ::
-# 	$(MAKE) -C build clean
-
-# rmbuilddir ::
-# 	$(RM) -r build
-
-# # for developer's use on local build host
-# local ::
-# 	$(PYTHON) utils/test_suite.py
-# 	$(RM) -r build
-# 	mkdir -p build
-# 	$(PYTHON) utils/build_preparation.py . build
-# 	$(MAKE) -C build
+# for developer's use on local build host
+local ::
+	make test
+	make prepare
+	$(MAKE) nxdl2rst -C $(BUILD_DIR)
+	$(MAKE) html -C $(BUILD_DIR)
 
 # NeXus - Neutron and X-ray Common Data Format
-# 
+#
 # Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
