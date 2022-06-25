@@ -80,14 +80,21 @@ class AnchorRegistry:
         return key
 
     def write(self):
+        # fmt: off
+        version = open(repo_root_path / "NXDL_VERSION", "r").read().strip()
         contents = dict(
             _metadata=dict(
                 datetime=datetime.datetime.utcnow().isoformat(),
                 title="NeXus NXDL vocabulary.",
-                subtitle="Anchors for all NeXus fields, groups, attributes, and links.",
+                subtitle=(
+                    "Anchors for all NeXus fields,"
+                    " groups, attributes, and links."
+                ),
+                version=version,
             ),
             terms=self.registry,
         )
+        # fmt: on
 
         self._write_yaml(contents)
         self._write_json(contents)
