@@ -13,16 +13,16 @@ BUILD_DIR = "build"
 all ::
 ifneq ($(DIR_NAME), $(BUILD_DIR))
 	# root directory
-	make test
-	make prepare
-	make -C $(BUILD_DIR) all
+	$(MAKE) test
+	$(MAKE) prepare
+	$(MAKE) -C $(BUILD_DIR) all
 else
 	# root/build directory
-	make clean
-	make impatient-guide
-	make nxdl2rst
-	make html
-	make pdf
+	$(MAKE) clean
+	$(MAKE) impatient-guide
+	$(MAKE) nxdl2rst
+	$(MAKE) html
+	$(MAKE) pdf
 
 	cp impatient-guide/_build/latex/NXImpatient.pdf manual/build/html/_static/NXImpatient.pdf
 	cp manual/build/latex/nexus.pdf manual/build/html/_static/NeXusManual.pdf
@@ -58,7 +58,7 @@ ifeq ($(DIR_NAME), $(BUILD_DIR))
 	# extra option needed to satisfy "levels nested too deeply" error
 	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode -f" -C manual || exit 0)
 
-	# make that missing file
+	# create the missing file
 	makeindex manual/build/latex/nexus.idx
 
 	# second pass will also fail but we can ignore it without problem
@@ -70,7 +70,6 @@ endif
 
 prepare ::
 ifneq ($(DIR_NAME), $(BUILD_DIR))
-	echo "In root directory, can $@"
 	$(RM) -rf $(BUILD_DIR)
 	mkdir -p $(BUILD_DIR)
 	$(PYTHON) utils/build_preparation.py . $(BUILD_DIR)
@@ -81,8 +80,8 @@ test ::
 
 # for developer's use on local build host
 local ::
-	make test
-	make prepare
+	$(MAKE) test
+	$(MAKE) prepare
 	$(MAKE) nxdl2rst -C $(BUILD_DIR)
 	$(MAKE) html -C $(BUILD_DIR)
 
