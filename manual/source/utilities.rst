@@ -160,7 +160,7 @@ The list is not intended to be a complete list of all available packages.
    file; validate
    punx (utility)
 
-.. _punx:
+.. _punx_util:
 
 **punx**
    Python Utilities for NeXus HDF5 files
