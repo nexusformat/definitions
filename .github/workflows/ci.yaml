@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main   # push commit to the main branch
+    tags:
+      - 'v2*'  # push tag starting with "v2" to the main branch
+  pull_request:
+    branches:
+      - main   # pull request to the main branch
+  workflow_dispatch:   # allow manual triggering
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build-linux:
+    name: CI py${{ matrix.python-version }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.7', '3.8', '3.9', '3.10']
+      max-parallel: 5
+    env:
+      python_version: ${{ matrix.python-version }}
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Deploy Information
+        if: ${{ startsWith(github.ref, 'refs/tags') && env.python_version == '3.7' }}
+        run: |
+          echo "The HTML NeXus User Manual will be pushed to"
+          echo " https://github.com/nexusformat/definitions/tree/gh-pages"
+          echo "The HTML NeXus User Manual will be deployed on"
+          echo " https://nexusformat.github.io/definitions/"
+
+      - name: Install Requirements
+        run: |
+          python3 -m pip install --upgrade pip setuptools
+          python3 -m pip install -r dev_tools/requirements.txt
+          python3 -m pip list
+
+      - name: Check Code Style
+        run: |
+          cd dev_tools
+          black --check .
+          flake8 .
+          isort --check .
+
+      - name: Run Tests
+        run: |
+          pytest dev_tools -v
+
+      - name: Install LaTeX
+        run: |
+          sudo apt-get update -y && \
+          sudo apt-get install -y \
+            latexmk \
+            texlive-latex-recommended \
+            texlive-latex-extra \
+            texlive-fonts-recommended
+
+      - name: Generate build files
+        run: |
+          python3 -m dev_tools manual --prepare
+          python3 -m dev_tools impatient --prepare
+
+      - name: Build PDF Manuals
+        run: |
+          sphinx-build -M latexpdf build/impatient-guide/ build/impatient-guide/build
+          cp build/impatient-guide/build/latex/NXImpatient.pdf build/manual/source/_static/NXImpatient.pdf
+          sphinx-build -M latexpdf build/manual/source/ build/manual/build
+          cp build/manual/build/latex/nexus.pdf build/manual/source/_static/NeXusManual.pdf
+
+      - name: Build HTML Manuals
+        run: |
+          sphinx-build -b html build/manual/source/ build/manual/build/html
+          sphinx-build -b html -W build/impatient-guide/ build/impatient-guide/build/html
+
+      - name: Build and Commit the NeXus User Manual
+        if: ${{ startsWith(github.ref, 'refs/tags') && env.python_version == '3.7' }}
+        uses: sphinx-notes/pages@master
+        with:
+          # path to the conf.py directory
+          documentation_path: build/manual/source
+
+      - name: Deploy the NeXus User Manual
+        if: ${{ startsWith(github.ref, 'refs/tags') && env.python_version == '3.7' }}
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: gh-pages
