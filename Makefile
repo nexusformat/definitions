@@ -81,7 +81,7 @@ ifeq ($(DIR_NAME), $(BUILD_DIR))
 	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode -f" -C manual || exit 0)
 
 	# create the missing file
-	makeindex manual/build/latex/nexus.idx
+	makeindex -s manual/build/latex/python.ist manual/build/latex/nexus.idx
 
 	# second pass will also fail but we can ignore it without problem
 	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode -f" -C manual || exit 0)
