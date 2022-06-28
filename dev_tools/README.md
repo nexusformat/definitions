@@ -44,10 +44,9 @@ sphinx-build -b html -W build/manual/source/ build/manual/build/html
 Auto-formatting and syntax checking to the developer tools themselves
 
 ```bash
-cd dev_tools
-black .
-isort .
-flake8 .
+black dev_tools
+isort dev_tools
+flake8 dev_tools
 ```
 
 ## Prepare environment (optional)

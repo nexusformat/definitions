@@ -3,109 +3,86 @@
 # purpose:
 #	build resources in NeXus definitions tree
 
-SUBDIRS = manual impatient-guide
 PYTHON = python3
-DIR_NAME = "$(shell basename $(realpath .))"
+SPHINX = sphinx-build
 BUILD_DIR = "build"
 
-.PHONY: $(SUBDIRS)  all clean html pdf nxdl2rst prepare test local help
+.PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local
 
 help ::
 	@echo ""
 	@echo "NeXus: Testing the NXDL files and building the documentation:"
 	@echo ""
-	@echo "make all -C .                    Total (re)build of the manual, starting from root directory."
-	@echo "make all -C build                Builds complete web site for the manual (in build directory)."
-	@echo "make clean                       Remove build products from some directories."
-	@echo "make impatient-guide -C build    Build html & PDF versions of the Guide for the Impatient."
-	@echo "make html -C build               Build HTML version of manual, requires nxdl2rst first,"
-	@echo "make nxdl2rst -C build           Document each NXDL class, add to manual source."
-	@echo "make pdf -C build                Build PDF version of manual, requires nxdl2rst first"
-	@echo "make prepare -C .                (Re)create the build directory."
-	@echo "make test                        Apply all Python-coded tests."
-	@echo "make local -C .                  (Developer use) Build nxdl2rst and the html manual."
+
+	@echo "make install            Install all requirements to run tests and builds."
+	@echo "make style              Check python coding style."
+	@echo "make autoformat         Format all files to the coding style conventions."
+	@echo "make test               Run NXDL syntax and documentation tests."
+	@echo "make clean              Remove all build files."
+	@echo "make prepare            (Re)create all build files."
+	@echo "make html               Build HTML version of manual. Requires prepare first."
+	@echo "make pdf                Build PDF version of manual. Requires prepare first."
+	@echo "make impatient-guide    Build html & PDF versions of the Guide for the Impatient. Requires prepare first."
+	@echo "make all                Builds complete web site for the manual (in build directory)."
+	@echo "make local              (Developer use) Test, prepare and build the HTML manual."
 	@echo ""
 	@echo "Note:  All builds of the manual will occur in the 'build/' directory."
 	@echo "   For a complete build, run 'make all' in the root directory."
-	@echo "   To delete and then create the 'build/' directory, run 'make prepare' in the root directory."
-	@echo "   For syntax checks of the NXDL files, run 'make test' in either root or 'build/' directory."
-	@echo "   Developers might find it easier to 'make local' to confirm the documentation builds."
+	@echo "   Developers of the NeXus class definitions can use 'make local' to"
+	@echo "   confirm the documentation builds."
 	@echo ""
 
-all ::
-ifneq ($(DIR_NAME), $(BUILD_DIR))
-	# root directory
-	$(MAKE) test
-	$(MAKE) prepare
-	$(MAKE) -C $(BUILD_DIR) all
-else
-	# root/build directory
-	$(MAKE) clean
-	$(MAKE) impatient-guide
-	$(MAKE) nxdl2rst
-	$(MAKE) html
-	$(MAKE) pdf
+install ::
+	$(PYTHON) -m pip install -r requirements.txt
 
-	cp impatient-guide/_build/latex/NXImpatient.pdf manual/build/html/_static/NXImpatient.pdf
-	cp manual/build/latex/nexus.pdf manual/build/html/_static/NeXusManual.pdf
+style ::
+	$(PYTHON) -m black --check dev_tools
+	$(PYTHON) -m flake8 dev_tools
+	$(PYTHON) -m isort --check dev_tools
 
-	@echo "HTML built: `ls -lAFgh manual/build/html/index.html`"
-	@echo "PDF built: `ls -lAFgh manual/build/latex/nexus.pdf`"
-endif
-
-clean ::
-	for dir in $(SUBDIRS); do \
-	    $(MAKE) -C $$dir clean; \
-	done
-
-impatient-guide ::
-ifeq ($(DIR_NAME), $(BUILD_DIR))
-	$(MAKE) html -C $@
-	$(MAKE) latexpdf -C $@
-endif
-
-html ::
-ifeq ($(DIR_NAME), $(BUILD_DIR))
-	$(MAKE) html -C manual
-endif
-
-nxdl2rst ::
-ifeq ($(DIR_NAME), $(BUILD_DIR))
-	$(MAKE) -C manual/source PYTHON=$(PYTHON)
-endif
-
-pdf ::
-ifeq ($(DIR_NAME), $(BUILD_DIR))
-	# expect pass to fail (thus exit 0) since nexus.ind not found first time
-	# extra option needed to satisfy "levels nested too deeply" error
-	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode -f" -C manual || exit 0)
-
-	# create the missing file
-	makeindex -s manual/build/latex/python.ist manual/build/latex/nexus.idx
-
-	# second pass will also fail but we can ignore it without problem
-	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode -f" -C manual || exit 0)
-
-	# third time should be no errors
-	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode -f" -C manual || exit 0)
-endif
-
-prepare ::
-ifneq ($(DIR_NAME), $(BUILD_DIR))
-	$(RM) -rf $(BUILD_DIR)
-	mkdir -p $(BUILD_DIR)
-	$(PYTHON) utils/build_preparation.py . $(BUILD_DIR)
-endif
+autoformat ::
+	$(PYTHON) -m black dev_tools
+	$(PYTHON) -m isort dev_tools
 
 test ::
-	$(PYTHON) utils/test_suite.py
+	$(PYTHON) -m pytest dev_tools
+
+clean ::
+	$(RM) -rf $(BUILD_DIR)
+
+prepare ::
+	$(PYTHON) -m dev_tools manual --prepare --build-root $(BUILD_DIR)
+	$(PYTHON) -m dev_tools impatient --prepare --build-root $(BUILD_DIR)
+
+pdf ::
+	$(SPHINX) -M latexpdf $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build
+	cp $(BUILD_DIR)/manual/build/latex/nexus.pdf $(BUILD_DIR)/manual/source/_static/NeXusManual.pdf
+
+html ::
+	$(SPHINX) -b html -W $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
+
+impatient-guide ::
+	$(SPHINX) -b html -W $(BUILD_DIR)/impatient-guide/ $(BUILD_DIR)/impatient-guide/build/html
+	$(SPHINX) -M latexpdf $(BUILD_DIR)/impatient-guide/ $(BUILD_DIR)/impatient-guide/build
+	cp $(BUILD_DIR)/impatient-guide/build/latex/NXImpatient.pdf $(BUILD_DIR)/manual/source/_static/NXImpatient.pdf
 
 # for developer's use on local build host
 local ::
 	$(MAKE) test
 	$(MAKE) prepare
-	$(MAKE) nxdl2rst -C $(BUILD_DIR)
-	$(MAKE) html -C $(BUILD_DIR)
+	$(MAKE) html
+
+all ::
+	$(MAKE) clean
+	$(MAKE) prepare
+	$(MAKE) impatient-guide
+	$(MAKE) pdf
+	$(MAKE) html
+	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/html/index.html`"
+	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/latex/NXImpatient.pdf`"
+	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/manual/build/html/index.html`"
+	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus.pdf`"
+
 
 # NeXus - Neutron and X-ray Common Data Format
 #

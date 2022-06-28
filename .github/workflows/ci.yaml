@@ -43,19 +43,16 @@ jobs:
       - name: Install Requirements
         run: |
           python3 -m pip install --upgrade pip setuptools
-          python3 -m pip install -r dev_tools/requirements.txt
+          make install
           python3 -m pip list
 
       - name: Check Code Style
         run: |
-          cd dev_tools
-          black --check .
-          flake8 .
-          isort --check .
+          make style
 
       - name: Run Tests
         run: |
-          pytest dev_tools -v
+          make test
 
       - name: Install LaTeX
         run: |
@@ -68,20 +65,20 @@ jobs:
 
       - name: Generate build files
         run: |
-          python3 -m dev_tools manual --prepare
-          python3 -m dev_tools impatient --prepare
+          make prepare
 
-      - name: Build PDF Manuals
+      - name: Build Impatient Guid
         run: |
-          sphinx-build -M latexpdf build/impatient-guide/ build/impatient-guide/build
-          cp build/impatient-guide/build/latex/NXImpatient.pdf build/manual/source/_static/NXImpatient.pdf
-          sphinx-build -M latexpdf build/manual/source/ build/manual/build
-          cp build/manual/build/latex/nexus.pdf build/manual/source/_static/NeXusManual.pdf
+          make impatient-guide
+          ls -lAFgh build/impatient-guide/build/html/index.html
+          ls -lAFgh build/impatient-guide/build/latex/NXImpatient.pdf
 
-      - name: Build HTML Manuals
+      - name: Build User Manual
         run: |
-          sphinx-build -b html build/manual/source/ build/manual/build/html
-          sphinx-build -b html -W build/impatient-guide/ build/impatient-guide/build/html
+          make pdf
+          make html
+          ls -lAFgh build/manual/build/html/index.html
+          ls -lAFgh build/manual/build/latex/nexus.pdf
 
       - name: Build and Commit the NeXus User Manual
         if: ${{ startsWith(github.ref, 'refs/tags') && env.python_version == '3.7' }}
