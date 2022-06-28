@@ -8,10 +8,15 @@ HDF5 in Python with ``h5py``
 
 One way to gain a quick familiarity with NeXus is to start working with some data. For at least the
 first few examples in this section, we have a simple two-column set of 1-D data, collected as part of a
-series of alignment scans by the APS USAXS instrument during the time it was stationed at
-beam line 32ID. We will show how to write this
-data using the Python language and both the ``nexusformat`` [#]_ and ``h5py`` packages [#]_. The
-actual data to be written was extracted (elsewhere) from a ``spec`` [#]_ data file 
+series of alignment scans by the Advanced Photon Source USAXS instrument during the time it was stationed at
+beam line 32ID. We will show how to read and write this data in Python using both the 
+``nexusformat`` [#]_ and ``h5py`` [#]_ packages.  The ``nexusformat`` package provides a simplified syntax for 
+reading and writing NeXus-compliant files by automatically handling some of the features required by the 
+NeXus standard, such as the attributes that define group classes and plottable data. However, it also uses 
+the ``h5py`` package [#]_ to read/write the HDF5 files on disk. We provide tabbed examples showing 
+how to produce equivalent files either using ``nexusformat`` or directly in ``h5py``.
+
+The actual data to be written was extracted (elsewhere) from a ``spec`` [#]_ data file 
 and read as a text block from a file by the Python source code.
 Our examples will start with the simplest case and add only mild complexity with each new case
 since these examples are meant for those who are unfamiliar with NeXus.
