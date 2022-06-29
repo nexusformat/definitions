@@ -284,7 +284,7 @@ class XSDDocGenerator:
     def add_figure(self, name, indentLevel=0):
         imageFile = f"img/nxdl/nxdl_{name}.png"
         figure_id = f"fig.nxdl_{name}"
-        file_name = directories.manual_source_sphinxsroot() / imageFile
+        file_name = directories.manual_source_sphinxroot() / imageFile
         if not file_name.exists():
             return
         text = FIGURE_FMT % (

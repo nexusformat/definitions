@@ -1,11 +1,13 @@
 import datetime
 import json
+import os
 from pathlib import Path
 from typing import Optional
 
 import lxml
 import yaml
 
+from ..globals import directories
 from ..globals.nxdl import get_nxdl_version
 from ..globals.urls import MANUAL_URL
 from ..utils.types import PathLike
@@ -53,7 +55,6 @@ class AnchorRegistry:
         self._registry = self._load_registry()
         self._anchor_buffer = []
         self._nxdl_file = None
-        self.category = None
 
     @property
     def all_anchors(self):
@@ -70,6 +71,15 @@ class AnchorRegistry:
     def nxdl_file(self, value: PathLike) -> None:
         self._nxdl_file = Path(value).absolute()
 
+    @property
+    def html_url(self):
+        rst_file = directories.get_rst_filename(self.nxdl_file)
+        manual_root = directories.manual_build_sphinxroot()
+        rel_path = rst_file.relative_to(manual_root)
+        rel_html = str(rel_path.with_suffix(".html"))
+        rel_html = rel_html.replace(os.sep, "/")
+        return f"{MANUAL_URL}/{rel_html}"
+
     def add(self, anchor):
         """Add anchor to the in-memory registry and to the
         current anchor buffer."""
@@ -84,8 +94,7 @@ class AnchorRegistry:
         reg = self._registry[key]
         if anchor not in reg:
             hanchor = self._html_anchor(anchor)
-            fnxdl = "/".join(self.nxdl_file.parts[-2:]).split(".")[0]
-            url = f"{MANUAL_URL}classes/{self.category}/{fnxdl}.html{hanchor}"
+            url = f"{self.html_url}{hanchor}"
             reg[anchor] = dict(
                 term=anchor,
                 html=hanchor,
@@ -170,7 +179,7 @@ class AnchorRegistry:
         p.text = "This content is also available in these formats: "
         for ext in "json txt yml".split():
             a = lxml.etree.SubElement(p, "a")
-            a.attrib["href"] = f"{MANUAL_URL}_static/{self._txt_file.stem}.{ext}"
+            a.attrib["href"] = f"{MANUAL_URL}/_static/{self._txt_file.stem}.{ext}"
             a.text = f" {ext}"
 
         dl = lxml.etree.SubElement(body, "dl")

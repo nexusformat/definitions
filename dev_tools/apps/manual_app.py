@@ -64,7 +64,7 @@ def manual_exec(args):
     if generate_docs:
         xsd_file = directories.get_xsd_file()
         rst_lines = xsdgenerator(xsd_file)
-        nxdl_desc = directories.manual_build_sphinxsroot() / "nxdl_desc.rst"
+        nxdl_desc = directories.manual_build_sphinxroot() / "nxdl_desc.rst"
     if args.diff:
         diff_ascii(xsd_file, rst_lines, nxdl_desc)
     if args.prepare:
@@ -75,7 +75,7 @@ def manual_exec(args):
     if generate_docs:
         xsd_file = directories.get_xsd_units_file()
         rst_lines = generate_xsd_units_doc(xsd_file, "anyUnitsAttr", "units")
-        nxdl_desc = directories.manual_build_sphinxsroot() / "units.table"
+        nxdl_desc = directories.manual_build_sphinxroot() / "units.table"
     if args.diff:
         diff_ascii(xsd_file, rst_lines, nxdl_desc)
     if args.prepare:
@@ -86,7 +86,7 @@ def manual_exec(args):
     if generate_docs:
         xsd_file = directories.get_xsd_units_file()
         rst_lines = generate_xsd_units_doc(xsd_file, "primitiveType", "data")
-        nxdl_desc = directories.manual_build_sphinxsroot() / "types.table"
+        nxdl_desc = directories.manual_build_sphinxroot() / "types.table"
     if args.diff:
         diff_ascii(xsd_file, rst_lines, nxdl_desc)
     if args.prepare:

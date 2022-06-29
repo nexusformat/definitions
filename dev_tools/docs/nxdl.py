@@ -22,11 +22,6 @@ class NXClassDocGenerator:
 
     _INDENTATION_UNIT = " " * 2
 
-    _CATEGORY_TO_DIRNAME = {
-        "base": "base_classes",
-        "application": "applications",
-    }
-
     _CATEGORY_TO_LISTING = {
         "base": "base class",
         "application": "application definition",
@@ -77,11 +72,6 @@ class NXClassDocGenerator:
                 f'Unexpected class name "{nxclass_name}"; does not start with NX'
             )
         lexical_name = nxclass_name[2:]  # without padding 'NX', for indexing
-
-        # Pass these terms to construct the full URL
-        if self._anchor_registry:
-            self._anchor_registry.category = self._CATEGORY_TO_DIRNAME[category]
-
         self._listing_category = self._CATEGORY_TO_LISTING[category]
         self._use_application_defaults = category == "application"
 
@@ -174,9 +164,10 @@ class NXClassDocGenerator:
         # print NXDL source location
         self._print("")
         self._print("**NXDL Source**:")
-        self._print(
-            f"  {REPO_URL}/{self._CATEGORY_TO_DIRNAME[category]}/{nxclass_name}.nxdl.xml"
-        )
+        nxdl_root = get_nxdl_root()
+        rel_path = str(nxdl_file.relative_to(nxdl_root))
+        rel_html = str(rel_path).replace(os.sep, "/")
+        self._print(f"  {REPO_URL}/{rel_html}")
 
         return self._rst_lines
 

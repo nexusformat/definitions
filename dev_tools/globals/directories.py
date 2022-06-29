@@ -85,26 +85,32 @@ def impatient_build_root() -> Path:
     return get_build_root() / "impatient-guide"
 
 
-def manual_source_sphinxsroot() -> Path:
+def manual_source_sphinxroot() -> Path:
     """Sphinx source directory of the NeXus User Manual"""
     return manual_source_root() / "source"
 
 
-def manual_build_sphinxsroot() -> Path:
+def manual_build_sphinxroot() -> Path:
     """Sphinx source directory for building of the NeXus User Manual"""
     return manual_build_root() / "source"
 
 
 def manual_build_staticroot() -> Path:
     """Static source directory for building of the NeXus User Manual"""
-    return manual_build_sphinxsroot() / "_static"
+    return manual_build_sphinxroot() / "_static"
 
 
 def nxclass_build_root(nxdl_file: Path) -> Path:
     """NeXus class documentation directory for building of the NeXus User Manual"""
-    root = manual_build_sphinxsroot() / "classes"
+    root = manual_build_sphinxroot() / "classes"
     root /= os.path.relpath(nxdl_file.parent, get_nxdl_root())
     return root
+
+
+def get_rst_filename(nxdl_file: Path) -> Path:
+    rst_file_name = nxclass_build_root(nxdl_file)
+    rst_file_name /= nxdl_file.with_suffix("").with_suffix(".rst").name
+    return rst_file_name
 
 
 _XSD_FILE_NAME = "nxdl.xsd"

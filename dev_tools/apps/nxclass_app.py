@@ -70,7 +70,7 @@ def save_nxclass_docs(nxdl_file: Path, rst_lines: List[str]) -> None:
     """Build the NXDL file: this means prepare the documentation
     and resources in the build directory.
     """
-    rst_file_name = get_rst_filename(nxdl_file)
+    rst_file_name = directories.get_rst_filename(nxdl_file)
 
     # Save the documentation in the build directory
     print("generate", nxdl_file)
@@ -99,11 +99,5 @@ def diff_nxclass_docs(nxdl_file: Path, rst_lines: List[str]) -> None:
     """Build the NXDL file: this means prepare the documentation
     and resources in the build directory.
     """
-    rst_file_name = get_rst_filename(nxdl_file)
+    rst_file_name = directories.get_rst_filename(nxdl_file)
     diff_ascii(nxdl_file, rst_lines, rst_file_name)
-
-
-def get_rst_filename(nxdl_file: Path) -> Path:
-    rst_file_name = directories.nxclass_build_root(nxdl_file)
-    rst_file_name /= nxdl_file.with_suffix("").with_suffix(".rst").name
-    return rst_file_name
