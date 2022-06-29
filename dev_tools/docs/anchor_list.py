@@ -207,7 +207,7 @@ class AnchorRegistry:
         if not self._json_file:
             return
         with open(self._json_file, "w") as f:
-            json.dump(contents, f, indent=4)
+            json.dump(contents, f, indent=4, sort_keys=True)
             f.write("\n")
 
     def _write_txt(self):
