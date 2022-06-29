@@ -8,7 +8,7 @@ and generate all files needed for documentation building with sphinx.
 Install all requirements
 
 ```bash
-python3 -m pip install -r dev_tools/requirements.txt
+python3 -m pip install -r requirements.txt
 ```
 
 Run all tests

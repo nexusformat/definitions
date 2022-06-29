@@ -3,14 +3,14 @@
 * Documentation: https://manual.nexusformat.org/
 * Release Notes: https://github.com/nexusformat/definitions/wiki/Release-Notes
 * License: [![License](https://img.shields.io/badge/License-LGPL_v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
-* Test, Build and Deploy: [![Workflow](https://github.com/nexusformat/definitions/actions/workflows/ci.yaml/badge.svg)](https://github.com/nexusformat/definitions/actions/workflows/ci.yaml)
+* Test, Build and Deploy: [![CI](https://github.com/nexusformat/definitions/actions/workflows/ci.yaml/badge.svg)](https://github.com/nexusformat/definitions/actions/workflows/ci.yaml)
 
 ## NeXus definition developers
 
-After make a change to the NeXus class definitions there are two important steps
-to take before commiting the change:
+After making a change to the NeXus class definitions there are two important checks
+to be made before commiting the change:
 
- 1. check whether the change do not violate any syntax rules
+ 1. check whether the change does not violate any syntax rules
  2. verify whether the change looks as intended in the HTML documentation
 
 First install the test and build requirements with this command (only run once)
