@@ -27,11 +27,6 @@ repo_root_path = pathlib.Path(__file__).parent.parent
 WRITE_ANCHOR_REGISTRY = False
 HTML_ROOT = "https://github.com/nexusformat/definitions/blob/main"
 MANUAL_ROOT = "https://manual.nexusformat.org/"
-SUBDIR_MAP = {
-    "base": "base_classes",
-    "application": "applications",
-    "contributed": "contributed_definitions",
-}
 
 
 class AnchorRegistry:
@@ -47,7 +42,7 @@ class AnchorRegistry:
         self.registry = self._read()
         self.local_anchors = []  # anchors from current NXDL file
         self.nxdl_file = None
-        self.category = None
+        self.subdir = None
 
     @property
     def all_anchors(self):
@@ -69,7 +64,7 @@ class AnchorRegistry:
         if anchor not in reg:
             hanchor = self._html_anchor(anchor)
             fnxdl = "/".join(pathlib.Path(self.nxdl_file).parts[-2:]).split(".")[0]
-            url = f"{MANUAL_ROOT}classes/{self.category}/{fnxdl}.html{hanchor}"
+            url = f"{MANUAL_ROOT}classes/{self.subdir}/{fnxdl}.html{hanchor}"
             reg[anchor] = dict(term=anchor, html=hanchor, url=url,)
 
     def key_from_anchor(self, anchor):
@@ -170,7 +165,7 @@ class AnchorRegistry:
 
     def _write_json(self, contents):
         with open(self.json_file, "w") as f:
-            json.dump(contents, f, indent=4)
+            json.dump(contents, f, indent=4, sort_keys=True)
             f.write("\n")
 
     def _write_txt(self):
@@ -647,7 +642,7 @@ def printFullTree(ns, parent, name, indent, parent_path):
         printDoc(indent + INDENTATION_UNIT, ns, node)
 
 
-def print_rst_from_nxdl(nxdl_file):
+def print_rst_from_nxdl(nxdl_file, subdir):
     """
     print restructured text from the named .nxdl.xml file
     """
@@ -671,19 +666,18 @@ def print_rst_from_nxdl(nxdl_file):
     lexical_name = name[2:]  # without padding 'NX', for indexing
 
     # retrieve category from directory
-    # subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
-    subdir = root.attrib["category"]
+    category = root.attrib["category"]
 
     # Pass these terms to construct the full URL
     anchor_registry.nxdl_file = nxdl_file
-    anchor_registry.category = SUBDIR_MAP[subdir]
+    anchor_registry.subdir = subdir
 
     # TODO: check for consistency with root.get('category')
     listing_category = {
         "base": "base class",
         "application": "application definition",
         "contributed": "contributed definition",
-    }[subdir]
+    }[category]
 
     use_application_defaults = listing_category in (
         "application definition",
@@ -774,7 +768,7 @@ def print_rst_from_nxdl(nxdl_file):
     # print NXDL source location
     print("")
     print("**NXDL Source**:")
-    print(f"  {HTML_ROOT}/{SUBDIR_MAP[subdir]}/{name}.nxdl.xml")
+    print(f"  {HTML_ROOT}/{subdir}/{name}.nxdl.xml")
 
 
 def main():
@@ -792,13 +786,13 @@ def main():
         print(f"Cannot find {nxdl_file}")
         exit()
 
-    print_rst_from_nxdl(nxdl_file)
+    subdir = os.path.basename(os.getcwd())
+    print_rst_from_nxdl(nxdl_file, subdir)
 
     # if the NXDL has a subdirectory,
     # copy that subdirectory (quietly) to the pwd, such as:
     #  contributed/NXcanSAS.nxdl.xml: cp -a contributed/canSAS ./
-    category = os.path.basename(os.getcwd())
-    path = os.path.join("../../../../", category)
+    path = os.path.join("../../../../", subdir)
     basename = os.path.basename(nxdl_file)
     corename = basename[2:].split(".")[0]
     source = os.path.join(path, corename)

@@ -90,7 +90,7 @@ class Issue_524_Clarify_Optional_or_Required(unittest.TestCase):
 
         sys.argv.insert(0, "python")
         with Capture_stdout() as printed_lines:
-            nxdl2rst.print_rst_from_nxdl(nxdl_file)
+            nxdl2rst.print_rst_from_nxdl(nxdl_file, category)
 
         printed_lines = [_.strip() for _ in printed_lines]
         for line in expected_lines:
