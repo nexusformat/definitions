@@ -12,7 +12,6 @@ See copyright text at bottom of this file for example.
 
 import os, sys
 import mimetypes
-import local_utilities
 from build_preparation import ROOT_DIR_EXPECTED_RESOURCES
 import datetime
 
