@@ -668,10 +668,9 @@ def print_rst_from_nxdl(nxdl_file):
     anchor_registry.nxdl_subdir = nxdl_subdir
 
     listing_category = {
-        "base_classes": "base class",
-        "applications": "application definition",
-        "contributed_definitions": "contributed definition",
-    }[nxdl_subdir]
+        "base": "base class",
+        "application": "application definition",
+    }[category]
 
     use_application_defaults = category == "application"
 
