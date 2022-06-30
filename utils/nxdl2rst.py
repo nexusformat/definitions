@@ -27,11 +27,6 @@ repo_root_path = pathlib.Path(__file__).parent.parent
 WRITE_ANCHOR_REGISTRY = False
 HTML_ROOT = "https://github.com/nexusformat/definitions/blob/main"
 MANUAL_ROOT = "https://manual.nexusformat.org/"
-SUBDIR_MAP = {
-    "base": "base_classes",
-    "application": "applications",
-    "contributed": "contributed_definitions",
-}
 
 
 class AnchorRegistry:
@@ -47,7 +42,7 @@ class AnchorRegistry:
         self.registry = self._read()
         self.local_anchors = []  # anchors from current NXDL file
         self.nxdl_file = None
-        self.category = None
+        self.nxdl_subdir = None
 
     @property
     def all_anchors(self):
@@ -69,7 +64,7 @@ class AnchorRegistry:
         if anchor not in reg:
             hanchor = self._html_anchor(anchor)
             fnxdl = "/".join(pathlib.Path(self.nxdl_file).parts[-2:]).split(".")[0]
-            url = f"{MANUAL_ROOT}classes/{self.category}/{fnxdl}.html{hanchor}"
+            url = f"{MANUAL_ROOT}classes/{self.nxdl_subdir}/{fnxdl}.html{hanchor}"
             reg[anchor] = dict(term=anchor, html=hanchor, url=url,)
 
     def key_from_anchor(self, anchor):
@@ -670,25 +665,20 @@ def print_rst_from_nxdl(nxdl_file):
         raise Exception('Unexpected class name "%s"; does not start with NX' % (name))
     lexical_name = name[2:]  # without padding 'NX', for indexing
 
-    # retrieve category from directory
-    # subdir = os.path.split(os.path.split(tree.docinfo.URL)[0])[1]
-    subdir = root.attrib["category"]
+    category = root.attrib["category"]
 
     # Pass these terms to construct the full URL
     anchor_registry.nxdl_file = nxdl_file
-    anchor_registry.category = SUBDIR_MAP[subdir]
+    nxdl_subdir = os.path.basename(os.path.dirname(os.path.abspath(nxdl_file)))
+    anchor_registry.nxdl_subdir = nxdl_subdir
 
-    # TODO: check for consistency with root.get('category')
     listing_category = {
-        "base": "base class",
-        "application": "application definition",
-        "contributed": "contributed definition",
-    }[subdir]
+        "base_classes": "base class",
+        "applications": "application definition",
+        "contributed_definitions": "contributed definition",
+    }[nxdl_subdir]
 
-    use_application_defaults = listing_category in (
-        "application definition",
-        "contributed definition",
-    )
+    use_application_defaults = category == "application"
 
     # print ReST comments and section header
     print(
@@ -774,7 +764,7 @@ def print_rst_from_nxdl(nxdl_file):
     # print NXDL source location
     print("")
     print("**NXDL Source**:")
-    print(f"  {HTML_ROOT}/{SUBDIR_MAP[subdir]}/{name}.nxdl.xml")
+    print(f"  {HTML_ROOT}/{nxdl_subdir}/{name}.nxdl.xml")
 
 
 def main():
