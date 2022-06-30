@@ -304,12 +304,11 @@ def getDocLine(ns, node):
     return re.sub(r"\n", " ", blocks[0])
 
 
-def get_minOccurs(node, use_application_defaults):
+def get_minOccurs(node):
     """
     get the value for the ``minOccurs`` attribute
 
     :param obj node: instance of lxml.etree._Element
-    :param bool use_application_defaults: use special case value
     :returns str: value of the attribute (or its default)
     """
     # TODO: can we improve on the default by examining nxdl.xsd?
@@ -318,12 +317,11 @@ def get_minOccurs(node, use_application_defaults):
     return minOccurs
 
 
-def get_required_or_optional_text(node, use_application_defaults):
+def get_required_or_optional_text(node):
     """
     make clear if a reported item is required or optional
 
     :param obj node: instance of lxml.etree._Element
-    :param bool use_application_defaults: use special case value
     :returns: formatted text
     """
     tag = node.tag.split("}")[-1]
@@ -332,7 +330,7 @@ def get_required_or_optional_text(node, use_application_defaults):
         optional_default = not use_application_defaults
         optional = node.get("optional", optional_default) in (True, "true", "1", 1)
         recommended = node.get("recommended", None) in (True, "true", "1", 1)
-        minOccurs = get_minOccurs(node, use_application_defaults)
+        minOccurs = get_minOccurs(node)
         if recommended:
             optional_text = "(recommended) "
         elif minOccurs in ("0", 0) or optional:
@@ -554,14 +552,13 @@ def printFullTree(ns, parent, name, indent, parent_path):
     :param indent: to keep track of indentation level
     :param parent_path: NX class path of parent nodes
     """
-    global use_application_defaults
 
     for node in parent.xpath("nx:field", namespaces=ns):
         name = node.get("name")
         index_name = name
         dims = analyzeDimensions(ns, node)
 
-        optional_text = get_required_or_optional_text(node, use_application_defaults)
+        optional_text = get_required_or_optional_text(node)
         print(f"{indent}{hyperlinkTarget(parent_path, name, 'field')}")
         print(f"{indent}.. index:: {index_name} (field)\n")
         print(
@@ -581,7 +578,7 @@ def printFullTree(ns, parent, name, indent, parent_path):
             printEnumeration(indent + INDENTATION_UNIT, ns, node_list[0])
 
         for subnode in node.xpath("nx:attribute", namespaces=ns):
-            optional = get_required_or_optional_text(subnode, use_application_defaults)
+            optional = get_required_or_optional_text(subnode)
             printAttribute(
                 ns,
                 "field",
@@ -595,7 +592,7 @@ def printFullTree(ns, parent, name, indent, parent_path):
         name = node.get("name", "")
         typ = node.get("type", "untyped (this is an error; please report)")
 
-        optional_text = get_required_or_optional_text(node, use_application_defaults)
+        optional_text = get_required_or_optional_text(node)
         if typ.startswith("NX"):
             if name == "":
                 name = typ.lstrip("NX").upper()
@@ -610,7 +607,7 @@ def printFullTree(ns, parent, name, indent, parent_path):
         printDoc(indent + INDENTATION_UNIT, ns, node)
 
         for subnode in node.xpath("nx:attribute", namespaces=ns):
-            optional = get_required_or_optional_text(subnode, use_application_defaults)
+            optional = get_required_or_optional_text(subnode)
             printAttribute(
                 ns,
                 "group",
@@ -668,10 +665,9 @@ def print_rst_from_nxdl(nxdl_file):
     anchor_registry.nxdl_subdir = nxdl_subdir
 
     listing_category = {
-        "base_classes": "base class",
-        "applications": "application definition",
-        "contributed_definitions": "contributed definition",
-    }[nxdl_subdir]
+        "base": "base class",
+        "application": "application definition",
+    }[category]
 
     use_application_defaults = category == "application"
 
@@ -748,7 +744,7 @@ def print_rst_from_nxdl(nxdl_file):
     # print full tree
     print("**Structure**:\n")
     for subnode in root.xpath("nx:attribute", namespaces=ns):
-        optional = get_required_or_optional_text(subnode, use_application_defaults)
+        optional = get_required_or_optional_text(subnode)
         printAttribute(
             ns, "file", subnode, optional, INDENTATION_UNIT, parent_path
         )  # FIXME: +"/"+name )
