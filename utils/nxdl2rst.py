@@ -22,7 +22,7 @@ from local_utilities import replicate
 
 
 INDENTATION_UNIT = "  "
-listing_category = None
+use_application_defaults = None
 repo_root_path = pathlib.Path(__file__).parent.parent
 WRITE_ANCHOR_REGISTRY = False
 HTML_ROOT = "https://github.com/nexusformat/definitions/blob/main"
@@ -554,12 +554,7 @@ def printFullTree(ns, parent, name, indent, parent_path):
     :param indent: to keep track of indentation level
     :param parent_path: NX class path of parent nodes
     """
-    global listing_category
-
-    use_application_defaults = listing_category in (
-        "application definition",
-        "contributed definition",
-    )
+    global use_application_defaults
 
     for node in parent.xpath("nx:field", namespaces=ns):
         name = node.get("name")
@@ -646,7 +641,7 @@ def print_rst_from_nxdl(nxdl_file):
     """
     print restructured text from the named .nxdl.xml file
     """
-    global listing_category
+    global use_application_defaults
 
     # parse input file into tree
     tree = lxml.etree.parse(nxdl_file)
