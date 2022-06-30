@@ -15,15 +15,15 @@ as shown in the next figure.
 
 .. compound::
 
-    .. _fig.simple-example-h5py:
+    .. _fig.simple-example-python:
 
     .. figure:: ../../../img/simple_example_write1.png
-        :alt: fig.simple-example-h5py
+        :alt: fig.simple-example-python
         :width: 50%
 
         Simple Example
 
-In the :ref:`above figure <fig.simple-example-h5py>`, 
+In the :ref:`above figure <fig.simple-example-python>`, 
 the data file (``simple_example_write1_h5py.hdf5``) contains
 a hierarchy of items, starting with an ``NXentry`` named ``entry``.
 (The full HDF5 path reference, ``/entry`` in this case, is shown to the right of each

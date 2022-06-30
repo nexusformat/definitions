@@ -233,7 +233,7 @@ Links
 
 .. sidebar:: Python h5py code to make NeXus links
 
-   The section titled :ref:`Example-H5py` provides example
+   The section titled :ref:`Example-Python` provides example
    python code to create links (both internal and external)
    in NeXus data files.  See the routines:
 

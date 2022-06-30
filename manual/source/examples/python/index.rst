@@ -1,10 +1,10 @@
 .. index:: !h5py; code examples
 
-.. _Example-H5py:
+.. _Example-python:
 
-============================
-HDF5 in Python with ``h5py``
-============================
+==============
+HDF5 in Python
+==============
 
 One way to gain a quick familiarity with NeXus is to start working with some data. For at least the
 first few examples in this section, we have a simple two-column set of 1-D data, collected as part of a

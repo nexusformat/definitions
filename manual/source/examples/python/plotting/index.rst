@@ -16,9 +16,9 @@ subsection :ref:`Find-Plottable-Data-v3`, for the details.)
 
 .. compound::
 
-    .. rubric:: *reader_attributes_trail.py*: Read a NeXus HDF5 file using Python with h5py
+    .. rubric:: *reader_attributes_trail.py*: Read a NeXus HDF5 file using Python
     
-    .. _Example-H5py-Reader_attributes_trail:
+    .. _Example-Python-Reader_attributes_trail:
 
 .. tabs::
 

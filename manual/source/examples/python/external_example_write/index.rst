@@ -103,7 +103,7 @@ to write a NeXus-compliant HDF5 file with links to data in other HDF5 files.
 
     .. rubric:: *external_example_write.py*: Write using HDF5 external links
     
-    .. _Example-H5py-external_example_write:
+    .. _Example-Python-external_example_write:
 
     .. tabs::
 
