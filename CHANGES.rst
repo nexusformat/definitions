@@ -161,6 +161,10 @@ In addition to the NIAC members, these people have contributed to this release:
   * cmmngr
   * domna (Florian Dobener)
 
+* Helmholtz-Zentrum Berlin für Materialien und Energie
+
+  * Heike Görzig
+
 * National Synchrotron Light Source II
 
   * Abby Giles
