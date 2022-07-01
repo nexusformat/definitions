@@ -56,29 +56,30 @@ Breaking Changes
 
 * Removed ``NXlog`` group called ``temperature``.
 
-New Features / Enhancements
----------------------------
+New Features
+------------
+
+* contributed definitions:
+
+  * atom probe microscopy
+  * electron microscopy
+  * ellipsometry
+  * multidimensional photoemission spectroscopy
+  * ``NXregion``
+  * X-ray photon correlation spectroscopy
+
+* Full vocabulary (names of all groups, fields, attributes, and links) now built
+  and published in the manual.
+
+* ``NX_COMPLEX`` data type to describe complex numbers.
+
+* ``NX_COUNT`` unit type to describe counting events.
+
+Enhancements
+------------
 
 * All classes provide a list of reST & HTML anchors to every defined item
   (groups, fields, attributes, & links).
-
-* New
-
-  * contributed definitions:
-
-    * atom probe microscopy
-    * electron microscopy
-    * ellipsometry
-    * multidimensional photoemission spectroscopy
-    * ``NXregion``
-    * X-ray photon correlation spectroscopy
-
-  * Full vocabulary (names of all groups, fields, attributes, and links) now built
-    and published in the manual.
-
-  * ``NX_COMPLEX`` data type to describe complex numbers.
-
-  * ``NX_COUNT`` unit type to describe counting events.
 
 Maintenance
 -----------
@@ -119,8 +120,7 @@ Deprecations
 Contributors
 ------------
 
-In addition to the NIAC members, these people have made contributions
-to this release:
+In addition to the NIAC members, these people have contributed to this release:
 
 * Advanced Light Source
 
