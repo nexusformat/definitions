@@ -50,40 +50,71 @@ Breaking Changes
 
 * ``NXsnsevent`` & ``NXsnshisto`` category changed to ``application`` (was ``base``)
 
-* ``NXspecdata`` contributed definition withdrawn and removed.
-
 * Publishing workflow completely rebuilt in Python now in ``/dev_tools/``
   directory (was in ``/utils/``).  All Python code adheres to automated
   code style checking (``black`` and ``flake8``).
 
+* Removed ``NXlog`` group called ``temperature``.
+
 New Features / Enhancements
 ---------------------------
-
-* New contributed definitions for electron microscopy, X-ray ptychography.
 
 * All classes provide a list of reST & HTML anchors to every defined item
   (groups, fields, attributes, & links).
 
-* Full vocabulary (names of all groups, fields, attributes, and links) now built
-  and published in the manual.
+* New
 
-* new ``NX_COMPLEX`` datatype to describe complex numbers.
+  * contributed definitions:
+
+    * atom probe microscopy
+    * electron microscopy
+    * ellipsometry
+    * multidimensional photoemission spectroscopy
+    * ``NXregion``
+    * X-ray photon correlation spectroscopy
+
+  * Full vocabulary (names of all groups, fields, attributes, and links) now built
+    and published in the manual.
+
+  * ``NX_COMPLEX`` data type to describe complex numbers.
+
+  * ``NX_COUNT`` unit type to describe counting events.
 
 Maintenance
 -----------
 
-* Add ``depends_on`` (field) and ``NXtransformations`` (group) to more base classes.
+* Add
 
-* Various documentation revised:
+  * ``depends_on`` (field) and ``NXtransformations`` (group)
+    to more base classes.
+  * ``NXdetector``: ``image_key``
+  * ``NXdetector``, ``NXmx``: ``countrate_correction_lookup_table``
 
-  * Description of links
+* Change GitHub default branch to ``main`` (was ``master``).
+
+* Clarify:
+
+  * naming rule of NXDL XML files
+  * symbol table in NXDL files
+  * ``NXdetector``: ``dimensions``
+  * how ``default`` attribute is used to find the plottable data
+  * ``NXBeam``: various symbols and polarization fields
 
 * Documentation built and published from GitHub Actions workflow
 
 * Switch repository default branch from master to main.
 
+* Units of flux corrected.
+
+* Various documentation revised:
+
+  * Description of links
+
 Deprecations
 ------------
+
+* ``incr`` attribute of ``dimensionType``
+* ``NXspecdata`` contributed definition withdrawn and removed.
 
 Contributors
 ------------
@@ -91,7 +122,44 @@ Contributors
 In addition to the NIAC members, these people have made contributions
 to this release:
 
-* 
+* Advanced Light Source
+
+  * Dylan McReynolds
+  * Ron Pandolfi
+  * Juliane Reinhardt
+  * Padraic Shafer
+
+* Advanced Photon Source
+
+  * Daniel Ching
+  * Miaoqi Chu
+  * Suresh Narayanan
+  * Qingteng Zhang
+
+* Dectris
+
+  * sophie.hotz
+  * kal.conley
+
+* Diamond
+
+  * Tim Snow
+
+* European Synchrotron Radiation Facility
+
+  * Wout de Nolf
+
+* FAIRmat
+
+  * Carola Emminger
+  * Florian Dobener
+  * Markus Kühbach
+  * Andrea Albino
+
+* National Synchrotron Light Source II
+
+  * Abby Giles
+  * Andi Barbour
 
 v2020.10
 ++++++++
