@@ -22,7 +22,17 @@ v2022.06
 
 expected release *2022-07-01*
 
-This release is the result of two NeXus Code Camps ...
+This release is the result of NeXus Code Camps in 2021-03 and 2022-06,
+a virtual NIAC meeting in 2022-03, and substantial work by both NeXus
+Community and NIAC members.
+
+=============   ========
+activity        quantity
+=============   ========
+Pull Requests   134
+Issues          101
+Commits         250
+=============   ========
 
 Notice
 ------
