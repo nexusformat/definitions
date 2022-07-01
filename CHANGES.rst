@@ -138,8 +138,8 @@ to this release:
 
 * Dectris
 
-  * sophie.hotz
-  * kal.conley
+  * Sophie Hotz
+  * Kal Conley
 
 * Diamond
 
@@ -155,6 +155,11 @@ to this release:
   * Florian Dobener
   * Markus Kühbach
   * Andrea Albino
+
+* GitHub users
+
+  * cmmngr
+  * domna (Florian Dobener)
 
 * National Synchrotron Light Source II
 
