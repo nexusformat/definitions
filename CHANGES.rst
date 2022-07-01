@@ -147,7 +147,7 @@ In addition to the NIAC members, these people have contributed to this release:
   * Sophie Hotz
   * Kal Conley
 
-* Diamond
+* Diamond Light Source
 
   * Tim Snow
 
