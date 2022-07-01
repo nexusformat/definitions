@@ -17,11 +17,9 @@
 Change History
 ##############
 
-Highlights of each release are described below.
-For more details, see our wiki [#]_ which provides links to the
-Release Notes (itemized list of changes) for any release.
-
-.. [#]: https://github.com/nexusformat/definitions/wiki/Release-Notes
+Highlights of each release are described below.  For more details, see our wiki
+(https://github.com/nexusformat/definitions/wiki/Release-Notes)
+which provides links to the Release Notes (itemized list of changes) for any release.
 
 
 v2022.06
