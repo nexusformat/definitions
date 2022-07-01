@@ -50,17 +50,17 @@ Commits         250
 Breaking Changes
 ----------------
 
-* Included PDF files moved `/pdf/` to `/_static/`.
+* Included PDF files moved ``/pdf/`` to ``/_static/``.
 
 * Minimum Python requirement (for testing and building documentation):  3.7
 
-* ``NXsnsevent`` & ``NXsnshisto`` category changed to ``application`` (was ``base``)
+* ``NXlog``: Removed group named ``temperature``.
 
-* Publishing workflow completely rebuilt in Python now in ``/dev_tools/``
+* ``NXsnsevent`` & ``NXsnshisto``: category changed to ``application`` (was ``base``)
+
+* Publishing workflow completely rebuilt in Python, now in ``/dev_tools/``
   directory (was in ``/utils/``).  All Python code adheres to automated
   code style checking (``black`` and ``flake8``).
-
-* Removed ``NXlog`` group called ``temperature``.
 
 New Features
 ------------
