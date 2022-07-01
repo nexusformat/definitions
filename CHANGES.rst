@@ -22,9 +22,13 @@ v2022.06
 
 expected release *2022-07-01*
 
-This release is the result of NeXus Code Camps in 2021-03 and 2022-06,
-a virtual NIAC meeting in 2022-03, and substantial work by both NeXus
-Community and NIAC members.
+This release is the result of
+a virtual NIAC meeting in 2022-03,
+NeXus Code Camps in 2021-03 and 2022-06,
+and substantial work by both the NeXus Community and NIAC members.
+
+Summary statistics from the GitHub definitions repository show
+this activity since the (previous) v2020.10 release:
 
 =============   ========
 activity        quantity
@@ -40,17 +44,22 @@ Notice
 Breaking Changes
 ----------------
 
+* Included PDF files moved `/pdf/` to `/_static/`.
+
 * Minimum Python requirement (for testing and building documentation):  3.7
 
-* Publishing workflow completely rebuilt in Python now in ``/dev_tools/``
-  directory (was in ``/utils/``).
+* ``NXsnsevent`` & ``NXsnshisto`` category changed to ``application`` (was ``base``)
 
-* Included PDF files moved `/pdf/` to `/_static/`.
+* ``NXspecdata`` contributed definition withdrawn and removed.
+
+* Publishing workflow completely rebuilt in Python now in ``/dev_tools/``
+  directory (was in ``/utils/``).  All Python code adheres to automated
+  code style checking (``black`` and ``flake8``).
 
 New Features / Enhancements
 ---------------------------
 
-* New contributed definitions for electron microscopy.
+* New contributed definitions for electron microscopy, X-ray ptychography.
 
 * All classes provide a list of reST & HTML anchors to every defined item
   (groups, fields, attributes, & links).
@@ -58,8 +67,16 @@ New Features / Enhancements
 * Full vocabulary (names of all groups, fields, attributes, and links) now built
   and published in the manual.
 
+* new ``NX_COMPLEX`` datatype to describe complex numbers.
+
 Maintenance
 -----------
+
+* Add ``depends_on`` (field) and ``NXtransformations`` (group) to more base classes.
+
+* Various documentation revised:
+
+  * Description of links
 
 * Documentation built and published from GitHub Actions workflow
 
@@ -70,6 +87,11 @@ Deprecations
 
 Contributors
 ------------
+
+In addition to the NIAC members, these people have made contributions
+to this release:
+
+* 
 
 v2020.10
 ++++++++
