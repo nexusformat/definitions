@@ -43,6 +43,9 @@ Issues          101
 Commits         250
 =============   ========
 
+See the wiki for more details:
+https://github.com/nexusformat/definitions/wiki/releasenotes__v2022.06
+
 .. nothing to report here
   Notice
   ------
@@ -54,7 +57,7 @@ Breaking Changes
 
 * Minimum Python requirement (for testing and building documentation):  3.7
 
-* ``NXlog``: Removed group named ``temperature``.
+* ``NXsample``: Removed group named ``temperature``.
 
 * ``NXsnsevent`` & ``NXsnshisto``: category changed to ``application`` (was ``base``)
 
