@@ -25,7 +25,7 @@ which provides links to the Release Notes (itemized list of changes) for any rel
 v2022.06
 ++++++++
 
-expected release *2022-07-01*
+released *2022-07-05*
 
 This release is the result of
 a virtual NIAC meeting in 2022-03,
