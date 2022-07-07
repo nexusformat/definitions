@@ -36,30 +36,36 @@ New Base Classes
 
 We developed new base classes to structure the application definition into lab experiment and computational steps:
 
-    :ref:`NXion`:
-       A base class to describe charged molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with which all possible isotopes can be described.:
+    :ref:`NXchamber`:
+        A base class to describe a component of the instrument which houses other components. A chamber may offer a controlled atmosphere to execute an experiment and/or offer functionalities for storing and loading specimens.
 
-    :ref:`NXreflectron`:
-        A base class to describe an optional reflectron device that influences the flight path of evaporated ions.
+    :ref:`NXcoordinate_system_set`
+        A base class to describe different coordinate systems used and/or to be harmonized or transformed into one another when interpreting the dataset.
+
+    :ref:`NXion`:
+       A base class to describe charged molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with which all possible isotopes can be described.
+
+    :ref:`NXmanufacturer`:
+        A base class to bundle manufacturer/vendor-specific details about a component or device of an instrument.
 
     :ref:`NXpeak`:
         A base class to describe peaks mathematically so that it can be used to detail how peaks in mass-to-charge-state ratio histograms (aka mass spectra) are defined and labelled as iontypes.
 
+    :ref:`NXpump`:
+        A base class to describe details about a pump in an instrument.
+
     :ref:`NXpulser_apm`:
         A base class to describe the high-voltage and/or laser pulsing capabilities of an atom probe microscope.
+
+    :ref:`NXreflectron`:
+        A base class to describe an optional reflectron device that influences the flight path of evaporated ions.
+
+    :ref:`NXreflectron`:
+        A base class to describe a kinetic energy sensitive filtering device for ToF.
 
     :ref:`NXstage_lab`:
         A base class to describe the specimen fixture including the cryo-head. This base class is an example that the so far used :ref:`NXstage_lab` base class is insufficiently detailed to represent the functionalities which modern stages of an
         atom probe microscope or especially an electron microscopy offer. Nowadays, these stages represent small-scale laboratory platforms. Hence, there is a need to define their characteristics in more detail, especially in light of in-situ experiments. We see many similarities between a stage in an electron microscope and in an atom probe, given that both offer fixture functionalities and additional components such as for applying stimuli on the specimen. For this reason, we use this base class currently for atom probe and electron microscopy.
-
-    :ref:`NXchamber`:
-        A base class to describe a component of the instrument which houses other components. A chamber may offer a controlled atmosphere to execute an experiment and/or offer functionalities for storing and loading specimens.
-
-    :ref:`NXpump`:
-        A base class to describe a component which reduce the partial/total pressure in a chamber to some controlled value so that an experiment can be performed. Most commonly this class can be used for representing and storing details of e.g. the vacuum pumping system.
-
-    :ref:`NXreflectron`:
-        A base class to describe a kinetic energy sensitive filtering device for ToF.
 
 Microscopy experiments, not only taking into account those performed on commercial instruments, offer the user usually
 a set of frequently on-the-fly processed computational data. For now we represent these steps with specifically named instances of the :ref:`NXprocess` base class.
