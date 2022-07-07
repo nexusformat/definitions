@@ -191,7 +191,6 @@ for the following macro-areas of experimental physics
        :ref:`NXchamber`
        :ref:`NXcoordinate_system_set`
        :ref:`NXcorrector_cs`
-       :ref:`NXdeflector`
        :ref:`NXebeam_column`
        :ref:`NXevent_data_em`
        :ref:`NXevent_data_em_set`
