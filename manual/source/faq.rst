@@ -79,7 +79,7 @@ This is a list of commonly asked questions concerning the NeXus data format.
     If you encounter any problems because the classes are not
     sufficient to describe your experiment, please contact the
     :ref:`mailing list<NeXus.mailinglist.main>`.
-    Pull requests for the defintions repository (for example adding contributed defintions)
+    Pull requests for the definitions repository (for example adding contributed definitions)
     are also welcome (see next question).
     The NIAC is always willing to consider new proposals.
 
