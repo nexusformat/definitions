@@ -9,6 +9,7 @@ Electron Microscopy Structure
    EmNewAppDef
    EmNewBC
    EmNewCommonBC
+   EmDeprecated
 
 
 
@@ -133,3 +134,17 @@ New Common Base Classes
 We support the proposal of our colleagues from photoemission spectroscopy that the :ref:`NXlens_em`, :ref:`NXlens`, and :ref:`NXxraylens` have similarities.
 It should be discussed with the NIAC if these classes can be consolidated/harmonized further e.g. eventually become a child class of a more general
 base class lenses. We see understand also that the proposed set of NXimage_set_em base classes can benefit from future discussion and consolidation efforts.
+
+
+.. _EmDeprecated:
+
+Deprecated
+##########
+
+With the results of the NeXus 2022.06 Code Camp the following base classes and application definitions are considered deprecated.
+Their functionalities has been extended and is replaced specifically as follows:
+
+    :ref:`NXem_nion`:
+        An application definition specific for Nion (transmission) electron microscopes. This is replaced by the substantially more general :ref:`NXem` application definition.
+    :ref:`NXfib`:
+        A base class to describe focused-ion beam capabilities of an (electron) microscope. The base class is replaced by :ref:`NXibeam_column`.

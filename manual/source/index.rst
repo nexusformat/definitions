@@ -15,6 +15,7 @@ https://www.nexusformat.org/
     ellipsometry-structure
     em-structure
     apm-structure
+    epics-structure
 
 
 -----------
