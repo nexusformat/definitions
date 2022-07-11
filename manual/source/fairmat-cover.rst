@@ -162,7 +162,7 @@ for the following macro-areas of experimental physics
        :ref:`NXdistortion`
        :ref:`NXregistration`
        :ref:`NXlens`
-       :ref:`NXdeflector` 
+       :ref:`NXdeflector`
      Extended base classes:
        :ref:`NXaperture`
        :ref:`NXbeam`
@@ -205,11 +205,11 @@ for the following macro-areas of experimental physics
        :ref:`NXimage_set_em_kikuchi`
        :ref:`NXimage_set_em_ronchigram`
        :ref:`NXimage_set_em_se`
-       :ref:`NXinteraction_volume_em`
+       :ref:`NXinteraction_vol_em`
        :ref:`NXion`
        :ref:`NXlens_em`
        :ref:`NXmanufacturer`
-       :ref:`NXoptical_system_em
+       :ref:`NXoptical_system_em`
        :ref:`NXpeak`
        :ref:`NXpump`
        :ref:`NXscanbox_em`
@@ -232,7 +232,7 @@ for the following macro-areas of experimental physics
        :ref:`NXpeak`
        :ref:`NXpump`
        :ref:`NXpulser_apm`
-       :ref:`NXreflectron
+       :ref:`NXreflectron`
        :ref:`NXstage_lab`
      .. Extended base classes:
 
