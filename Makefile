@@ -27,7 +27,7 @@ all ::
 #	# build the PDF, still a failure will be noted but we can ignore it without problem
 #	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode" -C build/manual || exit 0)
 #	# finally, report what was built
-	@echo "HTML built: `ls -lAFgh build/manual/build/html/index.html`"
+#	@echo "HTML built: `ls -lAFgh build/manual/build/html/index.html`"
 #	@echo "PDF built: `ls -lAFgh build/manual/build/latex/nexus.pdf`"
 
 impatient-guide ::
