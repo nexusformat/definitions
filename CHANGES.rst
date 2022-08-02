@@ -22,6 +22,13 @@ Highlights of each release are described below.  For more details, see our wiki
 which provides links to the Release Notes (itemized list of changes) for any release.
 
 
+v2022.07
+++++++++
+
+released *2022-08-02*
+
+This is a bugfix release. See notes on wiki: https://github.com/nexusformat/definitions/wiki/releasenotes_v2022.07
+
 v2022.06
 ++++++++
 
