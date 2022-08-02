@@ -27,7 +27,7 @@ v2022.07
 
 released *2022-08-02*
 
-This is a bugfix release. See notes on wiki: https://github.com/nexusformat/definitions/wiki/releasenotes_v2022.07
+This is a bugfix release. See notes on wiki: https://github.com/nexusformat/definitions/wiki/releasenotes__v2022.07
 
 v2022.06
 ++++++++
@@ -178,14 +178,14 @@ v2020.10
 
 released *2020-12-08*
 
-    * see Release Notes wiki: https://github.com/nexusformat/definitions/wiki/releasenotes_v2020.10
+    * see Release Notes wiki: https://github.com/nexusformat/definitions/wiki/releasenotes__v2020.10
 
 v2020.1
 +++++++
 
 released *2020-01-31*
 
-    * see Release Notes wiki: https://github.com/nexusformat/definitions/wiki/releasenotes_v2020.1
+    * see Release Notes wiki: https://github.com/nexusformat/definitions/wiki/releasenotes__v2020.1
     * The manual is now published through GitHub Pages: https://manual.nexusformat.org
     * We have a DOI (with zenodo https://zenodo.org/record/3629571) that updates with each release of the definitions repository.  The DOI link is noted on our GitHub home page.
 
