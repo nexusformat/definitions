@@ -32,7 +32,7 @@ We acknowledge that it can be difficult to agree on a single application definit
 the specimen from the instrument or parking it so that the next user can take its time at the instrument. Next, we wrote base classes to describe these steps and events.
 
     :ref:`NXem`:
-       A general application definition which explores the possibilities of electron microscopes.
+        A general application definition which explores the possibilities of electron microscopes.
 
 .. _EmNewBC:
 
@@ -69,27 +69,29 @@ We developed entirely new base classes. Some of them are also used for other tec
     :ref:`NXibeam_column`:
         A base class serving the possibility to group the components relevant for generating and shape an ion beam of an instrument with focused ion beam capabilities.
 
-    :ref:`NXimage_set_em_adf`:
-    :ref:`NXimage_set_em_bf`:
-    :ref:`NXimage_set_em_bse`:
-    :ref:`NXimage_set_em_chamber`:
-    :ref:`NXimage_set_em_df`:
-    :ref:`NXimage_set_em_diffrac`:
-    :ref:`NXimage_set_em_ecci`:
-    :ref:`NXimage_set_em_kikuchi`:
-    :ref:`NXimage_set_em_ronchigram`:
+    :ref:`NXimage_set_em_adf`
+    :ref:`NXimage_set_em_bf`
+    :ref:`NXimage_set_em_bse`
+    :ref:`NXimage_set_em_chamber`
+    :ref:`NXimage_set_em_df`
+    :ref:`NXimage_set_em_diffrac`
+    :ref:`NXimage_set_em_ecci`
+    :ref:`NXimage_set_em_kikuchi`
+    :ref:`NXimage_set_em_ronchigram`
     :ref:`NXimage_set_em_se`:
-        Base classes for storing acquisition details for individual images or stacks images in different imaging modes.
-        Adf - annular dark field
-        Bf - bright filed
-        Bse - backscattered electron
-        Chamber - TV camera to monitor the stage and chamber (e. g. to assure that the specimen does not collides with components in the instrument)
-        Df - darkfield
-        Diffrac - diffraction image
-        Ecci - electron channel contrast imaging
-        Kikuchi - Kikuchi diffraction images for electron backscattered electron diffraction (EBSD) for orientation microscopy
-        Ronchigram - convergent beam diffraction pattern
-        Se - secondary electron
+        Base classes for storing acquisition details for individual images
+        or stacks of images collected via using e.g. different imaging modes.
+
+        * Adf - annular dark field   
+        * Bf - bright filed   
+        * Bse - backscattered electron   
+        * Chamber - TV camera to monitor the stage and chamber   
+        * Df - darkfield   
+        * Diffrac - diffraction image   
+        * Ecci - electron channel contrast imaging   
+        * Kikuchi - electron backscatter diffraction (EBSD)   
+        * Ronchigram - convergent beam diffraction pattern   
+        * Se - secondary electron   
 
     :ref:`NXinteraction_vol_em`:
         A base class to describe details about e.g. the simulated or known volume of interaction of the electrons with the specimen, especially in scanning electron microscopy.
@@ -116,11 +118,18 @@ We developed entirely new base classes. Some of them are also used for other tec
     :ref:`NXscanbox_em`:
         A base class to represent the component of an electron microscope which realizes a controlled deflection (and eventually shift) of the electron beam to illuminate the specimen in a controlled manner. This can be used to document the scan pattern.
 
-    :ref:`NXspectrum_set_em_auger`:
+    :ref:`NXspectrum_set_em_eels`
+    :ref:`NXspectrum_set_em_xray`
+    :ref:`NXspectrum_set_em_auger`
     :ref:`NXspectrum_set_em_cathodolum`:
-    :ref:`NXspectrum_set_em_eels`:
-    :ref:`NXspectrum_set_em_xray`:
-        A base classes comparable to NXimage_set_em but for different techniques resulting in spectra like Auger spectroscopy, cathodoluminescence, electron energy loss spectroscopy and X-ray spectroscopy.
+        Base classes comparable to NXimage_set_em but for
+        different techniques resulting in spectra.
+        
+        * Auger spectroscopy   
+        * Cathodoluminescence   
+        * Electron energy loss spectroscopy (EELS)   
+        * X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS)   
+        
 
     :ref:`NXstage_lab`:
         As it was mentioned for atom probe microscopy this is a base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities which modern stages of electron microscopes frequently offer.
@@ -144,7 +153,10 @@ Deprecated
 With the results of the NeXus 2022.06 Code Camp the following base classes and application definitions are considered deprecated.
 Their functionalities has been extended and is replaced specifically as follows:
 
-    :ref:`NXem_nion`:
-        An application definition specific for Nion (transmission) electron microscopes. This is replaced by the substantially more general :ref:`NXem` application definition.
-    :ref:`NXfib`:
-        A base class to describe focused-ion beam capabilities of an (electron) microscope. The base class is replaced by :ref:`NXibeam_column`.
+    **NXem_nion** was an application definition specific for Nion (transmission) electron microscopes.
+    We consider this application definition as deprecated. Instead, users
+    should use the substantially more general :ref:`NXem` application definition.
+
+    **NXfib** was a base class which described focused-ion beam capabilities of an
+    (electron) microscope. Considered deprecated, users should use the more specific
+    :ref:`NXibeam_column` base class instead.

@@ -2,19 +2,14 @@
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <definition category="base" extends="NXobject" name="NXspectrum_set_em_xray" type="group" xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
-        <symbol name="n_p">
-            <doc>
-                 Number of scan points
-            </doc>
-        </symbol>
         <symbol name="n_y">
             <doc>
-                 Number of pixel per Kikuchi pattern in the slow direction
+                 Number of pixel per X-ray mapping in the slow direction
             </doc>
         </symbol>
         <symbol name="n_x">
             <doc>
-                 Number of pixel per Kikuchi pattern in the fast direction
+                 Number of pixel per X-ray mapping in the fast direction
             </doc>
         </symbol>
         <symbol name="n_photon_energy">
@@ -42,16 +37,49 @@
          such as single point, line profiles, or (rectangular) surface mappings.
          The latter pattern is the most frequently used.
          
-         For now the base class provides for scans where the settings,
+         For now the base class provides for scans for which the settings,
          binning, and energy resolution is the same for each scan point.
          
-         `IUPAC instead of Siegbahn notation &lt;https://doi.org/10.1002/xrs.1300200308&gt;`_  should be used.
+         `IUPAC instead of Siegbahn notation &lt;https://doi.org/10.1002/xrs.1300200308&gt;`_
+         should be used.
     </doc>
-    <group type="NXdata">
+    <group type="NXprocess">
         <doc>
-             Collected X-ray counts chunked based on rectangular images.
-             
-             This representation supports only rectangular scan pattern.
+             Details how X-ray spectra were processed from the detector readings.
+        </doc>
+        <field name="source" type="NX_CHAR">
+            <doc>
+                 Typically the name of the input, (vendor) file from which all
+                 the NXdata instances in this NXspectrum_set_em_xray were loaded during
+                 parsing to represent them in e.g. databases.
+            </doc>
+            <attribute name="version" type="NX_CHAR">
+                <doc>
+                     An at least as strong as SHA256 hashvalue of the dataset/file
+                     which represents the source digitally to support provenance tracking.
+                </doc>
+            </attribute>
+        </field>
+        <field name="program" type="NX_CHAR">
+            <doc>
+                 Commercial or otherwise given name to the program which was used
+                 to process detector data into the X-ray spectra stack and summary.
+            </doc>
+            <attribute name="version" type="NX_CHAR">
+                <doc>
+                     Program version plus build number, commit hash, or description
+                     of an ever persistent resource where the source code of the program
+                     and build instructions can be found so that the program
+                     can be configured in such a manner that the result file
+                     is ideally recreatable yielding the same results.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="stack" type="NXdata">
+        <doc>
+             Collected X-ray spectra for all pixels of a rectangular region-of-interest.
+             This representation supports rectangular scan pattern.
         </doc>
         <field name="counts" type="NX_UINT" units="NX_UNITLESS">
             <dimensions rank="3">
@@ -85,6 +113,32 @@
                 </doc>
             </attribute>
         </field>
+        <field name="photon_energy" type="NX_NUMBER" units="NX_ENERGY">
+            <dimensions rank="1">
+                <dim index="1" value="n_photon_energy"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     X-ray energy
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="summary" type="NXdata">
+        <doc>
+             Accumulated X-ray spectrum over all pixels of a rectangular region-of-interest.
+             This representation supports rectangular scan pattern.
+        </doc>
+        <field name="counts" type="NX_UINT" units="NX_UNITLESS">
+            <dimensions rank="1">
+                <dim index="1" value="n_photon_energy"/>
+            </dimensions>
+        </field>
+        <attribute name="long_name">
+            <doc>
+                 X-ray photon counts
+            </doc>
+        </attribute>
         <field name="photon_energy" type="NX_NUMBER" units="NX_ENERGY">
             <dimensions rank="1">
                 <dim index="1" value="n_photon_energy"/>

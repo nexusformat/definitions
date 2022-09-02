@@ -11,7 +11,6 @@ Atom Probe Microscopy Structure
    ApmRemovedBC
 
 
-
 .. _IntroductionAPM:
 
 Introduction
@@ -75,5 +74,4 @@ Removed base classes
 
 We have removed the NXlens_apm base class and replaced it by :ref:`NXreflectron`.
 
-..
-  https://stackoverflow.com/questions/4783814/how-to-comment-a-string-in-restructured-text
+

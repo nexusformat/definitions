@@ -16,6 +16,8 @@ https://www.nexusformat.org/
     em-structure
     apm-structure
     epics-structure
+    cgms-structure
+    north-structure
 
 
 -----------
