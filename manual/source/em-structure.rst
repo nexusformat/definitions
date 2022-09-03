@@ -1,8 +1,8 @@
 .. _Em-Structure:
 
-==================================
-Electron Microscopy Structure
-==================================
+=======================
+B1: Electron microscopy
+=======================
 
 .. index::
    IntroductionEM

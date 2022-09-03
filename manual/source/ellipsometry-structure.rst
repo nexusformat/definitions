@@ -1,8 +1,8 @@
 .. _Ellipsometry-Structure:
 
-=======================
-Ellipsometry Structure
-=======================
+========================
+B4: Optical spectroscopy
+========================
 
 .. index::
    IntroductionEllipsometry

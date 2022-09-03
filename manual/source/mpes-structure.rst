@@ -1,8 +1,8 @@
 .. _Mpes-Structure:
 
-=======================
-MPES Structure
-=======================
+===================================
+B2/B3: Photoemission & spectroscopy
+===================================
 
 .. index::
    IntroductionMPES

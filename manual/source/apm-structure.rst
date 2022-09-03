@@ -1,8 +1,8 @@
 .. _Apm-Structure:
 
-=================================
-Atom Probe Microscopy Structure
-=================================
+=========================
+B5: Atom-probe tomography
+=========================
 
 .. index::
    IntroductionAPM

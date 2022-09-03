@@ -1,8 +1,8 @@
 .. _CGMSFeatures-Structure:
 
-===============================================================================
-Computational-Geometry-Based Descriptions of Structural Features in Materials
-===============================================================================
+=================================
+Shape, geometry & microstructures
+=================================
 
 .. index::
    IntroductionCGMS
