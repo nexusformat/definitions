@@ -79,20 +79,19 @@ We developed entirely new base classes. Some of them are also used for other tec
     :ref:`NXimage_set_em_kikuchi`
     :ref:`NXimage_set_em_ronchigram`
     :ref:`NXimage_set_em_se`:
-        Base classes for storing acquisition details for individual images
-        or stacks of images collected via using e.g. different imaging modes.
-
-        * Adf - annular dark field   
-        * Bf - bright filed   
-        * Bse - backscattered electron   
-        * Chamber - TV camera to monitor the stage and chamber   
-        * Df - darkfield   
-        * Diffrac - diffraction image   
-        * Ecci - electron channel contrast imaging   
-        * Kikuchi - electron backscatter diffraction (EBSD)   
-        * Ronchigram - convergent beam diffraction pattern   
-        * Se - secondary electron   
-
+       Base classes for storing acquisition details for individual images or stacks of images collected via using e.g. different imaging modes.
+       
+       * Adf - annular dark field   
+       * Bf - bright filed   
+       * Bse - backscattered electron   
+       * Chamber - TV camera to monitor the stage and chamber   
+       * Df - darkfield   
+       * Diffrac - diffraction image   
+       * Ecci - electron channel contrast imaging   
+       * Kikuchi - electron backscatter diffraction (EBSD)   
+       * Ronchigram - convergent beam diffraction pattern   
+       * Se - secondary electron   
+       
     :ref:`NXinteraction_vol_em`:
         A base class to describe details about e.g. the simulated or known volume of interaction of the electrons with the specimen, especially in scanning electron microscopy.
 
@@ -122,14 +121,13 @@ We developed entirely new base classes. Some of them are also used for other tec
     :ref:`NXspectrum_set_em_xray`
     :ref:`NXspectrum_set_em_auger`
     :ref:`NXspectrum_set_em_cathodolum`:
-        Base classes comparable to NXimage_set_em but for
-        different techniques resulting in spectra.
-        
-        * Auger spectroscopy   
-        * Cathodoluminescence   
-        * Electron energy loss spectroscopy (EELS)   
-        * X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS)   
-        
+       Base classes comparable to NXimage_set_em but for different techniques resulting in spectra.
+       
+       * Auger spectroscopy   
+       * Cathodoluminescence   
+       * Electron energy loss spectroscopy (EELS)   
+       * X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS)   
+       
 
     :ref:`NXstage_lab`:
         As it was mentioned for atom probe microscopy this is a base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities which modern stages of electron microscopes frequently offer.

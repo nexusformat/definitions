@@ -1,8 +1,8 @@
 .. _CGMSFeatures-Structure:
 
-=================================
-Shape, geometry & microstructures
-=================================
+=========================
+Geometry & microstructure
+=========================
 
 .. index::
    IntroductionCGMS
