@@ -3,15 +3,35 @@
 * Documentation: https://manual.nexusformat.org/
 * Release Notes: https://github.com/nexusformat/definitions/wiki/Release-Notes
 * License: [![License](https://img.shields.io/badge/License-LGPL_v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
-* Continuous Integration: [![Syntax Checking](https://github.com/nexusformat/definitions/actions/workflows/syntax-checks.yml/badge.svg)](https://github.com/nexusformat/definitions/actions/workflows/syntax-checks.yml)
-* Continuous Deployment: [![Publish Documentation](https://github.com/nexusformat/definitions/actions/workflows/publish-sphinx.yml/badge.svg)](https://github.com/nexusformat/definitions/actions/workflows/publish-sphinx.yml)
+* Test, Build and Deploy: [![CI](https://github.com/nexusformat/definitions/actions/workflows/ci.yaml/badge.svg)](https://github.com/nexusformat/definitions/actions/workflows/ci.yaml)
+
+## NeXus definition developers
+
+After making a change to the NeXus class definitions there are two important checks
+to be made before commiting the change:
+
+ 1. check whether the change does not violate any syntax rules
+ 2. verify whether the change looks as intended in the HTML documentation
+
+First install the test and build requirements with this command (only run once)
+
+    make install
+
+Then verify syntax and build the HTML manual with this command
+
+    make local
+
+Open the HTML manual in a web brower for visual verification
+
+    firefox build/manual/build/html/index.html
+
+## Repository content
 
 These are the components that define the structure of NeXus data files 
 in the development directory.
 
 component                      | description
 -------------------------------|------------------------
-[BUILDING.rst](BUILDING.rst)   | how to build the documentation
 [CHANGES.rst](CHANGES.rst)     | Change History
 [LGPL.txt](LGPL.txt)           | one proposed license model
 [NXDL_VERSION](NXDL_VERSION)   | the current NXDL version number
@@ -29,3 +49,4 @@ package/                       | directory for packaging this content
 utils/                         | various tools used in the definitions tree
 www/                           | launch (home) page of NeXus WWW site
 xslt/                          | various XML stylesheet transformations
+dev_tools/                     | developer tools for testing and building
