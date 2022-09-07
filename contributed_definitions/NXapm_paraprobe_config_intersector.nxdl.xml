@@ -1,0 +1,387 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd" extends="NXobject" type="group" category="application" name="NXapm_paraprobe_config_intersector">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_elements">
+            <doc>
+                 How many elements to use for computing a composition.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Configuration of a paraprobe-intersector tool run in atom probe microscopy.
+    </doc>
+    <group type="NXentry">
+        <attribute name="version">
+            <doc>
+                 Version specifier of this application definition.
+            </doc>
+        </attribute>
+        <field name="definition" type="NX_CHAR">
+            <doc>
+                 Official NeXus NXDL schema with which this file was written.
+            </doc>
+            <enumeration>
+                <item value="NXapm_paraprobe_config_intersector"/>
+            </enumeration>
+        </field>
+        <field name="program" type="NX_CHAR">
+            <doc>
+                 Given name of the program/software/tool with which this NeXus
+                 (configuration) file was generated.
+            </doc>
+            <attribute name="version" type="NX_CHAR">
+                <doc>
+                     Ideally program version plus build number, or commit hash or description
+                     of ever persistent resources where the source code of the program and
+                     build instructions can be found so that the program can be configured
+                     ideally in such a manner that the result of this computational process
+                     is recreatable in the same deterministic manner.
+                </doc>
+            </attribute>
+        </field>
+        <field name="analysis_identifier" type="NX_CHAR" optional="true">
+            <doc>
+                 Ideally, a (globally persistent) unique identifier for referring
+                 to this analysis.
+            </doc>
+        </field>
+        <field name="analysis_description" type="NX_CHAR" optional="true">
+            <doc>
+                 Possibility for leaving a free-text description about this analysis.
+            </doc>
+        </field>
+        <field name="time_stamp" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 formatted time code with local time zone offset to
+                 UTC information included when this configuration file was created.
+            </doc>
+        </field>
+        <field name="intersection_detection_method" type="NX_CHAR">
+            <doc>
+                 Specifies the method to use which decides if two objects intersect.
+                 For reasons which are detailed in the supplementary material of
+                 `M. Kühbach et al. &lt;https://arxiv.org/abs/2205.13510&gt;`_, the tool by
+                 default assumes that two objects intersect if they share at least one
+                 ion with the same evaporation ID
+                 (shared_ion). Alternatively, with specifying tetrahedra_intersections,
+                 the tool can perform an intersection analysis which attempts to 
+                 tetrahedralize first each polyhedron. If successful, the tool then checks
+                 for at least one pair of intersecting tetrahedra to identify if two objects
+                 intersect or not.
+                 
+                 However, we found that these geometrical analyses can result in corner
+                 cases which the currently used library (TetGen) was not unable to
+                 tetrahedralize successfully. These cases were virtually always
+                 associated with complicated non-convex polyhedra
+                 which had portions of the mesh that were connected by almost point like
+                 tubes of triangles.
+            </doc>
+            <enumeration>
+                <item value="shared_ion"/>
+                <item value="tetrahedra_intersections"/>
+            </enumeration>
+        </field>
+        <field name="has_object_volume" type="NX_BOOLEAN">
+            <doc>
+                 Specifies if the tool should load the volume of each object
+                 (if existent in the input file) to characterize the evolution of the
+                 objects' volume as a function of set identifier (e.g. time).
+                 
+                 This and the has_object_composition option enables to activate
+                 computations in the code which correlate the spatio-temporal tracking
+                 with an object's properties. This is useful to explore/understand how
+                 the object descriptor values evolve as a function of the parameterization
+                 of the object. To arrive at a detailed understanding and quantification
+                 of the differences of a given object as a function of delocalization and
+                 e.g. iso-surfacing settings.
+                 
+                 The point made in M. Kühbach et al. 2022, is that this functionality
+                 can be used to track for instance how the accumulated volume and
+                 composition of an object depends on its segmentation via iso-surfaces.
+                 The benefit of such computations is that users can inspect the
+                 parameter sensitivity of an objects representation rigorously.
+            </doc>
+        </field>
+        <field name="has_object_composition" type="NX_BOOLEAN">
+            <doc>
+                 Specifies if the tool should load the composition of each object
+                 (if existent in the input file) to characterize the evolution of the
+                 object's composition as a function of set identifier. See the description
+                 of has_object_volume for further details. In M. Kühbach et al. 2022, both
+                 has_object options were used to characterize e.g. the parameter
+                 sensitivity of computed composition, volume, and shape specifically,
+                 for a carbide that was segmented via different carbon iso-composition
+                 values.
+            </doc>
+        </field>
+        <field name="element_whitelist" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 List of np.uint16 elements, via their proton number. The whitelist is
+                 evaluated to compute the composition of an object during tracking
+                 when has_object_composition is set to true.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_elements"/>
+            </dimensions>
+        </field>
+        <field name="number_of_processes" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 For now a support field for the tool to identify how many individual
+                 analyses the tool should execute as part of the analysis.
+            </doc>
+        </field>
+        <group type="NXprocess">
+            <field name="number_of_tracking_sets" type="NX_UINT" units="NX_UNITLESS">
+                <doc>
+                     For now a support field for the tool to identify how many individual
+                     analyses (i. e. individual current_to_next mappings) the tool should
+                     perform as part of the high-throughput analysis.
+                </doc>
+            </field>
+            <group type="NXprocess" minOccurs="1" maxOccurs="1">
+                <doc>
+                     Tracking is the process of building logical relations between objects
+                     based on proximity and mesh intersections. For each time step pairs
+                     of sets are compared: members of a current_set and a next_set.
+                     Members have to be objects and eventually can in addition be so-called
+                     proxies. Objects and proxies are non-degenerated closed polyhedra which
+                     are not necessarily convex. Proxies are doppelganger/replacement
+                     meshes of objects which would otherwise be impossible to describe
+                     with a closed mesh.
+                </doc>
+                <group name="current_set" type="NXcollection">
+                    <doc>
+                         Current set stores a set of object geometries that should be checked
+                         for proximity and/or intersection with member of the next_set.
+                    </doc>
+                    <field name="identifier" type="NX_UINT" units="NX_ANY">
+                        <doc>
+                             This identifier can be used to label the current set. The label
+                             effectively represents the time/iteration step when the current
+                             set was taken. As it is detailed in M. Kühbach et al. 2022,
+                             this identifier takes the role of the time variable k.
+                        </doc>
+                    </field>
+                    <field name="filename" type="NX_CHAR">
+                        <doc>
+                             Name of the HDF5 file which contain geometry (vertex coordinates,
+                             facet indices) and properties (ions, composition) of polyhedra
+                             (l objects) which should be included in the current set.
+                             The user has to ensure that the datasets under list_of_dataset_names
+                             (vertices, facet_indices, ions) exist and are formatted consistently.
+                        </doc>
+                        <attribute name="version" type="NX_CHAR">
+                            <doc>
+                                 Version identifier of the file such as a secure hash which documents
+                                 the binary state of the file to add an additional layer of
+                                 reproducibility from which file specifically contains these data.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <field name="groupname_object_geometry_data" type="NX_CHAR">
+                        <doc>
+                             Paraprobe-intersector loads triangulated surface mesh data of a
+                             set of objects. For each object its mesh is expected to have
+                             three-dimensional position data of the unique vertices and a
+                             matrix of vertex indices which describe the faces.
+                             As each object has to be a polyhedron/closed surface mesh, this
+                             matrix has as many rows as faces, i.e. triangles and three columns.
+                             Vertex indices have to start at zero.
+                        </doc>
+                    </field>
+                    <field name="groupname_object_supplementary_data" type="NX_CHAR">
+                        <doc>
+                             The default intersection detection method uses shared ions.
+                             Therefore, it is necessary to specify where the results from the
+                             paraprobe-nanochem tool run are located which document which ions
+                             (with their evaporation IDs) are inside or on the surface of each
+                             object. This field points the tool to these evaporation IDs.
+                        </doc>
+                    </field>
+                    <field name="groupname_object_property_data" type="NX_CHAR">
+                        <doc>
+                             In order to correlate object properties like volume and composition
+                             with tracking data, it is necessary to specify where the results
+                             (object properties) from the paraprobe-nanochem tool run are located.
+                             This field instructs the tool where to load these object property data
+                             from.
+                        </doc>
+                    </field>
+                    <field name="dataset_object_identifier" type="NX_CHAR">
+                        <doc>
+                             Paraprobe-intersector does not just compare two objects but a set
+                             of sets of objects. This field instructs the tool where to load
+                             the identifiers (names) of each object in a current_set or next_set
+                             respectively from.
+                        </doc>
+                    </field>
+                    <field name="groupname_proxy_geometry_data" type="NX_CHAR" optional="true">
+                        <doc>
+                             Like groupname_object_geometry_data but for the proxies.
+                             Triangulated surface meshes of proxies have to be formatted
+                             in the same manner as objects.
+                        </doc>
+                    </field>
+                    <field name="groupname_proxy_interior_supplementary_data" type="NX_CHAR" optional="true">
+                        <doc>
+                             Like groupname_proxy_supplementary_data but for the interior proxies.
+                             Leave an empty string if proxies should not be used.
+                        </doc>
+                    </field>
+                    <field name="groupname_proxy_exterior_supplementary_data" type="NX_CHAR" optional="true">
+                        <doc>
+                             Like groupname_proxy_supplementary_data but for the exterior proxies.
+                             Leave an empty string if proxies should not be used.
+                        </doc>
+                    </field>
+                </group>
+                <group name="next_set" type="NXcollection">
+                    <doc>
+                         Next set stores a set of object geometries that should be checked
+                         for proximity and/or intersection with (each) member(s) of the
+                         current_set.
+                    </doc>
+                    <field name="identifier" type="NX_UINT" units="NX_ANY">
+                        <doc>
+                             This identifier can be used to label the next set. Like for the current_set
+                             the identifier is effectively the time/iteration step when the next set was taken.
+                             As it is detailed in M. Kühbach et al. 2022, this identifier
+                             takes the role of the time variable k+1.
+                        </doc>
+                    </field>
+                    <field name="filename" type="NX_CHAR">
+                        <doc>
+                             Name of the HDF5 file which contain geometry (vertex coordinates,
+                             facet indices) and properties (ions, composition) of
+                             polyhedra(l objects) which should be included in the current set.
+                             The user has to ensure that the datasets that are referred to
+                             under list_of_dataset_names (vertices, facet_indices, ions).
+                        </doc>
+                        <attribute name="version" type="NX_CHAR">
+                            <doc>
+                                 Version identifier of the file such as a secure hash which documents
+                                 the binary state of the file to add an additional layer of
+                                 reproducibility from which file specifically contains these data.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <field name="groupname_object_geometry_data" type="NX_CHAR">
+                        <doc>
+                             Paraprobe-intersector loads triangulated surface mesh data of a
+                             set of objects. For each object its mesh is expected to have
+                             three-dimensional position data of the unique vertices and a
+                             matrix of vertex indices which describe the faces.
+                             As each object has to be a polyhedron/closed surface mesh
+                             this matrix has as many rows as faces, i.e. triangles and
+                             three columns. Vertex indices have to start at zero.
+                        </doc>
+                    </field>
+                    <field name="groupname_object_supplementary_data" type="NX_CHAR">
+                        <doc>
+                             The default intersection detection method uses shared ions.
+                             Therefore, it is necessary to specify where the results from the
+                             paraprobe-nanochem tool run are located which document which ions
+                             (with their identifiers) are inside or on the surface of each object.
+                             This field instructs the tool where to load these
+                             ion evaporation ids from.
+                        </doc>
+                    </field>
+                    <field name="groupname_object_property_data" type="NX_CHAR">
+                        <doc>
+                             In order to correlate object properties like volume and composition
+                             with tracking data, it is necessary to specify where the results
+                             (object properties) from the paraprobe-nanochem tool run are located.
+                             This field instructs the tool where to load these object property
+                             data from.
+                        </doc>
+                    </field>
+                    <field name="dataset_object_identifier" type="NX_CHAR">
+                        <doc>
+                             Paraprobe-intersector does not just compare two objects but a set
+                             of sets of objects. This field instructs the tool where to load
+                             the identifiers (names) of each object in a current or next set
+                             respectively from.
+                        </doc>
+                    </field>
+                    <field name="groupname_proxy_geometry_data" type="NX_CHAR" optional="true">
+                        <doc>
+                             Like groupname_object_geometry_data but for the proxies.
+                             Triangulated surface meshes of proxies have to be formatted
+                             in the same manner. Leave an empty string if proxies should not
+                             be used.
+                        </doc>
+                    </field>
+                    <field name="groupname_proxy_interior_supplementary_data" type="NX_CHAR" optional="true">
+                        <doc>
+                             Like groupname_proxy_supplementary_data but for the interior proxies.
+                             Leave an empty string if proxies should not be used.
+                        </doc>
+                    </field>
+                    <field name="groupname_proxy_exterior_supplementary_data" type="NX_CHAR" optional="true">
+                        <doc>
+                             Like groupname_proxy_supplementary_data but for the exterior proxies.
+                             Leave an empty string if proxies should not be used.
+                        </doc>
+                    </field>
+                </group>
+                <field name="add_proxies_to_objects" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if, in the case of small finite datasets, objects which are
+                         located at the edge of the dataset should be accounted for or not.
+                         If these so-called proxy/doppelganger objects are accounted for, the
+                         respective groupname_proxy and dataset_proxy fields have to be
+                         filled to tell the tool where to load which proxy meshes from.
+                    </doc>
+                </field>
+                <field name="analyze_intersection" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool evaluates if for each pair the two objects
+                         (and proxies if used) intersect volumetrically.
+                    </doc>
+                </field>
+                <field name="analyze_proximity" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool evaluates if for each pair the two objects
+                         (and proxies if used) lie closer to one another than the
+                         threshold_proximity.
+                    </doc>
+                </field>
+                <field name="analyze_coprecipitation" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool evaluates, ones all tracking tasks were
+                         successfully completed, how intersecting or proximity related
+                         objects build sub-graphs. This is the feature which enabled
+                         M. Kühbach et al. 2022 the high-throughput analyses of how many
+                         objects are coprecipitates in the sense that they are single,
+                         duplet, triplet, or high-order. For these analyses to work
+                         has_object_volume needs to be activated.
+                    </doc>
+                </field>
+                <field name="threshold_proximity" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         The maximum Euclidean distance between two objects below which
+                         both objects are still considered within proximity.
+                    </doc>
+                </field>
+                <field name="has_current_to_next_links" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool stores the so-called forward relations between
+                         nodes representing members of the current_set to nodes representing
+                         members of the next_set.
+                    </doc>
+                </field>
+                <field name="has_next_to_current_links" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool stores the so-called backward relations between
+                         nodes representing members of the next_set to nodes representing
+                         members of the current_set.
+                    </doc>
+                </field>
+            </group>
+        </group>
+    </group>
+</definition>

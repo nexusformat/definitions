@@ -11,11 +11,13 @@ https://www.nexusformat.org/
 
     fairmat-cover
     nexus-index
+    em-structure
     mpes-structure
     ellipsometry-structure
-    em-structure
     apm-structure
-    epics-structure
+    transport-structure
+    cgms-structure
+    north-structure
 
 
 -----------

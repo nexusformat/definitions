@@ -1,15 +1,14 @@
 .. _Apm-Structure:
 
-=================================
-Atom Probe Microscopy Structure
-=================================
+=========================
+B5: Atom-probe tomography
+=========================
 
 .. index::
    IntroductionAPM
    ApmNewAppDef
    ApmNewBC
    ApmRemovedBC
-
 
 
 .. _IntroductionAPM:
@@ -45,7 +44,7 @@ We developed new base classes to structure the application definition into lab e
     :ref:`NXion`:
        A base class to describe charged molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with which all possible isotopes can be described.
 
-    :ref:`NXmanufacturer`:
+    :ref:`NXfabrication`:
         A base class to bundle manufacturer/vendor-specific details about a component or device of an instrument.
 
     :ref:`NXpeak`:
@@ -56,9 +55,6 @@ We developed new base classes to structure the application definition into lab e
 
     :ref:`NXpulser_apm`:
         A base class to describe the high-voltage and/or laser pulsing capabilities of an atom probe microscope.
-
-    :ref:`NXreflectron`:
-        A base class to describe an optional reflectron device that influences the flight path of evaporated ions.
 
     :ref:`NXreflectron`:
         A base class to describe a kinetic energy sensitive filtering device for ToF.
@@ -74,6 +70,4 @@ Removed base classes
 ######################
 
 We have removed the NXlens_apm base class and replaced it by :ref:`NXreflectron`.
-
-..
-  https://stackoverflow.com/questions/4783814/how-to-comment-a-string-in-restructured-text
+We have renamed NXmanufacturer to NXfabrication.

@@ -1,8 +1,8 @@
 .. _Mpes-Structure:
 
-=======================
-MPES Structure
-=======================
+==============================================
+B2/B3: Photoemission & core-level spectroscopy
+==============================================
 
 .. index::
    IntroductionMPES
