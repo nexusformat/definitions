@@ -141,6 +141,15 @@ New Application Definitions
         extraction algorithms on the resulting shape, spatial arrangement,
         and colocation of 3D objects via graph-based techniques.
 
+    :ref:`NXapm_paraprobe_config_spatstat`:
+        Configuration of paraprobe-spatstat
+        Spatial statistics on the entire or selected regions of the reconstructed dataset.
+
+    :ref:`NXapm_paraprobe_config_clusterer`:
+        Configuration of paraprobe-clusterer
+        Import cluster analysis results of IVAS/APSuite and perform clustering
+        analyses in a Python ecosystem.
+
 .. _ApmParaprobeNewBC:
 
 New Base Classes
@@ -174,24 +183,25 @@ proposal on computational geometry base classes:
         general that all possible nuclids be they observationally stable
         or radioactive can be considered.
 
-    :ref:`NXapm_spatial_filter`:
+A detailed inspection of spatial and other type of filters used in atom probe microscopy
+data analysis revealed that it is better to define atom probe agnostic, i.e. more
+general filters:
+
+    :ref:`NXspatial_filter`:
         A proposal how a point cloud can be spatial filtered in a very specific,
         flexible, yet general manner. This base class takes advantage of
         :ref:`NXcg_ellipsoid_set`, :ref:`NXcg_cylinder_set`, and :ref:`NXcg_hexahedron_set`
         to cater for all of the most commonly used geometric primitives in
         atom probe.
 
-    :ref:`NXapm_evaporation_id_filter`:
-        A proposal to describe how ions are filtered based on their evaporation
-        sequence ID.
+    :ref:`NXsubsampling_filter`:
+        A proposal for a filter that can also be used for specifying how entries
+        like ions can be filtered via sub-sampling.
 
-    :ref:`NXapm_iontype_filter`:
-        A proposal to describe how ions are filtered based on their
-        ion type (ion species).
-
-    :ref:`NXapm_hitmultiplicity_filter`:
-        A proposal to describe how ions are filtered based on their
-        hit multiplicity.
+    :ref:`NXmatch_filter`:
+        A proposal for a filter that can also be used for specifying how entries
+        like ions can be filtered based on their type (ion species)
+        or hit multiplicity.
 
 In summary, we report with this proposal our experience made in an experimental
 project that is about using NeXus for standardizing a certain scientific software.

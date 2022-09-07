@@ -79,19 +79,8 @@ We developed entirely new base classes. Some of them are also used for other tec
     :ref:`NXimage_set_em_kikuchi`
     :ref:`NXimage_set_em_ronchigram`
     :ref:`NXimage_set_em_se`:
-       Base classes for storing acquisition details for individual images or stacks of images collected via using e.g. different imaging modes.
-       
-       * Adf - annular dark field   
-       * Bf - bright filed   
-       * Bse - backscattered electron   
-       * Chamber - TV camera to monitor the stage and chamber   
-       * Df - darkfield   
-       * Diffrac - diffraction image   
-       * Ecci - electron channel contrast imaging   
-       * Kikuchi - electron backscatter diffraction (EBSD)   
-       * Ronchigram - convergent beam diffraction pattern   
-       * Se - secondary electron   
-       
+        Base classes for storing acquisition details for individual images or stacks of images collected via using e.g. different imaging modes. The suffixes specify **adf** annular dark field, **bf** bright field, **bse** backscattered electron, **chamber** camera to monitor the stage and chamber, **df** darkfield, **diffrac** diffraction, **ecci** electron channeling contrast imaging, **kikuchi** electron backscatter diffraction (EBSD), **ronchigram** - convergent beam diffraction pattern, and **se** secondary electron.
+
     :ref:`NXinteraction_vol_em`:
         A base class to describe details about e.g. the simulated or known volume of interaction of the electrons with the specimen, especially in scanning electron microscopy.
 
@@ -101,7 +90,7 @@ We developed entirely new base classes. Some of them are also used for other tec
     :ref:`NXlens_em`:
         A base class to detail an electro-magnetic lens. In practice, an electron microscope has many such lenses. The idea of this base class is to use it in an application definition. It is possible to specify as many lenses as necessary to represent eventually each single lens of the microscope and thus describe how the lenses are affecting the electron beam. This can offer opportunities for developers of software tool which strive to model the instrument e.g. to create digital twins of the instrument. We understand there is still a way to go with this to arrive there though. Consequently, we suggest to focus first on which details should be collect for a lens as a component so that developers of application definitions can take immediate advantage of this work.
 
-    :ref:`NXmanufacturer`:
+    :ref:`NXfabrication`:
         A base class to bundle manufacturer/vendor-specific details about a component or device of an instrument.
 
     :ref:`NXoptical_system_em`:
@@ -121,13 +110,7 @@ We developed entirely new base classes. Some of them are also used for other tec
     :ref:`NXspectrum_set_em_xray`
     :ref:`NXspectrum_set_em_auger`
     :ref:`NXspectrum_set_em_cathodolum`:
-       Base classes comparable to NXimage_set_em but for different techniques resulting in spectra.
-       
-       * Auger spectroscopy   
-       * Cathodoluminescence   
-       * Electron energy loss spectroscopy (EELS)   
-       * X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS)   
-       
+        Base classes comparable to NXimage_set_em but for different techniques resulting in spectra. The suffixes specify **eels** electron energy loss spectroscopy, **xray** X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS), **auger** Auger spectroscopy, and **cathodolum** cathodoluminescence.
 
     :ref:`NXstage_lab`:
         As it was mentioned for atom probe microscopy this is a base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities which modern stages of electron microscopes frequently offer.
