@@ -1,32 +1,23 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
-<definition category="application" extends="NXobject" name="NXiv_temp" type="group" xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition category="application" extends="NXobject" name="NXsensor_scan" type="group" xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
-         Application definition for temperature-dependent IV curve measurements.
+         Application definition for a generic scan using sensors.
 
          In this application definition, times should be specified always together
          with an UTC offset.
-
-         This is the application definition describing temperature dependent IV curve
-         measurements. For this a temperature is set. After reaching the temperature,
-         a voltage sweep is performed. For each voltage a current is measured.
-         Then, the next desired temperature is set and an IV measurement is performed.
-         The application definition defines:
-         - elements of the experimental instrument
-         - calibration information if available
-         - parameters used to tune the state of the sample
-         - sample description
     </doc>
     <group type="NXentry">
         <field name="definition" type="NX_CHAR">
             <enumeration>
-                <item value="NXtransport"/>
+                <item value="NXsensor_scan"/>
             </enumeration>
             <attribute name="version"></attribute>
         </field>
         <field name="experiment_identifier" recommended="true" type="NX_CHAR"></field>
         <field name="experiment_description" type="NX_CHAR"></field>
         <field name="start_time" recommended="true" type="NX_DATE_TIME"></field>
+        <field name="end_time" recommended="true" type="NX_DATE_TIME"></field>
         <group optional="true" type="NXprocess">
             <doc>
                  Define the program that was used to generate the results file(s)
@@ -106,13 +97,25 @@
                      its readings. 
                 </doc>
                 <group type="NXsensor">
+                    <group recommended="true" type="NXdata">
+                        <doc>
+                            Plot of measured signal as a function of the timestamp of when they have been acquired is also possible.
+                        </doc>
+                    </group>
                     <field name="value" type="NX_FLOAT" units="NX_ANY">
                         <doc>
-                            nominal setpoint or average value 
-			                - need [n] as may be a vector
+                            For each point in the scan space, either the nominal setpoint of an independently scanned controller
+                            or a representative average value of a measurement sensor is registered.
+                            In case of a full multi-dimensional scan, the length of the scan space [n] is the product of the number
+                            of setpoints along all independently scanned controllers.
+                        </doc>
+                    </field>
+                    <field name="value_timestamp" recommended="true" type="NX_DATE_TIME">
+                        <doc>
+                            Timestamp for when the values provided in the value field were registered.
 
-                            For each point in the scan space, either the nominal setpoint of an independently scanned controller or a representative average value of a measurement sensor is registered.
-                            In case of a full multi-dimensional scan, the length of the scan space [n] is the product of the number of setpoints along all independently scanned controllers.
+                            Individual readings can be stored with their timestamps under value_log. This is to timestamp
+                            the nominal setpoint or average reading values listed above in the value field.
                         </doc>
                     </field>
                     <field name="run_control" recommended="true" type="NX_CHAR">
@@ -148,8 +151,10 @@
             <field name="name" type="NX_CHAR"></field>
         </group>
         <group optional="true" type="NXdata">
-            <attribute name="axes" recommended="true"></attribute>
-            <attribute name="signal" recommended="true"></attribute>
+            <doc>
+                A scan specific representation of the measured signals as a function of the independently controlled environment settings.
+                Plot of every measured signal as a function of the timestamp of when they have been acquired is also possible.
+            </doc>
         </group>
     </group>
 </definition>
