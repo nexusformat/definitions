@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd" extends="NXobject" type="group" category="application" name="NXapm_paraprobe_config_distancer">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd" type="group" extends="NXobject" category="application" name="NXapm_paraprobe_config_distancer">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -108,79 +108,86 @@
             <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true"/>
             <group name="iontype_filter" type="NXmatch_filter" optional="true"/>
             <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true"/>
-            <group name="triangle_soup" type="NXprocess">
+            <group name="point_to_triangle" type="NXprocess">
                 <doc>
-                     Paraprobe-distancer enables the computation of the Euclidean shortest
-                     distance for each member of a set of points against a set of triangles.
-                     In contrast to comparable methods used in atom probe the here computed
-                     distance is not simply the projected distance to one of the triangles
-                     but the more costly but robust computation of the distance between
-                     a point and a triangle.
-                     
-                     The triangles can represent for instance the facets of a triangulated
-                     surface mesh of a model for the edge of the dataset. Such a model can
-                     be computed with paraprobe-surfacer. Alternatively, the triangles can
-                     be those from the set of all facets for a set of convex hulls, alpha-shapes,
-                     or alpha wrappings about three-dimensional objects like precipitates
-                     (computed with e.g. paraprobe-nanochem).
-                     
-                     Currently, the tool does not check if the respectively specified
-                     triangle sets are consistent, what their topology is, or whether or
-                     not they are consistently oriented.
-                     Each dataset that is referred to in the list_of _dataset_names_vertices
-                     should be an (Nvertices, 3) array of NX_FLOAT. Each dataset referred
-                     to in the list_of_dataset_names_facet_indices should be an
-                     (Nfacets, 3) array of NX_UINT.
-                     Facet indices refer to vertex indices. These need to start at zero
-                     and must not exceed Nvertices - 1, i.e. the identifier_offset is 0
-                     and vertices are indexed thus implicitly.
-                     Facet normal vectors have to be also an array
-                     of shape (Nfacets, 3) of NX_FLOAT.
+                     Compute for all filtered points, e.g. ions of the point set
+                     the shortest Euclidean distance to the closest triangle of the
+                     set of triangles. The triangles can formed a closed surface mesh.
+                     Distances are not simple distances based on normal projections but
+                     giving an exact solution.
                 </doc>
-                <field name="number_of_files" type="NX_UINT" units="NX_UNITLESS">
+                <group name="triangle_soup" type="NXprocess">
                     <doc>
-                         How many triangle sets to consider.
+                         Paraprobe-distancer enables the computation of the Euclidean shortest
+                         distance for each member of a set of points against a set of triangles.
+                         In contrast to comparable methods used in atom probe the here computed
+                         distance is not simply the projected distance to one of the triangles
+                         but the more costly but robust computation of the distance between
+                         a point and a triangle.
+                         
+                         The triangles can represent for instance the facets of a triangulated
+                         surface mesh of a model for the edge of the dataset. Such a model can
+                         be computed with paraprobe-surfacer. Alternatively, the triangles can
+                         be those from the set of all facets for a set of convex hulls, alpha-shapes,
+                         or alpha wrappings about three-dimensional objects like precipitates
+                         (computed with e.g. paraprobe-nanochem).
+                         
+                         Currently, the tool does not check if the respectively specified
+                         triangle sets are consistent, what their topology is, or whether or
+                         not they are consistently oriented.
+                         Each dataset that is referred to in the list_of _dataset_names_vertices
+                         should be an (Nvertices, 3) array of NX_FLOAT. Each dataset referred
+                         to in the list_of_dataset_names_facet_indices should be an
+                         (Nfacets, 3) array of NX_UINT.
+                         Facet indices refer to vertex indices. These need to start at zero
+                         and must not exceed Nvertices - 1, i.e. the identifier_offset is 0
+                         and vertices are indexed thus implicitly.
+                         Facet normal vectors have to be also an array
+                         of shape (Nfacets, 3) of NX_FLOAT.
                     </doc>
-                </field>
-                <group type="NXprocess">
-                    <doc>
-                         List of triangle sets. This design allows users to combine
-                         multiple triangle sets.
-                    </doc>
-                    <field name="filename" type="NX_CHAR">
+                    <field name="number_of_files" type="NX_UINT" units="NX_UNITLESS">
                         <doc>
-                             Name of the HDF5 file(s) which contain(s) vertex coordinates
-                             and facet indices to describe the desired set of triangles.
+                             How many triangle sets to consider.
                         </doc>
-                        <attribute name="version" type="NX_CHAR">
+                    </field>
+                    <group type="NXprocess">
+                        <doc>
+                             List of triangle sets. This design allows users to combine
+                             multiple triangle sets.
+                        </doc>
+                        <field name="filename" type="NX_CHAR">
                             <doc>
-                                 Version identifier of the file such as a secure hash which
-                                 documents the binary state of the file to add an additional
-                                 layer of reproducibility.
+                                 Name of the HDF5 file(s) which contain(s) vertex coordinates
+                                 and facet indices to describe the desired set of triangles.
                             </doc>
-                        </attribute>
-                    </field>
-                    <field name="dataset_name_vertices" type="NX_CHAR">
-                        <doc>
-                             Absolute HDF5 path to the dataset which
-                             specifies the array of vertex positions.
-                        </doc>
-                    </field>
-                    <field name="dataset_name_facet_indices" type="NX_CHAR">
-                        <doc>
-                             Absolute HDF5 path to the dataset which
-                             specifies the array of facet indices.
-                        </doc>
-                    </field>
-                    <field name="dataset_name_facet_normals" type="NX_CHAR" optional="true">
-                        <doc>
-                             Absolute HDF5 path to the dataset which
-                             specifies the array of facet normal vectors.
-                        </doc>
-                    </field>
+                            <attribute name="version" type="NX_CHAR">
+                                <doc>
+                                     Version identifier of the file such as a secure hash which
+                                     documents the binary state of the file to add an additional
+                                     layer of reproducibility.
+                                </doc>
+                            </attribute>
+                        </field>
+                        <field name="dataset_name_vertices" type="NX_CHAR">
+                            <doc>
+                                 Absolute HDF5 path to the dataset which
+                                 specifies the array of vertex positions.
+                            </doc>
+                        </field>
+                        <field name="dataset_name_facet_indices" type="NX_CHAR">
+                            <doc>
+                                 Absolute HDF5 path to the dataset which
+                                 specifies the array of facet indices.
+                            </doc>
+                        </field>
+                        <field name="dataset_name_facet_normals" type="NX_CHAR" optional="true">
+                            <doc>
+                                 Absolute HDF5 path to the dataset which
+                                 specifies the array of facet normal vectors.
+                            </doc>
+                        </field>
+                    </group>
                 </group>
-            </group>
-            <group name="distancing" type="NXprocess">
                 <field name="method" type="NX_CHAR">
                     <doc>
                          Specifies for which ions/points the tool will compute distances.

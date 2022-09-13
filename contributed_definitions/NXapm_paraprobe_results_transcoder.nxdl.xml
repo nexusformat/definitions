@@ -1,10 +1,32 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd" extends="NXobject" type="group" category="application" name="NXapm_paraprobe_results_transcoder">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd" type="group" extends="NXobject" category="application" name="NXapm_paraprobe_results_transcoder">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
+        <symbol name="n_ions">
+            <doc>
+                 Total number of ions collected.
+            </doc>
+        </symbol>
+        <symbol name="n_ivec_max">
+            <doc>
+                 Maximum number of allowed atoms per (molecular) ion (fragment). Needs
+                 to match maximum_number_of_atoms_per_molecular_ion.
+            </doc>
+        </symbol>
+        <symbol name="n_ranges">
+            <doc>
+                 Number of mass-to-charge-state-ratio intervals mapped on this ion
+                 type.
+            </doc>
+        </symbol>
+        <symbol name="n_topology">
+            <doc>
+                 Total number of integers in the supplementary XDMF topology array.
+            </doc>
+        </symbol>
     </symbols>
     <doc>
          Results of a paraprobe-transcoder tool run in atom probe microscopy.
@@ -88,10 +110,11 @@
             </doc>
             <group type="NXtransformations" minOccurs="1" maxOccurs="unbounded">
                 <doc>
-                     The individual coordinate systems which used.
-                     fields should be prefixed with a prefix taken from an
-                     enumeration which details the individual coordinate systems:
+                     The individual coordinate systems which should be used.
+                     Field names should be prefixed with the following controlled terms
+                     indicating which individual coordinate system is described:
                      
+                     * paraprobe
                      * lab
                      * specimen
                      * laser
@@ -101,31 +124,155 @@
                 </doc>
             </group>
         </group>
-        <group name="results" type="NXprocess" minOccurs="1" maxOccurs="1">
+        <group name="visualization" type="NXprocess" recommended="true">
+            <field name="xdmf_topology" type="NX_UINT" minOccurs="1" units="NX_UNITLESS">
+                <doc>
+                     An array of triplets of integers which can serve as a supplementary
+                     array for Paraview to display the reconstruction. The XDMF datatype
+                     is here 1, the number of primitives 1 per triplet, the last integer
+                     in each triplet is the identifier of each point starting from zero.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_topology"/>
+                </dimensions>
+            </field>
+        </group>
+        <group name="atom_probe" type="NXinstrument">
             <doc>
-                 Paraprobe-transcoder prepares the data in POS, ePOS, APT files from
-                 APSuite, RRNG, RNG, and NeXus/HDF5 NXapm in such a way that they can
-                 be used with the tools of the paraprobe-toolbox.
+                 On a mid term perspective we would like to evolve the paraprobe-toolbox
+                 to an implementation stage where it works exclusively with completely
+                 provenance-tracked formats for both the configuration of the workflow step
+                 and/or analysis with each tool and also for the output of these analyses
+                 in the form of so-called tool-specific results files.
+                 Currently the Hierarchical Data Format 5 (HDF5) is used to store such data.
+                 
+                 Different file formats can be used to inject reconstructed datasets and
+                 ranging definitions into the toolbox. Traditionally, these are the POS, 
+                 ePOS, and APT files with the tomographic reconstruction and other metadata
+                 and RNG and RRNG file formats for the ranging definitions how mass-to-charge
+                 state-ratio values map on (molecular) ion types. Such input should be
+                 injected via specific NeXus/HDF5 files which are documented
+                 in compliance with the NXapm application definition.
+                 
+                 So far the paraprobe-toolbox was used as a standalone tool. Therefore, it
+                 was not relevant during the development to focus on interoperability.
+                 Essentially paraprobe-transcoder was used as a parser to transcode data
+                 in the above-mentioned file formats into a paraprobe-specific
+                 representation. This transcoding should become deprecated.
+                 Here we describe steps we have taken into this direction.
+                 
+                 With the work in the FAIRmat project and the desire to make the paraprobe-
+                 toolbox also accessible as a cloud-computing capable service in the Nomad
+                 Remote Tools Hub (NORTH) the topic of interoperability became more important
+                 and eventually the NXapm application definition was proposed.
+                 NORTH is a GUI and related service in a NOMAD OASIS instance which allows
+                 to spawn preconfigured docker containers via JupyterHub.
+                 Currently, NORTH includes the so-called apm container. A container with
+                 tools specific for analyzing data from atom probe microscopy as well as
+                 processing of point cloud and mesh data.
+                 
+                 The NXapm application definition and related implementation work within
+                 NOMAD OASIS enabled users to parse content of POS, ePOS, APT, RNG, and
+                 RRNG files, surplus key metadata from vendor-agnostic electronic lab notebook
+                 solutions directly into NOMAD OASIS via the uploads section.
+                 The process is automated and yields an NXapm-compliant NeXus/HDF5 file
+                 inside the uploads section in return.
+                 
+                 With these improvements made there is no longer a need for - at least the
+                 users of a NOMAD OASIS and NORTH instance to use the deprecated 
+                 PARAPROBE.Transcoder.Results.*.h5 files. Ideally, paraprobe should
+                 automatically detect that the input can now be an NXapm-compliant NeXus/HDF5
+                 file and in response work with this file directly.
+                 To remain compliant with users however who do not have or do not wish
+                 to use a NOMAD OASIS or NXapm or NeXus at all right now, the solution is
+                 as follows:
+                 
+                 Calling the configuration stage of paraprobe-transcoder is always mandatory.
+                 It is always the first step of working with the toolbox. In this process
+                 the user defines the input files. These can either be nxs i.e. the NXapm/NeXus/
+                 HDF5 file from e.g. the upload section, or such a file that was obtained from
+                 a colleague with a NOMAD OASIS instance.
+                 In all other cases, users can pass the reconstruction and ranging definitions
+                 using the traditional POS, ePOS, or APT and RNG or RRNG file formats respectively.
+                 
+                 Based on which input the user delivers, the parmsetup-transcoder tool then
+                 creates a configuration file PARAPROBE.Transcoder.Config.SimID.*.nxs and
+                 informs the user whether the input was NeXus (and thus if all relevant
+                 input is already available) or whether the paraprobe-transcoder tool needs
+                 to be executed to convert the content of the vendor files first into a
+                 format which paraprobe can provenance track and understand.
+                 In the latter case, the PARAPROBE.Transcoder.Config.SimID.*.nxs file is
+                 used to communicate to all subsequently used tools from which files
+                 the tools can expect to find the reconstruction and ranging definitions.
+                 
+                 All subsequent analysis steps start also with a tool-specific configuration.
+                 This configuration step reads in (among others) the
+                 PARAPROBE.Transcoder.Config.SimID.*.nxs file from which the configuration
+                 tool identifies automatically whether to read the reconstruction and ranging data
+                 from PARAPROBE.Transcoder.Results.SimID.*.h5 or directly the NXapm-compliant
+                 NeXus/HDF5 file that was created upon preparing the upload or the file shared
+                 from a colleague. This design removes the need for unnecessary copies of the data.
+                 Currently still though users should execute the transcoder step as it will
+                 generate a supplementary XDMF topology field with which the data in either
+                 the NeXus/HDF5 or the transcoded vendor files can be displayed using e.g.
+                 Paraview. For this purpose XDMF is used.
+                 
+                 Of course ideally the APT community would at some point converge to use
+                 a common data exchange file format. To this end, AMETEK/Cameca's APT file format
+                 could be a good starting point but so far it is lacking a consistent way of
+                 how to store generalized ranging definitions and post-processing results.
+                 POS, ePOS, Rouen's ATO, as well as other so far used representations of data
+                 like CSV or text files have, to the best of our current knowledge, no
+                 concept of how to marry reconstruction and (optional) ranging data into
+                 one self-descriptive format.
+                 
+                 This summarizes the rationale behind the current choices of the I/O for
+                 paraprobe. Furthermore, this summarizes also why the fundamental design
+                 of splitting an analysis always into steps of configuration (with parmsetup),
+                 task execution (with the respective C/C++ or Python tool of the toolbox),
+                 and post-processing (e.g. with autoreporter) is useful because it offers
+                 a clear description of provenance tracking. This is a necessary step to make
+                 atom probe microscopy data at all better aligned with the aims of the
+                 FAIR principles.
+                 
+                 The internal organization of the data entries in the atom_probe group
+                 in this application definition for paraprobe-transcoder results files
+                 mirror the definitions of the NXapm for consistency reasons.
             </doc>
-            <group name="reconstruction" type="NXcg_point_set">
-                <field name="dimensionality" type="NX_POSINT"/>
-                <field name="cardinality" type="NX_POSINT"/>
-                <field name="identifier_offset" type="NX_INT"/>
-                <field name="position" type="NX_NUMBER"/>
-            </group>
-            <group name="ranging" type="NXcollection">
-                <group type="NXion" minOccurs="1" maxOccurs="256">
+            <group name="mass_to_charge_conversion" type="NXprocess">
+                <field name="mass_to_charge" type="NX_FLOAT" units="NX_ANY">
                     <doc>
-                         This is the collection of iontypes distinguished.
-                         The default unknown iontype always has to map to 0.
-                         Its non-physical mass_to_charge_state_ratio is [0., 0.001] Da.
+                         Mass-to-charge-state ratio values.
                     </doc>
-                    <field name="ion_type" type="NX_UINT" optional="true"/>
-                    <field name="isotope_vector" type="NX_UINT"/>
-                    <field name="nuclid_list" type="NX_UINT" recommended="true"/>
-                    <field name="charge_state" type="NX_INT"/>
-                    <field name="name" type="NX_CHAR" optional="true"/>
-                    <field name="mass_to_charge_range" type="NX_FLOAT"/>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="reconstruction" type="NXprocess">
+                <field name="reconstructed_positions" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Three-dimensional reconstructed positions of the ions.
+                         Interleaved array of x, y, z positions in the specimen space.
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="n_ions"/>
+                        <dim index="2" value="3"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="ranging" type="NXprocess">
+                <group name="peak_identification" type="NXprocess">
+                    <doc>
+                         Details about how peaks, with taking into account
+                         error models, were interpreted as ion types or not.
+                    </doc>
+                    <group type="NXion" minOccurs="1" maxOccurs="256">
+                        <field name="isotope_vector" type="NX_UINT"/>
+                        <field name="nuclid_list" type="NX_UINT" recommended="true"/>
+                        <field name="charge_state" type="NX_INT"/>
+                        <field name="mass_to_charge_range" type="NX_FLOAT"/>
+                    </group>
                 </group>
             </group>
         </group>
