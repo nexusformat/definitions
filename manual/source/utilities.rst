@@ -358,18 +358,19 @@ low level programmatic access to the data structures.
 	h5wasm; tools
 
 **h5wasm** (https://h5web.panosc.eu/h5wasm)
-    Web site allowing one to view HDF5 content from a URL.
+    Demonstration web site of self-contained Webassembly library for HDF5 reading and writing.
 
     Example from the NeXus manual: ``simple_example_basic.nexus.hdf5``
 
     https://h5web.panosc.eu/h5wasm?url=https%3A%2F%2Fmanual.nexusformat.org%2F_downloads%2Fb9b76d34af0f606d0e0958a234054608%2Fsimple_example_basic.nexus.hdf5
 
 .. index::
-	H5Web; tools
+	vscode-h5web; tools
 
-**H5Web** (https://h5web.panosc.eu/)
+**vscode-h5web** (https://github.com/silx-kit/vscode-h5web)
     Explore and visualize data stored in HDF5 files usingthis extension
-    for Microsoft VisualStudio Code Editor (https://code.visualstudio.com/).
+    for Microsoft VisualStudio Code Editor
+    (https://marketplace.visualstudio.com/items?itemName=h5web.vscode-h5web).
 
 .. index::
 	HDF; tools
