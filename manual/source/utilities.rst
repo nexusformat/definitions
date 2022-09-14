@@ -355,14 +355,29 @@ APIs for many programming languages that will allow
 low level programmatic access to the data structures.
 
 .. index::
-	h5wasm; tools
+    h5wasm; tools
+    jupyterlab-h5web; tools
+    vscode-w5web; tools
+    h5web; tools
 
-**h5wasm** (https://h5web.panosc.eu/h5wasm)
-    Demonstration web site of self-contained Webassembly library for HDF5 reading and writing.
+**H5Web** (https://github.com/silx-kit/h5web):
 
-    Example from the NeXus manual: ``simple_example_basic.nexus.hdf5``
+    `H5Web <https://github.com/silx-kit/h5web>`__ is a toolkit for exploring
+    and visualising HDF5 files and, more generally, for visualizing data. It
+    is based on React and WebGL. These projects make use of H5Web:
 
-    https://h5web.panosc.eu/h5wasm?url=https%3A%2F%2Fmanual.nexusformat.org%2F_downloads%2Fb9b76d34af0f606d0e0958a234054608%2Fsimple_example_basic.nexus.hdf5
+    * `VSCode extension <https://github.com/silx-kit/vscode-h5web>`__:
+      ``vscode-w5web`` for `Microsoft Visual Studio Code
+      Editor <https://marketplace.visualstudio.com/items?itemName=h5web.vscode-h5web>`__
+    * `JupyterLab
+      extension <https://github.com/silx-kit/jupyterlab-h5web>`__:
+      ``jupyterlab-h5web``
+    * `h5wasm <https://github.com/usnistgov/h5wasm>`__, a WebAssembly port
+      of the HDF5 C library, which allows reading and writing HDF5 files
+      from JavaScript (i.e. no need for a back-end server at all).
+    * On-line visualization with file: 
+      `simple_example_basic.nexus.hdf5 <https://h5web.panosc.eu/h5wasm?url=https%3A%2F%2Fmanual.nexusformat.org%2F_downloads%2Fb9b76d34af0f606d0e0958a234054608%2Fsimple_example_basic.nexus.hdf5>`__
+    * `H5Web demonstration site <https://h5web.panosc.eu>`__
 
 .. index::
 	HDF; tools
@@ -391,14 +406,6 @@ low level programmatic access to the data structures.
 **tiled** (https://blueskyproject.io/tiled/)
     A *data access service* for data-aware portals and data science tools,
     provides a way to browse and visualize HDF5 files.
-
-.. index::
-	vscode-h5web; tools
-
-**vscode-h5web** (https://github.com/silx-kit/vscode-h5web)
-    Explore and visualize data stored in HDF5 files using this extension
-    for Microsoft Visual Studio Code Editor
-    (https://marketplace.visualstudio.com/items?itemName=h5web.vscode-h5web).
 
 .. _language.apis:
 
