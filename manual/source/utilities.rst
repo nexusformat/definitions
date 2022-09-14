@@ -360,8 +360,9 @@ low level programmatic access to the data structures.
 **h5wasm** (https://h5web.panosc.eu/h5wasm)
     Web site allowing one to view HDF5 content from a URL.
 
-    Example from the NeXus manual: :ref:`simple_example_basic.nexus.hdf5
-    <https://h5web.panosc.eu/h5wasm?url=https%3A%2F%2Fmanual.nexusformat.org%2F_downloads%2Fb9b76d34af0f606d0e0958a234054608%2Fsimple_example_basic.nexus.hdf5>`_
+    Example from the NeXus manual: ``simple_example_basic.nexus.hdf5``
+
+    https://h5web.panosc.eu/h5wasm?url=https%3A%2F%2Fmanual.nexusformat.org%2F_downloads%2Fb9b76d34af0f606d0e0958a234054608%2Fsimple_example_basic.nexus.hdf5
 
 .. index::
 	H5Web; tools
