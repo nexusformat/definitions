@@ -391,6 +391,13 @@ low level programmatic access to the data structures.
 **HDFview** (http://www.hdfgroup.org)
     A Java based GUI for browsing (and some basic plotting) of HDF files.
 
+.. index::
+	tiled; tools
+
+**tiled** (https://blueskyproject.io/tiled/)
+    A *data access service* for data-aware portals and data science tools,
+    provides a way to browse and visualize HDF5 files.
+
 .. _language.apis:
 
 Language APIs for NeXus and HDF5
