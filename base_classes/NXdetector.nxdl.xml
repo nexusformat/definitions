@@ -253,6 +253,8 @@
       nature of the detector: Most often it is the distance of the
       detector assembly. But there are irregular detectors. In this
       case the distance must be specified for each detector pixel.
+
+      Note, it is recommended to use NXtransformations instead.
     </doc>
 
     <dimensions rank="3">
@@ -272,6 +274,8 @@
       But there are irregular detectors.
       In this
       case, the polar_angle  must be specified for each detector pixel.
+
+      Note, it is recommended to use NXtransformations instead.
     </doc>
 
     <dimensions rank="3">
@@ -291,6 +295,8 @@
       But there are irregular detectors.
       In this
       case, the azimuthal_angle  must be specified for each detector pixel.
+
+      Note, it is recommended to use NXtransformations instead.
     </doc>
 
     <dimensions rank="3">
@@ -312,7 +318,7 @@
     <doc>Local name for the detector</doc>
   </field>
 
-  <group type="NXgeometry">
+  <group type="NXgeometry" deprecated="Use the field `depends_on` and :ref:`NXtransformations` to position the detector and NXoff_geometry to describe its shape instead">
     <doc>Position and orientation of detector</doc>
   </group>
 
@@ -718,8 +724,34 @@
 
   <field name="countrate_correction_applied" type="NX_BOOLEAN" >
     <doc>
-      True when a count-rate correction has already been applied in the
-      electronics, false otherwise.
+      Counting detectors usually are not able to measure all incoming particles,
+      especially at higher count-rates. Count-rate correction is applied to
+      account for these errors.
+
+      True when count-rate correction has been applied, false otherwise.
+    </doc>
+  </field>
+  <field name="countrate_correction_lookup_table" type="NX_NUMBER" >
+    <doc>
+      The countrate_correction_lookup_table defines the LUT used for count-rate
+      correction. It maps a measured count :math:`c` to its corrected value
+      :math:`countrate\_correction\_lookup\_table[c]`.
+
+      :math:`m` denotes the length of the table.
+    </doc>
+    <dimensions rank="1">
+      <dim index="1" value="m"/>
+    </dimensions>
+  </field>
+  <field name="virtual_pixel_interpolation_applied" type="NX_BOOLEAN" >
+    <doc>
+      True when virtual pixel interpolation has been applied, false otherwise.
+
+      When virtual pixel interpolation is applied, values of some pixels may
+      contain interpolated values. For example, to account for space between
+      readout chips on a module, physical pixels on edges and corners between
+      chips may have larger sensor areas and counts may be distributed between
+      their logical pixels.
     </doc>
   </field>
   <field name="bit_depth_readout" type="NX_INT">
@@ -795,7 +827,7 @@
       additional terms to add to the list.
     </doc>
   </field>
-  <field name="saturation_value" type="NX_INT">
+  <field name="saturation_value" type="NX_NUMBER">
     <doc>
       The value at which the detector goes into saturation.
       Especially common to CCD detectors, the data
@@ -804,9 +836,11 @@
       For example, given a saturation_value and an underload_value, the valid
       pixels are those less than or equal to the saturation_value and greater
       than or equal to the underload_value.
+
+      The precise type should match the type of the data.
     </doc>
   </field>
-  <field name="underload_value" type="NX_INT">
+  <field name="underload_value" type="NX_NUMBER">
     <doc>
       The lowest value at which pixels for this detector would be reasonably
       measured. The data is known to be invalid below this value.
@@ -814,6 +848,8 @@
       For example, given a saturation_value and an underload_value, the valid
       pixels are those less than or equal to the saturation_value and greater
       than or equal to the underload_value.
+
+      The precise type should match the type of the data.
     </doc>
   </field>
   <field name="number_of_cycles" type="NX_INT">
@@ -852,10 +888,6 @@
     <doc>
       For use in special cases where the data in NXdetector
       is represented in several parts, each with a separate geometry.
-
-      Use one or more instances of the NXdetector_module
-      group to declare regions of interest or some other
-      subdivision of a detector.
     </doc>
   </group>
   <choice name="pixel_shape">
@@ -899,4 +931,25 @@
           for a summary of the discussion.
       </doc>
   </attribute>
+  <field name="depends_on" type="NX_CHAR">
+      <doc>
+          NeXus positions components by applying a set of translations and rotations
+          to apply to the component starting from 0, 0, 0. The order of these operations
+          is critical and forms what NeXus calls a dependency chain. The depends_on
+          field defines the path to the top most operation of the dependency chain or the
+          string "." if located in the origin. Usually these operations are stored in a
+          NXtransformations group. But NeXus allows them to be stored anywhere.
+
+          The reference point of the detector is the center of the first pixel.
+          In complex geometries the NXoff_geometry groups can be used to provide an unambiguous reference.
+      </doc>
+  </field>
+  <group type="NXtransformations">
+      <doc>
+          This is the group recommended for holding the chain of translation
+          and rotation operations necessary to position the component within
+          the instrument. The dependency chain may however traverse similar groups in
+          other component groups.
+      </doc>
+  </group>
 </definition>

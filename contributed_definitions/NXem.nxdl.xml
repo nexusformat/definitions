@@ -1,0 +1,713 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<definition category="application" extends="NXobject" name="NXem" type="group" xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         Characterization and session with one sample in an electron microscope.
+         
+         **The idea and aim of NXem**:
+         Electron microscopes (EM), whether it be a scanning electron microscope (SEM)
+         or a transmission electron microscope (TEM), are versatile tools for preparing
+         and characterizing samples and specimens. The term specimen is here understood
+         as a synonym for a sample. A specimen is a physical portion of material that
+         is studied/characterize in the microscope session, eventually in different
+         places on the specimen surface.
+         These places are named regions of interest (ROIs).
+         
+         Fundamentally, an EM is an electron accelerator. Experimentalists use an EM
+         in sessions during which they characterize as well as prepare specimens.
+         This application definition describes data and metadata about processes and
+         characterization tasks applied to one specimen.
+         
+         Multiple specimens have to be described with multiple NXentry instances.
+         
+         There are research groups who use an EM in a manner where it is exclusively
+         operated by a single, instrument-responsible scientists or a team of 
+         (staff) scientists. These users perform analyses for other users as a service
+         task. Oftentimes, though, and especially for cutting-edge instruments,
+         the scientists and their team guide the process while operating the
+         microscope. Oftentimes the scientists operate the instrument themselves
+         either on-site or remotely and can ask technicians for support.
+         In all cases, these people are considered users. Users might have different
+         roles though.
+         
+         The rational behind a common EM schema rather than separate SEM or TEM 
+         schemata are primarily the key similarities of SEM and TEM instruments:
+         Both have electro-magnetic lenses. These lens may differ in design, alignment,
+         number, and level of corrected-for aberrations. As an obvious difference,
+         a TEM is used mainly to measure the transmitted electron beam.
+         This demands thinner specimens as in SEM but offers capabilities for probing 
+         of additional physical mechanisms of electron-matter interaction.
+         
+         Compared to SEMs, TEMs have a different relative arrangement between the
+         lenses and the specimen which is most obvious by the different relative
+         arrangement of the objective lens versus the specimen.
+         
+         Nevertheless, both types of electron microscopes use detector systems which
+         measure different types of signals that originate though from the same set of
+         radiation/specimen interactions. Consequently, detectors can also be similar.
+         
+         Given these physical and technical differences, different instruments have
+         been developed. This led to a coexistence of two broad interacting
+         communities: SEM and TEM users. From a data science perspective, we
+         acknowledge that the more specific a research question is and the narrower
+         the addressed user base is which develops or uses schemata for
+         research data management with EM, the more understandable it is
+         that scientists of either community (or sub-community) ask for
+         method-specific schemata.
+         
+         Researchers who have a single (main) microscope of some vendor in their lab,
+         may argue they need an NXem_vendor_name schema or an NXem_microscope_name or
+         an NXem_sem or a NXem_tem schema.
+         Scientists exclusively working with one technique or type of signal probed
+         (X-rays, electrons) may argue they wish to be pragmatic and store only
+         what is immediately relevant for their particular technique and
+         research questions. In effect, they may advocate for method-specific
+         schemata such as NXem_ebsd, NXem_eels, NXem_edx, or NXem_imaging.
+         
+         The development in the past has shown that these activities led to a zoo of
+         schemata and implementations of these into many data and file formats.
+         There is nothing which prevents the communities to make these schemata
+         open and interoperable. Open here means specifically not that all data are
+         compliant with/or use the schema and have to end up in the open-source domain.
+         There can be embargo periods first of all. Open means that the metadata and 
+         associated schemata are documented in a manner that as many details as 
+         possible are open in the sense that others can understand what the 
+         (meta)data mean conceptually. 
+         The `FAIR principles &lt;https://doi.org/10.1038/sdata.2016.18&gt;`_ guide all 
+         decisions how data and metadata should be stored.
+         
+         EM instruments, software, and research are moving targets. Consequently,
+         there is a key challenge and inconvenience with having many different 
+         schemata with associated representations of data and metadata in EM:
+         Each combination of schemata or an interoperable-made handshake between two
+         file formats or software packages has to be maintained by software developers.
+         This counts especially when data should be processed interoperably
+         between software packages.
+         
+         This brings two problems: Many software tools and parsers for the handshaking
+         between tools to maintain. This can result in usage of different terminology.
+         Which in turn results in representations and connections made between 
+         different data representations and workflows that are not machine-actionable.
+         `There are community efforts to harmonize the terminology. &lt;https://gitlab.hzdr.de/em_glossary/em_glossary&gt;`_
+         
+         A common vocabulary can serve interoperability as developers of schemata
+         and scientists can take for instance then these terms as closely as possible.
+         Ideally, they specialize the application definition only for the few very
+         specific additional quantities of their instruments and techniques. This is
+         better than reimplementing the wheel for descriptions of EM instruments.
+         This route of more standardization can support the EM community in that it
+         removes the necessity for having to maintain a very large number of schemata.
+         
+         Aiming for more standardization, i.e. a lower number of schemata rather than
+         a single standard for electron microscopy is a compromise that can serve
+         academia as it enables the EM community to focus their software development
+         efforts on those schemata, on fixing and discussing them, and on harmonize
+         their common vocabulary. These activities can be specifically relevant also
+         for vendors of EM hard- and software as it improves the longevity of certain
+         schema and thus can help to incentivize vendors to support the community with
+         implementing support for such schemata into their proprietary applications.
+         
+         In effect, everybody can gain from this as it will likely reduce the cases
+         in which scientists have to fix bugs in making their own tools compliant and
+         interoperable with tools of their colleagues and the wider community.
+         
+         The here proposed NXem application definition offers modular components
+         (EM-research specific base classes) for using NeXus to define schemata for
+         electron microscopy research. Working towards a common vocabulary is a
+         community activity that profits from everybody reflecting in detail whether
+         certain terms they have used are not eventually conceptually similar if not
+         the same as what this application definition and its base classes provide.
+         
+         We are happy for receiving your feedback.
+         
+         It is noteworthy to understand that (not only for) NeXus, schema differ
+         already if at least one field is required in one version of the schema,
+         but it is set optional in another version. If group(s), field(s), or
+         attributes are removed or added, or even a docstring is changed, schemata can
+         become inconsistent. An application definition here serves as a contract
+         between a data provider and a data consumer. These two can be software tools
+         (like the vendor software to drive the instrument or a scientific software
+         for doing artificial intelligence with EM data).
+         Such changes of a schema lead to new versions.
+         
+         Tools like NeXus do not avoid or protect against inconsistencies; however
+         NeXus offers a mechanism and toolset, through which schemata can be
+         documented and defined. In effect, having an openly documented
+         (at a case-specific level of technical detail) schema is a necessary but alone
+         not a sufficient step to take EM research on a route of machine-actionable 
+         and interoperable FAIR data.
+         A common vocabulary and a machine-actionable knowledge representation/engine
+         is also required. Essentially when the docstrings are no longer needed
+         but can be replaced by a connection to an automated tool which understands
+         what a specific field represents conceptually, EM data have become more
+         generally interoperable EM data.
+         
+         This application definition takes a key step into this direction.
+         It offers a controlled vocabulary and relation between concepts and data
+         relevant for research with electron microscopes. To be most efficient and
+         offering reusability, the application definition should be understood as a
+         template that one should ideally use as is. This application definition
+         is called NXem. It can be considered a base for more specialized definitions
+         (ideally prefixed with NXem) *method*.
+         
+         **The use of NXem should be as follows:**
+         Offspring application definitions should not remove groups but make
+         them optional or, even better, propose changes in the application definition.
+         
+         A particular challenge with electron microscopes as physical instruments are
+         their dynamics. To make EM data understandable, repeatable, and eventually
+         corresponding experiments reproducible in general requires a documentation
+         of the spatio-temporal dynamics of the instrument in its environment.
+         For most commercial systems there is a specific accessibility beyond which
+         detailed settings like lens excitations and low-level hardware settings
+         may not be retrievable.
+         
+         EM experiments by design illuminate the specimen with electrons as a
+         consequence of which the specimen changes if not may get destroyed.
+         As such, repeatability of numerical processing and clear descriptions of
+         procedures and system setups should be addressed first.
+         
+         If especially a certain simulation package needs a detailed view of the
+         geometry of the lens system and its excitations during the course of the
+         experiment, it is difficult to fully abstract the technical details of the
+         hardware into a set of names for fields and groups that make for a compromise
+         between clarity and being vendor-agnostic. Settings of apertures are an 
+         example where aperture modes are aliases behind which there is a set of
+         settings. These settings are difficult to retrieve, often undocumented in
+         detail. This serves users and makes EM experiments easier understandable and
+         conveniently executable for a broader user base. The opportunities for 
+         application definitions to offer an abstraction layer are limited.
+         
+         Instead, currently it is for the docstring to specify what is conceptually
+         eventually behind such aliases. The design rule we followed while drafting 
+         the application definition and base classes is that there are numerous 
+         (technical) details about an EM which may warrant a very detailed technical
+         disentangling of settings and reflection of numerous settings as deeply
+         nested groups, fields and attributes. An application definition can offer a
+         place to hold these nested representations; however at the cost of generality.
+         
+         Which specific details matter for answering scientific research questions is
+         a difficult question to answer by a single team of scientists, especially
+         if the application definition is to speak for a number of vendors. What makes
+         it especially challenging if the application definition is expected to hold
+         all data that might be of relevance for future questions.
+         
+         We are skeptical if there is one representation that can fulfill all these
+         aims, while remaining at the same time approachable and executable by a large
+         number of scientists in a community. With this application definition we 
+         would like to motivate the community to work towards such aim. While doing
+         so we found that existent terminology can be encoded into a more controlled
+         vocabulary.
+         
+         We have concluded that despite all these details of current EM research with
+         SEM, TEM, and focused-ion beam instruments, there a clearly identifiable
+         common components and generalizable settings of EM research use cases.
+         
+         **This application definition has the following components at the top-level:**
+         
+         * Generic experimental details (timestamp, identifiers, name);  
+           conceptually these are session details. A session at a microscope may  
+           involve the characterization of multiple specimens. For each specimen  
+           an instance of an (NXentry) is created. Details of the instrument have to  
+           be stored at least in an entry. Other entries should refer to these  
+           metadata via links to reduce redundancies.  
+         * Each signal, such as a spectrum or image taken at the microscope, should  
+           have an associated time stamp and report of the specific settings at that  
+           point in time when the image was taken. The reason is that EMs can be  
+           highly dynamic, be used to illuminate the specimen differently  
+           or show drift during signal acquisition, to name but a few effects.  
+           What constitutes a single EM experiment/measurement? This can be the  
+           collecting of a single diffraction pattern with a scanning TEM (STEM),  
+           taking of a secondary electron image for fracture analysis, taking a set  
+           of EBSD line scan and surface mappings in an SEM, or ion-beam-milling of a  
+           specimen in preparation for an atom probe experiment.  
+         * NXmonitor;
+           instances to keep track of time-dependent quantities  
+           pertaining to specific components of the instrument. Alternatively  
+           NXevent_data_em instances can be used to store timestamp states of the  
+           components, which is relevant to document the exact settings when images  
+           and spectra were taken.  
+         * NXinstrument;
+           conceptually this is a container to store arbitrary level of detail of the  
+           technical components of the microscope as a device and the lab in which  
+           it is operated.  
+         * NXuser;
+           conceptually, this is a set with at least one NXuser instance which details  
+           who operated or performed the measurement. Additional NXusers can be  
+           referred to in an NXevent_data_em instance to store  
+           individualized details who executed an event.  
+         * NXevent_data_em instances as an NXevent_data_em_set;  
+           each NXevent_data_em instance is a container to group specific details  
+           about the state of the microscope when a measurement was taken and  
+           relevant data and eventual processing steps were taken (on-the-fly).  
+         * NXdata; a the top-level, conceptually, this is a place for documenting  
+           available default plottable data. A default plottable can be useful for  
+           research data management systems to show a visual representation of some  
+           aspect of the content of the EM session.  
+           It is clear that what constitutes a useful default plot is a matter of  
+           interpretation, somewhat of personal taste, and community standards.  
+         
+         In effect, default plottables are case- and method-specific.
+         Usually a session at a microscope is used to collect multiple signals and
+         images. Examples for possible default plottables could be an arbitrarily
+         taken: secondary, back-scattered, electron image, diffraction pattern,
+         EELS spectra, composition, or orientation mappings to name but a few.
+         
+         **There are a few design choices to consider with sub-ordinate groups:**
+         
+         * Above images, spectra, and mappings should be stored as NXdata instances,  
+           ideally formatted in such a way that they can be displayed with  
+           visualization software that can be specific for the file format in which  
+           the data are stored. NeXus specifies only the data model, i.e. the terms  
+           and their relations. These descriptions can be implemented and stored in  
+           JSON, HDF5, XML, or HSDS, file storage, or even other formats, although  
+           HDF5 is the most commonly used.
+         * Consumable results of EM characterization tasks are usually a sub-set of  
+           data artifacts, as there is not an infinite amount of possible  
+           electron/ion beam-specimen interactions.  
+         * Images of electron counts detected in specific operation modes (bright  
+           field, dark field in TEM, secondary/back-scattered, Kikuchi in SEM)  
+         * Spectra (X-ray quanta or auger electron counts)  
+         * These data are in virtually all cases a result of some numerical
+           processing. It makes sense to name them with a controlled vocabulary,  
+           e.g. SE (secondary electron), BSE (back-scattered electron), Kikuchi,  
+           X-ray, Auger, Cathodolum(inescence) etc.  
+         
+         A key question often asked with EM experiments is how the actual (meta)data
+         should be stored (in memory or on disk). To this end the schema, here makes no
+         specific assumptions, not even that all the fields/group of a schema instance
+         have to be stored into a single file. Instead, the schema specifies the
+         relations between metadata, constraints on how they should be formatted, what
+         they conceptually represent and which terms (controlled vocabulary) is
+         practical to store with the data.
+         
+         In effect, the application definition is a graph which describes how
+         (meta)data are related to one another.
+    </doc>
+    <group maxOccurs="unbounded" minOccurs="1" type="NXentry">
+        <attribute name="version">
+            <doc>
+                 An at least as strong as SHA256 hashvalue of the file
+                 that specifies the application definition.
+            </doc>
+        </attribute>
+        <field name="definition" type="NX_CHAR">
+            <doc>
+                 NeXus NXDL schema to which this file conforms.
+            </doc>
+            <enumeration>
+                <item value="NXem"/>
+            </enumeration>
+        </field>
+        <field name="experiment_identifier" type="NX_CHAR">
+            <doc>
+                 Ideally, a (globally) unique persistent identifier
+                 for referring to this experiment.
+                 
+                 The identifier is usually defined/issued by the facility, laboratory,
+                 or the principle investigator.
+                 The identifier enables to link experiments to e.g. proposals.
+            </doc>
+        </field>
+        <field name="experiment_description" optional="true" type="NX_CHAR">
+            <doc>
+                 Free-text description about the experiment.
+                 
+                 Users are strongly advised to detail the sample history in the respective 
+                 field and fill rather as completely as possible the fields of this 
+                 application definition rather than write details about the experiment
+                 into this free-text description field.
+            </doc>
+        </field>
+        <field name="start_time" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 time code with local time zone offset to UTC information included
+                 when the microscope session started. If the application demands that time
+                 codes in this section of the application definition should only be used
+                 for specifying when the experiment was performed - and the exact
+                 duration is not relevant - this start time field should be used.
+                 
+                 Often though it is useful to specify a time interval with specifying
+                 both start_time and end_time to allow for more detailed bookkeeping and
+                 interpretation of the experiment. The user should be aware that even
+                 with having both time instances specified, it may not be possible
+                 to infer how long the experiment took or for how long data were acquired.
+                 
+                 More detailed timing data over the course of the experiment have
+                 to be collected to compute this. These computations can take
+                 advantage of individual time stamps in NXevent_em instances to
+                 provide additional pieces of information.
+            </doc>
+        </field>
+        <field name="end_time" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 time code with local time zone offset to UTC included when
+                 the microscope session ended.
+            </doc>
+        </field>
+        <field name="program" type="NX_CHAR">
+            <doc>
+                 Commercial or otherwise given name to the program which was used to
+                 create the file.
+                 
+                 Electron microscopy experiments are usually controlled/performed via
+                 commercial integrated acquisition and instrument control software.
+                 In many cases, an EM dataset is useful only if it gets post-processed
+                 already during the acquisition, i.e. while the scientist is sitting
+                 at the microscope.
+                 Many of these processes are automated, while some demand GUI
+                 interactions with the control software. Examples include collecting
+                 of diffraction pattern and on-the-fly indexing of these.
+                 
+                 It is possible that different types of programs might be used to 
+                 perform these processing steps whether on-the-fly or not. If this is
+                 the case the processing should be structured with individual NXprocess
+                 instances. If the program and/or version used for processing referred
+                 to in an NXprocess group is different to the program and version
+                 mentioned in this field, the NXprocess needs
+                 to hold an own program and version.
+            </doc>
+            <attribute name="version" type="NX_CHAR">
+                <doc>
+                     Program version plus build number, commit hash, or description of
+                     an ever persistent resource where the source code of the program
+                     and build instructions can be found so that the program can be
+                     configured in such a manner that the result file is ideally
+                     recreatable yielding the same results.
+                </doc>
+            </attribute>
+        </field>
+        <group name="experiment_documentation" optional="true" type="NXnote">
+            <doc>
+                 Binary container for a file or a compressed collection of files which
+                 can be used to add further descriptions and details to the experiment.
+                 The container can hold a compressed archive.
+            </doc>
+        </group>
+        <group name="thumbnail" optional="true" type="NXnote">
+            <doc>
+                 A small image that is representative of the entry; this can be an
+                 image taken from the dataset like a thumbnail of a spectrum.
+                 A 640 x 480 pixel jpeg image is recommended. 
+                 Adding a scale bar to that image is recommended but not required
+                 as the main purpose of the thumbnail is to provide e.g. thumbnail
+                 images for displaying them in data repositories.
+            </doc>
+            <attribute name="type"/>
+        </group>
+        <group maxOccurs="unbounded" minOccurs="1" name="operator" type="NXuser">
+            <doc>
+                 Contact information and eventually details of at least one person
+                 involved in the taking of the microscope session. This can be the
+                 principle investigator who performed this experiment.
+                 Adding multiple users if relevant is recommended.
+            </doc>
+            <field name="name" type="NX_CHAR">
+                <doc>
+                     Given (first) name and surname of the user.
+                </doc>
+            </field>
+            <field name="affiliation" recommended="true" type="NX_CHAR">
+                <doc>
+                     Name of the affiliation of the user at the point in time when the experiment was
+                     performed.
+                </doc>
+            </field>
+            <field name="address" recommended="true" type="NX_CHAR">
+                <doc>
+                     Postal address of the affiliation.
+                </doc>
+            </field>
+            <field name="email" type="NX_CHAR">
+                <doc>
+                     Email address of the user at the point in time when the experiment was
+                     performed. Writing the most permanently used email is recommended.
+                </doc>
+            </field>
+            <field name="orcid" recommended="true" type="NX_CHAR">
+                <doc>
+                     Globally unique identifier of the user as offered by services like ORCID or
+                     ResearcherID.
+                </doc>
+            </field>
+            <field name="telephone_number" optional="true" type="NX_CHAR">
+                <doc>
+                     (Business) (tele)phone number of the user at the point in time when the
+                     experiment was performed.
+                </doc>
+            </field>
+            <field name="role" optional="true" type="NX_CHAR">
+                <doc>
+                     Which role does the user have in the place and at the point 
+                     in time when the experiment was performed? Technician operating
+                     the microscope. Student, postdoc, principle investigator, guest
+                     are common examples.
+                </doc>
+            </field>
+            <field name="social_media_name" optional="true" type="NX_CHAR">
+                <doc>
+                     Account name that is associated with the user in social media platforms.
+                </doc>
+            </field>
+            <field name="social_media_platform" optional="true" type="NX_CHAR">
+                <doc>
+                     Name of the social media platform where the account under social_media_name is
+                     registered.
+                </doc>
+            </field>
+        </group>
+        <group name="SAMPLE" type="NXsample">
+            <field name="method" type="NX_CHAR">
+                <doc>
+                     A qualifier whether the sample is a real one or a virtual one (in a computer
+                     simulation)
+                </doc>
+                <enumeration>
+                    <item value="experimental"/>
+                    <item value="simulation"/>
+                </enumeration>
+            </field>
+            <doc>
+                 A description of the material characterized in the experiment.
+                 Sample and specimen are threaded as de facto synonyms.
+            </doc>
+            <field name="name" type="NX_CHAR">
+                <doc>
+                     Descriptive name or ideally (globally) unique persistent identifier.
+                     The name distinguishes the specimen from all others and especially
+                     the predecessor/origin from where the specimen was cut.
+                     
+                     This field must not be used for an alias of the sample.
+                     Instead, use short_title.
+                     
+                     In cases where multiple specimens have been loaded into the microscope
+                     the name has to identify the specific one, whose results are stored
+                     by this NXentry, because a single NXentry should be used only for
+                     the characterization of a single specimen.
+                     
+                     Details about the specimen preparation should be stored in the
+                     sample history.
+                </doc>
+            </field>
+            <field name="sample_history" type="NX_CHAR">
+                <doc>
+                     Ideally, a reference to a (globally) unique persistent identifier, representing a data 
+                     artifact which documents ideally as many details of the material, its microstructure,
+                     and its thermo-chemo-mechanical processing/preparation history as possible.
+                     
+                     The sample_history is the record what happened before the specimen was placed into the
+                     microscope at the beginning of the session.
+                     
+                     In the case that such a detailed history of the sample/specimen is not available, use this field as
+                     a free-text description to specify a sub-set of the entire sample history, i.e. what you would consider
+                     are the key steps and relevant information about the specimen, its material, microstructure, 
+                     thermo-chemo-mechanical processing state, and the details of the preparation.
+                     
+                     Specific details about eventual physically-connected material like embedding resin should be
+                     documented ideally also in the sample_history. If all fails, the description field
+                     can be used but it is strongly discouraged because it leads to eventually non-machine-actionable
+                     data.
+                </doc>
+            </field>
+            <field name="preparation_date" type="NX_DATE_TIME">
+                <doc>
+                     ISO 8601 time code with local time zone offset to UTC information when the specimen was prepared.
+                     
+                     Ideally report the end of the preparation, i.e. the last known time the measured specimen surface
+                     was actively prepared. Usually this should be a part of the sample history, i.e. the sample
+                     is imagined handed over for the analysis. At the point it enters the microscope the session starts.
+                     
+                     Knowing when the specimen was exposed to e.g. specific atmosphere is especially required for
+                     environmentally sensitive material such as hydrogen charged specimens or experiments
+                     including tracers with a short half time. Further time stamps prior to preparation_date should
+                     better be placed in resources which describe the sample_history.
+                </doc>
+            </field>
+            <field name="short_title" optional="true" type="NX_CHAR">
+                <doc>
+                     Possibility to give an abbreviation or alias of the specimen name field.
+                </doc>
+            </field>
+            <field name="atom_types" type="NX_CHAR">
+                <doc>
+                     Use Hill's system for listing elements of the periodic table which are inside or attached
+                     to the surface of the specimen and thus relevant from a scientific point of view.
+                     
+                     The purpose of the field is to offer materials database systems an opportunity to parse
+                     the relevant elements without having to interpret these from the sample history.
+                </doc>
+            </field>
+            <field name="thickness" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     (Measured) sample thickness. The information is recorded to qualify
+                     if the beam used was likely able to shine through the specimen.
+                </doc>
+            </field>
+            <field name="description" optional="true" type="NX_CHAR">
+                <doc>
+                     Discouraged free-text field in case properly designed records for the
+                     sample_history are not available.
+                </doc>
+            </field>
+        </group>
+        <group type="NXdata">
+            <doc>
+                 Hard link to a location in the hierarchy of the NeXus file
+                 where the data for default plotting are stored.
+            </doc>
+        </group>
+        <group type="NXcoordinate_system_set"/>
+        <group maxOccurs="unbounded" minOccurs="0" type="NXmonitor"/>
+        <group name="em_lab" type="NXinstrument">
+            <doc>
+                 Metadata and numerical data of the microscope and the lab in which it stands.
+                 
+                 The em_lab section contains a description of the instrument and its components.
+                 The component descriptions in this section differ from those inside individual
+                 NXevent_em sections. These event instances take the role of time snapshot.
+                 For an NXevent_em instance users should store only those settings for a 
+                 component which are relevant to understand the current state of the component.
+                 Here, current means at the point in time, i.e. the time interval, 
+                 which the event represents.
+                 
+                 For example it is not relevant to store in each event's electron_gun group
+                 again the details of the gun type and manufacturer but only the high-voltage
+                 if for that event the high-voltage was different. If for all events
+                 the high-voltage was the same it is not even necessary to include an electron_gun
+                 section in the event.
+                 
+                 Individual sections of specific type should have the following names:
+                 
+                 * NXaperture: the name should match with the name of the lens  
+                 * NXlens_em: condenser_lens, objective_lens are commonly used names  
+                 * NXcorrector_cs: device for correcting spherical aberrations  
+                 * NXstage_lab: a collection of component for holding the specimen and  
+                   eventual additional component for applying external stimuli on the sample  
+                 * NXdetector: several possible names like secondary_electron,  
+                   backscattered_electron, direct_electron, ebsd, edx, wds, auger,  
+                   cathodoluminescence, camera, ronchigram  
+            </doc>
+            <field name="instrument_name" type="NX_CHAR">
+                <doc>
+                     Given name of the microscope at the hosting institution. This is an alias.
+                     Examples could be NionHermes, Titan, JEOL, Gemini, etc.
+                </doc>
+            </field>
+            <field name="location" optional="true" type="NX_CHAR">
+                <doc>
+                     Location of the lab or place where the instrument is installed.
+                     Using GEOREF is preferred.
+                </doc>
+            </field>
+            <group type="NXmanufacturer"/>
+            <group maxOccurs="1" minOccurs="1" type="NXebeam_column"/>
+            <group maxOccurs="2" minOccurs="0" type="NXibeam_column"/>
+            <group name="ebeam_deflector" type="NXscanbox_em"/>
+            <group name="ibeam_deflector" optional="true" type="NXscanbox_em"/>
+            <group optional="true" type="NXoptical_system_em"/>
+            <group maxOccurs="unbounded" minOccurs="1" type="NXdetector">
+                <doc>
+                     Description of the type of the detector.
+                     
+                     Electron microscopes have typically multiple detectors.
+                     Different technologies are in use like CCD, scintillator, 
+                     direct electron, CMOS, or image plate to name but a few.
+                </doc>
+                <group type="NXmanufacturer"/>
+                <field name="description" optional="true" type="NX_CHAR">
+                    <doc>
+                         Free text option to write further details about the detector.
+                    </doc>
+                </field>
+            </group>
+            <group maxOccurs="unbounded" minOccurs="0" type="NXpump"/>
+        </group>
+        <group maxOccurs="1" minOccurs="0" name="measurement" type="NXevent_data_em_set">
+            <doc>
+                 A container to structure a set of NXevent_em instances.
+                 
+                 An event is a time point/interval during which the microscope
+                 was configured in a specific way and the microscope was used
+                 to take a measurement.
+                 
+                 Each NXevent_em holds an acquisition task with the microscope.
+                 For instance the capturing of a secondary electron, backscattered
+                 electron, diffraction image, or spectrum.
+                 
+                 An NXevent_em_data instance holds specific details about how raw data 
+                 from a detector were processed into consumable data like images, spectra,
+                 etc. These on-the-fly data processing tasks are usually performed
+                 by the control software, eventually realized with custom scripts.
+                 
+                 Furthermore, NXevent_em_state instances can document specific values
+                 and settings of the microscope during the snapshot/event.
+            </doc>
+            <group maxOccurs="unbounded" minOccurs="1" type="NXevent_data_em">
+                <doc>
+                     A container holding a specific result of the measurement and
+                     eventually metadata how that result was obtained numerically.
+                     
+                     NXevent_em instances can hold several specific
+                     NXimage_em or NXspectrum_em instances taken and considered as
+                     one event, i.e. a point in time when the microscope had the
+                     settings specified either in NXinstrument or in this NXevent_data_em
+                     instance.
+                     
+                     The application definition is designed without an explicit need
+                     an NXevent_data_em instance that contains an NXimage_em or 
+                     NXspectra_em instance. An NXevent_data_em can be used to document a
+                     specific state of the microscope at a time without having it placed
+                     into the NXinstrument group.
+                     
+                     In other words the NXinstrument group details primarily the more
+                     static settings and components of the microscope as they are found
+                     by the operator during the session. The NXevent_data_em samples
+                     the dynamics.
+                     
+                     It is not necessary to store data in NXebeam, NXibeam instances
+                     of NXevent_data_em but in this case it is assumed that the settings
+                     were constant over the entire course of microscope session
+                     and thus all relevant metadata inside the NXinstrument groups
+                     are sufficient to understand the session.
+                </doc>
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="event_identifier" type="NX_CHAR">
+                    <doc>
+                         Reference to a specific state and setting of the microscope components.
+                    </doc>
+                </field>
+                <field name="event_type" type="NX_CHAR"/>
+                <field name="detector_identifier" type="NX_CHAR">
+                    <doc>
+                         The detector or set of detectors that was used to collect this signal.
+                         The name of the detector has to match one of the names of available
+                         NXdetector instances e.g. if the instrument has an ebsd_camera
+                         the detector for an NXimage_em_kikuchi should be the NXdetector
+                         instance called ebsd_camera.
+                    </doc>
+                </field>
+                <group optional="true" type="NXimage_set_em_se"/>
+                <group optional="true" type="NXimage_set_em_bse"/>
+                <group optional="true" type="NXimage_set_em_ecci"/>
+                <group optional="true" type="NXimage_set_em_bf"/>
+                <group optional="true" type="NXimage_set_em_df"/>
+                <group optional="true" type="NXimage_set_em_adf"/>
+                <group optional="true" type="NXimage_set_em_kikuchi"/>
+                <group optional="true" type="NXimage_set_em_diffrac"/>
+                <group optional="true" type="NXspectrum_set_em_xray"/>
+                <group optional="true" type="NXspectrum_set_em_eels"/>
+                <group optional="true" type="NXspectrum_set_em_auger"/>
+                <group optional="true" type="NXspectrum_set_em_cathodolum"/>
+                <group optional="true" type="NXimage_set_em_ronchigram"/>
+                <group optional="true" type="NXimage_set_em_chamber"/>
+                <group optional="true" type="NXebeam_column"/>
+                <group optional="true" type="NXibeam_column"/>
+                <group name="ebeam_deflector" optional="true" type="NXscanbox_em"/>
+                <group name="ibeam_deflector" optional="true" type="NXscanbox_em"/>
+                <group optional="true" type="NXoptical_system_em"/>
+                <group optional="true" type="NXuser"/>
+            </group>
+        </group>
+    </group>
+</definition>

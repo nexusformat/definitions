@@ -1,0 +1,1185 @@
+<?xml version="1.0" ?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<definition category="application" extends="NXobject" name="NXapm" type="group" xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays
+        </doc>
+        <symbol name="n_ions">
+            <doc>
+                 Total number of ions collected
+            </doc>
+        </symbol>
+        <symbol name="n_dld_wires">
+            <doc>
+                 Total number of independent wires in the delay-line detector.
+            </doc>
+        </symbol>
+        <symbol name="n_support">
+            <doc>
+                 Number of support points for e.g. modeling peaks.
+            </doc>
+        </symbol>
+        <symbol name="n_ivec_max">
+            <doc>
+                 Maximum number of allowed atoms per (molecular) ion (fragment). Needs
+                 to match maximum_number_of_atoms_per_molecular_ion.
+            </doc>
+        </symbol>
+        <symbol name="n_ranges">
+            <doc>
+                 Number of mass-to-charge-state-ratio range intervals mapped on this
+                 ion type.
+            </doc>
+        </symbol>
+        <symbol name="n_x">
+            <doc>
+                 Number of bins in the x direction.
+            </doc>
+        </symbol>
+        <symbol name="n_y">
+            <doc>
+                 Number of bins in the y direction.
+            </doc>
+        </symbol>
+        <symbol name="n_z">
+            <doc>
+                 Number of bins in the z direction.
+            </doc>
+        </symbol>
+        <symbol name="n_bins">
+            <doc>
+                 Number of bins.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for atom probe microscopy experiments.
+    </doc>
+    <group type="NXentry">
+        <attribute name="version">
+            <doc>
+                 An at least as strong as SHA256 hashvalue of the file
+                 that specifies the application definition.
+            </doc>
+        </attribute>
+        <field name="definition" type="NX_CHAR">
+            <doc>
+                 NeXus NXDL schema to which this file conforms.
+            </doc>
+            <enumeration>
+                <item value="NXapm"/>
+            </enumeration>
+        </field>
+        <field name="experiment_identifier" type="NX_CHAR">
+            <doc>
+                 Ideally, a (globally) unique persistent identifier 
+                 for referring to this experiment.
+                 
+                 The identifier is usually defined/issued by the facility, laboratory,
+                 or the principle investigator. The identifier enables to link 
+                 experiments to e.g. proposals.
+            </doc>
+        </field>
+        <field name="experiment_description" optional="true" type="NX_CHAR">
+            <doc>
+                 Free-text description about the experiment.
+                 
+                 Users are strongly advised to detail the sample history in the 
+                 respective field and fill rather as completely as possible the fields
+                 of this application definition rather than write details about the
+                 experiment into this free-text description field.
+            </doc>
+        </field>
+        <field name="start_time" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 time code with local time zone offset to UTC information
+                 included when the microscope session started.
+                 If the application demands that time codes in this section of the
+                 application definition should only be used for specifying when the
+                 experiment was performed - and the exact duration is not relevant
+                 - this start time field should be used.
+                 
+                 Often though it is useful to specify a time interval with specifying
+                 both start_time and end_time to allow for more detailed bookkeeping
+                 and interpretation of the experiment. The user should be aware that
+                 even with having both time instances specified, it may not be possible
+                 to infer how long the experiment took or for how long data 
+                 were acquired.
+                 
+                 More detailed timing data over the course of the experiment have to be
+                 collected to compute this. These computations can take advantage of
+                 individual time stamps in NXevent_em instances to provide
+                 additional pieces of information.
+            </doc>
+        </field>
+        <field name="end_time" recommended="true" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 time code with local time zone offset to UTC included
+                 when the microscope session ended.
+            </doc>
+        </field>
+        <field name="program" type="NX_CHAR">
+            <doc>
+                 Commercial or otherwise given name to the program which was used
+                 to create the file. Atom probe microscopy experiments are nowadays
+                 in most cases controlled via commercial software. These are often
+                 designed as integrated acquisition and instrument control software
+                 solutions.
+                 For AMETEK/Cameca local electrode atom probe (LEAP) instruments the
+                 least processed (rawest) numerical results and metadata are stored
+                 in so-called RHIT and HITS files, which are proprietary and the
+                 specifications of which are not publicly documented.
+                 
+                 Supplementary metadata are kept in a database which is connected
+                 to the instrument control software. RHIT and HITS are proprietary
+                 binary file formats whose content must not be accessed with software
+                 other than of AMETEK (IVAS/AP Suite). In effect, RHIT and HITS files
+                 store the experiment in a closed manner that is practically useless
+                 for users unless they have access to the commercial software.
+                 
+                 To arrive at a state that atom probe microscopy with LEAP instruments 
+                 delivers a dataset with which users can study reconstructed atomic
+                 position and do e.g. composition analyses or other post-processing
+                 analysis tasks, these raw data have to be processed. Therefore, it is
+                 necessary that for an application definition to be useful, details about
+                 the physical acquisition of the raw data and all its
+                 processing steps have to be stored.
+                 
+                 With this a user can create derived quantities like ion hit positions
+                 (on the detector), calibrated time-of-flight data. These derived
+                 quantities are also needed to obtain calibrated mass-to-charge-state
+                 ratios, and finally the tomographic reconstruction of the ion positions.
+                 
+                 In most cases, an APM dataset is useful only if it gets post-processed
+                 via so-called ranging. Ranging defines rules for mapping time-of-flight
+                 and mass-to-charge-state ratio values on ion species. In turn, these
+                 labels decode elemental identities and can often also be used to
+                 resolve isotopes. All these steps are in most cases performed using
+                 commercial software.
+                 
+                 Frequently, though, ranging and post-processing is also performed with
+                 (open-source) research software. Therefore, there is strictly speaking
+                 not a single program used throughout an atom probe analysis not even
+                 for the early data acquisition and processing stages to obtain a useful
+                 reconstructed and ranged dataset.
+                 
+                 Therefore, the application definition documents not only the measurement
+                 but also the key post-processing steps which transform the proprietary
+                 data into a tomographic reconstruction with ranging definitions.
+            </doc>
+            <attribute name="version" type="NX_CHAR">
+                <doc>
+                     Program version plus build number, commit hash, or description of an
+                     ever persistent resource where the source code of the program and
+                     build instructions can be found so that the program can be configured
+                     in such a manner that the result file is ideally recreatable
+                     yielding the same results.
+                </doc>
+            </attribute>
+        </field>
+        <field name="run_number" type="NX_CHAR">
+            <doc>
+                 Not the specimen name or the experiment identifier but the identifier
+                 through which the experiment is referred to in the control software.
+                 For LEAP instruments it is recommended to use the IVAS/AP Suite
+                 run_number. For other instruments, such as the one from Stuttgart or
+                 Oxcart from Erlangen, or the instruments in Rouen, use the
+                 identifier which is closest in meaning to the LEAP run number.
+                 
+                 As a destructive microscopy method, a run can be performed only once.
+                 It is possible, however, to interrupt a run and restart data acquisition
+                 while still using the same specimen. In this case, each evaporation run
+                 needs to be distinguished with 
+                 different run numbers. We follow this habit of most atom probe groups.
+            </doc>
+        </field>
+        <group name="experiment_documentation" optional="true" type="NXnote">
+            <doc>
+                 Binary container for a file or a compressed collection of files which 
+                 can be used to add further descriptions and details to the experiment.
+                 The container can hold a compressed archive.
+                 
+                 Required for operation_mode apt_fim or other to give further details.
+                 Users should not abuse this field to provide free-text information.
+                 Instead, these should be mapped to respective groups and sections.
+            </doc>
+        </group>
+        <group name="thumbnail" recommended="true" type="NXnote">
+            <doc>
+                 A small image that is representative of the entry; this can be an
+                 image taken from the dataset like a thumbnail of a spectrum.
+                 A 640 x 480 pixel jpeg image is recommended. 
+                 Adding a scale bar to that image is recommended but not required
+                 as the main purpose of the thumbnail is to provide e.g. thumbnail
+                 images for displaying them in data repositories.
+            </doc>
+            <attribute name="type"/>
+        </group>
+        <field name="operation_mode" type="NX_CHAR">
+            <doc>
+                 What type of atom probe microscope experiment is performed.
+                 This field can be used e.g. by materials database systems to
+                 qualitatively filter experiments.
+                 APT are experiments where the analysis_chamber has no imaging gas.
+                 For FIM analyses an imaging gas is used, which should be specified
+                 with the atmosphere in the analysis_chamber group.
+                 Combinations of the two imaging modes are possible. For these apt_fim
+                 or other operation_mode the user should specify details in the
+                 experiment_documentation field.
+            </doc>
+            <enumeration>
+                <item value="apt"/>
+                <item value="fim"/>
+                <item value="apt_fim"/>
+                <item value="other"/>
+            </enumeration>
+        </field>
+        <group maxOccurs="unbounded" minOccurs="1" name="operator" type="NXuser">
+            <doc>
+                 Contact information and eventually details of at least one person
+                 involved in the taking of the microscope session. This can be the
+                 principle investigator who performed this experiment.
+                 Adding multiple users if relevant is recommended.
+            </doc>
+            <field name="name" type="NX_CHAR">
+                <doc>
+                     Given (first) name and surname of the user.
+                </doc>
+            </field>
+            <field name="affiliation" recommended="true" type="NX_CHAR">
+                <doc>
+                     Name of the affiliation of the user at the point in time when the experiment was
+                     performed.
+                </doc>
+            </field>
+            <field name="address" recommended="true" type="NX_CHAR">
+                <doc>
+                     Postal address of the affiliation.
+                </doc>
+            </field>
+            <field name="email" type="NX_CHAR">
+                <doc>
+                     Email address of the user at the point in time when the experiment was
+                     performed. Writing the most permanently used email is recommended.
+                </doc>
+            </field>
+            <field name="orcid" recommended="true" type="NX_CHAR">
+                <doc>
+                     Globally unique identifier of the user as offered by services like ORCID or
+                     ResearcherID.
+                </doc>
+            </field>
+            <field name="telephone_number" optional="true" type="NX_CHAR">
+                <doc>
+                     (Business) (tele)phone number of the user at the point in time when the
+                     experiment was performed.
+                </doc>
+            </field>
+            <field name="role" optional="true" type="NX_CHAR">
+                <doc>
+                     Which role does the user have in the place and at the point 
+                     in time when the experiment was performed? Technician operating
+                     the microscope. Student, postdoc, principle investigator, guest
+                     are common examples.
+                </doc>
+            </field>
+            <field name="social_media_name" optional="true" type="NX_CHAR">
+                <doc>
+                     Account name that is associated with the user in social media platforms.
+                </doc>
+            </field>
+            <field name="social_media_platform" optional="true" type="NX_CHAR">
+                <doc>
+                     Name of the social media platform where the account under social_media_name is
+                     registered.
+                </doc>
+            </field>
+        </group>
+        <group name="specimen" type="NXsample">
+            <field name="name" type="NX_CHAR">
+                <doc>
+                     Descriptive name or ideally (globally) unique persistent identifier.
+                     The name distinguishes the specimen from all others and especially the
+                     predecessor/origin from where the specimen was cut.
+                     In cases where the specimen was e.g. site-specifically cut from
+                     samples or in cases of an instrument session during which multiple
+                     specimens are loaded, the name has to be descriptive enough to resolve
+                     which specimen on e.g. the microtip array was taken. 
+                     
+                     The user is advised to store the details how specimens were 
+                     cut/prepared from samples in the sample history.
+                     This field must not be used for an alias of the specimen.
+                     Instead, use short_title.
+                     
+                     In cases where multiple specimens have been loaded into the microscope
+                     the name has to be the specific one, whose results are stored
+                     by this NXentry, because a single NXentry should be used only for
+                     the characterization of a single specimen.
+                     
+                     Details about the specimen preparation should be stored in the 
+                     sample history.
+                </doc>
+            </field>
+            <field name="sample_history" type="NX_CHAR">
+                <doc>
+                     Ideally, a reference to the location of or a (globally) unique
+                     persistent identifier of e.g. another file which should document 
+                     ideally as many details as possible of the material, its 
+                     microstructure, and its thermo-chemo-mechanical processing/preparation
+                     history.
+                     
+                     In the case that such a detailed history of the sample/specimen is not
+                     available, use this field as a free-text description to specify a
+                     sub-set of the entire sample history, i.e. what you would consider
+                     being the key steps and relevant information about the specimen,
+                     its material, microstructure, thermo-chemo-mechanical processing
+                     state and details of the preparation.
+                </doc>
+            </field>
+            <field name="preparation_date" type="NX_DATE_TIME">
+                <doc>
+                     ISO 8601 time code with local time zone offset to UTC information
+                     when the specimen was prepared.
+                     
+                     Ideally report the end of the preparation, i.e. the last known time
+                     the measured specimen surface was actively prepared. Usually this
+                     should be a part of the sample history, i.e. the sample is imagined
+                     handed over for the analysis. At the point it enters the microscope
+                     the session starts.
+                     
+                     Knowing when the specimen was exposed to e.g. specific atmosphere is
+                     especially required for environmentally sensitive material such as
+                     hydrogen charged specimens or experiments including tracers with a
+                     short half time. Further time stamps prior to preparation_date should
+                     better be placed in resources which describe the sample_history.
+                </doc>
+            </field>
+            <field name="short_title" optional="true" type="NX_CHAR">
+                <doc>
+                     Possibility to give an abbreviation of the specimen name field.
+                </doc>
+            </field>
+            <field name="atom_types" type="NX_CHAR">
+                <doc>
+                     Use Hill's system for listing elements of the periodic table which
+                     are inside or attached to the surface of the specimen and thus
+                     relevant from a scientific point of view.
+                     
+                     The purpose of the field is to offer materials database systems an
+                     opportunity to parse the relevant elements without having to interpret
+                     these from the sample history.
+                </doc>
+            </field>
+            <field name="description" optional="true" type="NX_CHAR">
+                <doc>
+                     Discouraged free-text field in case properly designed records for the
+                     sample_history are not available.
+                </doc>
+            </field>
+        </group>
+        <group type="NXdata">
+            <doc>
+                 Hard link to a location in the hierarchy of the NeXus file
+                 where the data for default plotting are stored.
+            </doc>
+        </group>
+        <group type="NXcoordinate_system_set">
+            <doc>
+                 Container to hold different coordinate systems conventions.
+                 
+                 For the specific idea and conventions to use with the
+                 NXcoordinate_system_set inspect the description of the
+                 NXcoordinate_system_set base class.
+                 
+                 Specific details for application in atom probe microscopy follow.
+                 In this research field scientists distinguish usually several
+                 Euclidean coordinate systems (CS):
+                 
+                 * The laboratory space;  
+                   a CS specifying the room where the instrument is located in or  
+                   a physical landmark on the instrument, e.g. the direction of the  
+                   transfer rod where positive is the direction how the rod  
+                   pushes into the instrument.  
+                 * The specimen space;  
+                   a CS affixed to either the base or the initial apex of the specimen,  
+                   whose z axis points towards the detector.  
+                 * The detector space;  
+                   a CS affixed whose xy plane is usually in the detector and whose  
+                   z axis points towards the specimen.  
+                 * The reconstruction space;  
+                   a CS associated with the tomographic reconstruction.  
+                   Its orientation depends on the commercial software used.  
+                 * Eventually further coordinate systems attached to the  
+                   flight path of individual ions might be defined.  
+                 
+                 Coordinate systems should be right-handed ones.
+                 Clockwise rotations should be considered positive rotations.
+                 
+                 In atom probe microscopy a frequently used choice for the detector
+                 space (CS) is discussed with the so-called detector space image
+                 (stack). This is a stack of two-dimensional histograms of detected ions
+                 within a predefined evaporation ID interval. Typically, the set of
+                 ion evaporation sequence IDs is grouped into chunks.
+                 
+                 For each chunk a histogram of the ion hit positions on the detector
+                 is computed. This leaves the possibility for inconsistency between
+                 the so-called detector space and the e.g. specimen space.
+                 
+                 The transformation here resolves this ambiguity by specifying how
+                 the positive z-axes of either coordinate systems is oriented.
+                 Consult the work of A. J. Breen and B. Gault and team
+                 for further details.
+            </doc>
+        </group>
+        <group maxOccurs="unbounded" minOccurs="0" type="NXmonitor"/>
+        <group name="atom_probe" type="NXinstrument">
+            <doc>
+                 Metadata and numerical data of the atom probe and the lab in which it 
+                 stands.
+                 
+                 An atom probe microscope (experiment) is different compared to a large-
+                 scale facility or electron accelerator experiments in at least two ways:
+                 
+                 * First, ionized atoms and molecular ion(s fragments)  
+                   (in the case of atom probe tomography)  
+                   and (primarily) imaging gas ions (in the case of field ion  
+                   microscopy) are accelerated towards a position-sensitive  
+                   and time-of-flight taking detector system.  
+                   Hence, there is no real probe/beam.  
+                 * Second, the specimen is the lens of an atom probe microscope.  
+            </doc>
+            <field name="instrument_name" type="NX_CHAR">
+                <doc>
+                     Given name of the atom probe at the hosting institution. This is an 
+                     alias. Examples could be LEAP5000, Raptor, Oxcart, one atom at a time,
+                     etc.
+                </doc>
+            </field>
+            <field name="location" optional="true" type="NX_CHAR">
+                <doc>
+                     Location of the lab or place where the instrument is installed.
+                     Using GEOREF is preferred.
+                </doc>
+            </field>
+            <group type="NXmanufacturer"/>
+            <field name="flight_path_length" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     The space inside the atom probe that ions pass through nominally when they leave
+                     the specimen and travel to the detector.
+                </doc>
+            </field>
+            <field name="field_of_view" optional="true" type="NX_FLOAT" units="NX_LENGTH"/>
+            <group name="analysis_chamber" optional="true" type="NXchamber"/>
+            <group name="load_lock_chamber" optional="true" type="NXchamber"/>
+            <group name="buffer_chamber" optional="true" type="NXchamber"/>
+            <group name="getter_pump" optional="true" type="NXpump"/>
+            <group name="roughening_pump" optional="true" type="NXpump"/>
+            <group name="turbomolecular_pump" optional="true" type="NXpump"/>
+            <group optional="true" type="NXreflectron">
+                <field name="applied" type="NX_BOOLEAN">
+                    <doc>
+                         Was the reflectron used?
+                    </doc>
+                </field>
+            </group>
+            <group name="local_electrode" type="NXlens_em">
+                <doc>
+                     A local electrode guiding the ion flight path.
+                </doc>
+                <field name="name" type="NX_CHAR">
+                    <doc>
+                         Identifier of the local_electrode in an e.g. database.
+                    </doc>
+                </field>
+                <group optional="true" type="NXaperture_em"/>
+            </group>
+            <group name="ion_detector" type="NXdetector">
+                <doc>
+                     Detector for taking raw time-of-flight and
+                     ion/hit impact positions data.
+                </doc>
+                <field name="type" type="NX_CHAR">
+                    <doc>
+                         Description of the detector type. Specify if the detector is
+                         not the usual type, i.e. not a delay-line detector.
+                         In the case the detector is a multi-channel plate/
+                         delay line detector, use mcp_dld. In the case the detector is
+                         a phosphor CCD use phosphor_ccd. In other case specify
+                         the detector type via free-text.
+                    </doc>
+                </field>
+                <field name="name" recommended="true" type="NX_CHAR">
+                    <doc>
+                         Given name/alias.
+                    </doc>
+                </field>
+                <field name="model" recommended="true" type="NX_CHAR">
+                    <doc>
+                         Given brand or model name by the manufacturer.
+                    </doc>
+                </field>
+                <field name="serial_number" recommended="true" type="NX_CHAR">
+                    <doc>
+                         Given hardware name/serial number or hash identifier issued by the manufacturer.
+                    </doc>
+                </field>
+                <field name="manufacturer_name" recommended="true" type="NX_CHAR">
+                    <doc>
+                         Given name of the manufacturer.
+                    </doc>
+                </field>
+                <field name="signal_amplitude" optional="true" type="NX_FLOAT" units="NX_CURRENT">
+                    <doc>
+                         Amplitude of the signal detected on the multi-channel plate (MCP).
+                         
+                         This field should be used for storing the signal amplitude quantity
+                         within ATO files. The ATO file format is used primarily by the
+                         atom probe groups of the GPM in Rouen, France.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="pulser" type="NXpulser_apm">
+                <field name="pulse_mode" type="NX_CHAR"/>
+                <field name="pulse_frequency" type="NX_NUMBER"/>
+                <field name="pulse_fraction" type="NX_NUMBER"/>
+                <field name="pulsed_voltage" type="NX_FLOAT"/>
+            </group>
+            <group type="NXstage_lab">
+                <field name="base_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
+                    <doc>
+                         Average temperature at the specimen base, i.e. base temperature, during the
+                         measurement.
+                    </doc>
+                </field>
+            </group>
+            <group name="control_software" optional="true" type="NXcollection">
+                <doc>
+                     The majority of atom probe microscopes come from a
+                     single commercial manufacturer `AMETEK (formerly Cameca) &lt;https://www.atomprobe.com&gt;`_.
+                     Their instruments are controlled via an(/a set) of integrated
+                     instrument control system(s) (APSuite/IVAS/DAVis).
+                     
+                     By contrast, instruments which were built by individual
+                     research groups such as of the French (GPM, Rouen, France),
+                     the Schmitz (Inspico, Stuttgart, Germany),
+                     the Felfer (Oxcart, Erlangen, Germany),
+                     the Northwestern (D. Isheim, Seidman group et al.),
+                     or the PNNL group (Pacific Northwest National Laborary,
+                     Portland, Oregon, U.S.) have other solutions
+                     to control the instrument.
+                     
+                     Some of which are modularized and open,
+                     some of which realize also integrated control units with
+                     portions of eventually undisclosed source code and
+                     (so far) lacking (support of)/open APIs.
+                     
+                     Currently, there is no accepted/implemented
+                     community-specific API for getting finely granularized
+                     access to such control settings.
+                     
+                     These considerations motivated the design of the NXapm
+                     application definition in that it stores quantities in NXcollection.
+                     groups to begin with. Holding heterogeneous, not yet standardized
+                     but relevant pieces of information is the purpose of this collection.
+                </doc>
+                <group name="analysis_chamber" optional="true" type="NXcollection">
+                    <doc>
+                         Track time-dependent settings over the course of the measurement about the
+                         environment in the analysis chamber such as gas pressure values etc.
+                    </doc>
+                    <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
+                        <doc>
+                             Average pressure in the analysis chamber.
+                        </doc>
+                    </field>
+                </group>
+            </group>
+            <group name="specimen_monitoring" optional="true" type="NXcollection">
+                <doc>
+                     A place where details about the initial shape of the specimen
+                     can be stored. Ideally, here also data about the shape evolution
+                     of the specimen can be stored. There are currently very few
+                     techniques which can measure the shape evolution:
+                     
+                     * Correlative electron microscopy coupled with modeling  
+                       but this usually takes an interrupted experiment  
+                       in which the specimen is transferred, an image taken,  
+                       and a new evaporation sequence initiated.  
+                       Examples are `I. Mouton et al. &lt;https://doi.org/10.1017/S1431927618016161&gt;`_ and `C. Fletcher &lt;https://doi.org/10.1088/1361-6463/abaaa6&gt;`_.
+                     * Another, less accurate method, though, is to monitor  
+                       the specimen evolution via the in-built camera system  
+                       (if available) in the instrument.  
+                     * Another method is to use correlated scanning force microscopy  
+                       methods like reported in `C. Fleischmann &lt;https://doi.org/10.1016/j.ultramic.2018.08.010&gt;`_.  
+                     * A continuous monitoring of the specimen in a   
+                       correlative electron microscopy/atom probe experiment  
+                       is planned to be developed by `T. Kelly et al. &lt;https://doi.org/10.1017/S1431927620022205&gt;`_  
+                </doc>
+                <field name="initial_radius" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Ideally measured or best elaborated guess of the initial radius of the specimen.
+                    </doc>
+                </field>
+                <field name="shank_angle" type="NX_FLOAT" units="NX_ANGLE">
+                    <doc>
+                         Ideally measured or best elaborated guess of the shank angle.
+                         This is a measure of the specimen taper. Define it in such a way
+                         that the base of the specimen is modelled as a conical frustrum so
+                         that the shank angle is the (shortest) angle between the specimen
+                         space z-axis and a vector on the lateral surface of the cone.
+                    </doc>
+                </field>
+            </group>
+            <group name="ion_impact_positions" recommended="true" type="NXprocess">
+                <doc>
+                     Details about where ions hit the ion_detector and data processing
+                     steps related to analog-to-digital conversion of detector signals
+                     into ion hit positions. For AMETEK LEAP instruments this processing
+                     takes place partly in the control unit of the detector partly
+                     in the software. The process is controlled by the acquisition/
+                     instrument control software (IVAS/APSuite/DAVis).
+                     The exact details are not documented by AMETEK in an open manner.
+                     For instruments built by individual research groups,
+                     like the Oxcart instrument, individual timing data from the
+                     delay-line detector are openly accessible.
+                </doc>
+                <field name="program" type="NX_CHAR">
+                    <doc>
+                         Given name of the program that was used to perform this computation.
+                         Apart from the classical approach to use AMETEK software for this
+                         processing step, a number of open-source alternative tools exists.
+                    </doc>
+                    <attribute name="version" type="NX_CHAR">
+                        <doc>
+                             Program version plus build number, commit hash, or description of
+                             an ever persistent resource where the source code of the program
+                             and build instructions can be found so that the program can be
+                             configured in such a manner that the result file is ideally
+                             recreatable yielding the same results.
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="arrival_time_pairs" recommended="true" type="NX_NUMBER" units="NX_TIME">
+                    <doc>
+                         Raw readings from the analog-to-digital-converter
+                         timing circuits of the detector wires.
+                    </doc>
+                    <dimensions rank="3">
+                        <dim index="1" value="n_ions"/>
+                        <dim index="2" value="n_dld_wires"/>
+                        <dim index="3" value="2"/>
+                    </dimensions>
+                </field>
+                <field name="hit_positions" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                         Evaluated ion impact coordinates at the detector
+                         (either as computed from the arrival time data
+                         or as reported by the control software).
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="n_ions"/>
+                        <dim index="2" value="2"/>
+                    </dimensions>
+                </field>
+                <field name="detection_rate" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                    <doc>
+                         Average detection rate over the course of the experiment.
+                    </doc>
+                </field>
+            </group>
+            <group name="hit_multiplicity" recommended="true" type="NXprocess">
+                <doc>
+                     Data post-processing step which is, like the impact position analyses, 
+                     also usually executed in the integrated control software. 
+                     This processing yields how many ions were detected with each pulse.
+                     
+                     It is possible that multiple ions evaporate and hit the same or 
+                     different pixels of the detector on the same pulse. 
+                     These data form the basis to analyses of the so-called
+                     (hit) multiplicity of an ion. 
+                     Multiplicity must not be confused with how many 
+                     atoms of the same element or isotope, respectively,
+                     a molecular ion contains (which is encoded with the
+                     isotope_vector field of each NXion instance.
+                </doc>
+                <field name="program" type="NX_CHAR">
+                    <doc>
+                         Given name of the program that was used to perform this computation.
+                         Apart from the classical approach to use AMETEK software for this
+                         processing step, a number of open-source alternative tools exists.
+                    </doc>
+                    <attribute name="version" type="NX_CHAR">
+                        <doc>
+                             Program version plus build number, commit hash, or description of
+                             an ever persistent resource where the source code of the program 
+                             and build instructions can be found so that the program can be
+                             configured in such a manner that the result file is ideally
+                             recreatable yielding the same results.
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="pulses_since_last_ion" recommended="true" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Number of pulses since the last detected ion pulse.
+                         For multi-hit records, after the first record, this is zero.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="hit_multiplicity" recommended="true" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Hit multiplicity.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="pulse_id" optional="true" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Number of pulses since the start of the atom probe run/evaporation sequence.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="ion_filtering" recommended="true" type="NXprocess">
+                <doc>
+                     Like impact position and hit multiplicity computations, 
+                     ion filtering is a data post-processing step with which users
+                     identify which of the detected ions should be included
+                     in the voltage-and-bowl correction.
+                     This post-processing is usually performed via GUI interaction
+                     in the reconstruction pipeline of IVAS/APSuite.
+                </doc>
+                <field name="program" type="NX_CHAR">
+                    <doc>
+                         Given name of the program that was used to perform this computation.
+                         Apart from the classical approach to use AMETEK software for this
+                         processing step, a number of open-source alternative tools exists.
+                    </doc>
+                    <attribute name="version" type="NX_CHAR">
+                        <doc>
+                             Program version plus build number, commit hash, or description of
+                             an ever persistent resource where the source code of the program
+                             and build instructions can be found so that the program can be
+                             configured in such a manner that the result file is ideally
+                             recreatable yielding the same results.
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="evaporation_id_included" type="NX_BOOLEAN">
+                    <doc>
+                         Bitmask which is set to true if the ion is considered and false otherwise.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="voltage_and_bowl_correction" recommended="true" type="NXprocess">
+                <doc>
+                     Data post-processing step to correct for ion impact 
+                     position flight path differences, detector biases, 
+                     and nonlinearities. This step is usually performed
+                     with commercial software.
+                </doc>
+                <field name="program" type="NX_CHAR">
+                    <doc>
+                         Given name of the program that was used to perform this computation.
+                         Apart from the classical approach to use AMETEK software for this
+                         processing step, a number of open-source alternative tools exists.
+                    </doc>
+                    <attribute name="version" type="NX_CHAR">
+                        <doc>
+                             Program version plus build number, commit hash, or description of
+                             an ever persistent resource where the source code of the program
+                             and build instructions can be found so that the program can be
+                             configured in such a manner that the result file is ideally
+                             recreatable yielding the same results.
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="raw_tof" recommended="true" type="NX_FLOAT" units="NX_TIME">
+                    <doc>
+                         Raw time-of-flight data as read out from the acquisition software if these data
+                         are available and accessible.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <field name="calibrated_tof" type="NX_FLOAT" units="NX_TIME">
+                    <doc>
+                         Calibrated time-of-flight.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <group name="tof_calibration" recommended="true" type="NXcollection">
+                    <doc>
+                         The key idea and algorithm of the voltage-and-bowl correction 
+                         is qualitatively similar for instruments of different manufacturers
+                         or research groups.
+                         
+                         Specific differences exists though in the form of different
+                         calibration models. For now we do not wish to resolve or 
+                         generalize these differences. Rather the purpose of this collection
+                         is to provide a container where model-specific parameters
+                         and calibration models can be stored if users know these
+                         for sure.
+                         
+                         For AMETEK LEAP atom probes this should be the place for
+                         storing initial calibration values. These values are
+                         accessible normally only by AMETEK service engineers.
+                         They use these for calibrating the detector and instrument.
+                         
+                         Users can also use this NXcollection for storing the
+                         iteratively identified calibrations which scientists
+                         will get displayed in e.g. AP Suite while they execute
+                         the voltage-and-bowl correction as a part of the
+                         reconstruction pipeline in APSuite.
+                    </doc>
+                </group>
+            </group>
+            <group name="mass_to_charge_conversion" recommended="true" type="NXprocess">
+                <doc>
+                     Data post-processing step in which calibrated time-of-flight data
+                     (ToF) are interpreted into mass-to-charge-state ratios.
+                </doc>
+                <field name="program" type="NX_CHAR">
+                    <doc>
+                         Given name of the program that was used to perform this computation.
+                         Apart from the classical approach to use AMETEK software for this
+                         processing step, a number of open-source alternative tools exists.
+                    </doc>
+                    <attribute name="version" type="NX_CHAR">
+                        <doc>
+                             Program version plus build number, commit hash, or description of
+                             an ever persistent resource where the source code of the program
+                             and build instructions can be found so that the program can be
+                             configured in such a manner that the result file is ideally
+                             recreatable yielding the same results.
+                        </doc>
+                    </attribute>
+                </field>
+                <group name="parameter" recommended="true" type="NXcollection">
+                    <doc>
+                         Store vendor-specific calibration models here (if available).
+                    </doc>
+                </group>
+                <field name="mass_to_charge" type="NX_FLOAT" units="NX_ANY">
+                    <doc>
+                         Mass-to-charge-state ratios
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="reconstruction" recommended="true" type="NXprocess">
+                <doc>
+                     Data post-processing step to create a tomographic reconstruction
+                     of the specimen based on selected calibrated ion hit positions,
+                     the evaporation sequence, and voltage curve data.
+                     Very often scientists use own software scripts according to
+                     published procedures, so-called reconstruction protocols,
+                     i.e. numerical recipes how to compute x, y, z atomic positions
+                     from the input data.
+                </doc>
+                <field name="program" type="NX_CHAR">
+                    <doc>
+                         Given name of the program that was used to perform this computation.
+                         Similar comments as voltage_and_bowl_correction apply.
+                    </doc>
+                    <attribute name="version" type="NX_CHAR">
+                        <doc>
+                             Program version plus build number, commit hash, or description of
+                             an ever persistent resource where the source code of the program
+                             and build instructions can be found so that the program can be
+                             configured in such a manner that the result file is ideally
+                             recreatable yielding the same results.
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="protocol_name" recommended="true" type="NX_CHAR">
+                    <doc>
+                         Qualitative statement about which reconstruction protocol was used.
+                    </doc>
+                    <enumeration>
+                        <item value="bas_original"/>
+                        <item value="bas_modified"/>
+                        <item value="geiser"/>
+                        <item value="gault"/>
+                        <item value="ivas"/>
+                        <item value="apsuite"/>
+                        <item value="other"/>
+                    </enumeration>
+                </field>
+                <field name="reconstructed_positions" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Three-dimensional reconstructed positions of the ions.
+                         Interleaved array of x, y, z positions in the specimen space.
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="n_ions"/>
+                        <dim index="2" value="3"/>
+                    </dimensions>
+                </field>
+                <group name="parameter" recommended="true" type="NXcollection">
+                    <doc>
+                         Different reconstruction protocols exist. Although these approaches
+                         are qualitatively similar, each protocol uses different parameters
+                         (and interprets these differently). The source code to IVAS/APSuite
+                         is not open. For now users should store reconstruction parameter
+                         in a collection.
+                    </doc>
+                </group>
+                <group name="naive_point_cloud_density_map" type="NXprocess">
+                    <doc>
+                         To get a first overview of the reconstructed dataset,
+                         the format conversion computes a simple 3d histogram
+                         of the ion density using one nanometer cubic bins without
+                         applying smoothening algorithms on this histogram.
+                    </doc>
+                    <field name="program" type="NX_CHAR">
+                        <doc>
+                             Given name of the program that was used to perform this computation.
+                             Apart from the classical approach to use AMETEK software for this
+                             processing step, a number of open-source alternative tools exists.
+                        </doc>
+                        <attribute name="version" type="NX_CHAR">
+                            <doc>
+                                 Program version plus build number, commit hash, or description of
+                                 an ever persistent resource where the source code of the program
+                                 and build instructions can be found so that the program can be
+                                 configured in such a manner that the result file is ideally
+                                 recreatable yielding the same results.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <group type="NXdata">
+                        <doc>
+                             A default three-dimensional histogram of the total number of ions in each bin.
+                        </doc>
+                        <field name="counts" type="NX_NUMBER" units="NX_UNITLESS">
+                            <doc>
+                                 Array of counts for each bin.
+                            </doc>
+                            <dimensions rank="3">
+                                <dim index="1" value="n_z"/>
+                                <dim index="2" value="n_y"/>
+                                <dim index="3" value="n_x"/>
+                            </dimensions>
+                        </field>
+                        <field name="zpos" type="NX_NUMBER" units="NX_LENGTH">
+                            <doc>
+                                 Bin positions along the z axis.
+                            </doc>
+                        </field>
+                        <field name="ypos" type="NX_NUMBER" units="NX_LENGTH">
+                            <doc>
+                                 Bin positions along the y axis.
+                            </doc>
+                        </field>
+                        <field name="xpos" type="NX_NUMBER" units="NX_LENGTH">
+                            <doc>
+                                 Bin positions along the x axis.
+                            </doc>
+                        </field>
+                        <attribute name="long_name">
+                            <doc>
+                                 Naive point cloud density map.
+                            </doc>
+                        </attribute>
+                    </group>
+                </group>
+            </group>
+            <group name="ranging" recommended="true" type="NXprocess">
+                <doc>
+                     Data post-processing step in which elemental, isotopic,
+                     and/or molecular identities are assigned to the ions.
+                     The documentation of these steps is based on ideas
+                     described in the literature:
+                     
+                     * `M. K. Miller &lt;https://doi.org/10.1002/sia.1719&gt;`_  
+                     * `D. Haley et al. &lt;https://doi.org/10.1017/S1431927620024290&gt;`_  
+                     * `M. Kühbach et al. &lt;https://doi.org/10.1017/S1431927621012241&gt;`_  
+                </doc>
+                <field name="program" type="NX_CHAR">
+                    <doc>
+                         Given name of the program that was used to perform this computation.
+                         Apart from the classical approach to use AMETEK software for this
+                         processing step, a number of open-source alternative tools exists.
+                    </doc>
+                    <attribute name="version" type="NX_CHAR">
+                        <doc>
+                             Program version plus build number, commit hash, or description of
+                             an ever persistent resource where the source code of the program
+                             and build instructions can be found so that the program can be
+                             configured in such a manner that the result file is ideally
+                             recreatable yielding the same results.
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="number_of_ion_types" type="NX_POSINT" units="NX_UNITLESS">
+                    <doc>
+                         How many ion types are distinguished.
+                         If no ranging was performed each ion is of the special unknown type.
+                    </doc>
+                </field>
+                <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Assumed maximum value that suffices to store all relevant
+                         molecular ions, even the most complicated ones. 
+                         Currently a value of 32 is used.
+                    </doc>
+                </field>
+                <group name="mass_to_charge_distribution" recommended="true" type="NXprocess">
+                    <doc>
+                         Specifies the computation of the mass-to-charge histogram.
+                         Usually mass-to-charge values are studied as an ensemble quantity,
+                         specifically these values are binned.
+                         The (NXprocess) stores the settings of this binning.
+                    </doc>
+                    <field name="program" type="NX_CHAR">
+                        <doc>
+                             Given name of the program that was used to perform this computation.
+                             Apart from the classical approach to use AMETEK software for this
+                             processing step, a number of open-source alternative tools exists.
+                        </doc>
+                        <attribute name="version" type="NX_CHAR">
+                            <doc>
+                                 Program version plus build number, commit hash, or description of
+                                 an ever persistent resource where the source code of the program
+                                 and build instructions can be found so that the program can be
+                                 configured in such a manner that the result file is ideally
+                                 recreatable yielding the same results.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <field name="range_minmax" type="NX_FLOAT" units="NX_ANY">
+                        <doc>
+                             Smallest and largest mass-to-charge value.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="2"/>
+                        </dimensions>
+                    </field>
+                    <field name="range_increment" type="NX_FLOAT" units="NX_ANY">
+                        <doc>
+                             Binning width
+                        </doc>
+                    </field>
+                    <group name="mass_spectrum" type="NXdata">
+                        <doc>
+                             A default histogram aka mass spectrum of
+                             the mass-to-charge-state ratio values.
+                        </doc>
+                        <field name="counts" type="NX_NUMBER" units="NX_UNITLESS">
+                            <doc>
+                                 Array of counts for each bin.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_bins"/>
+                            </dimensions>
+                        </field>
+                        <field name="bin_ends" type="NX_NUMBER" units="NX_ANY">
+                            <doc>
+                                 End of mass-to-charge-state ratio bin.
+                            </doc>
+                        </field>
+                        <attribute name="long_name">
+                            <doc>
+                                 Mass-to-charge-state histogram.
+                            </doc>
+                        </attribute>
+                    </group>
+                </group>
+                <group name="background_quantification" recommended="true" type="NXprocess">
+                    <doc>
+                         Details of the background model which was used to
+                         correct the total counts per bin into counts.
+                    </doc>
+                    <field name="program" type="NX_CHAR">
+                        <doc>
+                             Given name of the program that was used to perform this computation.
+                             Apart from the classical approach to use AMETEK software for this
+                             processing step, a number of open-source alternative tools exists.
+                        </doc>
+                        <attribute name="version" type="NX_CHAR">
+                            <doc>
+                                 Program version plus build number, commit hash, or description of
+                                 an ever persistent resource where the source code of the program
+                                 and build instructions can be found so that the program can be
+                                 configured in such a manner that the result file is ideally
+                                 recreatable yielding the same results.
+                            </doc>
+                        </attribute>
+                    </field>
+                </group>
+                <group name="peak_search_and_deconvolution" recommended="true" type="NXprocess">
+                    <doc>
+                         How where peaks in the background-corrected 
+                         mass-to-charge histogram identified?
+                    </doc>
+                    <field name="program" type="NX_CHAR">
+                        <doc>
+                             Given name of the program that was used to perform this computation.
+                             Apart from the classical approach to use AMETEK software for this
+                             processing step, a number of open-source alternative tools exists.
+                        </doc>
+                        <attribute name="version" type="NX_CHAR">
+                            <doc>
+                                 Program version plus build number, commit hash, or description of
+                                 an ever persistent resource where the source code of the program
+                                 and build instructions can be found so that the program can be
+                                 configured in such a manner that the result file is ideally
+                                 recreatable yielding the same results.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <group type="NXpeak"/>
+                </group>
+                <group name="peak_identification" recommended="true" type="NXprocess">
+                    <doc>
+                         Details about how peaks, with taking into account
+                         error models, were interpreted as ion types or not.
+                    </doc>
+                    <field name="program" type="NX_CHAR">
+                        <doc>
+                             Given name of the program that was used to perform this computation.
+                             Apart from the classical approach to use AMETEK software for this
+                             processing step, a number of open-source alternative tools exists.
+                        </doc>
+                        <attribute name="version" type="NX_CHAR">
+                            <doc>
+                                 Program version plus build number, commit hash, or description of
+                                 an ever persistent resource where the source code of the program
+                                 and build instructions can be found so that the program can be
+                                 configured in such a manner that the result file is ideally
+                                 recreatable yielding the same results.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <group type="NXion">
+                        <field name="isotope_vector" type="NX_UINT"/>
+                        <field name="charge_state" type="NX_UINT"/>
+                        <field name="mass_to_charge_range" type="NX_FLOAT">
+                            <dimensions rank="2">
+                                <dim index="1" value="n_ranges"/>
+                                <dim index="2" value="2"/>
+                            </dimensions>
+                        </field>
+                    </group>
+                </group>
+            </group>
+        </group>
+    </group>
+</definition>

@@ -160,7 +160,7 @@ The list is not intended to be a complete list of all available packages.
    file; validate
    punx (utility)
 
-.. _punx:
+.. _punx_util:
 
 **punx**
    Python Utilities for NeXus HDF5 files
@@ -176,6 +176,28 @@ The list is not intended to be a complete list of all available packages.
     
    See the program documentation for more details:
    https://punx.readthedocs.io
+
+Other Utilities
+###############
+
+.. index:: 
+	NeXus Constructor
+
+**NeXus Constructor** (https://github.com/ess-dmsc/nexus-constructor)
+    The NeXus Constructor facilitates constructing NeXus files in which to record data from
+    experiments at neutron science facilities. This includes all supporting metadata typically
+    required to perform analysis of such experiments, including instrument geometry information.
+
+.. index:: 
+	nxdl_to_hdf5.py
+
+**nxdl_to_hdf5.py** (https://github.com/nexusformat/exampledata/tree/master/nxdl)
+    ``nxdl_to_hdf5.py`` is a Python script that reads the NeXus definition files
+    (files ending with ``.nxdl.xml``) and creates example Python scripts as well
+    as HDF5 files for each definition. There are generated example scripts of
+    each application definition for both *h5py* and *nexusformat*. Currently, only
+    application definitions and some contributed_definitions are supported as
+    the code depends on the existence of an :ref:`NXentry` in the definition.
 
 Data Analysis
 #############
@@ -278,6 +300,15 @@ as a data format.  It is not intended to be a complete list of all available pac
     neutron scattering data.
     (It was decided at the NIAC 2010 meeting that a large portion of this code
     would be adopted in the future by NeXus and be part of the distribution)
+
+.. index:: 
+	silx (data analysis software)
+
+**silx** (http://www.silx.org/doc/silx/latest/)
+    The silx project aims to provide a collection of Python packages to support
+    the development of data assessment, reduction and analysis at synchrotron
+    radiation facilities.
+    In particular it provides tools to read, write and visualize NeXus HDF5 files.
 
 .. index:: 
 	OpenGENIE (data analysis software)
