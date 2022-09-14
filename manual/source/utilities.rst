@@ -365,14 +365,6 @@ low level programmatic access to the data structures.
     https://h5web.panosc.eu/h5wasm?url=https%3A%2F%2Fmanual.nexusformat.org%2F_downloads%2Fb9b76d34af0f606d0e0958a234054608%2Fsimple_example_basic.nexus.hdf5
 
 .. index::
-	vscode-h5web; tools
-
-**vscode-h5web** (https://github.com/silx-kit/vscode-h5web)
-    Explore and visualize data stored in HDF5 files usingthis extension
-    for Microsoft VisualStudio Code Editor
-    (https://marketplace.visualstudio.com/items?itemName=h5web.vscode-h5web).
-
-.. index::
 	HDF; tools
 
 **HDF Group command line tools** (http://www.hdfgroup.org/products/hdf5_tools/#h5dist/)
@@ -399,6 +391,14 @@ low level programmatic access to the data structures.
 **tiled** (https://blueskyproject.io/tiled/)
     A *data access service* for data-aware portals and data science tools,
     provides a way to browse and visualize HDF5 files.
+
+.. index::
+	vscode-h5web; tools
+
+**vscode-h5web** (https://github.com/silx-kit/vscode-h5web)
+    Explore and visualize data stored in HDF5 files usingthis extension
+    for Microsoft VisualStudio Code Editor
+    (https://marketplace.visualstudio.com/items?itemName=h5web.vscode-h5web).
 
 .. _language.apis:
 
