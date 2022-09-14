@@ -396,8 +396,8 @@ low level programmatic access to the data structures.
 	vscode-h5web; tools
 
 **vscode-h5web** (https://github.com/silx-kit/vscode-h5web)
-    Explore and visualize data stored in HDF5 files usingthis extension
-    for Microsoft VisualStudio Code Editor
+    Explore and visualize data stored in HDF5 files using this extension
+    for Microsoft Visual Studio Code Editor
     (https://marketplace.visualstudio.com/items?itemName=h5web.vscode-h5web).
 
 .. _language.apis:
