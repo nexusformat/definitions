@@ -355,6 +355,13 @@ APIs for many programming languages that will allow
 low level programmatic access to the data structures.
 
 .. index:: 
+	H5Web; tools
+
+**H5Web** (https://h5web.panosc.eu/)
+    Explore and visualize data stored in HDF5 files usingthis extension
+    for Microsoft VisualStudio Code Editor (https://code.visualstudio.com/).
+
+.. index:: 
 	HDF; tools
 
 **HDF Group command line tools** (http://www.hdfgroup.org/products/hdf5_tools/#h5dist/)
@@ -363,14 +370,14 @@ low level programmatic access to the data structures.
     download separately.
 
 .. index:: 
-	HDFexplorer
+	HDFexplorer; tools
 
 **HDFexplorer** (http://www.space-research.org/)
     A data visualization program that reads Hierarchical Data Format 
     files (HDF, HDF-EOS and HDF5) and also netCDF data files.
 
 .. index:: 
-	HDFview
+	HDFview; tools
 
 **HDFview** (http://www.hdfgroup.org)
     A Java based GUI for browsing (and some basic plotting) of HDF files.
