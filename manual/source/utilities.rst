@@ -349,17 +349,17 @@ as a data format.  It is not intended to be a complete list of all available pac
 HDF Tools
 #########
 
-Here are some of the generic tools that are available to work with HDF files.
-In addition to the software listed here there are also
-APIs for many programming languages that will allow
-low level programmatic access to the data structures.
+Here are some of the generic tools that are available to work with HDF files. In
+addition to the software listed here there are also APIs for many programming
+languages that will allow low level programmatic access to the data structures.
 
 .. index::
     h5wasm; tools
 
 **h5wasm** (https://github.com/usnistgov/h5wasm):
 
-    A WebAssembly port of the HDF5 C library, which allows reading and writing
+    A `WebAssembly <https://webassembly.org/>`__
+    port of the HDF5 C library, which allows reading and writing
     HDF5 files from JavaScript (i.e. no need for a back-end server at all).
 
     * On-line visualization with NeXus file:
