@@ -621,7 +621,7 @@ class NXClassDocGenerator:
             self._print(
                 f"{indent}**{name}**: "
                 ":ref:`link<Design-Links>` "
-                f"(suggested target: ``{node.get('target')}``"
+                f"(suggested target: ``{node.get('target')}``)"
                 "\n"
             )
             self._print_doc(indent + self._INDENTATION_UNIT, ns, node)
