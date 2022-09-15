@@ -364,7 +364,7 @@ languages that will allow low level programmatic access to the data structures.
 
 .. index::
     jupyterlab-h5web; tools
-    vscode-w5web; tools
+    vscode-h5web; tools
     h5web; tools
 
 **H5Web** (https://github.com/silx-kit/h5web):
