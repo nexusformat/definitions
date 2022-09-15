@@ -362,9 +362,6 @@ languages that will allow low level programmatic access to the data structures.
     port of the HDF5 C library, which allows reading and writing
     HDF5 files from JavaScript (i.e. no need for a back-end server at all).
 
-    * On-line visualization with NeXus file:
-      `simple_example_basic.nexus.hdf5 <https://h5web.panosc.eu/h5wasm?url=https%3A%2F%2Fmanual.nexusformat.org%2F_downloads%2Fb9b76d34af0f606d0e0958a234054608%2Fsimple_example_basic.nexus.hdf5>`__
-
 .. index::
     jupyterlab-h5web; tools
     vscode-w5web; tools
@@ -374,13 +371,15 @@ languages that will allow low level programmatic access to the data structures.
 
     `H5Web <https://github.com/silx-kit/h5web>`__ is a toolkit for exploring
     and visualising HDF5 files and, more generally, for visualizing data. It
-    is based on h5wasm, React, and WebGL. These projects make use of H5Web:
+    is based on React, and WebGL. These projects make use of H5Web:
 
-    * `jupyterlab-h5web <https://github.com/silx-kit/vscode-h5web>`__:
+    * `jupyterlab-h5web <https://github.com/silx-kit/jupyterlab-h5web>`__:
       extension for `JupyterLab <https://jupyter.org/>`__
-    * `vscode-w5web <https://github.com/silx-kit/vscode-h5web>`__:
+    * `vscode-h5web <https://github.com/silx-kit/vscode-h5web>`__:
       extension for `Microsoft Visual Studio Code
       Editor <https://marketplace.visualstudio.com/items?itemName=h5web.vscode-h5web>`__
+    * On-line visualization with NeXus file (using ``h5wasm``):
+      `simple_example_basic.nexus.hdf5 <https://h5web.panosc.eu/h5wasm?url=https%3A%2F%2Fmanual.nexusformat.org%2F_downloads%2Fb9b76d34af0f606d0e0958a234054608%2Fsimple_example_basic.nexus.hdf5>`__
     * `H5Web demonstration site <https://h5web.panosc.eu>`__
 
 .. index::
