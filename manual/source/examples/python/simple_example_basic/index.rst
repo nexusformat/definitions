@@ -105,7 +105,7 @@ extracting other useful stuff from the file.
 
         .. tab:: h5py
 
-            .. literalinclude:: simple_example_basic_read.py.py
+            .. literalinclude:: simple_example_basic_read.py
 	            :tab-width: 4
 	            :linenos:
 	            :language: python

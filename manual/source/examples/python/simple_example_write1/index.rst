@@ -52,7 +52,7 @@ file is generated.
 
     .. tab:: h5py
 
-        .. literalinclude:: simple_example_write1.py.py
+        .. literalinclude:: simple_example_write1.py
 	        :tab-width: 4
 	        :linenos:
 	        :language: python
