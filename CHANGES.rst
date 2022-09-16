@@ -22,6 +22,48 @@ Highlights of each release are described below.  For more details, see our wiki
 which provides links to the Release Notes (itemized list of changes) for any release.
 
 
+v2023.06
+++++++++
+
+expected *2023-06*
+
+New Features
+------------
+
+Add ``h5wasm`` and ``H5Web`` to HDF tools list.
+
+Allow ``recommended`` attribute as alias for ``optional``, but with the
+recommendation that this attribute be specified.
+
+Fixes
+-----------
+
+Added missing close parenthesis in rendering of suggested target.
+
+Maintenance
+-----------
+
+NXdata: clarify how errors are described in documentation.
+
+NXmx: clarify pixel size.
+
+NXsas: Various fields and groups changed to optional.  Only those deemed
+necessary for data reduction are required.
+
+NXtransformations: Add ``equipment_component`` attribute
+
+NXxpcs: clarify use of ``entry_identifier``, ``entry_identifier_uuid``, and ``scan_number``.
+
+Deprecations
+------------
+
+NXdata: deprecate `errors` field in favor of `VARIABLE_errors` for the signal field.
+
+Contributors
+------------
+
+domna
+
 v2022.07
 ++++++++
 
