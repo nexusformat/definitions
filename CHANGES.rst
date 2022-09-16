@@ -35,6 +35,8 @@ Add ``h5wasm`` and ``H5Web`` to HDF tools list.
 Allow ``recommended`` attribute as alias for ``optional``, but with the
 recommendation that this attribute be specified.
 
+NXxas: Added `NXdata/mode` to report detection method.
+
 Fixes
 -----------
 
@@ -51,6 +53,8 @@ NXsas: Various fields and groups changed to optional.  Only those deemed
 necessary for data reduction are required.
 
 NXtransformations: Add ``equipment_component`` attribute
+
+NXxas: `data` fields` changed from `NX_INT` to `NX_NUMBER`.
 
 NXxpcs: clarify use of ``entry_identifier``, ``entry_identifier_uuid``, and ``scan_number``.
 
