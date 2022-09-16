@@ -52,8 +52,9 @@ downloads
 
 The Python code and files related to this section may be downloaded from the following table.
 
-===========================================  =============================================
-file                                         description
-===========================================  =============================================
-:download:`reader_attributes_trail.py`       Read NeXus HDF5 file and find plotaable data
-===========================================  =============================================
+===========================================         =============================================
+file                                                description
+===========================================         =============================================
+:download:`reader_attributes_trail.py`              h5py code to read NeXus HDF5 file and find plottable data
+:download:`nexusformat/reader_attributes_trail.py`  nexusformat code to read  NeXus HDF5 file and find plottable data
+===========================================         =============================================

@@ -130,8 +130,10 @@ The Python code and files related to this section may be downloaded from the fol
 file                                                   description
 =====================================================  =============================================
 :download:`../simple_example.dat`                      2-column ASCII data used in this section
-:download:`simple_example_basic_read.py`               python code to read example *simple_example_basic.nexus.hdf5*
-:download:`simple_example_basic_write.py`              python code to write example *simple_example_basic.nexus.hdf5*
+:download:`simple_example_basic_read.py`               h5py code to read example *simple_example_basic.nexus.hdf5*
+:download:`nexusformat/simple_example_basic_read.py`   nexusformat code to read example *simple_example_basic.nexus.hdf5*
+:download:`simple_example_basic_write.py`              h5py code to write example *simple_example_basic.nexus.hdf5*
+:download:`nexusformat/simple_example_basic_write.py`  nexusformat code to write example *simple_example_basic.nexus.hdf5*
 :download:`simple_example_basic.nexus_h5dump.txt`      *h5dump* analysis of the NeXus file
 :download:`simple_example_basic.nexus.hdf5`            NeXus file written by *BasicWriter*
 :download:`simple_example_basic.nexus_structure.txt`   *punx tree* analysis of the NeXus file
