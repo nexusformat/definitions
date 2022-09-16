@@ -126,9 +126,9 @@ downloads
 
 The Python code and files related to this section may be downloaded from the following table.
 
-===========================================        =============================================
+=================================================  ===================================================
 file                                               description
-===========================================        =============================================
+=================================================  ===================================================
 :download:`external_angles_h5dump.txt`             *h5dump* analysis of *external_angles.hdf5*
 :download:`external_angles.hdf5`                   HDF5 file written by *external_example_write*
 :download:`external_angles_structure.txt`          *punx tree* analysis of *external_angles.hdf5*
@@ -140,4 +140,4 @@ file                                               description
 :download:`external_master_h5dump.txt`             *h5dump* analysis of *external_master.hdf5*
 :download:`external_master.hdf5`                   NeXus file written by *external_example_write*
 :download:`external_master_structure.txt`          *punx tree* analysis of *external_master.hdf5*
-===========================================        =============================================
+=================================================  ===================================================
