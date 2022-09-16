@@ -91,7 +91,7 @@ extracting other useful stuff from the file.
 .. compound::
 
     .. rubric:: *simple_example_basic_read.py*: Read a NeXus HDF5 file using Python
-    p
+
     .. _Example-Python-Reader:
 
     .. tabs::
