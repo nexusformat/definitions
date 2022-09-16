@@ -13,7 +13,7 @@ beam line 32ID. We will show how to read and write this data in Python using bot
 ``nexusformat`` [#]_ and ``h5py`` [#]_ packages.  The ``nexusformat`` package provides a simplified syntax for 
 reading and writing NeXus-compliant files by automatically handling some of the features required by the 
 NeXus standard, such as the attributes that define group classes and plottable data. However, it also uses 
-the ``h5py`` package [#]_ to read/write the HDF5 files on disk. We provide tabbed examples showing 
+the ``h5py`` package to read/write the HDF5 files on disk. We provide tabbed examples showing 
 how to produce equivalent files either using ``nexusformat`` or directly in ``h5py``.
 
 The actual data to be written was extracted (elsewhere) from a ``spec`` [#]_ data file 
