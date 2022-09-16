@@ -348,6 +348,9 @@
                             a full data array, rather than with a hyperslab within
                             a larger array, then a single module should be defined,
                             spanning the entire array.
+
+                            Note, the pixel size is given as values in the array
+                            fast_pixel_direction and slow_pixel_direction.
                         </doc>
                         <field name="data_origin" type="NX_INT">
                             <doc>
@@ -629,6 +632,18 @@
                             the data recorded here, false otherwise.
                         </doc>
                     </field>
+                    <field name="virtual_pixel_interpolation_applied" type="NX_BOOLEAN"
+                        minOccurs="0">
+                        <doc>
+                            True when virtual pixel interpolation has been applied, false otherwise.
+
+                            When virtual pixel interpolation is applied, values of some pixels may
+                            contain interpolated values. For example, to account for space between
+                            readout chips on a module, physical pixels on edges and corners between
+                            chips may have larger sensor areas and counts may be distributed between
+                            their logical pixels.
+                        </doc>
+                    </field>
 
                     <field name="bit_depth_readout" type="NX_INT" recommended="true">
                         <doc>
@@ -736,6 +751,15 @@
                     </field>
                 </group>
                 <group type="NXbeam" minOccurs="1">
+                    <attribute name="flux" optional="true">
+                        <doc>
+                            Which field contains the measured flux. One of ``flux``,
+                            ``total_flux``, ``flux_integrated``, or ``total_flux_integrated``.
+
+                            Alternatively, the name being indicated could be a link
+                            to a dataset in an NXmonitor group that records per shot beam data.
+                        </doc>
+                    </attribute>
                     <field name="incident_wavelength" type="NX_FLOAT" units="NX_WAVELENGTH"
                         minOccurs="1" >
                         <doc>
@@ -825,9 +849,38 @@
                         </doc>
                     </field>
 
-                    <field name="total_flux" type="NX_FLOAT" units="NX_FREQUENCY" minOccurs="1">
+                    <field name="total_flux" type="NX_FLOAT" units="NX_FREQUENCY" minOccurs="0">
                         <doc>
-                            Flux incident on beam plane in photons per second.
+                            Flux incident on beam plane in photons per second. In other words
+                            this is the :ref:`flux &lt;/NXmx/ENTRY/INSTRUMENT/BEAM/flux-field&gt;` integrated
+                            over area.
+
+                            Useful where spatial beam profiles are not known.
+
+                            In the case of a beam that varies in total flux shot-to-shot,
+                            this is an array of values, one for each recorded shot.
+                        </doc>
+                    </field>
+
+                    <field name="flux_integrated" type="NX_FLOAT" units="NX_PER_AREA" minOccurs="0">
+                        <doc>
+                            Flux density incident on beam plane area in photons
+                            per unit area. In other words this is the :ref:`flux &lt;/NXmx/ENTRY/INSTRUMENT/BEAM/flux-field&gt;`
+                            integrated over time.
+
+                            Useful where temporal beam profiles of flux are not known.
+
+                            In the case of a beam that varies in flux shot-to-shot,
+                            this is an array of values, one for each recorded shot.
+                        </doc>
+                    </field>
+
+                    <field name="total_flux_integrated" type="NX_FLOAT" units="NX_DIMENSIONLESS" minOccurs="0">
+                        <doc>
+                            Flux incident on beam plane in photons. In other words this is the :ref:`flux &lt;/NXmx/ENTRY/INSTRUMENT/BEAM/flux-field&gt;`
+                            integrated over time and area.
+
+                            Useful where temporal beam profiles of flux are not known.
 
                             In the case of a beam that varies in total flux shot-to-shot,
                             this is an array of values, one for each recorded shot.
@@ -858,9 +911,23 @@
                             <item value="rectangular"/>
                         </enumeration>
                     </field>
-
-
-                    <field name="incident_polarisation_stokes" recommended="true">
+                    <field name="incident_polarisation_stokes" type="NX_NUMBER" optional="true"
+                        deprecated="use incident_polarization_stokes, see https://github.com/nexusformat/definitions/issues/708">
+                        <doc>
+                            Polarization vector on entering beamline
+                            component using Stokes notation
+                        </doc>
+                        <dimensions rank="2">
+                            <dim index="1" value="nP" />
+                            <dim index="2" value="4" />
+                        </dimensions>
+                    </field>
+                    <field name="incident_polarization_stokes" type="NX_NUMBER" recommended="true">
+                        <doc>
+                            Polarization vector on entering beamline
+                            component using Stokes notation. See
+                            incident_polarization_stokes in :ref:`NXbeam`
+                        </doc>
                         <dimensions rank="2">
                             <dim index="1" value="nP" />
                             <dim index="2" value="4" />
@@ -868,7 +935,6 @@
                     </field>
                 </group>
             </group>
-
             <group type="NXsource">
                 <doc>
                     The neutron or x-ray storage ring/facility. Note, the NXsource base class

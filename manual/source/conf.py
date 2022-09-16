@@ -74,6 +74,9 @@ html_theme = 'sphinxdoc'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# Add extra files
+html_extra_path = ['CNAME']
+
 html_sidebars = {
     '**': [
         'localtoc.html', 
