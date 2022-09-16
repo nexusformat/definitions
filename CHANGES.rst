@@ -63,10 +63,9 @@ Deprecations
 
 NXdata: deprecate `errors` field in favor of `VARIABLE_errors` for the signal field.
 
-Contributors
-------------
-
-domna
+..
+  Contributors
+  ------------
 
 v2022.07
 ++++++++
