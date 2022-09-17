@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2014-2020 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -40,11 +40,12 @@
 		transformations are done, or in documenting important directions, such as the
 		direction of gravity.
 
-		A nested sequence of transformations lists the offset and rotation steps
+		A nested sequence of transformations lists the translation and rotation steps
 		needed to describe the position and orientation of any movable or fixed device.
 
 		There will be one or more transformations (axes) defined by one or more fields
-		for each transformation.  The all-caps name ``AXISNAME`` designates the
+		for each transformation. Transformations can also be described by NXlog groups when
+		the values change with time. The all-caps name ``AXISNAME`` designates the
 		particular axis generating a transformation (e.g. a rotation axis or a translation
 		axis or a general axis).   The attribute ``units="NX_TRANSFORMATION"`` designates the
 		units will be appropriate to the ``transformation_type`` attribute:
@@ -80,18 +81,33 @@
 		:math:`0_3` is a row of 3 zeros, :math:`I_3` is the 3x3 identity matrix and
 		:math:`t` is the translation vector.
 
-		:math:`o` is given the ``offset`` attribute, :math:`t` is given by the ``vector``
+		:math:`o` is given by the ``offset`` attribute, :math:`t` is given by the ``vector``
 		attribute multiplied by the field value, and :math:`R` is defined as a rotation
 		about an axis in the direction of ``vector``, of angle of the field value.
-		
+
 		NOTE
 		
 		One possible use of ``NXtransformations`` is to define the motors and
 		transformations for a diffractometer (goniometer).  Such use is mentioned
 		in the ``NXinstrument`` base class.  Use one ``NXtransformations`` group 
 		for each diffractometer and name the group appropriate to the device.
-		Collecting the motors of a sample table or xyz-stage in an NXtransformation
+		Collecting the motors of a sample table or xyz-stage in an NXtransformations
 		group is equally possible.
+
+
+		Following the section on the general dscription of axis in NXtransformations is a section which
+		documents the fields commonly used within NeXus for positioning purposes and their meaning. Whenever
+		there is a need for positioning a beam line component please use the existing names. Use as many fields
+		as needed in order to position the component. Feel free to add more axis if required. In the description
+		given below, only those atttributes which are defined through the name are spcified. Add the other attributes
+		of the full set:
+
+		* vector
+		* offset
+		* transformation_type
+		* depends_on
+
+		as needed.
 	</doc>
 	<field name="AXISNAME" nameType="any" units="NX_TRANSFORMATION" type="NX_NUMBER" maxOccurs="unbounded">
 		<doc>
@@ -122,14 +138,15 @@
 				<!-- <item value="general" /> -->
 			</enumeration>
 		</attribute>
-		<attribute name="vector" type="NX_NUMBER">
+		<attribute name="vector" optional="false" type="NX_NUMBER">
 			<doc>
 				Three values that define the axis for this transformation.
 				The axis should be normalized to unit length, making it
 				dimensionless.  For ``rotation`` axes, the direction should be
 				chosen for a right-handed rotation with increasing angle.
 				For ``translation`` axes the direction should be chosen for
-				increasing displacement.
+				increasing displacement. For general axes, an appropriate direction
+				should be chosen.
 			</doc>
 			<dimensions rank="1">
 				<dim index="1" value="3" />
@@ -138,6 +155,8 @@
 		<attribute name="offset" type="NX_NUMBER">
 			<doc>
 				A fixed offset applied before the transformation (three vector components).
+				This is not intended to be a substitute for a fixed ``translation`` axis but, for example,
+				as the mechanical offset from mounting the axis to its dependency.
 			</doc>
 			<dimensions rank="1">
 				<dim index="1" value="3" />
@@ -152,6 +171,15 @@
 			<doc>
 				Points to the path to a field defining the axis on which this
 				depends or the string ".".
+			</doc>
+		</attribute>
+		<attribute name="equipment_component" type="NX_CHAR">
+			<doc>
+				An arbitrary identifier of a component of the equipment to which
+				the transformation belongs, such as 'detector_arm' or 'detector_module'.
+				NXtransformations with the same equipment_component label form a logical
+				grouping which can be combined together into a single change-of-basis
+				operation.
 			</doc>
 		</attribute>
 	</field>

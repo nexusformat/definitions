@@ -4,14 +4,14 @@
 Create release notes for a new release of this GitHub repository.
 """
 
-# Requires: 
+# Requires:
 #
 # * assumes current directory is within a repository clone
 # * pyGithub (conda or pip install) - https://pygithub.readthedocs.io/
 # * Github personal access token (https://github.com/settings/tokens)
 #
-# Github token access is needed or the GitHub API limit 
-# will likely interfere with making a complete report 
+# Github token access is needed or the GitHub API limit
+# will likely interfere with making a complete report
 # of the release.
 
 import argparse
@@ -22,7 +22,7 @@ import os
 
 
 logging.basicConfig(level=logging.WARNING)
-logger = logging.getLogger('create_release_notes')
+logger = logging.getLogger("create_release_notes")
 
 
 def findGitConfigFile():
@@ -40,8 +40,8 @@ def findGitConfigFile():
     for i in range(99):
         config_file = os.path.join(path, ".git", "config")
         if os.path.exists(config_file):
-            return config_file      # found it!
-        
+            return config_file  # found it!
+
         # next, look in the parent directory
         path = os.path.abspath(os.path.join(path, ".."))
 
@@ -49,14 +49,16 @@ def findGitConfigFile():
     logger.error(msg)
     raise ValueError(msg)
 
+
 def parse_git_url(url):
     """
     return (organization, repository) tuple from url line of .git/config file
     """
-    if url.startswith("git@"): # deal with git@github.com:org/repo.git
+    if url.startswith("git@"):  # deal with git@github.com:org/repo.git
         url = url.split(":")[1]
     org, repo = url.rstrip(".git").split("/")[-2:]
     return org, repo
+
 
 def getRepositoryInfo():
     """
@@ -68,7 +70,7 @@ def getRepositoryInfo():
     Needs testing for when things are wrong.
     """
     config_file = findGitConfigFile()
-        
+
     with open(config_file, "r") as f:
         for line in f.readlines():
             line = line.strip()
@@ -80,10 +82,11 @@ def getRepositoryInfo():
                     raise ValueError(msg)
                 return parse_git_url(url)
 
+
 def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
     """mine the Github API for information about this release"""
     organization_name, repository_name = getRepositoryInfo()
-    gh = github.Github(token)   # GitHub Personal Access Token
+    gh = github.Github(token)  # GitHub Personal Access Token
 
     user = gh.get_user(organization_name)
     logger.debug(f"user: {user}")
@@ -91,11 +94,13 @@ def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
     repo = user.get_repo(repository_name)
     logger.debug(f"repo: {repo}")
 
+    # fmt: off
     milestones = [
         m
         for m in repo.get_milestones(state="all")
         if m.title == milestone_name
     ]
+    # fmt: on
     if len(milestones) == 0:
         msg = f"Could not find milestone: {milestone_name}"
         logger.error(msg)
@@ -123,13 +128,16 @@ def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
             earliest = min(dt, earliest or dt)
     logger.debug(f"# tags: {len(tags)}")
 
+    # fmt: off
     pulls = {
         p.number: p
         for p in repo.get_pulls(state="closed")
         if p.closed_at > earliest
     }
+    # fmt: on
     logger.debug(f"# pulls: {len(pulls)}")
 
+    # fmt: off
     issues = {
         i.number: i
         for i in repo.get_issues(milestone=milestone, state="closed")
@@ -139,6 +147,7 @@ def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
             i.number not in pulls
         )
     }
+    # fmt: on
     logger.debug(f"# issues: {len(issues)}")
 
     return repo, milestone, tags, pulls, issues, commits
@@ -150,27 +159,34 @@ def parse_command_line():
     parser = argparse.ArgumentParser(description=doc)
 
     help_text = "name of tag to start the range"
-    parser.add_argument('base', action='store', help=help_text)
+    parser.add_argument("base", action="store", help=help_text)
 
     help_text = "name of milestone"
-    parser.add_argument('milestone', action='store', help=help_text)
+    parser.add_argument("milestone", action="store", help=help_text)
 
     parser.add_argument(
-        'token', 
-        action='store', 
+        "token",
+        action="store",
+        # fmt: off
         help=(
             "personal access token "
-            "(see: https://github.com/settings/tokens)"))
+            "(see: https://github.com/settings/tokens)"
+        )
+        # fmt: on
+    )
 
     help_text = "name of tag, branch, SHA to end the range"
-    help_text += ' (default="master")'
+    help_text += ' (default="main")'
+    # fmt: off
     parser.add_argument(
         "--head", 
         action='store', 
         dest='head',
         nargs='?', 
         help = help_text, 
-        default="master")
+        default="main"
+    )
+    # fmt: on
 
     return parser.parse_args()
 
@@ -184,9 +200,7 @@ def str2time(time_string):
         msg = f"need valid date/time string, not: {time_string}"
         logger.error(msg)
         raise ValueError(msg)
-    return datetime.datetime.strptime(
-        time_string, 
-        "%a, %d %b %Y %H:%M:%S %Z")
+    return datetime.datetime.strptime(time_string, "%a, %d %b %Y %H:%M:%S %Z")
 
 
 def report(title, repo, milestone, tags, pulls, issues, commits):
@@ -199,7 +213,7 @@ def report(title, repo, milestone, tags, pulls, issues, commits):
         print(f"* **milestone**: [{milestone.title}]({milestone.url})")
         print("")
     print("section | quantity")
-    print("-"*5, " | ", "-"*5)
+    print("-" * 5, " | ", "-" * 5)
     print(f"[New Tags](#tags) | {len(tags)}")
     print(f"[Pull Requests](#pull-requests) | {len(pulls)}")
     print(f"[Issues](#issues) | {len(issues)}")
@@ -211,7 +225,7 @@ def report(title, repo, milestone, tags, pulls, issues, commits):
         print("-- none --")
     else:
         print("tag | date | name")
-        print("-"*5, " | ", "-"*5, " | ", "-"*5)
+        print("-" * 5, " | ", "-" * 5, " | ", "-" * 5)
         for k, tag in sorted(tags.items()):
             commit = repo.get_commit(tag.commit.sha)
             when = str2time(commit.last_modified).strftime("%Y-%m-%d")
@@ -223,11 +237,16 @@ def report(title, repo, milestone, tags, pulls, issues, commits):
         print("-- none --")
     else:
         print("pull request | date | state | title")
-        print("-"*5, " | ", "-"*5, " | ", "-"*5, " | ", "-"*5)
+        print("-" * 5, " | ", "-" * 5, " | ", "-" * 5, " | ", "-" * 5)
         for k, pull in sorted(pulls.items()):
             state = {True: "merged", False: "closed"}[pull.merged]
             when = str2time(pull.last_modified).strftime("%Y-%m-%d")
-            print(f"[#{pull.number}]({pull.html_url}) | {when} | {state} | {pull.title}")
+            # fmt: off
+            print(
+                f"[#{pull.number}]({pull.html_url})"
+                f" | {when} | {state} | {pull.title}"
+            )
+            # fmt: on
     print("")
     print("### Issues")
     print("")
@@ -235,11 +254,16 @@ def report(title, repo, milestone, tags, pulls, issues, commits):
         print("-- none --")
     else:
         print("issue | date | title")
-        print("-"*5, " | ", "-"*5, " | ", "-"*5)
+        print("-" * 5, " | ", "-" * 5, " | ", "-" * 5)
         for k, issue in sorted(issues.items()):
             if k not in pulls:
                 when = issue.closed_at.strftime("%Y-%m-%d")
-                print(f"[#{issue.number}]({issue.html_url}) | {when} | {issue.title}")
+                # fmt: off
+                print(
+                    f"[#{issue.number}]({issue.html_url})"
+                    f" | {when} | {issue.title}"
+                )
+                # fmt: on
     print("")
     print("### Commits")
     print("")
@@ -247,10 +271,10 @@ def report(title, repo, milestone, tags, pulls, issues, commits):
         print("-- none --")
     else:
         print("commit | date | message")
-        print("-"*5, " | ", "-"*5, " | ", "-"*5)
+        print("-" * 5, " | ", "-" * 5, " | ", "-" * 5)
         for k, commit in commits.items():
             message = commit.commit.message.splitlines()[0]
-            when = commit.raw_data['commit']['committer']['date'].split("T")[0]
+            when = commit.raw_data["commit"]["committer"]["date"].split("T")[0]
             print(f"[{k[:7]}]({commit.html_url}) | {when} | {message}")
 
 
@@ -268,20 +292,23 @@ def main(base=None, head=None, milestone=None, token=None, debug=False):
         token = cmd.token
         logger.setLevel(logging.WARNING)
 
+    # fmt: off
     info = get_release_info(
-        token, base_tag_name, head_branch_name, milestone_name)
+        token, base_tag_name, head_branch_name, milestone_name
+    )
+    # fmt: on
     # milestone, repo, tags, pulls, issues, commits = info
     report(milestone_name, *info)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 
 
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either

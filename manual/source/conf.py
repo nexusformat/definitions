@@ -46,7 +46,11 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx.ext.todo'
 ]
+
+# Show `.. todo` directives in the output
+# todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -70,6 +74,9 @@ html_theme = 'sphinxdoc'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+# Add extra files
+html_extra_path = ['CNAME']
+
 html_sidebars = {
     '**': [
         'localtoc.html', 
@@ -86,4 +93,5 @@ htmlhelp_basename = 'NeXusManualdoc'
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {
     'maxlistdepth':7, # some application definitions are deeply nested
+    'preamble': '\\usepackage{amsbsy}\n'
 }

@@ -1,0 +1,35 @@
+.. _example.napi.fortran:
+
+HDF5 in Fortran with NAPI
+#########################
+
+Code examples are provided in this section that write 2-D data
+to a NeXus HDF5 file in F77, and F90 languages using the :ref:`NAPI`.
+
+The following code reads a two-dimensional set ``counts``
+with dimension scales of ``t`` and ``phi`` using
+local routines, and then writes a NeXus file containing a single
+``NXentry`` group and a single ``NXdata`` group.
+This is the simplest data file that conforms to the NeXus standard.
+
+NAPI F77 Example: write simple NeXus file
++++++++++++++++++++++++++++++++++++++++++
+
+.. note:: The F77 interface is no longer being developed.
+
+.. literalinclude:: napi-example.f77
+    :tab-width: 4
+    :linenos:
+    :language: fortran
+
+NAPI F90 Example: write simple NeXus file
++++++++++++++++++++++++++++++++++++++++++
+
+.. note:: This example uses the signal/axes attributes applied to the
+   data field, as described in :ref:`Design-FindPlottable-ByName`.
+   New code should use the method described in :ref:`Design-FindPlottable-NIAC2014`.
+
+.. literalinclude:: napi-example.f90
+    :tab-width: 4
+    :linenos:
+    :language: fortran

@@ -35,7 +35,7 @@ This manual built |today|.
    	https://manual.nexusformat.org/
 
    :PDF:
-   	https://manual.nexusformat.org/pdf/NeXusManual.pdf
+   	https://manual.nexusformat.org/_static/NeXusManual.pdf
 
    A very brief overview (title: *NeXus for the Impatient*) 
    is also available (separate from the manual).
@@ -44,7 +44,7 @@ This manual built |today|.
       https://manual.nexusformat.org/impatient/
 
    :PDF:
-      https://manual.nexusformat.org/pdf/NXImpatient.pdf
+      https://manual.nexusformat.org/_static/NXImpatient.pdf
 
 ..  Suggestions for adding to this manual:
 

@@ -11,6 +11,18 @@ Two things to note about the development and history of NeXus:
 
 - The NIAC has already discussed many matters related to the format.
 
+2022-07:
+    * `release v2022.06 <https://github.com/nexusformat/definitions/wiki/releasenotes__v2022.06>`
+      of NeXus Definitions
+
+2020-10:
+    * `release v2020.10 <https://github.com/nexusformat/definitions/wiki/releasenotes__v2020.10>`
+      of NeXus Definitions
+
+2020-01:
+    * `release v2020.1 <https://github.com/nexusformat/definitions/wiki/releasenotes__v2020.1>`
+      of NeXus Definitions
+
 2018-05:
     * `release v2018.5 <https://github.com/nexusformat/definitions/wiki/releasenotes__v2018.5>`
       of NeXus Definitions

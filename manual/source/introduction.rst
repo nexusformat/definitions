@@ -146,14 +146,9 @@ links.
 .. index::
    link
    plotting
-   NXdata (base class); plotting
-   NXmonitor (base class); plotting
-   NXdetector (base class); plotting
    
 :ref:`Design-Links`
-    Links are used to reference the plottable data from ``NXdata``
-    when the data is provided in other groups
-    such as ``NXmonitor`` or ``NXdetector``.
+    Links are used to represent the same information in different places.
 
 In fact, a NeXus file can be viewed as a computer file system. Just as files
 are stored in folders (or subdirectories) to make them easy to locate, so NeXus
