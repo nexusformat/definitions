@@ -1,6 +1,6 @@
-==========================
-NXDL Field Types and Units
-==========================
+=========================
+NXDL Data Types and Units
+=========================
 
 .. index::
     see: type; data type
@@ -8,15 +8,16 @@ NXDL Field Types and Units
 
 .. _nxdl-types:
 		
-Field Types allowed in NXDL specifications
-##########################################
+Data Types allowed in NXDL specifications
+#########################################
 
-Field types for use in NXDL
-describe the expected type of data for a NeXus field. These terms are very
+Data types for use in NXDL
+describe the expected type of data for a NeXus field or attribute. These terms are very
 broad. More specific terms are used in actual NeXus data files that describe
 size and array dimensions. In addition to the types in the following table, the
 ``NAPI`` type is defined when one wishes to permit a field
-with any of these data types.
+with any of these data types. The default type ``NX_CHAR`` is applied in cases 
+where a field or attribute is defined in an NXDL specification without explicit assignment of a ``type``.
 
 ..  Generated from ../nxdlTypes.xsd via a custom Python tool
     ../../utils/types2rst.py ../../nxdlTypes.xsd > types.table

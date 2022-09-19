@@ -3,75 +3,91 @@
 # purpose:
 #	build resources in NeXus definitions tree
 
-# ref: http://www/gnu.org/software/make/manual/make.html
+PYTHON = python3
+SPHINX = sphinx-build
+BUILD_DIR = "build"
 
-SUBDIRS = manual impatient-guide
+.PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local
 
-.PHONY: subdirs $(SUBDIRS) builddir all
+help ::
+	@echo ""
+	@echo "NeXus: Testing the NXDL files and building the documentation:"
+	@echo ""
 
-subdirs: $(SUBDIRS)
+	@echo "make install            Install all requirements to run tests and builds."
+	@echo "make style              Check python coding style."
+	@echo "make autoformat         Format all files to the coding style conventions."
+	@echo "make test               Run NXDL syntax and documentation tests."
+	@echo "make clean              Remove all build files."
+	@echo "make prepare            (Re)create all build files."
+	@echo "make html               Build HTML version of manual. Requires prepare first."
+	@echo "make pdf                Build PDF version of manual. Requires prepare first."
+	@echo "make impatient-guide    Build html & PDF versions of the Guide for the Impatient. Requires prepare first."
+	@echo "make all                Builds complete web site for the manual (in build directory)."
+	@echo "make local              (Developer use) Test, prepare and build the HTML manual."
+	@echo ""
+	@echo "Note:  All builds of the manual will occur in the 'build/' directory."
+	@echo "   For a complete build, run 'make all' in the root directory."
+	@echo "   Developers of the NeXus class definitions can use 'make local' to"
+	@echo "   confirm the documentation builds."
+	@echo ""
 
-#$(SUBDIRS):
-#	$(MAKE) -C $@
+install ::
+	$(PYTHON) -m pip install -r requirements.txt
 
-manual :: nxdl2rst
-	$(MAKE) html -C $@
+style ::
+	$(PYTHON) -m black --check dev_tools
+	$(PYTHON) -m flake8 dev_tools
+	$(PYTHON) -m isort --check dev_tools
 
-all :: 
-	$(MAKE) rmbuilddir builddir
-	$(MAKE) impatient-guide manual -C build
-	# expect next make (PDF) to fail (thus exit 0) since nexus.ind not found first time
-	# extra option needed to satisfy "levels nested too deeply" error
-	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode" -C build/manual || exit 0)
-	# make that missing file
-	makeindex build/manual/build/latex/nexus.idx
-	# build the PDF, still a failure will be noted but we can ignore it without problem
-	($(MAKE) latexpdf LATEXOPTS="--interaction=nonstopmode" -C build/manual || exit 0)
-	# finally, report what was built
-	@echo "HTML built: `ls -lAFgh build/manual/build/html/index.html`"
-	@echo "PDF built: `ls -lAFgh build/manual/build/latex/nexus.pdf`"
+autoformat ::
+	$(PYTHON) -m black dev_tools
+	$(PYTHON) -m isort dev_tools
+
+test ::
+	$(PYTHON) -m pytest dev_tools
+
+clean ::
+	$(RM) -rf $(BUILD_DIR)
+
+prepare ::
+	$(PYTHON) -m dev_tools manual --prepare --build-root $(BUILD_DIR)
+	$(PYTHON) -m dev_tools impatient --prepare --build-root $(BUILD_DIR)
+
+pdf ::
+	$(SPHINX) -M latexpdf $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build
+	cp $(BUILD_DIR)/manual/build/latex/nexus.pdf $(BUILD_DIR)/manual/source/_static/NeXusManual.pdf
+
+html ::
+	$(SPHINX) -b html -W $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
 
 impatient-guide ::
-	$(MAKE) html -C $@
-
-#pdfdoc ::
-#	$(MAKE) latexpdf -C $(SUBDIRS)
-
-clean:
-	$(MAKE) clean -C $(SUBDIRS)
-
-nxdl2rst:
-	$(MAKE) -C manual/source
-
-builddir :: 
-	mkdir -p build
-	python utils/build_preparation.py . build
-
-makebuilddir :: builddir
-	$(MAKE) -C build
-
-remakebuilddir :: makebuilddir
-
-rebuildall :: rmbuilddir makebuilddir
-
-cleanbuilddir ::
-	$(MAKE) -C build clean
-
-rmbuilddir ::
-	$(RM) -r build
+	$(SPHINX) -b html -W $(BUILD_DIR)/impatient-guide/ $(BUILD_DIR)/impatient-guide/build/html
+	$(SPHINX) -M latexpdf $(BUILD_DIR)/impatient-guide/ $(BUILD_DIR)/impatient-guide/build
+	cp $(BUILD_DIR)/impatient-guide/build/latex/NXImpatient.pdf $(BUILD_DIR)/manual/source/_static/NXImpatient.pdf
 
 # for developer's use on local build host
 local ::
-	python utils/test_suite.py
-	$(RM) -r build
-	mkdir -p build
-	python utils/build_preparation.py . build
-	$(MAKE) -C build
+	$(MAKE) test
+	$(MAKE) prepare
+	$(MAKE) html
+
+all ::
+	$(MAKE) clean
+	$(MAKE) prepare
+	$(MAKE) impatient-guide
+	$(MAKE) pdf
+	$(MAKE) html
+	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/html/index.html`"
+	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/latex/NXImpatient.pdf`"
+	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/manual/build/html/index.html`"
+	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus.pdf`"
+
 
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either

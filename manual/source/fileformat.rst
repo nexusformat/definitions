@@ -74,14 +74,15 @@ A NeXus ``link`` directly maps to the HDF hard link mechanisms.
           
           - :ref:`Introduction-HowToWrite`
           - :ref:`Introduction-HowToRead`
-          - :ref:`example.napi.simple.2d.write`
+          - :ref:`example.napi.c`
+		  - :ref:`example.napi.python`
           - :ref:`code_native.writing`
           - :ref:`code_native.reading`
           - :ref:`Example-H5py-Writing`
           - :ref:`Example-H5py-Reading`
 
-Perhaps the easiest way to view the implementation of NeXus in HDF5 is to view
-how the data structures look.  For this, we use the ``h5dump`` command-line
+Perhaps the easiest way to view the implementation of NeXus in HDF5 is to look
+at the data structure.  For this, we use the ``h5dump`` command-line
 utility provided with the HDF5 support libraries.  Short examples are provided for the
 basic NeXus data components:
 
@@ -116,10 +117,6 @@ basic NeXus data components:
      NXmakelink (fileid, &itemid);
      # -or-
      NXmakenamedlink (fileid, "linked_name", &itemid);
-
-See the sections :ref:`example.napi.simple.2d.write`
-and  :ref:`example.napi.simple.3d.write.python` in the :ref:`Examples`
-chapter for examples that use the native HDF5 calls to write NeXus data files.
 
 .. compound::
 

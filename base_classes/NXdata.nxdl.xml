@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2008-2020 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -43,7 +43,10 @@
 	<symbols>
 		<doc>These symbols will be used below to coordinate fields with the same shape.</doc>
 		<symbol name="dataRank"><doc>rank of the ``DATA`` field</doc></symbol>
-		<symbol name="n"><doc>length of the ``AXIS`` field</doc></symbol>
+		<symbol name="n"><doc>length of the ``AXISNAME`` field</doc></symbol>
+		<symbol name="nx"><doc>length of the ``x`` field</doc></symbol>
+		<symbol name="ny"><doc>length of the ``y`` field</doc></symbol>
+		<symbol name="nz"><doc>length of the ``z`` field</doc></symbol>
 	</symbols>
 	
 	<attribute name="auxiliary_signals">
@@ -61,15 +64,17 @@
 	</attribute>
 	<attribute name="signal">
 		<doc>
+			.. index:: find the default plottable data
 			.. index:: plotting
+			.. index:: signal attribute value
 			
-			Declares which field contains the default plottable data. 
+			Declares which NeXus field contains the default plottable data. 
 			The value is the name of the field to be plotted.
-			A field of this name *must* exist (either as field 
+			A field of this :ref:`name &lt;validItemName>` *must* exist (either as field 
 			or as a link to a field in another group).
 			
 			It is recommended (as of NIAC2014) to use this attribute
-			rather than adding a signal attribute to the dataset.
+			rather than adding a signal attribute to the field.
 			See https://www.nexusformat.org/2014_How_to_find_default_data.html
 			for a summary of the discussion.
 		</doc>
@@ -108,7 +113,7 @@
 			the axes attribute can be omitted.
 		</doc>
 	</attribute>
-	<attribute name="AXIS_indices">
+	<attribute name="AXISNAME_indices" type="NX_INT">
 		<!-- 
 			nxdl.xsd rules do not allow us to show this as a variable name 
 			- we'll use ALL CAPS (see #562)
@@ -122,7 +127,7 @@
 		
 			Integer array that defines the indices of the *signal* field 
 			(that field will be a multidimensional array)
-			which need to be used in the *AXIS* field in 
+			which need to be used in the *AXISNAME* field in 
 			order to reference the corresponding axis value.
 			
 			The first index of an array is ``0`` (zero).
@@ -159,6 +164,8 @@
 		The ``signal`` and ``axes`` attributes of the ``data`` group define 
 		which fields are plottable data and which are the independent variables,
 		or *dimension scales*, respectively.
+		Note that the fields named ``AXISNAME`` and ``DATA``
+		can be defined with different names.  
 		
 		:ref:`NXdata` is used to implement one of the basic motivations in NeXus,
 		to identify plottable data in each :ref:`NXentry`.  The actual data
@@ -169,11 +176,13 @@
 				axes, respectively. The names are not fixed by the standard.  
 
 		* Each :ref:`NXdata` group will define only one field
-		  containing plottable data, one for each of the dimension scales, and, 
-		  optionally, associated uncertainties. Other fields may be present in 
+		  containing plottable data.  Optionally, a field for each of the dimension scales, 
+		  and additionally, field(s) for their associated uncertainties. Other fields may be present in 
 		  the group.
 		* The plottable data may be of arbitrary rank up to a maximum
 		  of ``NX_MAXRANK=32``.
+		  The ``auxiliary_signals`` attribute is a list of the other fields
+		  to be plotted with the ``signal`` data.
 		* The name of the plottable data will be defined by the value of 
 		  the group ``signal`` attribute, such as::
 		  
@@ -266,7 +275,7 @@
 		but not to describe how the data is to be plotted.
 		(https://www.nexusformat.org/NIAC2018Minutes.html#nxdata-plottype--attribute)
 	</doc>
-	<field name="AXIS" type="NX_NUMBER" nameType="any">
+	<field name="AXISNAME" type="NX_NUMBER" nameType="any">
 		<doc>
 	 		Dimension scale defining an axis of the data. There should be one
 	 		of these for each dimension of the ``DATA`` field.
@@ -301,21 +310,15 @@
 			</doc>
 		</attribute>
 	</field>
-	<field name="AXIS_errors" type="NX_NUMBER" nameType="any">
+	<field name="FIELDNAME_errors" type="NX_NUMBER" nameType="any">
 		<doc>
-			Errors (uncertainties) associated with axis ``AXIS``.
-			Client is responsible for defining the dimensions of the data.
-			The name of this field may be changed to fit the circumstances 
-			but is matched with the *AXIS*
-			field with ``_errors`` appended.
+			"Errors" (meaning *uncertainties* or *standard deviations*)
+			associated with any field named ``FIELDNAME`` in this ``NXdata``
+			group (e.g. an axis, signal or auxiliary signal).
+
+			The dimensions of the ``FIELDNAME_errors`` field must match
+			the dimensions of the ``FIELDNAME`` field.
 		</doc>
-		<dimensions rank="1">
-			<doc>
-				A dimension scale must have a rank of 1 and has length ``n``, 
-				same as ``AXIS``.
-			</doc>
-			<dim index="1" value="n"/>
-		</dimensions>
 	</field>
 	<field name="DATA" type="NX_NUMBER" nameType="any">
 		<doc>
@@ -361,10 +364,6 @@
 				used in writing new files.  
 			</doc>
 		</attribute>
-		<!--
-			NIAC2018 voted to use VARIABLE_errors, not @uncertainties
-			https://github.com/nexusformat/definitions/issues/634
-		-->
 		<attribute name="long_name">
 			<doc>data label</doc>
 		</attribute>
@@ -373,10 +372,10 @@
 		<doc>
 			Errors (uncertainties) associated with data ``DATA``. It is now
 			recommended that uncertainties are defined using the 
-			``uncertainties`` attribute of the signal field. The name of this 
-			field does not therefore have to conform to this pattern, i.e., 
-			the name of the signal field with ``_errors`` appended. However,
-			it does make the association of the two fields clear.
+			``uncertainties`` attribute of the signal field. 
+      TO provide consistent naming within NeXus, it is recommended the name of this 
+			field do conform to this pattern, i.e., 
+			the name of the signal field with ``_errors`` appended.
 			Client is responsible for defining the dimensions of the data.
 			
 		</doc>
@@ -387,11 +386,11 @@
 			<dim index="0" value="n"><!-- index="0": cannot know to which dimension this applies a priori --></dim>
 		</dimensions>
 	</field>
-	<field name="errors" type="NX_NUMBER">
+	<field name="errors" type="NX_NUMBER" deprecated="Use ``DATA_errors`` instead (NIAC2018)">
 		<doc>
 			Standard deviations of data values - 
 			the data array is identified by the group attribute ``signal``. 
-			The ``errors`` array must have the same dimensions as ``data``.
+			The ``errors`` array must have the same dimensions as ``DATA``.
 			Client is responsible for defining the dimensions of the data.
 		</doc>
 		<dimensions rank="dataRank">
