@@ -15,15 +15,15 @@ as shown in the next figure.
 
 .. compound::
 
-    .. _fig.simple-example-h5py:
+    .. _fig.simple-example-python:
 
     .. figure:: ../../../img/simple_example_write1.png
-        :alt: fig.simple-example-h5py
+        :alt: fig.simple-example-python
         :width: 50%
 
         Simple Example
 
-In the :ref:`above figure <fig.simple-example-h5py>`, 
+In the :ref:`above figure <fig.simple-example-python>`, 
 the data file (``simple_example_write1_h5py.hdf5``) contains
 a hierarchy of items, starting with an ``NXentry`` named ``entry``.
 (The full HDF5 path reference, ``/entry`` in this case, is shown to the right of each
@@ -41,10 +41,21 @@ When the next Python program (``simple_example_write1_h5py.py``) is run from the
 command line (and there are no problems), the ``simple_example_write1_h5py.hdf5``
 file is generated.
 
-.. literalinclude:: simple_example_write1.py
-    :tab-width: 4
-    :linenos:
-    :language: python
+.. tabs::
+
+    .. tab:: nexusformat
+
+        .. literalinclude:: nexusformat/simple_example_write1.py
+            :tab-width: 4
+            :linenos:
+            :language: python
+
+    .. tab:: h5py
+
+        .. literalinclude:: simple_example_write1.py
+	        :tab-width: 4
+	        :linenos:
+	        :language: python
 
 One of the tools provided with the HDF5 support libraries is
 the ``h5dump`` command, a command-line tool to print out the
@@ -86,12 +97,13 @@ downloads
 
 The Python code and files related to this section may be downloaded from the following table.
 
-================================================  =============================================
+================================================  =========================================================
 file                                              description
-================================================  =============================================
+================================================  =========================================================
 :download:`../simple_example.dat`                 2-column ASCII data used in this section
-:download:`simple_example_write1.py`              python code to write example *simple_example_write1*
+:download:`simple_example_write1.py`              h5py code to write example *simple_example_write1*
+:download:`nexusformat/simple_example_write1.py`  nexusformat code to write example *simple_example_write1*
 :download:`simple_example_write1.hdf5`            NeXus file written by this code
 :download:`simple_example_write1_h5dump.txt`      *h5dump* analysis of the NeXus file
 :download:`simple_example_write1_structure.txt`   *punx tree* analysis of the NeXus file
-================================================  =============================================
+================================================  =========================================================

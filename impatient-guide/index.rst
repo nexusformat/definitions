@@ -497,15 +497,16 @@ Application definitions
 Reading NeXus Files
 ===================
 
-The simplest way to read and plot a NeXus file is through the Python *PyTree* API:
+The simplest way to read and plot a NeXus file is through the
+nexusformat [#nexusformat]_ Python package :
 
 .. code-block:: python
    :linenos:
 
-   import nxs
-   nxs.load('powder.h5').plot()
+   from nexusformat.nexus import nxopen
+   nxopen('powder.h5').plot()
 
-In order for this to be possible, *PyTree* uses the NeXus conventions to locate
+In order for this to be possible, *nexusformat* uses the NeXus conventions to locate
 the plottable data and the axes to use.  In particular, this plots the first
 ``NXdata`` group in the first ``NXentry`` in the ``powder.h5`` file.  The NeXus python
 package provides additional support for working with NeXus groups.
@@ -721,6 +722,8 @@ find on the NeXus WWW site.
   .. shameless self-promotion
 
 .. [#HDF5] HDF-5: http://www.hdfgroup.org/HDF5/
+
+.. [#nexusformat] *nexusformat*: https://nexpy.github.io/nexpy/
 
 .. [#h5py] *h5py*: https://www.h5py.org/
 

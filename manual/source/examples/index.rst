@@ -26,8 +26,7 @@ Please be aware that not all examples are up to date with the latest format reco
    :maxdepth: 1
 
    code_native
-   h5py/index
-   nexusformat/index
+   python/index
    matlab/index
    napi/c
    napi/fortran
@@ -42,10 +41,10 @@ Tools to visualize NeXus HDF5 files graphically or in text form.
 
 .. toctree::
 
-   view/h5dump
-   view/punx
    view/nexpy
    view/silx
+   view/punx
+   view/h5dump
 
 .. _Examples.instruments:
 
