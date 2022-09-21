@@ -379,16 +379,18 @@ languages that will allow low level programmatic access to the data structures.
       extension for `Microsoft Visual Studio Code
       Editor <https://marketplace.visualstudio.com/items?itemName=h5web.vscode-h5web>`__
     * On-line visualization with NeXus file (using ``h5wasm``):
-      `simple_example_basic.nexus.hdf5 <https://h5web.panosc.eu/h5wasm?url=https%3A%2F%2Fmanual.nexusformat.org%2F_downloads%2Fb9b76d34af0f606d0e0958a234054608%2Fsimple_example_basic.nexus.hdf5>`__
+      `simple_example_basic.nexus.hdf5 <https://h5web.panosc.eu/h5wasm?url=https://raw.githubusercontent.com/nexusformat/definitions/main/manual/source/examples/python/simple_example_basic/simple_example_basic.nexus.hdf5>`__
     * `H5Web demonstration site <https://h5web.panosc.eu>`__
 
 .. index::
 	HDF; tools
 
-**HDF Group command line tools** (http://www.hdfgroup.org/products/hdf5_tools/#h5dist/)
-    There are various command line tools that are available from the HDF
-    Group, these are usually shipped with the HDF5 kits but are also available for
+**HDF Group tools** (https://portal.hdfgroup.org/display/support/Downloads)
+    Various tools are available from the HDF
+    Group. These are usually shipped with the HDF5 kits but are also available for
     download separately.
+    The HDF5 source code (https://github.com/HDFGroup/hdf5)
+    is available on GitHub.
 
 .. index::
 	HDFexplorer; tools
