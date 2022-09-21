@@ -385,10 +385,12 @@ languages that will allow low level programmatic access to the data structures.
 .. index::
 	HDF; tools
 
-**HDF Group command line tools** (http://www.hdfgroup.org/products/hdf5_tools/#h5dist/)
-    There are various command line tools that are available from the HDF
-    Group, these are usually shipped with the HDF5 kits but are also available for
+**HDF Group tools** (https://portal.hdfgroup.org/display/support/Downloads)
+    Various tools are available from the HDF
+    Group. These are usually shipped with the HDF5 kits but are also available for
     download separately.
+    The HDF5 source code (https://github.com/HDFGroup/hdf5)
+    is available on GitHub.
 
 .. index::
 	HDFexplorer; tools
