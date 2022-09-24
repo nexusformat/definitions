@@ -13,6 +13,7 @@ https://www.nexusformat.org/
 
     user_manual
     examples/index
+    notebooks/index
     ref_doc
     napi
     community

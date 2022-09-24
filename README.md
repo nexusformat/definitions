@@ -15,15 +15,48 @@ to be made before commiting the change:
 
 First install the test and build requirements with this command (only run once)
 
-    make install
+```bash
+make install
+```
+
+In addition you need to following system packages (only run once)
+
+```bash
+# Needed for jupyter notebooks
+sudo apt-get install -y pandoc
+
+# Only needed when building the PDF manual
+sudo apt-get install -y \
+    latexmk \
+    texlive-latex-recommended \
+    texlive-latex-extra \
+    texlive-fonts-recommended
+```
+
+To run the Jupyter notebooks you need to install the following packages (only run once)
+
+```bash
+pip install jupyterlab
+pip install numpy h5py scipy matplotlib
+```
 
 Then verify syntax and build the HTML manual with this command
 
-    make local
+```bash
+make local
+```
 
 Open the HTML manual in a web brower for visual verification
 
-    firefox build/manual/build/html/index.html
+```bash
+firefox build/manual/build/html/index.html
+```
+
+To build the PDF manual
+
+```bash
+make prepare pdf
+```
 
 ### HTML pages with contributor information
 

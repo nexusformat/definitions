@@ -204,6 +204,22 @@
 			  y: float[10,20,30]            --> coordinates along all dimensions
 			  energy: float[30]             --> coordinates along the third dimension
 
+		`Coordinate systems`
+
+		The :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields contain the axis coordinates associated
+		with the data values in the *data reference frame*. Data is plotted in the *plotting reference frame*.
+
+		The `active transformation matrix &lt;../../notebooks/reference_frames.ipynb#NXdata-reference-frame&gt;`__
+		defines the coordinate transformation matrix from *data reference frame* to *plotting reference frame*
+		in `homogeneous coordinates &lt;../../notebooks/reference_frames.ipynb#Homogeneous-coordinates&gt;`__.
+		It is provided by the :ref:`TRANSFORMATION &lt;/NXdata/TRANSFORMATION-field&gt;` field. When absent
+		the identity matrix is assumed, meaning the data and plotting frame are identical.
+
+		The fields :ref:`offset &lt;/NXdata/offset-field&gt;` and :ref:`scaling_factor &lt;/NXdata/scaling_factor-field&gt;`
+		provide additional coordinate transformations (offset and scaling) from data to plotting reference frame.
+		They could be absorbed in the :ref:`TRANSFORMATION &lt;/NXdata/TRANSFORMATION-field&gt;` field but if they
+		are present they should be applied to the axis values before applying the activate transformation matrix.
+
 		**Uncertainties:**
 
 		Standard deviations on data values as well as coordinates can be provided by
@@ -290,6 +306,11 @@
 
 			.. note::  When ``axes`` contains multiple strings, it must be saved as an actual array
 				of strings and not a single comma separated string.
+		</doc>
+	</attribute>
+	<attribute name="active_transformation" type="NX_CHAR">
+		<doc>
+			The name of the :ref:`field &lt;/NXdata/TRANSFORMATION-field&gt;` that contains the active transformation matrix.
 		</doc>
 	</attribute>
 	
@@ -411,6 +432,36 @@
 		<doc>
 			An optional offset to apply to the values in data.
 		</doc>
+	</field>
+	<field name="TRANSFORMATION" type="NX_FLOAT" nameType="any" optional="true">
+		<doc>
+			The `active transformation matrix &lt;../../notebooks/reference_frames.ipynb#NXdata-reference-frame&gt;`__
+			in `homogeneous coordinates &lt;../../notebooks/reference_frames.ipynb#Homogeneous-coordinates&gt;`__.
+			It is the matrix that transforms coordinates in the *data reference frame* into their corresponding
+			coordinates in the *plotting reference frame*.
+		</doc>
+		<dimensions rank="2">
+			<doc>
+				If the :ref:`DATA field &lt;/NXdata/DATA-field&gt;` has dimensions
+				\ :math:`n\times n` then the :ref:`TRANSFORMATION field &lt;/NXdata/TRANSFORMATION-field&gt;`
+				should have dimensions \ :math:`(n+1)\times (n+1)`
+			</doc>
+		</dimensions>
+		<attribute name="transformation_type" optional="true">
+			<doc>
+				The `type of transformation &lt;../../notebooks/reference_frames.ipynb#NXdata-reference-frame&gt;`__
+				may be helpful for plotting utilities.
+			</doc>
+			<enumeration>
+				<item value="identity"/>
+				<item value="translation"/>
+				<item value="proper rigid"/>
+				<item value="rigid"/>
+				<item value="similarity"/>
+				<item value="affine"/>
+				<item value="projective"/>
+				</enumeration>
+		</attribute>
 	</field>
 
 	<!-- Other fields -->
