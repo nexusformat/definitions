@@ -357,12 +357,6 @@ class NXClassDocGenerator:
             <dimensions rank="dataRank">
             </dimensions>
 
-        The legacy way of doing this (still supported)
-
-            <dimensions rank="dataRank">
-            <dim index="0" value="n" />
-            </dimensions>
-
         4. Rank and dimensions equal to that of another field called `field_name`
 
             <dimensions rank="dataRank">
@@ -383,10 +377,9 @@ class NXClassDocGenerator:
             if not index.isdigit():
                 raise RuntimeError("A dimension must have an index")
             index = int(index)
-            if index == 0:
-                # No longer needed: legacy way to specify that the
-                # rank is variable
-                continue
+            if index <= 0:
+                # No longer permitted
+                raise RuntimeError("A dimension's index must be a positive integer (>=1)")
 
             # Expand dimensions when needed
             index -= 1
