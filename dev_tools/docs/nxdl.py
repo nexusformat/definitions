@@ -379,7 +379,9 @@ class NXClassDocGenerator:
             index = int(index)
             if index <= 0:
                 # No longer permitted
-                raise RuntimeError("A dimension's index must be a positive integer (>=1)")
+                raise RuntimeError(
+                    "A dimension's index must be a positive integer (>=1)"
+                )
 
             # Expand dimensions when needed
             index -= 1
