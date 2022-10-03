@@ -31,20 +31,20 @@ used by NeXus. These are:
     Levels in the NeXus hierarchy. May contain fields and other groups.
 
 :ref:`Design-Fields`
-    Multidimensional arrays and scalars representing the actual data to be stored
+    Multidimensional arrays and scalars representing the actual data to be stored.
 
 :ref:`Design-Attributes`
     Attributes containing additional metadata can be assigned to groups, fields,
     or :ref:`files <Design-FileAttributes>`.
 
 :ref:`Design-Links`
-    Elements which point to data stored in another place in the file hierarchy
+    Elements which point to data stored in another place in the file hierarchy.
 
 :ref:`Design-NeXusClasses`
-    Dictionaries of names possible in the various types of NeXus groups
+    Dictionaries of names possible in the various types of NeXus groups.
 
 :ref:`Design-NeXusApplications`
-    Describe the minimum content of a NeXus file for a particular usage case
+    Describe the minimum content of a NeXus file for a particular usage case.
 
 In the following sections these elements of NeXus files will be defined in more detail.
 
@@ -58,9 +58,9 @@ In the following sections these elements of NeXus files will be defined in more 
 
    The tree syntax is a very condensed version (with high information density) meant to convey the structure of the HDF file.
 
-   * Groups have a ``/`` appended to their name (with NeXus class name shown)
+   * Groups have a ``/`` appended to their name (with NeXus class name shown).
    * Indentation shows membership in the lesser indented parent above.
-   * Fields have a data type and value appended (for arrays, this may be an abbreviated view)
+   * Fields have a data type and value appended (for arrays, this may be an abbreviated view).
    * Attributes (of groups or fields) are prefixed with ``@``.
    * NeXus-style links are described with some sort of arrow notation such as ``-->``.
 
@@ -106,12 +106,12 @@ Fields (also called data fields, data items or data sets)
 contain the essential information stored in a NeXus file. They can
 be scalar values or multidimensional arrays of a variety of sizes (1-byte,
 2-byte, 4-byte, 8-byte) and types (integers, floats, characters). The fields may
-store both experimental results (counts, detector angles, etc), and other
+store both experimental results (counts, detector angles, etc.), and other
 information associated with the experiment (start and end times, user names,
-etc). Fields are identified by their names, which must be unique within the
+etc.). Fields are identified by their names, which must be unique within the
 group in which they are stored.  Some fields have engineering units to be specified.
 In some cases, such as :ref:`/NXdata/DATA </NXdata/DATA-field>`, a field is
-expected to have be an array of several dimensions.
+expected to be an array of several dimensions.
 
 	.. compound::
 
@@ -126,7 +126,7 @@ expected to have be an array of several dimensions.
 			Errors (uncertainties) associated with axis ``variable``.
 
 		``wavelength`` (*NX_FLOAT*)
-			wavelength of radiation, ``units="NX_FLOAT"``
+			wavelength of radiation, ``units="NX_FLOAT"``.
 
 		``chemical_formula`` (*NX_CHAR*)
 			The chemical formula specified using CIF conventions.
@@ -135,7 +135,7 @@ expected to have be an array of several dimensions.
 			Name of user responsible for this entry.
 
 		``data`` (*NX_NUMBER*)
-			Data values from the detector, ``units="NX_ANY"``
+			Data values from the detector, ``units="NX_ANY"``.
 
 See the sections :ref:`nxdl-types` and :ref:`nxdl-units` for complete lists of
 the data types and engineering units types, respectively.
@@ -441,8 +441,8 @@ Data groups often describe objects in the experiment (monitors, detectors,
 monochromators, etc.), so that the contents (both fields and/or other
 groups) comprise the properties of that object. NeXus has defined a set of standard
 objects, or :ref:`base classes <base.class.definitions>`,
-out of which a NeXus file can be constructed. This is each data group
-is identified by a name and a class. The group class, defines the type of object
+out of which a NeXus file can be constructed. Each data group
+is identified by a name and a class. The group class defines the type of object
 and the properties that it can contain, whereas the group name defines a unique instance
 of that class. These classes are
 defined in XML using the NeXus Definition Language
@@ -483,8 +483,8 @@ But there are some base classes which have special uses which need to be mention
 :ref:`NXdata`
     ``NXdata`` is used to identify the default
     :index:`plottable data <plotting>`.
-    The notion of a default plot of data is a basic motivation of NeXus.
-    (see :ref:`SimplePlotting`)
+    The notion of a default plot of data is a basic motivation of NeXus
+    (see :ref:`SimplePlotting`).
 
 :ref:`NXlog`
     ``NXlog`` is used to store time stamped data like the log of a temperature controller.
@@ -926,8 +926,8 @@ edges must be present but does not need to be correct
    :linenos:
    :language: text
 
-Following the initial line are the xyz coordinates of each vertex. Proceeding
-which is the list of faces. Each line defining a face starts with the number of
+Following the initial line are the xyz coordinates of each vertex, followed
+by the list of faces. Each line defining a face starts with the number of
 vertices in that face followed by the sequence number of the composing vertices,
 indexed from zero. The vertex indices form a winding order by defining the face
 normal by the right-hand rule. The number of vertices in each face need not be
