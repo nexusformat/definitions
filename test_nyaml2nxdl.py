@@ -73,8 +73,6 @@ not found in file'
     return [lines, lines_index]
 
 
-@pytest.mark.parametrize(
-)
 def compare_matches(ref_xml_file, test_yml_file, test_xml_file, desired_matches):
     """Check if a new xml file is generated
 and if test xml file is equal to reference xml file
