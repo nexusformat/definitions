@@ -27,15 +27,15 @@ support library must create and set the ``NX_class`` attribute on each group.
     =====================================   ================================  ================================================
     action                                  nexusformat function              h5py function
     =====================================   ================================  ================================================
-    create file & root (``/``) structure    ``nxopen(fileName, "w")``         ``h5py.File()``
+    create file & root (``/``) structure    ``nxopen(fileName, "w")``         ``h5py.File(fileName, "w")``
     create ``/entry`` group                 ``f["entry"] = NXentry()``        ``f.create_group("entry")``
     create ``/entry/mr_scan`` group         ``f["entry/mr_scan"] = Ndata()``  ``nxentry.create_group("mr_scan")``
     store ``mr`` data                       ``NXfield(mr_arr, ...)``          ``nxdata.create_dataset("mr", data=mr_arr)``
     store ``I00`` data                      ``NXfield(i00_arr, ...)``         ``nxdata.create_dataset("I00", data=i00_arr)``
+    add ``title``                           ``f["entry/title"] = ..."``       ``nxentry.create_dataset("title", ...)``
     =====================================   ================================  ================================================
 
-Next, we create a dataset called ``title`` to hold a title string that can
-appear on the default plot.
+The ``title`` string is added to label the default plot.
 
 The data type of  ``mr`` and ``I00``, as represented in ``numpy``, will be recognized
 by ``h5py`` and automatically converted to the proper HDF5 type in the file.
