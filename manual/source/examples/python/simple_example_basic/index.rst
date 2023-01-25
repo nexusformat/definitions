@@ -8,7 +8,7 @@ Getting started
 Write a NeXus HDF5 File
 =======================
 
-In the main code section of :ref:`simple_example_basic_write.py <Example-Python-BasicWriter>`, 
+In the main code section of :ref:`simple_example_basic_write.py <Example-Python-BasicWriter>`,
 the data (``mr`` is similar to "two_theta" and
 ``I00`` is similar to "counts") is collated into two Python lists. We use the
 **numpy** package to read the file and parse the two-column format.
@@ -20,39 +20,39 @@ Since we are not using the NAPI, our
 support library must create and set the ``NX_class`` attribute on each group.
 
 .. note:: We want to create the desired structure of
-          ``/entry:NXentry/mr_scan:NXdata/``. 
-          
-	  #. First, our support library calls 
-             ``f = h5py.File()`` 
-             to create the file and root level NeXus structure.
-	  #. Then, it calls 
-             ``nxentry = f.create_group("entry")`` 
-             to create the ``NXentry`` group called
-             ``entry`` at the root level. 
-	  #. Then, it calls 
-             ``nxdata = nxentry.create_group("mr_scan")`` 
-             to create the ``NXentry`` group called
-             ``entry`` as a child of the ``NXentry`` group.
+          ``/entry:NXentry/mr_scan:NXdata/``.
+
+      Examine the example code below for these key actions to create the structure:
+
+      =====================================   ================================  ================================================
+	  action                                  nexusformat function              h5py function
+      =====================================   ================================  ================================================
+      create file & root (``/``) structure    ``nxopen(fileName, "w")``         ``h5py.File()``
+      create ``/entry`` group                 ``f["entry"] = NXentry()``        ``f.create_group("entry")``
+      create ``/entry/mr_scan`` group         ``f["entry/mr_scan"] = Ndata()``  ``nxentry.create_group("mr_scan")``
+      store ``mr`` data                       ``NXfield(mr_arr, ...)``          ``nxdata.create_dataset("mr", data=mr_arr)``
+      store ``I00`` data                      ``NXfield(i00_arr, ...)``         ``nxdata.create_dataset("I00", data=i00_arr)``
+      =====================================   ================================  ================================================
 
 Next, we create a dataset called ``title`` to hold a title string that can
 appear on the default plot.
 
-Next, we create datasets for ``mr`` and ``I00`` using our support library.
-The data type of each, as represented in ``numpy``, will be recognized by
-``h5py`` and automatically converted to the proper HDF5 type in the file.
+The data type of  ``mr`` and ``I00``, as represented in ``numpy``, will be recognized
+by ``h5py`` and automatically converted to the proper HDF5 type in the file.
 A Python dictionary of attributes is given, specifying the engineering units and other
 values needed by NeXus to provide a default plot of this data.  By setting ``signal="I00"``
 as an attribute on the group, NeXus recognizes ``I00`` as the default
-*y* axis for the plot.  The ``axes="mr"`` attribute on the :ref:`NXdata` 
+*y* axis for the plot.  The ``axes="mr"`` attribute on the :ref:`NXdata`
 group connects the dataset to be used as the *x* axis.
 
-Finally, we *must* remember to call ``f.close()`` or we might
-corrupt the file when the program quits.
+Since we opened the file with a Python context manager (``with .. as f:``), it
+is not necessary to make an explicit call to close the file.  The context manager
+will close the file with the context.
 
 .. compound::
 
     .. rubric:: *simple_example_basic_write.py*: Write a NeXus HDF5 file using Python with h5py
-    
+
     .. _Example-Python-BasicWriter:
 
     .. tabs::
