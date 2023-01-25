@@ -32,7 +32,7 @@ support library must create and set the ``NX_class`` attribute on each group.
     create ``/entry/mr_scan`` group         ``f["entry/mr_scan"] = Ndata()``  ``nxentry.create_group("mr_scan")``
     store ``mr`` data                       ``NXfield(mr_arr, ...)``          ``nxdata.create_dataset("mr", data=mr_arr)``
     store ``I00`` data                      ``NXfield(i00_arr, ...)``         ``nxdata.create_dataset("I00", data=i00_arr)``
-    add ``title``                           ``f["entry/title"] = ..."``       ``nxentry.create_dataset("title", ...)``
+    add ``title``                           ``f["entry/title"] = ...``        ``nxentry.create_dataset("title", ...)``
     =====================================   ================================  ================================================
 
 The ``title`` string is added to label the default plot.
