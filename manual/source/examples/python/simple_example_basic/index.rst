@@ -39,9 +39,9 @@ appear on the default plot.
 
 The data type of  ``mr`` and ``I00``, as represented in ``numpy``, will be recognized
 by ``h5py`` and automatically converted to the proper HDF5 type in the file.
-A Python dictionary of attributes is given, specifying the engineering units and other
-values needed by NeXus to provide a default plot of this data.  By setting ``signal="I00"``
-as an attribute on the group, NeXus recognizes ``I00`` as the default
+Engineering units and other metadata needed by NeXus to provide a default plot of
+this data are provided.  The NeXus ``signal="I00"``
+attribute on the :ref:`NXdata` group identifies ``I00`` as the default
 *y* axis for the plot.  The ``axes="mr"`` attribute on the :ref:`NXdata`
 group connects the dataset to be used as the *x* axis.
 
