@@ -20,19 +20,19 @@ Since we are not using the NAPI, our
 support library must create and set the ``NX_class`` attribute on each group.
 
 .. note:: We want to create the desired structure of
-          ``/entry:NXentry/mr_scan:NXdata/``.
+    ``/entry:NXentry/mr_scan:NXdata/``.
 
-      Examine the example code below for these key actions to create the structure:
+    Examine the example code below for these key actions to create the structure:
 
-      =====================================   ================================  ================================================
-	  action                                  nexusformat function              h5py function
-      =====================================   ================================  ================================================
-      create file & root (``/``) structure    ``nxopen(fileName, "w")``         ``h5py.File()``
-      create ``/entry`` group                 ``f["entry"] = NXentry()``        ``f.create_group("entry")``
-      create ``/entry/mr_scan`` group         ``f["entry/mr_scan"] = Ndata()``  ``nxentry.create_group("mr_scan")``
-      store ``mr`` data                       ``NXfield(mr_arr, ...)``          ``nxdata.create_dataset("mr", data=mr_arr)``
-      store ``I00`` data                      ``NXfield(i00_arr, ...)``         ``nxdata.create_dataset("I00", data=i00_arr)``
-      =====================================   ================================  ================================================
+    =====================================   ================================  ================================================
+    action                                  nexusformat function              h5py function
+    =====================================   ================================  ================================================
+    create file & root (``/``) structure    ``nxopen(fileName, "w")``         ``h5py.File()``
+    create ``/entry`` group                 ``f["entry"] = NXentry()``        ``f.create_group("entry")``
+    create ``/entry/mr_scan`` group         ``f["entry/mr_scan"] = Ndata()``  ``nxentry.create_group("mr_scan")``
+    store ``mr`` data                       ``NXfield(mr_arr, ...)``          ``nxdata.create_dataset("mr", data=mr_arr)``
+    store ``I00`` data                      ``NXfield(i00_arr, ...)``         ``nxdata.create_dataset("I00", data=i00_arr)``
+    =====================================   ================================  ================================================
 
 Next, we create a dataset called ``title`` to hold a title string that can
 appear on the default plot.
