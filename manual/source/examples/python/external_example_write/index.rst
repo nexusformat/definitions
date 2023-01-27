@@ -103,29 +103,41 @@ to write a NeXus-compliant HDF5 file with links to data in other HDF5 files.
 
     .. rubric:: *external_example_write.py*: Write using HDF5 external links
     
-    .. _Example-H5py-external_example_write:
+    .. _Example-Python-external_example_write:
 
-    .. literalinclude:: external_example_write.py
-       :tab-width: 4
-       :linenos:
-       :language: python
+    .. tabs::
+
+        .. tab:: nexusformat
+
+            .. literalinclude:: nexusformat/external_example_write.py
+                :tab-width: 4
+                :linenos:
+                :language: python
+
+        .. tab:: h5py
+
+            .. literalinclude:: external_example_write.py
+                :tab-width: 4
+                :linenos:
+                :language: python
 
 downloads
 =========
 
 The Python code and files related to this section may be downloaded from the following table.
 
-===========================================  =============================================
-file                                         description
-===========================================  =============================================
-:download:`external_angles_h5dump.txt`       *h5dump* analysis of *external_angles.hdf5*
-:download:`external_angles.hdf5`             HDF5 file written by *external_example_write*
-:download:`external_angles_structure.txt`    *punx tree* analysis of *external_angles.hdf5*
-:download:`external_counts_h5dump.txt`       *h5dump* analysis of *external_counts.hdf5*
-:download:`external_counts.hdf5`             HDF5 file written by *external_example_write*
-:download:`external_counts_structure.txt`    *punx tree* analysis of *external_counts.hdf5*
-:download:`external_example_write.py`        python code to write external linking examples
-:download:`external_master_h5dump.txt`       *h5dump* analysis of *external_master.hdf5*
-:download:`external_master.hdf5`             NeXus file written by *external_example_write*
-:download:`external_master_structure.txt`    *punx tree* analysis of *external_master.hdf5*
-===========================================  =============================================
+=================================================  ===================================================
+file                                               description
+=================================================  ===================================================
+:download:`external_angles_h5dump.txt`             *h5dump* analysis of *external_angles.hdf5*
+:download:`external_angles.hdf5`                   HDF5 file written by *external_example_write*
+:download:`external_angles_structure.txt`          *punx tree* analysis of *external_angles.hdf5*
+:download:`external_counts_h5dump.txt`             *h5dump* analysis of *external_counts.hdf5*
+:download:`external_counts.hdf5`                   HDF5 file written by *external_example_write*
+:download:`external_counts_structure.txt`          *punx tree* analysis of *external_counts.hdf5*
+:download:`external_example_write.py`              h5py code to write external linking examples
+:download:`nexusformat/external_example_write.py`  nexusformat code to write external linking examples
+:download:`external_master_h5dump.txt`             *h5dump* analysis of *external_master.hdf5*
+:download:`external_master.hdf5`                   NeXus file written by *external_example_write*
+:download:`external_master_structure.txt`          *punx tree* analysis of *external_master.hdf5*
+=================================================  ===================================================

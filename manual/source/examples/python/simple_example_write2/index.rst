@@ -35,10 +35,21 @@ Links are made from that data to the ``/entry/data`` group.
 The Python code to build an HDF5 data file with that structure (using
 numerical data from the previous example) is shown below.
 
-.. literalinclude:: simple_example_write2.py
-    :tab-width: 4
-    :linenos:
-    :language: python
+    .. tabs::
+
+        .. tab:: nexusformat
+
+            .. literalinclude:: nexusformat/simple_example_write2.py
+                :tab-width: 4
+                :linenos:
+                :language: python
+
+        .. tab:: h5py
+
+            .. literalinclude:: simple_example_write2.py
+	            :tab-width: 4
+	            :linenos:
+	            :language: python
 
 It is interesting to compare the output of the ``h5dump``
 of the data file ``simple_example_write2.hdf5`` with our Python instructions.
@@ -86,13 +97,14 @@ downloads
 
 The Python code and files related to this section may be downloaded from the following table.
 
-================================================  =============================================
+================================================  =========================================================
 file                                              description
-================================================  =============================================
+================================================  =========================================================
 :download:`../simple_example.dat`                 2-column ASCII data used in this section
-:download:`simple_example_write2.py`              python code to write example *simple_example_write2*
+:download:`simple_example_write2.py`              h5py code to write example *simple_example_write2*
+:download:`nexusformat/simple_example_write2.py`  nexusformat code to write example *simple_example_write2*
 :download:`simple_example_write2.hdf5`            NeXus file written by this code
 :download:`simple_example_write2_h5dump.txt`      *h5dump* analysis of the NeXus file
 :download:`simple_example_write2_structure.txt`   *punx tree* analysis of the NeXus file
-================================================  =============================================
+================================================  =========================================================
     

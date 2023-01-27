@@ -1,14 +1,14 @@
-.. _Example-H5py-complete:
+.. _Example-Python-complete:
 
 Getting started
 ###############
 
-.. _Example-H5py-Writing:
+.. _Example-Python-Writing:
 
 Write a NeXus HDF5 File
 =======================
 
-In the main code section of :ref:`simple_example_basic_write.py <Example-H5py-BasicWriter>`, 
+In the main code section of :ref:`simple_example_basic_write.py <Example-Python-BasicWriter>`, 
 the data (``mr`` is similar to "two_theta" and
 ``I00`` is similar to "counts") is collated into two Python lists. We use the
 **numpy** package to read the file and parse the two-column format.
@@ -53,21 +53,31 @@ corrupt the file when the program quits.
 
     .. rubric:: *simple_example_basic_write.py*: Write a NeXus HDF5 file using Python with h5py
     
-    .. _Example-H5py-BasicWriter:
+    .. _Example-Python-BasicWriter:
 
-    .. literalinclude:: simple_example_basic_write.py
-	    :tab-width: 4
-	    :linenos:
-	    :language: python
+    .. tabs::
 
-.. _Example-H5py-Reading:
+        .. tab:: nexusformat
+
+            .. literalinclude:: nexusformat/simple_example_basic_write.py
+                :tab-width: 4
+                :linenos:
+                :language: python
+
+        .. tab:: h5py
+
+            .. literalinclude:: simple_example_basic_write.py
+	            :tab-width: 4
+	            :linenos:
+	            :language: python
+
+.. _Example-Python-Reading:
 
 Read a NeXus HDF5 File
 ======================
 
-The file reader, :ref:`simple_example_basic_read.py <Example-H5py-Reader>`,
-is very simple since the bulk of the work is done by ``h5py``.
-Our code opens the HDF5 we wrote above,
+The file reader, :ref:`simple_example_basic_read.py <Example-Python-Reader>`,
+opens the HDF5 we wrote above,
 prints the HDF5 attributes from the file, reads the two datasets,
 and then prints them out as columns.  As simple as that.
 Of course, real code might add some error-handling and
@@ -80,14 +90,25 @@ extracting other useful stuff from the file.
 
 .. compound::
 
-    .. rubric:: *simple_example_basic_read.py*: Read a NeXus HDF5 file using Python with h5py
-    
-    .. _Example-H5py-Reader:
+    .. rubric:: *simple_example_basic_read.py*: Read a NeXus HDF5 file using Python
 
-    .. literalinclude:: simple_example_basic_read.py
-	    :tab-width: 4
-	    :linenos:
-	    :language: python
+    .. _Example-Python-Reader:
+
+    .. tabs::
+
+        .. tab:: nexusformat
+
+            .. literalinclude:: nexusformat/simple_example_basic_read.py
+                :tab-width: 4
+                :linenos:
+                :language: python
+
+        .. tab:: h5py
+
+            .. literalinclude:: simple_example_basic_read.py
+	            :tab-width: 4
+	            :linenos:
+	            :language: python
 
 Output from ``simple_example_basic_read.py`` is shown next.
 
@@ -105,13 +126,15 @@ downloads
 
 The Python code and files related to this section may be downloaded from the following table.
 
-=====================================================  =============================================
+=====================================================  ===================================================================
 file                                                   description
-=====================================================  =============================================
+=====================================================  ===================================================================
 :download:`../simple_example.dat`                      2-column ASCII data used in this section
-:download:`simple_example_basic_read.py`               python code to read example *simple_example_basic.nexus.hdf5*
-:download:`simple_example_basic_write.py`              python code to write example *simple_example_basic.nexus.hdf5*
+:download:`simple_example_basic_read.py`               h5py code to read example *simple_example_basic.nexus.hdf5*
+:download:`nexusformat/simple_example_basic_read.py`   nexusformat code to read example *simple_example_basic.nexus.hdf5*
+:download:`simple_example_basic_write.py`              h5py code to write example *simple_example_basic.nexus.hdf5*
+:download:`nexusformat/simple_example_basic_write.py`  nexusformat code to write example *simple_example_basic.nexus.hdf5*
 :download:`simple_example_basic.nexus_h5dump.txt`      *h5dump* analysis of the NeXus file
 :download:`simple_example_basic.nexus.hdf5`            NeXus file written by *BasicWriter*
 :download:`simple_example_basic.nexus_structure.txt`   *punx tree* analysis of the NeXus file
-=====================================================  =============================================
+=====================================================  ===================================================================

@@ -19,7 +19,7 @@ HDF5 in MATLAB
 ``input.dat``
 +++++++++++++
 
-This is the same data used with :ref:`Example-H5py`.
+This is the same data used with :ref:`Example-Python`.
 
 .. literalinclude:: input.dat
     :tab-width: 4

@@ -46,7 +46,8 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.todo'
+    'sphinx.ext.todo',
+    'sphinx_tabs.tabs'
 ]
 
 # Show `.. todo` directives in the output
