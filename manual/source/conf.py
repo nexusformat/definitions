@@ -47,7 +47,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx_comments',
-    'sphinx.ext.todo'
+    'sphinx.ext.todo',
+    'sphinx_tabs.tabs'
 ]
 
 # Show `.. todo` directives in the output
@@ -75,6 +76,9 @@ html_theme = 'alabaster'
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+# Add extra files
+html_extra_path = ['CNAME']
 html_logo = 'img/FAIRmat.png'
 
 if html_theme== 'sphinx_rtd_theme':

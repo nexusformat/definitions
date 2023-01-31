@@ -3,6 +3,9 @@
 
 .. _all.class.definitions:
 
+.. role:: styleh2
+    :class: styleh2
+
 NeXus Class Definitions
 #######################
 
@@ -14,8 +17,7 @@ The complete :index:`!vocabulary` of terms used in NeXus NXDL files (names of
 groups, fields, attributes, and links) is available for :ref:`download
 <classes.vocabulary.downloads>`.
 
-Base classes
-------------------
+.. rubric:: :styleh2:`Base classes`
 
 NeXus :ref:`base class <base.class.definitions>` definitions define the set of terms that
 *might* be used in an instance of that class.
@@ -37,8 +39,7 @@ Validation procedures should treat such additional items
 (not covered by a base class specification) as notes or warnings
 rather than errors. 
 
-Application Definitions
-------------------------
+.. rubric:: :styleh2:`Application Definitions`
 
 NeXus :ref:`application definitions <application.definitions>` define the *minimum*
 set of terms that
@@ -90,8 +91,7 @@ this group according to the specifications of the application definition.
    application definition, you should start with each application definition
    in a :ref:`NXsubentry` group.
 
-Contributed Definitions
-------------------------
+.. rubric:: :styleh2:`Contributed Definitions`
 
 NXDL files in the NeXus :ref:`contributed definitions <contributed.definitions>` include propositions from
 the community for NeXus base classes or application definitions, as well

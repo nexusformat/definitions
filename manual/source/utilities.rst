@@ -10,15 +10,15 @@ other tools listed here can read or write one of the low-level file formats used
 HDF4, or XML).
 
 Furthermore, there are specific examples of code
-that can read, write, (or both) NeXus data files, 
+that can read, write, (or both) NeXus data files,
 given in the section :ref:`language.apis`.
 
 
-The NIAC welcomes your continued contributions to 
+The NIAC welcomes your continued contributions to
 this documentation.
 
 Please note that NeXus maintains a repository of
-example data files [#]_ which you may browse and 
+example data files [#]_ which you may browse and
 download.  There is a cursory analysis [#]_ of every file
 in this repository as to whether it can be read as HDF5
 or NeXus HDF5.  The analysis code [#]_, which serves as yet
@@ -45,14 +45,14 @@ Most of these utility programs are run from the command line. It will be noted i
 program provides a graphical user interface (GUI). Short descriptions are provided here with
 links to further information, as available.
 
-.. index:: 
+.. index::
         browser
 	nxbrowse (utility)
 
 **nxbrowse**
     NeXus Browser
 
-.. index:: 
+.. index::
         conversion
 	nxconvert (utility)
 
@@ -64,12 +64,12 @@ links to further information, as available.
 	nxdir (utility)
 
 **nxdir**
-    ``nxdir`` is a utility for querying 
+    ``nxdir`` is a utility for querying
     a NeXus file about its contents. Full
     documentation can be found by running this command:
-    
+
     .. code-block:: c
-    
+
         nxdir -h
 
 .. index::
@@ -78,15 +78,15 @@ links to further information, as available.
 
 **nxingest**
     ``nxingest`` extracts the metadata from a NeXus file to create an
-    XML file according to a mapping file.  The mapping file defines the structure 
-    :index:`(names and hierarchy) <hierarchy>` and content (from either the 
+    XML file according to a mapping file.  The mapping file defines the structure
+    :index:`(names and hierarchy) <hierarchy>` and content (from either the
     NeXus file, the mapping file or the current time) of the output file. See
-    the man page for a description of the mapping file.  This tool uses the  
+    the man page for a description of the mapping file.  This tool uses the
     :index:`NAPI`.  Thus, any of the supported formats (HDF4, HDF5 and XML)
     can be read.
 
-.. index:: 
-	nxsummary 
+.. index::
+	nxsummary
 
 **nxsummary**
     Use ``nxsummary`` to generate summary of a NeXus file.
@@ -108,16 +108,16 @@ links to further information, as available.
     ``nxtranslate`` can read from new formats as plugins become available. The
     documentation for ``nxtranslate`` describes its usage by three types of
     individuals:
-    
+
     + the person using existing translation files to create NeXus files
     + the person creating translation files
     + the person writing new *retrievers*
-    
+
     All of these concepts are discussed in detail in the documentation
     provided with the source code.
 
 
-.. index:: 
+.. index::
    plotting
 	NXplot (utility)
 
@@ -135,7 +135,7 @@ links to further information, as available.
 Validation
 ##########
 
-The list of applications below are for :ref:`validating <Verification>` NeXus files. 
+The list of applications below are for :ref:`validating <Verification>` NeXus files.
 The list is not intended to be a complete list of all available packages.
 
 .. index::
@@ -147,10 +147,10 @@ The list is not intended to be a complete list of all available packages.
 
 **cnxvalidate**
    NeXus validation tool written in C (not via NAPI).
-    
+
    Its dependencies are libxml2 and the HDF5 libraries, version 1.8.9 or
    better. Its purpose is to validate HDF5 files against NeXus
-   application definitions. 
+   application definitions.
 
    See the program documentation for more details:
    https://github.com/nexusformat/cnxvalidate.git
@@ -160,27 +160,27 @@ The list is not intended to be a complete list of all available packages.
    file; validate
    punx (utility)
 
-.. _punx:
+.. _punx_util:
 
 **punx**
    Python Utilities for NeXus HDF5 files
-   
+
    **punx** can validate both NXDL files and NeXus HDF5 data files, as
    well as print the structure of any HDF5 file, even non-NeXus files.
-    
+
    NOTE: project is under initial construction, not yet released for
    public use, but is useful in its present form (version 0.2.5).
 
    **punx** can show the tree structure of any HDF5 file. The output is
    more concise than that from *h5dump*.
-    
+
    See the program documentation for more details:
    https://punx.readthedocs.io
 
 Other Utilities
 ###############
 
-.. index:: 
+.. index::
 	NeXus Constructor
 
 **NeXus Constructor** (https://github.com/ess-dmsc/nexus-constructor)
@@ -188,7 +188,7 @@ Other Utilities
     experiments at neutron science facilities. This includes all supporting metadata typically
     required to perform analysis of such experiments, including instrument geometry information.
 
-.. index:: 
+.. index::
 	nxdl_to_hdf5.py
 
 **nxdl_to_hdf5.py** (https://github.com/nexusformat/exampledata/tree/master/nxdl)
@@ -202,11 +202,11 @@ Other Utilities
 Data Analysis
 #############
 
-The list of applications below are some of the utilities that have been 
+The list of applications below are some of the utilities that have been
 developed (or modified) to read/write NeXus files
 as a data format.  It is not intended to be a complete list of all available packages.
 
-.. index:: 
+.. index::
 	DAVE (data analysis software)
 
 **DAVE** (http://www.ncnr.nist.gov/dave/)
@@ -214,84 +214,84 @@ as a data format.  It is not intended to be a complete list of all available pac
     analysis of inelastic neutron scattering data. It is built using IDL (Interactive Data
     Language) from ITT Visual Information Solutions.
 
-.. index:: 
+.. index::
 	DAWN (data analysis software)
 
 **DAWN** (http://www.dawnsci.org)
     The Data Analysis WorkbeNch (DAWN) project is an eclipse based workbench
-    for doing scientific data anaylsis. It offers generic visualisation, 
+    for doing scientific data anaylsis. It offers generic visualisation,
     and domain specific processing.
 
-.. index:: 
+.. index::
 	GDA (data acquisition software)
 
 **GDA** (http://www.opengda.org)
-    The GDA project is an open-source framework for creating customised 
-    data acquisition software for science facilities such 
-    as neutron and X-ray sources. It has elements of the DAWN analysis 
+    The GDA project is an open-source framework for creating customised
+    data acquisition software for science facilities such
+    as neutron and X-ray sources. It has elements of the DAWN analysis
     workbench built in.
 
-.. index:: 
+.. index::
 	Gumtree (data analysis software)
 
 **Gumtree** (https://archive.ansto.gov.au/ResearchHub/OurInfrastructure/ACNS/Facilities/Computing/GumTree/index.htm)
-    Gumtree  is an open source project, providing a graphical user 
-    interface for instrument status and control, data acquisition 
+    Gumtree  is an open source project, providing a graphical user
+    interface for instrument status and control, data acquisition
     and data reduction.
 
-.. index:: 
+.. index::
 	IDL (data analysis software)
 
 **IDL** (https://www.harrisgeospatial.com/docs/using_idl_home.html)
-    IDL is a high-level technical computing language and interactive 
-    environment for algorithm development, data visualization, 
+    IDL is a high-level technical computing language and interactive
+    environment for algorithm development, data visualization,
     data analysis, and numeric computation.
 
-.. index:: 
+.. index::
 	IGOR Pro (data analysis software)
 
 **IgorPro** (http://www.wavemetrics.com/)
-    IGOR Pro is an extraordinarily powerful and extensible scientific 
-    graphing, data analysis, image processing and programming software 
+    IGOR Pro is an extraordinarily powerful and extensible scientific
+    graphing, data analysis, image processing and programming software
     tool for scientists and engineers.
 
-.. index:: 
+.. index::
 	ISAW (data analysis software)
 
 **ISAW** (ftp://ftp.sns.gov/ISAW/)
-    The Integrated Spectral Analysis Workbench software project (ISAW) 
+    The Integrated Spectral Analysis Workbench software project (ISAW)
     is a Platform-Independent system Data Reduction/Visualization.
-    ISAW can be used to read, manipulate, view, and save neutron 
+    ISAW can be used to read, manipulate, view, and save neutron
     scattering data. It reads data from IPNS run files or NeXus files
     and can merge and sort data from separate measurements.
 
-.. index:: 
+.. index::
 	LAMP (data analysis software)
 
 **LAMP** (http://www.ill.eu/data_treat/lamp/>)
-    LAMP (Large Array Manipulation Program)  is designed for the treatment of 
+    LAMP (Large Array Manipulation Program)  is designed for the treatment of
     data obtained from neutron scattering experiments at the Institut Laue-Langevin. However,
-    LAMP is now a more general purpose application which can be seen as 
+    LAMP is now a more general purpose application which can be seen as
     a GUI-laboratory for data analysis based on the IDL language.
 
-.. index:: 
+.. index::
 	Mantid (data analysis software)
 
 **Mantid** (http://www.mantidproject.org/)
-    The Mantid project 
+    The Mantid project
     provides a platform that supports high-performance
     computing on neutron and muon data.  It is being developed as a collaboration between
     Rutherford Appleton Laboratory and Oak Ridge National Laboratory.
 
-.. index:: 
+.. index::
 	MATLAB
 
 **MATLAB** (http://www.mathworks.com/)
-    MATLAB is a high-level technical computing language and interactive 
-    environment for algorithm development, data visualization, 
+    MATLAB is a high-level technical computing language and interactive
+    environment for algorithm development, data visualization,
     data analysis, and numeric computation.
 
-.. index:: 
+.. index::
 	NeXpy (data analysis software)
 
 **NeXpy** (http://nexpy.github.io/nexpy/)
@@ -301,7 +301,7 @@ as a data format.  It is not intended to be a complete list of all available pac
     (It was decided at the NIAC 2010 meeting that a large portion of this code
     would be adopted in the future by NeXus and be part of the distribution)
 
-.. index:: 
+.. index::
 	silx (data analysis software)
 
 **silx** (http://www.silx.org/doc/silx/latest/)
@@ -310,25 +310,25 @@ as a data format.  It is not intended to be a complete list of all available pac
     radiation facilities.
     In particular it provides tools to read, write and visualize NeXus HDF5 files.
 
-.. index:: 
+.. index::
 	OpenGENIE (data analysis software)
 
 **OpenGENIE** (http://www.opengenie.org/)
     A general purpose data analysis and visualisation package primarily
     developed at the ISIS Facility, Rutherford Appleton Laboratory.
 
-.. index:: 
+.. index::
 	PyMCA (data analysis software)
 
 **PyMCA** (http://pymca.sourceforge.net/)
-    PyMca is a ready-to-use, and in many aspects state-of-the-art, 
+    PyMca is a ready-to-use, and in many aspects state-of-the-art,
     set of applications implementing most of the needs
-    of X-ray fluorescence data analysis.  It also provides a 
+    of X-ray fluorescence data analysis.  It also provides a
     Python toolkit for visualization and analysis of energy-dispersive
-    X-ray fluorescence data.  
+    X-ray fluorescence data.
     Reads, browses, and plots data from NeXus HDF5 files.
 
-.. index:: 
+.. index::
 	spec2nexus
 
 **spec2nexus** (https://spec2nexus.readthedocs.io)
@@ -336,7 +336,7 @@ as a data format.  It is not intended to be a complete list of all available pac
     (Note the *h5toText* tool mentioned here previously is no longer
     available from the *spec2nexus* project.  The code has been moved
     into the *punx* project: https://punx.readthedocs.io/.)
-    
+
     *spec2nexus* provides libraries:
 
     * *spec2nexus.spec*: python binding to read SPEC [#]_ data files
@@ -349,31 +349,68 @@ as a data format.  It is not intended to be a complete list of all available pac
 HDF Tools
 #########
 
-Here are some of the generic tools that are available to work with HDF files.  
-In addition to the software listed here there are also
-APIs for many programming languages that will allow 
-low level programmatic access to the data structures.
+Here are some of the generic tools that are available to work with HDF files. In
+addition to the software listed here there are also APIs for many programming
+languages that will allow low level programmatic access to the data structures.
 
-.. index:: 
+.. index::
+    h5wasm; tools
+
+**h5wasm** (https://github.com/usnistgov/h5wasm):
+
+    A `WebAssembly <https://webassembly.org/>`__
+    port of the HDF5 C library, which allows reading and writing
+    HDF5 files from JavaScript (i.e. no need for a back-end server at all).
+
+.. index::
+    jupyterlab-h5web; tools
+    vscode-h5web; tools
+    h5web; tools
+
+**H5Web** (https://github.com/silx-kit/h5web):
+
+    `H5Web <https://github.com/silx-kit/h5web>`__ is a toolkit for exploring
+    and visualising HDF5 files and, more generally, for visualizing data. It
+    is based on React, and WebGL. These projects make use of H5Web:
+
+    * `jupyterlab-h5web <https://github.com/silx-kit/jupyterlab-h5web>`__:
+      extension for `JupyterLab <https://jupyter.org/>`__
+    * `vscode-h5web <https://github.com/silx-kit/vscode-h5web>`__:
+      extension for `Microsoft Visual Studio Code
+      Editor <https://marketplace.visualstudio.com/items?itemName=h5web.vscode-h5web>`__
+    * On-line visualization with NeXus file (using ``h5wasm``):
+      `simple_example_basic.nexus.hdf5 <https://h5web.panosc.eu/h5wasm?url=https://raw.githubusercontent.com/nexusformat/definitions/main/manual/source/examples/python/simple_example_basic/simple_example_basic.nexus.hdf5>`__
+    * `H5Web demonstration site <https://h5web.panosc.eu>`__
+
+.. index::
 	HDF; tools
 
-**HDF Group command line tools** (http://www.hdfgroup.org/products/hdf5_tools/#h5dist/)
-    There are various command line tools that are available from the HDF
-    Group, these are usually shipped with the HDF5 kits but are also available for
+**HDF Group tools** (https://portal.hdfgroup.org/display/support/Downloads)
+    Various tools are available from the HDF
+    Group. These are usually shipped with the HDF5 kits but are also available for
     download separately.
+    The HDF5 source code (https://github.com/HDFGroup/hdf5)
+    is available on GitHub.
 
-.. index:: 
-	HDFexplorer
+.. index::
+	HDFexplorer; tools
 
 **HDFexplorer** (http://www.space-research.org/)
-    A data visualization program that reads Hierarchical Data Format 
+    A data visualization program that reads Hierarchical Data Format
     files (HDF, HDF-EOS and HDF5) and also netCDF data files.
 
-.. index:: 
-	HDFview
+.. index::
+	HDFview; tools
 
 **HDFview** (http://www.hdfgroup.org)
     A Java based GUI for browsing (and some basic plotting) of HDF files.
+
+.. index::
+	tiled; tools
+
+**tiled** (https://blueskyproject.io/tiled/)
+    A *data access service* for data-aware portals and data science tools,
+    provides a way to browse and visualize HDF5 files.
 
 .. _language.apis:
 
@@ -415,7 +452,7 @@ Language API: *IDL*
 
 .. index:: API; IDL; aXis2000
 
-* **aXis2000** [#]_, with the NeXus-specific IDL code 
+* **aXis2000** [#]_, with the NeXus-specific IDL code
   in the ``read_nexus.pro`` [#]_, reads :ref:`NXstxm`
 
   .. [#] http://unicorn.chemistry.mcmaster.ca/aXis2000.html
@@ -429,9 +466,9 @@ Language API: *IgorPro*
 
 .. index:: API; IgorPro; HDF5gateway
 
-* **HDF5gateway** [#]_ makes it easy to read a HDF5 file (including NeXus) into an 
-  IgorPro [#]_ folder, including group and dataset attributes, 
-  such as a NeXus data file, modify it, and then write 
+* **HDF5gateway** [#]_ makes it easy to read a HDF5 file (including NeXus) into an
+  IgorPro [#]_ folder, including group and dataset attributes,
+  such as a NeXus data file, modify it, and then write
   the folder structure back out.
 
   .. [#] https://github.com/prjemian/hdf5gateway
@@ -444,9 +481,9 @@ Language API: *Java*
 
 .. index:: API; java; Dawn
 
-* **Dawn** [#]_ has java code to read [#]_ and write [#]_ 
-  HDF5 NeXus files (generic NeXus, not tied to 
-  specific application definitions). 
+* **Dawn** [#]_ has java code to read [#]_ and write [#]_
+  HDF5 NeXus files (generic NeXus, not tied to
+  specific application definitions).
 
   .. [#] https://dawnsci.org/
   .. [#] read: https://github.com/DawnScience/scisoft-core/blob/master/uk.ac.diamond.scisoft.analysis/src/uk/ac/diamond/scisoft/analysis/io/NexusHDF5Loader.java
@@ -454,10 +491,10 @@ Language API: *Java*
 
 .. index:: API; java; NXreader.zip
 
-* ``NXreader.zip`` [#]_ is java code which reads NeXus files into **ImageJ.** 
-  It uses the Java-hdf interface to HDF5. It tries to do a good 
-  job locating the image dataset by NeXus conventions. 
-  But it uses the old style conventions. 
+* ``NXreader.zip`` [#]_ is java code which reads NeXus files into **ImageJ.**
+  It uses the Java-hdf interface to HDF5. It tries to do a good
+  job locating the image dataset by NeXus conventions.
+  But it uses the old style conventions.
 
   .. [#] https://github.com/nexusformat/definitions/files/4107439/NXreader.zip
 

@@ -78,8 +78,8 @@ A NeXus ``link`` directly maps to the HDF hard link mechanisms.
 		  - :ref:`example.napi.python`
           - :ref:`code_native.writing`
           - :ref:`code_native.reading`
-          - :ref:`Example-H5py-Writing`
-          - :ref:`Example-H5py-Reading`
+          - :ref:`Example-Python-Writing`
+          - :ref:`Example-Python-Reading`
 
 Perhaps the easiest way to view the implementation of NeXus in HDF5 is to look
 at the data structure.  For this, we use the ``h5dump`` command-line

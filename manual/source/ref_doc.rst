@@ -9,7 +9,6 @@ NeXus: Reference Documentation
 
 .. toctree::
     :maxdepth: 1
-    :glob:
    
     defs_intro
     nxdl
