@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd" type="group" extends="NXobject" category="application" name="NXapm">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd" type="group" category="application" name="NXapm" extends="NXobject">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -28,8 +28,7 @@
         </symbol>
         <symbol name="n_ranges">
             <doc>
-                 Number of mass-to-charge-state-ratio intervals mapped on this ion
-                 type.
+                 Number of mass-to-charge-state-ratio intervals of this ion type.
             </doc>
         </symbol>
         <symbol name="n_x">
@@ -56,7 +55,7 @@
     <doc>
          Application definition for atom probe and field ion microscopy experiments.
     </doc>
-    <group type="NXentry">
+    <group type="NXentry" minOccurs="1" maxOccurs="unbounded">
         <attribute name="version">
             <doc>
                  An at least as strong as SHA256 hashvalue of the file
@@ -87,8 +86,8 @@
                  
                  Users are strongly advised to detail the sample history in the 
                  respective field and fill rather as completely as possible the fields
-                 of this application definition rather than write details about the
-                 experiment into this free-text description field.
+                 of the application definition behind instead of filling in these
+                 details into the experiment_description free-text description field.
             </doc>
         </field>
         <field name="start_time" type="NX_DATE_TIME" recommended="true">
@@ -98,7 +97,7 @@
                  If the application demands that time codes in this section of the
                  application definition should only be used for specifying when the
                  experiment was performed - and the exact duration is not relevant
-                 - this start time field should be used.
+                 - this start_time field should be used.
                  
                  Often though it is useful to specify a time interval with specifying
                  both start_time and end_time to allow for more detailed bookkeeping
@@ -286,7 +285,8 @@
             <field name="orcid" type="NX_CHAR" recommended="true">
                 <doc>
                      Globally unique identifier of the user as offered by services
-                     like ORCID or ResearcherID. If this field is field the specific service should also be written in orcid_platform
+                     like ORCID or ResearcherID. If this field is field the specific 
+                     service should also be written in orcid_platform
                 </doc>
             </field>
             <field name="orcid_platform" type="NX_CHAR" recommended="true">
@@ -311,7 +311,8 @@
             </field>
             <field name="social_media_name" type="NX_CHAR" optional="true">
                 <doc>
-                     Account name that is associated with the user in social media platforms.
+                     Account name that is associated with the user
+                     in social media platforms.
                 </doc>
             </field>
             <field name="social_media_platform" type="NX_CHAR" optional="true">
@@ -457,7 +458,7 @@
                  Consult the work of A. J. Breen and B. Gault and team
                  for further details.
             </doc>
-            <group type="NXtransformations" minOccurs="0" maxOccurs="unbounded"/>
+            <group name="TRANSFORMATIONS" type="NXtransformations" minOccurs="0" maxOccurs="unbounded"/>
         </group>
         <group type="NXmonitor" minOccurs="0" maxOccurs="unbounded"/>
         <group name="atom_probe" type="NXinstrument">
@@ -489,7 +490,9 @@
                      Using GEOREF is preferred.
                 </doc>
             </field>
-            <group type="NXfabrication">
+            <group type="NXfabrication" recommended="true">
+                <field name="vendor" type="NX_CHAR" recommended="true"/>
+                <field name="model" type="NX_CHAR" recommended="true"/>
                 <field name="identifier" type="NX_CHAR" recommended="true"/>
                 <field name="capabilities" type="NX_CHAR" optional="true"/>
             </group>
@@ -509,19 +512,6 @@
                      detected or hit elsewhere in the analysis_chamber.
                 </doc>
             </field>
-            <group name="analysis_chamber" type="NXchamber">
-                <field name="name" type="NX_CHAR" optional="true"/>
-                <group type="NXfabrication" optional="true">
-                    <field name="identifier" type="NX_CHAR" recommended="true"/>
-                    <field name="capabilities" type="NX_CHAR" optional="true"/>
-                </group>
-                <field name="description" type="NX_CHAR" optional="true"/>
-                <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
-                    <doc>
-                         Average pressure in the analysis chamber.
-                    </doc>
-                </field>
-            </group>
             <group type="NXreflectron">
                 <field name="applied" type="NX_BOOLEAN">
                     <doc>
@@ -530,6 +520,8 @@
                 </field>
                 <field name="name" type="NX_CHAR" optional="true"/>
                 <group type="NXfabrication" optional="true">
+                    <field name="vendor" type="NX_CHAR" recommended="true"/>
+                    <field name="model" type="NX_CHAR" recommended="true"/>
                     <field name="identifier" type="NX_CHAR" recommended="true"/>
                     <field name="capabilities" type="NX_CHAR" optional="true"/>
                 </group>
@@ -580,7 +572,8 @@
                 </field>
                 <field name="serial_number" type="NX_CHAR" recommended="true">
                     <doc>
-                         Given hardware name/serial number or hash identifier issued by the manufacturer.
+                         Given hardware name/serial number or hash identifier
+                         issued by the manufacturer.
                     </doc>
                 </field>
                 <field name="manufacturer_name" type="NX_CHAR" recommended="true">
@@ -607,12 +600,12 @@
                 <field name="pulse_fraction" type="NX_FLOAT"/>
                 <field name="pulsed_voltage" type="NX_FLOAT" recommended="true"/>
                 <field name="standing_voltage" type="NX_FLOAT" recommended="true"/>
-                <group name="laser_gun" type="NXsource" recommended="true">
+                <group name="laser_gun" type="NXsource" minOccurs="0" maxOccurs="2">
                     <doc>
-                         Atom probe microscopes use controlled laser, voltage,
-                         or a combination of pulsing strategies to trigger the
-                         excitation and eventual field evaporation/emission of
-                         an ion during an experiment.
+                         Atom probe microscopes use controlled laser, voltage, or a
+                         combination of pulsing strategies to trigger the excitation
+                         and eventual field evaporation/emission of an ion during
+                         an experiment.
                          If pulse_mode is set to laser or laser_and_voltage (e.g. for
                          LEAP6000-type instruments) having the group/section laser_gun
                          is required and the following of its fields have to be filled:
@@ -623,6 +616,8 @@
                     </doc>
                     <field name="name" type="NX_CHAR"/>
                     <group type="NXfabrication" optional="true">
+                        <field name="vendor" type="NX_CHAR" recommended="true"/>
+                        <field name="model" type="NX_CHAR" recommended="true"/>
                         <field name="identifier" type="NX_CHAR" recommended="true"/>
                         <field name="capabilities" type="NX_CHAR" optional="true"/>
                     </group>
@@ -643,22 +638,26 @@
                     </doc>
                 </field>
             </group>
-            <group name="load_lock_chamber" type="NXchamber" optional="true">
+            <group name="analysis_chamber" type="NXchamber">
                 <field name="name" type="NX_CHAR" optional="true"/>
                 <group type="NXfabrication" optional="true">
+                    <field name="vendor" type="NX_CHAR" recommended="true"/>
+                    <field name="model" type="NX_CHAR" recommended="true"/>
                     <field name="identifier" type="NX_CHAR" recommended="true"/>
                     <field name="capabilities" type="NX_CHAR" optional="true"/>
                 </group>
                 <field name="description" type="NX_CHAR" optional="true"/>
                 <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
                     <doc>
-                         Average pressure in the load_lock_chamber.
+                         Average pressure in the analysis chamber.
                     </doc>
                 </field>
             </group>
             <group name="buffer_chamber" type="NXchamber" optional="true">
                 <field name="name" type="NX_CHAR" optional="true"/>
                 <group type="NXfabrication" optional="true">
+                    <field name="vendor" type="NX_CHAR" recommended="true"/>
+                    <field name="model" type="NX_CHAR" recommended="true"/>
                     <field name="identifier" type="NX_CHAR" recommended="true"/>
                     <field name="capabilities" type="NX_CHAR" optional="true"/>
                 </group>
@@ -669,9 +668,26 @@
                     </doc>
                 </field>
             </group>
+            <group name="load_lock_chamber" type="NXchamber" optional="true">
+                <field name="name" type="NX_CHAR" optional="true"/>
+                <group type="NXfabrication" optional="true">
+                    <field name="vendor" type="NX_CHAR" recommended="true"/>
+                    <field name="model" type="NX_CHAR" recommended="true"/>
+                    <field name="identifier" type="NX_CHAR" recommended="true"/>
+                    <field name="capabilities" type="NX_CHAR" optional="true"/>
+                </group>
+                <field name="description" type="NX_CHAR" optional="true"/>
+                <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
+                    <doc>
+                         Average pressure in the load_lock_chamber.
+                    </doc>
+                </field>
+            </group>
             <group name="getter_pump" type="NXpump" optional="true">
                 <field name="design" type="NX_CHAR" recommended="true"/>
                 <group type="NXfabrication" optional="true">
+                    <field name="vendor" type="NX_CHAR" recommended="true"/>
+                    <field name="model" type="NX_CHAR" recommended="true"/>
                     <field name="identifier" type="NX_CHAR" recommended="true"/>
                     <field name="capabilities" type="NX_CHAR" optional="true"/>
                 </group>
@@ -679,6 +695,8 @@
             <group name="roughening_pump" type="NXpump" optional="true">
                 <field name="design" type="NX_CHAR" recommended="true"/>
                 <group type="NXfabrication" optional="true">
+                    <field name="vendor" type="NX_CHAR" recommended="true"/>
+                    <field name="model" type="NX_CHAR" recommended="true"/>
                     <field name="identifier" type="NX_CHAR" recommended="true"/>
                     <field name="capabilities" type="NX_CHAR" optional="true"/>
                 </group>
@@ -686,6 +704,8 @@
             <group name="turbomolecular_pump" type="NXpump" optional="true">
                 <field name="design" type="NX_CHAR" recommended="true"/>
                 <group type="NXfabrication" optional="true">
+                    <field name="vendor" type="NX_CHAR" recommended="true"/>
+                    <field name="model" type="NX_CHAR" recommended="true"/>
                     <field name="identifier" type="NX_CHAR" recommended="true"/>
                     <field name="capabilities" type="NX_CHAR" optional="true"/>
                 </group>
@@ -892,17 +912,18 @@
                         <dim index="1" value="n_ions"/>
                     </dimensions>
                 </field>
-                <field name="hit_multiplicity" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+                <field name="pulse_id" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                         Hit multiplicity.
+                         Number of pulses since the start of the atom probe
+                         run/evaporation sequence.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n_ions"/>
                     </dimensions>
                 </field>
-                <field name="pulse_id" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                <field name="hit_multiplicity" type="NX_UINT" units="NX_UNITLESS">
                     <doc>
-                         Number of pulses since the start of the atom probe run/evaporation sequence.
+                         Hit multiplicity.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n_ions"/>
@@ -936,7 +957,8 @@
                 </field>
                 <field name="evaporation_id_included" type="NX_BOOLEAN">
                     <doc>
-                         Bitmask which is set to true if the ion is considered and false otherwise.
+                         Bitmask which is set to true if the ion 
+                         is considered and false otherwise.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n_ions"/>
@@ -1134,9 +1156,15 @@
                     </field>
                     <group type="NXdata">
                         <doc>
-                             A default three-dimensional histogram of the total number of ions in each bin.
+                             A default three-dimensional histogram of the total
+                             number of ions in each bin obtained via using a rectangular
+                             transfer function.
                         </doc>
-                        <field name="counts" type="NX_NUMBER" units="NX_UNITLESS">
+                        <attribute name="signal"/>
+                        <attribute name="axes"/>
+                        <attribute name="AXISNAME_indices"/>
+                        <field name="title" type="NX_CHAR"/>
+                        <field name="data_counts" type="NX_NUMBER" units="NX_UNITLESS">
                             <doc>
                                  Array of counts for each bin.
                             </doc>
@@ -1146,26 +1174,33 @@
                                 <dim index="3" value="n_x"/>
                             </dimensions>
                         </field>
-                        <field name="zpos" type="NX_NUMBER" units="NX_LENGTH">
+                        <field name="axis_z" type="NX_FLOAT" units="NX_LENGTH">
                             <doc>
-                                 Bin positions along the z axis.
+                                 Bin center of mass position along the z axis.
                             </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_z"/>
+                            </dimensions>
+                            <attribute name="long_name" type="NX_CHAR"/>
                         </field>
-                        <field name="ypos" type="NX_NUMBER" units="NX_LENGTH">
+                        <field name="axis_y" type="NX_FLOAT" units="NX_LENGTH">
                             <doc>
-                                 Bin positions along the y axis.
+                                 Bin center of mass position along the y axis.
                             </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_y"/>
+                            </dimensions>
+                            <attribute name="long_name" type="NX_CHAR"/>
                         </field>
-                        <field name="xpos" type="NX_NUMBER" units="NX_LENGTH">
+                        <field name="axis_x" type="NX_FLOAT" units="NX_LENGTH">
                             <doc>
-                                 Bin positions along the x axis.
+                                 Bin center of mass position along the x axis.
                             </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_x"/>
+                            </dimensions>
+                            <attribute name="long_name" type="NX_CHAR"/>
                         </field>
-                        <attribute name="long_name">
-                            <doc>
-                                 Naive point cloud density map.
-                            </doc>
-                        </attribute>
                     </group>
                 </group>
             </group>
@@ -1196,7 +1231,7 @@
                         </doc>
                     </attribute>
                 </field>
-                <field name="number_of_ion_types" type="NX_POSINT" units="NX_UNITLESS">
+                <field name="number_of_ion_types" type="NX_UINT" units="NX_UNITLESS">
                     <doc>
                          How many ion types are distinguished.
                          If no ranging was performed each ion is of the special unknown type.
@@ -1252,24 +1287,28 @@
                              A default histogram aka mass spectrum of
                              the mass-to-charge-state ratio values.
                         </doc>
-                        <field name="counts" type="NX_NUMBER" units="NX_UNITLESS">
+                        <attribute name="signal"/>
+                        <attribute name="axes"/>
+                        <attribute name="AXISNAME_indices"/>
+                        <field name="title" type="NX_CHAR"/>
+                        <field name="data_counts" type="NX_NUMBER" units="NX_UNITLESS">
                             <doc>
                                  Array of counts for each bin.
                             </doc>
                             <dimensions rank="1">
                                 <dim index="1" value="n_bins"/>
                             </dimensions>
+                            <attribute name="long_name" type="NX_CHAR"/>
                         </field>
-                        <field name="bin_ends" type="NX_NUMBER" units="NX_ANY">
+                        <field name="axis_mass_to_charge" type="NX_FLOAT" units="NX_ANY">
                             <doc>
-                                 End of value for each mass-to-charge-state ratio bin.
+                                 Right boundary of each mass-to-charge-state ratio value bin.
                             </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_bins"/>
+                            </dimensions>
+                            <attribute name="long_name" type="NX_CHAR"/>
                         </field>
-                        <attribute name="long_name">
-                            <doc>
-                                 Mass-to-charge-state histogram.
-                            </doc>
-                        </attribute>
                     </group>
                 </group>
                 <group name="background_quantification" type="NXprocess" recommended="true">
@@ -1317,7 +1356,11 @@
                     </field>
                     <group type="NXpeak" minOccurs="0" maxOccurs="unbounded">
                         <field name="label" type="NX_CHAR" recommended="true"/>
-                        <field name="peak_model" type="NX_CHAR"/>
+                        <field name="peak_model" type="NX_CHAR">
+                            <doc>
+                                 THIS DOCSTRING NEEDS CLARIFICATION.
+                            </doc>
+                        </field>
                     </group>
                 </group>
                 <group name="peak_identification" type="NXprocess" recommended="true">
@@ -1341,11 +1384,12 @@
                             </doc>
                         </attribute>
                     </field>
-                    <group type="NXion">
+                    <group type="NXion" minOccurs="0" maxOccurs="256">
                         <field name="isotope_vector" type="NX_UINT"/>
-                        <field name="nuclid_list" type="NX_UINT" recommended="true"/>
                         <field name="charge_state" type="NX_INT"/>
                         <field name="mass_to_charge_range" type="NX_FLOAT"/>
+                        <field name="nuclid_list" type="NX_UINT" recommended="true"/>
+                        <field name="name" type="NX_CHAR" recommended="true"/>
                     </group>
                 </group>
             </group>
