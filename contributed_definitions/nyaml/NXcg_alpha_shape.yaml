@@ -1,0 +1,83 @@
+category: base
+doc: |
+  Computational geometry description of alpha shapes or wrappings to primitives.
+  
+  For details see:
+  
+  * https://dx.doi.org/10.1109/TIT.1983.1056714 for 2D,
+  * https://dx.doi.org/10.1145/174462.156635 for 3D,
+  * https://dl.acm.org/doi/10.5555/871114 for weighted, and
+  * https://doc.cgal.org/latest/Alpha_shapes_3 for 3D implementation
+  * https://doc.cgal.org/latest/Manual/packages.html#PkgAlphaWrap3 for 3D wrap
+  
+  in CGAL, the Computational Geometry Algorithms Library.
+  As a starting point, we follow the conventions of the CGAL library.
+# weighted alpha shapes
+# The so-called spectrum or sets of (weighted) alpha shapes includes the
+# convex hull of a point set.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  d: The dimensionality of the alpha shape, for now 2 or 3.
+  # generalize to d > 3
+  n_e: The number of edges.
+  n_f: The number of faces.
+  n_c: The number of cells.
+NXcg_alpha_shape:
+  dimensionality(NX_UINT):
+    unit: NX_UNITLESS
+    enumeration: [2, 3]
+  version:
+    doc: |
+      Specify which general type of alpha shape is computed.
+      Using for now the CGAL terminology. Basic means (unweighted) alpha shapes.
+      Alpha_wrapping means meshes created using alpha wrapping procedures.
+    enumeration: [basic, alpha_wrapping] # , weighted]
+  mode:
+    doc: |
+      Specifically when computed with the CGAL, the mode specifies if singular 
+      faces are removed (regularized) of the alpha complex.
+    # CHECK THIS AGAIN CAREFULLY
+    enumeration: [general, regularized]
+  alpha(NX_NUMBER):
+    doc: |
+      The alpha, (radius of the alpha-sphere) parameter to be used for alpha
+      shapes and alpha wrappings.
+    unit: NX_LENGTH
+  offset(NX_NUMBER):
+    doc: |
+      The offset distance parameter to be used in addition to alpha
+      in the case of alpha_wrapping.
+    unit: NX_LENGTH
+    # check again carefully the CGAL documentation talks about, for 3D, the square of the radius!
+  s(NXcg_point_set):
+    doc: Point cloud for which the alpha shape or wrapping should be computed.
+  # this could also just be implemented as a link but how would this be possible
+  # unfold the NXcg_point_set and add a 
+  # weight(NX_NUMBER):
+  #   doc: Weights for each point
+  # In general, an alpha complex is a disconnected and non-pure complex, 
+  # meaning in particular that the alpha complex may have singular faces.
+  # so the number of cells, faces and edges depends on how a specific alpha complex,
+  # i.e. an alpha-shape of S for alpha, is filtrated with respect to k < d-dimensional
+  # simplices. Here we assume that number_of_cells, number_of_faces, number_of_edges
+  # are reported assuming one filtrates these simplices according to mode.
+  # also using the assumption the base class reports the unique vertices
+  # of the specifically filtrated alpha complex.
+  t(NXcg_triangle_set):
+    doc: Triangle soup for which the alpha wrapping should be computed.
+  triangulation(NXcg_triangle_set):
+    doc: A meshed representation of the resulting shape.
+  # should be a mesh
+  # add for each triangle if desirable a notation of whether the simplex is
+  # exterior, regular, singular, or interior with respect to the alpha complex
+  # but a triangulation is more than a triangle (soup)/set because there is
+  # connectivity information
+  # customize the NXcg_triangle_set base class members such that connectivity
+  # information is contained
+  # we need to find also a better name for this, what people intutive understand
+  # as the interior, may not even exist for a given alpha value
+  # more specifically it is the set of filtrated cells acknowledging mode
+  # e.g. the interior cells of the regularized alpha complex
+  interior_cells(NXcg_tetrahedron_set):
+  # document the alpha status
+  # https://doc.cgal.org/latest/Alpha_shapes_3/classCGAL_1_1Alpha__status.html

@@ -1,0 +1,206 @@
+doc: |
+  Properties of the neutron or X-ray beam at a given location. 
+        
+  It will be referenced by beamline component groups within the :ref:`NXinstrument` group or by the :ref:`NXsample` group. 
+  Note that variables such as the incident energy could be scalar values or arrays. 
+  This group is especially valuable in storing the results of instrument simulations in which it is useful to specify the beam profile, 
+  time distribution etc. at each beamline component. 
+  Otherwise, its most likely use is in the :ref:`NXsample` group in which it defines the results of the neutron
+  scattering by the sample, e.g., energy transfer, polarizations.
+symbols:
+  doc: "The symbols used in the schema to specify e.g. dimensions of arrays"
+  nx: "Number of pixels of the horizontal axis (e.g. delay) of a FROG trace"
+  ny: "Number of pixels of the vertical axis (e.g. frequency) of a FROG trace"
+category: base
+(NXbeam):
+  distance(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: "Distance from sample"
+  incident_energy(NX_FLOAT):
+    unit: NX_ENERGY
+    doc: |
+      In the case of a monchromatic beam this is the scalar energy.
+      Several other use cases are permitted, depending on the presence of other incident_energy_X fields.
+
+      * In the case of a polychromatic beam this is an array of length m of energies, with the relative weights in incident_energy_weights.
+      * In the case of a monochromatic beam that varies shot-to-shot, this is an array of energies, one for each recorded shot. 
+        Here, incident_energy_weights and incident_energy_spread are not set.
+      * In the case of a polychromatic beam that varies shot-to-shot, 
+        this is an array of length m with the relative weights in incident_energy_weights as a 2D array.
+      * In the case of a polychromatic beam that varies shot-to-shot and where the channels also vary,
+        this is a 2D array of dimensions nP by m (slow to fast) with the relative weights in incident_energy_weights as a 2D array.
+
+      Note, variants are a good way to represent several of these use cases in a single dataset,
+      e.g. if a calibrated, single-value energy value is available along with the original spectrum from which it was calibrated.
+    dimensions:
+      rank: 1
+      dim: [[1, i]]
+  incident_energy_spread(NX_NUMBER):
+    unit: NX_ENERGY
+    doc:
+      "The energy spread FWHM for the corresponding energy(ies) in incident_energy.
+      In the case of shot-to-shot variation in the energy spread,
+      this is a 2D array of dimension nP by m (slow to fast) of the spreads of the corresponding wavelength in incident_wavelength."
+  incident_energy_weights(NX_NUMBER):
+    unit: NX_ENERGY
+    doc:
+      "In the case of a polychromatic beam this is an array of length m of the relative weights of the corresponding energies in incident_energy.
+      In the case of a polychromatic beam that varies shot-to-shot,
+      this is a 2D array of dimensions np by m (slow to fast) of the relative weights of the corresponding energies in incident_energy."
+  final_energy(NX_FLOAT):
+    unit: NX_ENERGY
+    doc: "Energy on leaving beamline component"
+    dimensions:
+      rank: 1
+      dim: [[1, i]]
+  energy_transfer(NX_FLOAT):
+    unit: NX_ENERGY
+    doc: "Energy change caused by beamline component"
+    dimensions:
+      rank: 1
+      dim: [[1, i]]
+  incident_wavelength(NX_FLOAT):
+    unit: NX_WAVELENGTH
+    doc: |
+      In the case of a monchromatic beam this is the scalar wavelength.
+      Several other use cases are permitted, depending on the presence of other incident_wavelength_X fields.
+
+      * In the case of a polychromatic beam this is an array of length m of wavelengths,
+        with the relative weights in incident_wavelength_weights.
+      * In the case of a monochromatic beam that varies shot-to-shot,
+        this is an array of wavelengths, one for each recorded shot.
+        Here, incident_wavelength_weights and incident_wavelength_spread are not set.
+      * In the case of a polychromatic beam that varies shot-to-shot,
+        this is an array of length m with the relative weights in incident_wavelength_weights as a 2D array.
+      * In the case of a polychromatic beam that varies shot-to-shot and where the channels also vary,
+        this is a 2D array of dimensions nP by m (slow to fast) with the relative weights in incident_wavelength_weights as a 2D array.
+
+      Note, variants are a good way to represent several of these use cases in a single dataset, e.g. if a calibrated,
+      single-value wavelength value is available along with the original spectrum from which it was calibrated.
+    dimensions:
+      rank: 1
+      dim: [[1, i]]
+  incident_wavelength_spread(NX_FLOAT):
+    unit: NX_WAVELENGTH
+    doc: "Wavelength spread FWHM on entering component"
+    dimensions:
+      rank: 1
+      dim: [[1, i]]
+  incident_beam_divergence(NX_FLOAT):
+    unit: NX_ANGLE
+    doc: "Divergence of beam entering this component"
+    dimensions:
+      rank: 2
+      dim: [[1, 2], [2, j]]
+  extent(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: "Size of the beam entering this component"
+    dimensions:
+      rank: 2
+      dim: [[1, 2], [2, j]]
+  final_wavelength(NX_FLOAT):
+    unit: NX_WAVELENGTH
+    doc: "Wavelength on leaving beamline component"
+    dimensions:
+      rank: 1
+      dim: [[1, i]]
+  incident_polarization(NX_FLOAT):
+    unit: NX_ANY
+    doc: "Incident polarization as a Stokes vector"
+    dimensions:
+      rank: 1
+      dim: [[1, 4]]
+    \@units:
+      doc: |
+        The units for this observable are not included in the NIAC list.
+        Responsibility on correct formatting and parsing is handed to the user by using 'NX_ANY'.
+        Correct parsing can still be implemented by using this attribute.
+
+        | Fill with:
+
+        * The unit unidata symbol if the unit has one (Example: 'T' for the unit of magnetic flux density tesla).
+        * The unit unidata name if the unit has a name (Example: 'farad' for capacitance).
+        * A string describing the units according to unidata unit operation notation,
+          if the unit is a complex combination of named units and does not have a name.
+
+        Example: for lightsource brilliance (SI) '1/(s.mm2.mrad2)'.
+        Here: SI units are 'V2/m2'.
+  final_polarization(NX_FLOAT):
+    unit: NX_ANY
+    doc: "Polarization as Stokes vector on leaving beamline component"
+    dimensions:
+      rank: 1
+      dim: [[1, 4]]
+    \@units:
+      doc: "Here: SI units are 'V2/m2'."
+  final_wavelength_spread(NX_FLOAT):
+    unit: NX_WAVELENGTH
+    doc: "Wavelength spread FWHM of beam leaving this component"
+    dimensions:
+      rank: 1
+      dim: [[1, i]]
+  final_beam_divergence(NX_FLOAT):
+    unit: NX_ANGLE
+    doc: "Divergence FWHM of beam leaving this component"
+    dimensions:
+      rank: 2
+      dim: [[1, 2], [2, j]]
+  flux(NX_FLOAT):
+    unit: NX_FLUX
+    doc: "flux incident on beam plane area"
+    dimensions:
+      rank: 1
+      dim: [[1, i]]
+  pulse_energy(NX_FLOAT):
+    unit: NX_ENERGY
+    doc: "Energy of a single pulse at the diagnostic point"
+  average_power(NX_FLOAT):
+    unit: NX_POWER
+    doc: "Average power at the diagnostic point"
+  fluence(NX_FLOAT):
+    unit: NX_ANY
+    doc: "Incident fluence at the diagnostic point"
+    \@units:
+      doc: "Here: SI units are
+        ''J/m2'', customary ''mJ/cm2''."
+  pulse_duration(NX_FLOAT):
+    unit: NX_TIME
+    doc: "FWHM duration of the pulses at the diagnostic point"
+  frog_trace(NX_FLOAT):
+    doc: "FROG trace of the pulse."
+    dimensions:
+      rank: 2
+      dim: [[1, nx], [1, ny]]
+  frog_delays(NX_FLOAT):
+    unit: NX_TIME
+    doc: "Horizontal axis of a FROG trace, i.e. delay."
+    dimensions:
+      rank: 1
+      dim: [[1, nx]]
+  frog_frequencies(NX_FLOAT):
+    unit: NX_FREQUENCY
+    doc: "Vertical axis of a FROG trace, i.e. frequency."
+    dimensions:
+      rank: 1
+      dim: [[1, ny]]
+  chirp_type(NX_CHAR):
+    doc: "The type of chirp implemented"
+  chirp_GDD(NX_FLOAT):
+    unit: NX_TIME
+    doc: "Group delay dispersion of the pulse for linear chirp"
+  (NXdata):
+    doc:
+      "Distribution of beam with respect to relevant variable e.g. wavelength. This is mainly
+      useful for simulations which need to store plottable information at each beamline
+      component."
+  \@default:
+    doc: |
+      .. index:: plotting
+
+      Declares which child group contains a path leading
+      to a :ref:`NXdata` group.
+
+      It is recommended (as of NIAC2014) to use this attribute
+      to help define the path to the default dataset to be plotted.
+      See https://www.nexusformat.org/2014_How_to_find_default_data.html
+      for a summary of the discussion.

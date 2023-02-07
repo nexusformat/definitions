@@ -1,0 +1,129 @@
+category: base
+doc: |
+  Base class to describe data about observed crystals in microstructures.
+  
+  Both experiments and computer simulations support that atoms organize into regions
+  which are often separated and interconnected by different types of crystal defects.
+  Crystalline regions show a long-range periodic arrangement (compared to the 
+  length scale of nearest neighbor distances).
+  Although the group of atoms forming a crystal is virtually never static, due
+  to diffusive in- and outflux of atoms and thermal fluctuations of the atoms
+  about their equilibrium positions, crystals are relevant persistent features
+  in microstructures. The size of crystals can span orders of magnitude from
+  meters to nanometers.
+  
+  There are two different and (somewhat extremal) views on crystals and how to
+  describe their eventually very rich variety of internal defects. Either 
+  crystals can be coarse-grained into continuum objects or not. In the second case
+  they need a more advanced internal description of defects inside the grains
+  which convinces many that eventually a grain has to be viewed from its
+  individual atoms, its material points, and the hierarchy of structural motifs
+  local arrangements in the crystal.
+  
+  Despite these details, identifying crystals is foremost a labeling task.
+  Atoms are clustered into structural motifs and (noise) and these motifs
+  are again clustered into crystals.
+  
+  There are two main approaches how crystals are described in mesoscale
+  microstructure evolution simulations. Assuming for now transformations in the
+  solid state, precipitates, phase regions, sub-grains or grains are examples
+  of crystals:
+  
+  * Objects are either tracked explicitly in the sense that their shape will
+    be resolved through the crystal interfaces using e.g. a phase-field, 
+    level-set, grid, or finite element mesh based models and implementations.
+    These simulations may keep track of explicit crystal/grain/object-related
+    quantities. Such models can treat the interface network implicitly while
+    still focusing their description on the explicit crystals.
+    During such simulations the interface is often analyzed on-the-fly,
+    because of technical demands (like in level-set implementations) or to
+    trigger specific situations where it is relevant to resolve the
+    position of the interfaces explicitly (like for placing seeds for phases,
+    recrystallizing grains etc, or for visualization purposes), demand a
+    description of interfaces between crystals.
+    For explicitly tracking simulations this base class can be applied as is.
+  * Objects are tracked implicitly in the sense that the computational domain
+    is discretized into an ensemble of what one can call material points.
+    Such models can be described at different length scale: On the one hand
+    where atom dynamics are (whether the assumption is substantiated or not)
+    homogenized/-able already or not. Each material point is assumed to have
+    at least one associated constitutive phase.
+    Such simulations usually do not/cannot resolve crystal-related quantities
+    without executing an on-the-fly post-processing of snapshot data from
+    which the spatial representation of the crystal is recovered.
+    An important case are large-strain formalism crystal plasticity methods.
+    Here the initial configuration represents most frequently material points
+    on a regular grid. Within the course of the simulation this grid gets
+    deformed implicitly. The code internally keeps no track of how the cells/
+    material points of what is essentially a Voronoi tessellation, are deformed.
+    Only in the case when one would like to visualize the deformed configuration,
+    a post-processing of the simulation snapshot data is executed which
+    recovers the positions of the material points in the deformed configuration
+    in the laboratory coordinate system  from which one can then extract a
+    representation of grains/precipitates, i.e. crystals.
+    It is a signature of such simulations that quantities like orientation
+    are defined as material point quantities. This means what constitutes the grain
+    needs to be extracted by cluster analyses.
+    In this regard, such simulation are essentially matching the representation and
+    case of molecular dynamics simulations, with the important difference
+    that these track atoms, from whose configuration
+    in a snapshot a description has to be computed what are most likely the
+    atoms that belong to the volume of the crystal or the interface/defect 
+    network.
+# for implicitly tracking simulation one can also argue that as
+# one anyway needs to do post-processing to extract at all what the grains
+# one could also group fields from this base class into an NXprocess
+# the fundamental problem making a decision is that depending on which
+# model and implementation is used some of these post-processes are
+# executed on-the-fly, so from the perspective of an application definition
+# the internal workflows in the software are irrelevant but instead one
+# just cares what is reported as a result from the software
+# !!! this example nicely shows that drafting an application definition is
+# !!! eventually also demanding to make a somewhat arbitrary cutting of the 
+# !!! workflow steps, tag this sub-workflow as some entity 
+# !!! (e.g. the phase field simulation)
+# !!! and thus have application definitions that merely assure specific data
+# !!! are passed into this sub-graph or expect as output from the sub-graph
+# !!! in a particular application
+# a general enough phase-field description needs to account for the 
+# fact that not necessarily each region is crystalline
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  d: The dimensionality of the description.
+  n_objects: The number of objects, which can be crystals, grains, phases or phase field regions.
+# how can we elegantly implement that in simulations and situations where the number
+# of objects remains static there is no need to store identifiers several times?
+NXms_crystal_set:
+  dimensionality(NX_POSINT):
+    unit: NX_UNITLESS
+  number_of_objects(NX_POSINT):
+    unit: NX_UNITLESS
+  identifier_offset(NX_INT):
+    doc: |
+      Integer which specifies the first index to be used for distinguishing
+      objects. Identifiers are defined either implicitly
+      or explicitly. For implicit indexing the identifiers are defined on the
+      interval [identifier_offset, identifier_offset+c-1].
+      For explicit indexing the identifier array has to be defined.
+      
+      The identifier_offset field can for example be used to communicate if the
+      identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
+      or from 0 (referred to as C-, Python-style index notation) respectively.
+    unit: NX_UNITLESS
+  identifier(NX_INT):
+    doc: Integer used to distinguish objects for explicit indexing.
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 1
+      dim: [[1, n_objects]]
+  object_size(NX_NUMBER):
+    doc: Depending on the value of dimensionality, the area or volume of each object.
+    dimensions:
+      rank: 1
+      dim: [[1, n_objects]]
+  # add further object specific properties
+  # (NXorientation_set):
+  # (NXms_dislocation_set):
+  # (NXms_boundary_set):
+  # (NXms_triple_line_set):
+  # (NXms_quadruple_junction_set):

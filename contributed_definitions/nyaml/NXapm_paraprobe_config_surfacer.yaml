@@ -1,0 +1,175 @@
+category: application
+doc: |
+  Configuration of a paraprobe-surfacer tool run in atom probe microscopy.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_alpha_values: Number of alpha values (and offset values) to probe.
+NXapm_paraprobe_config_surfacer:
+  (NXentry):
+    # by default for appdefs the value of the exists keyword is required
+    # unless it is explicitly specified differently
+    \@version:
+      doc: Version specifier of this application definition.
+    definition:
+      doc: Official NeXus NXDL schema with which this file was written.
+      enumeration: [NXapm_paraprobe_config_surfacer]
+    program:
+      doc: |
+        Given name of the program/software/tool with which this NeXus
+        (configuration) file was generated.
+      \@version:
+        doc: |
+          Ideally program version plus build number, or commit hash or description
+          of ever persistent resources where the source code of the program and
+          build instructions can be found so that the program can be configured
+          ideally in such a manner that the result of this computational process
+          is recreatable in the same deterministic manner.
+    time_stamp(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when this configuration file was created.
+    analysis_identifier:
+      exists: optional
+      doc: |
+        Ideally, a (globally persistent) unique identifier for referring
+        to this analysis.
+    analysis_description:
+      exists: optional
+      doc: Possibility for leaving a free-text description about this analysis.
+    number_of_processes(NX_UINT):
+      doc: |
+        For now a support field for the tool to identify how many individual
+        analyses the tool should executed as part of the analysis.
+      unit: NX_UNITLESS
+    (NXprocess):
+      dataset(NXapm_input_reconstruction):
+        filename:
+          \@version:
+        dataset_name_reconstruction:
+        dataset_name_mass_to_charge:
+      iontypes(NXapm_input_ranging):
+        filename:
+          \@version:
+        group_name_iontypes:
+
+      spatial_filter(NXspatial_filter):
+        exists: optional
+        windowing_method:
+          exists: required
+        (NXcg_ellipsoid_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          half_axes_radii(NX_NUMBER):
+          orientation(NX_NUMBER):
+        (NXcg_cylinder_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          height(NX_NUMBER):
+          radii(NX_NUMBER):
+        (NXcg_hexahedron_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          hexahedra(NXcg_face_list_data_structure):
+        (NXcs_filter_boolean_mask):
+          exists: optional
+          number_of_objects(NX_UINT):
+          bitdepth(NX_UINT):
+          mask(NX_UINT):
+          identifier(NX_UINT):
+      evaporation_id_filter(NXsubsampling_filter):
+        exists: optional
+      iontype_filter(NXmatch_filter):
+        exists: optional
+      hit_multiplicity_filter(NXmatch_filter):
+        exists: optional
+
+      surface_meshing(NXprocess):
+        preprocessing_method:
+          doc: |
+            Specifies the method that is used to preprocess the point cloud.
+            The main purpose of this setting is to specify whether the point
+            cloud should be segmented or not during the preprocessing
+            to identify which points are more likely lying close to the edge
+            of the point cloud. These points could be more relevant than the
+            interior points for certain alpha-shape constructions.
+            
+            By default no such filtering is used during pre-processing.
+            By contrast, the option kuehbach activates a preprocessing
+            during which a Hoshen-Kopelman percolation analysis is used
+            to identify which points are closer to the edge of the dataset.
+            This can reduce the number of points in the alpha-shape
+            computation and thus improve performance substantially.
+            Details about the methods are reported in 
+            `M. Kühbach et al. <https://doi.org/10.1038/s41524-020-00486-1>`_.
+          enumeration: [default, kuehbach]
+        preprocessing_kernel_width(NX_UINT):
+          # the exists is dependant on the value for preprocessing_method
+          doc: |
+            When using the kuehbach preprocessing, this is the width of the
+            kernel for identifying which ions are in voxels close to the
+            edge of the point cloud.
+          unit: NX_UNITLESS
+        alpha_value_choice:
+          doc: |
+            Specifies which method to use to define the alpha value.
+            By default, the tool uses a fast specialized algorithm for
+            computing only the convex hull.
+            
+            The value smallest_solid instructs the CGAL library to choose a
+            value which realizes an alpha-shape that is the smallest solid.
+            
+            The value cgal_optimal instructs the library to choose a value
+            which the library considers as an optimal value. Details are
+            define in the respective section of the CGAL library on 3D alpha
+            shapes.
+            
+            The value set_of_values instructs to compute a list of
+            alpha-shapes for the specified alpha-values.
+            
+            The value set_of_alpha_wrappings instructs the library to generate
+            a set of so-called alpha wrappings. These are a method
+            which is similar to alpha shapes but provide additional guarantees
+            though such as watertightness and proximity constraints on the
+            resulting wrapping.
+          # NEW ISSUE: further details CGAL documentation
+          enumeration: [fast_convex_hull, smallest_solid, cgal_optimal, set_of_values, set_of_alpha_wrappings]
+        alpha_values(NX_FLOAT):
+          doc: |
+            Array of alpha values to use when alpha_value_choice is set_of_values
+            or when alpha_value_choice is set_of_alpha_wrappings.
+          unit: NX_LENGTH
+          # \@units: nm
+          dimensions:
+            rank: 1
+            dim: [[1, n_alpha_values]]
+        offset_values(NX_FLOAT):
+          doc: |
+            Array of offset values to use when alpha_value_choice is
+            set_of_alpha_wrappings. The array of alpha_values and offset_values
+            define a sequence of (alpha and offset value).
+          unit: NX_LENGTH
+          # \@units: nm
+          dimensions:
+            rank: 1
+            dim: [[1, n_alpha_values]]
+        has_exterior_facets(NX_BOOLEAN):
+          doc: |
+            Specifies if the tool should compute the set of exterior triangle
+            facets for each alpha complex (for convex hull, alpha shapes, and wrappings)
+        has_closure(NX_BOOLEAN):
+          doc: |
+            Specifies if the tool should check if the alpha complex of exterior
+            triangular facets is a closed polyhedron.
+        has_interior_tetrahedra(NX_BOOLEAN):
+          doc: |
+            Specifies if the tool should compute all interior tetrahedra 
+            of the alpha complex (currently only for alpha shapes).
+        # NEW ISSUE: has_facet_appearance(NX_BOOLEAN):

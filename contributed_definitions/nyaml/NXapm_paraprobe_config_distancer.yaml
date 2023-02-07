@@ -1,0 +1,179 @@
+category: application
+doc: |
+  Configuration/settings of a paraprobe-distancer software tool run.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+NXapm_paraprobe_config_distancer:
+  (NXentry):
+    \@version:
+      doc: Version specifier of this application definition.
+    definition:
+      doc: Official NeXus NXDL schema with which this file was written.
+      enumeration: [NXapm_paraprobe_config_distancer]
+    program:
+      doc: |
+        Given name of the program/software/tool with which this NeXus
+        (configuration) file was generated.
+      \@version:
+        doc: |
+          Ideally program version plus build number, or commit hash or description
+          of ever persistent resources where the source code of the program and
+          build instructions can be found so that the program can be configured
+          ideally in such a manner that the result of this computational process
+          is recreatable in the same deterministic manner.
+    time_stamp(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when this configuration file was created.
+    analysis_identifier:
+      exists: optional
+      doc: |
+        Ideally, a (globally persistent) unique identifier for referring
+        to this analysis.
+    analysis_description:
+      exists: optional
+      doc: Possibility for leaving a free-text description about this analysis.
+    number_of_processes(NX_UINT):
+      doc: How many individual analyses should the tool execute.
+      unit: NX_UNITLESS
+    (NXprocess):
+      dataset(NXapm_input_reconstruction):
+        filename:
+          \@version:
+        dataset_name_reconstruction:
+        dataset_name_mass_to_charge:
+      iontypes(NXapm_input_ranging):
+        filename:
+          \@version:
+        group_name_iontypes:
+
+      spatial_filter(NXspatial_filter):
+        exists: optional
+        windowing_method:
+          exists: required
+        (NXcg_ellipsoid_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          half_axes_radii(NX_NUMBER):
+          orientation(NX_NUMBER):
+        (NXcg_cylinder_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          height(NX_NUMBER):
+          radii(NX_NUMBER):
+        (NXcg_hexahedron_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          hexahedra(NXcg_face_list_data_structure):
+        (NXcs_filter_boolean_mask):
+          exists: optional
+          number_of_objects(NX_UINT):
+          bitdepth(NX_UINT):
+          mask(NX_UINT):
+          identifier(NX_UINT):
+      evaporation_id_filter(NXsubsampling_filter):
+        exists: optional
+      iontype_filter(NXmatch_filter):
+        exists: optional
+      hit_multiplicity_filter(NXmatch_filter):
+        exists: optional
+
+      point_to_triangle(NXprocess):
+        doc: |
+          Compute for all filtered points, e.g. ions of the point set
+          the shortest Euclidean distance to the closest triangle of the
+          set of triangles. The triangles can formed a closed surface mesh.
+          Distances are not simple distances based on normal projections but
+          giving an exact solution.
+        triangle_soup(NXprocess):
+          # NEW ISSUE NXtriangle_soup
+          doc: |
+            Paraprobe-distancer enables the computation of the Euclidean shortest
+            distance for each member of a set of points against a set of triangles.
+            In contrast to comparable methods used in atom probe the here computed
+            distance is not simply the projected distance to one of the triangles
+            but the more costly but robust computation of the distance between
+            a point and a triangle.
+            
+            The triangles can represent for instance the facets of a triangulated
+            surface mesh of a model for the edge of the dataset. Such a model can
+            be computed with paraprobe-surfacer. Alternatively, the triangles can
+            be those from the set of all facets for a set of convex hulls, alpha-shapes,
+            or alpha wrappings about three-dimensional objects like precipitates
+            (computed with e.g. paraprobe-nanochem).
+            
+            Currently, the tool does not check if the respectively specified
+            triangle sets are consistent, what their topology is, or whether or
+            not they are consistently oriented.
+            Each dataset that is referred to in the list_of _dataset_names_vertices
+            should be an (Nvertices, 3) array of NX_FLOAT. Each dataset referred
+            to in the list_of_dataset_names_facet_indices should be an
+            (Nfacets, 3) array of NX_UINT.
+            Facet indices refer to vertex indices. These need to start at zero
+            and must not exceed Nvertices - 1, i.e. the identifier_offset is 0
+            and vertices are indexed thus implicitly.
+            Facet normal vectors have to be also an array
+            of shape (Nfacets, 3) of NX_FLOAT.
+          number_of_files(NX_UINT):
+            doc: How many triangle sets to consider.
+            unit: NX_UNITLESS
+          (NXprocess):  # should better be an NXprocess
+            doc: |
+              List of triangle sets. This design allows users to combine
+              multiple triangle sets.
+            filename:
+              doc: |
+                Name of the HDF5 file(s) which contain(s) vertex coordinates
+                and facet indices to describe the desired set of triangles.
+              \@version:
+                doc: |
+                  Version identifier of the file such as a secure hash which
+                  documents the binary state of the file to add an additional
+                  layer of reproducibility.
+            dataset_name_vertices:
+              doc: |
+                Absolute HDF5 path to the dataset which
+                specifies the array of vertex positions.
+            dataset_name_facet_indices:
+              doc: |
+                Absolute HDF5 path to the dataset which
+                specifies the array of facet indices.
+            dataset_name_facet_normals:
+              exists: optional
+              doc: |
+                Absolute HDF5 path to the dataset which
+                specifies the array of facet normal vectors.
+        method:
+          doc: |
+            Specifies for which ions/points the tool will compute distances.
+            The purpose of this setting is to avoid unnecessary computations
+            when the user requests to only compute distances of ions within a
+            threshold distance to the triangle soup.
+            
+            By default the distances are computed for all ions; however
+            the setting skin enables to compute distances only for those
+            ions which are not farther away located to a triangle
+            than threshold_distance.
+          enumeration: [default, skin]
+        threshold_distance(NX_FLOAT):
+          # ##MK::only required when method is skin
+          doc: |
+            Maximum distance for which distances are computed when method is skin.
+          unit: NX_LENGTH
+          # \@units: nm
+
+      # point_set_to_polyline_set(NXprocess):
+      #   doc: |
+      #     Compute the shortest Euclidean distance of all filtered points/ions
+      #     of a point set to the closest point on the closest polyline.
+      # polyhedra_set_to_triangle_set(NXprocess):
+      #   doc: |
+      #     Compute the (shortest Euclidean) distance of all polyhedra of a set

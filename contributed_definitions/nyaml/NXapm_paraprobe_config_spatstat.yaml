@@ -1,0 +1,220 @@
+category: application
+doc: |
+  Configuration of a paraprobe-spatstat tool run in atom probe microscopy.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_ivecmax: Maximum number of atoms per molecular ion. Should be 32 for paraprobe.
+  n_ion_source: Number of different sources iontypes to distinguish.
+  n_ion_target: Number of different target iontypes to distinguish.
+NXapm_paraprobe_config_spatstat:
+  (NXentry):
+    # by default for appdefs the value of the exists keyword is required
+    # unless it is explicitly specified differently
+    \@version:
+      doc: Version specifier of this application definition.
+    definition:
+      doc: Official NeXus NXDL schema with which this file was written.
+      enumeration: [NXapm_paraprobe_config_spatstat]
+    program:
+      doc: |
+        Given name of the program/software/tool with which this NeXus
+        (configuration) file was generated.
+      \@version:
+        doc: |
+          Ideally program version plus build number, or commit hash or description
+          of ever persistent resources where the source code of the program and
+          build instructions can be found so that the program can be configured
+          ideally in such a manner that the result of this computational process
+          is recreatable in the same deterministic manner.
+    analysis_identifier:
+      exists: optional
+      doc: |
+        Ideally, a (globally persistent) unique identifier for referring
+        to this analysis.
+    analysis_description:
+      exists: optional
+      doc: Possibility for leaving a free-text description about this analysis.
+    time_stamp(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when this configuration file was created.
+    number_of_processes(NX_UINT):
+      doc: |
+        How many range_with_existent_iontypes processes should
+        the tool execute as part of the analysis.
+      unit: NX_UNITLESS
+    spatial_statistics(NXprocess):
+      exists: [min, 0, max, 1]
+      dataset(NXapm_input_reconstruction):
+        filename:
+          \@version:
+        dataset_name_reconstruction:
+        dataset_name_mass_to_charge:
+      iontypes(NXapm_input_ranging):
+        filename:
+          \@version:
+        group_name_iontypes:
+
+      spatial_filter(NXspatial_filter):
+        exists: optional
+        windowing_method:
+          exists: required
+        (NXcg_ellipsoid_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          half_axes_radii(NX_NUMBER):
+          orientation(NX_NUMBER):
+        (NXcg_cylinder_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          height(NX_NUMBER):
+          radii(NX_NUMBER):
+        (NXcg_hexahedron_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          hexahedra(NXcg_face_list_data_structure):
+        (NXcs_filter_boolean_mask):
+          exists: optional
+          number_of_objects(NX_UINT):
+          bitdepth(NX_UINT):
+          mask(NX_UINT):
+          identifier(NX_UINT):
+      evaporation_id_filter(NXsubsampling_filter):
+        exists: optional
+      iontype_filter(NXmatch_filter):
+        exists: optional
+      hit_multiplicity_filter(NXmatch_filter):
+        exists: optional
+
+      ion_to_edge_distances(NXprocess):
+        doc: |
+          The tool enables to inject precomputed distances of each ion to a
+          representation of the edge of the dataset which can be used to
+          control and substantially reduce edge effects when computing spatial statistics.
+        exists: optional
+        filename:
+          doc: |
+            Name of an HDF5 file which contains ion-to-edge distances.
+        dataset_name_distances:
+          doc: |
+            Absolute HDF5 path to the dataset with the
+            ion-to-edge distance values for each ion.
+            The shape of the distance values has to match the length
+            of the ion positions array in dataset/dataset_name_reconstruction
+            and dataset_name_mass_to_charge respectively.
+      ion_to_feature_distances(NXprocess):
+        doc: |
+          In addition to spatial filtering, and considering how far ions lie
+          to the edge of the dataset, it is possible to restrict the analyses
+          to a sub-set of ions within a distance not farther away to a feature than
+          a threshold value.
+        # which is this threshold value
+        exists: optional
+        # NEW ISSUE: is this optional?
+        filename:
+          doc: | 
+            Name of an HDF5 file which contains ion-to-feature distances.
+        dataset_name_distances:
+          doc: |
+            Absolute HDF5 path to the dataset with the
+            ion-to-feature distance values for each ion.
+
+        randomize_labels(NX_BOOLEAN):
+          doc: |
+            Specifies if the iontypes are randomized for the point cloud or not.
+            Internally paraprobe uses a sequentially executed deterministic MT19987
+            (MersenneTwister) pseudo-random number generator to shuffle the
+            iontype labels randomly across the entire set of ions.
+        random_number_generator(NXcs_prng):
+          exists: recommended
+          type:
+          seed(NX_NUMBER):
+          warmup(NX_NUMBER):
+        ion_query_type_source:
+          doc: |
+            How should the iontype be interpreted on the source-side, i.e.
+            all these ion positions where a regions-of-interest (ROI) around
+            so-called source ions will be placed. Different options exist
+            how iontypes are interpreted given an iontype represents
+            in general a (molecular) ion with different isotopes that have
+            individually different multiplicity.
+            
+            The value resolve_all will set an ion active in the analysis
+            regardless of which iontype it is.
+            The value resolve_unknown will set an ion active when it is of the
+            UNKNOWNTYPE.
+            The value resolve_ion will set an ion active if it is of the
+            specific iontype, irregardless of its elemental or isotopic details.
+            The value resolve_element will set an ion active, and most importantly,
+            account as many times for it, as the (molecular) ion contains
+            atoms of elements in the whitelist ion_query_isotope_vector.
+            The value resolve_isotope will set an ion active, and most importantly,
+            account as many times for it, as the (molecular) ion contains isotopes
+            in the whitelist ion_query_isotope_vector.
+            
+            In effect, ion_query_isotope_vector acts as a whitelist to filter
+            which ions are considered as source ions of the correlation statistics
+            and how the multiplicity of each ion will be factorized.
+          enumeration: [resolve_all, resolve_unknown, resolve_ion, resolve_element, resolve_isotope]
+        ion_query_isotope_vector_source(NX_UINT):
+          doc: |
+            Matrix of isotope vectors, as many as rows as different candidates
+            for iontypes should be distinguished as possible source iontypes.
+            In the simplest case, the matrix contains only the proton number
+            of the element in the row, all other values set to zero.
+            Combined with ion_query_type_source set to resolve_element this will
+            recover usual spatial correlation statistics like the 1NN C-C
+            spatial statistics.
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 2
+            dim: [[1, n_ion_source], [2, n_ivecmax]]
+        ion_query_type_target:
+          doc: |
+            Similarly as ion_query_type_source how should iontypes be interpreted
+            on the target-side, i.e. how many counts will be bookkept for ions
+            which are neighbors of source ions within or on the surface of each
+            inspection/ROI about each source ion.
+            Source ion in the center of the ROI are not accounted for during
+            counting the summary statistics.
+            For details about the resolve values consider the explanations in
+            ion_query_type_source. These account for ion_query_type_target as well.
+          enumeration: [resolve_all, resolve_unknown, resolve_ion, resolve_element, resolve_isotope]
+        # NEW ISSUE: conditionally required only when resolve_isotope
+        ion_query_isotope_vector_target(NX_UINT):
+          doc: |
+            Matrix of isotope vectors, as many as rows as different candidates for
+            iontypes to distinguish as possible targets. See additional comments
+            under ion_query_isotope_vector_source.
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 2
+            dim: [[1, n_ion_target], [2, n_ivecmax]]
+        statistics(NXprocess):
+          doc: |
+            Specifies which spatial statistics to compute.
+          knn(NXcollection):
+            doc: Compute k-th nearest neighbour statistics.
+            exists: optional
+            nth(NX_UINT):
+              doc: Order k.
+              unit: NX_UNITLESS
+            histogram_min_incr_max(NX_FLOAT):
+              doc: |
+                Minimum value, increment, and maximum value of the histogram binning.
+              unit: NX_LENGTH
+              # \@units: nm
+              dimensions:
+                rank: 1
+                dim: [[1, 3]]
+          # NEW ISSUE: rdf(NXcollection):
+          # NEW ISSUE: ripleyk(NXcollection):
+          # NEW ISSUE: two_point(NXcollection):
