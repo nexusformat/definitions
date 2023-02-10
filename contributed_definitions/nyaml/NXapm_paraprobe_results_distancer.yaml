@@ -1,13 +1,12 @@
 category: application
 doc: |
-  Results of a paraprobe-ranger tool run.
+  Results of a paraprobe-distancer tool run.
 symbols:
   doc: The symbols used in the schema to specify e.g. dimensions of arrays.
   n_ions: The total number of ions in the reconstruction.
-  n_ivec_max: |
-    Maximum number of allowed atoms per (molecular) ion (fragment).
-    Needs to match maximum_number_of_atoms_per_molecular_ion.
-NXapm_paraprobe_results_ranger:
+  n_tris: The total number of triangles in the set.
+
+NXapm_paraprobe_results_distancer:
   (NXentry):
     # by default for appdefs the value of the exists keyword is required
     # unless it is explicitly specified differently
@@ -17,7 +16,7 @@ NXapm_paraprobe_results_ranger:
 # ##MK::begin of the tool-specific section
     definition:
       doc: Official NeXus NXDL schema with which this file was written.
-      enumeration: [NXapm_paraprobe_results_ranger]
+      enumeration: [NXapm_paraprobe_results_distancer]
 # ##MK::end of the tool-specific section
 
     program:
@@ -94,7 +93,6 @@ NXapm_paraprobe_results_ranger:
       social_media_platform:
         exists: optional
     (NXcoordinate_system_set):
-      exists: optional
       doc: Details about the coordinate system conventions used.
       (NXtransformations):
         exists: [min, 1, max, infty]
@@ -115,76 +113,14 @@ NXapm_paraprobe_results_ranger:
 # ##MK::begin of the tool-specific section
     (NXprocess):
       exists: [min, 0, max, 1]
-      apply_existent_ranging(NXprocess):
-        exists: [min, 0, max, 1]
+      point_to_triangle_set(NXprocess):
         doc: |
-          Paraprobe-ranger loads the iontypes and evaluates for each
-          ion on which iontype it matches. If it matches on none, the
-          ion is considered of the default unknown type with a 0 as its
-          respective value in the iontypes array.
-        # ##MK::number_of_ion_types(NX_POSINT):
-        maximum_number_of_atoms_per_molecular_ion(NX_POSINT):
-          doc: |
-            The length of the isotope_vector used to describe molecular ions.
-          units: NX_UNITLESS
-        ION(NXion):
-          exists: [min, 1, max, 256]
-          isotope_vector(NX_UINT):
-          nuclid_list(NX_UINT):
-            exists: recommended
-          charge_state(NX_INT):
-          mass_to_charge_range(NX_FLOAT):
-        charged_ION(NXion):
-          exists: [min, 1, max, 256]
-          isotope_vector(NX_UINT):
-          nuclid_list(NX_UINT):
-            exists: recommended
-          charge_state(NX_INT):
-          mass_to_charge_range(NX_FLOAT):
-        iontypes(NX_UINT):
-          doc: |
-            The iontype ID for each ion that was best matching, stored in the
-            order of the evaporation sequence ID. The here computed iontypes
-            do not take into account the charge state of the ion which is
-            equivalent to interpreting a RNG and RRNG range files for each
-            ion in such a way that only the elements of which a (molecular) ion
-            is build are considered. By contrast, charged_iontypes takes
-            into account also the charge state.
-          unit: NX_UNITLESS
-          dimensions:
-            rank: 1
-            dim: [[1, n_ions]]
-        charged_iontypes(NX_UINT):
-          doc: |
-            The iontype ID for each ion that was best matching, stored in the
-            order of the evaporation sequence ID. For the here computed
-            charged_iontypes the information for each (molecular) ion defined
-            in e.g. RNG or RRNG files is analyzed for which differently charge
-            states are possible. As an example while iontypes might only consider
-            if an ion is Al charged_iontypes will resolve if it is Al1+, Al2+, or
-            Al3+. To decide the charge state a recursive algorithm is used which
-            enumerates first all possible isotopic variants of a given molecular
-            ion build from a specific set of elements. All variants are then
-            analyzed for their natural abundance and filtered. The sub-set of
-            all significantly abundant variants is inspected if their charge
-            states are all the same. If only one significant variant is found
-            its charge state is assumed the relevant. If multiple significant
-            variants are found and all their charge states is the same this
-            charge state will be the decisive one. However, if multiple variants
-            are found and their charge state differs such a case highlights that
-            the charge state analysis is underconstrained and thus the charge
-            state is set to 0. Underconstrained cases are possible because
-            an arbitrary combination of elements into a molecular ion that is
-            constrained only by an additional single interval of mass-to-charge
-            state ratios is not necessarily sufficient.
-          unit: NX_UNITLESS
-          dimensions:
-            rank: 1
-            dim: [[1, n_ions]]
+          The tool can be used to compute the analytical distance of each ion
+          to a set of triangles.
         window(NXcs_filter_boolean_mask):
           doc: |
-            A bitmask which identifies exactly all those ions ranged irrespective
-            the type they ended up with.
+            A bitmask which identifies which of the ions in the dataset were
+            analyzed.
           number_of_ions(NX_UINT):
             doc: |
               Number of ions covered by the mask.
@@ -212,104 +148,90 @@ NXapm_paraprobe_results_ranger:
             dimensions:
               rank: 1
               dim: [[1, n_ions]]
-      molecular_ion_search(NXprocess):
-        exists: [min, 0, max, 1]
-        doc: |
-          Paraprobe-ranger performs a combinatorial search over
-          all possible or a reduced set of nuclids to identify
-          into which ions these can be composed.
-        isotope_vector_matrix(NX_UINT):
+        window_triangles(NXcs_filter_boolean_mask):
           doc: |
-            The main result is the list of molecular ions, here formatted
-            according to the definitions of a set of isotope_vectors
-            as detailed in :ref:`NXion`.
+            A bitmask which identifies which of the triangles in the set
+            were considered. Usually these are all but sometimes users may
+            wish to filter certain portions of the triangles out.
+          number_of_triangles(NX_UINT):
+            doc: |
+              Number of triangles covered by the mask.
+              The mask value for most may be 0.
+            unit: NX_UNITLESS
+          bitdepth(NX_UINT):
+            doc: |
+              Number of bits assumed matching on a default datatype.
+              (e.g. 8 bits for a C-style uint8).
+            unit: NX_UNITLESS
+          mask(NX_UINT):
+            doc: |
+              The unsigned integer array representing the content of the mask.
+              If padding is used the padded bits are set to 0. The mask is for
+              convenience always as large as the entire dataset as it will
+              be stored compressed anyway. The convenience feature with this
+              is that then the mask can be decoded with numpy and mirrored
+              against the evaporation_id array and one immediately can filter
+              out all points that were used by the paraprobe.
+              The length of the array adds to the next unsigned integer
+              if the number of ions in the dataset is not an integer
+              multiple of the bitdepth.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, n_triangles]]
+        distance(NX_FLOAT):
+          doc: |
+            The closest analytical distance of the ions to their respectively
+            closest triangle from the triangle set.
+          unit: NX_LENGTH
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+        sign_valid(NXcs_filter_boolean_mask):
+          exists: optional
+          doc: |
+            A bitmask which identifies which of the distance values
+            can be assumed to have a consistent sign because the closest
+            triangle had a consistent outer unit normal defined.
+            For points whose bit is set 0 the distance is correct but the
+            sign is not reliable.
+          number_of_points(NX_UINT):
+            doc: |
+              Number of triangles covered by the mask.
+              The mask value for most may be 0.
+            unit: NX_UNITLESS
+          bitdepth(NX_UINT):
+            doc: |
+              Number of bits assumed matching on a default datatype.
+              (e.g. 8 bits for a C-style uint8).
+            # which does paraprobe use
+            unit: NX_UNITLESS
+          mask(NX_UINT):
+            doc: |
+              The unsigned integer array representing the content of the mask.
+              If padding is used the padded bits are set to 0.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+        triangle_identifier(NX_UINT):
+          exists: optional
+          doc: |
+            The identifier of the triangle that is closest for each ion.
           unit: NX_UNITLESS
           dimensions:
-            rank: 2
-            dim: [[1, i], [2, 32]]
-        mass_to_charge_state_ratio(NX_FLOAT):
-          doc: |
-            The mass-to-charge-state ratio of each molecular ion
-            without considering relativistic or quantum effects.
-          unit: NX_ANY
-          dimensions:
-            rank: 1
+            rank:
             dim: [[1, i]]
-        mass(NX_FLOAT):
+        xdmf_ion_identifier(NX_UINT):
           exists: optional
           doc: |
-            The mass of each molecular ion without
-            considering relativistic or quantum effects.
-          unit: NX_ANY
-          # \@units: amu
-          dimensions:
-            rank: 1
-            dim: [[1, i]]
-        charge_state(NX_UINT):
-          doc: |
-            The charge_state of each molecular ion.
-          unit: NX_CHARGE
-          dimensions:
-            rank: 1
-            dim: [[1, i]]
-        natural_abundance_product(NX_FLOAT):
-          exists: optional
-          doc: |
-            The product of the natural abundance of the isotopes building
-            each molecular ion. Further details are available in
-            :ref:`NXapm_paraprobe_config_ranger`.
-          unit: NX_DIMENSIONLESS
-          dimensions:
-            rank: 1
-            dim: [[1, i]]
-        composition_product(NX_FLOAT):
-          exists: optional
-          doc: |
-            The product of the natural abundance of the isotopes building
-            each molecular ion. Further details are available in
-            :ref:`NXapm_paraprobe_config_ranger`.
-          unit: NX_DIMENSIONLESS
-          dimensions:
-            rank: 1
-            dim: [[1, i]]
-        number_of_disjoint_nuclids(NX_POSINT):
-          exists: optional
-          doc: |
-            The number of disjoint nuclids for each molecular ion.
+            A support field to visualize each ion and with this the distance
+            informations using XDMF and e.g. Paraview.
           unit: NX_UNITLESS
           dimensions:
-            rank: 1
-            dim: [[1, i]]
-        number_of_nuclids(NX_POSINT):
-          exists: optional
-          doc: |
-            The number of nuclids for each molecular ion.
-          unit: NX_UNITLESS
-          dimensions:
-            rank: 1
+            rank:
             dim: [[1, i]]
 
-      check_existent_ranging(NXprocess):
-        exists: [min, 0, max, 1]
-        doc: |
-          Paraprobe-ranger loads iontypes and evaluates for each ion on which
-          iontype it matches. If it matches on none, the ion is considered of
-          the default unknown type with a 0 as its respective value in the
-          iontypes array. In contrast to use_existent_ranging this process
-          does neither needs measured ion position nor mass-to-charge-state
-          ratio values.
-        # ##MK::number_of_ion_types(NX_POSINT):
-        maximum_number_of_atoms_per_molecular_ion(NX_POSINT):
-          doc: |
-            The length of the isotope_vector used to describe molecular ions.
-          units: NX_UNITLESS
-        charged_ION(NXion):
-          exists: [min, 1, max, 256]
-          isotope_vector(NX_UINT):
-          nuclid_list(NX_UINT):
-            exists: recommended
-          charge_state(NX_INT):
-          mass_to_charge_range(NX_FLOAT):
 # ##MK::end of the tool-specific section
 
     performance(NXcs_profiling):
