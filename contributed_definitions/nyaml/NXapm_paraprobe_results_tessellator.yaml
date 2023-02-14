@@ -1,0 +1,586 @@
+category: application
+doc: |
+  Results of a paraprobe-tessellator tool run.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_ions: The total number of ions in the reconstruction.
+  n_f_xdmf: The total number of facets/polygons defining the tessellation.
+
+NXapm_paraprobe_results_tessellator:
+  (NXentry):
+    # by default for appdefs the value of the exists keyword is required
+    # unless it is explicitly specified differently
+    exists: [min, 1, max, 1]
+    \@version:
+      doc: Version specifier of this application definition.
+
+# ##MK::begin of the tool-specific section
+    definition:
+      doc: Official NeXus NXDL schema with which this file was written.
+      enumeration: [NXapm_paraprobe_results_tessellator]
+# ##MK::end of the tool-specific section
+
+    program:
+      doc: |
+        Given name of the program/software/tool with which this NeXus
+        (configuration) file was generated.
+      \@version:
+        doc: |
+          Ideally program version plus build number, or commit hash or description
+          of ever persistent resources where the source code of the program and
+          build instructions can be found so that the program can be configured
+          ideally in such a manner that the result of this computational process
+          is recreatable in the same deterministic manner.
+    analysis_identifier:
+      exists: optional
+      doc: |
+        Ideally, a (globally persistent) unique identifier for referring
+        to this analysis.
+    analysis_description:
+      exists: optional
+      doc: |
+        Possibility for leaving a free-text description about this analysis.
+    start_time(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when the analysis behind this results file
+        was started, i.e. the paraprobe-tool executable started as a process.
+    end_time(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when the analysis behind this results file
+        were completed and the paraprobe-tool executable exited as a process.
+    config_filename:
+      doc: |
+        The absolute path and name of the config file for this analysis.
+      \@version:
+        doc: |
+          At least SHA256 strong hash of the specific config_file for
+          tracking provenance.
+    results_path:
+      exists: optional
+      doc: |
+        Path to the directory where the tool should store NeXus/HDF5 results
+        of this analysis. If not specified results will be stored in the
+        current working directory.
+    status(NX_CHAR):
+      doc: |
+        A statement whether the paraprobe-tool executable managed to
+        process the analysis or failed prematurely.
+        
+        This status is written to the results file after the end_time
+        at which point the executable must not compute any analysis.
+        Only when this status message is present and shows `success`, the
+        user should consider the results. In all other cases it might be
+        that the executable has terminated prematurely or another error
+        occurred.
+      enumeration: [success, failure]
+    (NXuser):
+      exists: recommended
+      doc: |
+        If used, contact information and eventually details
+        of at least the person who performed this analysis.
+      name:
+      affiliation:
+        exists: recommended
+      address:
+        exists: optional
+      email:
+        exists: recommended
+      orcid:
+        exists: recommended
+      orcid_platform:
+        exists: recommended
+      telephone_number:
+        exists: optional
+      role:
+        exists: recommended
+      social_media_name:
+        exists: optional
+      social_media_platform:
+        exists: optional
+    (NXcoordinate_system_set):
+      doc: Details about the coordinate system conventions used.
+      (NXtransformations):
+        exists: [min, 1, max, infty]
+        doc: |
+          The individual coordinate systems which should be used.
+          Field names should be prefixed with the following controlled terms
+          indicating which individual coordinate system is described:
+          
+          * paraprobe
+          * lab
+          * specimen
+          * laser
+          * leap
+          * detector
+          * recon
+          
+
+# ##MK::begin of the tool-specific section
+    (NXprocess):
+      exists: [min, 0, max, 1]
+      voronoi_tessellation(NXprocess):
+        doc: |
+          The tool can be used to compute a Voronoi tessellation the entire
+          or a sub-set of the reconstruction. The point cloud in the ROI is
+          wrapped into a tight axis-aligned bounding box. The tool detects if
+          Voronoi cells make contact with the walls of this bounding box.
+          The tessellation is computed without periodic boundary conditions.
+        window(NXcs_filter_boolean_mask):
+          doc: |
+            A bitmask which identifies which of the ions in the dataset were
+            analyzed.
+          number_of_ions(NX_UINT):
+            doc: |
+              Number of ions covered by the mask.
+              The mask value for most may be 0.
+            unit: NX_UNITLESS
+          bitdepth(NX_UINT):
+            doc: |
+              Number of bits assumed matching on a default datatype.
+              (e.g. 8 bits for a C-style uint8).
+            # which does paraprobe use
+            unit: NX_UNITLESS
+          mask(NX_UINT):
+            doc: |
+              The unsigned integer array representing the content of the mask.
+              If padding is used the padded bits are set to 0. The mask is for
+              convenience always as large as the entire dataset as it will
+              be stored compressed anyway. The convenience feature with this
+              is that then the mask can be decoded with numpy and mirrored
+              against the evaporation_id array and one immediately can filter
+              out all points that were used by the paraprobe.
+              The length of the array adds to the next unsigned integer
+              if the number of ions in the dataset is not an integer
+              multiple of the bitdepth.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, n_ions]]
+        wall_contact_global(NXcs_filter_boolean_mask):
+          doc: |
+            A bitmask which identifies which of points have Voronoi cells that
+            are truncated by the global axis-aligned bounding box, i.e. boundaries
+            of the threads are ignored.
+          number_of_points(NX_UINT):
+            doc: |
+              Number of points covered by the mask.
+              The mask value for most may be 0.
+            unit: NX_UNITLESS
+          bitdepth(NX_UINT):
+            doc: |
+              Number of bits assumed matching on a default datatype.
+              (e.g. 8 bits for a C-style uint8).
+            # which does paraprobe use
+            unit: NX_UNITLESS
+          mask(NX_UINT):
+            doc: |
+              The unsigned integer array representing the content of the mask.
+              If padding is used the padded bits are set to 0. The mask is for
+              convenience always as large as the entire dataset as it will
+              be stored compressed anyway. The convenience feature with this
+              is that then the mask can be decoded with numpy and mirrored
+              against the evaporation_id array and one immediately can filter
+              out all points that were used by the paraprobe.
+              The length of the array adds to the next unsigned integer
+              if the number of ions in the dataset is not an integer
+              multiple of the bitdepth.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+        # ##MK::optional documenting of touching on thread-local boundaries
+        wall_contact_left(NXcs_filter_boolean_mask):
+          doc: |
+            A bitmask which identifies which of points have Voronoi cells that
+            are truncated by a specific wall of the axis-aligned bounding box.
+            The left wall has the negative x axis of the paraprobe coordinate
+            system as the outer unit normal.
+          number_of_points(NX_UINT):
+            doc: |
+              Number of points covered by the mask.
+              The mask value for most may be 0.
+            unit: NX_UNITLESS
+          bitdepth(NX_UINT):
+            doc: |
+              Number of bits assumed matching on a default datatype.
+              (e.g. 8 bits for a C-style uint8).
+            # which does paraprobe use
+            unit: NX_UNITLESS
+          mask(NX_UINT):
+            doc: |
+              The unsigned integer array representing the content of the mask.
+              If padding is used the padded bits are set to 0. The mask is for
+              convenience always as large as the entire dataset as it will
+              be stored compressed anyway. The convenience feature with this
+              is that then the mask can be decoded with numpy and mirrored
+              against the evaporation_id array and one immediately can filter
+              out all points that were used by the paraprobe.
+              The length of the array adds to the next unsigned integer
+              if the number of ions in the dataset is not an integer
+              multiple of the bitdepth.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+        wall_contact_right(NXcs_filter_boolean_mask):
+          doc: |
+            A bitmask which identifies which of points have Voronoi cells that
+            are truncated by a specific wall of the axis-aligned bounding box.
+            The right wall has the positive x axis of the paraprobe coordinate
+            system as the outer unit normal.
+          number_of_points(NX_UINT):
+            doc: |
+              Number of points covered by the mask.
+              The mask value for most may be 0.
+            unit: NX_UNITLESS
+          bitdepth(NX_UINT):
+            doc: |
+              Number of bits assumed matching on a default datatype.
+              (e.g. 8 bits for a C-style uint8).
+            # which does paraprobe use
+            unit: NX_UNITLESS
+          mask(NX_UINT):
+            doc: |
+              The unsigned integer array representing the content of the mask.
+              If padding is used the padded bits are set to 0. The mask is for
+              convenience always as large as the entire dataset as it will
+              be stored compressed anyway. The convenience feature with this
+              is that then the mask can be decoded with numpy and mirrored
+              against the evaporation_id array and one immediately can filter
+              out all points that were used by the paraprobe.
+              The length of the array adds to the next unsigned integer
+              if the number of ions in the dataset is not an integer
+              multiple of the bitdepth.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+        wall_contact_front(NXcs_filter_boolean_mask):
+          doc: |
+            A bitmask which identifies which of points have Voronoi cells that
+            are truncated by a specific wall of the axis-aligned bounding box.
+            The front wall has the negative y axis of the paraprobe coordinate
+            system as the outer unit normal.
+          number_of_points(NX_UINT):
+            doc: |
+              Number of points covered by the mask.
+              The mask value for most may be 0.
+            unit: NX_UNITLESS
+          bitdepth(NX_UINT):
+            doc: |
+              Number of bits assumed matching on a default datatype.
+              (e.g. 8 bits for a C-style uint8).
+            # which does paraprobe use
+            unit: NX_UNITLESS
+          mask(NX_UINT):
+            doc: |
+              The unsigned integer array representing the content of the mask.
+              If padding is used the padded bits are set to 0. The mask is for
+              convenience always as large as the entire dataset as it will
+              be stored compressed anyway. The convenience feature with this
+              is that then the mask can be decoded with numpy and mirrored
+              against the evaporation_id array and one immediately can filter
+              out all points that were used by the paraprobe.
+              The length of the array adds to the next unsigned integer
+              if the number of ions in the dataset is not an integer
+              multiple of the bitdepth.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+        wall_contact_rear(NXcs_filter_boolean_mask):
+          doc: |
+            A bitmask which identifies which of points have Voronoi cells that
+            are truncated by a specific wall of the axis-aligned bounding box.
+            The rear wall has the positive y axis of the paraprobe coordinate
+            system as the outer unit normal.
+          number_of_points(NX_UINT):
+            doc: |
+              Number of points covered by the mask.
+              The mask value for most may be 0.
+            unit: NX_UNITLESS
+          bitdepth(NX_UINT):
+            doc: |
+              Number of bits assumed matching on a default datatype.
+              (e.g. 8 bits for a C-style uint8).
+            # which does paraprobe use
+            unit: NX_UNITLESS
+          mask(NX_UINT):
+            doc: |
+              The unsigned integer array representing the content of the mask.
+              If padding is used the padded bits are set to 0. The mask is for
+              convenience always as large as the entire dataset as it will
+              be stored compressed anyway. The convenience feature with this
+              is that then the mask can be decoded with numpy and mirrored
+              against the evaporation_id array and one immediately can filter
+              out all points that were used by the paraprobe.
+              The length of the array adds to the next unsigned integer
+              if the number of ions in the dataset is not an integer
+              multiple of the bitdepth.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+
+        wall_contact_bottom(NXcs_filter_boolean_mask):
+          doc: |
+            A bitmask which identifies which of points have Voronoi cells that
+            are truncated by a specific wall of the axis-aligned bounding box.
+            The left wall has the negative z axis of the paraprobe coordinate
+            system as the outer unit normal.
+          number_of_points(NX_UINT):
+            doc: |
+              Number of points covered by the mask.
+              The mask value for most may be 0.
+            unit: NX_UNITLESS
+          bitdepth(NX_UINT):
+            doc: |
+              Number of bits assumed matching on a default datatype.
+              (e.g. 8 bits for a C-style uint8).
+            # which does paraprobe use
+            unit: NX_UNITLESS
+          mask(NX_UINT):
+            doc: |
+              The unsigned integer array representing the content of the mask.
+              If padding is used the padded bits are set to 0. The mask is for
+              convenience always as large as the entire dataset as it will
+              be stored compressed anyway. The convenience feature with this
+              is that then the mask can be decoded with numpy and mirrored
+              against the evaporation_id array and one immediately can filter
+              out all points that were used by the paraprobe.
+              The length of the array adds to the next unsigned integer
+              if the number of ions in the dataset is not an integer
+              multiple of the bitdepth.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+
+        wall_contact_top(NXcs_filter_boolean_mask):
+          doc: |
+            A bitmask which identifies which of points have Voronoi cells that
+            are truncated by a specific wall of the axis-aligned bounding box.
+            The left wall has the positive z axis of the paraprobe coordinate
+            system as the outer unit normal.
+          number_of_points(NX_UINT):
+            doc: |
+              Number of points covered by the mask.
+              The mask value for most may be 0.
+            unit: NX_UNITLESS
+          bitdepth(NX_UINT):
+            doc: |
+              Number of bits assumed matching on a default datatype.
+              (e.g. 8 bits for a C-style uint8).
+            # which does paraprobe use
+            unit: NX_UNITLESS
+          mask(NX_UINT):
+            doc: |
+              The unsigned integer array representing the content of the mask.
+              If padding is used the padded bits are set to 0. The mask is for
+              convenience always as large as the entire dataset as it will
+              be stored compressed anyway. The convenience feature with this
+              is that then the mask can be decoded with numpy and mirrored
+              against the evaporation_id array and one immediately can filter
+              out all points that were used by the paraprobe.
+              The length of the array adds to the next unsigned integer
+              if the number of ions in the dataset is not an integer
+              multiple of the bitdepth.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+
+        voronoi_cells(NXcg_polyhedron_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+            unit: NX_UNITLESS
+            enumeration: [3]
+          cardinality(NX_POSINT):
+            unit: NX_UNITLESS
+          volume(NX_NUMBER):
+            doc: Interior volume
+            unit: NX_VOLUME
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+          process_identifier(NX_POSINT):
+            exists: optional
+            doc: |
+              By which MPI process was the Voronoi cell computed.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+          thread_identifier(NX_POSINT):
+            exists: optional
+            doc: |
+              By which OpenMP thread was the Voronoi cell computed.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+          number_of_faces(NX_POSINT):
+            exists: optional
+            doc: |
+              The number of faces for each polyhedron. Faces of adjoining polyhedra
+              are counted for each polyhedron. This field can be used to interpret
+              the array/field with the individual area values for each face.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+          # (NXtransformations):
+          #   exists: optional
+          #   doc: |
+          #     Reference to or definition of a coordinate system with
+          #     which the qualifiers and mesh data are interpretable.
+          # substantially more detailed descriptors of the shape, the mesh
+          identifier_offset(NX_INT):
+            doc: |
+              Integer which specifies the first index to be used for distinguishing
+              polyhedra. Identifiers are defined either implicitly
+              or explicitly. For implicit indexing the identifiers are defined on the
+              interval [identifier_offset, identifier_offset+c-1].
+              For explicit indexing the identifier array has to be defined.
+            unit: NX_UNITLESS
+          identifier(NX_INT):
+            exists: optional
+            doc: Integer used to distinguish polyhedra for explicit indexing.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, i]]
+          polyhedra(NXcg_face_list_data_structure):
+            exists: [min, 0, max, 1]
+            doc: |
+              A simple approach to describe the entire set of polyhedra when
+              the main intention is to store the shape of the polyhedra for
+              visualization.
+            dimensionality(NX_POSINT):
+              unit: NX_UNITLESS
+            number_of_vertices(NX_POSINT):
+              doc: Number of vertices.
+              unit: NX_UNITLESS
+            number_of_faces(NX_POSINT):
+              doc: Number of faces.
+              unit: NX_UNITLESS
+            vertex_identifier_offset(NX_INT):
+              unit: NX_UNITLESS
+            face_identifier_offset(NX_INT):
+              unit: NX_UNITLESS
+            vertices(NX_FLOAT):
+              unit: NX_LENGTH
+              dimensions:
+                rank: 2
+                dim: [[1, i], [2, 3]]
+            xdmf_topology(NX_UINT):
+              doc: |
+                A sequence of always first an XDMF topology type key, followed
+                by the XDMF number of vertices of the polygon, followed by
+                the vertex identifier which define the facet polygon. First
+                we store the polygon of the first facet of the first cell, then
+                the second facet of the first cell, until the last facet of the
+                first cell, followed by the first facet of the second cell,
+                and so on and so forth.
+              unit: NX_UNITLESS
+              dimensions:
+                rank: 1
+                dim: [[1, j]]
+            xdmf_cell_identifier(NX_UINT):
+              doc: |
+                A sequence of cell identifier so that each facet is associated
+                with its cell because of which it is then possible to segment
+                out cells three-dimensionally based on cell i.e. evaporation_id.
+              unit: NX_UNITLESS
+              dimensions:
+                rank: 1
+                dim: [[1, n_f_xdmf]]
+# ##MK::end of the tool-specific section
+
+    performance(NXcs_profiling):
+      exists: recommended
+      current_working_directory:
+      command_line_call:
+        exists: optional
+      start_time(NX_DATE_TIME):
+        exists: recommended
+      end_time(NX_DATE_TIME):
+        exists: recommended
+      total_elapsed_time(NX_NUMBER):
+      number_of_processes(NX_POSINT):
+      number_of_threads(NX_POSINT):
+      number_of_gpus(NX_POSINT):
+      (NXcs_computer):
+        exists: recommended
+        name:
+          exists: recommended
+        operating_system:
+          \@version:
+        uuid:
+          exists: optional
+        (NXcs_cpu):
+          exists: [min, 0, max, infty]
+          name:
+            exists: optional
+          (NXfabrication):
+            exists: recommended
+            identifier:
+              exists: optional
+            capabilities:
+              exists: optional
+        (NXcs_gpu):
+          exists: [min, 0, max, infty]
+          name:
+            exists: optional
+          (NXfabrication):
+            exists: recommended
+            identifier:
+              exists: optional
+            capabilities:
+              exists: optional
+        (NXcs_mm_sys):
+          exists: [min, 0, max, 1]
+          total_physical_memory(NX_NUMBER):
+        (NXcs_io_sys):
+          exists: [min, 0, max, 1]
+          (NXcs_io_obj):
+            exists: [min, 1, max, infty]
+            technology:
+            max_physical_capacity(NX_NUMBER):
+            name:
+              exists: optional
+            (NXfabrication):
+              exists: recommended
+              identifier:
+                exists: optional
+              capabilities:
+                exists: optional
+
+        (NXcs_profiling_event):
+          start_time(NX_DATE_TIME):
+            exists: optional
+          end_time(NX_DATE_TIME):
+            exists: optional
+          description:
+          elapsed_time(NX_NUMBER):
+          number_of_processes(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_processes
+              in the NXcs_profiling super class.
+          number_of_threads(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_threads
+              in the NXcs_profiling super class.
+          number_of_gpus(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_threads
+              in the NXcs_profiling super class.
+          max_virtual_memory_snapshot(NX_NUMBER):
+            exists: recommended
+          max_resident_memory_snapshot(NX_NUMBER):
+            exists: recommended

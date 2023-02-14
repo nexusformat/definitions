@@ -1,14 +1,17 @@
 category: application
 doc: |
-  Results of a paraprobe-ranger tool run in atom probe microscopy.
+  Results of a paraprobe-ranger tool run.
 symbols:
   doc: The symbols used in the schema to specify e.g. dimensions of arrays.
   n_ions: The total number of ions in the reconstruction.
-  n_ivec: The maximum number of atoms per molecular ion type.
+  n_ivec_max: |
+    Maximum number of allowed atoms per (molecular) ion (fragment).
+    Needs to match maximum_number_of_atoms_per_molecular_ion.
 NXapm_paraprobe_results_ranger:
   (NXentry):
     # by default for appdefs the value of the exists keyword is required
     # unless it is explicitly specified differently
+    exists: [min, 1, max, 1]
     \@version:
       doc: Version specifier of this application definition.
 
@@ -36,18 +39,43 @@ NXapm_paraprobe_results_ranger:
         to this analysis.
     analysis_description:
       exists: optional
-      doc: Possibility for leaving a free-text description about this analysis.
-    time_stamp(NX_DATE_TIME):
+      doc: |
+        Possibility for leaving a free-text description about this analysis.
+    start_time(NX_DATE_TIME):
       doc: |
         ISO 8601 formatted time code with local time zone offset to UTC
-        information included when this configuration file was created.
+        information included when the analysis behind this results file
+        was started, i.e. the paraprobe-tool executable started as a process.
+    end_time(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when the analysis behind this results file
+        were completed and the paraprobe-tool executable exited as a process.
     config_filename:
       doc: |
-        The absolute path and name of the config file for this analysis.
+        The path and name of the config file for this analysis.
       \@version:
         doc: |
           At least SHA256 strong hash of the specific config_file for
           tracking provenance.
+    results_path:
+      exists: optional
+      doc: |
+        Path to the directory where the tool should store NeXus/HDF5 results
+        of this analysis. If not specified results will be stored in the
+        current working directory.
+    status(NX_CHAR):
+      doc: |
+        A statement whether the paraprobe-tool executable managed to
+        process the analysis or failed prematurely.
+        
+        This status is written to the results file after the end_time
+        at which point the executable must not compute any analysis.
+        Only when this status message is present and shows `success`, the
+        user should consider the results. In all other cases it might be
+        that the executable has terminated prematurely or another error
+        occurred.
+      enumeration: [success, failure]
     (NXuser):
       exists: recommended
       doc: |
@@ -78,10 +106,11 @@ NXapm_paraprobe_results_ranger:
       (NXtransformations):
         exists: [min, 1, max, infty]
         doc: |
-          The individual coordinate systems which used.
-          fields should be prefixed with a prefix taken from an
-          enumeration which details the individual coordinate systems:
+          The individual coordinate systems which should be used.
+          Field names should be prefixed with the following controlled terms
+          indicating which individual coordinate system is described:
           
+          * paraprobe
           * lab
           * specimen
           * laser
@@ -93,16 +122,26 @@ NXapm_paraprobe_results_ranger:
 # ##MK::begin of the tool-specific section
     (NXprocess):
       exists: [min, 0, max, 1]
-      # ##MK::number_of_ion_types(NX_POSINT):
-      # ##MK::maximum_number_of_atoms_per_molecular_ion(NX_POSINT):
-      use_existent_ranging(NXprocess):
+      apply_existent_ranging(NXprocess):
         exists: [min, 0, max, 1]
         doc: |
           Paraprobe-ranger loads the iontypes and evaluates for each
           ion on which iontype it matches. If it matches on none, the
           ion is considered of the default unknown type with a 0 as its
           respective value in the iontypes array.
-        (NXion):
+        # ##MK::number_of_ion_types(NX_POSINT):
+        maximum_number_of_atoms_per_molecular_ion(NX_POSINT):
+          doc: |
+            The length of the isotope_vector used to describe molecular ions.
+          unit: NX_UNITLESS
+        ION(NXion):
+          exists: [min, 1, max, 256]
+          isotope_vector(NX_UINT):
+          nuclid_list(NX_UINT):
+            exists: recommended
+          charge_state(NX_INT):
+          mass_to_charge_range(NX_FLOAT):
+        charged_ION(NXion):
           exists: [min, 1, max, 256]
           isotope_vector(NX_UINT):
           nuclid_list(NX_UINT):
@@ -112,12 +151,74 @@ NXapm_paraprobe_results_ranger:
         iontypes(NX_UINT):
           doc: |
             The iontype ID for each ion that was best matching, stored in the
-            order of the evaporation sequence ID.
+            order of the evaporation sequence ID. The here computed iontypes
+            do not take into account the charge state of the ion which is
+            equivalent to interpreting a RNG and RRNG range files for each
+            ion in such a way that only the elements of which a (molecular) ion
+            is build are considered. By contrast, charged_iontypes takes
+            into account also the charge state.
           unit: NX_UNITLESS
           dimensions:
             rank: 1
             dim: [[1, n_ions]]
-
+        charged_iontypes(NX_UINT):
+          doc: |
+            The iontype ID for each ion that was best matching, stored in the
+            order of the evaporation sequence ID. For the here computed
+            charged_iontypes the information for each (molecular) ion defined
+            in e.g. RNG or RRNG files is analyzed for which differently charge
+            states are possible. As an example while iontypes might only consider
+            if an ion is Al charged_iontypes will resolve if it is Al1+, Al2+, or
+            Al3+. To decide the charge state a recursive algorithm is used which
+            enumerates first all possible isotopic variants of a given molecular
+            ion build from a specific set of elements. All variants are then
+            analyzed for their natural abundance and filtered. The sub-set of
+            all significantly abundant variants is inspected if their charge
+            states are all the same. If only one significant variant is found
+            its charge state is assumed the relevant. If multiple significant
+            variants are found and all their charge states is the same this
+            charge state will be the decisive one. However, if multiple variants
+            are found and their charge state differs such a case highlights that
+            the charge state analysis is underconstrained and thus the charge
+            state is set to 0. Underconstrained cases are possible because
+            an arbitrary combination of elements into a molecular ion that is
+            constrained only by an additional single interval of mass-to-charge
+            state ratios is not necessarily sufficient.
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 1
+            dim: [[1, n_ions]]
+        window(NXcs_filter_boolean_mask):
+          doc: |
+            A bitmask which identifies exactly all those ions ranged irrespective
+            the type they ended up with.
+          number_of_ions(NX_UINT):
+            doc: |
+              Number of ions covered by the mask.
+              The mask value for most may be 0.
+            unit: NX_UNITLESS
+          bitdepth(NX_UINT):
+            doc: |
+              Number of bits assumed matching on a default datatype.
+              (e.g. 8 bits for a C-style uint8).
+            # which does paraprobe use
+            unit: NX_UNITLESS
+          mask(NX_UINT):
+            doc: |
+              The unsigned integer array representing the content of the mask.
+              If padding is used the padded bits are set to 0. The mask is for
+              convenience always as large as the entire dataset as it will
+              be stored compressed anyway. The convenience feature with this
+              is that then the mask can be decoded with numpy and mirrored
+              against the evaporation_id array and one immediately can filter
+              out all points that were used by the paraprobe.
+              The length of the array adds to the next unsigned integer
+              if the number of ions in the dataset is not an integer
+              multiple of the bitdepth.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, n_ions]]
       molecular_ion_search(NXprocess):
         exists: [min, 0, max, 1]
         doc: |
@@ -194,10 +295,32 @@ NXapm_paraprobe_results_ranger:
           dimensions:
             rank: 1
             dim: [[1, i]]
+
+      check_existent_ranging(NXprocess):
+        exists: [min, 0, max, 1]
+        doc: |
+          Paraprobe-ranger loads iontypes and evaluates for each ion on which
+          iontype it matches. If it matches on none, the ion is considered of
+          the default unknown type with a 0 as its respective value in the
+          iontypes array. In contrast to use_existent_ranging this process
+          does neither needs measured ion position nor mass-to-charge-state
+          ratio values.
+        # ##MK::number_of_ion_types(NX_POSINT):
+        maximum_number_of_atoms_per_molecular_ion(NX_POSINT):
+          doc: |
+            The length of the isotope_vector used to describe molecular ions.
+          unit: NX_UNITLESS
+        charged_ION(NXion):
+          exists: [min, 1, max, 256]
+          isotope_vector(NX_UINT):
+          nuclid_list(NX_UINT):
+            exists: recommended
+          charge_state(NX_INT):
+          mass_to_charge_range(NX_FLOAT):
 # ##MK::end of the tool-specific section
 
     performance(NXcs_profiling):
-      exists: recommended
+      current_working_directory:
       command_line_call:
         exists: optional
       start_time(NX_DATE_TIME):
@@ -269,12 +392,12 @@ NXapm_paraprobe_results_ranger:
           number_of_threads(NX_POSINT):
             # exists: recommended
             doc: |
-              Specify if it was different from the number_of_threads 
+              Specify if it was different from the number_of_threads
               in the NXcs_profiling super class.
           number_of_gpus(NX_POSINT):
             # exists: recommended
             doc: |
-              Specify if it was different from the number_of_threads 
+              Specify if it was different from the number_of_threads
               in the NXcs_profiling super class.
           max_virtual_memory_snapshot(NX_NUMBER):
             exists: recommended

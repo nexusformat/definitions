@@ -10,16 +10,17 @@
                  The total number of ions in the reconstruction.
             </doc>
         </symbol>
-        <symbol name="n_ivec">
+        <symbol name="n_ivec_max">
             <doc>
-                 The maximum number of atoms per molecular ion type.
+                 Maximum number of allowed atoms per (molecular) ion (fragment). Needs
+                 to match maximum_number_of_atoms_per_molecular_ion.
             </doc>
         </symbol>
     </symbols>
     <doc>
-         Results of a paraprobe-ranger tool run in atom probe microscopy.
+         Results of a paraprobe-ranger tool run.
     </doc>
-    <group type="NXentry">
+    <group maxOccurs="1" minOccurs="1" type="NXentry">
         <attribute name="version">
             <doc>
                  Version specifier of this application definition.
@@ -59,15 +60,23 @@
                  Possibility for leaving a free-text description about this analysis.
             </doc>
         </field>
-        <field name="time_stamp" type="NX_DATE_TIME">
+        <field name="start_time" type="NX_DATE_TIME">
             <doc>
                  ISO 8601 formatted time code with local time zone offset to UTC
-                 information included when this configuration file was created.
+                 information included when the analysis behind this results file
+                 was started, i.e. the paraprobe-tool executable started as a process.
+            </doc>
+        </field>
+        <field name="end_time" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 formatted time code with local time zone offset to UTC
+                 information included when the analysis behind this results file
+                 were completed and the paraprobe-tool executable exited as a process.
             </doc>
         </field>
         <field name="config_filename" type="NX_CHAR">
             <doc>
-                 The absolute path and name of the config file for this analysis.
+                 The path and name of the config file for this analysis.
             </doc>
             <attribute name="version" type="NX_CHAR">
                 <doc>
@@ -75,6 +84,30 @@
                      tracking provenance.
                 </doc>
             </attribute>
+        </field>
+        <field name="results_path" optional="true" type="NX_CHAR">
+            <doc>
+                 Path to the directory where the tool should store NeXus/HDF5 results
+                 of this analysis. If not specified results will be stored in the
+                 current working directory.
+            </doc>
+        </field>
+        <field name="status" type="NX_CHAR">
+            <doc>
+                 A statement whether the paraprobe-tool executable managed to
+                 process the analysis or failed prematurely.
+                 
+                 This status is written to the results file after the end_time
+                 at which point the executable must not compute any analysis.
+                 Only when this status message is present and shows `success`, the
+                 user should consider the results. In all other cases it might be
+                 that the executable has terminated prematurely or another error
+                 occurred.
+            </doc>
+            <enumeration>
+                <item value="success"/>
+                <item value="failure"/>
+            </enumeration>
         </field>
         <group recommended="true" type="NXuser">
             <doc>
@@ -98,10 +131,11 @@
             </doc>
             <group maxOccurs="unbounded" minOccurs="1" type="NXtransformations">
                 <doc>
-                     The individual coordinate systems which used.
-                     fields should be prefixed with a prefix taken from an
-                     enumeration which details the individual coordinate systems:
+                     The individual coordinate systems which should be used.
+                     Field names should be prefixed with the following controlled terms
+                     indicating which individual coordinate system is described:
                      
+                     * paraprobe
                      * lab
                      * specimen
                      * laser
@@ -112,14 +146,25 @@
             </group>
         </group>
         <group maxOccurs="1" minOccurs="0" type="NXprocess">
-            <group maxOccurs="1" minOccurs="0" name="use_existent_ranging" type="NXprocess">
+            <group maxOccurs="1" minOccurs="0" name="apply_existent_ranging" type="NXprocess">
                 <doc>
                      Paraprobe-ranger loads the iontypes and evaluates for each
                      ion on which iontype it matches. If it matches on none, the
                      ion is considered of the default unknown type with a 0 as its
                      respective value in the iontypes array.
                 </doc>
-                <group maxOccurs="256" minOccurs="1" type="NXion">
+                <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_POSINT" units="NX_UNITLESS">
+                    <doc>
+                         The length of the isotope_vector used to describe molecular ions.
+                    </doc>
+                </field>
+                <group maxOccurs="256" minOccurs="1" name="ION" type="NXion">
+                    <field name="isotope_vector" type="NX_UINT"/>
+                    <field name="nuclid_list" recommended="true" type="NX_UINT"/>
+                    <field name="charge_state" type="NX_INT"/>
+                    <field name="mass_to_charge_range" type="NX_FLOAT"/>
+                </group>
+                <group maxOccurs="256" minOccurs="1" name="charged_ION" type="NXion">
                     <field name="isotope_vector" type="NX_UINT"/>
                     <field name="nuclid_list" recommended="true" type="NX_UINT"/>
                     <field name="charge_state" type="NX_INT"/>
@@ -128,12 +173,80 @@
                 <field name="iontypes" type="NX_UINT" units="NX_UNITLESS">
                     <doc>
                          The iontype ID for each ion that was best matching, stored in the
-                         order of the evaporation sequence ID.
+                         order of the evaporation sequence ID. The here computed iontypes
+                         do not take into account the charge state of the ion which is
+                         equivalent to interpreting a RNG and RRNG range files for each
+                         ion in such a way that only the elements of which a (molecular) ion
+                         is build are considered. By contrast, charged_iontypes takes
+                         into account also the charge state.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n_ions"/>
                     </dimensions>
                 </field>
+                <field name="charged_iontypes" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         The iontype ID for each ion that was best matching, stored in the
+                         order of the evaporation sequence ID. For the here computed
+                         charged_iontypes the information for each (molecular) ion defined
+                         in e.g. RNG or RRNG files is analyzed for which differently charge
+                         states are possible. As an example while iontypes might only consider
+                         if an ion is Al charged_iontypes will resolve if it is Al1+, Al2+, or
+                         Al3+. To decide the charge state a recursive algorithm is used which
+                         enumerates first all possible isotopic variants of a given molecular
+                         ion build from a specific set of elements. All variants are then
+                         analyzed for their natural abundance and filtered. The sub-set of
+                         all significantly abundant variants is inspected if their charge
+                         states are all the same. If only one significant variant is found
+                         its charge state is assumed the relevant. If multiple significant
+                         variants are found and all their charge states is the same this
+                         charge state will be the decisive one. However, if multiple variants
+                         are found and their charge state differs such a case highlights that
+                         the charge state analysis is underconstrained and thus the charge
+                         state is set to 0. Underconstrained cases are possible because
+                         an arbitrary combination of elements into a molecular ion that is
+                         constrained only by an additional single interval of mass-to-charge
+                         state ratios is not necessarily sufficient.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <group name="window" type="NXcs_filter_boolean_mask">
+                    <doc>
+                         A bitmask which identifies exactly all those ions ranged irrespective
+                         the type they ended up with.
+                    </doc>
+                    <field name="number_of_ions" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Number of ions covered by the mask.
+                             The mask value for most may be 0.
+                        </doc>
+                    </field>
+                    <field name="bitdepth" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Number of bits assumed matching on a default datatype.
+                             (e.g. 8 bits for a C-style uint8).
+                        </doc>
+                    </field>
+                    <field name="mask" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             The unsigned integer array representing the content of the mask.
+                             If padding is used the padded bits are set to 0. The mask is for
+                             convenience always as large as the entire dataset as it will
+                             be stored compressed anyway. The convenience feature with this
+                             is that then the mask can be decoded with numpy and mirrored
+                             against the evaporation_id array and one immediately can filter
+                             out all points that were used by the paraprobe.
+                             The length of the array adds to the next unsigned integer
+                             if the number of ions in the dataset is not an integer
+                             multiple of the bitdepth.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_ions"/>
+                        </dimensions>
+                    </field>
+                </group>
             </group>
             <group maxOccurs="1" minOccurs="0" name="molecular_ion_search" type="NXprocess">
                 <doc>
@@ -215,8 +328,30 @@
                     </dimensions>
                 </field>
             </group>
+            <group maxOccurs="1" minOccurs="0" name="check_existent_ranging" type="NXprocess">
+                <doc>
+                     Paraprobe-ranger loads iontypes and evaluates for each ion on which
+                     iontype it matches. If it matches on none, the ion is considered of
+                     the default unknown type with a 0 as its respective value in the
+                     iontypes array. In contrast to use_existent_ranging this process
+                     does neither needs measured ion position nor mass-to-charge-state
+                     ratio values.
+                </doc>
+                <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_POSINT" units="NX_UNITLESS">
+                    <doc>
+                         The length of the isotope_vector used to describe molecular ions.
+                    </doc>
+                </field>
+                <group maxOccurs="256" minOccurs="1" name="charged_ION" type="NXion">
+                    <field name="isotope_vector" type="NX_UINT"/>
+                    <field name="nuclid_list" recommended="true" type="NX_UINT"/>
+                    <field name="charge_state" type="NX_INT"/>
+                    <field name="mass_to_charge_range" type="NX_FLOAT"/>
+                </group>
+            </group>
         </group>
-        <group name="performance" recommended="true" type="NXcs_profiling">
+        <group name="performance" type="NXcs_profiling">
+            <field name="current_working_directory" type="NX_CHAR"/>
             <field name="command_line_call" optional="true" type="NX_CHAR"/>
             <field name="start_time" recommended="true" type="NX_DATE_TIME"/>
             <field name="end_time" recommended="true" type="NX_DATE_TIME"/>
@@ -271,13 +406,13 @@
                     </field>
                     <field name="number_of_threads" type="NX_POSINT">
                         <doc>
-                             Specify if it was different from the number_of_threads 
+                             Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
                     <field name="number_of_gpus" type="NX_POSINT">
                         <doc>
-                             Specify if it was different from the number_of_threads 
+                             Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
