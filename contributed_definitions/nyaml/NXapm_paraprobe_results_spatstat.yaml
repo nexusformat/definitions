@@ -1,0 +1,298 @@
+category: application
+doc: |
+  Results of a paraprobe-spatstat tool run.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_ions: The total number of ions in the reconstruction.
+
+NXapm_paraprobe_results_spatstat:
+  (NXentry):
+    # by default for appdefs the value of the exists keyword is required
+    # unless it is explicitly specified differently
+    exists: [min, 1, max, 1]
+    \@version:
+      doc: Version specifier of this application definition.
+
+# ##MK::begin of the tool-specific section
+    definition:
+      doc: Official NeXus NXDL schema with which this file was written.
+      enumeration: [NXapm_paraprobe_results_spatstat]
+# ##MK::end of the tool-specific section
+
+    program:
+      doc: |
+        Given name of the program/software/tool with which this NeXus
+        (configuration) file was generated.
+      \@version:
+        doc: |
+          Ideally program version plus build number, or commit hash or description
+          of ever persistent resources where the source code of the program and
+          build instructions can be found so that the program can be configured
+          ideally in such a manner that the result of this computational process
+          is recreatable in the same deterministic manner.
+    analysis_identifier:
+      exists: optional
+      doc: |
+        Ideally, a (globally persistent) unique identifier for referring
+        to this analysis.
+    analysis_description:
+      exists: optional
+      doc: |
+        Possibility for leaving a free-text description about this analysis.
+    start_time(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when the analysis behind this results file
+        was started, i.e. the paraprobe-tool executable started as a process.
+    end_time(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when the analysis behind this results file
+        were completed and the paraprobe-tool executable exited as a process.
+    config_filename:
+      doc: |
+        The absolute path and name of the config file for this analysis.
+      \@version:
+        doc: |
+          At least SHA256 strong hash of the specific config_file for
+          tracking provenance.
+    results_path:
+      exists: optional
+      doc: |
+        Path to the directory where the tool should store NeXus/HDF5 results
+        of this analysis. If not specified results will be stored in the
+        current working directory.
+    status(NX_CHAR):
+      doc: |
+        A statement whether the paraprobe-tool executable managed to
+        process the analysis or failed prematurely.
+        
+        This status is written to the results file after the end_time
+        at which point the executable must not compute any analysis.
+        Only when this status message is present and shows `success`, the
+        user should consider the results. In all other cases it might be
+        that the executable has terminated prematurely or another error
+        occurred.
+      enumeration: [success, failure]
+    (NXuser):
+      exists: recommended
+      doc: |
+        If used, contact information and eventually details
+        of at least the person who performed this analysis.
+      name:
+      affiliation:
+        exists: recommended
+      address:
+        exists: optional
+      email:
+        exists: recommended
+      orcid:
+        exists: recommended
+      orcid_platform:
+        exists: recommended
+      telephone_number:
+        exists: optional
+      role:
+        exists: recommended
+      social_media_name:
+        exists: optional
+      social_media_platform:
+        exists: optional
+    (NXcoordinate_system_set):
+      exists: optional
+      doc: Details about the coordinate system conventions used.
+      (NXtransformations):
+        exists: [min, 1, max, infty]
+        doc: |
+          The individual coordinate systems which should be used.
+          Field names should be prefixed with the following controlled terms
+          indicating which individual coordinate system is described:
+          
+          * paraprobe
+          * lab
+          * specimen
+          * laser
+          * leap
+          * detector
+          * recon
+          
+
+# ##MK::begin of the tool-specific section
+    (NXprocess):
+      exists: [min, 0, max, 1]
+      window(NXcs_filter_boolean_mask):
+        doc: |
+          A bitmask which identifies which of the ions in the dataset were
+          analyzed.
+        number_of_ions(NX_UINT):
+          doc: |
+            Number of ions covered by the mask.
+            The mask value for most may be 0.
+          unit: NX_UNITLESS
+        bitdepth(NX_UINT):
+          doc: |
+            Number of bits assumed matching on a default datatype.
+            (e.g. 8 bits for a C-style uint8).
+          # which does paraprobe use
+          unit: NX_UNITLESS
+        mask(NX_UINT):
+          doc: |
+            The unsigned integer array representing the content of the mask.
+            If padding is used the padded bits are set to 0. The mask is for
+            convenience always as large as the entire dataset as it will
+            be stored compressed anyway. The convenience feature with this
+            is that then the mask can be decoded with numpy and mirrored
+            against the evaporation_id array and one immediately can filter
+            out all points that were used by the paraprobe.
+            The length of the array adds to the next unsigned integer
+            if the number of ions in the dataset is not an integer
+            multiple of the bitdepth.
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 1
+            dim: [[1, n_ions]]
+      iontypes_randomized(NX_UINT):
+        doc: |
+          The iontype ID for each ion that was assigned to each ion during
+          the randomization of the ionlabels. Iontype labels are just permuted
+          but the total number of values for each iontype stay the same.
+          
+          The order matches the iontypes array from a given ranging results
+          as is specified in the configuration settings inside the specific
+          config_filename that was used for this spatstat analysis.
+        unit: NX_UNITLESS
+        dimensions:
+          rank: 1
+          dim: [[1, n_ions]]
+
+      knn(NXprocess):
+        exists: optional
+        doc: |
+          K-nearest neighbor statistics.
+        distance(NX_FLOAT):
+          doc: Right boundary of the binning.
+          unit: NX_LENGTH
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+        probability_mass(NX_FLOAT):
+          unit: NX_DIMENSIONLESS
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+        accumulated(NX_FLOAT):
+          doc: Cumulated
+          unit: NX_DIMENSIONLESS
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+
+      rdf(NXprocess):
+        exists: optional
+        doc: |
+          Radial distribution statistics.
+        distance(NX_FLOAT):
+          doc: Right boundary of the binning.
+          unit: NX_LENGTH
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+        probability_mass(NX_FLOAT):
+          unit: NX_DIMENSIONLESS
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+        accumulated(NX_FLOAT):
+          doc: Cumulated
+          unit: NX_DIMENSIONLESS
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+
+# ##MK::end of the tool-specific section
+
+    performance(NXcs_profiling):
+      exists: recommended
+      current_working_directory:
+      command_line_call:
+        exists: optional
+      start_time(NX_DATE_TIME):
+        exists: recommended
+      end_time(NX_DATE_TIME):
+        exists: recommended
+      total_elapsed_time(NX_NUMBER):
+      number_of_processes(NX_POSINT):
+      number_of_threads(NX_POSINT):
+      number_of_gpus(NX_POSINT):
+      (NXcs_computer):
+        exists: recommended
+        name:
+          exists: recommended
+        operating_system:
+          \@version:
+        uuid:
+          exists: optional
+        (NXcs_cpu):
+          exists: [min, 0, max, infty]
+          name:
+            exists: optional
+          (NXfabrication):
+            exists: recommended
+            identifier:
+              exists: optional
+            capabilities:
+              exists: optional
+        (NXcs_gpu):
+          exists: [min, 0, max, infty]
+          name:
+            exists: optional
+          (NXfabrication):
+            exists: recommended
+            identifier:
+              exists: optional
+            capabilities:
+              exists: optional
+        (NXcs_mm_sys):
+          exists: [min, 0, max, 1]
+          total_physical_memory(NX_NUMBER):
+        (NXcs_io_sys):
+          exists: [min, 0, max, 1]
+          (NXcs_io_obj):
+            exists: [min, 1, max, infty]
+            technology:
+            max_physical_capacity(NX_NUMBER):
+            name:
+              exists: optional
+            (NXfabrication):
+              exists: recommended
+              identifier:
+                exists: optional
+              capabilities:
+                exists: optional
+
+        (NXcs_profiling_event):
+          start_time(NX_DATE_TIME):
+            exists: optional
+          end_time(NX_DATE_TIME):
+            exists: optional
+          description:
+          elapsed_time(NX_NUMBER):
+          number_of_processes(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_processes
+              in the NXcs_profiling super class.
+          number_of_threads(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_threads
+              in the NXcs_profiling super class.
+          number_of_gpus(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_threads
+              in the NXcs_profiling super class.
+          max_virtual_memory_snapshot(NX_NUMBER):
+            exists: recommended
+          max_resident_memory_snapshot(NX_NUMBER):
+            exists: recommended

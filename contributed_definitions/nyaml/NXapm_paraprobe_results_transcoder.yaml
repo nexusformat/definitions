@@ -1,9 +1,9 @@
 category: application
 doc: |
-  Results of a paraprobe-transcoder tool run in atom probe microscopy.
+  Results of a paraprobe-transcoder tool run.
 symbols:
   doc: The symbols used in the schema to specify e.g. dimensions of arrays.
-  n_ions: Total number of ions collected.
+  n_ions: The total number of ions in the reconstruction.
   n_ivec_max: |
     Maximum number of allowed atoms per (molecular) ion (fragment).
     Needs to match maximum_number_of_atoms_per_molecular_ion.
@@ -13,6 +13,7 @@ NXapm_paraprobe_results_transcoder:
   (NXentry):
     # by default for appdefs the value of the exists keyword is required
     # unless it is explicitly specified differently
+    exists: [min, 1, max, 1]
     \@version:
       doc: Version specifier of this application definition.
 
@@ -40,11 +41,18 @@ NXapm_paraprobe_results_transcoder:
         to this analysis.
     analysis_description:
       exists: optional
-      doc: Possibility for leaving a free-text description about this analysis.
-    time_stamp(NX_DATE_TIME):
+      doc: |
+        Possibility for leaving a free-text description about this analysis.
+    start_time(NX_DATE_TIME):
       doc: |
         ISO 8601 formatted time code with local time zone offset to UTC
-        information included when this configuration file was created.
+        information included when the analysis behind this results file
+        was started, i.e. the paraprobe-tool executable started as a process.
+    end_time(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when the analysis behind this results file
+        were completed and the paraprobe-tool executable exited as a process.
     config_filename:
       doc: |
         The absolute path and name of the config file for this analysis.
@@ -52,6 +60,24 @@ NXapm_paraprobe_results_transcoder:
         doc: |
           At least SHA256 strong hash of the specific config_file for
           tracking provenance.
+    results_path:
+      exists: optional
+      doc: |
+        Path to the directory where the tool should store NeXus/HDF5 results
+        of this analysis. If not specified results will be stored in the
+        current working directory.
+    status(NX_CHAR):
+      doc: |
+        A statement whether the paraprobe-tool executable managed to
+        process the analysis or failed prematurely.
+        
+        This status is written to the results file after the end_time
+        at which point the executable must not compute any analysis.
+        Only when this status message is present and shows `success`, the
+        user should consider the results. In all other cases it might be
+        that the executable has terminated prematurely or another error
+        occurred.
+      enumeration: [success, failure]
     (NXuser):
       exists: recommended
       doc: |
@@ -307,10 +333,12 @@ NXapm_paraprobe_results_transcoder:
               exists: recommended
             charge_state(NX_INT):
             mass_to_charge_range(NX_FLOAT):
+            # add further fields coming from using the charge state recovery
+            # workflow from the ifes_apt_tc_data_modeling library
 # ##MK::end of the tool-specific section
 
     performance(NXcs_profiling):
-      exists: recommended
+      current_working_directory:
       command_line_call:
         exists: optional
       start_time(NX_DATE_TIME):
@@ -382,12 +410,12 @@ NXapm_paraprobe_results_transcoder:
           number_of_threads(NX_POSINT):
             # exists: recommended
             doc: |
-              Specify if it was different from the number_of_threads 
+              Specify if it was different from the number_of_threads
               in the NXcs_profiling super class.
           number_of_gpus(NX_POSINT):
             # exists: recommended
             doc: |
-              Specify if it was different from the number_of_threads 
+              Specify if it was different from the number_of_threads
               in the NXcs_profiling super class.
           max_virtual_memory_snapshot(NX_NUMBER):
             exists: recommended

@@ -9,13 +9,15 @@ symbols:
   n_ivec_max: |
     Maximum number of allowed atoms per (molecular) ion (fragment).
     Needs to match maximum_number_of_atoms_per_molecular_ion.
-  n_ranges: Number of mass-to-charge-state-ratio intervals mapped on this ion type.
+  n_ranges: |
+    Number of mass-to-charge-state-ratio intervals of this ion type.
   n_x: Number of bins in the x direction.
   n_y: Number of bins in the y direction.
   n_z: Number of bins in the z direction.
   n_bins: Number of bins.
 NXapm:
   (NXentry):
+    exists: [min, 1, max, infty]
     \@version:
       doc: |
         An at least as strong as SHA256 hashvalue of the file
@@ -39,8 +41,8 @@ NXapm:
         
         Users are strongly advised to detail the sample history in the 
         respective field and fill rather as completely as possible the fields
-        of this application definition rather than write details about the
-        experiment into this free-text description field.
+        of the application definition behind instead of filling in these
+        details into the experiment_description free-text description field.
     start_time(NX_DATE_TIME):
       exists: recommended
       doc: |
@@ -49,7 +51,7 @@ NXapm:
         If the application demands that time codes in this section of the
         application definition should only be used for specifying when the
         experiment was performed - and the exact duration is not relevant
-        - this start time field should be used.
+        - this start_time field should be used.
         
         Often though it is useful to specify a time interval with specifying
         both start_time and end_time to allow for more detailed bookkeeping
@@ -134,7 +136,7 @@ NXapm:
           build instructions can be found so that the program can be configured
           in such a manner that the result file is ideally recreatable
           yielding the same results.
-    run_number(NX_CHAR):
+    run_number:
       doc: |
         Neither the specimen_name nor the experiment_identifier but the identifier
         through which the experiment is referred to in the control software.
@@ -220,7 +222,8 @@ NXapm:
         exists: recommended
         doc: |
           Globally unique identifier of the user as offered by services
-          like ORCID or ResearcherID. If this field is field the specific service should also be written in orcid_platform
+          like ORCID or ResearcherID. If this field is field the specific 
+          service should also be written in orcid_platform
       orcid_platform:
         exists: recommended
         doc: |
@@ -241,7 +244,8 @@ NXapm:
       social_media_name:
         exists: optional
         doc: |
-          Account name that is associated with the user in social media platforms.
+          Account name that is associated with the user
+          in social media platforms.
       social_media_platform:
         exists: optional
         doc: |
@@ -303,12 +307,14 @@ NXapm:
           better be placed in resources which describe the sample_history.
       short_title:
         exists: optional
-        doc: Possibility to give an abbreviation of the specimen name field.
+        doc: |
+          Possibility to give an abbreviation of the specimen name field.
       atom_types:
         doc: |
-          Use Hill's system for listing elements of the periodic table which
-          are inside or attached to the surface of the specimen, and thus
-          relevant from a scientific point of view.
+          List of comma-separated elements from the periodic table
+          that are contained in the sample. 
+          If the sample substance has multiple components, all 
+          elements from each component must be included in `atom_types`. 
           
           The purpose of the field is to offer materials database systems an
           opportunity to parse the relevant elements without having to interpret
@@ -319,7 +325,8 @@ NXapm:
           Discouraged free-text field in case properly designed records
           for the sample_history are not available.
       # NEW ISSUE: error model
-      # NEW ISSUE: use Andrea and MarkusK groups for describing the geometry of the sample
+      # NEW ISSUE: use Andrea and MarkusK groups for
+      # describing the geometry of the sample
     (NXdata):
       exists: optional
       doc: |
@@ -374,7 +381,7 @@ NXapm:
         the positive z-axes of either coordinate systems is oriented.
         Consult the work of A. J. Breen and B. Gault and team
         for further details.
-      (NXtransformations):
+      TRANSFORMATIONS(NXtransformations):
         exists: [min, 0, max, infty]
     # NEW ISSUE: add Breen's Ultramicroscopy paper on atom probe crystallography
     # in what follows each component of the instrument might be equipped with an NXmonitor
@@ -408,6 +415,11 @@ NXapm:
           Location of the lab or place where the instrument is installed.
           Using GEOREF is preferred.
       (NXfabrication):
+         exists: recommended
+         vendor:
+           exists: recommended
+         model:
+           exists: recommended
          identifier:
            exists: recommended
          capabilities:
@@ -419,7 +431,8 @@ NXapm:
           
           THIS DOCSTRING NEEDS CLARIFICATION.
         unit: NX_LENGTH
-      # NEW ISSUE: discussion depends on the type of instrument, straight flight path, curved
+      # NEW ISSUE: discussion depends on the type of instrument, 
+      # straight flight path, curved
       field_of_view(NX_FLOAT):
         exists: recommended
         doc: |
@@ -428,28 +441,19 @@ NXapm:
           cannot be measured completely because ions may launch but not be
           detected or hit elsewhere in the analysis_chamber.
         unit: NX_LENGTH
-      analysis_chamber(NXchamber):
-        name:
-          exists: optional
-        (NXfabrication):
-          exists: optional
-          identifier:
-            exists: recommended
-          capabilities:
-            exists: optional
-        description:
-          exists: optional
-        pressure(NX_FLOAT):
-          doc: Average pressure in the analysis chamber.
-          unit: NX_PRESSURE
       (NXreflectron):
         # check if doc string gets carried over doc: Device for reducing flight time differences of ions in ToF experiments.
         applied(NX_BOOLEAN):
-          doc: Is a reflectron installed and was it used?
+          doc: | 
+            Is a reflectron installed and was it used?
         name:
           exists: optional
         (NXfabrication):
           exists: optional
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
           identifier:
             exists: recommended
           capabilities:
@@ -505,7 +509,9 @@ NXapm:
           doc: Given brand or model name by the manufacturer.
         serial_number:
           exists: recommended
-          doc: Given hardware name/serial number or hash identifier issued by the manufacturer.
+          doc: |
+            Given hardware name/serial number or hash identifier
+            issued by the manufacturer.
         manufacturer_name:
           exists: recommended
           doc: Given name of the manufacturer.
@@ -530,14 +536,14 @@ NXapm:
         standing_voltage(NX_FLOAT):
           exists: recommended
         laser_gun(NXsource):
-          exists: recommended
+          exists: [min, 0, max, 2]
           # INVIZO 6000 instrument have two symmetric lasers! so for these
           # laser_gun and laser_beam exists: [min, 0, max, 2]
           doc: |
-            Atom probe microscopes use controlled laser, voltage,
-            or a combination of pulsing strategies to trigger the
-            excitation and eventual field evaporation/emission of
-            an ion during an experiment.
+            Atom probe microscopes use controlled laser, voltage, or a
+            combination of pulsing strategies to trigger the excitation
+            and eventual field evaporation/emission of an ion during
+            an experiment.
             If pulse_mode is set to laser or laser_and_voltage (e.g. for
             LEAP6000-type instruments) having the group/section laser_gun
             is required and the following of its fields have to be filled:
@@ -549,6 +555,10 @@ NXapm:
           name:
           (NXfabrication):
             exists: optional
+            vendor:
+              exists: recommended
+            model:
+              exists: recommended
             identifier:
               exists: recommended
             capabilities:
@@ -575,12 +585,15 @@ NXapm:
           unit: NX_TEMPERATURE
 
       # NEW ISSUE: begin add and support I/O of further details
-      load_lock_chamber(NXchamber):
-        exists: optional
+      analysis_chamber(NXchamber):
         name:
           exists: optional
         (NXfabrication):
           exists: optional
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
           identifier:
             exists: recommended
           capabilities:
@@ -588,7 +601,8 @@ NXapm:
         description:
           exists: optional
         pressure(NX_FLOAT):
-          doc: Average pressure in the load_lock_chamber.
+          doc: |
+            Average pressure in the analysis chamber.
           unit: NX_PRESSURE
       buffer_chamber(NXchamber):
         exists: optional
@@ -596,6 +610,10 @@ NXapm:
           exists: optional
         (NXfabrication):
           exists: optional
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
           identifier:
             exists: recommended
           capabilities:
@@ -603,7 +621,28 @@ NXapm:
         description:
           exists: optional
         pressure(NX_FLOAT):
-          doc: Average pressure in the buffer chamber.
+          doc: |
+            Average pressure in the buffer chamber.
+          unit: NX_PRESSURE
+      load_lock_chamber(NXchamber):
+        exists: optional
+        name:
+          exists: optional
+        (NXfabrication):
+          exists: optional
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
+          identifier:
+            exists: recommended
+          capabilities:
+            exists: optional
+        description:
+          exists: optional
+        pressure(NX_FLOAT):
+          doc: |
+            Average pressure in the load_lock_chamber.
           unit: NX_PRESSURE
       getter_pump(NXpump):
         exists: optional
@@ -611,6 +650,10 @@ NXapm:
           exists: recommended
         (NXfabrication):
           exists: optional
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
           identifier:
             exists: recommended
           capabilities:
@@ -621,6 +664,10 @@ NXapm:
           exists: recommended
         (NXfabrication):
           exists: optional
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
           identifier:
             exists: recommended
           capabilities:
@@ -631,6 +678,10 @@ NXapm:
           exists: recommended
         (NXfabrication):
           exists: optional
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
           identifier:
             exists: recommended
           capabilities:
@@ -744,7 +795,7 @@ NXapm:
 
       ion_impact_positions(NXprocess):
         exists: recommended
-        doc: | 
+        doc: |
           Details about where ions hit the ion_detector and data processing
           steps related to analog-to-digital conversion of detector signals
           into ion hit positions. For AMETEK LEAP instruments this processing
@@ -772,7 +823,8 @@ NXapm:
           doc: |
             Raw readings from the analog-to-digital-converter
             timing circuits of the detector wires.
-          # NEW ISSUE: discuss with Oxcart developers which modifications might be necessary here.
+          # NEW ISSUE: discuss with Oxcart developers which 
+          # modifications might be necessary here.
           unit: NX_TIME
           dimensions:
             rank: 3
@@ -828,25 +880,27 @@ NXapm:
             rank: 1
             dim: [[1, n_ions]]
           unit: NX_UNITLESS
-        hit_multiplicity(NX_UINT):
-          exists: recommended
-          # NEW ISSUE: further discussions with members of the APM community is required to clarify this field and what it means
-          doc: Hit multiplicity.
-          dimensions:
-            rank: 1
-            dim: [[1, n_ions]]
-          unit: NX_UNITLESS
         pulse_id(NX_UINT):
           # NEW ISSUE: I feel the name is misleading, the quantity is 
-          # named like this de facto only because thats the jargon term with epos files.
+          # named like this de facto only because thats the jargon 
+          # term with epos files.
           exists: optional
           doc: |
-            Number of pulses since the start of the atom probe run/evaporation sequence.
+            Number of pulses since the start of the atom probe
+            run/evaporation sequence.
           dimensions:
             rank: 1
             dim: [[1, n_ions]]
           unit: NX_UNITLESS
-
+        hit_multiplicity(NX_UINT):
+          # NEW ISSUE: further discussions with members of the APM community 
+          # is required to clarify this field and what it means
+          doc: |
+            Hit multiplicity.
+          dimensions:
+            rank: 1
+            dim: [[1, n_ions]]
+          unit: NX_UNITLESS
       ion_filtering(NXprocess):
         exists: recommended
         doc: |
@@ -869,7 +923,9 @@ NXapm:
               configured in such a manner that the result file is ideally
               recreatable yielding the same results.
         evaporation_id_included(NX_BOOLEAN):  # NXcs_filter_boolean_mask
-          doc: Bitmask which is set to true if the ion is considered and false otherwise.
+          doc: |
+            Bitmask which is set to true if the ion 
+            is considered and false otherwise.
           dimensions:
             rank: 1
             dim: [[1, n_ions]]  # then only a group
@@ -893,7 +949,10 @@ NXapm:
               and build instructions can be found so that the program can be
               configured in such a manner that the result file is ideally
               recreatable yielding the same results.
-        # NEW ISSUE: realistic is that currently scientists can pull always a calibrated time-of-flight but not necessarily unprocessed timing data from the detector (unless individuals built the instrument). Relevant for ranging are the calibrated data, thats why only these (as an intermediate/compromise solution) are required in this version of the application definition
+        # NEW ISSUE: realistic is that currently scientists can pull always a calibrated time-of-flight
+        # but not necessarily unprocessed timing data from the detector (unless individuals built the instrument).
+        # Relevant for ranging are the calibrated data, thats why only these
+        # (as an intermediate/compromise solution) are required in this version of the application definition
         raw_tof(NX_FLOAT):
           exists: recommended
           doc: |
@@ -904,7 +963,8 @@ NXapm:
             rank: 1
             dim: [[1, n_ions]]
         calibrated_tof(NX_FLOAT):
-          # NEW ISSUE: which type of calibrations are applied is usually a modified sqrt tof to m/q mapping the exact parameter of which are for LEAP instruments not immediately accessible.
+          # NEW ISSUE: which type of calibrations are applied is usually a modified
+          # sqrt tof to m/q mapping the exact parameter of which are for LEAP instruments not immediately accessible.
           doc: |
             Calibrated time-of-flight.
           unit: NX_TIME
@@ -935,7 +995,9 @@ NXapm:
             will see displayed in e.g. APSuite while they execute
             the voltage-and-bowl correction as a part of the
             reconstruction pipeline in APSuite.
-          # NEW ISSUE: should be recommended as otherwise one cannot ensure that numerically the same voltage-and-bowl correction results are obtained (without knowning the parameters...)
+          # NEW ISSUE: should be recommended as otherwise one cannot ensure that
+          # numerically the same voltage-and-bowl correction results are obtained
+          # (without knowning the parameters...)
 
       mass_to_charge_conversion(NXprocess):
         exists: recommended
@@ -993,8 +1055,10 @@ NXapm:
             Qualitative statement about which reconstruction protocol was used.
           enumeration: [bas, geiser, gault, cameca, other]
         parameter:
-          # NEW ISSUE: the status here should be promoted to required but currently one needs to manually extract the reconstruction parameters
-          # NEW ISSUE: for instance from commercial software, here a better strategy is needed how to document the reconstruction parameter.
+          # NEW ISSUE: the status here should be promoted to required but currently
+          # one needs to manually extract the reconstruction parameters
+          # NEW ISSUE: for instance from commercial software, here a better strategy
+          # is needed how to document the reconstruction parameter.
           doc: |
             Different reconstruction protocols exist. Although these approaches
             are qualitatively similar, each protocol uses different parameters
@@ -1050,34 +1114,41 @@ NXapm:
                 recreatable yielding the same results.
           (NXdata):
             doc: |
-              A default three-dimensional histogram of the total number of ions in each bin.
-            # \@signal:
-            #   doc: Which is the dependent signal to plot, here the counts.
-            # \@axes:
-            #   doc: Which axes are plotted, here the three principal coordinate directions.
-            counts(NX_NUMBER):
+              A default three-dimensional histogram of the total
+              number of ions in each bin obtained via using a rectangular
+              transfer function.
+            \@signal:
+            \@axes:
+            \@AXISNAME_indices:
+            # \@long_name:
+            title:
+            data_counts(NX_NUMBER):
               doc: Array of counts for each bin.
               unit: NX_UNITLESS
               dimensions:
                 rank: 3
-                dim: [[1, n_z], [2, n_y], [3, n_x]]  #why do indices start at 0 here and not 1 ?
-            zpos(NX_NUMBER):
-              doc: Bin positions along the z axis.
+                dim: [[1, n_z], [2, n_y], [3, n_x]]
+            axis_z(NX_FLOAT):
+              doc: Bin center of mass position along the z axis.
               unit: NX_LENGTH
-            ypos(NX_NUMBER):
-              doc: Bin positions along the y axis.
+              dimensions:
+                rank: 1
+                dim: [[1, n_z]]
+              \@long_name:
+            axis_y(NX_FLOAT):
+              doc: Bin center of mass position along the y axis.
               unit: NX_LENGTH
-            xpos(NX_NUMBER):
-              doc: Bin positions along the x axis.
+              dimensions:
+                rank: 1
+                dim: [[1, n_y]]
+              \@long_name: 
+            axis_x(NX_FLOAT):
+              doc: Bin center of mass position along the x axis.
               unit: NX_LENGTH
-            # \@xpos_indices:
-            #  doc: Bin edge end along x.
-            # \@ypos_indices:
-            #   doc: Bin edge end along y.
-            # \@zpos_indices:
-            #   doc: Bin edge end along z.
-            \@long_name:
-              doc: Naive point cloud density map.
+              dimensions:
+                rank: 1
+                dim: [[1, n_x]]
+              \@long_name:
 
       ranging(NXprocess):
         exists: recommended
@@ -1103,7 +1174,7 @@ NXapm:
               and build instructions can be found so that the program can be
               configured in such a manner that the result file is ideally
               recreatable yielding the same results.
-        number_of_ion_types(NX_POSINT):
+        number_of_ion_types(NX_UINT):
           doc: |
             How many ion types are distinguished.
             If no ranging was performed each ion is of the special unknown type.
@@ -1137,7 +1208,8 @@ NXapm:
                 configured in such a manner that the result file is ideally
                 recreatable yielding the same results.
           range_minmax(NX_FLOAT):
-            doc: Smallest and largest mass-to-charge-state ratio value.
+            doc: |
+              Smallest and largest mass-to-charge-state ratio value.
             unit: NX_ANY
             # \@units: Da
             # NEW ISSUE: NX_ATOMIC_MASS_UNIT use Tommasso scheme here Da
@@ -1145,7 +1217,8 @@ NXapm:
               rank: 1
               dim: [[1, 2]]
           range_increment(NX_FLOAT):
-            doc: Binning width of the mass-to-charge-state ratio values.
+            doc: |
+              Binning width of the mass-to-charge-state ratio values.
             unit: NX_ANY
             # \@units: Da
             # NEW ISSUE: unit must match with range, is Da
@@ -1153,24 +1226,26 @@ NXapm:
             doc: |
               A default histogram aka mass spectrum of
               the mass-to-charge-state ratio values.
-            # \@signal:
-            #   doc: Which is the dependent signal to plot.
-            # \@axes:
-            #   doc: Which axes are plotted, here counts over bins.
-            counts(NX_NUMBER):
+            \@signal:
+            \@axes:
+            \@AXISNAME_indices:
+            # \@long_name:
+            title:
+            data_counts(NX_NUMBER):
               doc: Array of counts for each bin.
               unit: NX_UNITLESS
               dimensions:
                 rank: 1
                 dim: [[1, n_bins]]
-            bin_ends(NX_NUMBER):
-              doc: End of value for each mass-to-charge-state ratio bin.
+              \@long_name:
+            axis_mass_to_charge(NX_FLOAT):
+              doc: |
+                Right boundary of each mass-to-charge-state ratio value bin.
               unit: NX_ANY
-            #   # \@units: Da
-            # \@bin_ends_indices:
-            #   doc: Label of the mass-to-charge-state ratio bin axis.
-            \@long_name:
-              doc: Mass-to-charge-state histogram.
+              dimensions:
+                rank: 1
+                dim: [[1, n_bins]]
+              \@long_name:
 
         background_quantification(NXprocess):
           exists: recommended
@@ -1217,6 +1292,8 @@ NXapm:
             label:
               exists: recommended
             peak_model:
+              doc: |
+                THIS DOCSTRING NEEDS CLARIFICATION.
 
         peak_identification(NXprocess):
           exists: recommended
@@ -1236,8 +1313,11 @@ NXapm:
                 configured in such a manner that the result file is ideally
                 recreatable yielding the same results.
           (NXion):
+            exists: [min, 0, max, 256]
             isotope_vector(NX_UINT):
-            nuclid_list(NX_UINT):  # more human-readable form of the isotope_vector
-              exists: recommended
-            charge_state(NX_INT):  #  ##MK::needs to be NX_INT
+            charge_state(NX_INT):
             mass_to_charge_range(NX_FLOAT):
+            nuclid_list(NX_UINT):
+              exists: recommended
+            name:
+              exists: recommended
