@@ -74,10 +74,10 @@ not found in file'
 
 
 def compare_matches(ref_xml_file, test_yml_file, test_xml_file, desired_matches):
-    """Check if a new xml file is generated
-and if test xml file is equal to reference xml file
-
-"""
+    """
+        Check if a new xml file is generated
+    and if test xml file is equal to reference xml file
+    """
     # Reference file is read
     ref_matches = find_matches(ref_xml_file, desired_matches)
     # Test file is generated
@@ -95,7 +95,7 @@ def test_links():
 
 """
     ref_xml_link_file = 'tests/data/nyaml2nxdl/Ref_NXtest_links.nxdl.xml'
-    test_yml_link_file = 'tests/data/nyaml2nxdl/NXtest_links.yml'
+    test_yml_link_file = 'tests/data/nyaml2nxdl/NXtest_links.yaml'
     test_xml_link_file = 'tests/data/nyaml2nxdl/NXtest_links.nxdl.xml'
     desired_matches = ['<link', '/>']
     compare_matches(
@@ -126,13 +126,13 @@ The xml trees of the two files are then compared.
 
 
 def test_nxdl2yaml_doc_format():
-    """In this test an nxdl file with all kind of doc formats are translated to yaml
-       to check if they are correct.
-
+    """
+        In this test an nxdl file with all kind of doc formats are translated
+    to yaml to check if they are correct.
     """
     ref_xml_file = 'tests/data/nyaml2nxdl/Ref_NXentry.nxdl.xml'
     ref_yml_file = 'tests/data/nyaml2nxdl/Ref_NXentry.yml'
-    test_yml_file = 'tests/data/nyaml2nxdl/Ref_NXentry_parsed.yml'
+    test_yml_file = 'tests/data/nyaml2nxdl/Ref_NXentry_parsed.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', ref_xml_file])
     assert result.exit_code == 0
     check_file_fresh_baked(test_yml_file)
@@ -148,7 +148,7 @@ def test_fileline_error():
     """In this test the yaml fileline in the error message is tested.
 
     """
-    test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError1.yml'
+    test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError1.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', test_yml_file])
     assert result.exit_code == 1
     assert '13' in str(result.exception)
@@ -202,9 +202,9 @@ def test_attributes():
 
 
 def test_extends():
-    """Check the correct handling of extends keyword
-
-"""
+    """
+        Check the correct handling of extends keyword
+    """
     ref_xml_attribute_file = 'tests/data/nyaml2nxdl/Ref_NXattributes.nxdl.xml'
     test_yml_attribute_file = 'tests/data/nyaml2nxdl/NXattributes.yml'
     test_xml_attribute_file = 'tests/data/nyaml2nxdl/NXattributes.nxdl.xml'
