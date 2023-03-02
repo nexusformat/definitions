@@ -206,7 +206,7 @@ def test_extends():
         Check the correct handling of extends keyword
     """
     ref_xml_attribute_file = 'tests/data/nyaml2nxdl/Ref_NXattributes.nxdl.xml'
-    test_yml_attribute_file = 'tests/data/nyaml2nxdl/NXattributes.yml'
+    test_yml_attribute_file = 'tests/data/nyaml2nxdl/NXattributes.yaml'
     test_xml_attribute_file = 'tests/data/nyaml2nxdl/NXattributes.nxdl.xml'
     runner = CliRunner()
     result = runner.invoke(nyml2nxdl.launch_tool, ['--input-file', test_yml_attribute_file])
@@ -244,7 +244,7 @@ The xml trees of the two files are then compared.
 
     """
     ref_xml_file = 'tests/data/nyaml2nxdl/Ref_NXellips.nxdl.xml'
-    test_yml_file = 'tests/data/nyaml2nxdl/Ref_NXellips_parsed.yml'
+    test_yml_file = 'tests/data/nyaml2nxdl/Ref_NXellips_parsed.yaml'
     test_xml_file = 'tests/data/nyaml2nxdl/\
 Ref_NXellips_parsed.nxdl.xml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', ref_xml_file])
@@ -255,15 +255,15 @@ Ref_NXellips_parsed.nxdl.xml'
     check_file_fresh_baked(test_xml_file)
 
     test_tree = ET.parse(test_xml_file)
-    test_tree_flattened = [i.tag.split("}", 1)[1] for i in test_tree.iter()]
+    test_tree_flattened = set([i.tag.split("}", 1)[1] for i in test_tree.iter()])
 
     ref_tree = ET.parse(ref_xml_file)
-    ref_tree_flattened = [i.tag.split("}", 1)[1] for i in ref_tree.iter()]
+    ref_tree_flattened = set([i.tag.split("}", 1)[1] for i in ref_tree.iter()])
 
-    assert set(test_tree_flattened) == set(ref_tree_flattened), 'Ref XML and parsed XML\
+    assert test_tree_flattened == ref_tree_flattened, 'Ref XML and parsed XML\
 has not the same tree structure!!'
     os.remove('tests/data/nyaml2nxdl/Ref_NXellips_parsed.nxdl.xml')
-    os.remove('tests/data/nyaml2nxdl/Ref_NXellips_parsed.yml')
+    os.remove('tests/data/nyaml2nxdl/Ref_NXellips_parsed.yaml')
     sys.stdout.write('Test on xml -> yml -> xml okay.\n')
 
 
@@ -274,7 +274,7 @@ The xml trees of the two files are then compared.
     """
     ref_yml_file = 'tests/data/nyaml2nxdl/Ref_NXellipsometry.yml'
     test_xml_file = 'tests/data/nyaml2nxdl/Ref_NXellipsometry.nxdl.xml'
-    test_yml_file = 'tests/data/nyaml2nxdl/Ref_NXellipsometry_parsed.yml'
+    test_yml_file = 'tests/data/nyaml2nxdl/Ref_NXellipsometry_parsed.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', ref_yml_file])
     assert result.exit_code == 0
     check_file_fresh_baked(test_xml_file)
@@ -288,6 +288,6 @@ The xml trees of the two files are then compared.
 
     assert list(test_yml_tree) == list(ref_yml_tree), 'Ref YML and parsed YML \
 has not the same root entries!!'
-    os.remove('tests/data/nyaml2nxdl/Ref_NXellipsometry_parsed.yml')
+    os.remove('tests/data/nyaml2nxdl/Ref_NXellipsometry_parsed.yaml')
     os.remove('tests/data/nyaml2nxdl/Ref_NXellipsometry.nxdl.xml')
     sys.stdout.write('Test on yml -> xml -> yml okay.\n')
