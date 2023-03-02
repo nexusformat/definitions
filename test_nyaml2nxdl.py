@@ -224,7 +224,7 @@ def test_symbols_and_enum_docs():
 
 """
     ref_xml_file = 'tests/data/nyaml2nxdl/Ref_NXmytests.nxdl.xml'
-    test_yml_file = 'tests/data/nyaml2nxdl/NXmytests.yml'
+    test_yml_file = 'tests/data/nyaml2nxdl/NXmytests.yaml'
     test_xml_file = 'tests/data/nyaml2nxdl/NXmytests.nxdl.xml'
     desired_matches = ['<attribute', '</attribute>', '<doc>', '</doc>',
                        '<symbols>', '</symbols>', '<symbols',
