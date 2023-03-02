@@ -131,7 +131,7 @@ def test_nxdl2yaml_doc_format():
     to yaml to check if they are correct.
     """
     ref_xml_file = 'tests/data/nyaml2nxdl/Ref_NXentry.nxdl.xml'
-    ref_yml_file = 'tests/data/nyaml2nxdl/Ref_NXentry.yml'
+    ref_yml_file = 'tests/data/nyaml2nxdl/Ref_NXentry.yaml'
     test_yml_file = 'tests/data/nyaml2nxdl/Ref_NXentry_parsed.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', ref_xml_file])
     assert result.exit_code == 0
@@ -153,12 +153,12 @@ def test_fileline_error():
     assert result.exit_code == 1
     assert '13' in str(result.exception)
 
-    test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError2.yml'
+    test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError2.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', test_yml_file])
     assert result.exit_code == 1
     assert '21' in str(result.exception)
 
-    test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError3.yml'
+    test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError3.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', test_yml_file])
     assert result.exit_code == 1
     assert '25' in str(result.exception)
@@ -189,7 +189,7 @@ def test_attributes():
 
 """
     ref_xml_attribute_file = 'tests/data/nyaml2nxdl/Ref_NXattributes.nxdl.xml'
-    test_yml_attribute_file = 'tests/data/nyaml2nxdl/NXattributes.yml'
+    test_yml_attribute_file = 'tests/data/nyaml2nxdl/NXattributes.yaml'
     test_xml_attribute_file = 'tests/data/nyaml2nxdl/NXattributes.nxdl.xml'
     desired_matches = ['<attribute', '</attribute>', '<doc>', '</doc>']
     compare_matches(
