@@ -272,7 +272,7 @@ def test_yml_parsing():
 The xml trees of the two files are then compared.
 
     """
-    ref_yml_file = 'tests/data/nyaml2nxdl/Ref_NXellipsometry.yml'
+    ref_yml_file = 'tests/data/nyaml2nxdl/Ref_NXellipsometry.yaml'
     test_xml_file = 'tests/data/nyaml2nxdl/Ref_NXellipsometry.nxdl.xml'
     test_yml_file = 'tests/data/nyaml2nxdl/Ref_NXellipsometry_parsed.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', ref_yml_file])
