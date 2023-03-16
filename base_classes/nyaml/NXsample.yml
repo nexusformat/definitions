@@ -1,0 +1,315 @@
+doc: |
+  Any information on the sample.
+  
+  This could include scanned variables that
+  are associated with one of the data dimensions, e.g. the magnetic field, or
+  logged data, e.g. monitored temperature vs elapsed time.
+symbols: 
+  doc: "symbolic array lengths to be coordinated between various fields"
+  n_comp: "number of compositions"
+  n_Temp: "number of temperatures"
+  n_eField: "number of values in applied electric field"
+  n_mField: "number of values in applied magnetic field"
+  n_pField: "number of values in applied pressure field"
+  n_sField: "number of values in applied stress field"
+category: base
+(NXsample):
+  name:
+    doc: "Descriptive name of sample"
+  chemical_formula:
+    doc: |
+      The chemical formula specified using CIF conventions.
+      Abbreviated version of CIF standard:
+      
+      * Only recognized element symbols may be used.
+      * Each element symbol is followed by a 'count' number. A count of '1' may be omitted.
+      * A space or parenthesis must separate each cluster of (element symbol + count).
+      * Where a group of elements is enclosed in parentheses, the multiplier for the 
+        group must follow the closing parentheses. That is, all element and group 
+        multipliers are assumed to be printed as subscripted numbers.
+      * Unless the elements are ordered in a manner that corresponds to their chemical 
+        structure, the order of the elements within any group or moiety depends on 
+        whether or not carbon is present.
+      * If carbon is present, the order should be: 
+
+        - C, then H, then the other elements in alphabetical order of their symbol. 
+        - If carbon is not present, the elements are listed purely in alphabetic order of their symbol. 
+      * This is the *Hill* system used by Chemical Abstracts.
+  temperature(NX_FLOAT):
+    unit: NX_TEMPERATURE
+    doc: "Sample temperature. This could be a scanned variable"
+    dimensions:
+      rank: anyRank
+      dim: [[1, n_Temp]]
+  electric_field(NX_FLOAT):
+    unit: NX_VOLTAGE
+    doc: "Applied electric field"
+    dimensions:
+      dim: [[1, n_eField]]
+    \@direction:
+      enumeration: [x, y, z]
+  magnetic_field(NX_FLOAT):
+    unit: NX_ANY
+    doc: "Applied magnetic field"
+    dimensions:
+      dim: [[1, n_mField]]
+    \@direction:
+      enumeration: [x, y, z]
+  stress_field(NX_FLOAT):
+    unit: NX_ANY
+    doc: "Applied external stress field"
+    dimensions:
+      dim: [[1, n_sField]]
+    \@direction:
+      enumeration: [x, y, z]
+  pressure(NX_FLOAT):
+    unit: NX_PRESSURE
+    doc: "Applied pressure"
+    dimensions:
+      dim: [[1, n_pField]]
+  changer_position(NX_INT):
+    unit: NX_UNITLESS
+    doc: "Sample changer position"
+  unit_cell_abc(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: "Crystallography unit cell parameters a, b, and c"
+    dimensions:
+      dim: [[1, 3]]
+  unit_cell_alphabetagamma(NX_FLOAT):
+    unit: NX_ANGLE
+    doc: "Crystallography unit cell parameters alpha, beta, and gamma"
+    dimensions:
+      dim: [[1, 3]]
+  unit_cell(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: "Unit cell parameters (lengths and angles)"
+    dimensions:
+      rank: 2
+      dim: [[1, n_comp], [2, 6]]
+  unit_cell_volume(NX_FLOAT):
+    unit: NX_VOLUME
+    doc: "Volume of the unit cell"
+    dimensions:
+      rank: 1
+      dim: [[1, n_comp]]
+  sample_orientation(NX_FLOAT):
+    unit: NX_ANGLE
+    doc: |
+      This will follow the Busing-Levy convention:
+      
+      W. R. Busing and H. A. Levy (1967). Acta Cryst. 22, 457-464
+    dimensions:
+      rank: 1
+      dim: [[1, 3]]
+  orientation_matrix(NX_FLOAT):
+    doc: |
+      Orientation matrix of single crystal sample using Busing-Levy convention:
+
+      W. R. Busing and H. A. Levy (1967). Acta Cryst. 22, 457-464
+    dimensions:
+      rank: 3
+      dim: [[1, n_comp], [2, 3], [3, 3]]
+  ub_matrix(NX_FLOAT):
+    doc: |
+      UB matrix of single crystal sample using Busing-Levy convention:
+      
+      W. R. Busing and H. A. Levy (1967). Acta Cryst. 22, 457-464.
+      
+      This is the multiplication of the orientation_matrix, 
+      given above, with the :math:`B` matrix 
+      which can be derived from the lattice constants.
+    dimensions:
+      rank: 3
+      dim: [[1, n_comp], [2, 3], [3, 3]]
+  mass(NX_FLOAT):
+    unit: NX_MASS
+    doc: "Mass of sample"
+    dimensions:
+      rank: 1
+      dim: [[1, n_comp]]
+  density(NX_FLOAT):
+    unit: NX_MASS_DENSITY
+    doc: "Density of sample"
+    dimensions:
+      rank: 1
+      dim: [[1, n_comp]]
+  relative_molecular_mass(NX_FLOAT):
+    unit: NX_MASS
+    doc: "Relative Molecular Mass of sample"
+    dimensions:
+      rank: 1
+      dim: [[1, n_comp]]
+  type:
+    enumeration: [sample, sample+can, can, sample+buffer, buffer, calibration sample, normalisation sample, simulated data, none, sample environment]
+  situation:
+    doc: "The atmosphere will be one of the components, which is where 
+      its details will be stored; the relevant components will be 
+      indicated by the entry in the sample_component member."
+    enumeration: [air, vacuum, inert atmosphere, oxidising atmosphere, reducing atmosphere, sealed can, other]
+  description:
+    doc: "Description of the sample"
+  preparation_date(NX_DATE_TIME):
+    doc: "Date of preparation of the sample"
+  geometry(NXgeometry):
+    doc: "The position and orientation of the center of mass of the sample"
+  (NXbeam):
+    doc: "Details of beam incident on sample - used to calculate sample/beam interaction point"
+  (NXsample_component):
+    doc: "One group per sample component
+			This is the perferred way of recording per component information over the n_comp arrays"
+  component:
+    doc: "Details of the component of the sample and/or can"
+    dimensions:
+      rank: 1
+      dim: [[1, n_comp]]
+  sample_component:
+    doc: "Type of component"
+    dimensions:
+      rank: 1
+      dim: [[1, n_comp]]
+    enumeration: [sample, can, atmosphere, kit]
+  concentration(NX_FLOAT):
+    unit: NX_MASS_DENSITY
+    doc: "Concentration of each component"
+    dimensions:
+      rank: 1
+      dim: [[1, n_comp]]
+  volume_fraction(NX_FLOAT):
+    doc: "Volume fraction of each component"
+    dimensions:
+      rank: 1
+      dim: [[1, n_comp]]
+  scattering_length_density(NX_FLOAT):
+    unit: NX_SCATTERING_LENGTH_DENSITY
+    doc: "Scattering length density of each component"
+    dimensions:
+      rank: 1
+      dim: [[1, n_comp]]
+  unit_cell_class:
+    doc: "In case it is all we know and we want to record/document it"
+    enumeration: [triclinic, monoclinic, orthorhombic, tetragonal, rhombohedral, hexagonal, cubic]
+  space_group:
+    doc: "Crystallographic space group"
+    dimensions:
+      dim: [[1, n_comp]]
+  point_group:
+    doc: "Crystallographic point group, deprecated if space_group present"
+    dimensions:
+      dim: [[1, n_comp]]
+  path_length(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: "Path length through sample/can for simple case when 
+      it does not vary with scattering direction"
+  path_length_window(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: "Thickness of a beam entry/exit window on the can (mm). 
+      It is assumed to be the same for entry and exit"
+  thickness(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: "sample thickness"
+  sample_id(NX_CHAR):
+    doc: "Identification number or signatures of the sample used."
+  sample_history(NXnote):
+    doc: "A descriptor to keep track of the treatment of the sample before entering the photoemission experiment. 
+      Ideally, a full report of the previous operations, in any format (NXnote allows to add pictures, audio, movies). 
+      Alternatively, a reference to the location or a unique identifier or other metadata file. 
+      In the case these are not available, free-text description"
+  state(NX_CHAR):
+    doc: "Physical state of the sample"
+  purity(NX_FLOAT):
+    unit: NX_UNITLESS
+    doc: "Chemical purity of the sample"
+  orientation(NX_CHAR):
+    doc: "Surface termination of the sample (if crystalline)"
+  layer(NX_CHAR):
+    doc: "Number of layers of the sample (e.g. bulk, monolayer, pentalayer, etc.)"
+  chemical_name(NX_CHAR):
+    doc: "Full chemical name of the sample"
+  chem_id_cas(NX_CHAR):
+    doc: "CAS registry number of the sample chemical content."
+  gas(NX_CHAR):
+    doc: "Gases might be fluxed on the surface for various reasons. Chemical designation, or residual."
+  gas_pressure(NX_NUMBER):
+    doc: "In the case of a fixed pressure measurement this is the scalar pressure.
+      In the case of an experiment in which pressure changes, or anyway is recorded,
+      this is an array of length m of pressures."
+    unit: NX_PRESSURE
+  surface_dopant(NX_CHAR):
+    doc: "Element of evaporated surface dopant such as alkali or other"
+  surface_dopant_coverage(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: "Nominal thickness of the evaporated dopant"
+  bias(NX_FLOAT):
+    unit: NX_VOLTAGE
+    doc: "Voltage applied to sample and sample holder."
+  growth_method(NX_CHAR):
+    doc: "Sample growth method (e. g. molecular beam epitaxy, chemical vapor deposition etc.)"
+  vendor(NX_CHAR):
+    doc: "Name of the sample vendor (company or research group)"
+  substrate_material(NX_CHAR):
+    doc: "Material of the substrate in direct contact with the sample."
+  substrate_state(NX_CHAR):
+    doc: "Physical state of the substrate, similar options to sample_state"
+  drain_current(NX_FLOAT):
+    doc: "Current to neutralize the photoemission current.
+      This field may also be found in NXmanpulator if present."
+    unit: NX_CURRENT
+  bias_voltage(NX_FLOAT):
+    doc: "Possible bias of the sample with respect to analyser ground.
+      This field may also be found as sample_bias in NXmanipulator if present."
+    unit: NX_VOLTAGE
+  notes(NXnote):
+    doc: "Further notes."
+  transmission(NXdata):
+    doc: "As a function of Wavelength"
+  temperature(NXlog):
+    doc: "temperature.value is a link to e.g. temperature_env.sensor1.value"
+  temperature_log(NXlog):
+    doc: "temperature_log.value is a link to e.g. temperature_env.sensor1.value_log.value"
+  temperature_env(NXenvironment):
+    doc: "Additional sample temperature environment information"
+  magnetic_field(NXlog):
+    doc: "magnetic_field.value is a link to e.g. magnetic_field_env.sensor1.value"
+  magnetic_field_log(NXlog):
+    doc: "magnetic_field_log.value is a link to e.g. magnetic_field_env.sensor1.value_log.value"
+  magnetic_field_env(NXenvironment):
+    doc: "Additional sample magnetic environment information"
+  external_DAC(NX_FLOAT):
+    unit: NX_ANY
+    doc: "value sent to user's sample setup"
+  external_ADC(NXlog):
+    doc: "logged value (or logic state) read from user's setup"
+  short_title:
+    doc: "20 character fixed length sample description for legends"
+  rotation_angle(NX_FLOAT):
+    unit: NX_ANGLE
+    doc: "Optional rotation angle for the case when the powder diagram has 
+      been obtained through an omega-2theta scan like from a traditional 
+      single detector powder diffractometer"
+  x_translation(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: "Translation of the sample along the X-direction of the laboratory coordinate system"
+  distance(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: "Translation of the sample along the Z-direction of the laboratory coordinate system"
+  (NXpositioner):
+    doc: "Any positioner (motor, PZT, ...) used to locate the sample"
+  depends_on(NX_CHAR):
+    doc: "Refers to the last transformation specifying the positon of the manipulator in the NXtransformations chain."
+  (NXtransformations):
+    doc:
+      "Collection of axis-based translations and rotations to describe the location and geometry of the sample as a component in the instrument.
+      Conventions from the NXtransformations base class are used. In principle, the McStas coordinate system is used.
+      The first transformation has to point either to another component of the system or . (for pointing to the reference frame) to relate it relative to the experimental setup.
+      Typically, the components of a system should all be related relative to each other and only one component should relate to the reference coordinate system."
+  \@default:
+    doc: |
+      .. index:: plotting
+            
+      Declares which child group contains a path leading 
+      to a :ref:`NXdata` group.
+      
+      It is recommended (as of NIAC2014) to use this attribute
+      to help define the path to the default dataset to be plotted.
+      See https://www.nexusformat.org/2014_How_to_find_default_data.html
+      for a summary of the discussion.

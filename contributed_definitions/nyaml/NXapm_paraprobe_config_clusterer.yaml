@@ -1,0 +1,246 @@
+category: application
+doc: |
+  Configuration of a paraprobe-clusterer tool run in atom probe microscopy.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_positions: Number of position values.
+  n_disjoint_clusters: Number of disjoint cluster.
+NXapm_paraprobe_config_clusterer:
+  (NXentry):
+    # by default for appdefs the value of the exists keyword is required
+    # unless it is explicitly specified differently
+    \@version:
+      doc: Version specifier of this application definition.
+    definition:
+      doc: Official NeXus NXDL schema with which this file was written.
+      enumeration: [NXapm_paraprobe_config_clusterer]
+    program:
+      doc: |
+        Given name of the program/software/tool with which this NeXus
+        (configuration) file was generated.
+      \@version:
+        doc: |
+          Ideally program version plus build number, or commit hash or description
+          of ever persistent resources where the source code of the program and
+          build instructions can be found so that the program can be configured
+          ideally in such a manner that the result of this computational process
+          is recreatable in the same deterministic manner.
+    analysis_identifier:
+      exists: optional
+      doc: |
+        Ideally, a (globally persistent) unique identifier for referring
+        to this analysis.
+    analysis_description:
+      exists: optional
+      doc: Possibility for leaving a free-text description about this analysis.
+    time_stamp(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when this configuration file was created.
+    number_of_processes(NX_UINT):
+      doc: |
+        How many clustering processes should the tool execute.
+      unit: NX_UNITLESS
+    cameca_to_nexus(NXprocess):
+      exists: [min, 0, max, 1]
+      doc: |
+        This process maps results from cluster analyses performed with IVAS/APSuite
+        into an interoperable representation. Specifically in this process
+        paraprobe-clusterer takes results from clustering methods from other tools
+        of the APM community, like IVAS/APSuite. These results are usually reported
+        in two ways. Either as an explicit list of reconstructed ion positions.
+        In the case of IVAS these positions are reported through a text file
+        with a cluster label for each position.
+        
+        Alternatively, the list of positions is reported, as it is the case for
+        AMETEK (IVAS/AP Suite) but the cluster labels are specified implicitly
+        only in the following way: The mass-to-charge-state ratio column of a
+        what is effectively a file formatted like POS is used to assign a hypothetical
+        mass-to-charge value which resolves a floating point representation
+        of the cluster ID.
+        
+        Another case can occur where all disjoint floating point values,
+        i.e. here cluster labels, are reported and then a dictionary is created
+        how each value matches to a cluster ID.
+        
+        In general the cluster ID zero is reserved for marking the dataset
+        as to not be assigned to any cluster. Therefore, indices of disjoint
+        clusters start at 1.
+      dataset(NXapm_input_reconstruction):
+        filename:
+          \@version:
+        dataset_name_reconstruction:
+        dataset_name_mass_to_charge:
+      iontypes(NXapm_input_ranging):
+        filename:
+          \@version:
+        group_name_iontypes:
+
+      spatial_filter(NXspatial_filter):
+        exists: optional
+        windowing_method:
+          exists: required
+        (NXcg_ellipsoid_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          half_axes_radii(NX_NUMBER):
+          orientation(NX_NUMBER):
+        (NXcg_cylinder_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          height(NX_NUMBER):
+          radii(NX_NUMBER):
+        (NXcg_hexahedron_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          hexahedra(NXcg_face_list_data_structure):
+        (NXcs_filter_boolean_mask):
+          exists: optional
+          number_of_objects(NX_UINT):
+          bitdepth(NX_UINT):
+          mask(NX_UINT):
+          identifier(NX_UINT):
+      evaporation_id_filter(NXsubsampling_filter):
+        exists: optional
+      iontype_filter(NXmatch_filter):
+        exists: optional
+      hit_multiplicity_filter(NXmatch_filter):
+        exists: optional
+
+      ion_position_filename:
+        doc: |
+          Name of HDF5 file which stores reconstructed ion positions.
+          This file should have been generated by from the community or vendor format.
+          This file not necessarily contains all the of the dataset because
+          spatial filters might have been applied in commercial software prior
+          to executing the cluster analysis so that e.g. only positions within a
+          ROI are reported by the commercial software.
+          POS files from IVAS have to be converted first.
+      dataset_name_positions:
+        doc: |
+          Name of the dataset inside the HDF5 file ion_position_filename
+          which refers to the specific positions to use for this analysis.
+          The referred to dataset has to be formatted as an array of shape
+          (n_positions, 3).
+      cluster_indices_filename:
+        doc: |
+          Name of the HDF5 file which stores mass-to-charge-state-ratio values
+          (in the case of IVAS/APSuite) or other numbers which can be interpreted
+          as cluster labels.
+      dataset_name_cluster_indices:
+        doc: |
+          Name of the dataset inside the HDF5 file cluster_indices_filename
+          which refers to the specifically encoded cluster indices.
+          The referred to dataset has to be formatted as an array of shape
+          (n_positions, 1).
+      # mapping_method:
+      #   doc: |
+      #     How should cluster labels be created from the cluster_labels information
+      #     especially when these areNcluste floating point values.
+      #  enumeration: [take_as_is, use_dictionary]
+      mapping_dictionary_keyword(NX_NUMBER):
+        doc: |
+          The list of all keywords of a dictionary which maps implicit cluster
+          indices like those from IVAS/APSuite which were0ass-to-charge-state ratios.
+        unit: NX_UNITLESS
+        dimensions:
+          rank: 1
+          dim: [[1, n_disjoint_clusters]]
+      mapping_dictionary_value(NX_UINT):
+        doc: |
+          The list of all values of a dictionary which maps implicit cluster
+          indices like those from IVAS/APSuite which were0ass-to-charge-state ratios.
+          The sequences of mapping_dictionary_keyword and mapping_dictionary_value
+          have to match.
+        unit: NX_UNITLESS
+        dimensions:
+          rank: 1
+          dim: [[1, n_disjoint_clusters]]
+      recover_evaporation_id(NX_BOOLEAN):
+        doc: |
+          Specifies if the tool should try to recover for each position the closest
+          matching position from dataset/dataset_name_reconstruction (within
+          floating point accuracy). This can be useful for instance when users
+          wish to recover the original evaporation ID which IVAS/AP Suite drops
+          for instance when writing their *.indexed.* cluster results files.
+        unit: NX_UNITLESS
+      recover_bitmask(NX_BOOLEAN):
+        doc: |
+          Specifies if the tool should try to recover, after a recovery of the
+          evaporation IDs a bitmask which identifies which of the positions
+          in dataset/dataset/dataset_name_reconstruction where covered
+          by the IVAS/APSuite cluster analysis. This can be useful to recover
+          the region of interest.
+        unit: NX_UNITLESS
+      # compute_convex_hulls(NX_BOOLEAN):
+      #   doc: |
+      #     For now a support functionality which instructs the tool based on the group all positions for each ion to compute a representation of the convex hull of the dataset. This functionality is planned to be replaced at some point by the surfacer tool inasmuch as the surfacer tool gets the option to accept labelled positions. This approach would also be more useful in the future because then the machinery for computing alpha shapes can immediately be applied as well for set of point clouds, i.e. cluster analysis.
+
+    cluster_analysis(NXprocess):
+      exists: [min, 0, max, 1]
+      doc: |
+        This process performs a cluster analysis on a reconstructed dataset
+        or a portion of the reconstruction.
+      dataset(NXapm_input_reconstruction):
+        filename:
+          \@version:
+        dataset_name_reconstruction:
+        dataset_name_mass_to_charge:
+      iontypes(NXapm_input_ranging):
+        filename:
+          \@version:
+        group_name_iontypes:
+
+      spatial_filter(NXspatial_filter):
+        exists: optional
+        windowing_method:
+          exists: required
+        (NXcg_ellipsoid_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          half_axes_radii(NX_NUMBER):
+          orientation(NX_NUMBER):
+        (NXcg_cylinder_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          height(NX_NUMBER):
+          radii(NX_NUMBER):
+        (NXcg_hexahedron_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          hexahedra(NXcg_face_list_data_structure):
+        (NXcs_filter_boolean_mask):
+          exists: optional
+          number_of_objects(NX_UINT):
+          bitdepth(NX_UINT):
+          mask(NX_UINT):
+          identifier(NX_UINT):
+      evaporation_id_filter(NXsubsampling_filter):
+        exists: optional
+      iontype_filter(NXmatch_filter):
+        exists: optional
+      hit_multiplicity_filter(NXmatch_filter):
+        exists: optional
+
+      clustering_algorithm:
+        doc: Name of the algorithm.
+      clustering_parameter:
+        doc: |
+          A text representation like a JSON/YAML dictionary with the
+          parameter of the clustering_algorithm.

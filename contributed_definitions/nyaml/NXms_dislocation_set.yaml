@@ -1,0 +1,118 @@
+category: base
+doc: |
+  Base class to describe details about dislocations observed in microstructures.
+  
+  Dislocations are one-dimensional crystal defects whose primary interest is
+  that they are the carrier of plastic deformation. Conceptually dislocations
+  are a continuum-scale description of how atoms arrange spatio-temporally on
+  the one hand as a persistent defect which on the other hand though, when 
+  inspected in detail for the atom dynamics and their interaction with other 
+  crystal defects manifest as an involved microstructural feature for which 
+  very different descriptions are used depending which length-, time-scale, 
+  and research question people address.
+  
+  This is manifested in the large amount of literature on the topic:
+  
+  * https://www.sciencedirect.com/bookseries/dislocations-in-solids  
+  
+  Dislocations are one prominent group of representatives for one-dimensional
+  features, other defects include disconnections and/or disclinations, and even
+  more complicated configurations, especially when one considers not-necessarily
+  crystalline materials, quasi crystals. It would be rude to claim that a single
+  base class can encompass the entire complexity that this effectively 
+  coarse-graining of atomic spatio-temporal configurations has, in an effort 
+  to simplicify the description in the hope to arrive at physical models which
+  do not need to take into account the location and movement of every atom.
+  
+  However, it is also a fact that not every description, research question, and 
+  thus use cases that one could think of what one should store as data and metadata
+  for one-dimensional, primarily line-type crystal defects, is equally relevant
+  for an ensemble of research studies.
+  
+  Thus, for the design of concrete schemata for the purpose of structured storage
+  of research data on dislocations or studies where dislocations are measured
+  or characterized, one has to prioritize which descriptors and aspects about
+  dislocations are likely relevant for a large number of users of a research 
+  infrastructure. Consequently, it is possible to narrow down the scope of 
+  the base class and application definition.
+  
+  It is noteworthy to mention that this applies not only to description
+  using NeXus, but points to the problem of creating a golden-bullet schema
+  capable of handling all possible subtleties.
+  
+  For now we have to accept that is not yet an ontology of e.g. the above
+  understanding of what dislocations are. Pragmatically we thus make the
+  following assumptions:
+  
+  * This base class is essentially a template how specific often referred  
+    quantities for one-dimensional crystal defects can be stored.  
+  * In practice dislocations have a finite length as they are embedded in a  
+    finite specimen and wired into an ensemble of adjoining dislocations  
+    or other adjoining crystal defects.  
+  * There are the following general approaches of studying/characterizing  
+  * 1. Indirect measurements where dislocations characterized statistically.  
+    In this case different types of dislocations are distinguished  
+    (geometrically-necessary, mobile, immobile), mainly motivated by  
+    different constitutive, continuum-models how they are threated in  
+    computer simulations with respect to what their effect is on ms evolution.  
+  * 2. Electron microscopy measurements of single or several dislocation (bundles)  
+    In this case post-processing strategies are necessary which can  
+    extract statistical descriptors or d-dimensional reconstructions  
+  * 3. Atomic-scale-resolved simulations. In this case the most frequently  
+    performed tasks are again post-processing into polyline networks,  
+    detailed local investigations of the atomic configurations, or both  
+    with or without some correlation.  
+  * 4. Analytical approaches whereby dislocations are resolved at the continuum  
+    scale, as line defects containing other elementary defects (for instance)  
+    in models of disconnection motion), or again atomically resolved treatments.  
+  
+  From this we can conclude that an NXms_dislocation_set can primarily be
+  useful as a wrapper class in which specific details about dislocations
+  can be stored in an arbitrarily nested manner.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+NXms_dislocation_set:
+  doc: A starting point for the discussion.
+#  doc: Needs to be extended based on the NXannealing appdef.
+# lets sketch for each of the four above-mentioned frequent use cases what
+# could be relevant to be nested inside such base classes
+# !!! here we really need to discuss if these many options 
+# !!! warrant necessary deeper nesting or further splitting of the base class
+# !!! essentially pseudo-code yaml follows !!!
+# USE CASE statistical treatments
+# (NXslip_system_set):
+#  for each slip system one would add
+#    symbols:
+#      n_types: Number of different types.
+#    density(NX_NUMBER):
+#      doc: Dislocation density as number of dislocations per unit area.
+#      dimensions:
+#        rank: 1
+#        dim: [[1, n_types]]
+# USE CASE spatially-resolved
+# (NXcg_point_set): # !!! should one at all consider any longer 2D or 2.5D simulations...
+# (NXcg_polyline_set):
+#   for each polyline eventual further properties like mobility etc.
+# USE CASE analytical treatment
+# !!! there is no clear separation between these use case
+# one might also just want to store elementary properties of dislocations in the set
+# burgers_vector(NX_NUMBER):
+#   doc: Burgers vector
+#   dimensions:
+#     rank: 2
+#     dim: [[1, n], [2, 3]]
+# line_element(NX_NUMBER): # but the line element for a general dislocation 
+# is a position dependent quantity, expect for the very specific text book 
+# simple configuration like straight edge and straight screw dislocations
+# !!! especially for analytical treatment one may resolve individual dislocations
+# at the continuu-scale using some domain, discretized and analyze the strain and stress fields, 
+# solute concentrations
+# !!! admittedly these combinations and configurations are very specific for a research study
+# !!! however, this can not be an excuse for aiming at a controlled and shared vocabulary to use
+# !!! otherwise how should a machine ever understand how jog is different to kink
+# !!! especially in theoretical analyses at the continuum-scale it has been frequently
+# discussed that dislocations host an ensemble of other defects along their, jogs, kinks, stacking faults,
+# core structure anomalies, the point is again they either have to be measured or simulated
+# and this results in either a description at the continuum-scale or based on the atomic architecture and dynamics
+# often thermodynamics are used to describe ensemble statistics about these defects along the dislocation line
+# or of the dislocation network, a distinction, which is especially in the research on recovery phenomena, oftentimes not well separated.

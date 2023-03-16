@@ -1,0 +1,395 @@
+category: application
+doc: |
+  Results of a paraprobe-transcoder tool run in atom probe microscopy.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_ions: Total number of ions collected.
+  n_ivec_max: |
+    Maximum number of allowed atoms per (molecular) ion (fragment).
+    Needs to match maximum_number_of_atoms_per_molecular_ion.
+  n_ranges: Number of mass-to-charge-state-ratio intervals mapped on this ion type.
+  n_topology: Total number of integers in the supplementary XDMF topology array.
+NXapm_paraprobe_results_transcoder:
+  (NXentry):
+    # by default for appdefs the value of the exists keyword is required
+    # unless it is explicitly specified differently
+    \@version:
+      doc: Version specifier of this application definition.
+
+# ##MK::begin of the tool-specific section
+    definition:
+      doc: Official NeXus NXDL schema with which this file was written.
+      enumeration: [NXapm_paraprobe_results_transcoder]
+# ##MK::end of the tool-specific section
+
+    program:
+      doc: |
+        Given name of the program/software/tool with which this NeXus
+        (configuration) file was generated.
+      \@version:
+        doc: |
+          Ideally program version plus build number, or commit hash or description
+          of ever persistent resources where the source code of the program and
+          build instructions can be found so that the program can be configured
+          ideally in such a manner that the result of this computational process
+          is recreatable in the same deterministic manner.
+    analysis_identifier:
+      exists: optional
+      doc: |
+        Ideally, a (globally persistent) unique identifier for referring
+        to this analysis.
+    analysis_description:
+      exists: optional
+      doc: Possibility for leaving a free-text description about this analysis.
+    time_stamp(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when this configuration file was created.
+    config_filename:
+      doc: |
+        The absolute path and name of the config file for this analysis.
+      \@version:
+        doc: |
+          At least SHA256 strong hash of the specific config_file for
+          tracking provenance.
+    (NXuser):
+      exists: recommended
+      doc: |
+        If used, contact information and eventually details
+        of at least the person who performed this analysis.
+      name:
+      affiliation:
+        exists: recommended
+      address:
+        exists: optional
+      email:
+        exists: recommended
+      orcid:
+        exists: recommended
+      orcid_platform:
+        exists: recommended
+      telephone_number:
+        exists: optional
+      role:
+        exists: recommended
+      social_media_name:
+        exists: optional
+      social_media_platform:
+        exists: optional
+    (NXcoordinate_system_set):
+      doc: Details about the coordinate system conventions used.
+      (NXtransformations):
+        exists: [min, 1, max, infty]
+        doc: |
+          The individual coordinate systems which should be used.
+          Field names should be prefixed with the following controlled terms
+          indicating which individual coordinate system is described:
+          
+          * paraprobe
+          * lab
+          * specimen
+          * laser
+          * leap
+          * detector
+          * recon
+# ##MK::begin of the tool-specific section
+    visualization(NXprocess):
+      exists: recommended
+      xdmf_topology(NX_UINT):
+        exists: required
+        doc: |
+          An array of triplets of integers which can serve as a supplementary
+          array for Paraview to display the reconstruction. The XDMF datatype
+          is here 1, the number of primitives 1 per triplet, the last integer
+          in each triplet is the identifier of each point starting from zero.
+        unit: NX_UNITLESS
+        dimensions:
+          rank: 1
+          dim: [[1, n_topology]]
+        # n_topology == 3*n_ions
+    # not in all cases a PARAPROBE.Transcoder.Results.SimID.<JOBID>.h5 is required
+    # namely when an NXapm-compliant NeXus file is directly used for interacting
+    # with paraprobe tools in all other cases, the PARAPROBE.Transcoder.Results
+    # file will get an *.nxs file ending
+    # the original proposal
+    # results(NXprocess):
+    #   exists: [min, 1, max, 1]
+    #   doc: |
+    #     Paraprobe-transcoder prepares the data in POS, ePOS, APT files from
+    #     APSuite, RRNG, RNG, and NeXus/HDF5 NXapm in such a way that they can
+    #     be used with the tools of the paraprobe-toolbox.
+    #  reconstruction(NXcg_point_set):
+    #    dimensionality(NX_POSINT):
+    #    cardinality(NX_POSINT):
+    #    identifier_offset(NX_INT):
+    #    position(NX_NUMBER):
+    #  # ##MK::number_of_ion_types(NX_POSINT):
+    #  # ##MK::maximum_number_of_atoms_per_molecular_ion(NX_POSINT):
+    #  ranging(NXcollection):
+    #       exists: [min, 1, max, 256]
+    #       doc: |
+    #         This is the collection of iontypes distinguished.
+    #         The default unknown iontype always has to map to 0.
+    #         Its non-physical mass_to_charge_state_ratio is [0., 0.001] Da.
+    #       ion_type(NX_UINT):
+    #         exists: optional
+    #       isotope_vector(NX_UINT):
+    #       nuclid_list(NX_UINT):
+    #         exists: recommended
+    #       charge_state(NX_INT):
+    #       name:
+    #         exists: optional
+    #       mass_to_charge_range(NX_FLOAT):
+    # the key problem still for apm is people use different formats
+    # when people would like to use paraprobe without nomad and pos, epos, apt
+    # rrng and rng files the data have to be transcoded, this is the main
+    # reason for having the transcoder however, when you already have an NXapm
+    # file (like) in nomad, why should we create yet another format here the
+    # transcoder is not needed
+    # namely take e.g. paraprobe-nanochem all it needs to know is the place of
+    # an HDF5 file where the nanochem tool knows there will be groups in this file
+    # with entry<ID>/atom_probe/reconstruction/reconstructed_positions
+    # and entry<ID>/atom_probe/ranging/peak_identification and a set of NXion
+    # this suggest the need for three fundamental changes:
+    # if transcoder config gets an nxs file as input it just checks if
+    #       the above-mentioned groups are available, if yes it accepts and
+    #       guides that no transcoding is needed any longer
+    # if transcoder config gets other files it creates the above-mentioned
+    #       groups in different places than it does currently
+    # convenience functions of tools have to be changed in the following way:
+    #       you hunt for PARAPROBE.Transcoder.Config.SimID.<JOBID>.h5
+    #       if the references to dataset files there end with nxs you know
+    #       data are in an NXapm so reconstruction will be in
+    #       entry/atom_probe/reconstruction/reconstructed_positions
+    #       ranging will be in
+    #       entry/atom_probe/ranging/peak_identification
+    #       however if the references to dataset files there end with != nxs
+    #       you point the tool to in fact data inside PARAPROBE.Transcoder.Results
+    #       because in this case transcoding was necessary but also then you
+    #       will find the data in entry/atom_probe/.. respectively
+    # alternatively:
+    atom_probe(NXinstrument):
+      doc: |
+        On a mid term perspective we would like to evolve the paraprobe-toolbox
+        to an implementation stage where it works exclusively with completely
+        provenance-tracked formats for both the configuration of the workflow step
+        and/or analysis with each tool and also for the output of these analyses
+        in the form of so-called tool-specific results files.
+        Currently the Hierarchical Data Format 5 (HDF5) is used to store such data.
+        
+        Different file formats can be used to inject reconstructed datasets and
+        ranging definitions into the toolbox. Traditionally, these are the POS, 
+        ePOS, and APT files with the tomographic reconstruction and other metadata
+        and RNG and RRNG file formats for the ranging definitions how mass-to-charge
+        state-ratio values map on (molecular) ion types. Such input should be
+        injected via specific NeXus/HDF5 files which are documented
+        in compliance with the NXapm application definition.
+        
+        So far the paraprobe-toolbox was used as a standalone tool. Therefore, it
+        was not relevant during the development to focus on interoperability.
+        Essentially paraprobe-transcoder was used as a parser to transcode data
+        in the above-mentioned file formats into a paraprobe-specific
+        representation. This transcoding should become deprecated.
+        Here we describe steps we have taken into this direction.
+        
+        With the work in the FAIRmat project and the desire to make the paraprobe-
+        toolbox also accessible as a cloud-computing capable service in the Nomad
+        Remote Tools Hub (NORTH) the topic of interoperability became more important
+        and eventually the NXapm application definition was proposed.
+        NORTH is a GUI and related service in a NOMAD OASIS instance which allows
+        to spawn preconfigured docker containers via JupyterHub.
+        Currently, NORTH includes the so-called apm container. A container with
+        tools specific for analyzing data from atom probe microscopy as well as
+        processing of point cloud and mesh data.
+        
+        The NXapm application definition and related implementation work within
+        NOMAD OASIS enabled users to parse content of POS, ePOS, APT, RNG, and
+        RRNG files, surplus key metadata from vendor-agnostic electronic lab notebook
+        solutions directly into NOMAD OASIS via the uploads section.
+        The process is automated and yields an NXapm-compliant NeXus/HDF5 file
+        inside the uploads section in return.
+        
+        With these improvements made there is no longer a need for - at least the
+        users of a NOMAD OASIS and NORTH instance to use the deprecated 
+        PARAPROBE.Transcoder.Results.*.h5 files. Ideally, paraprobe should
+        automatically detect that the input can now be an NXapm-compliant NeXus/HDF5
+        file and in response work with this file directly.
+        To remain compliant with users however who do not have or do not wish
+        to use a NOMAD OASIS or NXapm or NeXus at all right now, the solution is
+        as follows:
+        
+        Calling the configuration stage of paraprobe-transcoder is always mandatory.
+        It is always the first step of working with the toolbox. In this process
+        the user defines the input files. These can either be nxs i.e. the NXapm/NeXus/
+        HDF5 file from e.g. the upload section, or such a file that was obtained from
+        a colleague with a NOMAD OASIS instance.
+        In all other cases, users can pass the reconstruction and ranging definitions
+        using the traditional POS, ePOS, or APT and RNG or RRNG file formats respectively.
+        
+        Based on which input the user delivers, the parmsetup-transcoder tool then
+        creates a configuration file PARAPROBE.Transcoder.Config.SimID.*.nxs and
+        informs the user whether the input was NeXus (and thus if all relevant
+        input is already available) or whether the paraprobe-transcoder tool needs
+        to be executed to convert the content of the vendor files first into a
+        format which paraprobe can provenance track and understand.
+        In the latter case, the PARAPROBE.Transcoder.Config.SimID.*.nxs file is
+        used to communicate to all subsequently used tools from which files
+        the tools can expect to find the reconstruction and ranging definitions.
+        
+        All subsequent analysis steps start also with a tool-specific configuration.
+        This configuration step reads in (among others) the
+        PARAPROBE.Transcoder.Config.SimID.*.nxs file from which the configuration
+        tool identifies automatically whether to read the reconstruction and ranging data
+        from PARAPROBE.Transcoder.Results.SimID.*.h5 or directly the NXapm-compliant
+        NeXus/HDF5 file that was created upon preparing the upload or the file shared
+        from a colleague. This design removes the need for unnecessary copies of the data.
+        Currently still though users should execute the transcoder step as it will
+        generate a supplementary XDMF topology field with which the data in either
+        the NeXus/HDF5 or the transcoded vendor files can be displayed using e.g.
+        Paraview. For this purpose XDMF is used.
+        
+        Of course ideally the APT community would at some point converge to use
+        a common data exchange file format. To this end, AMETEK/Cameca's APT file format
+        could be a good starting point but so far it is lacking a consistent way of
+        how to store generalized ranging definitions and post-processing results.
+        POS, ePOS, Rouen's ATO, as well as other so far used representations of data
+        like CSV or text files have, to the best of our current knowledge, no
+        concept of how to marry reconstruction and (optional) ranging data into
+        one self-descriptive format.
+        
+        This summarizes the rationale behind the current choices of the I/O for
+        paraprobe. Furthermore, this summarizes also why the fundamental design
+        of splitting an analysis always into steps of configuration (with parmsetup),
+        task execution (with the respective C/C++ or Python tool of the toolbox),
+        and post-processing (e.g. with autoreporter) is useful because it offers
+        a clear description of provenance tracking. This is a necessary step to make
+        atom probe microscopy data at all better aligned with the aims of the
+        FAIR principles.
+        
+        The internal organization of the data entries in the atom_probe group
+        in this application definition for paraprobe-transcoder results files
+        mirror the definitions of the NXapm for consistency reasons.
+    #     APSuite, RRNG, RNG, and NeXus/HDF5 NXapm in such a way that they can
+    #     be used with the tools of the paraprobe-toolbox.
+      mass_to_charge_conversion(NXprocess):
+        mass_to_charge(NX_FLOAT):
+          doc: |
+            Mass-to-charge-state ratio values.
+          unit: NX_ANY
+          # \@units: Da
+          dimensions:
+            rank: 1
+            dim: [[1, n_ions]]  
+      reconstruction(NXprocess):
+        # number_of_ions(NX_UINT):
+        #   doc: |
+        #     For now still a support field to store the total number of ions in the
+        #     dataset. This field will become deprecated when the new HDF5 I/O routines
+        #     come in place which detect the metadata to an entry automatically.
+        #     For now has to be the same value as n_ions.
+        reconstructed_positions(NX_FLOAT):
+          doc: |
+            Three-dimensional reconstructed positions of the ions.
+            Interleaved array of x, y, z positions in the specimen space.
+          unit: NX_LENGTH
+          dimensions:
+            rank: 2
+            dim: [[1, n_ions], [2, 3]]
+      ranging(NXprocess):
+        peak_identification(NXprocess):
+          doc: |
+            Details about how peaks, with taking into account
+            error models, were interpreted as ion types or not.
+          (NXion):
+            exists: [min, 1, max, 256]
+            isotope_vector(NX_UINT):
+            nuclid_list(NX_UINT):
+              exists: recommended
+            charge_state(NX_INT):
+            mass_to_charge_range(NX_FLOAT):
+# ##MK::end of the tool-specific section
+
+    performance(NXcs_profiling):
+      exists: recommended
+      command_line_call:
+        exists: optional
+      start_time(NX_DATE_TIME):
+        exists: recommended
+      end_time(NX_DATE_TIME):
+        exists: recommended
+      total_elapsed_time(NX_NUMBER):
+      number_of_processes(NX_POSINT):
+      number_of_threads(NX_POSINT):
+      number_of_gpus(NX_POSINT):
+      (NXcs_computer):
+        exists: recommended
+        name:
+          exists: recommended
+        operating_system:
+          \@version:
+        uuid:
+          exists: optional
+        (NXcs_cpu):
+          exists: [min, 0, max, infty]
+          name:
+            exists: optional
+          (NXfabrication):
+            exists: recommended
+            identifier:
+              exists: optional
+            capabilities:
+              exists: optional
+        (NXcs_gpu):
+          exists: [min, 0, max, infty]
+          name:
+            exists: optional
+          (NXfabrication):
+            exists: recommended
+            identifier:
+              exists: optional
+            capabilities:
+              exists: optional
+        (NXcs_mm_sys):
+          exists: [min, 0, max, 1]
+          total_physical_memory(NX_NUMBER):
+        (NXcs_io_sys):
+          exists: [min, 0, max, 1]
+          (NXcs_io_obj):
+            exists: [min, 1, max, infty]
+            technology:
+            max_physical_capacity(NX_NUMBER):
+            name:
+              exists: optional
+            (NXfabrication):
+              exists: recommended
+              identifier:
+                exists: optional
+              capabilities:
+                exists: optional
+
+        (NXcs_profiling_event):
+          start_time(NX_DATE_TIME):
+            exists: optional
+          end_time(NX_DATE_TIME):
+            exists: optional
+          description:
+          elapsed_time(NX_NUMBER):
+          number_of_processes(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_processes
+              in the NXcs_profiling super class.
+          number_of_threads(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_threads 
+              in the NXcs_profiling super class.
+          number_of_gpus(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_threads 
+              in the NXcs_profiling super class.
+          max_virtual_memory_snapshot(NX_NUMBER):
+            exists: recommended
+          max_resident_memory_snapshot(NX_NUMBER):
+            exists: recommended

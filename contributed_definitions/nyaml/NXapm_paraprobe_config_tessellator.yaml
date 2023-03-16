@@ -1,0 +1,180 @@
+category: application
+doc: |
+  Configuration of a paraprobe-tessellator tool run in atom probe microscopy.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  #  n_control_points: The number of control points for tessellating regions instead of tessellating the volume about ion positions.
+NXapm_paraprobe_config_tessellator:
+  (NXentry):
+    # by default for appdefs the value of the exists keyword is required
+    # unless it is explicitly specified differently
+    \@version:
+      doc: Version specifier of this application definition.
+    definition:
+      doc: Official NeXus NXDL schema with which this file was written.
+      enumeration: [NXapm_paraprobe_config_tessellator]
+    program:
+      doc: |
+        Given name of the program/software/tool with which this NeXus
+        (configuration) file was generated.
+      \@version:
+        doc: |
+          Ideally program version plus build number, or commit hash or description
+          of ever persistent resources where the source code of the program and
+          build instructions can be found so that the program can be configured
+          ideally in such a manner that the result of this computational process
+          is recreatable in the same deterministic manner.
+    analysis_identifier:
+      exists: optional
+      doc: |
+        Ideally, a (globally persistent) unique identifier for referring
+        to this analysis.
+    analysis_description:
+      exists: optional
+      doc: Possibility for leaving a free-text description about this analysis.
+    time_stamp(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when this configuration file was created.
+    number_of_processes(NX_UINT):
+      doc: |
+        How many individual analyses should the tool execute.
+      unit: NX_UNITLESS
+    (NXprocess):
+      dataset(NXapm_input_reconstruction):
+        filename:
+          \@version:
+        dataset_name_reconstruction:
+        dataset_name_mass_to_charge:
+      iontypes(NXapm_input_ranging):
+        filename:
+          \@version:
+        group_name_iontypes:
+
+      spatial_filter(NXspatial_filter):
+        exists: optional
+        windowing_method:
+          exists: required
+        (NXcg_ellipsoid_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          half_axes_radii(NX_NUMBER):
+          orientation(NX_NUMBER):
+        (NXcg_cylinder_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+          height(NX_NUMBER):
+          radii(NX_NUMBER):
+        (NXcg_hexahedron_set):
+          exists: optional
+          dimensionality(NX_POSINT):
+          cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          hexahedra(NXcg_face_list_data_structure):
+        (NXcs_filter_boolean_mask):
+          exists: optional
+          number_of_objects(NX_UINT):
+          bitdepth(NX_UINT):
+          mask(NX_UINT):
+          identifier(NX_UINT):
+        # a perfect example for limited conditions in NeXus
+        # if windowing_method is entire_dataset: no constraint on existence of NXcg and NXcs instances
+        # if windowing_method is union_of_primitives: sum of cardinality of NXcg >= 0
+        # if windowing_method is bitmasked_points: sum cardinality of NXcg := 0 and cardinality of NXcs_filter_boolean_mask == 1
+
+      evaporation_id_filter(NXsubsampling_filter):
+        exists: optional
+      iontype_filter(NXmatch_filter):
+        exists: optional
+      hit_multiplicity_filter(NXmatch_filter):
+        exists: optional
+
+      ion_to_edge_distances(NXprocess):
+        exists: optional
+        doc: |
+          The tool enables to inject precomputed distance information for
+          each point which can be used for further post-processing and analysis.
+        filename:
+          doc: |
+            Name of an HDF5 file which contains the ion distances.
+            Users are responsible this file and referred to dataset under
+            dataset_name have an ion_distance value for each ion.
+          \@version:
+            doc: |
+              Version identifier of the file such as a secure hash which
+              documents the binary state of the file to add an additional layer of
+              reproducibility.
+        dataset_name:
+          doc: |
+            Absolute HDF5 path to the dataset with distance values for each ion.
+      tessellating(NXprocess):
+        method:
+          doc: |
+            Specifies for which points the tool will compute the tessellation.
+            By default, a Voronoi tessellation is computed for all ions in the
+            filtered point cloud.
+          #  The value control_points will compute the tessellation for the
+          #  provided overlay_control_points irregardless of the ion point cloud.
+          #  This enables for instance computations as proposed by P. Felfer and
+          #  coworkers where, for the purpose of e.g. interfacial excess quantification,
+          #  a tessellation of the dataset into regions about manually-specified
+          #  control points is needed.
+          #  For this option, the overlay_control points.
+          enumeration: [default]  #, control_points]
+        # overlay_control_points(NXprocess):
+        #    doc: |
+        #      Overlaying an additional set of control points onto the reconstruction
+        #      can be used as a first step to construct a tessellation of the dataset
+        #      into regions to segment the dataset or construct a model for internal
+        #      structural features in the dataset. Such an approach was suggested
+        #      e.g. by P. Felfer et al. which use a control points to locate
+        #      interfaces (grain/phase boundaries) in atom probe data to perform
+        #      e.g. interfacial excess computations. The control points can be
+        #      imported for example from some manual preprocessing of a dataset
+        #      where the user figured these control points could be of relevance
+        #      for the analysis.
+        #    # NEW ISSUE: dislocation lines
+        #    exists: optional
+        #    filename:
+        #      doc: |
+        #        Name of an HDF5 file which contains control point coordinates.
+        #      \@version:
+        #        doc: |
+        #          Version identifier of the file such as a secure hash which
+        #          documents the binary state of the file to add an additional
+        #          layer of reproducibility.
+        #    dataset_name:
+        #      doc: |
+        #        Absolute HDF5 path to the dataset which contains the array of
+        #        control points. This has to be an array of shape 
+        #        (n_control_points, 3).
+        has_cell_volume(NX_BOOLEAN):
+          doc: |
+            Specifies if the tool should report the volume of each cell.
+        has_cell_neighbors(NX_BOOLEAN):
+          doc: |
+            Specifies if the tool should report the first-order neighbors of each cell.
+        has_cell_geometry(NX_BOOLEAN):
+          doc: |
+            Specifies if the tool should report the facets and vertices of each cell.
+        has_cell_edge_detection(NX_BOOLEAN):
+          doc: |
+            Specifies if the tool should report if the cell makes contact with
+            the tight axis-aligned bounding box about the point cloud.
+            This can be used to identify if the shape of the cell is affected
+            by the edge of the dataset or if cells are deeply enough embedded
+            into the point cloud so that the shape of their cells are not affected
+            by the presence of the boundary.
+        erosion_distance(NX_FLOAT):
+          doc: |
+            Maximum distance for which cells are eroded.
+          # ##MK::needs further details
+          unit: NX_LENGTH
+          # \@units: nm
+          # minValue: EPSILON

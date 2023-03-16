@@ -1,0 +1,282 @@
+category: application
+doc: |
+  Results of a paraprobe-ranger tool run in atom probe microscopy.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_ions: The total number of ions in the reconstruction.
+  n_ivec: The maximum number of atoms per molecular ion type.
+NXapm_paraprobe_results_ranger:
+  (NXentry):
+    # by default for appdefs the value of the exists keyword is required
+    # unless it is explicitly specified differently
+    \@version:
+      doc: Version specifier of this application definition.
+
+# ##MK::begin of the tool-specific section
+    definition:
+      doc: Official NeXus NXDL schema with which this file was written.
+      enumeration: [NXapm_paraprobe_results_ranger]
+# ##MK::end of the tool-specific section
+
+    program:
+      doc: |
+        Given name of the program/software/tool with which this NeXus
+        (configuration) file was generated.
+      \@version:
+        doc: |
+          Ideally program version plus build number, or commit hash or description
+          of ever persistent resources where the source code of the program and
+          build instructions can be found so that the program can be configured
+          ideally in such a manner that the result of this computational process
+          is recreatable in the same deterministic manner.
+    analysis_identifier:
+      exists: optional
+      doc: |
+        Ideally, a (globally persistent) unique identifier for referring
+        to this analysis.
+    analysis_description:
+      exists: optional
+      doc: Possibility for leaving a free-text description about this analysis.
+    time_stamp(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when this configuration file was created.
+    config_filename:
+      doc: |
+        The absolute path and name of the config file for this analysis.
+      \@version:
+        doc: |
+          At least SHA256 strong hash of the specific config_file for
+          tracking provenance.
+    (NXuser):
+      exists: recommended
+      doc: |
+        If used, contact information and eventually details
+        of at least the person who performed this analysis.
+      name:
+      affiliation:
+        exists: recommended
+      address:
+        exists: optional
+      email:
+        exists: recommended
+      orcid:
+        exists: recommended
+      orcid_platform:
+        exists: recommended
+      telephone_number:
+        exists: optional
+      role:
+        exists: recommended
+      social_media_name:
+        exists: optional
+      social_media_platform:
+        exists: optional
+    (NXcoordinate_system_set):
+      exists: optional
+      doc: Details about the coordinate system conventions used.
+      (NXtransformations):
+        exists: [min, 1, max, infty]
+        doc: |
+          The individual coordinate systems which used.
+          fields should be prefixed with a prefix taken from an
+          enumeration which details the individual coordinate systems:
+          
+          * lab
+          * specimen
+          * laser
+          * leap
+          * detector
+          * recon
+          
+
+# ##MK::begin of the tool-specific section
+    (NXprocess):
+      exists: [min, 0, max, 1]
+      # ##MK::number_of_ion_types(NX_POSINT):
+      # ##MK::maximum_number_of_atoms_per_molecular_ion(NX_POSINT):
+      use_existent_ranging(NXprocess):
+        exists: [min, 0, max, 1]
+        doc: |
+          Paraprobe-ranger loads the iontypes and evaluates for each
+          ion on which iontype it matches. If it matches on none, the
+          ion is considered of the default unknown type with a 0 as its
+          respective value in the iontypes array.
+        (NXion):
+          exists: [min, 1, max, 256]
+          isotope_vector(NX_UINT):
+          nuclid_list(NX_UINT):
+            exists: recommended
+          charge_state(NX_INT):
+          mass_to_charge_range(NX_FLOAT):
+        iontypes(NX_UINT):
+          doc: |
+            The iontype ID for each ion that was best matching, stored in the
+            order of the evaporation sequence ID.
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 1
+            dim: [[1, n_ions]]
+
+      molecular_ion_search(NXprocess):
+        exists: [min, 0, max, 1]
+        doc: |
+          Paraprobe-ranger performs a combinatorial search over
+          all possible or a reduced set of nuclids to identify
+          into which ions these can be composed.
+        isotope_vector_matrix(NX_UINT):
+          doc: |
+            The main result is the list of molecular ions, here formatted
+            according to the definitions of a set of isotope_vectors
+            as detailed in :ref:`NXion`.
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 2
+            dim: [[1, i], [2, 32]]
+        mass_to_charge_state_ratio(NX_FLOAT):
+          doc: |
+            The mass-to-charge-state ratio of each molecular ion
+            without considering relativistic or quantum effects.
+          unit: NX_ANY
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+        mass(NX_FLOAT):
+          exists: optional
+          doc: |
+            The mass of each molecular ion without
+            considering relativistic or quantum effects.
+          unit: NX_ANY
+          # \@units: amu
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+        charge_state(NX_UINT):
+          doc: |
+            The charge_state of each molecular ion.
+          unit: NX_CHARGE
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+        natural_abundance_product(NX_FLOAT):
+          exists: optional
+          doc: |
+            The product of the natural abundance of the isotopes building
+            each molecular ion. Further details are available in
+            :ref:`NXapm_paraprobe_config_ranger`.
+          unit: NX_DIMENSIONLESS
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+        composition_product(NX_FLOAT):
+          exists: optional
+          doc: |
+            The product of the natural abundance of the isotopes building
+            each molecular ion. Further details are available in
+            :ref:`NXapm_paraprobe_config_ranger`.
+          unit: NX_DIMENSIONLESS
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+        number_of_disjoint_nuclids(NX_POSINT):
+          exists: optional
+          doc: |
+            The number of disjoint nuclids for each molecular ion.
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+        number_of_nuclids(NX_POSINT):
+          exists: optional
+          doc: |
+            The number of nuclids for each molecular ion.
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 1
+            dim: [[1, i]]
+# ##MK::end of the tool-specific section
+
+    performance(NXcs_profiling):
+      exists: recommended
+      command_line_call:
+        exists: optional
+      start_time(NX_DATE_TIME):
+        exists: recommended
+      end_time(NX_DATE_TIME):
+        exists: recommended
+      total_elapsed_time(NX_NUMBER):
+      number_of_processes(NX_POSINT):
+      number_of_threads(NX_POSINT):
+      number_of_gpus(NX_POSINT):
+      (NXcs_computer):
+        exists: recommended
+        name:
+          exists: recommended
+        operating_system:
+          \@version:
+        uuid:
+          exists: optional
+        (NXcs_cpu):
+          exists: [min, 0, max, infty]
+          name:
+            exists: optional
+          (NXfabrication):
+            exists: recommended
+            identifier:
+              exists: optional
+            capabilities:
+              exists: optional
+        (NXcs_gpu):
+          exists: [min, 0, max, infty]
+          name:
+            exists: optional
+          (NXfabrication):
+            exists: recommended
+            identifier:
+              exists: optional
+            capabilities:
+              exists: optional
+        (NXcs_mm_sys):
+          exists: [min, 0, max, 1]
+          total_physical_memory(NX_NUMBER):
+        (NXcs_io_sys):
+          exists: [min, 0, max, 1]
+          (NXcs_io_obj):
+            exists: [min, 1, max, infty]
+            technology:
+            max_physical_capacity(NX_NUMBER):
+            name:
+              exists: optional
+            (NXfabrication):
+              exists: recommended
+              identifier:
+                exists: optional
+              capabilities:
+                exists: optional
+
+        (NXcs_profiling_event):
+          start_time(NX_DATE_TIME):
+            exists: optional
+          end_time(NX_DATE_TIME):
+            exists: optional
+          description:
+          elapsed_time(NX_NUMBER):
+          number_of_processes(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_processes
+              in the NXcs_profiling super class.
+          number_of_threads(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_threads 
+              in the NXcs_profiling super class.
+          number_of_gpus(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_threads 
+              in the NXcs_profiling super class.
+          max_virtual_memory_snapshot(NX_NUMBER):
+            exists: recommended
+          max_resident_memory_snapshot(NX_NUMBER):
+            exists: recommended
