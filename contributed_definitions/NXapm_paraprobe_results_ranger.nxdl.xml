@@ -1,6 +1,27 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd" type="group" extends="NXobject" category="application" name="NXapm_paraprobe_results_ranger">
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXapm_paraprobe_results_ranger" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -10,22 +31,23 @@
                  The total number of ions in the reconstruction.
             </doc>
         </symbol>
-        <symbol name="n_ivec">
+        <symbol name="n_ivec_max">
             <doc>
-                 The maximum number of atoms per molecular ion type.
+                 Maximum number of allowed atoms per (molecular) ion (fragment).
+                 Needs to match maximum_number_of_atoms_per_molecular_ion.
             </doc>
         </symbol>
     </symbols>
     <doc>
-         Results of a paraprobe-ranger tool run in atom probe microscopy.
+         Results of a paraprobe-ranger tool run.
     </doc>
-    <group type="NXentry">
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
         <attribute name="version">
             <doc>
                  Version specifier of this application definition.
             </doc>
         </attribute>
-        <field name="definition" type="NX_CHAR">
+        <field name="definition">
             <doc>
                  Official NeXus NXDL schema with which this file was written.
             </doc>
@@ -33,12 +55,12 @@
                 <item value="NXapm_paraprobe_results_ranger"/>
             </enumeration>
         </field>
-        <field name="program" type="NX_CHAR">
+        <field name="program">
             <doc>
                  Given name of the program/software/tool with which this NeXus
                  (configuration) file was generated.
             </doc>
-            <attribute name="version" type="NX_CHAR">
+            <attribute name="version">
                 <doc>
                      Ideally program version plus build number, or commit hash or description
                      of ever persistent resources where the source code of the program and
@@ -48,49 +70,81 @@
                 </doc>
             </attribute>
         </field>
-        <field name="analysis_identifier" type="NX_CHAR" optional="true">
+        <field name="analysis_identifier" optional="true">
             <doc>
                  Ideally, a (globally persistent) unique identifier for referring
                  to this analysis.
             </doc>
         </field>
-        <field name="analysis_description" type="NX_CHAR" optional="true">
+        <field name="analysis_description" optional="true">
             <doc>
                  Possibility for leaving a free-text description about this analysis.
             </doc>
         </field>
-        <field name="time_stamp" type="NX_DATE_TIME">
+        <field name="start_time" type="NX_DATE_TIME">
             <doc>
                  ISO 8601 formatted time code with local time zone offset to UTC
-                 information included when this configuration file was created.
+                 information included when the analysis behind this results file
+                 was started, i.e. the paraprobe-tool executable started as a process.
             </doc>
         </field>
-        <field name="config_filename" type="NX_CHAR">
+        <field name="end_time" type="NX_DATE_TIME">
             <doc>
-                 The absolute path and name of the config file for this analysis.
+                 ISO 8601 formatted time code with local time zone offset to UTC
+                 information included when the analysis behind this results file
+                 were completed and the paraprobe-tool executable exited as a process.
             </doc>
-            <attribute name="version" type="NX_CHAR">
+        </field>
+        <field name="config_filename">
+            <doc>
+                 The path and name of the config file for this analysis.
+            </doc>
+            <attribute name="version">
                 <doc>
                      At least SHA256 strong hash of the specific config_file for
                      tracking provenance.
                 </doc>
             </attribute>
         </field>
+        <field name="results_path" optional="true">
+            <doc>
+                 Path to the directory where the tool should store NeXus/HDF5 results
+                 of this analysis. If not specified results will be stored in the
+                 current working directory.
+            </doc>
+        </field>
+        <field name="status" type="NX_CHAR">
+            <doc>
+                 A statement whether the paraprobe-tool executable managed to
+                 process the analysis or failed prematurely.
+                 
+                 This status is written to the results file after the end_time
+                 at which point the executable must not compute any analysis.
+                 Only when this status message is present and shows `success`, the
+                 user should consider the results. In all other cases it might be
+                 that the executable has terminated prematurely or another error
+                 occurred.
+            </doc>
+            <enumeration>
+                <item value="success"/>
+                <item value="failure"/>
+            </enumeration>
+        </field>
         <group type="NXuser" recommended="true">
             <doc>
                  If used, contact information and eventually details
                  of at least the person who performed this analysis.
             </doc>
-            <field name="name" type="NX_CHAR"/>
-            <field name="affiliation" type="NX_CHAR" recommended="true"/>
-            <field name="address" type="NX_CHAR" optional="true"/>
-            <field name="email" type="NX_CHAR" recommended="true"/>
-            <field name="orcid" type="NX_CHAR" recommended="true"/>
-            <field name="orcid_platform" type="NX_CHAR" recommended="true"/>
-            <field name="telephone_number" type="NX_CHAR" optional="true"/>
-            <field name="role" type="NX_CHAR" recommended="true"/>
-            <field name="social_media_name" type="NX_CHAR" optional="true"/>
-            <field name="social_media_platform" type="NX_CHAR" optional="true"/>
+            <field name="name"/>
+            <field name="affiliation" recommended="true"/>
+            <field name="address" optional="true"/>
+            <field name="email" recommended="true"/>
+            <field name="orcid" recommended="true"/>
+            <field name="orcid_platform" recommended="true"/>
+            <field name="telephone_number" optional="true"/>
+            <field name="role" recommended="true"/>
+            <field name="social_media_name" optional="true"/>
+            <field name="social_media_platform" optional="true"/>
         </group>
         <group type="NXcoordinate_system_set" optional="true">
             <doc>
@@ -98,10 +152,11 @@
             </doc>
             <group type="NXtransformations" minOccurs="1" maxOccurs="unbounded">
                 <doc>
-                     The individual coordinate systems which used.
-                     fields should be prefixed with a prefix taken from an
-                     enumeration which details the individual coordinate systems:
+                     The individual coordinate systems which should be used.
+                     Field names should be prefixed with the following controlled terms
+                     indicating which individual coordinate system is described:
                      
+                     * paraprobe
                      * lab
                      * specimen
                      * laser
@@ -112,14 +167,25 @@
             </group>
         </group>
         <group type="NXprocess" minOccurs="0" maxOccurs="1">
-            <group name="use_existent_ranging" type="NXprocess" minOccurs="0" maxOccurs="1">
+            <group name="apply_existent_ranging" type="NXprocess" minOccurs="0" maxOccurs="1">
                 <doc>
                      Paraprobe-ranger loads the iontypes and evaluates for each
                      ion on which iontype it matches. If it matches on none, the
                      ion is considered of the default unknown type with a 0 as its
                      respective value in the iontypes array.
                 </doc>
-                <group type="NXion" minOccurs="1" maxOccurs="256">
+                <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_POSINT" units="NX_UNITLESS">
+                    <doc>
+                         The length of the isotope_vector used to describe molecular ions.
+                    </doc>
+                </field>
+                <group name="ION" type="NXion" minOccurs="1" maxOccurs="256">
+                    <field name="isotope_vector" type="NX_UINT"/>
+                    <field name="nuclid_list" type="NX_UINT" recommended="true"/>
+                    <field name="charge_state" type="NX_INT"/>
+                    <field name="mass_to_charge_range" type="NX_FLOAT"/>
+                </group>
+                <group name="charged_ION" type="NXion" minOccurs="1" maxOccurs="256">
                     <field name="isotope_vector" type="NX_UINT"/>
                     <field name="nuclid_list" type="NX_UINT" recommended="true"/>
                     <field name="charge_state" type="NX_INT"/>
@@ -128,12 +194,80 @@
                 <field name="iontypes" type="NX_UINT" units="NX_UNITLESS">
                     <doc>
                          The iontype ID for each ion that was best matching, stored in the
-                         order of the evaporation sequence ID.
+                         order of the evaporation sequence ID. The here computed iontypes
+                         do not take into account the charge state of the ion which is
+                         equivalent to interpreting a RNG and RRNG range files for each
+                         ion in such a way that only the elements of which a (molecular) ion
+                         is build are considered. By contrast, charged_iontypes takes
+                         into account also the charge state.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n_ions"/>
                     </dimensions>
                 </field>
+                <field name="charged_iontypes" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         The iontype ID for each ion that was best matching, stored in the
+                         order of the evaporation sequence ID. For the here computed
+                         charged_iontypes the information for each (molecular) ion defined
+                         in e.g. RNG or RRNG files is analyzed for which differently charge
+                         states are possible. As an example while iontypes might only consider
+                         if an ion is Al charged_iontypes will resolve if it is Al1+, Al2+, or
+                         Al3+. To decide the charge state a recursive algorithm is used which
+                         enumerates first all possible isotopic variants of a given molecular
+                         ion build from a specific set of elements. All variants are then
+                         analyzed for their natural abundance and filtered. The sub-set of
+                         all significantly abundant variants is inspected if their charge
+                         states are all the same. If only one significant variant is found
+                         its charge state is assumed the relevant. If multiple significant
+                         variants are found and all their charge states is the same this
+                         charge state will be the decisive one. However, if multiple variants
+                         are found and their charge state differs such a case highlights that
+                         the charge state analysis is underconstrained and thus the charge
+                         state is set to 0. Underconstrained cases are possible because
+                         an arbitrary combination of elements into a molecular ion that is
+                         constrained only by an additional single interval of mass-to-charge
+                         state ratios is not necessarily sufficient.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+                <group name="window" type="NXcs_filter_boolean_mask">
+                    <doc>
+                         A bitmask which identifies exactly all those ions ranged irrespective
+                         the type they ended up with.
+                    </doc>
+                    <field name="number_of_ions" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Number of ions covered by the mask.
+                             The mask value for most may be 0.
+                        </doc>
+                    </field>
+                    <field name="bitdepth" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Number of bits assumed matching on a default datatype.
+                             (e.g. 8 bits for a C-style uint8).
+                        </doc>
+                    </field>
+                    <field name="mask" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             The unsigned integer array representing the content of the mask.
+                             If padding is used the padded bits are set to 0. The mask is for
+                             convenience always as large as the entire dataset as it will
+                             be stored compressed anyway. The convenience feature with this
+                             is that then the mask can be decoded with numpy and mirrored
+                             against the evaporation_id array and one immediately can filter
+                             out all points that were used by the paraprobe.
+                             The length of the array adds to the next unsigned integer
+                             if the number of ions in the dataset is not an integer
+                             multiple of the bitdepth.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_ions"/>
+                        </dimensions>
+                    </field>
+                </group>
             </group>
             <group name="molecular_ion_search" type="NXprocess" minOccurs="0" maxOccurs="1">
                 <doc>
@@ -215,9 +349,31 @@
                     </dimensions>
                 </field>
             </group>
+            <group name="check_existent_ranging" type="NXprocess" minOccurs="0" maxOccurs="1">
+                <doc>
+                     Paraprobe-ranger loads iontypes and evaluates for each ion on which
+                     iontype it matches. If it matches on none, the ion is considered of
+                     the default unknown type with a 0 as its respective value in the
+                     iontypes array. In contrast to use_existent_ranging this process
+                     does neither needs measured ion position nor mass-to-charge-state
+                     ratio values.
+                </doc>
+                <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_POSINT" units="NX_UNITLESS">
+                    <doc>
+                         The length of the isotope_vector used to describe molecular ions.
+                    </doc>
+                </field>
+                <group name="charged_ION" type="NXion" minOccurs="1" maxOccurs="256">
+                    <field name="isotope_vector" type="NX_UINT"/>
+                    <field name="nuclid_list" type="NX_UINT" recommended="true"/>
+                    <field name="charge_state" type="NX_INT"/>
+                    <field name="mass_to_charge_range" type="NX_FLOAT"/>
+                </group>
+            </group>
         </group>
-        <group name="performance" type="NXcs_profiling" recommended="true">
-            <field name="command_line_call" type="NX_CHAR" optional="true"/>
+        <group name="performance" type="NXcs_profiling">
+            <field name="current_working_directory"/>
+            <field name="command_line_call" optional="true"/>
             <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
             <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
             <field name="total_elapsed_time" type="NX_NUMBER"/>
@@ -225,23 +381,23 @@
             <field name="number_of_threads" type="NX_POSINT"/>
             <field name="number_of_gpus" type="NX_POSINT"/>
             <group type="NXcs_computer" recommended="true">
-                <field name="name" type="NX_CHAR" recommended="true"/>
-                <field name="operating_system" type="NX_CHAR">
-                    <attribute name="version" type="NX_CHAR"/>
+                <field name="name" recommended="true"/>
+                <field name="operating_system">
+                    <attribute name="version"/>
                 </field>
-                <field name="uuid" type="NX_CHAR" optional="true"/>
+                <field name="uuid" optional="true"/>
                 <group type="NXcs_cpu" minOccurs="0" maxOccurs="unbounded">
-                    <field name="name" type="NX_CHAR" optional="true"/>
+                    <field name="name" optional="true"/>
                     <group type="NXfabrication" recommended="true">
-                        <field name="identifier" type="NX_CHAR" optional="true"/>
-                        <field name="capabilities" type="NX_CHAR" optional="true"/>
+                        <field name="identifier" optional="true"/>
+                        <field name="capabilities" optional="true"/>
                     </group>
                 </group>
                 <group type="NXcs_gpu" minOccurs="0" maxOccurs="unbounded">
-                    <field name="name" type="NX_CHAR" optional="true"/>
+                    <field name="name" optional="true"/>
                     <group type="NXfabrication" recommended="true">
-                        <field name="identifier" type="NX_CHAR" optional="true"/>
-                        <field name="capabilities" type="NX_CHAR" optional="true"/>
+                        <field name="identifier" optional="true"/>
+                        <field name="capabilities" optional="true"/>
                     </group>
                 </group>
                 <group type="NXcs_mm_sys" minOccurs="0" maxOccurs="1">
@@ -249,19 +405,19 @@
                 </group>
                 <group type="NXcs_io_sys" minOccurs="0" maxOccurs="1">
                     <group type="NXcs_io_obj" minOccurs="1" maxOccurs="unbounded">
-                        <field name="technology" type="NX_CHAR"/>
+                        <field name="technology"/>
                         <field name="max_physical_capacity" type="NX_NUMBER"/>
-                        <field name="name" type="NX_CHAR" optional="true"/>
+                        <field name="name" optional="true"/>
                         <group type="NXfabrication" recommended="true">
-                            <field name="identifier" type="NX_CHAR" optional="true"/>
-                            <field name="capabilities" type="NX_CHAR" optional="true"/>
+                            <field name="identifier" optional="true"/>
+                            <field name="capabilities" optional="true"/>
                         </group>
                     </group>
                 </group>
                 <group type="NXcs_profiling_event">
                     <field name="start_time" type="NX_DATE_TIME" optional="true"/>
                     <field name="end_time" type="NX_DATE_TIME" optional="true"/>
-                    <field name="description" type="NX_CHAR"/>
+                    <field name="description"/>
                     <field name="elapsed_time" type="NX_NUMBER"/>
                     <field name="number_of_processes" type="NX_POSINT">
                         <doc>
@@ -271,13 +427,13 @@
                     </field>
                     <field name="number_of_threads" type="NX_POSINT">
                         <doc>
-                             Specify if it was different from the number_of_threads 
+                             Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
                     <field name="number_of_gpus" type="NX_POSINT">
                         <doc>
-                             Specify if it was different from the number_of_threads 
+                             Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
