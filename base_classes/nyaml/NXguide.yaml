@@ -1,0 +1,177 @@
+category: base
+doc: |   
+  A neutron optical element to direct the path of the beam.
+  
+  ':'ref':'`NXguide` is used by neutron instruments to describe
+  a guide consists of several mirrors building a shape through which
+  neutrons can be guided or directed. The simplest such form is box shaped
+  although elliptical guides are gaining in popularity.
+  The individual parts of a guide usually have common characteristics
+  but there are cases where they are different.
+  For example,  a neutron guide might consist of 2 or 4 coated walls or
+  a supermirror bender with multiple, coated vanes.
+  
+  To describe polarizing supermirrors such as used in neutron reflection,
+  it may be necessary to revise this definition of ':'ref':'`NXguide`
+  to include ':'ref':'`NXpolarizer` and/or ':'ref':'`NXmirror`.
+  
+  When even greater complexity exists in the definition of what
+  constitutes a *guide*,  it has been suggested that ':'ref':'`NXguide`
+  be redefined as a ':'ref':'`NXcollection` of ':'ref':'`NXmirror` each
+  having their own ':'ref':'`NXgeometry` describing their location(s).
+  
+  For the more general case when describing mirrors, consider using
+  ':'ref':'`NXmirror`.
+  
+  NOTE':' The NeXus International Advisory Committee welcomes
+  comments for revision and improvement of
+  this definition of ':'ref':'`NXguide`.
+
+symbols: 
+  nsurf: | 
+    number of reflecting surfaces
+
+  nwl: | 
+    number of wavelengths
+
+type: group
+NXguide(NXobject):
+  (NXgeometry):
+    deprecated: Use the field `depends_on` and ':'ref':'`NXtransformations` to position the guid and NXoff_geometry to describe its shape instead
+    doc: | 
+      TODO':'  Explain what this NXgeometry group means.  What is intended here?
+  description:
+    doc: | 
+      A description of this particular instance of ``NXguide``.
+  incident_angle(NX_FLOAT):
+    unit: NX_ANGLE
+    doc: | 
+      TODO':' documentation needed
+  (NXdata)reflectivity:
+    doc: | 
+      Reflectivity as function of reflecting surface and wavelength
+    \@signal:
+      enumeration: [data]
+    \@axes:
+      enumeration: [surface wavelength]
+    \@surface_indices:
+      enumeration: [0]
+    \@wavelength_indices:
+      enumeration: [1]
+    data(NX_NUMBER):
+      doc: | 
+        reflectivity of each surface as a function of wavelength
+      dimensions:
+        rank: 2
+        dim: [[1, nsurf], [2, nwl]]
+    surface(NX_NUMBER):
+      unit: NX_ANY
+      doc: |         
+        List of surfaces.  Probably best to use index
+        numbers but the specification is very loose.
+      dimensions:
+        rank: 1
+        dim: [[1, nsurf]]
+    wavelength(NX_NUMBER):
+      unit: NX_WAVELENGTH
+      doc: | 
+        wavelengths at which reflectivity was measured
+      dimensions:
+        rank: 1
+        dim: [[1, nwl]]
+  bend_angle_x(NX_FLOAT):
+    unit: NX_ANGLE
+    doc: | 
+      TODO':' documentation needed
+  bend_angle_y(NX_FLOAT):
+    unit: NX_ANGLE
+    doc: | 
+      TODO':' documentation needed
+  interior_atmosphere:
+    doc: | 
+    enumeration: [vacuum, helium, argon]
+  external_material:
+    doc: | 
+      external material outside substrate
+  m_value(NX_FLOAT):
+    doc: |       
+      The ``m`` value for a supermirror, which defines the supermirror
+      regime in multiples of the critical angle of Nickel.
+    dimensions:
+      rank: 1
+      dim: [[1, nsurf]]
+  substrate_material(NX_FLOAT):
+    doc: | 
+      TODO':' documentation needed
+    dimensions:
+      rank: 1
+      dim: [[1, nsurf]]
+  substrate_thickness(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: | 
+      TODO':' documentation needed
+    dimensions:
+      rank: 1
+      dim: [[1, nsurf]]
+  coating_material(NX_FLOAT):
+    doc: | 
+      TODO':' documentation needed
+    dimensions:
+      rank: 1
+      dim: [[1, nsurf]]
+  substrate_roughness(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: | 
+      TODO':' documentation needed
+    dimensions:
+      rank: 1
+      dim: [[1, nsurf]]
+  coating_roughness(NX_FLOAT):
+    unit: NX_LENGTH
+    doc: | 
+      TODO':' documentation needed
+    dimensions:
+      rank: 1
+      dim: [[1, nsurf]]
+  number_sections(NX_INT):
+    unit: NX_UNITLESS
+    doc: |       
+      number of substrate sections (also called ``nsurf`` as an
+      index in the ``NXguide`` specification)
+  (NXoff_geometry):
+    exists: ['min', '0']
+    doc: |       
+      This group describes the shape of the beam line component
+  \@default:
+    doc: |       
+      .. index':'':' plotting
+      
+      Declares which child group contains a path leading
+      to a ':'ref':'`NXdata` group.
+      
+      It is recommended (as of NIAC2014) to use this attribute
+      to help define the path to the default dataset to be plotted.
+      See https':'//www.nexusformat.org/2014_How_to_find_default_data.html
+      for a summary of the discussion.
+  depends_on(NX_CHAR):
+    doc: |       
+      NeXus positions components by applying a set of translations and rotations
+      to apply to the component starting from 0, 0, 0. The order of these operations
+      is critical and forms what NeXus calls a dependency chain. The depends_on
+      field defines the path to the top most operation of the dependency chain or the
+      string "." if located in the origin. Usually these operations are stored in a
+      NXtransformations group. But NeXus allows them to be stored anywhere.
+      
+      The entry opening of the guide lies on the reference plane. The center of the opening on that plane is
+      the reference point on the x and y axis. The reference plane is orthogonal to the z axis and is the
+      reference point along the z axis. Given no bend in the guide, it is parallel with z axis and extends
+      in the positive direction of the z axis.
+      
+      .. image':'':' guide/guide.png
+        ':'width':' 40%
+  (NXtransformations):
+    doc: |       
+      This is the group recommended for holding the chain of translation
+      and rotation operations necessary to position the component within
+      the instrument. The dependency chain may however traverse similar groups in
+      other component groups.
