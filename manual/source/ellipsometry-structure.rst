@@ -81,7 +81,7 @@ There is a set of base classes for describing a dispersion.
     :ref:`NXdispersion_function`
        This dispersion is described by a function and its single and repeated parameter values.
        It follows a formula of the form ``eps = eps_inf + sum[A * lambda ** 2 / (lambda ** 2 - B ** 2)]`` 
-       (Sellmeier formula). See the formula grammer below for an ebnf grammar for this form.
+       (Sellmeier formula). See the formula grammar below for an ebnf grammar for this form.
 
     :ref:`NXdispersion_single_parameter`
        This denotes a parameter which is used outside the summed part of a dispersion function,
