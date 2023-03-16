@@ -1,34 +1,36 @@
-doc: | 
-  This is the application definition for x-ray or neutron tomography raw data with phase contrast variation at each point. 
-  
-  In tomography first 
-  some dark field images are measured, some bright field images and, of course the sample. In order 
-  to properly sort the order of the images taken, a sequence number is stored with each image.
-symbols: 
-    doc: | 
-      These symbols will be used below to coordinate datasets with the same shape.
-
-    nBrightFrames: | 
-      Number of bright frames
-
-    nDarkFrames: | 
-      Number of dark frames
-
-    nSampleFrames: | 
-      Number of image (sample) frames
-
-    nPhase: | 
-      Number of phase settings
-
-    xSize: | 
-      Number of pixels in X direction
-
-    ySize: | 
-      Number of pixels in Y direction
-
 category: application
-NXtomophase:
-  entry(NXentry):
+doc: |   
+  This is the application definition for x-ray or neutron tomography raw data with phase contrast variation at each point.
+  
+  In tomography first
+  some dark field images are measured, some bright field images and, of course the sample. In order
+  to properly sort the order of the images taken, a sequence number is stored with each image.
+
+symbols: 
+  doc: | 
+    These symbols will be used below to coordinate datasets with the same shape.
+
+  nBrightFrames: | 
+    Number of bright frames
+
+  nDarkFrames: | 
+    Number of dark frames
+
+  nSampleFrames: | 
+    Number of image (sample) frames
+
+  nPhase: | 
+    Number of phase settings
+
+  xSize: | 
+    Number of pixels in X direction
+
+  ySize: | 
+    Number of pixels in Y direction
+
+type: group
+NXtomophase(NXobject):
+  (NXentry)entry:
     title:
     start_time(NX_DATE_TIME):
     end_time(NX_DATE_TIME):
@@ -36,14 +38,15 @@ NXtomophase:
       doc: | 
         Official NeXus NXDL schema to which this file conforms
       enumeration: [NXtomophase]
-    instrument(NXinstrument):
+    (NXinstrument)instrument:
       (NXsource):
         type:
         name:
         probe:
           enumeration: [neutron, x-ray, electron]
-      bright_field(NXdetector):
+      (NXdetector)bright_field:
         data(NX_INT):
+          signal: 1
           dimensions:
             rank: 3
             dim: [[1, nBrightFrames], [2, xSize], [3, ySize]]
@@ -51,8 +54,9 @@ NXtomophase:
           dimensions:
             rank: 1
             dim: [[1, nBrightFrames]]
-      dark_field(NXdetector):
+      (NXdetector)dark_field:
         data(NX_INT):
+          signal: 1
           dimensions:
             rank: 3
             dim: [[1, nDarkFrames], [2, xSize], [3, ySize]]
@@ -60,8 +64,9 @@ NXtomophase:
           dimensions:
             rank: 1
             dim: [[1, nDarkFrames]]
-      sample(NXdetector):
+      (NXdetector)sample:
         data(NX_INT):
+          signal: 1
           dimensions:
             rank: 4
             dim: [[1, nSampleFrames], [2, nPhase], [3, xSize], [4, ySize]]
@@ -77,12 +82,13 @@ NXtomophase:
           unit: NX_LENGTH
           doc: | 
             Distance between detector and sample
-    sample(NXsample):
+    (NXsample)sample:
       name:
         doc: | 
           Descriptive name of sample
       rotation_angle(NX_FLOAT):
         unit: NX_ANGLE
+        axis: 1
         dimensions:
           rank: 1
           dim: [[1, nSampleFrames]]
@@ -101,13 +107,17 @@ NXtomophase:
         dimensions:
           rank: 1
           dim: [[1, nSampleFrames]]
-    control(NXmonitor):
+    (NXmonitor)control:
       integral(NX_FLOAT):
         unit: NX_ANY
-        doc: | 
+        doc: |           
           Total integral monitor counts for each measured frame. Allows a correction for
           fluctuations in the beam between frames.
         dimensions:
           rank: 1
           dim: [[1, nDarkFrames + nBrightFrames + nSampleFrame]]
-    data(NXdata):
+    (NXdata)data:
+      data(link):
+        target: /NXentry/NXinstrument/sample:NXdetector/data
+      rotation_angle(link):
+        target: /NXentry/NXsample/rotation_angle

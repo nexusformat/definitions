@@ -1,24 +1,26 @@
-doc: | 
+category: application
+doc: |   
   raw, 2-D SAS data with an area detector with a time-of-flight source
   
   It covers all raw data from any SAS techniques
   that use an area detector
   at a time-of-flight source.
+
 symbols: 
-    doc: | 
-      The symbol(s) listed here will be used below to coordinate datasets with the same shape.
+  doc: |     
+    The symbol(s) listed here will be used below to coordinate datasets with the same shape.
 
-    nXPixel: | 
-      nXPixel description
+  nXPixel: | 
+    nXPixel description
 
-    nYPixel: | 
-      nYPixel description
+  nYPixel: | 
+    nYPixel description
 
-    nTOF: | 
-      nTOF description
+  nTOF: | 
+    nTOF description
 
-category: application
-NXsastof:
+type: group
+NXsastof(NXobject):
   (NXentry):
     \@entry:
       doc: | 
@@ -29,8 +31,8 @@ NXsastof:
       doc: | 
         Official NeXus NXDL schema to which this file conforms
       enumeration: [NXsastof]
-    instrument(NXinstrument):
-      source(NXsource):
+    (NXinstrument)instrument:
+      (NXsource)source:
         type:
           doc: | 
             type of radiation source
@@ -39,18 +41,19 @@ NXsastof:
             Name of the radiation source
         probe:
           enumeration: [neutron, x-ray]
-      collimator(NXcollimator):
-        geometry(NXgeometry):
-          shape(NXshape):
+      (NXcollimator)collimator:
+        (NXgeometry)geometry:
+          (NXshape)shape:
             shape(NX_CHAR):
               enumeration: [nxcylinder, nxbox]
             size(NX_FLOAT):
               unit: NX_LENGTH
               doc: | 
                 The collimation length
-      detector(NXdetector):
+      (NXdetector)detector:
         data(NX_NUMBER):
-          doc: | 
+          signal: 1
+          doc: |             
             This is area detector data, of number of x-pixel versus
             number of y-pixels. Since the beam center is to be
             determined as a step of data reduction, it is not necessary
@@ -86,24 +89,24 @@ NXsastof:
           unit: NX_ANGLE
         beam_center_x(NX_FLOAT):
           unit: NX_LENGTH
-          doc: | 
+          doc: |             
             This is the x position where the direct beam would hit the detector. This is a
             length, not a pixel position, and can be outside of the actual detector.
         beam_center_y(NX_FLOAT):
           unit: NX_LENGTH
-          doc: | 
+          doc: |             
             This is the y position where the direct beam would hit the detector. This is a
             length, not a pixel position, and can be outside of the actual detector.
       name(NX_CHAR):
         doc: | 
           Name of the instrument actually used to perform the experiment
-    sample(NXsample):
+    (NXsample)sample:
       name:
         doc: | 
           Descriptive name of sample
       aequatorial_angle(NX_FLOAT):
         unit: NX_ANGLE
-    control(NXmonitor):
+    (NXmonitor)control:
       mode:
         doc: | 
           Count to a preset value based on either clock time (timer) or received monitor counts (monitor).
@@ -112,6 +115,8 @@ NXsastof:
         doc: | 
           preset value for time or monitor
       data(NX_INT):
+        primary: 1
+        signal: 1
         dimensions:
           rank: 1
           dim: [[1, nTOF]]
@@ -120,4 +125,8 @@ NXsastof:
         dimensions:
           rank: 1
           dim: [[1, nTOF]]
-    data(NXdata):
+    (NXdata)data:
+      data(link):
+        target: /NXentry/NXinstrument/NXdetector/data
+      time_of_flight(link):
+        target: /NXentry/NXinstrument/NXdetector/time_of_flight

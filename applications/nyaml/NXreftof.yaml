@@ -1,21 +1,23 @@
+category: application
 doc: | 
   This is an application definition for raw data from a TOF reflectometer.
+
 symbols: 
-    doc: | 
-      The symbol(s) listed here will be used below to coordinate datasets with the same shape.
+  doc: |     
+    The symbol(s) listed here will be used below to coordinate datasets with the same shape.
 
-    xSize: | 
-      xSize description
+  xSize: | 
+    xSize description
 
-    ySize: | 
-      ySize description
+  ySize: | 
+    ySize description
 
-    nTOF: | 
-      nTOF description
+  nTOF: | 
+    nTOF description
 
-category: application
-NXreftof:
-  entry(NXentry):
+type: group
+NXreftof(NXobject):
+  (NXentry)entry:
     title:
     start_time(NX_DATE_TIME):
     end_time(NX_DATE_TIME):
@@ -23,21 +25,23 @@ NXreftof:
       doc: | 
         Official NeXus NXDL schema to which this file conforms
       enumeration: [NXreftof]
-    instrument(NXinstrument):
+    (NXinstrument)instrument:
       name(NX_CHAR):
-      chopper(NXdisk_chopper):
+      (NXdisk_chopper)chopper:
         distance(NX_FLOAT):
           unit: NX_LENGTH
           doc: | 
             Distance between chopper and sample
-      detector(NXdetector):
+      (NXdetector)detector:
         data(NX_INT):
+          signal: 1
           dimensions:
             rank: 3
             dim: [[1, xSize], [2, ySize], [3, nTOF]]
         time_of_flight(NX_FLOAT):
           unit: NX_TIME_OF_FLIGHT
-          doc: | 
+          axis: 3
+          doc: |             
             Array of time values for each bin in a time-of-flight
             measurement
           dimensions:
@@ -51,15 +55,15 @@ NXreftof:
           unit: NX_LENGTH
         y_pixel_size(NX_FLOAT):
           unit: NX_LENGTH
-    sample(NXsample):
+    (NXsample)sample:
       name:
         doc: | 
           Descriptive name of sample
       rotation_angle(NX_FLOAT):
         unit: NX_ANGLE
-    control(NXmonitor):
+    (NXmonitor)control:
       mode:
-        doc: | 
+        doc: |           
           Count to a preset value based on either clock time (timer)
           or received monitor counts (monitor).
         enumeration: [monitor, timer]
@@ -72,9 +76,15 @@ NXreftof:
           Total integral monitor counts
       time_of_flight(NX_FLOAT):
         unit: NX_TIME_OF_FLIGHT
+        axis: 1
         doc: | 
           Time channels
       data(NX_INT):
+        signal: 1
         doc: | 
           Monitor counts in each time channel
-    data(NXdata):
+    (NXdata)data:
+      data(link):
+        target: /NXentry/NXinstrument/NXdetector/data
+      time_of_flight(link):
+        target: /NXentry/NXinstrument/NXdetector/time_of_flight
