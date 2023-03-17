@@ -83,6 +83,10 @@ all ::
 	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/manual/build/html/index.html`"
 	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus.pdf`"
 
+nexus-fairmat-proposal ::
+	$(MAKE) clean
+	$(MAKE) prepare
+	$(SPHINX) -b html $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
 
 # NeXus - Neutron and X-ray Common Data Format
 #
