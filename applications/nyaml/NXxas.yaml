@@ -1,0 +1,79 @@
+category: application
+doc: |   
+  This is an application definition for raw data from an X-ray absorption spectroscopy experiment.
+  
+  This is essentially a scan on energy versus incoming/
+  absorbed beam.
+
+symbols: 
+  doc: |     
+    The symbol(s) listed here will be used below to coordinate datasets with the same shape.
+
+  nP: | 
+    Number of points
+
+type: group
+NXxas(NXobject):
+  (NXentry):
+    \@entry:
+      doc: |         
+        NeXus convention is to use "entry1", "entry2", ...
+        for analysis software to locate each entry.
+    title:
+    start_time(NX_DATE_TIME):
+    definition:
+      doc: | 
+        Official NeXus NXDL schema to which this file conforms
+      enumeration: [NXxas]
+    (NXinstrument):
+      (NXsource):
+        type:
+        name:
+        probe:
+          enumeration: [x-ray]
+      (NXmonochromator)monochromator:
+        energy(NX_FLOAT):
+          axis: 1
+          dimensions:
+            rank: 1
+            dim: [[1, nP]]
+      (NXdetector)incoming_beam:
+        data(NX_NUMBER):
+          dimensions:
+            rank: 1
+            dim: [[1, nP]]
+      (NXdetector)absorbed_beam:
+        data(NX_NUMBER):
+          doc: | 
+            This data corresponds to the sample signal.
+          dimensions:
+            rank: 1
+            dim: [[1, nP]]
+    (NXsample):
+      name:
+        doc: | 
+          Descriptive name of sample
+    (NXmonitor):
+      mode:
+        doc: |           
+          Count to a preset value based on either clock time (timer)
+          or received monitor counts (monitor).
+        enumeration: [monitor, timer]
+      preset(NX_FLOAT):
+        doc: | 
+          preset value for time or monitor
+      data(NX_NUMBER):
+        doc: | 
+          This field could be a link to ``/NXentry/NXinstrument/incoming_beam':'NXdetector/data``
+        dimensions:
+          rank: 1
+          dim: [[1, nP]]
+    (NXdata):
+      energy(link):
+        target: /NXentry/NXinstrument/monochromator:NXmonochromator/energy
+      absorbed_beam(link):
+        target: /NXentry/NXinstrument/absorbed_beam:NXdetector/data
+      mode:
+        doc: | 
+          Detection method used for observing the sample absorption (pick one from the enumerated list and spell exactly)
+        enumeration: [Total Electron Yield, Partial Electron Yield, Auger Electron Yield, Fluorescence Yield, Transmission]

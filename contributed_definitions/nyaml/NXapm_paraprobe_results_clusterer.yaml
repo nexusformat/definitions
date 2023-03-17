@@ -1,0 +1,437 @@
+category: application
+doc: |
+  Results of a paraprobe-clusterer tool run.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_ions: The total number of ions in the reconstruction.
+  n_dict: The total number of entries in the restricted_identifier dictionary.
+
+NXapm_paraprobe_results_clusterer:
+  (NXentry):
+    # by default for appdefs the value of the exists keyword is required
+    # unless it is explicitly specified differently
+    exists: [min, 1, max, 1]
+    \@version:
+      doc: Version specifier of this application definition.
+
+# ##MK::begin of the tool-specific section
+    definition:
+      doc: Official NeXus NXDL schema with which this file was written.
+      enumeration: [NXapm_paraprobe_results_clusterer]
+# ##MK::end of the tool-specific section
+
+    program:
+      doc: |
+        Given name of the program/software/tool with which this NeXus
+        (configuration) file was generated.
+      \@version:
+        doc: |
+          Ideally program version plus build number, or commit hash or description
+          of ever persistent resources where the source code of the program and
+          build instructions can be found so that the program can be configured
+          ideally in such a manner that the result of this computational process
+          is recreatable in the same deterministic manner.
+    analysis_identifier:
+      doc: |
+        Ideally, a (globally persistent) unique identifier for referring
+        to this analysis.
+    analysis_description:
+      exists: optional
+      doc: |
+        Possibility for leaving a free-text description about this analysis.
+    start_time(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when the analysis behind this results file
+        was started, i.e. the paraprobe-tool executable started as a process.
+    end_time(NX_DATE_TIME):
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when the analysis behind this results file
+        were completed and the paraprobe-tool executable exited as a process.
+    config_filename:
+      doc: |
+        The absolute path and name of the config file for this analysis.
+      \@version:
+        doc: |
+          At least SHA256 strong hash of the specific config_file for
+          tracking provenance.
+    results_path:
+      exists: optional
+      doc: |
+        Path to the directory where the tool should store NeXus/HDF5 results
+        of this analysis. If not specified results will be stored in the
+        current working directory.
+    status(NX_CHAR):
+      doc: |
+        A statement whether the paraprobe-tool executable managed to
+        process the analysis or failed prematurely.
+        
+        This status is written to the results file after the end_time
+        at which point the executable must no longer compute analyses.
+        Only when this status message is present and shows `success`, the
+        user should consider the results. In all other cases, it might be
+        that the executable has terminated prematurely or another error
+        occurred.
+      enumeration: [success, failure]
+    (NXuser):
+      exists: optional
+      doc: |
+        If used, contact information and eventually details
+        of at least the person who performed this analysis.
+      name:
+      affiliation:
+        exists: recommended
+      address:
+        exists: optional
+      email:
+        exists: recommended
+      orcid:
+        exists: recommended
+      orcid_platform:
+        exists: recommended
+      telephone_number:
+        exists: optional
+      role:
+        exists: recommended
+      social_media_name:
+        exists: optional
+      social_media_platform:
+        exists: optional
+    (NXcoordinate_system_set):
+      doc: |
+        Details about the coordinate system conventions used.
+        If nothing else is specified we assume that there
+        has to be at least one set of NXtransformations named
+        paraprobe defined, which specifies the coordinate system.
+        In which all positions are defined.
+      # ##MK::define also reconstruction coordinate system and
+      # ##MK::map between the two
+      (NXtransformations):
+        exists: [min, 1, max, infty]
+        doc: |
+          The individual coordinate systems which should be used.
+          Field names should be prefixed with the following controlled terms
+          indicating which individual coordinate system is described:
+          
+          * paraprobe
+          * lab
+          * specimen
+          * laser
+          * leap
+          * detector
+          * recon
+          
+
+# ##MK::begin of the tool-specific section
+    (NXprocess):
+      exists: [min, 0, max, 1]
+      window(NXcs_filter_boolean_mask):
+        doc: |
+          A bitmask which identifies which of the ions in the dataset were
+          analyzed during this process.
+        number_of_ions(NX_UINT):
+          doc: |
+            Number of ions covered by the mask.
+            The mask value for most may be 0.
+          unit: NX_UNITLESS
+        bitdepth(NX_UINT):
+          doc: |
+            Number of bits assumed matching on a default datatype.
+            (e.g. 8 bits for a C-style uint8).
+          unit: NX_UNITLESS
+        mask(NX_UINT):
+          doc: |
+            The unsigned integer array representing the content of the mask.
+            If padding is used, padded bits are set to 0. The mask is for
+            convenience always as large as the entire dataset as it will
+            be stored compressed anyway. The convenience feature with this
+            is that then the mask can be decoded with numpy and mirrored
+            against the evaporation_id array and one immediately can filter
+            out all points that were used by the paraprobe-toolbox executable.
+            The length of the array adds to the next unsigned integer
+            if the number of ions in the dataset is not an integer
+            multiple of the bitdepth (padding).
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 1
+            dim: [[1, n_ions]]
+
+      cluster_analysis(NXprocess):
+        exists: optional
+        doc: |
+          The result of a cluster analyses. These include typically the label for
+          each ion/point documenting to which feature (if any) an ion is assigned.
+          Typically, each analysis/run yields only a single cluster.
+          In cases of fuzzy clustering it can be possible that an ion is assigned
+          to multiple cluster (eventually with different) weight/probability.
+        dbscanID(NXsimilarity_grouping):
+          exists: [min, 0, max, infty]
+          doc: |
+            Results of a DBScan clustering analysis.
+          eps(NX_FLOAT):
+            doc: The epsilon (eps) parameter.
+            unit: NX_LENGTH
+          min_pts(NX_UINT):
+            doc: The minimum points (min_pts) parameter.
+            unit: NX_UNITLESS
+          cardinality(NX_UINT):
+            doc: |
+              Number of members in the set which is partitioned into features.
+              Specifically, this is the total number of targets filtered from the
+              dataset. Cardinality here is not the total number of ions in the
+              dataset.
+            unit: NX_UNITLESS
+          # number_of_numeric_labels(NX_UINT):
+          #   doc: |
+          #     How many numerical labels does each feature have.
+          #   unit: NX_UNITLESS
+          # number_of_categorical_labels(NX_UINT):
+          #   doc: |
+          #     How many categorical labels does each feature have.
+          #   unit: NX_UNITLESS
+          # features(NX_CHAR):
+          #  doc: |
+          #     Reference to a set of features investigated in a cluster analysis.
+          #     Features need to have disjoint numeric identifier.
+          identifier_offset(NX_NUMBER):
+            doc: |
+              Which identifier is the first to be used to label a cluster.
+              
+              The value should be chosen in such a way that special values can be resolved:
+              * identifier_offset-1 indicates an object belongs to no cluster.
+              * identifier_offset-2 indicates an object belongs to the noise category.
+              Setting for instance identifier_offset to 1 recovers the commonly used
+              case that objects of the noise category get values to -1 and unassigned points to 0.
+              Numerical identifier have to be strictly increasing.
+            unit: NX_UNITLESS
+            # dimensions:
+            #   rank: 1
+            #   dim: [[1, n_lbl_num]]
+          # reserved_identifier_keyword(NX_UINT):
+          #   doc: |
+          #     By default we assume that cluster identifier 0 is reserved to
+          #     mark that ions are not assigned to a cluster and identifier 1 is
+          #     noise. The reserved_identifier_keyword and reserved_identifier_value
+          #     can be used as a dictionary though to define that users
+          #     which to overwrite this default and define own specific categories.
+          #     In every case though cluster_identifier have to be positive integer
+          #     and be consecutive on $[0, maximum_value]$.
+          #   unit: NX_UNITLESS
+          #   dimensions:
+          #     rank: 1
+          #     dim: [[1, n_dict]]
+          # reserved_identifier_value(NX_CHAR):
+          #   doc: |
+          #     The corresponding value of the reserved_identifier dictionary.
+          #     This can give a free-text description what a specific reserved
+          #     ID specifies e.g. ignored, noise.
+          #   unit: NX_UNITLESS
+          #   dimensions:
+          #     rank: 1
+          #    dim: [[1, n_dict]]
+          targets(NX_UINT):
+            doc: |
+              The evaporation sequence identifier to figure out which ions
+              from the reconstruction were considered targets.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, c]]
+          # quantities for debugging purposes
+          model_labels(NX_INT):
+            doc: |
+              The raw labels from the DBScan clustering backend process.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, c]]
+          core_sample_indices(NX_INT):
+            doc: |
+              The raw array of core sample indices which specify which of the
+              targets are core points.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, n]]
+          # quantities to which these debugging quantities should be transformed
+          numerical_label(NX_UINT):  # the cluster_identifier !
+            doc: |
+              Matrix of numerical label for each member in the set.
+              For classical clustering algorithms this can for instance
+              encode the cluster_identifier.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, c]]  # ], [2, n_lbl_num]]
+          # categorical_label(NX_CHAR):
+          #   doc: |
+          #     Matrix of categorical attribute data for each member in the set.
+          #   dimensions:
+          #     rank: 2
+          #     dim: [[1, c], [2, n_lbl_cat]]
+          weight(NX_NUMBER):
+            exists: optional
+            doc: |
+              The array of weight which specifies how surely/likely the
+              cluster is associated/assigned to a specific identifier as
+              is specified in the cluster_identifier array.
+              For the DBScan and atom probe tomography the multiplicity
+              of each ion with respect to the cluster. That is how many times
+              should the position of the ion be accounted for because the ion
+              is e.g. a molecular ion with several elements or isotope of
+              requested type.
+            unit: NX_UNITLESS  # ##MK:NX_DIMENSIONLESS
+            dimensions:
+              rank: 1
+              dim: [[1, c]]
+          is_noise(NX_BOOLEAN):
+            exists: optional
+            doc: |
+              Optional bitmask encoding if members of the set are assigned to as noise or not.
+            dimensions:
+              rank: 1
+              dim: [[1, c]]
+          is_core(NX_BOOLEAN):
+            exists: optional
+            doc: |
+              Optional bitmask encoding if member of the set are a core point.
+              For details to which feature/cluster an ion/point is a core point
+              consider numerical_label.
+            dimensions:
+              rank: 1
+              dim: [[1, c]]
+          statistics(NXprocess):
+            doc: |
+              In addition to the detailed storage which members was grouped to
+              which feature/group summary statistics are stored under this group.
+            # at the level of the set
+            # number_of_unassigned_members(NX_UINT):
+            #   doc: |
+            #     Total number of members in the set which are categorized as unassigned.
+            #   unit: NX_UNITLESS
+            #   dimensions:
+            #     rank: 1
+            #     dim: [[1, n_lbl_num]]
+            number_of_noise(NX_UINT):
+              doc: |
+                Total number of members in the set which are categorized as noise.
+              unit: NX_UNITLESS
+              # dimensions:
+              #   rank: 1
+              #   dim: [[1, n_lbl_num]]
+            number_of_core(NX_UINT):
+              doc: |
+                Total number of members in the set which are categorized as a core point.
+              unit: NX_UNITLESS
+              # dimensions:
+              #   rank: 1
+              #   dim: [[1, n_lbl_num]]
+            # at the level of the feature set
+            number_of_features(NX_UINT):
+              doc: |
+                Total number of clusters (excluding noise and unassigned).
+              unit: NX_UNITLESS
+            feature_identifier(NX_UINT):
+              doc: |
+                Array of numerical identifier of each feature (cluster).
+              unit: NX_UNITLESS
+              dimensions:
+                rank: 1  # 2
+                dim: [[1, n_features]]  #  [2, n_lbl_num]]
+            feature_member_count(NX_UINT):
+              doc: |
+                Array of number of members for each feature.
+              unit: NX_UNITLESS
+              dimensions:
+                rank: 1  # 2
+                dim: [[1, n_features]]  #, [2, n_lbl_num]]
+
+       # ADD FURTHER RESULTS along the same pattern for e.g. OPTICS and HDBSCAN
+
+# ##MK::end of the tool-specific section
+    performance(NXcs_profiling):
+      exists: recommended
+      current_working_directory:
+      command_line_call:
+        exists: optional
+      start_time(NX_DATE_TIME):
+        exists: recommended
+      end_time(NX_DATE_TIME):
+        exists: recommended
+      total_elapsed_time(NX_NUMBER):
+      number_of_processes(NX_POSINT):
+      number_of_threads(NX_POSINT):
+      number_of_gpus(NX_POSINT):
+      (NXcs_computer):
+        exists: recommended
+        name:
+          exists: recommended
+        operating_system:
+          \@version:
+        uuid:
+          exists: optional
+        (NXcs_cpu):
+          exists: [min, 0, max, infty]
+          name:
+            exists: optional
+          (NXfabrication):
+            exists: recommended
+            identifier:
+              exists: optional
+            capabilities:
+              exists: optional
+        (NXcs_gpu):
+          exists: [min, 0, max, infty]
+          name:
+            exists: optional
+          (NXfabrication):
+            exists: recommended
+            identifier:
+              exists: optional
+            capabilities:
+              exists: optional
+        (NXcs_mm_sys):
+          exists: [min, 0, max, 1]
+          total_physical_memory(NX_NUMBER):
+        (NXcs_io_sys):
+          exists: [min, 0, max, 1]
+          (NXcs_io_obj):
+            exists: [min, 1, max, infty]
+            technology:
+            max_physical_capacity(NX_NUMBER):
+            name:
+              exists: optional
+            (NXfabrication):
+              exists: recommended
+              identifier:
+                exists: optional
+              capabilities:
+                exists: optional
+
+        (NXcs_profiling_event):
+          start_time(NX_DATE_TIME):
+            exists: optional
+          end_time(NX_DATE_TIME):
+            exists: optional
+          description:
+          elapsed_time(NX_NUMBER):
+          number_of_processes(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_processes
+              in the NXcs_profiling super class.
+          number_of_threads(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_threads
+              in the NXcs_profiling super class.
+          number_of_gpus(NX_POSINT):
+            # exists: recommended
+            doc: |
+              Specify if it was different from the number_of_threads
+              in the NXcs_profiling super class.
+          max_virtual_memory_snapshot(NX_NUMBER):
+            exists: recommended
+          max_resident_memory_snapshot(NX_NUMBER):
+            exists: recommended

@@ -1,0 +1,166 @@
+category: application
+doc: |   
+  Raw, monochromatic 2-D SAS data with an area detector.
+  
+  This is an application definition for raw data (not processed or reduced data)
+  from a 2-D small angle scattering instrument collected with a monochromatic
+  beam and an area detector. It is meant to be suitable both for neutron SANS
+  and X-ray SAXS data.
+  
+  It covers all raw data from any monochromatic SAS techniques that
+  use an area detector':' SAS, WSAS, grazing incidence, GISAS
+  
+  It covers all raw data from any SAS techniques that use an area detector and
+  a monochromatic beam.
+
+symbols: 
+  doc: |     
+    The symbol(s) listed here will be used below to coordinate fields with the same shape.
+
+  nXPixel: | 
+    Number of pixels in x direction.
+
+  nYPixel: | 
+    Number of pixels in y direction.
+
+type: group
+NXsas(NXobject):
+  (NXentry):
+    title:
+      exists: ['min', '0']
+    start_time(NX_DATE_TIME):
+      exists: ['min', '0']
+    end_time(NX_DATE_TIME):
+      exists: ['min', '0']
+    definition:
+      doc: | 
+        Official NeXus NXDL schema to which this file conforms.
+      enumeration: [NXsas]
+    (NXinstrument):
+      (NXsource):
+        type:
+          doc: | 
+            Type of radiation source.
+        name:
+          exists: ['min', '0']
+          doc: | 
+            Name of the radiation source.
+        probe:
+          doc: |             
+            Name of radiation probe, necessary to compute the sample contrast.
+          enumeration: [neutron, x-ray]
+      (NXmonochromator):
+        wavelength(NX_FLOAT):
+          unit: NX_WAVELENGTH
+          doc: | 
+            The wavelength (':'math':'`\lambda`) of the radiation.
+        wavelength_spread(NX_FLOAT):
+          exists: ['min', '0']
+          doc: |             
+            delta_lambda/lambda (':'math':'`\Delta\lambda/\lambda`)':'
+            Important for resolution calculations.
+      (NXcollimator):
+        exists: ['min', '0']
+        (NXgeometry):
+          (NXshape):
+            shape(NX_CHAR):
+              enumeration: [nxcylinder, nxbox]
+            size(NX_FLOAT):
+              unit: NX_LENGTH
+              doc: | 
+                The collimation length.
+      (NXdetector):
+        data(NX_NUMBER):
+          doc: |             
+            This is area detector data, number of x-pixel versus
+            number of y-pixels.
+            
+            Since the beam center is to be determined as a step of data
+            reduction, it is not necessary to document or assume the position of
+            the beam center in acquired data.
+            
+            It is necessary to define which are the x and y directions, to coordinate
+            with the pixel size and compute Q.
+          dimensions:
+            rank: 2
+            dim: [[1, nXPixel], [2, nYPixel]]
+        distance(NX_FLOAT):
+          unit: NX_LENGTH
+          doc: | 
+            The distance between detector and sample.
+        x_pixel_size(NX_FLOAT):
+          unit: NX_LENGTH
+          doc: | 
+            Physical size of a pixel in x-direction.
+        y_pixel_size(NX_FLOAT):
+          unit: NX_LENGTH
+          doc: | 
+            Physical size of a pixel in y-direction.
+        polar_angle(NX_FLOAT):
+          unit: NX_ANGLE
+          exists: ['min', '0']
+        azimuthal_angle(NX_FLOAT):
+          unit: NX_ANGLE
+          exists: ['min', '0']
+        rotation_angle(NX_FLOAT):
+          unit: NX_ANGLE
+          exists: ['min', '0']
+        aequatorial_angle(NX_FLOAT):
+          unit: NX_ANGLE
+          exists: ['min', '0']
+        beam_center_x(NX_FLOAT):
+          unit: NX_LENGTH
+          exists: ['min', '0']
+          doc: |             
+            This is the x position where the direct beam would hit the detector.
+            This is a length, not a pixel position, and can be outside of the
+            actual detector.
+            
+            It is expected that data reduction will determine beam center from
+            the raw data, thus it is not required here.  The instrument can
+            provide an initial or nominal value to advise data reduction.
+        beam_center_y(NX_FLOAT):
+          unit: NX_LENGTH
+          exists: ['min', '0']
+          doc: |             
+            This is the y position where the direct beam would hit the detector.
+            This is a length, not a pixel position, and can be outside of the
+            actual detector.
+            
+            It is expected that data reduction will determine beam center from
+            the raw data, thus it is not required here.  The instrument can
+            provide an initial or nominal value to advise data reduction.
+      name(NX_CHAR):
+        doc: | 
+          Name of the instrument actually used to perform the experiment.
+    (NXsample):
+      exists: ['min', '0']
+      name:
+        doc: | 
+          Descriptive name of sample.
+      aequatorial_angle(NX_FLOAT):
+        unit: NX_ANGLE
+        exists: ['min', '0']
+    (NXmonitor):
+      exists: ['min', '0']
+      mode:
+        doc: |           
+          Count to a preset value based on either clock time
+          (timer) or received monitor counts (monitor).
+        enumeration: [monitor, timer]
+      preset(NX_FLOAT):
+        doc: | 
+          Preset value for time or monitor.
+      integral(NX_FLOAT):
+        unit: NX_ANY
+        doc: | 
+          Total integral monitor counts.
+    (NXdata):
+      \@signal:
+        exists: optional
+        doc: |           
+          Name the *plottable* field.  The link here defines this name as
+          ``data``.
+        enumeration: [data]
+      data(link):
+        target: /NXentry/NXinstrument/NXdetector/data

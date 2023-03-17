@@ -18,33 +18,33 @@ Nomad Remote Tools Hub (NORTH)
 Introduction
 ##############
 
-NORTH (the NOMAD OASIS Remote Tools Hub) is a NOMAD OASIS service which makes
-preconfigured scientific software of different communities available coupled
-to the OASIS and accessible via the webbrowser. This part of the proposal documents
+NORTH (the NOMAD Oasis Remote Tools Hub) is a NOMAD Oasis service which makes
+preconfigured scientific software of different communities available and coupled
+to Oasis and accessible via the webbrowser. This part of the proposal documents
 examples for specific NeXus-related work to some of the tools and containers
 available in NORTH.
 
-One tool is the paraprobe-toolbox software package in the the apm tools container.
+
+apmtools
+########
+
+One tool is the paraprobe-toolbox software package in the the apmtools container.
 The software is developed by `M. Kühbach et al. <https://arxiv.org/abs/2205.13510>`_.
 
 Here we show how NeXus is used to consistently define application definitions
-for scientific software in the field of atom probe.
-
-In this community the paraprobe-toolbox is an example of an open-source parallelized
+for scientific software in the field of atom probe. In this community the paraprobe-toolbox is an example of an open-source parallelized
 software for analyzing point cloud data, for assessing meshes in 3D continuum
 space, and analyzing the effects of parameterization on descriptors
 about the microstructure of materials which were studied with atom probe microscopy.
 
-The need for a thorough documentation of the tools in not only the paraprobe-toolbox
-was motivated by several needs:
+The need for a thorough documentation of the tools in not only the paraprobe-toolbox was motivated by several needs:
 
 First, users of software would like to better understand and also be able to
-study themselves which individual parameter and settings for each tool exists
-and configuring these affects their analyses quantitatively.
+study themselves which individual parameter and settings for each tool exist
+and how configuring these affects their analyses quantitatively.
 
-Second, scientific software like those of the paraprobe-toolbox implement a
-numerical workflow where multiple data sources and previous analysis results
-are processed and carried through more involved analysis with several steps.
+Second, scientific software like the tools in the paraprobe-toolbox implement a
+numerical/algorithmical (computational) workflow whereby data from multiple input sources (like previous analysis results) are processed and carried through more involved analysis within several steps inside the tool. The tool then creates output as files.
 
 Individual tools are developed in C/C++ and/or Python. Here, having a possibility
 for provenance tracking is useful as it is one component and requirement for
@@ -53,15 +53,14 @@ to fullfill better the "R", i.e. reproducibility of daily FAIR research practice
 
 The paraprobe-toolbox is one example of a software which implements a workflow
 via a sequence of operations executed within a jupyter notebook
-(or Python script respectively). Specifically, individual tools are chained
-and convenience function are available to create well-defined input/configuration
+(or Python script respectively). Specifically, individual tools are chained. Convenience functions are available to create well-defined input/configuration
 files for each tool. These config files instruct the tool upon processing.
 
 In this design, each workflow step (with a tool) is in fact a pair (or triple) of
 at least two sub-steps: i) the creation of a configuration file, 
 ii) the actual analysis using the Python/or C/C++ tools, 
-iii) the optional of the results in the HDF5 file from each tool run with
-other software in Python or Matlab for instance.
+iii) the optional post-processing/visualizing of the results inside the NeXus/HDF5 files generated from each tool run using
+other software.
 
 
 .. _WhatHasBeenAchieved:
@@ -69,15 +68,15 @@ other software in Python or Matlab for instance.
 What has been achieved so far?
 ##############################
 
-This proposal summarizes the first (of two) steps which change the interface and
+This proposal summarizes both of the steps which we worked on between Q3/2022-Q1/2023 to change the interface and
 file interaction in all tools of the paraprobe-toolbox to accept exclusively
-well-defined configuration files and yield specific output.
+well-defined configuration files and yield exclusively specific output.
 
-Data and metadata between the tools are exchanged with HDF5/NeXus files.
+Data and metadata between the tools are exchanged with NeXus/HDF5 files.
 Specifically, we created for each tool an application definition (see below)
 which details all possible settings and options for the configuration as to
 guide users. The config(uration) files are HDF5 files, whose content matches
-to the naming conventions of the respective application definition for each tool.
+to the naming conventions of the respective `config` application definition for each tool.
 As an example NXapm_paraprobe_config_surfacer specifies how a configuration file
 for the paraprobe-surfacer tool should be formatted and which parameter it contains.
 
@@ -89,17 +88,15 @@ processing chain/workflow.
 As an example, a user may first range their reconstruction and then compute
 correlation functions. The config file for the ranging tool stores the files
 which hold the reconstructed ion position and ranging definitions.
-The ranging tool generates a results file with the ion type labels stored.
+The ranging tool generates a results file with the ion type labels stored. This results file is formatted according to the tool-specific `results` application definition. This results file and the reconstruction is imported by the spatial statistics
+tool which again keeps track of all files.
 
-This results file and the reconstruction is imported by the spatial statistics
-tool which again keeps track of all files. This makes it possible to rigorously
+This design makes it possible to rigorously
 trace which numerical results were achieved with a specific chain of input and
 settings using specifically-versioned tools.
 
 We understand that this additional handling of metadata and provenance tracking
-may not be at first glance super relevant for scientists or appear and unnecessary
-feature. There is indeed an additional layer of work for the development
-and maintenance of the software.
+may not be at first glance super relevant for scientists or appears to be an unnecessarily complex feature. There is indeed an additional layer of work which came with the development and maintenance of this functionality.
 
 However, we are convinced that this is the preferred way of performing software
 development and data analyses as it enables users to take advantage of a completely
@@ -107,8 +104,10 @@ automated provenance tracking which happens silently in the background.
 
 .. _ApmParaprobeAppDef:
 
-New Application Definitions
-############################
+Application Definitions
+#######################
+
+Firstly, we define application definitions for the input side (configuration) of each tool.
 
     :ref:`NXapm_paraprobe_config_transcoder`:
         Configuration of paraprobe-transcoder
@@ -117,6 +116,10 @@ New Application Definitions
     :ref:`NXapm_paraprobe_config_ranger`:
         Configuration of paraprobe-ranger
         Apply ranging definitions and explore possible molecular ions.
+
+    :ref:`NXapm_paraprobe_config_selector`:
+        Configuration of paraprobe-selector
+        Defining complex spatial regions-of-interest to filter reconstructed datasets.
 
     :ref:`NXapm_paraprobe_config_surfacer`:
         Configuration of paraprobe-surfacer
@@ -150,29 +153,73 @@ New Application Definitions
         Import cluster analysis results of IVAS/APSuite and perform clustering
         analyses in a Python ecosystem.
 
+Secondly, we define application definitions for the output side (results) of each tool.
+
+    :ref:`NXapm_paraprobe_results_transcoder`:
+        Results of paraprobe-transcoder
+        Store reconstructed positions, ions, and charge states.
+
+    :ref:`NXapm_paraprobe_results_ranger`:
+        Results of paraprobe-ranger
+        Store applied ranging definitions and combinatorial analyses of all possible iontypes.
+
+    :ref:`NXapm_paraprobe_results_selector`:
+        Results of paraprobe-selector
+        Store which points are inside or on the boundary of complex spatial regions-of-interest.
+
+    :ref:`NXapm_paraprobe_results_surfacer`:
+        Results of paraprobe-surfacer
+        Store triangulated surface meshes of models for the edge of a dataset.
+
+    :ref:`NXapm_paraprobe_results_distancer`:
+        Results of paraprobe-distancer
+        Store analytical distances between ions to a set of triangles.
+
+    :ref:`NXapm_paraprobe_results_tessellator`:
+        Results of paraprobe-tessellator
+        Store volume of all Voronoi cells about each ion in the dataset.
+
+    :ref:`NXapm_paraprobe_results_nanochem`:
+        Results of paraprobe-nanochem
+        Store all results of delocalization, isosurface, and interface detection algorithms,
+        store all extracted triangulated surface meshes of found microstructural features,
+        store composition profiles and corresponding geometric primitives (ROIs).
+
+    :ref:`NXapm_paraprobe_results_intersector`:
+        Results of paraprobe-intersector
+        Store graph of microstructural features and relations/link identified between them.
+
+    :ref:`NXapm_paraprobe_results_spatstat`:
+        Results of paraprobe-spatstat
+        Store spatial correlation functions.
+
+    :ref:`NXapm_paraprobe_results_clusterer`:
+        Results of paraprobe-clusterer
+        Store results of cluster analyses.
+
 .. _ApmParaprobeNewBC:
 
-New Base Classes
-#################
+Base Classes
+############
 
 We envision that the above-mentioned definitions can be useful not only to take
 inspiration for other software tools in the field of atom probe but also to support
 a discussion towards a stronger standardization of the vocabulary used.
 Therefore, we are happy for your comments and suggestions on this and the related
-pages via the hypothesis web annotation service.
+pages via the hypothesis web annotation service or as your issues posted on GitHub.
 
 We are convinced that the majority of data analyses in atom probe use
 an in fact common set of operations and conditions on the input data
 even though this might not be immediately evident. In particular this is not
-the case for some community build tools with a very specific scope where oftentimes
-the algorithms hardcoded. A typically example is a reseacher who implements a
-ranging tool and uses that all the examples are on a specific material.
-We are convinced it is better to follow a much more generalized approach.
+the case for some community built tools with a very specific scope where oftentimes
+the algorithms are hardcoded for specific material systems. A typical example is a
+reseacher who implements a ranging tool and uses that all the examples are on a
+specific material. We are convinced it is better to follow a much more generalized approach.
 
-In this spirit, we propose the following base classes as examples how very
-flexible constraints can be implemented which restrict which ions in the dataset
-should be processed or not. We see that these suggestion complement the
-proposal on computational geometry base classes:
+In this spirit, we propose the following base classes and the above application
+definitions as examples how very flexible constraints can be implemented which
+restrict which ions in the dataset should be processed or not. We see that these
+suggestions complement the proposal on computational geometry base classes:
 
     :ref:`NXapm_input_reconstruction`:
         A description from which file the reconstructed ion positions are imported.
@@ -180,8 +227,8 @@ proposal on computational geometry base classes:
     :ref:`NXapm_input_ranging`:
         A description from which file the ranging definitions are imported.
         The design of the ranging definitions is, thanks to :ref:`NXion` so
-        general that all possible nuclids be they observationally stable
-        or radioactive can be considered.
+        general that all possible nuclids can be considered, be they observationally stable, 
+        be they radioactive or transuranium nuclids.
 
 A detailed inspection of spatial and other type of filters used in atom probe microscopy
 data analysis revealed that it is better to define atom probe agnostic, i.e. more
@@ -204,25 +251,7 @@ general filters:
         or hit multiplicity.
 
 In summary, we report with this proposal our experience made in an experimental
-project that is about using NeXus for standardizing a certain scientific software.
+project that is about using NeXus for standardizing a set of non-trivial scientific software tools.
 During the implementation we learned that for handling computational geometry
 and microstructure-related terms many subtilities have to be considered which
-makes a controlled vocabulary valuable not only to avoid reimplementing the wheel.
-
-
-.. NextStep:
-
-Next Step
-####################
-
-This also makes us confident to take the next step which will be to change also
-the results file of each tool. The following two application definition are
-not yet implemented in the tools' source code but give an idea for development
-purposes how such application definitions and description of created files could
-look like.
-
-    :ref:`NXapm_paraprobe_results_transcoder`:
-
-    :ref:`NXapm_paraprobe_results_ranger`:
-
-
+makes a controlled vocabulary valuable not only to avoid a reimplementing of the wheel.

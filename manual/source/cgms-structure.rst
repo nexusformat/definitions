@@ -29,18 +29,16 @@ and computer simulations.
 As far as NeXus is concerned, the here proposed distinct sets of simple
 geometric primitives and shapes offer a complementary alternative to the
 already existent base classes in NeXus for constructive solid geometry
-such as :ref:`NXcsg`, :ref:`NXoff_geometry`, or :ref:`NXquadric` to name a few.
+such as :ref:`NXcsg`, :ref:`NXoff_geometry`, or :ref:`NXquadric` to name but a few.
 
 Second, we would like to explore with this proposal how we can harmonize terms
-frequently used by materials scientists in the condensed-matter physics with the
-NOMAD MetaInfo description.
+frequently used by materials scientists in the field of condensed-matter physics with definitions and terms offer by the NOMAD MetaInfo description.
 
 Third, the proposal should yield a substantiated set of arguments and suggestions
 how descriptors for the structure and atomic architecture of materials can be
-harmonize. With this we especially would like to reach out and intensify the
+harmonized. With this we especially would like to reach out and intensify the
 cooperation between the materials-science-related consortia of the German
-National Research Infrastructure, specifically, FAIRmat, NFDI-MatWerk, NFDI4Ing,
-and NFDI4Chem
+National Research Infrastructure, specifically, FAIRmat, NFDI-MatWerk, NFDI4Ing, NFDI4Chem, NFDI4Cat, MaRDi, and DAPHNE.
 
 .. The proposal reaches out to our colleagues in the materials engineering-based
 .. consortia to document that there is value in discussing about controlled vocabulary.
@@ -48,7 +46,7 @@ and NFDI4Chem
 .. _PhysicsCGMS:
 
 Physics background
-###################
+##################
 Microstructural features or crystal defects are spatial arrangements of atoms.
 Given their specific atomic arrangement and composition, such features have
 specific constraints on the degrees of freedom how atoms can arrange. This causes
@@ -80,35 +78,21 @@ temporal set of atoms, each having a nuclid type and position/trajectory.
 In most cases, such a coarse-graining is an ill-posed task because different
 mathematical/geometrical methods exists how a point, a line, a surface, or a volumetric defect
 can be described and be spatio-temporally constrained through a geometrical model
-with defined geometric primitives and associated coarser-scale properties of the defect.
+with defined geometric primitives and associated coarser-scale properties.
 
 The key motivation to such coarse-graining is to reduce the complexity of the
 description. On the one hand to support visualization and scientific analyses - not only
-of crystal defect arrangements - and on the other hand it is the hope that using descriptors
-at a coarser level, i.e. nanometer, micrometer, and larger, still sufficiently
-accurate and precise descriptors can be found without having to dynamics of each
-atom to predict or understand the properties of defects and their dynamics.
+of crystal defect arrangements. On the other hand it is the hope that using descriptors
+at a coarser level, i.e. nanometer, micrometer, and larger, it is still possible to find sufficiently
+accurate and precise descriptors which avoid that one has to account for the dynamics of each atom to predict or understand the properties of defects and their dynamics.
 
 Nevertheless, experience has shown that computational-geometry-based descriptions
-when combined with hierarchical clustering/labeling methods, applied on the set of
-atoms, turn out to yield useful descriptors. Examples include point, line, surface defects,
+when combined with hierarchical clustering/labeling methods, applied on set of
+atoms and features turn out to yield useful descriptors. Examples include point, line, surface defects,
 such as vacancies, solute cluster, dislocations, disconnections, interfaces to name but a few.
 
-.. _CGMSNewAppDef:
-
-.. New Application Definitions
-.. ############################
-
-.. Work on handshaking between EPICS-controlled experiments and NeXus resulted
-.. in one application definition for temperature dependent IV curve measurements.
-
-..  :ref:`NXiv_temp`:
-..      Application definition for temperature dependent IV curve measurements.
-
-.. _CGMSNewBC:
-
-New Base Classes
-#################
+Base Classes
+############
 
 We propose the following base classes, starting with a set of descriptors
 for frequently used shapes and geometric primitives:
@@ -144,7 +128,7 @@ for frequently used shapes and geometric primitives:
         A collection (or soup) of polyhedra.
 
     :ref:`NXcg_roi_set`:
-        A container to host a number of different type of primitives.
+        A container to host a number of different types of primitives.
 
     :ref:`NXcg_tetrahedron_set`:
         A collection (or soup) of tetrahedra.
@@ -152,7 +136,6 @@ for frequently used shapes and geometric primitives:
     :ref:`NXcg_hexahedron_set`:
         A collection (or soup) of hexahedra with capabilities to represent
         also simpler (bounding) boxes for e.g. binary trees.
-
 
 These base classes make use of new base classes which describe data structures:
 
@@ -163,21 +146,20 @@ These base classes make use of new base classes which describe data structures:
     :ref:`NXcg_half_edge_data_structure`:
         A half-edge data structure is a useful complementary descriptor for
         polygon/polyhedra which enables topological analyses and traversal
-        of the graph how polygons and polyhedra can be described.
+        of the graph how polygons and polyhedra can alternatively be described.
 
     :ref:`NXcg_unit_normal_set`:
-        As an additional structuring element especially for meshes well-documented
-        normal information is crucial for distance computations
+        As an additional structuring element especially for meshes, well-documented
+        normal information is crucial for distance computations.
 
     :ref:`NXcg_geodesic_mesh`:
         Geodesic meshes are useful for all applications when meshing the surface
         of a sphere.
 
-    :ref:`NXcg_alpha_shape`:
+    :ref:`NXcg_alpha_complex`:
         Alpha shapes and alpha wrappings, specifically the special case of the
         convex hull, are frequently used geometrical models for describing
         a boundary or edge to a set of geometric primitives.
-
 
 Furthermore, we propose a few base classes for operations when working with
 discretized representations of material (area or volume) which can be useful
@@ -186,7 +168,7 @@ not only for stencil-based methods:
     :ref:`NXcg_grid`:
         A grid of cells.
 
-    :ref:`NXcg_isocontour`:
+    :ref:`NXisocontour`:
         A description for isocontour descriptions.
 
     :ref:`NXcg_marching_cubes`:
@@ -195,13 +177,16 @@ not only for stencil-based methods:
         configurations is known to result in different triangle soups.
 
     :ref:`NXdelocalization`:
-        An approach to document procedures in which a scalar field
+        An approach to document procedures whereby a scalar field
         is smoothened in a controlled manner.
 
 Assuming that these base classes can serve as building blocks, we would like
 to test with the proposal also how these base classes can be applied in base
 classes for specific types of microstructural features and/or utility classes
 to hold metadata for these features:
+
+    :ref:`NXsimilarity_grouping`:
+        An alias for NXclustering.
 
     :ref:`NXclustering`:
         A description for clustering of objects (such as atoms or features).
@@ -210,8 +195,7 @@ to hold metadata for these features:
         A set of atoms.
 
     :ref:`NXorientation_set`:
-        A set of rotations to describe the relative orientation of
-        of members of a set of features/objects.
+        A set of rotations to describe the relative orientation of members of a set of features/objects.
 
     :ref:`NXslip_system_set`:
         Metadata to a set of slip system/slip system family for
@@ -237,9 +221,15 @@ to hold metadata for these features:
     :ref:`NXms_snapshot_set`:
         The corresponding class to hold a set of :ref:`NXms_snapshot` objects.
 
+    :ref:`NXchemical_composition`:
+        (Chemical) composition of a sample or a set of things.
+
 Furthermore, we found that it can be useful to have a set of base classes with
-which software documents state and gives a summary for users about the performance
+which software documents it state and gives a summary for users about the performance
 and elapsed time measured while processing data. These utility classes include:
+
+    :ref:`NXprogram`:
+        A named and version of a program of library/component of a larger software framework.
 
     :ref:`NXcs_filter_boolean_mask`:
         A boolean mask.
@@ -271,9 +261,3 @@ and elapsed time measured while processing data. These utility classes include:
 
     :ref:`NXcs_io_obj`:
         Metadata of a component storing data of an :ref:`NXcs_io_sys` instance.
-
-
-.. _CGMSNewCommonBC:
-.. New Common Base Classes
-.. #######################
-

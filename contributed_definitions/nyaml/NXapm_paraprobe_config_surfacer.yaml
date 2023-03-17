@@ -4,6 +4,7 @@ doc: |
 symbols:
   doc: The symbols used in the schema to specify e.g. dimensions of arrays.
   n_alpha_values: Number of alpha values (and offset values) to probe.
+  n_values: How many different match values does the filter specify.
 NXapm_paraprobe_config_surfacer:
   (NXentry):
     # by default for appdefs the value of the exists keyword is required
@@ -36,6 +37,12 @@ NXapm_paraprobe_config_surfacer:
     analysis_description:
       exists: optional
       doc: Possibility for leaving a free-text description about this analysis.
+    results_path:
+      exists: optional
+      doc: |
+        Path to the directory where the tool should store NeXus/HDF5 results
+        of this analysis. If not specified results will be stored in the
+        current working directory.
     number_of_processes(NX_UINT):
       doc: |
         For now a support field for the tool to identify how many individual
@@ -84,13 +91,30 @@ NXapm_paraprobe_config_surfacer:
           bitdepth(NX_UINT):
           mask(NX_UINT):
           identifier(NX_UINT):
+      # ##MK::ion_id_filter(NXcs_filter_boolean_mask):
       evaporation_id_filter(NXsubsampling_filter):
         exists: optional
+        linear_range_min_incr_max(NX_UINT):
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 1
+            dim: [[1, 3]]
       iontype_filter(NXmatch_filter):
         exists: optional
+        method:
+        match(NX_NUMBER):
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 1
+            dim: [[1, n_values]]
       hit_multiplicity_filter(NXmatch_filter):
         exists: optional
-
+        method:
+        match(NX_NUMBER):
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 1
+            dim: [[1, n_values]]
       surface_meshing(NXprocess):
         preprocessing_method:
           doc: |
@@ -120,8 +144,13 @@ NXapm_paraprobe_config_surfacer:
         alpha_value_choice:
           doc: |
             Specifies which method to use to define the alpha value.
-            By default, the tool uses a fast specialized algorithm for
-            computing only the convex hull.
+            The value convex_hull_naive is the default. This instructs the tool
+            to use a fast specialized algorithm for computing only the convex
+            hull. The resulting triangles can be skinny.
+            
+            The value convex_hull_refine computes first also a convex_hull_naive
+            but refines the mesh by triangle flipping and splitting to improve
+            the quality of the mesh.
             
             The value smallest_solid instructs the CGAL library to choose a
             value which realizes an alpha-shape that is the smallest solid.
@@ -140,7 +169,7 @@ NXapm_paraprobe_config_surfacer:
             though such as watertightness and proximity constraints on the
             resulting wrapping.
           # NEW ISSUE: further details CGAL documentation
-          enumeration: [fast_convex_hull, smallest_solid, cgal_optimal, set_of_values, set_of_alpha_wrappings]
+          enumeration: [convex_hull_naive, convex_hull_refine, smallest_solid, cgal_optimal, set_of_values, set_of_alpha_wrappings]
         alpha_values(NX_FLOAT):
           doc: |
             Array of alpha values to use when alpha_value_choice is set_of_values
@@ -173,3 +202,6 @@ NXapm_paraprobe_config_surfacer:
             Specifies if the tool should compute all interior tetrahedra 
             of the alpha complex (currently only for alpha shapes).
         # NEW ISSUE: has_facet_appearance(NX_BOOLEAN):
+
+    performance(NXcs_profiling):
+      current_working_directory:

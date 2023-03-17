@@ -1,0 +1,74 @@
+category: base
+doc: |   
+  Geometry (shape) description.
+  The format closely matches the Object File Format (OFF) which can be output
+  by most CAD software.
+  It can be used to describe the shape of any beamline component, including detectors.
+  In the case of detectors it can be used to define the shape of a single pixel, or,
+  if the pixel shapes are non-uniform, to describe the shape of the whole detector.
+
+symbols: 
+  doc: | 
+    These symbols will be used below.
+
+  i: | 
+    number of vertices in the shape
+
+  k: | 
+    number of faces in the shape
+
+  l: |     
+    number faces which are detecting surfaces or form the boundary of
+    detecting volumes
+
+type: group
+NXoff_geometry(NXobject):
+  vertices(NX_NUMBER):
+    unit: NX_LENGTH
+    doc: |       
+      List of x,y,z coordinates for vertices.
+      The origin of the coordinates is the position of the parent component, for
+      example the NXdetector which the geometry describes.
+      If the shape describes a single pixel for a detector with uniform pixel
+      shape then the origin is the position of each pixel as described by the
+      ``x/y/z_pixel_offset`` datasets in ``NXdetector``.
+    dimensions:
+      rank: 2
+      dim: [[1, i], [2, 3]]
+  winding_order(NX_INT):
+    doc: |       
+      List of indices of vertices in the ``vertices`` dataset to form each face,
+      right-hand rule for face normal.
+    dimensions:
+      rank: 1
+      dim: [[1, j]]
+  faces(NX_INT):
+    doc: | 
+      The start index in ``winding_order`` for each face.
+    dimensions:
+      rank: 1
+      dim: [[1, k]]
+  detector_faces(NX_INT):
+    doc: |       
+      List of pairs of index in the "faces" dataset and detector id. Face IDs in
+      the first column, and corresponding detector IDs in the second column.
+      This dataset should only be used only if the ``NXoff_geometry`` group is
+      describing a detector.
+      Note, the face indices must be in ascending order but need not be
+      consecutive as not every face in faces need be a detecting surface or
+      boundary of detecting volume.
+      Can use multiple entries with the same detector id to define detector volumes.
+    dimensions:
+      rank: 2
+      dim: [[1, l], [2, 2]]
+  \@default:
+    doc: |       
+      .. index':'':' plotting
+      
+      Declares which child group contains a path leading
+      to a ':'ref':'`NXdata` group.
+      
+      It is recommended (as of NIAC2014) to use this attribute
+      to help define the path to the default dataset to be plotted.
+      See https':'//www.nexusformat.org/2014_How_to_find_default_data.html
+      for a summary of the discussion.

@@ -1,0 +1,128 @@
+category: application
+doc: |   
+  This definition covers the common parts of all monochromatic single crystal raw data application definitions.
+
+symbols: 
+  doc: |     
+    The symbol(s) listed here will be used below to coordinate datasets with the same shape.
+
+  nP: | 
+    Number of points
+
+  nXPixels: | 
+    Number of X pixels
+
+  nYPixels: | 
+    Number of Y pixels
+
+type: group
+NXxbase(NXobject):
+  (NXentry)entry:
+    title:
+    start_time(NX_DATE_TIME):
+    definition:
+      doc: | 
+        Official NeXus NXDL schema to which this file conforms
+      enumeration: [NXxbase]
+    (NXinstrument)instrument:
+      (NXsource)source:
+        type:
+        name:
+        probe:
+          enumeration: [neutron, x-ray, electron]
+      (NXmonochromator)monochromator:
+        wavelength(NX_FLOAT):
+          unit: NX_WAVELENGTH
+      (NXdetector)detector:
+        exists: ['max', 'unbounded']
+        data(NX_INT):
+          signal: 1
+          doc: |             
+            The area detector data, the first dimension is always the
+            number of scan points, the second and third are the number
+            of pixels in x and y. The origin is always assumed to be
+            in the center of the detector. maxOccurs is limited to the
+            the number of detectors on your instrument.
+          dimensions:
+            rank: 3
+            dim: [[1, nP], [2, nXPixels], [3, nYPixels]]
+          \@signal:
+            type: NX_POSINT
+            enumeration: [1]
+        x_pixel_size(NX_FLOAT):
+          unit: NX_LENGTH
+        y_pixel_size(NX_FLOAT):
+          unit: NX_LENGTH
+        doc: |           
+          The name of the group is detector if there is only one detector,
+          if there are several,  names have to be detector1,
+          detector2, ...detectorn.
+        distance(NX_FLOAT):
+          unit: NX_LENGTH
+        frame_start_number(NX_INT):
+          doc: |             
+            This is the start number of the first frame of a scan. In PX one often scans a couple
+            of frames on a give sample, then does something else, then returns to the same sample
+            and scans some more frames. Each time with a new data file.
+            This number helps concatenating such measurements.
+    (NXsample)sample:
+      name(NX_CHAR):
+        doc: | 
+          Descriptive name of sample
+      orientation_matrix(NX_FLOAT):
+        doc: |           
+          The orientation matrix according to Busing and
+          Levy conventions. This is not strictly necessary as
+          the UB can always be derived from the data.  But
+          let us bow to common usage which includes the
+          UB nearly always.
+        dimensions:
+          rank: 2
+          dim: [[1, 3], [2, 3]]
+      unit_cell(NX_FLOAT):
+        doc: |           
+          The unit cell, a, b, c, alpha, beta, gamma.
+          Again, not strictly necessary, but normally written.
+        dimensions:
+          rank: 1
+          dim: [[1, 6]]
+      temperature(NX_FLOAT):
+        doc: |           
+          The sample temperature or whatever sensor represents this value best
+        dimensions:
+          rank: 1
+          dim: [[1, nP]]
+      x_translation(NX_FLOAT):
+        unit: NX_LENGTH
+        doc: | 
+          Translation of the sample along the X-direction of the laboratory coordinate system
+      y_translation(NX_FLOAT):
+        unit: NX_LENGTH
+        doc: | 
+          Translation of the sample along the Y-direction of the laboratory coordinate system
+      distance(NX_FLOAT):
+        unit: NX_LENGTH
+        doc: | 
+          Translation of the sample along the Z-direction of the laboratory coordinate system
+    (NXmonitor)control:
+      mode:
+        doc: |           
+          Count to a preset value based on either clock time (timer)
+          or received monitor counts (monitor).
+        enumeration: [monitor, timer]
+      preset(NX_FLOAT):
+        doc: | 
+          preset value for time or monitor
+      integral(NX_FLOAT):
+        unit: NX_ANY
+        doc: | 
+          Total integral monitor counts
+    (NXdata):
+      doc: |         
+        The name of this group id data if there is only
+        one detector; if there are several the names will
+        be data1, data2, data3 and will point
+        to the corresponding detector groups in the
+        instrument hierarchy.
+      data(link):
+        target: /NXentry/NXinstrument/NXdetector/data

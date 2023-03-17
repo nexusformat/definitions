@@ -1,0 +1,73 @@
+category: application
+doc: |   
+  Application definition for a generic scan instrument.
+  
+  This definition is more an
+  example then a stringent definition as the content of a given NeXus scan file needs to
+  differ for different types of scans. This example definition shows a scan like done
+  on a rotation camera':' the sample is rotated and a detector image, the rotation angle
+  and a monitor value is stored at each step in the scan. In the following, the symbol
+  ``NP`` is used to represent the number of scan points. These are the rules for
+  storing scan data in NeXus files which are implemented in this example':'
+  
+  * Each value varied throughout a scan is stored as an array of
+    length ``NP`` at its respective location within the NeXus hierarchy.
+  * For area detectors, ``NP`` is the first dimension,
+    example for a detector of 256x256':'  ``data[NP,256,256]``
+  * The NXdata group contains links to all variables varied in the scan and the data.
+    This to give an equivalent to the more familiar classical tabular representation of scans.
+  
+  These rules exist for a reason':' HDF allows the first dimension of a data set to be
+  unlimited. This means the data can be appended too. Thus a NeXus file built according
+  to the rules given above can be used in the following way':'
+  
+  * At the start of a scan, write all the static information.
+  * At each scan point, append new data from varied variables
+    and the detector to the file.
+
+symbols: 
+  doc: |     
+    The symbol(s) listed here will be used below to coordinate datasets with the same shape.
+
+  nP: | 
+    Number of points
+
+  xDim: | 
+    xDim description
+
+  yDim: | 
+    yDim description
+
+type: group
+NXscan(NXobject):
+  (NXentry):
+    title:
+    start_time(NX_DATE_TIME):
+    end_time(NX_DATE_TIME):
+    definition(NX_CHAR):
+      doc: | 
+        Official NeXus NXDL schema to which this file conforms
+      enumeration: [NXscan]
+    (NXinstrument):
+      (NXdetector):
+        data(NX_INT):
+          signal: 1
+          dimensions:
+            rank: 3
+            dim: [[1, nP], [2, xDim], [3, yDim]]
+    (NXsample):
+      rotation_angle(NX_FLOAT):
+        axis: 1
+        dimensions:
+          rank: 1
+          dim: [[1, nP]]
+    (NXmonitor):
+      data(NX_INT):
+        dimensions:
+          rank: 1
+          dim: [[1, nP]]
+    (NXdata):
+      data(link):
+        target: /NXentry/NXinstrument/NXdetector/data
+      rotation_angle(link):
+        target: /NXentry/NXsample/rotation_angle

@@ -1,0 +1,102 @@
+category: application
+doc: |   
+  This is the application definition for a TOF laue diffractometer
+
+symbols: 
+  doc: |     
+    The symbol(s) listed here will be used below to coordinate datasets with the same shape.
+
+  nXPixels: | 
+    Number of X pixels
+
+  nYPixels: | 
+    Number of Y pixels
+
+  nTOF: | 
+    Time of flight
+
+type: group
+NXlauetof(NXobject):
+  (NXentry)entry:
+    definition:
+      doc: | 
+        Official NeXus NXDL schema to which this file conforms
+      enumeration: [NXlauetof]
+    (NXinstrument)instrument:
+      (NXdetector)detector:
+        doc: |           
+          This assumes a planar 2D detector. All angles and distances refer to the center of the
+          detector.
+        polar_angle(NX_FLOAT):
+          unit: NX_ANGLE
+          doc: | 
+            The polar_angle (two theta) where the detector is placed.
+        azimuthal_angle(NX_FLOAT):
+          unit: NX_ANGLE
+          doc: | 
+            The azimuthal angle where the detector is placed.
+        data(NX_INT):
+          signal: 1
+          dimensions:
+            rank: 3
+            dim: [[1, nXPixels], [2, nYPixels], [3, nTOF]]
+          \@signal:
+            type: NX_POSINT
+            enumeration: [1]
+        x_pixel_size(NX_FLOAT):
+          unit: NX_LENGTH
+        y_pixel_size(NX_FLOAT):
+          unit: NX_LENGTH
+        distance(NX_FLOAT):
+          unit: NX_LENGTH
+        time_of_flight(NX_FLOAT):
+          unit: NX_TIME_OF_FLIGHT
+          dimensions:
+            rank: 1
+            dim: [[1, nTOF]]
+    (NXsample)sample:
+      name:
+        doc: | 
+          Descriptive name of sample
+      orientation_matrix(NX_FLOAT):
+        doc: |           
+          The orientation matrix according to Busing and
+          Levy conventions. This is not strictly necessary as
+          the UB can always be derived from the data.  But
+          let us bow to common usage which includes thie
+          UB nearly always.
+        dimensions:
+          rank: 2
+          dim: [[1, 3], [2, 3]]
+      unit_cell(NX_FLOAT):
+        doc: |           
+          The unit cell, a, b, c, alpha, beta, gamma.
+          Again, not strictly necessary, but normally written.
+        dimensions:
+          rank: 1
+          dim: [[1, 6]]
+    (NXmonitor)control:
+      mode:
+        doc: | 
+          Count to a preset value based on either clock time (timer) or received monitor counts
+                   (monitor).
+        enumeration: [monitor, timer]
+      preset(NX_FLOAT):
+        doc: | 
+          preset value for time or monitor
+      data(NX_INT):
+        doc: | 
+          use these attributes  ``primary=1 signal=1``
+        dimensions:
+          rank: 1
+          dim: [[1, nTOF]]
+      time_of_flight(NX_FLOAT):
+        unit: NX_TIME_OF_FLIGHT
+        dimensions:
+          rank: 1
+          dim: [[1, nTOF]]
+    (NXdata)name:
+      data(link):
+        target: /NXentry/NXinstrument/NXdetector/data
+      time_of_flight(link):
+        target: /NXentry/NXinstrument/NXdetector/time_of_flight
