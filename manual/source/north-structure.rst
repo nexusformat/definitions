@@ -155,45 +155,45 @@ Firstly, we define application definitions for the input side (configuration) of
 
 Secondly, we define application definitions for the output side (results) of each tool.
 
-    :ref:`NXapm_paraprobe_config_transcoder`:
+    :ref:`NXapm_paraprobe_results_transcoder`:
         Results of paraprobe-transcoder
         Store reconstructed positions, ions, and charge states.
 
-    :ref:`NXapm_paraprobe_config_ranger`:
+    :ref:`NXapm_paraprobe_results_ranger`:
         Results of paraprobe-ranger
         Store applied ranging definitions and combinatorial analyses of all possible iontypes.
 
-    :ref:`NXapm_paraprobe_config_selector`:
+    :ref:`NXapm_paraprobe_results_selector`:
         Results of paraprobe-selector
         Store which points are inside or on the boundary of complex spatial regions-of-interest.
 
-    :ref:`NXapm_paraprobe_config_surfacer`:
+    :ref:`NXapm_paraprobe_results_surfacer`:
         Results of paraprobe-surfacer
         Store triangulated surface meshes of models for the edge of a dataset.
 
-    :ref:`NXapm_paraprobe_config_distancer`:
+    :ref:`NXapm_paraprobe_results_distancer`:
         Results of paraprobe-distancer
         Store analytical distances between ions to a set of triangles.
 
-    :ref:`NXapm_paraprobe_config_tessellator`:
+    :ref:`NXapm_paraprobe_results_tessellator`:
         Results of paraprobe-tessellator
         Store volume of all Voronoi cells about each ion in the dataset.
 
-    :ref:`NXapm_paraprobe_config_nanochem`:
+    :ref:`NXapm_paraprobe_results_nanochem`:
         Results of paraprobe-nanochem
         Store all results of delocalization, isosurface, and interface detection algorithms,
         store all extracted triangulated surface meshes of found microstructural features,
         store composition profiles and corresponding geometric primitives (ROIs).
 
-    :ref:`NXapm_paraprobe_config_intersector`:
+    :ref:`NXapm_paraprobe_results_intersector`:
         Results of paraprobe-intersector
         Store graph of microstructural features and relations/link identified between them.
 
-    :ref:`NXapm_paraprobe_config_spatstat`:
+    :ref:`NXapm_paraprobe_results_spatstat`:
         Results of paraprobe-spatstat
         Store spatial correlation functions.
 
-    :ref:`NXapm_paraprobe_config_clusterer`:
+    :ref:`NXapm_paraprobe_results_clusterer`:
         Results of paraprobe-clusterer
         Store results of cluster analyses.
 
