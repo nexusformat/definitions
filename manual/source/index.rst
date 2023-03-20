@@ -17,6 +17,7 @@ https://www.nexusformat.org/
     apm-structure
     transport-structure
     cgms-structure
+    laboratory-structure
     north-structure
 
 
