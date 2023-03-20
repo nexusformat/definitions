@@ -32,13 +32,15 @@ already existent base classes in NeXus for constructive solid geometry
 such as :ref:`NXcsg`, :ref:`NXoff_geometry`, or :ref:`NXquadric` to name but a few.
 
 Second, we would like to explore with this proposal how we can harmonize terms
-frequently used by materials scientists in the field of condensed-matter physics with definitions and terms offer by the NOMAD MetaInfo description.
+frequently used by materials scientists in the field of condensed-matter physics
+with definitions and terms offer by the NOMAD MetaInfo description.
 
 Third, the proposal should yield a substantiated set of arguments and suggestions
 how descriptors for the structure and atomic architecture of materials can be
 harmonized. With this we especially would like to reach out and intensify the
 cooperation between the materials-science-related consortia of the German
-National Research Infrastructure, specifically, FAIRmat, NFDI-MatWerk, NFDI4Ing, NFDI4Chem, NFDI4Cat, MaRDi, and DAPHNE.
+National Research Infrastructure, specifically, FAIRmat, NFDI-MatWerk, NFDI4Ing,
+NFDI4Chem, NFDI4Cat, MaRDi, and DAPHNE.
 
 .. The proposal reaches out to our colleagues in the materials engineering-based
 .. consortia to document that there is value in discussing about controlled vocabulary.
@@ -83,13 +85,16 @@ with defined geometric primitives and associated coarser-scale properties.
 The key motivation to such coarse-graining is to reduce the complexity of the
 description. On the one hand to support visualization and scientific analyses - not only
 of crystal defect arrangements. On the other hand it is the hope that using descriptors
-at a coarser level, i.e. nanometer, micrometer, and larger, it is still possible to find sufficiently
-accurate and precise descriptors which avoid that one has to account for the dynamics of each atom to predict or understand the properties of defects and their dynamics.
+at a coarser level, i.e. nanometer, micrometer, and larger, it is still possible
+to find sufficiently accurate and precise descriptors which avoid that one has
+to account for the dynamics of each atom to predict or understand the properties
+of defects and their dynamics.
 
 Nevertheless, experience has shown that computational-geometry-based descriptions
 when combined with hierarchical clustering/labeling methods, applied on set of
-atoms and features turn out to yield useful descriptors. Examples include point, line, surface defects,
-such as vacancies, solute cluster, dislocations, disconnections, interfaces to name but a few.
+atoms and features turn out to yield useful descriptors. Examples include point,
+line, surface defects, such as vacancies, solute cluster, dislocations,
+disconnections, interfaces to name but a few.
 
 .. _CgmsBC:
 
@@ -280,7 +285,8 @@ To begin with we propose the following draft application definitions.
     :ref:`NXms`:
         An application definition for arbitrary spatiotemporally resolved simulations.
 
+    :ref:`NXms_score_config`:
+        A specific example how :ref:`NXapm_paraprobe_config_ranger` can be specialized for documenting the configuration of a computer simulation with the static recrystallization cellular automata model SCORE.
+
     :ref:`NXms_score_results`:
-        A specific example how :ref:`NXms` can be specialized for documenting
-        results of computer simulations with the static recrystallization
-        cellular automata model SCORE.
+        A specific example how :ref:`NXms` can be specialized for documenting results of computer simulations with the static recrystallization cellular automata model SCORE.
