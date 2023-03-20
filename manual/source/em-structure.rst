@@ -70,17 +70,7 @@ We developed entirely new base classes. Some of them are also used for other tec
     :ref:`NXibeam_column`:
         A base class serving the possibility to group the components relevant for generating and shaping an ion beam of an instrument to offer focused ion beam (milling) capabilities.
 
-    :ref:`NXimage_set_em_adf`
-    :ref:`NXimage_set_em_bf`
-    :ref:`NXimage_set_em_bse`
-    :ref:`NXimage_set_em_chamber`
-    :ref:`NXimage_set_em_df`
-    :ref:`NXimage_set_em_diffrac`
-    :ref:`NXimage_set_em_ecci`
-    :ref:`NXimage_set_em_kikuchi`
-    :ref:`NXimage_set_em_ronchigram`
-    :ref:`NXimage_set_em_se`
-    :ref:`NXimage_set_em`:
+    :ref:`NXimage_set_em_adf`, :ref:`NXimage_set_em_bf`, :ref:`NXimage_set_em_bse`, :ref:`NXimage_set_em_chamber`, :ref:`NXimage_set_em_df`, :ref:`NXimage_set_em_diffrac`, :ref:`NXimage_set_em_ecci`, :ref:`NXimage_set_em_kikuchi`, :ref:`NXimage_set_em_ronchigram`, :ref:`NXimage_set_em_se`, :ref:`NXimage_set_em`:
         Base classes for storing acquisition details for individual images or stacks of images collected via using e.g. different imaging modes. The suffixes specify **adf** annular dark field, **bf** bright field, **bse** backscattered electron, **chamber** camera to monitor the stage and chamber, **df** darkfield, **diffrac** diffraction, **ecci** electron channeling contrast imaging, **kikuchi** electron backscatter diffraction (EBSD), **ronchigram** - convergent beam diffraction pattern, **se** secondary electron, and **generic** images.
 
     :ref:`NXinteraction_vol_em`:
@@ -108,10 +98,7 @@ We developed entirely new base classes. Some of them are also used for other tec
     :ref:`NXscanbox_em`:
         A base class to represent the component of an electron microscope which realizes a controlled deflection (and eventually shift, blanking, and/or descanning) of the electron beam to illuminate the specimen in a controlled manner. This can be used to document the scan pattern.
 
-    :ref:`NXspectrum_set_em_eels`
-    :ref:`NXspectrum_set_em_xray`
-    :ref:`NXspectrum_set_em_auger`
-    :ref:`NXspectrum_set_em_cathodolum`:
+    :ref:`NXspectrum_set_em_eels`, :ref:`NXspectrum_set_em_xray`, :ref:`NXspectrum_set_em_auger`, :ref:`NXspectrum_set_em_cathodolum`:
         Base classes comparable to NXimage_set_em but for different techniques resulting in spectra. The suffixes specify **eels** electron energy loss spectroscopy, **xray** X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS), **auger** Auger spectroscopy, and **cathodolum** cathodoluminescence.
 
     :ref:`NXstage_lab`:

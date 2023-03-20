@@ -193,9 +193,6 @@ to hold metadata for these features:
     :ref:`NXclustering`:
         A description for clustering of objects (such as atoms or features).
 
-    :ref:`NXatom_set`:
-        A set of atoms.
-
     :ref:`NXorientation_set`:
         A set of rotations to describe the relative orientation of members of a set of features/objects.
 
@@ -203,14 +200,14 @@ to hold metadata for these features:
         Metadata to a set of slip system/slip system family for
         a given crystal structure.
 
-..    :ref:`NXms_point_defect_set`:
-..        Metadata to a set of point defects.
+    :ref:`NXms_atom_set`:
+        Metadata to a set of atoms.
 
-..     :ref:`NXms_dislocation_set`:
-..        Metadata of a set of dislocation/disconnection (line) defects.
+    :ref:`NXms_dislocation_set`:
+        Metadata of a set of dislocation/disconnection (line) defects.
 
-..    :ref:`NXms_interface_set`:
-..        Metadata to a set of interfaces between crystals.
+    :ref:`NXms_interface_set`:
+        Metadata to a set of interfaces between crystals.
 
     :ref:`NXms_crystal_set`:
         A set of crystals, for e.g. a polycrystal, phases, 
