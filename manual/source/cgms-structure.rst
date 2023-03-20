@@ -1,21 +1,21 @@
-.. _CGMSFeatures-Structure:
+.. _CgmsFeatures-Structure:
 
 =========================
 Geometry & microstructure
 =========================
 
 .. index::
-   IntroductionCGMS
-   PhysicsCGMS
-   CGMSNewAppDef
-   CGMSNewBC
-.. CGMSNewCommonBC
+   IntroductionCgms
+   PhysicsCgms
+   CgmsAppDef
+   CgmsBC
+   IcmeMsModels
 
 
-.. _IntroductionCGMS:
+.. _IntroductionCgms:
 
 Introduction
-##############
+############
 
 The computational-geometry/microstructure-modeling-based part of the proposal
 has the following aims:
@@ -43,7 +43,7 @@ National Research Infrastructure, specifically, FAIRmat, NFDI-MatWerk, NFDI4Ing,
 .. The proposal reaches out to our colleagues in the materials engineering-based
 .. consortia to document that there is value in discussing about controlled vocabulary.
 
-.. _PhysicsCGMS:
+.. _PhysicsCgms:
 
 Physics background
 ##################
@@ -90,6 +90,8 @@ Nevertheless, experience has shown that computational-geometry-based description
 when combined with hierarchical clustering/labeling methods, applied on set of
 atoms and features turn out to yield useful descriptors. Examples include point, line, surface defects,
 such as vacancies, solute cluster, dislocations, disconnections, interfaces to name but a few.
+
+.. _CgmsBC:
 
 Base Classes
 ############
@@ -261,3 +263,27 @@ and elapsed time measured while processing data. These utility classes include:
 
     :ref:`NXcs_io_obj`:
         Metadata of a component storing data of an :ref:`NXcs_io_sys` instance.
+
+.. _IcmeMsModels:
+
+Application definitions for ICME models
+#######################################
+
+To bridge to our colleagues from the NFDI-MatWerk and NFDI4Ing consortia we
+have created an example how the proposed components of the nexus-fairmat-proposal
+can be used to create data schemes for vanilla-type ICME microstructure models.
+ICME is an abbreviation for Integrated Computational Materials Engineering, which
+is a design strategy and workflow whereby physics-based modelling of microstructure
+evolution at the mesoscopic scale is used to understand the relations between
+the microstructure and technological relevant descriptors for the properties
+of materials.
+
+To begin with we propose the following draft application definitions.
+
+    :ref:`NXms`:
+        An application definition for arbitrary spatiotemporally resolved simulations.
+
+    :ref:`NXms_score_results`:
+        A specific example how :ref:`NXms` can be specialized for documenting
+        results of computer simulations with the static recrystallization
+        cellular automata model SCORE.

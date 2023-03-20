@@ -5,15 +5,16 @@ B1: Electron microscopy
 =======================
 
 .. index::
-   IntroductionEM
-   EmNewAppDef
-   EmNewBC
-   EmNewCommonBC
+   IntroductionEm
+   EmAppDef
+   EmBC
+   EmCommonBC
+   EmPartnerClasses
    EmDeprecated
 
 
 
-.. _IntroductionEM:
+.. _IntroductionEm:
 
 Introduction
 ############
@@ -23,7 +24,7 @@ Set of data storage objects to describe components of an electron microscope and
 Electron microscopes are functionally very customizable tools: Examples include multi-signal/-modal analyses which are frequently realized as on-the-fly computational analyses, regularly switching between GUI-based instrument control, computational steps, and more and more using high-throughput stream-based processing. Also artificial intelligence methods get increasingly used and become closer interconnected with classical modes of controlling the instrument and perform data processing. A challenge in electron microscopy is that these steps are often executed within commercial integrated control and analysis software. This makes it additionally difficult to keep track of workflows and challenging to identify which specific quantities in the control software mean and represent in technical detail which physical quantity (and how these
 quantities can be connected to the development of ontologies for electron microscopy experiments).
 
-.. _EmNewAppDef:
+.. _EmAppDef:
 
 Application Definitions
 #######################
@@ -34,7 +35,7 @@ the specimen from the instrument or parking it so that the next user can start a
     :ref:`NXem`:
         A general application definition which explores the possibilities of electron microscopes.
 
-.. _EmNewBC:
+.. _EmBC:
 
 Base Classes
 ############
@@ -117,7 +118,7 @@ We developed entirely new base classes. Some of them are also used for other tec
         As it was mentioned for atom probe microscopy, this is a base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities which modern stages of electron microscopes frequently offer.
 
 
-.. _EmNewCommonBC:
+.. _EmCommonBC:
 
 Common Base Classes
 ###################
@@ -127,6 +128,8 @@ It should be discussed with the NIAC if these classes can be consolidated/harmon
 base class lenses. We understand also that the proposed set of NXimage_set_em base classes can benefit from future discussion and consolidation efforts.
 
 The first result of such consolidations is the NXem_ebsd partner application definition.
+
+.. _EmPartnerClasses:
 
 Partner application definitions
 ###############################

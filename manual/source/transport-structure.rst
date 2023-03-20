@@ -1,40 +1,26 @@
-.. _Epics-Structure:
+.. _Transport-Structure:
 
 ===================
 Transport Phenomena
 ===================
 
 .. index::
-   IntroductionEpics
-   EpicsNewAppDef
-   EpicsNewBC
-   EpicsNewCommonBC
+   IntroductionTransport
+   TransportAppDef
 
 
-.. _IntroductionEpics:
+.. _IntroductionTransport:
 
 Introduction
 ##############
 
 
-.. _EpicsNewAppDef:
+.. _TransportAppDef:
 
-New Application Definitions
-############################
+Application Definitions
+#######################
 
 Work on handshaking between EPICS-controlled experiments and NeXus resulted in one application definition for temperature dependent IV curve measurements.
 
     :ref:`NXiv_temp`:
        Application definition for temperature dependent IV curve measurements.
-
-.. _EpicsNewBC:
-
-New Base Classes
-#################
-
-
-.. _EpicsNewCommonBC:
-
-New Common Base Classes
-#######################
-
