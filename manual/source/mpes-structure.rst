@@ -5,37 +5,37 @@ B2/B3: Photoemission & core-level spectroscopy
 ==============================================
 
 .. index::
-   IntroductionMPES
-   NewAppDef
-   NewBC
-   NewCommonBC
-   ExtendedBC
+   IntroductionMpes
+   MpesAppDef
+   MpesBC
+   MpesCommonBC
+   MpesExtendedBC
 
 
-.. _IntroductionMPES:
+.. _IntroductionMpes:
 
 Introduction
-##############
+############
 
 Set of data storage objects to describe photoemission experiments including x-ray photoelectron spectroscopy (XPS), ultraviolet photoelectron spectroscopy (UPS),
 hard x-ray photoelectron spectroscopy (HAXPES), angle-resolved photoemission spectroscopy (ARPES), two-photon photoemission (2PPE) 
 and photoemission electron microscopy (PEEM). We also included descriptors for advanced specializations, such as spin-resolution, time resolution, 
 near-ambient pressure conditions, dichroism etc.
 
-.. _NewAppDef:
+.. _MpesAppDef:
 
-New Application Definitions
-############################
+Application Definitions
+#######################
 
 We created two new application definitions:
 
     :ref:`NXmpes`:
        A general appdef with minimalistic metadata requirements, apt to describe all photemission experiments.
 
-.. _NewBC:
+.. _MpesBC:
 
-New Base Classes
-#################
+Base Classes
+############
 
 We developed entirely new base classes:
 
@@ -66,10 +66,10 @@ We developed three base classes to describe data processing, which can be used a
     :ref:`NXregistration`:
        A base class to describe the rigid transformations that are applied to an image. May be redundant as they can be described with :ref:`NXtransformations`.
 
-.. _NewCommonBC:
+.. _MpesCommonBC:
 
-New Common Base Classes
-#######################
+Common Base Classes
+###################
 
 We developed two classes that are common to other techniques:
 
@@ -79,10 +79,10 @@ We developed two classes that are common to other techniques:
     :ref:`NXdeflector`
        A class to describe all kinds of deflectors, including electrostatic and magnetostatic deflectors for electron energy analysers.  
 
-.. _ExtendedBC:
+.. _MpesExtendedBC:
 
 Base Classes Extended in Application Definitions
-###################################################
+################################################
 
 We use existent base classes in application definitions and add descriptors:
 

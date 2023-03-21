@@ -84,6 +84,7 @@ all ::
 	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus.pdf`"
 
 nexus-fairmat-proposal ::
+	$(MAKE) test
 	$(MAKE) clean
 	$(MAKE) prepare
 	$(SPHINX) -b html $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html

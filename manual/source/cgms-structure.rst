@@ -1,21 +1,21 @@
-.. _CGMSFeatures-Structure:
+.. _CgmsFeatures-Structure:
 
 =========================
 Geometry & microstructure
 =========================
 
 .. index::
-   IntroductionCGMS
-   PhysicsCGMS
-   CGMSNewAppDef
-   CGMSNewBC
-.. CGMSNewCommonBC
+   IntroductionCgms
+   PhysicsCgms
+   CgmsAppDef
+   CgmsBC
+   IcmeMsModels
 
 
-.. _IntroductionCGMS:
+.. _IntroductionCgms:
 
 Introduction
-##############
+############
 
 The computational-geometry/microstructure-modeling-based part of the proposal
 has the following aims:
@@ -32,18 +32,20 @@ already existent base classes in NeXus for constructive solid geometry
 such as :ref:`NXcsg`, :ref:`NXoff_geometry`, or :ref:`NXquadric` to name but a few.
 
 Second, we would like to explore with this proposal how we can harmonize terms
-frequently used by materials scientists in the field of condensed-matter physics with definitions and terms offer by the NOMAD MetaInfo description.
+frequently used by materials scientists in the field of condensed-matter physics
+with definitions and terms offer by the NOMAD MetaInfo description.
 
 Third, the proposal should yield a substantiated set of arguments and suggestions
 how descriptors for the structure and atomic architecture of materials can be
 harmonized. With this we especially would like to reach out and intensify the
 cooperation between the materials-science-related consortia of the German
-National Research Infrastructure, specifically, FAIRmat, NFDI-MatWerk, NFDI4Ing, NFDI4Chem, NFDI4Cat, MaRDi, and DAPHNE.
+National Research Infrastructure, specifically, FAIRmat, NFDI-MatWerk, NFDI4Ing,
+NFDI4Chem, NFDI4Cat, MaRDi, and DAPHNE.
 
 .. The proposal reaches out to our colleagues in the materials engineering-based
 .. consortia to document that there is value in discussing about controlled vocabulary.
 
-.. _PhysicsCGMS:
+.. _PhysicsCgms:
 
 Physics background
 ##################
@@ -83,13 +85,18 @@ with defined geometric primitives and associated coarser-scale properties.
 The key motivation to such coarse-graining is to reduce the complexity of the
 description. On the one hand to support visualization and scientific analyses - not only
 of crystal defect arrangements. On the other hand it is the hope that using descriptors
-at a coarser level, i.e. nanometer, micrometer, and larger, it is still possible to find sufficiently
-accurate and precise descriptors which avoid that one has to account for the dynamics of each atom to predict or understand the properties of defects and their dynamics.
+at a coarser level, i.e. nanometer, micrometer, and larger, it is still possible
+to find sufficiently accurate and precise descriptors which avoid that one has
+to account for the dynamics of each atom to predict or understand the properties
+of defects and their dynamics.
 
 Nevertheless, experience has shown that computational-geometry-based descriptions
 when combined with hierarchical clustering/labeling methods, applied on set of
-atoms and features turn out to yield useful descriptors. Examples include point, line, surface defects,
-such as vacancies, solute cluster, dislocations, disconnections, interfaces to name but a few.
+atoms and features turn out to yield useful descriptors. Examples include point,
+line, surface defects, such as vacancies, solute cluster, dislocations,
+disconnections, interfaces to name but a few.
+
+.. _CgmsBC:
 
 Base Classes
 ############
@@ -191,9 +198,6 @@ to hold metadata for these features:
     :ref:`NXclustering`:
         A description for clustering of objects (such as atoms or features).
 
-    :ref:`NXatom_set`:
-        A set of atoms.
-
     :ref:`NXorientation_set`:
         A set of rotations to describe the relative orientation of members of a set of features/objects.
 
@@ -201,14 +205,14 @@ to hold metadata for these features:
         Metadata to a set of slip system/slip system family for
         a given crystal structure.
 
-..    :ref:`NXms_point_defect_set`:
-..        Metadata to a set of point defects.
+    :ref:`NXms_atom_set`:
+        Metadata to a set of atoms.
 
-..     :ref:`NXms_dislocation_set`:
-..        Metadata of a set of dislocation/disconnection (line) defects.
+    :ref:`NXms_dislocation_set`:
+        Metadata of a set of dislocation/disconnection (line) defects.
 
-..    :ref:`NXms_interface_set`:
-..        Metadata to a set of interfaces between crystals.
+    :ref:`NXms_interface_set`:
+        Metadata to a set of interfaces between crystals.
 
     :ref:`NXms_crystal_set`:
         A set of crystals, for e.g. a polycrystal, phases, 
@@ -261,3 +265,28 @@ and elapsed time measured while processing data. These utility classes include:
 
     :ref:`NXcs_io_obj`:
         Metadata of a component storing data of an :ref:`NXcs_io_sys` instance.
+
+.. _IcmeMsModels:
+
+Application definitions for ICME models
+#######################################
+
+To bridge to our colleagues from the NFDI-MatWerk and NFDI4Ing consortia we
+have created an example how the proposed components of the nexus-fairmat-proposal
+can be used to create data schemes for vanilla-type ICME microstructure models.
+ICME is an abbreviation for Integrated Computational Materials Engineering, which
+is a design strategy and workflow whereby physics-based modelling of microstructure
+evolution at the mesoscopic scale is used to understand the relations between
+the microstructure and technological relevant descriptors for the properties
+of materials.
+
+To begin with we propose the following draft application definitions.
+
+    :ref:`NXms`:
+        An application definition for arbitrary spatiotemporally resolved simulations.
+
+    :ref:`NXms_score_config`:
+        A specific example how :ref:`NXapm_paraprobe_config_ranger` can be specialized for documenting the configuration of a computer simulation with the static recrystallization cellular automata model SCORE.
+
+    :ref:`NXms_score_results`:
+        A specific example how :ref:`NXms` can be specialized for documenting results of computer simulations with the static recrystallization cellular automata model SCORE.
