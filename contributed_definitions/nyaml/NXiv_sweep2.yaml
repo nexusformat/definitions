@@ -90,7 +90,7 @@ NXlockin:
         hw (NXmanufacturer?)
         (NXamplifier) (input and output amplifiers)
         frequency
-        #output (demodulated signal) characterisation
+        #output (demodulated signal) characterisation (foreach channel, like demodulation, a separate sensor output, e.g. X,Y)
          NumOfDemodulatorChannels
          LowPass cut-off frq (low pass filter) (foreach DemodulatorChannels)
          HiPass cut-off frq (low pass filter) (foreach DemodulatorChannels)
@@ -214,12 +214,12 @@ ENTRY
       Piezo Configuration>Drift correction status (on/off) FALSE # Use the button to turn on/off the drift compensation.
     
   MEASUREMENT
-    Position
+    Position (NXtransformation) # also clarify the frame laboratory frame
       X (m) -890.53E-12
       Y (m) 29.6968E-9
       Z (m) 130.5E-9
       Z-Controller>Z (m) 130.5E-9
-    SCAN
+    SCAN # parameters for a measurement at a single location during the scan
       Integration time (s) 150E-6 # Time during which the spectroscopy data are acquired and averaged.
       Bias Spectroscopy>Number of sweeps 100 # Number of sweeps to measure and average.
       Bias Spectroscopy>Sweep Start (V) -300E-3 # The first bias values of the sweep.
@@ -232,7 +232,8 @@ ENTRY
       SoftwareMain>Animations Period (s) 20E-3 # Update rate of animated graphical indicators. These are e.g. some graphs & sliders. A reasonable value is 40 ms (25 updates per second). Increase this period to reduce the processor load for the graphical user interface, especially on slow computers. This value is purely a user interface update rate and does not affect measurements in any way.
       SoftwareMain>Indicators Period (s) 300E-3 # Update rate of digital indicators, e.g. the numbers displayed besides each slider. Here, 3 updates per second, or 300 ms is enough. This value is purely a user interface update rate and does not affect measurements in any way.
       SoftwareMain>Measurements Period (s) 500E-3 # The Measurements period is the integration time for precise measurements (averaging over specified period), mostly used in sweep modules. Examples are recording of a force-distance curve or a resonance of a cantilever. For fast measurements with small steps, a value of 40 ms may be reasonable. For normal use, 300-500 ms is a good value, but for recording a resonance of a high-Q cantilever, values of several seconds might be necessary. Usually this parameter doesn’t need to be set from this module; the sweep modules will set this value according to the sweep timings.
-    Scan control
+    Scan control # parameters how to change the location from measurement to measurement during the scan
+      frame(NXtransformation) # also clarify the frame for the ROI of the scan (should depend on the lab frame)
       Scan>Scanfield 3.11737E-9;29.1583E-9;15E-9;15E-9;0E+0 # Configure the scan frame: x position; y position; width; height.
       Scan>channels Current (A);Bias (V);Z (m);LI Demod 2 X (A);LI Demod 2 Y (A);LI Demod 1 X (A);LI Demod 1 Y (A) # The scan channels are selected by users.
       Scan>pixels/line 512 # Scan resolution by setting the Lines equal to Pixels. 
@@ -244,7 +245,8 @@ ENTRY
       type Butterworth # Select a filter to smooth the displayed data. Note: When saving, if any filter selected, filtered data are saved to file along with the unfiltered data.
       Order 1 # Filter order of a dynamic filter or width (in number of points) for the gaussian filter.
       Cutoff frq 0.01 # Cutoff frequency for dynamic filters.
-    HW Filter (INSTRUMENT)
+      filtered_data # result of filtering if applied
+    HW Filter (NXlockin) # maybe the same as INSTRUMENT/lockin
       Lock-in>LP Filter Cutoff D1 (Hz) 621.699E+0 # Sets the cut-off frequency of the low-pass filter (affects the displayed TC (s) value) for D1. The filter is applied to the demodulated signals (X,Y).
       Lock-in>LP Filter Cutoff D2 (Hz) 621.699E+0 # Sets the cut-off frequency of the low-pass filter (affects the displayed TC (s) value) for D2. The filter is applied to the demodulated signals (X,Y).
       Lock-in>LP Filter Order D1 8 # Order and cut-off frequency of the low-pass filter applied on the demodulated signals (X,Y). Reducing the bandwidth or increasing the order reduces noise on the demodulated signals, but will require longer settling and measurement times.
@@ -305,28 +307,38 @@ ENTRY
         Z-Controller>TipLift (m) 0E+0 # Lifts the tip by the specified amount when then controller is switched off. This can be a positive or a negative number, i.e. the tip can also be moved towards the sample. Be careful with sign and value when using this feature.
         Z-Controller>Switch off delay (s) 0E+0 # Use this parameter for a reproducible position when switching off the Z-controller. When >0 and the Z-controller is switched off, it doesn't switch off immediately but continues to run for the specified time and averages the Z position.
 
-  DATA
-    Bias calc (V) 
-    Current (A) 
-    LI Demod 2 X (A) 
-    LI Demod 2 Y (A) 
-    LI Demod 1 X (A) 
-    LI Demod 1 Y (A) 
-    Current [bwd] (A) 
-    LI Demod 2 X [bwd] (A) 
-    LI Demod 2 Y [bwd] (A) 
-    LI Demod 1 X [bwd] (A) 
-    LI Demod 1 Y [bwd] (A) 
-    Current (A) [filt] 
-    LI Demod 2 X (A) [filt] 
-    LI Demod 2 Y (A) [filt] 
-    LI Demod 1 X (A) [filt] 
-    LI Demod 1 Y (A) [filt] 
+  DATA # multi dimensional array: multi I-V array per scan point;
+    Bias calc (V) #scanning parameter
+    Current (A) # current during forward direction scanning of bias - original NXsensor
+    LI Demod 2 X (A) lockin (NXsensor+lockin)
+    LI Demod 2 Y (A) lockin
+    LI Demod 1 X (A) lockin
+    LI Demod 1 Y (A) lockin
+    Current [bwd] (A) #bwd - backward (the positive direction shall be clarified by the reference bias scanning frame)
+    LI Demod 2 X [bwd] (A) lockin
+    LI Demod 2 Y [bwd] (A) lockin
+    LI Demod 1 X [bwd] (A) lockin
+    LI Demod 1 Y [bwd] (A) lockin
+    Current (A) [filt] # forward direction (maybe from lockin#2?)
+    LI Demod 2 X (A) [filt] lockin
+    LI Demod 2 Y (A) [filt] lockin
+    LI Demod 1 X (A) [filt] lockin
+    LI Demod 1 Y (A) [filt] lockin
     Current (A) [bwd] [filt] 
-    LI Demod 2 X (A) [bwd] [filt] 
-    LI Demod 2 Y (A) [bwd] [filt] 
-    LI Demod 1 X (A) [bwd] [filt] 
-    LI Demod 1 Y (A) [bwd] [filt]
+    LI Demod 2 X (A) [bwd] [filt] lockin
+    LI Demod 2 Y (A) [bwd] [filt] lockin
+    LI Demod 1 X (A) [bwd] [filt] lockin
+    LI Demod 1 Y (A) [bwd] [filt] lockin
+    Temperature
+    x
+    y
+    z
+    
+ single point default plot # current(I) vs bias(V)
+ line scan default plot # multi I vs. V curves
+       alternative plot # current(I) curve in the 2D space of (position(x), bias(V))
+ mesh scan default plot # 2D slices of the above alternative plot
+    
     
     
     
