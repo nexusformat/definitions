@@ -1,0 +1,130 @@
+category: base
+doc: | 
+  A sensor used to monitor an external condition
+  
+  The condition itself is described in ':'ref':'`NXenvironment`.
+
+type: group
+NXsensor(NXobject):
+  model:
+    doc: | 
+      Sensor identification code/model number
+  name:
+    doc: | 
+      Name for the sensor
+  short_name:
+    doc: | 
+      Short name of sensor used e.g. on monitor display program
+  attached_to:
+    doc: | 
+      where sensor is attached to ("sample" | "can")
+  geometry(NXgeometry):
+    deprecated: Use the field `depends_on` and ':'ref':'`NXtransformations` to position the beamstop and NXoff_geometry to describe its shape instead
+    doc: | 
+      Defines the axes for logged vector quantities if they are not the global instrument axes.
+  measurement:
+    doc: | 
+      name for measured signal
+    enumeration: [temperature, pH, magnetic_field, electric_field, conductivity, resistance, voltage, current, pressure, flow, stress, strain, shear, surface_pressure]
+  type:
+    doc: | 
+      The type of hardware used for the measurement.
+      Examples (suggestions but not restrictions)':'
+      
+      ':'Temperature':'
+        J | K | T | E | R | S | Pt100 | Pt1000 | Rh/Fe
+      ':'pH':'
+        Hg/Hg2Cl2 | Ag/AgCl | ISFET
+      ':'Ion selective electrode':'
+        specify species; e.g. Ca2+
+      ':'Magnetic field':'
+        Hall
+      ':'Surface pressure':'
+        wilhelmy plate
+  amplifier(NXamplifier):
+  second_amplifier(NX_circuit):
+    doc: link to second amplifer circuit with 1MOhm
+  run_control(NX_BOOLEAN):
+    doc: | 
+      Is data collection controlled or synchronised to this quantity':'
+      1=no, 0=to "value", 1=to "value_deriv1", etc.
+  high_trip_value(NX_FLOAT):
+    unit: NX_ANY
+    doc: | 
+      Upper control bound of sensor reading if using run_control
+  low_trip_value(NX_FLOAT):
+    unit: NX_ANY
+    doc: | 
+      Lower control bound of sensor reading if using run_control
+  value(NX_FLOAT):
+    unit: NX_ANY
+    doc: | 
+      nominal setpoint or average value
+      - need [n] as may be a vector
+    dimensions:
+      dim: [[1, n]]
+  value_deriv1(NX_FLOAT):
+    unit: NX_ANY
+    doc: | 
+      Nominal/average first derivative of value
+      e.g. strain rate
+      - same dimensions as "value" (may be a vector)
+    dimensions:
+      dim: [[1, ]]
+      dim_parameters:
+        ref: ['value']
+  value_deriv2(NX_FLOAT):
+    unit: NX_ANY
+    doc: | 
+      Nominal/average second derivative of value
+      - same dimensions as "value" (may be a vector)
+    dimensions:
+      dim: [[1, ]]
+      dim_parameters:
+        ref: ['value']
+  value_log(NXlog):
+    doc: | 
+      Time history of sensor readings
+  value_deriv1_log(NXlog):
+    doc: | 
+      Time history of first derivative of sensor readings
+  value_deriv2_log(NXlog):
+    doc: | 
+      Time history of second derivative of sensor readings
+  external_field_brief:
+    enumeration: [along beam, across beam, transverse, solenoidal, flow shear gradient, flow vorticity]
+  external_field_full(NXorientation):
+    doc: | 
+      For complex external fields not satisfied by External_field_brief
+  (NXoff_geometry):
+    exists: ['min', '0']
+    doc: | 
+      This group describes the shape of the sensor when necessary.
+  \@default:
+    doc: | 
+      .. index':'':' plotting
+      
+      Declares which child group contains a path leading
+      to a ':'ref':'`NXdata` group.
+      
+      It is recommended (as of NIAC2014) to use this attribute
+      to help define the path to the default dataset to be plotted.
+      See https':'//www.nexusformat.org/2014_How_to_find_default_data.html
+      for a summary of the discussion.
+  depends_on(NX_CHAR):
+    doc: | 
+      NeXus positions components by applying a set of translations and rotations
+      to apply to the component starting from 0, 0, 0. The order of these operations
+      is critical and forms what NeXus calls a dependency chain. The depends_on
+      field defines the path to the top most operation of the dependency chain or the
+      string "." if located in the origin. Usually these operations are stored in a
+      NXtransformations group. But NeXus allows them to be stored anywhere.
+      
+      .. todo':'':'
+        Add a definition for the reference point of a sensor.
+  (NXtransformations):
+    doc: | 
+      This is the group recommended for holding the chain of translation
+      and rotation operations necessary to position the component within
+      the instrument. The dependency chain may however traverse similar groups in
+      other component groups.
