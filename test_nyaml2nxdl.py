@@ -287,3 +287,66 @@ has not the same root entries!!'
     os.remove('tests/data/nyaml2nxdl/Ref_NXellipsometry_parsed.yaml')
     os.remove('tests/data/nyaml2nxdl/Ref_NXellipsometry.nxdl.xml')
     sys.stdout.write('Test on yml -> xml -> yml okay.\n')
+
+
+def test_yml_consistency_comment_parsing():
+    """Test comments parsing from yaml. Convert 'yaml' input file to '.nxdl.xml' and
+    '.nxdl.xml' to '.yaml'
+    """
+    from nexusutils.nyaml2nxdl.comment_collector import CommentCollector
+    from nexusutils.nyaml2nxdl.nyaml2nxdl_helper import LineLoader
+
+    ref_yml_file = 'tests/data/nyaml2nxdl/Ref_NXcomment.yaml'
+    test_yml_file = 'tests/data/nyaml2nxdl/Ref_NXcomment_consistency.yaml'
+
+    result = CliRunner().invoke(nyml2nxdl.launch_tool,
+                                ['--input-file', ref_yml_file,
+                                 '--check-consistency'])
+    assert result.exit_code == 0, (f'Exception: {result.exception}, \nExecution Info:'
+                                   '{result.exc_info}')
+    with open(ref_yml_file, 'r', encoding='utf-8') as ref_yml:
+        loader = LineLoader(ref_yml)
+        ref_loaded_yaml = loader.get_single_data()
+    ref_comment_blocks = CommentCollector(ref_yml_file, ref_loaded_yaml)
+    ref_comment_blocks.extract_all_comment_blocks()
+
+    with open(test_yml_file, 'r', encoding='utf-8') as test_yml:
+        loader = LineLoader(test_yml)
+        test_loaded_yaml = loader.get_single_data()
+    test_comment_blocks = CommentCollector(test_yml_file, test_loaded_yaml)
+    test_comment_blocks.extract_all_comment_blocks()
+
+    for ref_cmnt, test_cmnt in zip(ref_comment_blocks, test_comment_blocks):
+        assert ref_cmnt == test_cmnt, 'Comment is not consistent.'
+
+    os.remove(test_yml_file)
+
+
+def test_yml2xml_comment_parsing():
+    """To test comment that written in xml for element attributes, e.g.
+    attribute 'rank' for 'dimension' element and attribute 'exists' for
+    'NXentry' group element.
+    """
+    input_yml = 'tests/data/nyaml2nxdl/NXcomment_yaml2nxdl.yaml'
+    ref_xml = 'tests/data/nyaml2nxdl/Ref_NXcomment_yaml2nxdl.nxdl.xml'
+    test_xml = 'tests/data/nyaml2nxdl/NXcomment_yaml2nxdl.nxdl.xml'
+
+    result = CliRunner().invoke(nyml2nxdl.launch_tool,
+                                ['--input-file', input_yml])
+    assert result.exit_code == 0
+
+    ref_root = ET.parse(ref_xml).getroot()
+    test_root = ET.parse(test_xml).getroot()
+
+    def recursive_compare(ref_root, test_root):
+        assert ref_root.attrib.items() == test_root.attrib.items(), ("Got different xml element"
+                                                                     "Atribute.")
+        if ref_root.text and test_root.text:
+            assert ref_root.text.strip() == test_root.text.strip(), ("Got differen element text.")
+        if len(ref_root) > 0 and len(test_root) > 0:
+            for x, y in zip(ref_root, test_root):
+                recursive_compare(x, y)
+
+    recursive_compare(ref_root, test_root)
+
+    os.remove(test_xml)
