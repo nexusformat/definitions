@@ -28,8 +28,8 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 import pytest
 from click.testing import CliRunner
-import nexusutils.nyaml2nxdl.nyaml2nxdl as nyml2nxdl
-from nexusutils.nyaml2nxdl import nyaml2nxdl_forward_tools
+import pynxtools.nyaml2nxdl.nyaml2nxdl as nyml2nxdl
+from pynxtools.nyaml2nxdl import nyaml2nxdl_forward_tools
 
 
 def delete_duplicates(list_of_matching_string):
@@ -293,8 +293,8 @@ def test_yml_consistency_comment_parsing():
     """Test comments parsing from yaml. Convert 'yaml' input file to '.nxdl.xml' and
     '.nxdl.xml' to '.yaml'
     """
-    from nexusutils.nyaml2nxdl.comment_collector import CommentCollector
-    from nexusutils.nyaml2nxdl.nyaml2nxdl_helper import LineLoader
+    from pynxtools.nyaml2nxdl.comment_collector import CommentCollector
+    from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import LineLoader
 
     ref_yml_file = 'tests/data/nyaml2nxdl/Ref_NXcomment.yaml'
     test_yml_file = 'tests/data/nyaml2nxdl/Ref_NXcomment_consistency.yaml'
