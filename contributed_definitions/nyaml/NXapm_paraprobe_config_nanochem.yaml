@@ -27,7 +27,6 @@ NXapm_paraprobe_config_nanochem:
           ideally in such a manner that the result of this computational process
           is recreatable in the same deterministic manner.
     analysis_identifier:
-      exists: optional
       doc: |
         Ideally, a (globally persistent) unique identifier for referring
         to this analysis.
@@ -142,12 +141,12 @@ NXapm_paraprobe_config_nanochem:
         dataset_name:
           doc: Absolute HDF5 path to the dataset with distance values for each ion.
 
-      number_of_delocalizations(NX_UINT):
-        doc: |
-          For now a support field for the tool to identify how many individual
-          delocalization analyses for the above-mentioned dataset and supplementary
-          files are executed as part of the high-throughput analysis.
-        unit: NX_UNITLESS
+      # number_of_delocalizations(NX_UINT):
+      #   doc: |
+      #     For now a support field for the tool to identify how many individual
+      #     delocalization analyses for the above-mentioned dataset and supplementary
+      #     files are executed as part of the high-throughput analysis.
+      #   unit: NX_UNITLESS
       delocalization(NXprocess):
         # NEW ISSUE delocalization is all lower case meaning you cannot have right now multiple of these
         # even though paraprobe-nanochem triggers a number of delocalizations for each of which triggering again isosurfaces
@@ -218,14 +217,14 @@ NXapm_paraprobe_config_nanochem:
           # \@units: nm
         kernel_size(NX_UINT):
           doc: |
-            Half the width of a (2n+1)^3 cubic kernel of voxel beyond
-            which the Gaussian Ansatz function will be truncated.
+            Half the width of a :math:`{(2 \cdot n + 1)}^3` cubic kernel of voxel
+            beyond which the Gaussian Ansatz function will be truncated.
             Intensity beyond the kernel is refactored into the kernel via
             a normalization procedure.
           unit: NX_UNITLESS
         kernel_variance(NX_FLOAT):
           doc: |
-            Variance of the Gaussian Ansatz kernel sigma_x = sigma_y = 2*sigma_z.
+            Variance of the Gaussian Ansatz kernel :math:`\sigma_x = \sigma_y = 2 \cdot \sigma_z`.
           unit: NX_LENGTH
           # \@units: nm
         normalization:
@@ -288,14 +287,21 @@ NXapm_paraprobe_config_nanochem:
               In the results of each paraprobe-nanochem run, these proxy objects
               are listed separately to allow users to quantify and analyze in
               detail the differences when accounting for these objects or not.
-              Especially this is relevant in atom probe microscopy are small
-              in the sense that they contain few (many a few dozen) objects.
-              Even though such a dataset may give statistically significant
-              results for compositions this does not mean it necessarily yields
-              also statistically significant and unbiased results for three-dimensional
-              object analyses. Being able to quantify these effects and making
-              atom probers aware of these subtleties was one of the main reasons
-              why the paraprobe-nanochem tool was implemented.
+              Especially this is relevant in atom probe microscopy as objects
+              can contain a few dozen atoms only.
+              Users should be aware that results from fairing operations should
+              be compared to results from analyses where all objects at the edge
+              of the dataset have been removed.
+              
+              Also users should be careful with overestimating the statistical
+              significance of their dataset especially when using atom probe
+              to compare multiple descriptors: Even though a dataset may give
+              statistically significant results for compositions, this does not
+              necessarily mean it will yield also statistically significant
+              and unbiased results for three-dimensional object analyses.
+              Being able to quantify these effects and making atom probers
+              aware of these subtleties was one of the main reasons why the
+              paraprobe-nanochem tool was implemented.
             enumeration: [default, keep_edge_triangles]
           edge_threshold(NX_FLOAT):
             doc: |
@@ -723,7 +729,9 @@ NXapm_paraprobe_config_nanochem:
             be eventually relocated. The larger the DCOM radius is relative to
             the target_edge_length the more likely it is that vertices will be
             relocated so substantially that eventually triangle self-intersections
-            can occur.
+            can occur. If the code detects these it warns and stops in a
+            controlled manner so that the user can repeat the analyses
+            with a smaller value.
           unit: NX_LENGTH
           # \@units: nm
           dimensions:
@@ -766,8 +774,8 @@ NXapm_paraprobe_config_nanochem:
           Users should be aware that the latter intersection analysis is strictly
           speaking not a volumetric intersection analysis as such one is much
           more involved because the edge model can be a closed non-convex polyhedron
-          in which case one would have to test robustly if the cylinder piercing
-          or laying completely inside the polyhedron. For this the polyhedron has
+          in which case one would have to test robustly if the cylinder pierces
+          or is laying completely inside the polyhedron. For this the polyhedron has
           to be tessellated into convex polyhedra as otherwise tests like the
           Gilbert-Johnson-Keerthi algorithm would not be applicable.
           

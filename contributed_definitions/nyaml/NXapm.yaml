@@ -1,6 +1,62 @@
 category: application
 doc: |
   Application definition for atom probe and field ion microscopy experiments.
+  
+  This application definition provides a place to document data and metadata to
+  an atom probe experiment. Primarily the measurement itself is documented.
+  However, as most atom probe experiments are controlled with commercial software
+  which does not allow to access the raw detector hits, this application definition
+  also includes two key groups of processing steps (reconstruction and ranging).
+  
+  During tomographic reconstruction measured data are processed into a point cloud
+  of reconstructed positions of certain ions. During ranging time-of-flight data
+  are identified as representing specific ions to annotate each ion with a label.
+  
+  Commercial software used in atom probe research is designed as an integrated acquisition and instrument control software. For AMETEK/Cameca local electrode
+  atom probe (LEAP) instruments the least processed (rawest) numerical results and metadata are stored in so-called STR, RRAW, RHIT, and HITS files, which are proprietary and their file format specifications not publicly documented.
+  
+  Supplementary metadata are kept in a database (formerly known as the ISDb)
+  which is connected to the instrument control software and synced with the
+  experiment while ions are detected. In effect, RHIT and HITS files
+  store the (rawest) experiment data in a closed manner that is
+  practically useless for users unless they have access to the
+  commercial software.
+  
+  To arrive at a state that atom probe microscopy (APM) with LEAP instruments
+  delivers a dataset with which users can study reconstructed atomic
+  position and do e.g. composition analyses or other post-processing
+  analysis tasks, these raw data have to be processed. Therefore, it is
+  necessary that for an application definition to be useful, details about
+  the physical acquisition of the raw data and all its
+  processing steps have to be stored.
+  
+  With this a user can create derived quantities like ion hit positions
+  (on the detector) and calibrated time-of-flight data. These derived
+  quantities are also needed to obtain calibrated mass-to-charge-state
+  ratios, and finally the tomographic reconstruction of the ion positions.
+  
+  In most cases, an APM dataset is useful only if it gets post-processed
+  via so-called ranging. Ranging defines rules for mapping time-of-flight
+  and mass-to-charge-state ratio values on ion species. This is post-processing
+  even though in practice it is performed sometimes already (as preview)
+  already while data are still being collected.
+  
+  The ion types decode molecular identities which can very often be
+  mapped to elemental identities, and also be used to distinguish isotopes.
+  All these steps are in most cases performed using commercial software.
+  
+  Frequently, though, ranging and post-processing is also performed with
+  (open-source) research software. Therefore, there is strictly speaking
+  not a single program used throughout an atom probe analysis not even
+  for the early stage of data acquisition and processing stages to obtain
+  a useful reconstructed and ranged dataset.
+  
+  This application definition documents not only the measurement but also the
+  key post-processing steps which transform the proprietary data into a
+  tomographic reconstruction with ranging definitions.
+  
+  Future guidance by the technology partners like AMETEK/Cameca could improve this description to cover a substantial larger number of eventually metadata that
+  so far are neither publicly documented nor accessible.
 symbols:
   doc: The symbols used in the schema to specify e.g. dimensions of arrays.
   n_ions: Total number of ions collected.
@@ -15,6 +71,21 @@ symbols:
   n_y: Number of bins in the y direction.
   n_z: Number of bins in the z direction.
   n_bins: Number of bins.
+  n_topology: Total number of integers in the supplementary XDMF topology array.
+# some consistence is not yet achieved with IFES_APT_TC APT HDF5 v1 format
+# Language precision: Keywords such as “must” “required” “should”, etc are as per RFC-2119 [RFC2119]. https://tools.ietf.org/html/rfc2119
+# https://gitlab.com/apt_software_toolbox/apt-hdf5 an implementation for an
+# IFES APT TC APT HDF5 v1 verifier
+# NEW ISSUE: possible offspring application definitions:
+# NXapm_opt/pl would be possible, as soon as NXluminescence by Carola Emminger and Florian Dobner is ready whereby
+# then there would be two subentries one for an NXapm and one for NXphotoluminesence to capture the photonic atom probe of Rouen/GPM
+# and finally if there were an NXapm_afm for atomic force microscopy the IMEC AFM/APT experiments could be stored with an NXapm_afm application definition
+# with NXapm and NXafm being respective subentries of the appdef but as NXapm_afm is a step-by-step approach one would have to release the constraint
+# that only a single measurement can be performed.
+# NXasat which could just take two subentries NXem and NXapm
+# NXasat should be a fuse of NXapm and NXem within an NXentry with NXsubentry, in this way we can combine the strength of both application definitions
+# to describe also the upcoming technique of atomic scale analytical tomography https://doi.org/10.1017/9781316677292
+
 NXapm:
   (NXentry):
     exists: [min, 1, max, infty]
@@ -69,73 +140,19 @@ NXapm:
       doc: |
         ISO 8601 time code with local time zone offset to UTC included
         when the microscope session ended.
-    # NEW ISSUE: fields like duration need a clearer description as to how these quantities should be defined. Most atom probers do not care for this other than getting an approximate hour-accurate estimate of the time how long it took to evaporate the specimen.
-    program:
-      doc: |
-       Commercial or otherwise given name to the program which was used
-       to create the original results file of the atom probe experiment.
-       This file and program should not be confused with downstream
-       processing operations and file format conversion tasks.
-       
-       Atom probe microscopy experiments are except for still very much cases
-       controlled via commercial software. Such software is designed as an
-       integrated acquisition and instrument control software.
-       
-       For AMETEK/Cameca local electrode atom probe (LEAP) instruments the
-       least processed (rawest) numerical results and metadata are stored
-       in so-called RHIT and HITS files, which are proprietary and the
-       specifications of which are not publicly documented.
-       
-       Supplementary metadata are kept in a database which is connected
-       to the instrument control software and synced with the experiment
-       while signal is being detected. In effect, RHIT and HITS files
-       store the (rawest) experiment data in a closed manner that is
-       practically useless for users unless they have access to the
-       commercial software.
-       
-       To arrive at a state that atom probe microscopy (APM) with LEAP instruments
-       delivers a dataset with which users can study reconstructed atomic
-       position and do e.g. composition analyses or other post-processing
-       analysis tasks, these raw data have to be processed. Therefore, it is
-       necessary that for an application definition to be useful, details about
-       the physical acquisition of the raw data and all its
-       processing steps have to be stored.
-       
-       With this a user can create derived quantities like ion hit positions
-       (on the detector) and calibrated time-of-flight data. These derived
-       quantities are also needed to obtain calibrated mass-to-charge-state
-       ratios, and finally the tomographic reconstruction of the ion positions.
-       
-       In most cases, an APM dataset is useful only if it gets post-processed
-       via so-called ranging. Ranging defines rules for mapping time-of-flight
-       and mass-to-charge-state ratio values on ion species. This is post-processing
-       even though in practice it is performed sometimes already (as preview)
-       already while data are still being collected.
-       
-       The ion types decode molecular identities which can very often be
-       mapped to elemental identities, and also to resolve isotopes.
-       All these steps are in most cases performed using commercial software.
-       
-       Frequently, though, ranging and post-processing is also performed with
-       (open-source) research software. Therefore, there is strictly speaking
-       not a single program used throughout an atom probe analysis not even
-       for the early stage data acquisition and processing stages to obtain
-       a useful reconstructed and ranged dataset.
-       
-       Therefore, this application definition documents not only the measurement
-       but also the key post-processing steps which transform the proprietary
-       data into a tomographic reconstruction with ranging definitions.
-       
-       Future guidance by the vendors could improve this description to cover
-       a substantial larger number of eventually metadata that so far
-       are not publicly documented and accessible in an open-source manner.
-      \@version:
-        doc: |
-          Program version plus build number, commit hash, or description of an
-          ever persistent resource where the source code of the program and
-          build instructions can be found so that the program can be configured
-          in such a manner that the result file is ideally recreatable
-          yielding the same results.
+    # NEW ISSUE: fields like duration need a clearer description as to how these
+    # quantities should be defined. Most atom probers do not care for this other
+    # than getting an approximate hour-accurate estimate of the time how long it
+    # took to evaporate the specimen.
+    # several programs and libraries are usually coupled together for LEAP instruments,
+    # if it is possible to have a different root version with a different ivas/apsuite
+    # version that having a single program and version field is not enough but multiple
+    # are required LAS root version camecaroot version analysis software
+
+    (NXprogram):
+      exists: [min, 1, max, infty]
+      program:
+        \@version:
     run_number:
       doc: |
         Neither the specimen_name nor the experiment_identifier but the identifier
@@ -254,6 +271,10 @@ NXapm:
     specimen(NXsample):
       # NEW ISSUE: inject the conclusion from the discussion with Andrea
       # according to SAMPLE.yaml 0f8df14 2022/06/15
+      # NEW ISSUE: addition of a NXfurnace in which one can define the atmosphere
+      # and partial pressures of the agents in that atmosphere with which the
+      # sample was annealed at which temperature see the work happening at PNNL
+      # NEW ISSUE: it would be good to have an application definition NXicp for chemical composition
       name:
         doc: |
           Descriptive name or ideally (globally) unique persistent identifier.
@@ -345,11 +366,16 @@ NXapm:
         In this research field scientists distinguish usually several
         Euclidean coordinate systems (CS):
         
+        * World space;  
+          a CS specifying a local coordinate system of the planet earth which
+          identifies into which direction gravity is pointing such that
+          the laboratory space CS can be rotated into this world CS.
         * The laboratory space;  
           a CS specifying the room where the instrument is located in or  
           a physical landmark on the instrument, e.g. the direction of the  
           transfer rod where positive is the direction how the rod  
           has to be pushed during loading a specimen into the instrument.  
+          In summary, this CS is defined by the chassis of the instrument.
         * The specimen space;  
           a CS affixed to either the base or the initial apex of the specimen,  
           whose z axis points towards the detector.  
@@ -381,6 +407,10 @@ NXapm:
         the positive z-axes of either coordinate systems is oriented.
         Consult the work of A. J. Breen and B. Gault and team
         for further details.
+      # Spatial transformations are always active transformations; i.e. the location and direction of a vector in one coordinate system is expressed by the following transformation matrix, T Ptransformed = TPoriginal
+      # add a note about what is the tip space
+      #Conventions: right-handed, Cartesian, 3D Euclidean CS should be used Laboratory space to be set by This is the space that is set by the chassis of the instrument. The Z direction must be reasonably parallel to gravity (+ve defined to be gravity vector pointing towards lowest ground), but can be defined to be a direction that is nominally parallel to gravity during an experiment. The origin must be placed within a bounding box of the chassis. Tip space instead of specimen space, The space occupied by a tip in the neutral position when ready for analysis. Z+ should be located in the direction of the needle (apex is Z+ from needle centreline). i) If the specimen moves relative to the laboratory frame, and the electrode does not, or if no electrode is present, then the space should be defined such that when the tip is moved physically, it also moves through tip space. ii) If the electrode moves relative to the laboratory frame, then the space should be defined such that, in tip space, the electrode position does not change. 
+      # iii) The transformation between laboratory space and Tip space must be describable by a fixed 3x3 transformation matrix. Detector space: This is a 2D space only, and contains X+ and Y+ directions. X+ and Y+ should indicate primary directions on the detector, and should be, for an equivalent straight-flight-path configuration, such that X+ and Y+ is matched to that of tip space. Laser space missing: Laser space: The coordinate frame describing the impinging wavefront on the sample. Z+ is the vector of the propagating wavefront. X+ is the orthogonal component of the tip direction within the tip-laser plane. The origin shall be placed at the best estimate for tip apex position at the start of the experiment. Reconstruction space : The space occupied by a correctly reconstructed dataset. X+ and Y+ should correspond to X+ and Y+ in the detector space. Z+ should be such that the needle centre line is normal to the detector position. The origin shall be placed at the tip apex.
       TRANSFORMATIONS(NXtransformations):
         exists: [min, 0, max, infty]
     # NEW ISSUE: add Breen's Ultramicroscopy paper on atom probe crystallography
@@ -388,6 +418,7 @@ NXapm:
     (NXmonitor):
       exists: [min, 0, max, infty]
     # NEW ISSUE ADD AS MANY MONITORS AS NEEDED, also for pressure etc.
+    # add a default plot V = f(time/evaporation_id), essentially for each quantity
     atom_probe(NXinstrument):
       doc: |
         Metadata and numerical data of the atom probe and the lab in which it 
@@ -404,6 +435,8 @@ NXapm:
           Hence, there is no real probe/beam.  
         * Second, the specimen is the lens of the microscope.  
         
+      (NXcsg):
+        exists: optional
       instrument_name:
         doc: |
           Given name of the atom probe at the hosting institution. This is an
@@ -432,7 +465,15 @@ NXapm:
           THIS DOCSTRING NEEDS CLARIFICATION.
         unit: NX_LENGTH
       # NEW ISSUE: discussion depends on the type of instrument, 
-      # straight flight path, curved
+      # straight flight path, curved, there were a few comments to made
+      # https://fairmat-experimental.github.io/nexus-fairmat-proposal/
+      # 50433d9039b3f33299bab338998acb5335cd8951/classes/
+      # contributed_definitions/NXapm.html
+      # where further details of the flight geometry should be recorded however
+      # in the majority of cases these data are not offered by APSuite and
+      # so far nobody has asked or seriously proceeded with how to use these
+      # pieces of information if they were to be stored
+      # MK::NEW ISSUE
       field_of_view(NX_FLOAT):
         exists: recommended
         doc: |
@@ -460,12 +501,21 @@ NXapm:
             exists: optional
         description:
           exists: recommended
+        (NXcsg):
+          exists: optional
       # NEW ISSUE: flat_test_data(NXcollection):
       #   exists: recommended
       #   doc: NEED FOR FURTHER DISCUSSIONS WITH APM COLLEAGUES WHAT IS RELEVANT HERE.
+      # NEW ISSUE: have a place to be more specific about the geometry and
+      # usage of additional lenses:
+      # for the invizo 6000 instrument it makes sense to add at least groups for the two additional lenses whereby the field of view is brought from 50-60 to at most 100 the key invention
+      # add: decelerating_electrode(NXlens_em) accelerating_mesh maybe needs an own base class
+      # I suggest that this section should be reworked with the local_electrode being required and all other components and opposite counter_electrodes being optional WO2016171675A1 details the key specifications of the components and the setup
+      # see https://en.wikipedia.org/wiki/Einzel_lens for details double einzel lens in the invizo 6000 according to A. Breen (UNSW)
       local_electrode(NXlens_em):
         doc: |
-          A local electrode guiding the ion flight path.
+          A local electrode guiding the ion flight path. Also called
+          counter or extraction electrode.
         name:
           doc: |
             Identifier of the local_electrode in an e.g. database.
@@ -481,6 +531,8 @@ NXapm:
               exists: optional
           value(NX_NUMBER):
             exists: recommended  # ##MK::should become required
+        (NXcsg):
+          exists: optional
       # but the local_electrode does not really on purpose create a magnetic field,
       # specific for an electro-magnetic lens is the symmetry of its field
       # NEW ISSUE: for now keep that we have what is an NXlens_em
@@ -527,7 +579,11 @@ NXapm:
           dimensions:
             rank: 1
             dim: [[1, n_ions]]
+        (NXcsg):
+          exists: optional
       pulser(NXpulser_apm):
+        # NEW ISSUE: other sources of pulsers are possible
+        # NEW ISSUE: see in WO2016171675A1 Invizo 6000 patent from AMETEK
         pulse_mode:
         pulse_frequency(NX_FLOAT):
         pulse_fraction(NX_FLOAT):
@@ -535,7 +591,9 @@ NXapm:
           exists: recommended
         standing_voltage(NX_FLOAT):
           exists: recommended
-        laser_gun(NXsource):
+        (NXcsg):
+          exists: optional
+        LASER_SOURCE(NXsource):
           exists: [min, 0, max, 2]
           # INVIZO 6000 instrument have two symmetric lasers! so for these
           # laser_gun and laser_beam exists: [min, 0, max, 2]
@@ -583,8 +641,22 @@ NXapm:
             Average temperature at the specimen base, i.e.
             base_temperature during the measurement.
           unit: NX_TEMPERATURE
-
+        temperature(NX_FLOAT):
+          exists: optional
+          doc: |
+            The best estimate, at experiment time, for the temperature at the
+            sample base (furthest point along sample apex and holding assembly
+            that is removable from the sample stage).
+          unit: NX_TEMPERATURE
+          dimensions:
+            rank: 1
+            dim: [[1, n_ions]]
+        (NXcsg):
+          exists: optional
+      # evaporation control in which context is it used?
       # NEW ISSUE: begin add and support I/O of further details
+      # NEW ISSUE: with Shyam Katnagallu fix that so far the application definition does not really cover fim as there is no place to store values for a gas injection system and a (partial) pressure sensor for the imaging gas it should be clarified in the docstring of the pressure field if this measured either a chamber total of a species partial pressure
+      # NEW ISSUE: add NXapm_energy_analyzer, a voltage grid like done in Rouen/GPM
       analysis_chamber(NXchamber):
         name:
           exists: optional
@@ -604,6 +676,8 @@ NXapm:
           doc: |
             Average pressure in the analysis chamber.
           unit: NX_PRESSURE
+        (NXcsg):
+          exists: optional
       buffer_chamber(NXchamber):
         exists: optional
         name:
@@ -624,6 +698,8 @@ NXapm:
           doc: |
             Average pressure in the buffer chamber.
           unit: NX_PRESSURE
+        (NXcsg):
+          exists: optional
       load_lock_chamber(NXchamber):
         exists: optional
         name:
@@ -644,6 +720,8 @@ NXapm:
           doc: |
             Average pressure in the load_lock_chamber.
           unit: NX_PRESSURE
+        (NXcsg):
+          exists: optional
       getter_pump(NXpump):
         exists: optional
         design:
@@ -657,6 +735,8 @@ NXapm:
           identifier:
             exists: recommended
           capabilities:
+            exists: optional
+          (NXcsg):
             exists: optional
       roughening_pump(NXpump):
         exists: optional
@@ -672,6 +752,8 @@ NXapm:
             exists: recommended
           capabilities:
             exists: optional
+          (NXcsg):
+            exists: optional
       turbomolecular_pump(NXpump):
         exists: optional
         design:
@@ -686,7 +768,23 @@ NXapm:
             exists: recommended
           capabilities:
             exists: optional
+          (NXcsg):
+            exists: optional
       # NEW ISSUE: end add and support I/O of further details
+
+      instrument_calibration(NXcollection):
+        exists: recommended
+        doc: |
+          A possible place, which has to be discussed with the atom probe
+          community more though, where quantitative details about the calibration
+          of the counter electrode could be stored. Work in this direction was
+          e.g. reported by the `Erlangen group <https://www.youtube.com/watch?v=99hNEkqdj78t=1876s>`_  
+          (see `P. Felfer et al. <http://dx.doi.org/10.1016/j.ultramic.2016.07.008>`_  )
+        # gridded-counter-electrode shadow image polyline fits are exported as
+        # NXcg_spline_set see also https://www.youtube.com/watch?v=99hNEkqdj78t=2348s
+      # NEW ISSUE: dld_signal_amplitude monitoring
+      # arrival_time_pairs: (recommended) NX_NUMBER (Rank: 3, Dimensions: [n_ions, n_dld_wires, 2]) {units=NX_TIME}
+      # eventually one may wish to store values from an NXmonitoring tracking the DLD signal amplitude (mV) = f(t)
       specimen_monitoring(NXcollection):
         exists: recommended
         # NEW ISSUE: should be promoted to recommended at some point in particular with closer integration of APM and EM instruments
@@ -732,6 +830,14 @@ NXapm:
             Average detection rate over the course of the experiment.
           unit: NX_DIMENSIONLESS
         # NEW ISSUE: define e.g. radius(NX_FLOAT) and evaporation_id(NX_UINT) to store snapshots of the shape evolution of the specimen.
+        estimated_field_at_the_apex(NX_FLOAT):
+          exists: optional
+          doc: |
+            Estimated field at the apex along the evaporation sequence.
+          unit: NX_ANY
+          dimensions:
+            rank: 1
+            dim: [[1, n_ions]]
 
       control_software(NXcollection):
         doc: |
@@ -764,17 +870,10 @@ NXapm:
           but relevant pieces of information is the purpose of this collection.
         # NEW ISSUE: With new development pull fields out of this collection into dedicated groups.
         # might consider moving this to individual groups under (NXpump) or (NXchamber) groups.
-        program:
-          doc: |
-            Name of the control software of the microscope 
-            used during acquisition (e.g. IVAS/APSuite).
-          \@version:
-            doc: |
-              Program version plus build number, commit hash, or description of an
-              ever persistent resource where the source code of the program and
-              build instructions can be found so that the program can be configured
-              in such a manner that the result file is ideally recreatable
-              yielding the same results.
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program:
+            \@version:
         buffer_chamber(NXcollection):
           exists: optional
           doc: Track time-dependent details over the course of the measurement about the buffer_chamber.
@@ -793,7 +892,21 @@ NXapm:
       # these steps are currently not fully separatable as all processing in
       # most cases the processing is done in commercial software.
 
+      status:
+        doc: |
+          A statement whether the measurement was successful or failed prematurely.
+        enumeration: [success, failure]
+
+      # NEW ISSUE: atomic volume, detection efficiency, electric field (assumptions),
+      # final specimen state, pre, post image analysis, a reference to three images
+      # taken as recommended by cameca, before or after, radius evolution model, field # factor, image compression
+
+      # default statistics would be good to report as output e.g.
+      # total ions (single, multiple, partial) reconstructed ions (ranged, unranged)
+      # voltage and bowl calibration (peak) mass_calibration as an own field
+
       ion_impact_positions(NXprocess):
+        # NEW ISSUE: check also here the PYCCAPT pipeline from P. Felfer's group
         exists: recommended
         doc: |
           Details about where ions hit the ion_detector and data processing
@@ -806,18 +919,12 @@ NXapm:
           For instruments built by individual research groups,
           like the Oxcart instrument, individual timing data from the
           delay-line detector are openly accessible.
-        program:
-          doc: |
-            Given name of the program that was used to perform this computation.
-            Apart from the classical approach to use AMETEK software for this
-            processing step, a number of open-source alternative tools exists.
-          \@version:
-            doc: |
-              Program version plus build number, commit hash, or description of
-              an ever persistent resource where the source code of the program
-              and build instructions can be found so that the program can be
-              configured in such a manner that the result file is ideally
-              recreatable yielding the same results.
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program:
+            \@version:
         arrival_time_pairs(NX_NUMBER):
           exists: recommended
           doc: |
@@ -834,6 +941,9 @@ NXapm:
             Evaluated ion impact coordinates at the detector
             (either as computed from the arrival time data
             or as reported by the control software).
+            If the acquisition software enables it one can also store in this
+            field the hit_positions, as measured by the detector, without any
+            corrections.
           unit: NX_LENGTH
           dimensions:
             rank: 2
@@ -842,6 +952,15 @@ NXapm:
           # detection_rate_time_profile(NX_FLOAT):
           #   doc: Spatio-temporal profile of the detection rate since the start of the measurement.
           # NEW ISSUE: discuss how to handle cases when we would like to store ideally an array where one dimensions is NX_TIME and the other one is e.g. NX_PERCENT 
+      hit_quality_filtering(NXprocess):
+        exists: optional
+        doc: |
+          This could be a place where currently the publicly undocumented
+          algorithmic steps are stored how detected hits are judged for their
+          quality. In CamecaRoot this there is something mentioned like
+          golden and partial hits, here is where this could be documented.
+        sequence_index(NX_POSINT):
+          exists: recommended
       hit_multiplicity(NXprocess):
         # NEW ISSUE: use symbols to monitor number of pulses
         exists: recommended
@@ -859,18 +978,12 @@ NXapm:
           f the same element or isotope, respectively, a molecular
           ion contains (which is instead encoded with the
           isotope_vector field of each NXion instance).
-        program:
-          doc: |
-            Given name of the program that was used to perform this computation.
-            Apart from the classical approach to use AMETEK software for this
-            processing step, a number of open-source alternative tools exists.
-          \@version:
-            doc: |
-              Program version plus build number, commit hash, or description of
-              an ever persistent resource where the source code of the program 
-              and build instructions can be found so that the program can be
-              configured in such a manner that the result file is ideally
-              recreatable yielding the same results.
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program:
+            \@version:
         pulses_since_last_ion(NX_UINT):
           exists: recommended
           doc: |
@@ -910,18 +1023,12 @@ NXapm:
           in the voltage-and-bowl correction.
           This post-processing is usually performed via GUI interaction
           in the reconstruction pipeline of IVAS/APSuite.
-        program:
-          doc: |
-            Given name of the program that was used to perform this computation.
-            Apart from the classical approach to use AMETEK software for this
-            processing step, a number of open-source alternative tools exists.
-          \@version:
-            doc: |
-              Program version plus build number, commit hash, or description of
-              an ever persistent resource where the source code of the program
-              and build instructions can be found so that the program can be
-              configured in such a manner that the result file is ideally
-              recreatable yielding the same results.
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program:
+            \@version:
         evaporation_id_included(NX_BOOLEAN):  # NXcs_filter_boolean_mask
           doc: |
             Bitmask which is set to true if the ion 
@@ -931,24 +1038,19 @@ NXapm:
             dim: [[1, n_ions]]  # then only a group
 
       voltage_and_bowl_correction(NXprocess):
+        # NEW ISSUE: add section for propagation_delay(NXprocess) ?
         exists: recommended
         doc: |
           Data post-processing step to correct for ion impact
           position flight path differences, detector biases,
           and nonlinearities. This step is usually performed
           with commercial software.
-        program:
-          doc: |
-            Given name of the program that was used to perform this computation.
-            Apart from the classical approach to use AMETEK software for this
-            processing step, a number of open-source alternative tools exists.
-          \@version:
-            doc: |
-              Program version plus build number, commit hash, or description of
-              an ever persistent resource where the source code of the program
-              and build instructions can be found so that the program can be
-              configured in such a manner that the result file is ideally
-              recreatable yielding the same results.
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program:
+            \@version:
         # NEW ISSUE: realistic is that currently scientists can pull always a calibrated time-of-flight
         # but not necessarily unprocessed timing data from the detector (unless individuals built the instrument).
         # Relevant for ranging are the calibrated data, thats why only these
@@ -1004,18 +1106,12 @@ NXapm:
         doc: |
           Data post-processing step in which calibrated time-of-flight data
           (ToF) are interpreted into mass-to-charge-state ratios.
-        program:
-          doc: |
-            Given name of the program that was used to perform this computation.
-            Apart from the classical approach to use AMETEK software for this
-            processing step, a number of open-source alternative tools exists.
-          \@version:
-            doc: |
-              Program version plus build number, commit hash, or description of
-              an ever persistent resource where the source code of the program
-              and build instructions can be found so that the program can be
-              configured in such a manner that the result file is ideally
-              recreatable yielding the same results.
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program:
+            \@version:
         parameter(NXcollection):
           exists: recommended
           doc: |
@@ -1029,6 +1125,7 @@ NXapm:
             rank: 1
             dim: [[1, n_ions]]
 
+      # NEW ISSUE: make this rather an own subentry NXapm_reconstruction
       reconstruction(NXprocess):
         exists: recommended
         doc: |
@@ -1039,17 +1136,12 @@ NXapm:
           published procedures, so-called reconstruction protocols,
           i.e. numerical recipes how to compute x, y, z atomic positions
           from the input data.
-        program:
-          doc: |
-            Given name of the program that was used to perform this computation.
-            Similar comments as voltage_and_bowl_correction apply.
-          \@version:
-            doc: |
-              Program version plus build number, commit hash, or description of
-              an ever persistent resource where the source code of the program
-              and build instructions can be found so that the program can be
-              configured in such a manner that the result file is ideally
-              recreatable yielding the same results.
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program:
+            \@version:
         protocol_name:
           doc: |
             Qualitative statement about which reconstruction protocol was used.
@@ -1093,6 +1185,28 @@ NXapm:
           dimensions:
             rank: 2
             dim: [[1, n_ions], [2, 3]]
+        visualization(NXprocess):
+          exists: recommended
+          xdmf_topology(NX_UINT):
+            doc: |
+              An array of triplets of integers which can serve as a supplementary
+              array for Paraview to display the reconstructed dataset. The XDMF primitive type is here 1, the number of primitives 1 per triplet, the last integer in each triplet is the identifier of each point starting from zero.
+            unit: NX_UNITLESS
+            dimensions:
+              rank: 1
+              dim: [[1, n_topology]]
+              # n_topology == 3*n_ions
+        xdmf_topology(NX_UINT):
+          doc: |
+            Six equally formatted sextets chained together. For each
+            sextett the first entry is an XDMF primitive topology
+            key (here 5 for polygon), the second entry the XDMF primitive
+            count value (here 4 because each face is a quad).
+            The remaining four values are the vertex indices.
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 1
+            dim: [[1, 36]]
 
         naive_point_cloud_density_map(NXprocess):
           doc: |
@@ -1100,18 +1214,10 @@ NXapm:
             the format conversion computes a simple 3d histogram
             of the ion density using one nanometer cubic bins without
             applying smoothening algorithms on this histogram.
-          program:
-            doc: |
-              Given name of the program that was used to perform this computation.
-              Apart from the classical approach to use AMETEK software for this
-              processing step, a number of open-source alternative tools exists.
-            \@version:
-              doc: |
-                Program version plus build number, commit hash, or description of
-                an ever persistent resource where the source code of the program
-                and build instructions can be found so that the program can be
-                configured in such a manner that the result file is ideally
-                recreatable yielding the same results.
+          (NXprogram):
+            exists: [min, 1, max, infty]
+            program:
+              \@version:
           (NXdata):
             doc: |
               A default three-dimensional histogram of the total
@@ -1150,6 +1256,7 @@ NXapm:
                 dim: [[1, n_x]]
               \@long_name:
 
+      # NEW ISSUE: make this rather an own subentry NXapm_ranging
       ranging(NXprocess):
         exists: recommended
         doc: |
@@ -1162,18 +1269,12 @@ NXapm:
          * `D. Haley et al. <https://doi.org/10.1017/S1431927620024290>`_  
          * `M. Kühbach et al. <https://doi.org/10.1017/S1431927621012241>`_  
          
-        program:
-          doc: |
-            Given name of the program that was used to perform this computation.
-            Apart from the classical approach to use AMETEK software for this
-            processing step, a number of open-source alternative tools exists.
-          \@version:
-            doc: |
-              Program version plus build number, commit hash, or description of
-              an ever persistent resource where the source code of the program
-              and build instructions can be found so that the program can be
-              configured in such a manner that the result file is ideally
-              recreatable yielding the same results.
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program:
+            \@version:
         number_of_ion_types(NX_UINT):
           doc: |
             How many ion types are distinguished.
@@ -1195,18 +1296,10 @@ NXapm:
             Usually mass-to-charge values are studied as an ensemble quantity,
             specifically these values are binned.
             This (NXprocess) stores the settings of this binning.
-          program:
-            doc: |
-              Given name of the program that was used to perform this computation.
-              Apart from the classical approach to use AMETEK software for this
-              processing step, a number of open-source alternative tools exists.
-            \@version:
-              doc: |
-                Program version plus build number, commit hash, or description of
-                an ever persistent resource where the source code of the program
-                and build instructions can be found so that the program can be
-                configured in such a manner that the result file is ideally
-                recreatable yielding the same results.
+          (NXprogram):
+            exists: [min, 1, max, infty]
+            program:
+              \@version:
           range_minmax(NX_FLOAT):
             doc: |
               Smallest and largest mass-to-charge-state ratio value.
@@ -1252,18 +1345,10 @@ NXapm:
           doc: |
             Details of the background model which was used to
             correct the total counts per bin into counts.
-          program:
-            doc: |
-              Given name of the program that was used to perform this computation.
-              Apart from the classical approach to use AMETEK software for this
-              processing step, a number of open-source alternative tools exists.
-            \@version:
-              doc: |
-                Program version plus build number, commit hash, or description of
-                an ever persistent resource where the source code of the program
-                and build instructions can be found so that the program can be
-                configured in such a manner that the result file is ideally
-                recreatable yielding the same results.
+          (NXprogram):
+            exists: [min, 1, max, infty]
+            program:
+              \@version:
         # NEW ISSUE: add parameters of the background model in an e.g.
         # NXcollection as these are specific to every background model
         # NEW ISSUE: touching upon i.e. research activities by Andrew London et al.
@@ -1275,18 +1360,10 @@ NXapm:
           doc: |
             How where peaks in the background-corrected in the histogram
             of mass-to-charge-state ratio values identified?
-          program:
-            doc: |
-             Given name of the program that was used to perform this computation.
-             Apart from the classical approach to use AMETEK software for this
-             processing step, a number of open-source alternative tools exists.
-            \@version:
-              doc: |
-                Program version plus build number, commit hash, or description of
-                an ever persistent resource where the source code of the program
-                and build instructions can be found so that the program can be
-                configured in such a manner that the result file is ideally
-                recreatable yielding the same results.
+          (NXprogram):
+            exists: [min, 1, max, infty]
+            program:
+              \@version:
           (NXpeak):
             exists: [min, 0, max, infty]
             label:
@@ -1300,18 +1377,10 @@ NXapm:
           doc: |
             Details about how peaks, with taking into account
             error models, were interpreted as ion types or not.
-          program:
-            doc: |
-             Given name of the program that was used to perform this computation.
-             Apart from the classical approach to use AMETEK software for this
-             processing step, a number of open-source alternative tools exists.
-            \@version:
-              doc: |
-                Program version plus build number, commit hash, or description of
-                an ever persistent resource where the source code of the program
-                and build instructions can be found so that the program can be
-                configured in such a manner that the result file is ideally
-                recreatable yielding the same results.
+          (NXprogram):
+            exists: [min, 1, max, infty]
+            program:
+              \@version:
           (NXion):
             exists: [min, 0, max, 256]
             isotope_vector(NX_UINT):

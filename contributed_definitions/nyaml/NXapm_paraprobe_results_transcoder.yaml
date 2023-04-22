@@ -9,6 +9,8 @@ symbols:
     Needs to match maximum_number_of_atoms_per_molecular_ion.
   n_ranges: Number of mass-to-charge-state-ratio intervals mapped on this ion type.
   n_topology: Total number of integers in the supplementary XDMF topology array.
+  n_combinatorics: Number of ions probed in the combinatorial analysis of the charge states
+# be careful n_comb can vary for every instance of (NXion) !
 NXapm_paraprobe_results_transcoder:
   (NXentry):
     # by default for appdefs the value of the exists keyword is required
@@ -35,7 +37,6 @@ NXapm_paraprobe_results_transcoder:
           ideally in such a manner that the result of this computational process
           is recreatable in the same deterministic manner.
     analysis_identifier:
-      exists: optional
       doc: |
         Ideally, a (globally persistent) unique identifier for referring
         to this analysis.
@@ -66,7 +67,7 @@ NXapm_paraprobe_results_transcoder:
         Path to the directory where the tool should store NeXus/HDF5 results
         of this analysis. If not specified results will be stored in the
         current working directory.
-    status(NX_CHAR):
+    status:
       doc: |
         A statement whether the paraprobe-tool executable managed to
         process the analysis or failed prematurely.
@@ -332,6 +333,73 @@ NXapm_paraprobe_results_transcoder:
               exists: recommended
             charge_state(NX_INT):
             mass_to_charge_range(NX_FLOAT):
+            charge_model(NXprocess):
+              doc: |
+                Details and results of the combinatorial analyses of this
+                range definition to identify the charge_state for an ion.
+              charge_vector(NX_UINT):
+                doc: |
+                  Currently charge_state not charge!
+                unit: NX_UNITLESS
+                dimensions:
+                  rank: 1
+                  dim: [[1, n_combinatorics]]
+              isotope_matrix(NX_UINT):
+                doc: |
+                  Specific isotopes building each candidate matching the range.
+                unit: NX_UNITLESS
+                dimensions:
+                  rank: 2
+                  dim: [[1, n_combinatorics], [2, n_ivec_max]]
+              mass_vector(NX_FLOAT):
+                doc: |
+                  Accumulated mass of the isotopes in each candidate.
+                  Not corrected for quantum effects.
+                unit: NX_ANY
+                dimensions:
+                  rank: 1
+                  dim: [[1, n_combinatorics]]
+              # min_abundance(NX_FLOAT):
+              #   doc: |
+              #     Minimum natural abundance
+              #   unit: NX_DIMENSIONLESS
+              natural_abundance_product_vector(NX_FLOAT):
+                doc: |
+                  Product of natural abundance of the isotopes per candidate.
+                unit: NX_DIMENSIONLESS
+                dimensions:
+                  rank: 1
+                  dim: [[1, n_combinatorics]]
+              min_abundance_product(NX_FLOAT):
+                doc: |
+                  Filter criterion on the product of the natural abundances
+                  computed from each isotope building the (molecular) ion.
+                  Such a filter can be used to reduce the number of possible
+                  molecular ions considered when trying to find a unique solution
+                  to the question which charge_state does a molecular ion
+                  within a given range and given combination of elements have.
+                unit: NX_DIMENSIONLESS
+              min_half_life(NX_FLOAT):
+                doc: |
+                  Filter criterion on the minimum half life which all isotopes
+                  building the (molecular) ion need to have to consider the
+                  candidate.
+                  Such a filter can be used to reduce the number of possible
+                  molecular ions considered when trying to find a unique solution
+                  to the question which charge_state does a molecular ion
+                  within a given range and given combination of elements have.
+                unit: NX_TIME
+                # NEW ISSUE: value can be the string infinity!
+              # min_half_life_vector(NX_FLOAT):
+              #   doc: |
+              #     Needs to be documented
+              #   unit: NX_TIME
+              sacrifice_isotopic_uniqueness(NX_BOOLEAN):
+                doc: |
+                  If the value is zero/false it means that non-unique solutions
+                  are accepted. These are solutions where multiple candidates
+                  differ in their isotopes but have the same charge.
+
             # add further fields coming from using the charge state recovery
             # workflow from the ifes_apt_tc_data_modeling library
 # ##MK::end of the tool-specific section

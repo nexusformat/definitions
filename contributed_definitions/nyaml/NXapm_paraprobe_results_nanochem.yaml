@@ -70,7 +70,7 @@ NXapm_paraprobe_results_nanochem:
         Path to the directory where the tool should store NeXus/HDF5 results
         of this analysis. If not specified results will be stored in the
         current working directory.
-    status(NX_CHAR):
+    status:
       doc: |
         A statement whether the paraprobe-tool executable managed to
         process the analysis or failed prematurely.
@@ -167,7 +167,7 @@ NXapm_paraprobe_results_nanochem:
 
       iso_surface_analysis(NXprocess):
         exists: [min, 0, max, infty]
-        delocalization(NXdelocalization):
+        DELOCALIZATION(NXdelocalization):
           weighting_model:
             doc: |
               The weighting model specifies how mark data are mapped to a weight
@@ -245,7 +245,7 @@ NXapm_paraprobe_results_nanochem:
               dimensions:
                 rank: 1
                 dim: [[1, n_isotopic]]
-          normalization(NX_CHAR):
+          normalization:
             doc: |
               How results of the kernel-density estimation were computed
               into quantities. By default the tool computes the total number
@@ -307,11 +307,13 @@ NXapm_paraprobe_results_nanochem:
                 rank: 1
                 dim: [[1, d]]
               # (NXtransformations):
-            coordinate_system(NX_CHAR):
+            coordinate_system:
               exists: optional
               doc: |
                 Reference to or definition of a coordinate system with
                 which the positions and directions are interpretable.
+                If the coordinate system is not specified the paraprobe
+                coordinate system is used.
               # should constraints on the grid be place here or not
             identifier_offset(NX_INT):
               doc: |
@@ -396,10 +398,6 @@ NXapm_paraprobe_results_nanochem:
                   dimensions:
                     rank: 1
                     dim: [[1, 36]]
-                  unit: NX_UNITLESS
-                  dimensions:
-                    rank: 1
-                    dim: [[1, 36]]
 
                 number_of_boundaries(NX_POSINT):
                   exists: optional
@@ -408,7 +406,7 @@ NXapm_paraprobe_results_nanochem:
                     Most grids discretize a cubic or cuboidal region. In this case
                     six sides can be distinguished, each making an own boundary.
                   unit: NX_UNITLESS
-              boundaries(NX_CHAR):
+              boundaries:
                 exists: optional
                 doc: |
                   Name of the boundaries. E.g. left, right, front, back, bottom, top,
@@ -571,7 +569,7 @@ NXapm_paraprobe_results_nanochem:
               dimensions:
                 rank: 1
                 dim: [[1, 3]]
-            # kernel_type(NX_CHAR):
+            # kernel_type:
             #   doc: |
             #     Functional form of the kernel (Ansatz function).
             kernel_sigma(NX_FLOAT):
@@ -749,7 +747,7 @@ NXapm_paraprobe_results_nanochem:
                     doc: |
                       Triangle normals are oriented in the direction of the
                       gradient vector of the local delocalized scalar field.
-                      :math:`$\sum_{x, y, z} {\nabla{c}_i}^2$`.
+                      :math:`\sum_{x, y, z} {\nabla{c}_i}^2`.
                     unit: NX_ANY
                     dimensions:
                       rank: 1
@@ -804,7 +802,7 @@ NXapm_paraprobe_results_nanochem:
                   unit: NX_ANGLE
                   dimensions:
                     rank: 2
-                    dim: [[1, j], [2, 3]]
+                    dim: [[1, j], [2, 4]]
                 center(NX_NUMBER):
                   exists: optional
                   doc: The center of mass of each triangle.
@@ -823,8 +821,8 @@ NXapm_paraprobe_results_nanochem:
                   by triangles. Currently, the tool distinguishes at most
                   three types of features:
                   
-                  1. So-called objects, i.e. not necessarily watertight features
-                     convex polyhedra
+                  1. So-called objects, i.e. necessarily watertight features
+                     represented polyhedra.
                   2. So-called proxies, i.e. features that were replaced by a
                      proxy mesh and made watertight.
                   3. Remaining triangle surface meshes of arbitrary shape and
@@ -835,9 +833,10 @@ NXapm_paraprobe_results_nanochem:
                   some of them may be segments of dislocation lines or other
                   crystal defects which are decorated (or not) with solutes.
                   
-                  Each type of feature needs to be registered in the feature_type
-                  dictionary. Type identifiers (keywords are integer), values
-                  are human-readable names like object, proxy, undefined
+                #  Each type of feature needs to be registered in the feature_type
+                #  dictionary. Type identifiers (keywords are integer), values
+                #  are human-readable names like object, proxy, undefined
+                # NEW ISSUE: refactor using instances of NXms_feature_set
                 triangle_cluster_identifier(NX_UINT):
                   doc: |
                     The identifier which the triangle_soup connectivity analysis
@@ -855,7 +854,7 @@ NXapm_paraprobe_results_nanochem:
                   dimensions:
                     rank: 1
                     dim: [[1, n_feature_dict]]
-                feature_type_dict_value(NX_CHAR):
+                feature_type_dict_value:
                   exists: optional
                   doc: |
                     The array of values for each keyword of the
@@ -890,7 +889,7 @@ NXapm_paraprobe_results_nanochem:
                   doc: |
                     Details for features which are (closed) objects.
                     Identifier have to exist in feature_identifier
-                    `:mathcal:$identifier \in feature_identifier$`.
+                    :math:`\textnormal{identifier} \in \textnormal{feature_identifier}`.
                   # ##MK::constraints!
                   feature_identifier(NX_UINT):
                     unit: NX_UNITLESS
@@ -1130,7 +1129,7 @@ NXapm_paraprobe_results_nanochem:
                     processing their partial triangulated_surface_mesh
                     (hole filling, refinement).
                     Identifier have to exist in feature_identifier
-                    `:mathcal:$identifier \in feature_identifier$`.
+                    :math:`\textnormal{identifier} \in \textnormal{feature_identifier}`.
                   # ##MK::constraints feature_identifier are a subset of the parent!
                   feature_identifier(NX_UINT):
                     unit: NX_UNITLESS
@@ -1143,14 +1142,14 @@ NXapm_paraprobe_results_nanochem:
                       rank: 1
                       dim: [[1, i]]
                   # obb ?
-                  proxies_close_to_edge(NXms_three_d_feature_set):
+                  proxies_close_to_edge(NXprocess):  # (NXms_three_d_feature_set):
                     exists: optional
                     doc: |
                       Details for those proxies close to edge, i.e. those which
                       have at least one ion which lays closer to a modelled edge
                       of the dataset than threshold.
                       Identifier have to exist in feature_identifier
-                      `:mathcal:$identifier \in feature_identifier$`.
+                      :math:`\textnormal{identifier} \in \textnormal{feature_identifier}`.
                     # ##MK::constraints!
                     feature_identifier(NX_UINT):
                       unit: NX_UNITLESS
@@ -1314,6 +1313,13 @@ NXapm_paraprobe_results_nanochem:
             The multiplicity whereby the ion position is accounted for
             irrespective whether the ion is considered as a decorator
             of the interface or not.
+            As an example, with atom probe it is typically not possible
+            to resolve the positions of the atoms which arrive at the detector
+            as molecular ions. Therefore, an exemplar molecular ion of two carbon
+            atoms can be considered to have a multiplicity of two to account that
+            this molecular ion contributes two carbon atoms at the reconstructed
+            location considering that the spatial resolution of atom probe
+            experiments is limited.
           unit: NX_UNITLESS
           dimensions:
             rank: 1
@@ -1321,24 +1327,23 @@ NXapm_paraprobe_results_nanochem:
         decorator_multiplicity(NX_UINT):
           exists: optional
           doc: |
-            The multiplicity whereby the ion position is accounted
-            for when the ion is considered´one which is a decorator
-            of the interface.
+            The multiplicity whereby the ion position is accounted for when
+            the ion is considered one which is a decorator of the interface.
           unit: NX_UNITLESS
           dimensions:
             rank: 1
             dim: [[1, n_ions]]
-        initial_interface:  # ##MK::(NXcg_plane_set):
+        initial_interface(NXprocess):  # MK::(NXcg_plane_set):
           exists: optional
           doc: |
-            The equation of the plane that is fitting initially.
-        point_normal_form(NX_FLOAT):
-          doc: |
-            The four parameter ax + by + cz + d = 0 which define the plane.
-          unit: NX_LENGTH
-          dimensions:
-            rank: 1
-            dim: [[1, 4]]
+            The equation of the plane that is fitted initially.
+          point_normal_form(NX_FLOAT):
+            doc: |
+              The four parameter :math:`ax + by + cz + d = 0` which define the plane.
+            unit: NX_LENGTH
+            dimensions:
+              rank: 1
+              dim: [[1, 4]]
         MESH_CURR_PRE_DCOM_STEP(NXcg_triangle_set):
           exists: [min, 0, max, infty]
           doc: |
@@ -1452,7 +1457,7 @@ NXapm_paraprobe_results_nanochem:
             unit: NX_ANGLE
             dimensions:
               rank: 2
-              dim: [[1, c], [2, 3]]
+              dim: [[1, c], [2, 4]]
         MESH_CURR_POST_DCOM_STEP(NXcg_triangle_set):
           exists: [min, 0, max, infty]
           doc: |
@@ -1565,7 +1570,7 @@ NXapm_paraprobe_results_nanochem:
             unit: NX_ANGLE
             dimensions:
               rank: 2
-              dim: [[1, c], [2, 3]]
+              dim: [[1, c], [2, 4]]
 
       composition_analysis(NXprocess):
         exists: optional

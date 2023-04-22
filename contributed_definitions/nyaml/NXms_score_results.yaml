@@ -97,7 +97,7 @@ NXms_score_results:
         Path to the directory where the tool should store NeXus/HDF5 results
         of this analysis. If not specified results will be stored in the
         current working directory.
-    status(NX_CHAR):
+    status:
       doc: |
         A statement whether the SCORE executable managed to
         process the analysis or failed prematurely.
@@ -188,8 +188,8 @@ NXms_score_results:
       doc: |
         Container to hold different coordinate systems conventions.
         A least a right-handed Cartesian coordinate system with base vectors
-        named x, y, and z has to be specified. Using one NXtransformations
-        instance per base vector.
+        named x, y, and z has to be specified. Each base vector of the
+        coordinate system should be described with an NXtransformations instance.
       TRANSFORMATIONS(NXtransformations):
         exists: [min, 3, max, infty]
 
@@ -230,10 +230,10 @@ NXms_score_results:
         dimensionality(NX_POSINT):
         cardinality(NX_POSINT):
         origin(NX_NUMBER):
-      symmetry:
-      cell_dimensions(NX_NUMBER):
-      extent(NX_POSINT):
-      identifier_offset(NX_INT):
+        symmetry:
+        cell_dimensions(NX_NUMBER):
+        extent(NX_POSINT):
+        identifier_offset(NX_INT):
       boundary(NXcg_polyhedron_set):
         doc: A tight bounding box or sphere or bounding primitive about the grid.
         # a good example for a general bounding box description for such a grids of triclinic cells
@@ -244,7 +244,7 @@ NXms_score_results:
             Most grids discretize a cubic or cuboidal region. In this case
             six sides can be distinguished, each making an own boundary.
           unit: NX_UNITLESS
-        boundaries(NX_CHAR):
+        boundaries:
           exists: recommmended
           doc: |
             Name of the boundaries. E.g. left, right, front, back, bottom, top,
@@ -292,8 +292,14 @@ NXms_score_results:
             can be used here. A few examples are given. Each descriptor is currently
             modelled as an instance of an NXprocess because it is relevant to
             understand how the descriptors are computed.
+          time(NXprocess):
+            exists: optional
+            doc: |
+              Evolution of the physical time.
           temperature(NXprocess):
             exists: optional
+            doc: |
+              Evolution of the simulated temperature over time.
           # pressure(NXprocess):
           #   exists: optional
           # stress(NXprocess):
@@ -306,12 +312,12 @@ NXms_score_results:
           #   exists: optional
           # electric_field(NXprocess):
           #   exists: optional
-          recrystallization_kinetics(NXprocess):
+          kinetics(NXprocess):
             exists: optional
-          grain_size_distribution(NXprocess):
-            exists: optional
-          recrystallization_front(NXprocess):
-            exists: optional
+            doc: |
+              Evolution of the recrystallized volume fraction over time.
+          # recrystallization_front(NXprocess):
+          #   exists: optional
         # time-resolved results for individual snapshots
         # virtually all computer simulations and all experiments always probe
         # snapshots
@@ -321,6 +327,10 @@ NXms_score_results:
               Measured or simulated physical time stamp for this snapshot.
               Not to be confused with wall-clock timing or profiling data.
             unit: NX_TIME
+          temperature(NX_NUMBER):
+            doc: |
+               Simulated temperature.
+            unit: NX_TEMPERATURE
           iteration(NX_UINT):
             doc: |
               Iteration or increment counter.
@@ -350,7 +360,15 @@ NXms_score_results:
             doc: |
               Details about those cells which in this time step represent
               the discretized recrystallization front.
-            mobility(NX_NUMBER):  # P
+            halo_region(NX_UINT):
+              exists: optional
+              doc: |
+                Which cells are currently in a halo region of threads.
+              unit: NX_UNITLESS
+              dimensions:
+                rank: 1
+                dim: [[1, n_front]]
+            mobility_weight(NX_NUMBER):
               exists: recommended
               doc: |
                 So-called mobility weight which is a scaling factor to
@@ -408,7 +426,7 @@ NXms_score_results:
               dimensions:
                 rank: 1
                 dim: [[1, n_front]]
-          grain_size_distribution(NXprocess):  # grain_based quantities for Vitesh Shah
+          grain_ensemble(NXprocess):  # grain_based quantities for Vitesh Shah
             exists: recommended
             doc: |
               Current grain-related quantities.
@@ -453,11 +471,7 @@ NXms_score_results:
               dimensions:
                 rank: 1
                 dim: [[1, n_grains]]
-          temperature(NXprocess):
-            value(NX_NUMBER):
-              doc: |
-                Simulated temperature.
-              unit: NX_TEMPERATURE
+
           recrystallized_kinetics(NXprocess):
             doc: |
               Current recrystallized volume fraction.
@@ -473,10 +487,24 @@ NXms_score_results:
               unit: NX_DIMENSIONLESS
           # pressure(NXprocess):
           #   exists: optional
-          # stress(NXprocess):
-          #   exists: optional
-          # strain(NXprocess):
-          #   exists: optional
+          stress(NXprocess):
+            exists: optional
+            value(NX_NUMBER):
+              doc: |
+                Currently assumed globally applied Cauchy stress tensor on the ROI.
+              unit: NX_ANY
+              dimensions:
+                rank: 2
+                dim: [[1, 3], [2, 3]]
+          strain(NXprocess):
+            exists: optional
+            value(NX_NUMBER):
+              doc: |
+                Currently assumed globally applied Cauchy strain tensor on the ROI.
+              unit: NX_UNITLESS
+              dimensions:
+                rank: 2
+                dim: [[1, 3], [2, 3]]
           # deformation_gradient(NXprocess):
           #   exists: optional
           # magnetic_field(NXprocess):

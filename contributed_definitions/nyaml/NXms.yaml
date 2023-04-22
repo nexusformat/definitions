@@ -1,28 +1,31 @@
-# Key difficulties:
-#   Several viewpoints are equally justified: Grains useful when there are crystallites with adjoining interfaces and 
-#   none, or only some statistical populations of defects and/or some spatially-well defined defects, but if there are
-#   almost only defects like in a dislocation wall it might no longer be useful to define the grains as a well identifiable region whose majority volume
-#   shows long-range periodicity (so that defining an orientation makes) sense. Or should one better describe individual material points
-#   or atoms set of atoms forming a compact object with same grouping and same identifier?
-#   Lattice curvature, this is jargon with some truth in it but curvature has to be build from atom defects need to build the curvature
-#   average density, total, per character, per family, line length, curvature, jog, kink density, coarse-grainable structural motifs, atomic structure
-#   still all a models as thermal oscillations render that regions about a dislocation line segment oscillate change sub-nanometer arrangement frequently
-#   different scales relevant when coupling to specific mechanisms (e.g. phonons)
+# key points to keep in mind when thinking about a general enough description for coarse-graining systems of atoms into
+# so-called microstructural features of interest for which we may store also thermodynamic properties or other feature-specific descriptors
+#   several viewpoints how to coarse-grain are equally justified: grains are useful when there are crystallites with adjoining interfaces and #   none, or only some statistical populations of defects and/or some spatially-well defined defects inside these
+#   however, if grains are build almost only from defects like dislocation walls, it might no longer be useful to define the grains
+#   as a well identifiable region whose majority volume shows long-range atomic periodicity (so that defining an orientation makes) sense.
+#   one could then rather describe the set of defects. Alternatively one could describe a material volume by sampling individual so-called
+#   material points (e.g. in continuum-scale plasticity models) or describe the material volume really from the atoms up
+#   but there are many terms used in materials engineering which people may want to distinguish which stand however between the scales e.g.
+#   lattice curvature, this is jargon with some truth in it but curvature has to be build from atoms and defects need to build the curvature
+#   dislocations are another good example where different research questions demand differently granularized descriptions e.g.
+#   average density, total line length, per character, per family, line length, curvature, jog, kink density,
+#   coarse-grainable structural motifs in the dislocation core, atomic structure
+#   also different scales one would like to distinguish as this is relevant when defects couple/show spatiotemporal correlations
+#   to specific mechanisms (e.g. phonons) or when defect affect the properties of other defects
 #   ambiguous choices: is the grain boundary part of the grain or is it an own defect?
 #   i.e. can/should we store grains as childs of their grain boundary set vs the interface the childs of the grains?
-#   ?? right now can couple gr has gB but if gr is specialized can it still have a gB
-#   a member of grain boundary
-#   Depending on use case a continuum of descriptors: is used mapping the meaning of terms can be as simple as employing logical
-#   relations crystallite is a synonym for grain versus a grain is described programmatically as the resulting cluster of atoms with constraint
-#   Length scale of homogeneity:
-#   In a multi-parameter space of all possible methods and effects and different external stimuli applied, simulations in computational materials science 
-#   make sense when they focus on often very narrowly constrained effects and boundary conditions for which the simulation is formulated and useful.
-#   Data structures for multi-scale materials modeling IMM/ICME are diverse because they reflect these needs and specific main choices of what these simulation
-#   e.g. DFT (time, length-scale, which electronic effects)
+#   Depending on the use case we need to have a flexible description which can address a continuum of descriptors:
+#   important is that one can logically map different features
+#   Length scale of homogeneity: With the reality of a multi-parameter space of all possible methods and effects and
+#   different external stimuli applied for real materials, simulations in computational materials science typically focus
+#   their analysis on a few individual, spatiotemporally constrained effects and boundary conditions for which the simulation
+#   is formulated, useful, interpretable, and comparable to experiment.
+#   Data structures for multi-scale materials modeling IMM/ICME are currently diverse because they reflect the above-mentioned needs
+#   and different views which researchers have on their simulations e.g. DFT (time, length-scale, which electronic effects)
 #   RVE annealing phenomena at the micrometer scale (pressure, temperature, length scale, interactions considered or not)
 #   Some regions are well separated spatially (although it can be non-trivial to quantify the distance in a multi-dim parameter space)
-#   Some are overlapping (classical MD at the cutting edge with micrometer crystal plasticity microsecond and/or annealing at ns time scale)
-#   MD with classical vs abinitio-informed potential for studying evolution of mechanisms and phenomena at different length scale
+#   Some simulations are cross-scale (classical MD at the cutting edge with micrometer crystal plasticity microsecond and/or annealing at
+#   ns time scale) MD with classical vs abinitio-informed potential for studying evolution of mechanisms and phenomena at different length scales
 category: application
 doc: |
   Application definition, spatiotemporal characterization of a microstructure.
@@ -32,7 +35,7 @@ symbols:
   n_b: |
     Number of boundaries of the bounding box or primitive to domain.
   n_p: |
-    Number of parameter required for chosen orientation parameterization.
+    Number of parameter required for the chosen orientation parameterization.
   c: |
     Number of texture components identified.
 NXms:  # (NXannealing)
@@ -80,12 +83,18 @@ NXms:  # (NXannealing)
       doc: | 
         Specify if the (characterization) results/data of this instance of an
         application definition are based on the results of a simulation or the
-        results of a post-processing of measured data to describe a microstructure.
+        results of a post-processing of measured data to describe
+        a microstructure.
+        
         The term microstructure is used to describe the spatial arrangement of
         crystal defects inside a sample/specimen without demanding necessarily
         that this structure is mainly at the micron length scale.
         Nanostructure and macrostructure are close synonyms.
         Material architecture is a narrow synonym.
+        
+        Given that microstructure simulations nowadays more and more consider
+        the atomic arrangement, this application definition can also be used
+        to describe features at the scale of atoms.
       enumeration: [experiment, simulation]
     USER(NXuser):
       exists: [min, 0, max, infty]
@@ -166,8 +175,8 @@ NXms:  # (NXannealing)
       doc: |
         Container to hold different coordinate systems conventions.
         A least a right-handed Cartesian coordinate system with base vectors
-        named x, y, and z has to be specified. Using one NXtransformations
-        instance per base vector.
+        named x, y, and z has to be specified. Each base vector of the
+        coordinate system should be described with an NXtransformations instance.
       TRANSFORMATIONS(NXtransformations):
         exists: [min, 3, max, infty]
 
@@ -196,9 +205,10 @@ NXms:  # (NXannealing)
 
     ROI_SET(NXcg_roi_set):
       exists: [min, 1, max, infty]  # usually a single domain covering the entire simulated or measured material volume
-      # however for solitary unit models aka volume element ensemble, replica methods we may need more than one domain
-      # the volume element is not called representative because for what we consider the volume element to be representative
-      # for is a matter of interpretation (fundamentally this is an assumption) and can differ for different descriptors
+      # however for solitary unit models (i.e. ensembles of volume elements/simulation domains) and for replica methods
+      # we may need more than one domain
+      # the volume element is not called representative because for what a volume element is representative is a matter of
+      # interpretation (fundamentally this is an assumption) and can differ for different descriptors
       doc: |
         The simulated or characterized material volume element aka domain.
         At least one instance of geometry required either NXcg_grid,
@@ -206,11 +216,12 @@ NXms:  # (NXannealing)
         to contain details about the boundary conditions.
       grid(NXcg_grid):
         exists: optional
-      polyhedron_set(NXcg_polyhedron_set):
-        exists: optional
+      # specific application definitions can use these fields to specialize
       point_set(NXcg_point_set):  # how to model either or case?
         exists: optional
-      boundary(NXcg_hexahedron_set):  # how to model either or case?
+      polyhedron_set(NXcg_polyhedron_set):
+        exists: optional
+      boundary(NXcg_polyhedron_set):  # how to model either or case?
         exists: optional
         doc: |
           A boundary to the volume element.
@@ -283,12 +294,6 @@ NXms:  # (NXannealing)
             exists: optional
           electric_field(NXprocess):
             exists: optional
-          recrystallization_kinetics(NXprocess):
-            exists: optional
-          grain_size_distribution(NXprocess):
-            exists: optional
-          recrystallization_front(NXprocess):
-            exists: optional
 
         # time-resolved results for individual snapshots
         # virtually all computer simulations and all experiments always probe
@@ -321,44 +326,35 @@ NXms:  # (NXannealing)
           # damage
           # thermal
           # composition
-          (NXms_atom_set): # positions, identifier
-            exists: optional
+          MS_FEATURE_SET(NXms_feature_set):
+            exists: [min, 0, max, infty]
             doc: |
-              Details about statistically or explicitly resolved
-              atoms in the entire domain.
-          # (NXms_grain_set):
-          #   exists: optional
-          #   doc: |
-          #     Details about statistically or explicitly resolved
-          #     interfaces between grains of 
-          (NXms_dislocation_set):
-            exists: optional
-            doc: |
-              Details about statistically or explicitly resolved
-              dislocations in the entire domain.
-          (NXms_interface_set):
-            exists: optional
-            doc: |
-              Details about statistically or explicitly resolved
-              interfaces between crystals in the entire domain.
-          # (NXms_triple_line_set):
-          #   exists: optional
-          #   doc: |
-          #     Details about statistically or explicitly resolved
-          #     triple lines in the entire domain.
-          # (NXms_quadruple_junction_set):
-          #   exists: optional
-          #   doc: |
-          #     Details about statistically or explicitly resolved
-          #    quadruple junctions in the entire domain.
-          # (NXms_vacancy_set):
-          #   exists: optional
-          # (NXms_solute_atom_set):
-          #   exists: optional
-          #   doc: |
-          #     Details about explicitly resolved solute atoms
-          #     in the entire domain.
-
+              Conceptually distinguished object/feature in the ROI/
+              system with some relevance. Instances of NXms_feature_set can
+              be nested to build a hierarchy of logically-related objects.
+              
+              A typical example for MD simulations is to have one
+              ms_feature_set for the atoms which is the parent to another
+              ms_feature_set for monomers/molecules/proteins which is then the
+              parent to another ms_feature_set for the secondary, another feature_set
+              for the tertiary, and the parent for another feature_set for the
+              quaternary structure.
+              
+              Another typical example from materials engineering is to have
+              one ms_feature_set for crystals (grains/phases) which serves as
+              the parent to another ms_feature_set for interfaces between these
+              crystals which then is the parent for another ms_feature_set to
+              describe the triple junctions which is then the parent for the
+              quadruple/higher-order junctions between which connect the
+              triple lines.
+              
+              Another example from discrete dislocation dynamics could be to
+              have one ms_feature_set for the dislocations (maybe separate
+              sets for each dislocation type or family) which are then
+              parents to other ms_feature_set which describe junctions between
+              dislocations or features along the dislocation line network.
+            # respective application definitions based on NXms should add and
+            # specialize
           odf(NXprocess):  # (NXodf):
             exists: optional
             doc: |
@@ -386,7 +382,7 @@ NXms:  # (NXannealing)
                 doc: |
                   Reference to or definition of a coordinate system with
                   which the definitions are interpretable.
-              parameterization(NX_CHAR):
+              parameterization:
                 enumeration: [bunge-euler (ZXZ), quaternion]
               orientation(NX_NUMBER):
                 doc: Parameterized orientations.
@@ -394,7 +390,7 @@ NXms:  # (NXannealing)
                 dimensions:
                   rank: 2
                   dim: [[1, c], [2, n_p]]
-              name(NX_CHAR):
+              name:
                 doc: |
                   Name of each texture component, e.g. Cube, Dillamore, Y.
                 dimensions:

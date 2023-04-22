@@ -1,8 +1,8 @@
 .. _North-Structure:
 
-==============================
-Nomad Remote Tools Hub (NORTH)
-==============================
+======================
+Nomad Remote Tools Hub
+======================
 
 
 .. index::
@@ -44,7 +44,9 @@ study themselves which individual parameter and settings for each tool exist
 and how configuring these affects their analyses quantitatively.
 
 Second, scientific software like the tools in the paraprobe-toolbox implement a
-numerical/algorithmical (computational) workflow whereby data from multiple input sources (like previous analysis results) are processed and carried through more involved analysis within several steps inside the tool. The tool then creates output as files.
+numerical/algorithmical (computational) workflow whereby data from multiple input sources
+(like previous analysis results) are processed and carried through more involved analysis
+within several steps inside the tool. The tool then creates output as files.
 
 Individual tools are developed in C/C++ and/or Python. Here, having a possibility
 for provenance tracking is useful as it is one component and requirement for
@@ -53,14 +55,15 @@ to fullfill better the "R", i.e. reproducibility of daily FAIR research practice
 
 The paraprobe-toolbox is one example of a software which implements a workflow
 via a sequence of operations executed within a jupyter notebook
-(or Python script respectively). Specifically, individual tools are chained. Convenience functions are available to create well-defined input/configuration
+(or Python script respectively). Specifically, individual tools are chained.
+Convenience functions are available to create well-defined input/configuration
 files for each tool. These config files instruct the tool upon processing.
 
 In this design, each workflow step (with a tool) is in fact a pair (or triple) of
 at least two sub-steps: i) the creation of a configuration file, 
 ii) the actual analysis using the Python/or C/C++ tools, 
-iii) the optional post-processing/visualizing of the results inside the NeXus/HDF5 files generated from each tool run using
-other software.
+iii) the optional post-processing/visualizing of the results inside the NeXus/HDF5
+files generated from each tool run using other software.
 
 
 .. _WhatHasBeenAchieved:
@@ -88,15 +91,19 @@ processing chain/workflow.
 As an example, a user may first range their reconstruction and then compute
 correlation functions. The config file for the ranging tool stores the files
 which hold the reconstructed ion position and ranging definitions.
-The ranging tool generates a results file with the ion type labels stored. This results file is formatted according to the tool-specific `results` application definition. This results file and the reconstruction is imported by the spatial statistics
-tool which again keeps track of all files.
+The ranging tool generates a results file with the ion type labels stored.
+This results file is formatted according to the tool-specific `results`
+application definition. This results file and the reconstruction is
+imported by the spatial statistics tool which again keeps track of all files.
 
-This design makes it possible to rigorously
-trace which numerical results were achieved with a specific chain of input and
+This design makes it possible to rigorously trace which numerical results
+were achieved with a specific chain of input and
 settings using specifically-versioned tools.
 
 We understand that this additional handling of metadata and provenance tracking
-may not be at first glance super relevant for scientists or appears to be an unnecessarily complex feature. There is indeed an additional layer of work which came with the development and maintenance of this functionality.
+may not be at first glance super relevant for scientists or appears to be an
+unnecessarily complex feature. There is indeed an additional layer of work which
+came with the development and maintenance of this functionality.
 
 However, we are convinced that this is the preferred way of performing software
 development and data analyses as it enables users to take advantage of a completely
