@@ -21,6 +21,70 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
+<!--The respective partner application definition NXxray_fourd
+can be used for storing data and post-processing results of X-ray diffraction
+experiments which can yield also orientation maps in one, two- or three-dimensions.
+
+ These complementary techniques and associated application definitions can be used
+ to inform NXms, another partner application definition to NXem_ebsd. NXms describes
+ the connection between measured or simulated structural features with a focus of
+ the length and time-scale coarser then the atomic scale. The term microstructure
+ is used here but is not restricted to features at the micron scale.-->
+<!--the IUCr DMI should work on an e.g. NXhedm
+NXem_tkd is not needed as it can be covered by NXem_ebsd as well.
+if we think of the metadata/data graph collected from the microscope session
+documented in NXem there may be only a few relations between nodes of an instance
+of NXem_ebsd and NXem. Key data from NXem which many users would expect to find
+also enumerated in NXem_ebsd could be settings of the microscope, timestamp data
+when tasks were performed at the microscope using which specimen, operated
+and prepared by whom. These latter pieces of information are all available
+in NXem but if we were to make fields in NXem deep inside an instance
+of NXem_event_data required than we factually more and more granularize and
+pull in steps of detailed numerical post-processing which arguably is not
+any longer at all necessarily related to the microscope session.
+We know many cases in EBSD community, see the work of e.g. Marc de Graef's group
+or of Hakon Wiik Anes and Knut Marthinsen who spent much longer with a collected
+dataset in post-processing than collecting it at the microscope. Therefore, we
+need to have the flexibility that documentation of the actual microscope session
+and the post-processing of some of the data therein collected remain coupled
+but not too repetively and with too stiff constraints on the existence of specific
+fields as otherwise there can be contradictions for which NXem_ebsd would no longer
+be applicable when one wishes to remain at the same time conformant with the data
+scheme.
+The idea used here is to use a reference to another NeXus file in the NXem_ebsd
+file instance and the NXem file instance. So far we acknowledge that exporting
+data as an NXem application definition is limited and scientists currently have
+specific file formats from commercial or open-source tools to work with.
+Therefore, we so far model the connections between the application definitions
+as NXprocesses. As soon as NXem is more supported these NXclasses should become
+NXem e.g. though.
+Details about scan positions should not be reproduced unless needed for
+interpolating between results of neighboring scan positions.
+Currently, we suggest to leave the scan positions as closely to where they are
+collected, i.e. inside NXem.
+What this exampe of linking information rather than duplicating shows is that
+somewhat a culture change is needed: Instead of packing everything in one file
+we just need to assure that we have a tool whereby we can follow and inspect a
+set of linked objects if you would like to say so, also having multiple files
+is okay.
+Finally, this application definition makes any assumptions about
+gridding, this enables to handle all sort of scan schemes.
+We follow the argumentation of MTex, in certain cases data will not yield
+fully occupied grids anyway.
+NXem_ebsd could also be useful/used for storing generic simulations of EBSD pattern
+which is one example for simulations of diffractions patterns as they may be observed
+with electron microscopes. In this case, there should be simulation(NXprocess) under this
+the simulation group where one can store the minimum required set of pieces of information
+which comes with every diffraction pattern simulation.
+The main problem is in this case that the simulation group is required but then there must
+either be no measurement group and on_the_fly_indexing group, and eventually calibration ?
+or these groups should be created but remain empty.
+Using the current NeXus appdef design and rules for setting constraints demands that then the
+same appdef should be used for post-processing measured data. So there is a conflict:
+The simulation must not be required and measurement must not be optional.
+Arguably one may call for two application definitions in this case but most constraints and
+concepts would then match those of NXem_ebsd which works again standardization and
+reducing the total number of ontologies.-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXem_ebsd" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <symbol name="n_op">
@@ -52,6 +116,7 @@
             </doc>
         </symbol>
     </symbols>
+    <!--what to do when multiple pattern are averaged into one before the beam moves further?-->
     <doc>
          Application definition for collecting and indexing Kikuchi pattern into orientation maps.
          
@@ -121,6 +186,8 @@
                  that specifies the application definition.
             </doc>
         </attribute>
+        <!--NEW ISSUE: FILE or ARTIFACT?
+enumeration: [sha_256_hash]-->
         <field name="definition">
             <doc>
                  NeXus NXDL schema to which this file conforms.
@@ -247,6 +314,9 @@
                 </doc>
             </field>
         </group>
+        <!--rotation and reference frame conventions
+we assume that the conventions are the same across all experiments and/or
+simulations which this application definition captures-->
         <group name="conventions" type="NXem_ebsd_conventions">
             <group name="rotation_conventions" type="NXprocess">
                 <field name="three_dimensional_rotation_handedness"/>
@@ -293,6 +363,8 @@
                 <field name="yaxis_normalization_direction"/>
             </group>
         </group>
+        <!--either we have simulated data or we have a set of measured data
+in every case data are Kikuchi diffraction pattern and their metadata-->
         <group name="simulation" type="NXprocess" recommended="true">
             <doc>
                  Details about simulations for Kikuchi pattern using kinematic or dynamic
@@ -320,22 +392,35 @@
                     <attribute name="signal"/>
                     <attribute name="axes"/>
                     <attribute name="AXISNAME_indices"/>
+                    <!--\@long_name:-->
                     <field name="title"/>
                     <field name="data_counts" type="NX_NUMBER">
                         <attribute name="long_name"/>
                     </field>
+                    <!--dimensions:
+  rank: 3
+  dim: [[1, n_p], [2, n_y], [3, n_x]]-->
                     <field name="pattern_identifier" type="NX_UINT">
                         <attribute name="long_name"/>
                     </field>
+                    <!--dimensions:
+  rank: 1
+  dim: [[1, n_p]]-->
                     <field name="axis_y" type="NX_NUMBER">
                         <attribute name="long_name"/>
                     </field>
+                    <!--dimensions:
+rank: 1
+  dim: [[1, n_y]]-->
                     <field name="axis_x" type="NX_NUMBER">
                         <attribute name="long_name"/>
                     </field>
                 </group>
             </group>
         </group>
+        <!--dimensions:
+  rank: 1
+  dim: [[1, n_x]]-->
         <group name="experiment" type="NXprocess" minOccurs="0" maxOccurs="unbounded">
             <doc>
                  The experiment group captures relevant details about the conditions of
@@ -378,6 +463,7 @@
                 </doc>
             </group>
             <group name="calibration" type="NXprocess" recommended="true">
+                <!--although one could simulate spherical Kikuchi pattern without modeling the detector system-->
                 <doc>
                      The EBSD system, including components like the electron gun, pole-piece,
                      stage tilting, EBSD detector, and the gnomonic projection have to be
@@ -461,6 +547,7 @@
                 </field>
             </group>
             <group name="acquisition" type="NXprocess" recommended="true">
+                <!--data come from e.g. a Kikuchi pattern simulation!-->
                 <doc>
                      Relevant result of the session at the microscope for this experiment
                      which enables to connect the measurement of the Kikuchi pattern and
@@ -519,7 +606,9 @@
                     </doc>
                 </field>
             </group>
+            <!--base class for indexing methods with relevant vocabulary-->
             <group name="indexing" type="NXprocess" recommended="true">
+                <!--IPF default plots in this case we need to use simulated Kikuchi pattern as a fallback-->
                 <doc>
                      OIM, orientation imaging microscopy. Post-processing of the Kikuchi
                      patterns to obtain orientation per phase model and scan point.
@@ -642,18 +731,42 @@
                     </doc>
                     <field name="sequence_index" type="NX_POSINT"/>
                 </group>
+                <!--for each process the program used
+auto_background_correction:
+static_or_dynamic:
+pattern_averaging(NXprocess):
+  doc: |
+    Details about how patterns of each scan point are average or how
+    pattern from scan points and neighboring scan points are spatially
+    averaged (using weighting schemes and e.g. kernels) before these
+    patterns are passed to the indexing algorithm.-->
                 <group name="binning" type="NXprocess" optional="true">
                     <doc>
                          Binning i.e. downsampling of the pattern.
                     </doc>
                     <field name="sequence_index" type="NX_POSINT"/>
                 </group>
+                <!--for each process the program used
+mode:
+  doc: Free-text description for instrument specific settings
+binning(NX_UINT): ##MK equivalent to pattern height and width?
+  doc: |
+    How is the camera signal binned.
+    First the number of pixel along the slow direction.
+    Second the number of pixel along the fast direction.
+  unit: NX_UNITLESS
+  dimensions:
+    rank: 1
+    dim: [[1, 2]]-->
                 <group name="parameter" type="NXprocess" optional="true">
                     <doc>
                          Specific parameter relevant only for certain algorithms used
                     </doc>
                     <field name="sequence_index" type="NX_POSINT"/>
                 </group>
+                <!--mode:
+  doc: Which method used to index pattern?
+  enumeration: [optimize_bd]  # what does optimize_bd mean Oxford?-->
                 <group type="NXem_ebsd_crystal_structure_model" minOccurs="1" maxOccurs="unbounded">
                     <field name="crystallographic_database_identifier" recommended="true"/>
                     <field name="crystallographic_database" recommended="true"/>
@@ -671,6 +784,26 @@
                     <field name="dspacing" type="NX_FLOAT" recommended="true"/>
                     <field name="relative_intensity" type="NX_FLOAT" recommended="true"/>
                 </group>
+                <!--connection to data collected using kinematic or
+NEW ISSUE: dynamic diffraction theory simulations-->
+                <!--individual mappings
+(scientists in EBSD consult all sorts of mappings)
+like image_quality map, orientation mapping, ipf mapping, grain mapping
+etc. in fact these could be all the possible mappings which one can
+create with the famous commercial software solutions
+the problem a RDMS cannot understand these mappings unless they
+are standardized in the sense, one has an exchange format whereby
+these mappings can be exported/transcoded from their representation
+in the commercial software, e.g.
+keep in mind, everybody uses the TSL OIM or Bruker AZTec OIM mapping
+but even these two are not directly interoperable, which is why
+they are also not interoperable in some RDMS if one does not come
+up with a way how to go about standardizing their description
+summary(NXdata):
+  doc: |-->
+                <!--data(NX_UINT):
+  doc: |
+    Status value of each pixel of the orientation mapping.-->
                 <field name="status" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
                          Which return value did the indexing algorithm yield for each scan point.
@@ -686,6 +819,12 @@
                         <dim index="1" value="n_sc"/>
                     </dimensions>
                 </field>
+                <!--axis_y(NX_NUMBER):
+  doc: |
+    Coordinate along the slow direction.
+axis_x(NX_NUMBER):
+  doc: |
+    Coordinate along the fast direction.-->
                 <field name="n_phases_per_scan_point" type="NX_UINT" recommended="true" units="NX_UNITLESS">
                     <doc>
                          How many phases i.e. crystal structure models were used to index each
@@ -787,6 +926,10 @@
                     </dimensions>
                 </field>
                 <field name="scan_point_positions" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
+                    <!--we make this only required as people may not yet be so happy with
+having to walk a graph from measurement -> path -> NXevent_data_em
+-> em_lab/ebeam_deflector to retrieve the actual scan positions
+although this would be much cleaner-->
                     <doc>
                          Matrix of calibrated centre positions of each scan point
                          in the sample surface reference system.
@@ -796,12 +939,18 @@
                         <dim index="2" value="2"/>
                     </dimensions>
                 </field>
+                <!--EW ISSUE: this is in fact a duplicate because if we know th
+path to the measurement we would have available all ebeam_deflector
+settings and thus could identify where the beam was scanning for each
+NXevent_data_em instance, we have even more-->
+                <!--NEW ISSUE: replace by a more generic pivot table-->
                 <field name="hit_rate" type="NX_NUMBER" optional="true" units="NX_DIMENSIONLESS">
                     <doc>
                          Fraction of successfully indexed pattern
                          of the set averaged over entire set.
                     </doc>
                 </field>
+                <!--candidate for default plot-->
                 <group name="region_of_interest" type="NXprocess" minOccurs="1" maxOccurs="1">
                     <doc>
                          An overview of the entire area which was scanned.
@@ -812,6 +961,7 @@
                         <doc>
                              Descriptor representing the image contrast.
                         </doc>
+                        <!--taking two examples (CTF and H5OINA choked completely of possibility to find s.th. conceptually common to plot-->
                         <enumeration>
                             <item value="normalized_band_contrast"/>
                             <item value="normalized_confidence_index"/>
@@ -822,9 +972,14 @@
                              Container holding a default plot of the region on the sample
                              investigated with EBSD.
                         </doc>
+                        <!--\@signal:  # data
+\@axes:  # [axis_y, axis_x]
+\@axis_x_indices:  # 0
+\@axis_y_indices:  # 1-->
                         <attribute name="signal"/>
                         <attribute name="axes"/>
                         <attribute name="AXISNAME_indices"/>
+                        <!--\@long_name:-->
                         <field name="title"/>
                         <field name="data" type="NX_NUMBER" units="NX_UNITLESS">
                             <doc>
@@ -834,6 +989,9 @@
                                 <dim index="1" value="n_y"/>
                                 <dim index="2" value="n_x"/>
                             </dimensions>
+                            <!--n_0 slow 2, n_1 fast 1, rgb triplet is fastest 0
+in axes fast to fastest
+while for _indices fastest to fast-->
                             <attribute name="long_name">
                                 <doc>
                                      Signal
@@ -1043,6 +1201,16 @@
                              Which IPF definition computation according to backend.
                         </doc>
                     </field>
+                    <!--AS THE FIRST STEP WE DO NOT IMPLEMENT A GENERIC ORIENTATION AND REFERENCE
+FRAME LIBRARY WHICH CAN TRANSLATE BETWEEN ALL POSSIBLE CONVENTIONS.
+INSTEAD WE TAKE THE RESULTS COMPUTED FROM THE BACKEND THAT IS
+For cpr/crc/ang the pythonEBSD backend
+For other file either MTex or kikuchipy
+For DREAM.3D this is DREAM.3D
+For pyxem following the orix library (which has some, though not yet in
+all details checked links and usage of the orix library because kikuchipy
+is somehow connected to pyxem. NEED TO TALK TO DEVELOPERS HERE!-->
+                    <!--NEW ISSUE: [0, 0, 1] is defined in which coordinate system?-->
                     <field name="projection_direction" type="NX_NUMBER" units="NX_UNITLESS">
                         <doc>
                              Along which axis to project? Typically [0, 0, 1] is chosen.
@@ -1056,6 +1224,7 @@
                              Bitdepth used for the RGB color model. Usually 8 bit.
                         </doc>
                     </field>
+                    <!--can an NX_UINT have an enumeration?-->
                     <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
                         <doc>
                              The tool/implementation used for creating the IPF color map from
@@ -1068,13 +1237,21 @@
                             <attribute name="version"/>
                         </field>
                     </group>
+                    <!--enumeration: [brinckmann, mtex, kikuchipy, dream3d, orix, tsl]-->
                     <group name="ipf_rgb_map" type="NXdata">
                         <doc>
                              The RGB image which represents the IPF map.
                         </doc>
+                        <!--\@signal:  # rgb
+\@axes:  # [zpos, ypos, xpos]  # rgb
+# \@rgb_indices: 0
+\@axis_x_indices: 0
+\@axis_y_indices: 1
+# \@zpos_indices: 2-->
                         <attribute name="signal"/>
                         <attribute name="axes"/>
                         <attribute name="AXISNAME_indices"/>
+                        <!--\@long_name:-->
                         <field name="title"/>
                         <field name="data" type="NX_UINT" units="NX_UNITLESS">
                             <doc>
@@ -1086,6 +1263,9 @@
                                 <dim index="2" value="n_x"/>
                                 <dim index="3" value="3"/>
                             </dimensions>
+                            <!--n_p_or_z slow 3, n_y fast 2, n_x faster 1, rgb triplet is fastest 0
+in axes fast to fastest
+while for _indices fastest to fast-->
                             <attribute name="long_name">
                                 <doc>
                                      IPF color-coded orientation mapping
@@ -1105,6 +1285,7 @@
                                 </doc>
                             </attribute>
                         </field>
+                        <!--but for h5web RGB we need n_y + 1, was an issue in v6.6.1-->
                         <field name="axis_x" type="NX_NUMBER">
                             <doc>
                                  Calibrated center of mass of the pixel along the fast axis.
@@ -1139,9 +1320,15 @@
                              parsers takes a rasterized image which is rendered by the backend
                              tool.
                         </doc>
+                        <!--\@signal:  # rgb
+\@axes:  # [ypos, xpos]  # rgb
+# \@rgb_indices: 0
+\@axis_x_indices:  # 0
+\@axis_y_indices:  # 1-->
                         <attribute name="signal"/>
                         <attribute name="axes"/>
                         <attribute name="AXISNAME_indices"/>
+                        <!--\@long_name:-->
                         <field name="title"/>
                         <field name="data" type="NX_UINT" units="NX_UNITLESS">
                             <doc>
@@ -1152,6 +1339,9 @@
                                 <dim index="2" value="n_x"/>
                                 <dim index="3" value="3"/>
                             </dimensions>
+                            <!--n_0 slow 2, n_1 fast 1, rgb triplet is fastest 0
+in axes fast to fastest
+while for _indices fastest to fast-->
                             <attribute name="long_name">
                                 <doc>
                                      IPF color key in stereographic standard triangle (SST)
@@ -1297,6 +1487,11 @@
                  again be a link or reference to an instance of NXem_ebsd to complete the
                  chain of provenance.
             </doc>
+            <!--NEW ISSUE: implement support for filters eventually many of them
+NEW ISSUE: for now only show that data from DREAM3D can be loaded.
+NEW ISSUE: how to handle landmarks
+NEW ISSUE: again an entire set of workflows such as rigid or non-rigid
+             image registration etc.-->
             <field name="sequence_index" type="NX_POSINT"/>
             <group type="NXem_ebsd_crystal_structure_model" minOccurs="1" maxOccurs="unbounded">
                 <field name="crystallographic_database_identifier" recommended="true"/>
@@ -1307,6 +1502,7 @@
                 <field name="phase_identifier" type="NX_UINT"/>
                 <field name="phase_name" recommended="true"/>
             </group>
+            <!--candidate for default plot-->
             <group name="region_of_interest" type="NXprocess" minOccurs="1" maxOccurs="1">
                 <doc>
                      An overview of the entire reconstructed volume. For details about
@@ -1317,13 +1513,20 @@
                          Descriptor representing the image contrast.
                     </doc>
                 </field>
+                <!--enumeration: ["normalized_band_contrast", "normalized_confidence_index"]-->
                 <group name="roi" type="NXdata">
                     <doc>
                          Container holding a default plot of the reconstructed volume.
                     </doc>
+                    <!--\@signal:  # data
+\@axes:  # [axis_z, axis_y, axis_x]
+\@axis_x_indices:  # 0
+\@axis_y_indices:  # 1
+\@axis_z_indices:  # 2-->
                     <attribute name="signal"/>
                     <attribute name="axes"/>
                     <attribute name="AXISNAME_indices"/>
+                    <!--\@long_name:-->
                     <field name="title"/>
                     <field name="data" type="NX_NUMBER" units="NX_UNITLESS">
                         <doc>
@@ -1334,6 +1537,9 @@
                             <dim index="2" value="n_y"/>
                             <dim index="3" value="n_x"/>
                         </dimensions>
+                        <!--n_0 slow 2, n_1 fast 1, rgb triplet is fastest 0
+in axes fast to fastest
+while for _indices fastest to fast-->
                         <attribute name="long_name">
                             <doc>
                                  Signal
@@ -1403,6 +1609,7 @@
                          Which IPF definition computation according to backend.
                     </doc>
                 </field>
+                <!--NEW ISSUE: [0, 0, 1] is defined in which coordinate system?-->
                 <field name="projection_direction" type="NX_NUMBER" units="NX_UNITLESS">
                     <doc>
                          Along which axis to project? Typically [0, 0, 1] is chosen.
@@ -1428,13 +1635,21 @@
                         <attribute name="version"/>
                     </field>
                 </group>
+                <!--enumeration: [brinckmann, mtex, kikuchipy, dream3d, orix, tsl]-->
                 <group name="ipf_rgb_map" type="NXdata">
                     <doc>
                          The RGB image which represents the IPF map.
                     </doc>
+                    <!--\@signal:  # rgb
+\@axes:  # [zpos, ypos, xpos]  # rgb
+# \@rgb_indices: 0
+\@axis_x_indices: 0
+\@axis_y_indices: 1
+\@axis_z_indices: 2-->
                     <attribute name="signal"/>
                     <attribute name="axes"/>
                     <attribute name="AXISNAME_indices"/>
+                    <!--\@long_name:-->
                     <field name="title"/>
                     <field name="data" type="NX_UINT" units="NX_UNITLESS">
                         <doc>
@@ -1447,6 +1662,9 @@
                             <dim index="3" value="n_x"/>
                             <dim index="4" value="3"/>
                         </dimensions>
+                        <!--n_p_or_z slow 3, n_y fast 2, n_x faster 1, rgb triplet is fastest 0
+in axes fast to fastest
+while for _indices fastest to fast-->
                         <attribute name="long_name">
                             <doc>
                                  IPF color-coded orientation mapping
@@ -1466,6 +1684,7 @@
                             </doc>
                         </attribute>
                     </field>
+                    <!--but for h5web RGB we need n_z + 1, was an issue in v6.6.1-->
                     <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
                         <doc>
                              Calibrated center of mass of the pixel along the faster axis.
@@ -1479,6 +1698,7 @@
                             </doc>
                         </attribute>
                     </field>
+                    <!--but for h5web RGB we need n_y + 1, was an issue in v6.6.1-->
                     <field name="axis_x" type="NX_NUMBER">
                         <doc>
                              Calibrated center of mass of the pixel along the fastest axis.
@@ -1497,9 +1717,15 @@
                     <doc>
                          Same comments as for the two-dimensional case apply.
                     </doc>
+                    <!--\@signal:  # rgb
+\@axes:  # [ypos, xpos]  # rgb
+# \@rgb_indices: 0
+\@axis_x_indices:  # 0
+\@axis_y_indices:  # 1-->
                     <attribute name="signal"/>
                     <attribute name="axes"/>
                     <attribute name="AXISNAME_indices"/>
+                    <!--\@long_name:-->
                     <field name="title"/>
                     <field name="data" type="NX_UINT" units="NX_UNITLESS">
                         <doc>
@@ -1510,6 +1736,9 @@
                             <dim index="2" value="n_x"/>
                             <dim index="3" value="3"/>
                         </dimensions>
+                        <!--n_0 slow 2, n_1 fast 1, rgb triplet is fastest 0
+in axes fast to fastest
+while for _indices fastest to fast-->
                         <attribute name="long_name">
                             <doc>
                                  IPF color key in stereographic standard triangle (SST)
@@ -1546,4 +1775,152 @@
             </group>
         </group>
     </group>
+    <!--NEW ISSUE: frame averaging
+NEW ISSUE: going towards the level of suggestions what would all be immediately possible
+ebsd_mapping(NXprocess):
+  doc: |
+    An EBSD mapping is the result of a collecting and indexing of Kikuchi
+    pattern, so that for each pattern there is either an associated
+    phase_identifier or a status marker stating that no solution was found
+  (NXsst_color_model): ##MK
+    doc: |
+      For each stereographic standard triangle, (fundamental zone) of
+      the orientation space, it is possible to define a color model which
+      associates an orientation in the fundamental zone to a color.
+
+      For details see:
+      * [G. Nolze et al.](https://doi.org/10.1107/S1600576716012942)
+      * Srikanth Patala and coworkers"'" work and of others.
+    (NXorientation_set):
+      doc: |
+        Collection of quaternions in the SO3 fundamental zone with colors and
+      rgb(NX_NUMBER):
+        doc: RGB colors.
+        unit: NX_UNITLESS
+        dimensions: [[1, n_oris], [2, 3]]
+      # hsv and other models
+      (NXcg_point_set):
+        rgb(NX_NUMBER):
+          dimensions: [[1, n_points], [2, 3]]
+  mapping(NX_NUMBER):
+    doc: |
+      The EBSD mapping with colors outlined
+    unit: NX_UNITLESS
+    dimensions: [[1, n_y], [2, n_x], [3, 3]]
+NEW ISSUE: it would also be possible to define additional color models to overlay
+check n_p vs n_sc vs n_p_or_z-->
+    <!--confidence_index(NX_FLOAT):
+  doc: |
+    Is a technology-partner-specific (TSL OIM) AMETEK phase_matching descriptor.
+  unit: NX_UNITLESS
+  dimensions:
+    rank: 1
+    dim: [[1, i]]
+mean_angular_deviation(NX_FLOAT):
+  doc: |
+    The mean angular deviation is also a technology-partner-specific
+    (HKL Channel5) solution-to-reflector matching descriptor.
+  unit: NX_ANGLE
+  dimensions:
+    rank: 1
+    dim: [[1, i]]
+there are many other type of descriptor especially for new machine learning
+type and dictionary type indexing methods
+some descriptors are relevant only for Hough based indexing and technology-partner-specific
+band_count(NX_UINT):
+    doc: |
+    How many bands were detected in the pattern.
+    unit: NX_UNITLESS
+    dimensions:
+    rank: 1
+    dim: [[1, n_p]]
+band_minimum(NX_UINT):
+  doc: |
+    Minimum number of bands required to index the pattern
+  unit: NX_UNITLESS
+  dimensions:
+    rank: 1
+    dim: [[1, n_p]]
+band_maximum(NX_UINT):
+  doc: |
+    Maximum number of bands required to index the pattern
+  unit: NX_UNITLESS
+  dimensions:
+    rank: 1
+    dim: [[1, n_p]]
+resolution(NX_NUMBER):
+  doc: |
+    Resolution in Hough space.
+  unit: NX_ANGLE  # or NX_ANY
+band_detection(NXprocess):  # for hough_transform
+  mode:
+    doc: |
+      How are Kikuchi bands detected
+    enumeration: [center]
+  band_contrast(NX_NUMBER):
+    doc: |
+      Value for band contrast descriptor.
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 1
+      dim: [[1, n_p]]
+  band_slope(NX_NUMBER):
+    doc: |
+      Value for band slope descriptor.
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 1
+      dim: [[1, n_p]]
+centre(NX_FLOAT):
+  doc: |
+    Pattern centre location used for analyzing each pattern.
+  unit: NX_LENGTH
+  dimensions:
+    rank: 2
+    dim: [[1, n_p], [2, 2]]  # what to do when a different one for each pattern seldom but possible
+distance(NX_FLOAT):
+  doc: |
+    Pattern centre distance used for analyzing each pattern.
+  unit: NX_LENGTH
+  dimensions:
+    rank: 2
+    dim: [[1, n_p], [2, 2]]
+vh_ratio(NX_FLOAT):
+  doc: |
+    TBD Oxford/HKL Channel 5 CPR files
+  unit: NX_DIMENSIONLESS
+how to parameterize a group with value, and descriptor type or a
+field with descriptor type as attribute?
+pattern_quality(NXprocess):
+value(NX_NUMBER):
+ doc: |
+   Pattern quality descriptor
+ unit: NX_UNITLESS
+ dimensions:
+   rank: 1
+   dim: [[1, n_p]]
+model:
+  doc: |
+    Model used to describe some aspect of the pattern.
+  enumeration: [band_contrast, mean_angular_deviation]
+tilt_angle(NX_FLOAT):
+maybe better make this integrated into the NXtransformations of the stage_lab, a stage_lab event?
+beam_position(NXcg_point_set):
+(NXdetector):
+  exposure_time(NX_FLOAT):
+    unit: NX_TIME
+  gain(NX_FLOAT):
+  ##MK how does a gain translate mathematically an input signal into an intensity signal?
+  insertion_distance(NX_FLOAT):
+    unit: NX_LENGTH
+  ##MK a coordinate system for the detector in the NXcoordinate_system_set
+  drift_correction(NX_BOOLEAN): ##MK??
+move the next two rather to detector
+acquisition_speed(NX_FLOAT):
+   doc: |
+     Average number of patterns taken per second averaged over entire set.
+   unit: NX_FREQUENCY
+acquisition_time(NX_FLOAT):
+  doc: Wall-clock time the acquisition took.
+  unit: NX_TIME-->
 </definition>

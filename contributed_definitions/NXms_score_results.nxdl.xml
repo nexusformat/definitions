@@ -21,6 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
+<!--inspect comments behind NXms-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXms_score_results" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
@@ -75,7 +76,7 @@
          
          * `M. Kühbach et al. &lt;https://doi.org/10.1016/j.actamat.2016.01.068&gt;`_  
          * `C. Haase et al. &lt;https://doi.org/10.1016/j.actamat.2015.08.057&gt;`_  
-         * `M. Diehl et al. &lt;https://doi.org/10.1088/1361-651X/ab51bd&gt;`_  
+         * `M. Diehl et al. &lt;https://doi.org/10.1088/1361-651X/ab51bd&gt;`_
     </doc>
     <group type="NXentry">
         <attribute name="version">
@@ -84,6 +85,7 @@
                  that specifies the application definition.
             </doc>
         </attribute>
+        <!--enumeration: [sha_256_hash]-->
         <field name="definition">
             <doc>
                  NeXus NXDL schema to which this file conforms.
@@ -145,6 +147,7 @@
                 <item value="simulation"/>
             </enumeration>
         </field>
+        <!--always a simulation!-->
         <field name="config_filename">
             <doc>
                  The path and name of the config file for this analysis.
@@ -163,7 +166,7 @@
                  current working directory.
             </doc>
         </field>
-        <field name="status" type="NX_CHAR">
+        <field name="status">
             <doc>
                  A statement whether the SCORE executable managed to
                  process the analysis or failed prematurely.
@@ -248,12 +251,25 @@
             </field>
         </group>
         <group name="specimen" type="NXsample">
+            <!--NEW ISSUE: inject the conclusion from the discussion with Andrea
+according to SAMPLE.yaml 0f8df14 2022/06/15-->
             <field name="name">
                 <doc>
                      Descriptive name or ideally (globally) unique persistent identifier.
                 </doc>
             </field>
         </group>
+        <!--sample_history:
+ doc: |
+   Ideally, a reference to the location of or a (globally) unique
+   persistent identifier of e.g. another file which should document
+   ideally as many details as possible of the material, its
+   microstructure, and its thermo-chemo-mechanical processing/
+   preparation history.
+preparation_date(NX_DATE_TIME):
+ doc: |
+   ISO 8601 time code with local time zone offset to UTC information
+   when the specimen was prepared.-->
         <group type="NXdata" optional="true">
             <doc>
                  Hard link to a location in the hierarchy of the NeXus file
@@ -264,8 +280,8 @@
             <doc>
                  Container to hold different coordinate systems conventions.
                  A least a right-handed Cartesian coordinate system with base vectors
-                 named x, y, and z has to be specified. Using one NXtransformations
-                 instance per base vector.
+                 named x, y, and z has to be specified. Each base vector of the
+                 coordinate system should be described with an NXtransformations instance.
             </doc>
             <group name="TRANSFORMATIONS" type="NXtransformations" minOccurs="3" maxOccurs="unbounded"/>
         </group>
@@ -296,6 +312,9 @@
             </group>
         </group>
         <group name="ROI_SET" type="NXcg_roi_set" minOccurs="1" maxOccurs="unbounded">
+            <!--however for solitary unit models aka volume element ensemble, replica methods we may need more than one domain
+the volume element is not called representative because for what we consider the volume element to be representative
+for is a matter of interpretation (fundamentally this is an assumption) and can differ for different descriptors-->
             <doc>
                  The simulated or characterized material volume element aka domain.
                  At least one instance of geometry required either NXcg_grid,
@@ -306,15 +325,17 @@
                 <field name="dimensionality" type="NX_POSINT"/>
                 <field name="cardinality" type="NX_POSINT"/>
                 <field name="origin" type="NX_NUMBER"/>
+                <field name="symmetry"/>
+                <field name="cell_dimensions" type="NX_NUMBER"/>
+                <field name="extent" type="NX_POSINT"/>
+                <field name="identifier_offset" type="NX_INT"/>
             </group>
-            <field name="symmetry"/>
-            <field name="cell_dimensions" type="NX_NUMBER"/>
-            <field name="extent" type="NX_POSINT"/>
-            <field name="identifier_offset" type="NX_INT"/>
             <group name="boundary" type="NXcg_polyhedron_set">
                 <doc>
                      A tight bounding box or sphere or bounding primitive about the grid.
                 </doc>
+                <!--a good example for a general bounding box description for such a grids of triclinic cells
+https://docs.lammps.org/Howto_triclinic.html NXcg_polyhedron because a parallelepiped-->
                 <field name="number_of_boundaries" type="NX_POSINT" units="NX_UNITLESS">
                     <doc>
                          How many distinct boundaries are distinguished?
@@ -322,7 +343,7 @@
                          six sides can be distinguished, each making an own boundary.
                     </doc>
                 </field>
-                <field name="boundaries" type="NX_CHAR" minOccurs="0">
+                <field name="boundaries" minOccurs="0">
                     <doc>
                          Name of the boundaries. E.g. left, right, front, back, bottom, top,
                          The field must have as many entries as there are number_of_boundaries.
@@ -362,6 +383,7 @@
                          notation) respectively.
                     </doc>
                 </field>
+                <!--essentially NXmonitor instances for evolution of ensemble summary statistics-->
                 <group name="evolution" type="NXprocess" optional="true">
                     <doc>
                          Summary quantities which are the result of some post-processing of
@@ -371,11 +393,39 @@
                          modelled as an instance of an NXprocess because it is relevant to
                          understand how the descriptors are computed.
                     </doc>
-                    <group name="temperature" type="NXprocess" optional="true"/>
-                    <group name="recrystallization_kinetics" type="NXprocess" optional="true"/>
-                    <group name="grain_size_distribution" type="NXprocess" optional="true"/>
-                    <group name="recrystallization_front" type="NXprocess" optional="true"/>
+                    <group name="time" type="NXprocess" optional="true">
+                        <doc>
+                             Evolution of the physical time.
+                        </doc>
+                    </group>
+                    <group name="temperature" type="NXprocess" optional="true">
+                        <doc>
+                             Evolution of the simulated temperature over time.
+                        </doc>
+                    </group>
+                    <!--pressure(NXprocess):
+  exists: optional
+stress(NXprocess):
+  exists: optional
+strain(NXprocess):
+  exists: optional
+deformation_gradient(NXprocess):
+  exists: optional
+magnetic_field(NXprocess):
+  exists: optional
+electric_field(NXprocess):
+  exists: optional-->
+                    <group name="kinetics" type="NXprocess" optional="true">
+                        <doc>
+                             Evolution of the recrystallized volume fraction over time.
+                        </doc>
+                    </group>
                 </group>
+                <!--recrystallization_front(NXprocess):
+  exists: optional
+time-resolved results for individual snapshots
+virtually all computer simulations and all experiments always probe
+snapshots-->
                 <group name="MS_SNAPSHOT" type="NXms_snapshot">
                     <field name="time" type="NX_NUMBER" units="NX_TIME">
                         <doc>
@@ -383,11 +433,17 @@
                              Not to be confused with wall-clock timing or profiling data.
                         </doc>
                     </field>
+                    <field name="temperature" type="NX_NUMBER" units="NX_TEMPERATURE">
+                        <doc>
+                             Simulated temperature.
+                        </doc>
+                    </field>
                     <field name="iteration" type="NX_UINT" units="NX_UNITLESS">
                         <doc>
                              Iteration or increment counter.
                         </doc>
                     </field>
+                    <!--optional places to store the grid for instance if it changes-->
                     <group name="grid" type="NXcg_grid" recommended="true">
                         <field name="grain_identifier" type="NX_UINT" recommended="true" units="NX_UNITLESS">
                             <doc>
@@ -410,12 +466,21 @@
                             </dimensions>
                         </field>
                     </group>
+                    <!--check comments behind NXms-->
                     <group name="recrystallization_front" type="NXprocess" recommended="true">
                         <doc>
                              Details about those cells which in this time step represent
                              the discretized recrystallization front.
                         </doc>
-                        <field name="mobility" type="NX_NUMBER" recommended="true" units="NX_UNITLESS">
+                        <field name="halo_region" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                            <doc>
+                                 Which cells are currently in a halo region of threads.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_front"/>
+                            </dimensions>
+                        </field>
+                        <field name="mobility_weight" type="NX_NUMBER" recommended="true" units="NX_UNITLESS">
                             <doc>
                                  So-called mobility weight which is a scaling factor to
                                  control the mobility of the grain boundary which is assumed
@@ -475,7 +540,7 @@
                             </dimensions>
                         </field>
                     </group>
-                    <group name="grain_size_distribution" type="NXprocess" recommended="true">
+                    <group name="grain_ensemble" type="NXprocess" recommended="true">
                         <doc>
                              Current grain-related quantities.
                         </doc>
@@ -525,13 +590,6 @@
                             </dimensions>
                         </field>
                     </group>
-                    <group name="temperature" type="NXprocess">
-                        <field name="value" type="NX_NUMBER" units="NX_TEMPERATURE">
-                            <doc>
-                                 Simulated temperature.
-                            </doc>
-                        </field>
-                    </group>
                     <group name="recrystallized_kinetics" type="NXprocess">
                         <doc>
                              Current recrystallized volume fraction.
@@ -549,9 +607,39 @@
                             </doc>
                         </field>
                     </group>
+                    <!--pressure(NXprocess):
+  exists: optional-->
+                    <group name="stress" type="NXprocess" optional="true">
+                        <field name="value" type="NX_NUMBER" units="NX_ANY">
+                            <doc>
+                                 Currently assumed globally applied Cauchy stress tensor on the ROI.
+                            </doc>
+                            <dimensions rank="2">
+                                <dim index="1" value="3"/>
+                                <dim index="2" value="3"/>
+                            </dimensions>
+                        </field>
+                    </group>
+                    <group name="strain" type="NXprocess" optional="true">
+                        <field name="value" type="NX_NUMBER" units="NX_UNITLESS">
+                            <doc>
+                                 Currently assumed globally applied Cauchy strain tensor on the ROI.
+                            </doc>
+                            <dimensions rank="2">
+                                <dim index="1" value="3"/>
+                                <dim index="2" value="3"/>
+                            </dimensions>
+                        </field>
+                    </group>
                 </group>
             </group>
         </group>
+        <!--deformation_gradient(NXprocess):
+  exists: optional
+magnetic_field(NXprocess):
+  exists: optional
+electric_field(NXprocess):
+  exists: optional-->
         <group name="performance" type="NXcs_profiling">
             <field name="current_working_directory"/>
             <field name="command_line_call" optional="true"/>
@@ -601,18 +689,21 @@
                     <field name="description"/>
                     <field name="elapsed_time" type="NX_NUMBER"/>
                     <field name="number_of_processes" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_processes
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
                     <field name="number_of_threads" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
                     <field name="number_of_gpus" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.

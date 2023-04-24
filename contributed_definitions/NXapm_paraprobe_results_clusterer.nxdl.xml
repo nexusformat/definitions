@@ -40,12 +40,15 @@
     <doc>
          Results of a paraprobe-clusterer tool run.
     </doc>
+    <!--by default for appdefs the value of the exists keyword is required
+unless it is explicitly specified differently-->
     <group type="NXentry" minOccurs="1" maxOccurs="1">
         <attribute name="version">
             <doc>
                  Version specifier of this application definition.
             </doc>
         </attribute>
+        <!--##MK::begin of the tool-specific section-->
         <field name="definition">
             <doc>
                  Official NeXus NXDL schema with which this file was written.
@@ -54,6 +57,7 @@
                 <item value="NXapm_paraprobe_results_clusterer"/>
             </enumeration>
         </field>
+        <!--##MK::end of the tool-specific section-->
         <field name="program">
             <doc>
                  Given name of the program/software/tool with which this NeXus
@@ -112,7 +116,7 @@
                  current working directory.
             </doc>
         </field>
-        <field name="status" type="NX_CHAR">
+        <field name="status">
             <doc>
                  A statement whether the paraprobe-tool executable managed to
                  process the analysis or failed prematurely.
@@ -153,6 +157,8 @@
                  paraprobe defined, which specifies the coordinate system.
                  In which all positions are defined.
             </doc>
+            <!--##MK::define also reconstruction coordinate system and
+##MK::map between the two-->
             <group type="NXtransformations" minOccurs="1" maxOccurs="unbounded">
                 <doc>
                      The individual coordinate systems which should be used.
@@ -169,6 +175,7 @@
                 </doc>
             </group>
         </group>
+        <!--##MK::begin of the tool-specific section-->
         <group type="NXprocess" minOccurs="0" maxOccurs="1">
             <group name="window" type="NXcs_filter_boolean_mask">
                 <doc>
@@ -235,6 +242,18 @@
                              dataset.
                         </doc>
                     </field>
+                    <!--number_of_numeric_labels(NX_UINT):
+  doc: |
+    How many numerical labels does each feature have.
+  unit: NX_UNITLESS
+number_of_categorical_labels(NX_UINT):
+  doc: |
+    How many categorical labels does each feature have.
+  unit: NX_UNITLESS
+features:
+ doc: |
+    Reference to a set of features investigated in a cluster analysis.
+    Features need to have disjoint numeric identifier.-->
                     <field name="identifier_offset" type="NX_NUMBER" units="NX_UNITLESS">
                         <doc>
                              Which identifier is the first to be used to label a cluster.
@@ -247,6 +266,31 @@
                              Numerical identifier have to be strictly increasing.
                         </doc>
                     </field>
+                    <!--dimensions:
+  rank: 1
+  dim: [[1, n_lbl_num]]
+reserved_identifier_keyword(NX_UINT):
+  doc: |
+    By default we assume that cluster identifier 0 is reserved to
+    mark that ions are not assigned to a cluster and identifier 1 is
+    noise. The reserved_identifier_keyword and reserved_identifier_value
+    can be used as a dictionary though to define that users
+    which to overwrite this default and define own specific categories.
+    In every case though cluster_identifier have to be positive integer
+    and be consecutive on $[0, maximum_value]$.
+  unit: NX_UNITLESS
+  dimensions:
+    rank: 1
+    dim: [[1, n_dict]]
+reserved_identifier_value:
+  doc: |
+    The corresponding value of the reserved_identifier dictionary.
+    This can give a free-text description what a specific reserved
+    ID specifies e.g. ignored, noise.
+  unit: NX_UNITLESS
+  dimensions:
+    rank: 1
+   dim: [[1, n_dict]]-->
                     <field name="targets" type="NX_UINT" units="NX_UNITLESS">
                         <doc>
                              The evaporation sequence identifier to figure out which ions
@@ -256,6 +300,7 @@
                             <dim index="1" value="c"/>
                         </dimensions>
                     </field>
+                    <!--quantities for debugging purposes-->
                     <field name="model_labels" type="NX_INT" units="NX_UNITLESS">
                         <doc>
                              The raw labels from the DBScan clustering backend process.
@@ -273,6 +318,7 @@
                             <dim index="1" value="n"/>
                         </dimensions>
                     </field>
+                    <!--quantities to which these debugging quantities should be transformed-->
                     <field name="numerical_label" type="NX_UINT" units="NX_UNITLESS">
                         <doc>
                              Matrix of numerical label for each member in the set.
@@ -283,6 +329,12 @@
                             <dim index="1" value="c"/>
                         </dimensions>
                     </field>
+                    <!--categorical_label:
+  doc: |
+    Matrix of categorical attribute data for each member in the set.
+  dimensions:
+    rank: 2
+    dim: [[1, c], [2, n_lbl_cat]]-->
                     <field name="weight" type="NX_NUMBER" optional="true" units="NX_UNITLESS">
                         <doc>
                              The array of weight which specifies how surely/likely the
@@ -321,16 +373,31 @@
                              In addition to the detailed storage which members was grouped to
                              which feature/group summary statistics are stored under this group.
                         </doc>
+                        <!--at the level of the set
+number_of_unassigned_members(NX_UINT):
+  doc: |
+    Total number of members in the set which are categorized as unassigned.
+  unit: NX_UNITLESS
+  dimensions:
+    rank: 1
+    dim: [[1, n_lbl_num]]-->
                         <field name="number_of_noise" type="NX_UINT" units="NX_UNITLESS">
                             <doc>
                                  Total number of members in the set which are categorized as noise.
                             </doc>
                         </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_lbl_num]]-->
                         <field name="number_of_core" type="NX_UINT" units="NX_UNITLESS">
                             <doc>
                                  Total number of members in the set which are categorized as a core point.
                             </doc>
                         </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_lbl_num]]
+at the level of the feature set-->
                         <field name="number_of_features" type="NX_UINT" units="NX_UNITLESS">
                             <doc>
                                  Total number of clusters (excluding noise and unassigned).
@@ -356,6 +423,8 @@
                 </group>
             </group>
         </group>
+        <!--ADD FURTHER RESULTS along the same pattern for e.g. OPTICS and HDBSCAN-->
+        <!--##MK::end of the tool-specific section-->
         <group name="performance" type="NXcs_profiling" recommended="true">
             <field name="current_working_directory"/>
             <field name="command_line_call" optional="true"/>
@@ -405,18 +474,21 @@
                     <field name="description"/>
                     <field name="elapsed_time" type="NX_NUMBER"/>
                     <field name="number_of_processes" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_processes
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
                     <field name="number_of_threads" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
                     <field name="number_of_gpus" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.

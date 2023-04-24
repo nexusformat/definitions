@@ -21,6 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
+<!--be careful n_comb can vary for every instance of (NXion) !-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXapm_paraprobe_results_transcoder" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
@@ -47,16 +48,24 @@
                  Total number of integers in the supplementary XDMF topology array.
             </doc>
         </symbol>
+        <symbol name="n_combinatorics">
+            <doc>
+                 Number of ions probed in the combinatorial analysis of the charge states
+            </doc>
+        </symbol>
     </symbols>
     <doc>
          Results of a paraprobe-transcoder tool run.
     </doc>
+    <!--by default for appdefs the value of the exists keyword is required
+unless it is explicitly specified differently-->
     <group type="NXentry" minOccurs="1" maxOccurs="1">
         <attribute name="version">
             <doc>
                  Version specifier of this application definition.
             </doc>
         </attribute>
+        <!--##MK::begin of the tool-specific section-->
         <field name="definition">
             <doc>
                  Official NeXus NXDL schema with which this file was written.
@@ -65,6 +74,7 @@
                 <item value="NXapm_paraprobe_results_transcoder"/>
             </enumeration>
         </field>
+        <!--##MK::end of the tool-specific section-->
         <field name="program">
             <doc>
                  Given name of the program/software/tool with which this NeXus
@@ -80,7 +90,7 @@
                 </doc>
             </attribute>
         </field>
-        <field name="analysis_identifier" optional="true">
+        <field name="analysis_identifier">
             <doc>
                  Ideally, a (globally persistent) unique identifier for referring
                  to this analysis.
@@ -123,7 +133,7 @@
                  current working directory.
             </doc>
         </field>
-        <field name="status" type="NX_CHAR">
+        <field name="status">
             <doc>
                  A statement whether the paraprobe-tool executable managed to
                  process the analysis or failed prematurely.
@@ -176,6 +186,7 @@
                 </doc>
             </group>
         </group>
+        <!--##MK::begin of the tool-specific section-->
         <group name="visualization" type="NXprocess" recommended="true">
             <field name="xdmf_topology" type="NX_UINT" units="NX_UNITLESS">
                 <doc>
@@ -189,6 +200,68 @@
                 </dimensions>
             </field>
         </group>
+        <!--n_topology == 3*n_ions
+not in all cases a PARAPROBE.Transcoder.Results.SimID.<JOBID>.h5 is required
+namely when an NXapm-compliant NeXus file is directly used for interacting
+with paraprobe tools in all other cases, the PARAPROBE.Transcoder.Results
+file will get an *.nxs file ending
+the original proposal
+results(NXprocess):
+  exists: [min, 1, max, 1]
+  doc: |
+    Paraprobe-transcoder prepares the data in POS, ePOS, APT files from
+    APSuite, RRNG, RNG, and NeXus/HDF5 NXapm in such a way that they can
+    be used with the tools of the paraprobe-toolbox.
+ reconstruction(NXcg_point_set):
+   dimensionality(NX_POSINT):
+   cardinality(NX_POSINT):
+   identifier_offset(NX_INT):
+   position(NX_NUMBER):
+ # ##MK::number_of_ion_types(NX_POSINT):
+ # ##MK::maximum_number_of_atoms_per_molecular_ion(NX_POSINT):
+ ranging(NXcollection):
+      exists: [min, 1, max, 256]
+      doc: |
+        This is the collection of iontypes distinguished.
+        The default unknown iontype always has to map to 0.
+        Its non-physical mass_to_charge_state_ratio is [0., 0.001] Da.
+      ion_type(NX_UINT):
+        exists: optional
+      isotope_vector(NX_UINT):
+      nuclid_list(NX_UINT):
+        exists: recommended
+      charge_state(NX_INT):
+      name:
+        exists: optional
+      mass_to_charge_range(NX_FLOAT):
+the key problem still for apm is people use different formats
+when people would like to use paraprobe without nomad and pos, epos, apt
+rrng and rng files the data have to be transcoded, this is the main
+reason for having the transcoder however, when you already have an NXapm
+file (like) in nomad, why should we create yet another format here the
+transcoder is not needed
+namely take e.g. paraprobe-nanochem all it needs to know is the place of
+an HDF5 file where the nanochem tool knows there will be groups in this file
+with entry<ID>/atom_probe/reconstruction/reconstructed_positions
+and entry<ID>/atom_probe/ranging/peak_identification and a set of NXion
+this suggest the need for three fundamental changes:
+if transcoder config gets an nxs file as input it just checks if
+      the above-mentioned groups are available, if yes it accepts and
+      guides that no transcoding is needed any longer
+if transcoder config gets other files it creates the above-mentioned
+      groups in different places than it does currently
+convenience functions of tools have to be changed in the following way:
+      you hunt for PARAPROBE.Transcoder.Config.SimID.<JOBID>.h5
+      if the references to dataset files there end with nxs you know
+      data are in an NXapm so reconstruction will be in
+      entry/atom_probe/reconstruction/reconstructed_positions
+      ranging will be in
+      entry/atom_probe/ranging/peak_identification
+      however if the references to dataset files there end with != nxs
+      you point the tool to in fact data inside PARAPROBE.Transcoder.Results
+      because in this case transcoding was necessary but also then you
+      will find the data in entry/atom_probe/.. respectively
+alternatively:-->
         <group name="atom_probe" type="NXinstrument">
             <doc>
                  On a mid term perspective we would like to evolve the paraprobe-toolbox
@@ -291,17 +364,26 @@
                  in this application definition for paraprobe-transcoder results files
                  mirror the definitions of the NXapm for consistency reasons.
             </doc>
+            <!--    APSuite, RRNG, RNG, and NeXus/HDF5 NXapm in such a way that they can
+    be used with the tools of the paraprobe-toolbox.-->
             <group name="mass_to_charge_conversion" type="NXprocess">
                 <field name="mass_to_charge" type="NX_FLOAT" units="NX_ANY">
                     <doc>
                          Mass-to-charge-state ratio values.
                     </doc>
+                    <!--\@units: Da-->
                     <dimensions rank="1">
                         <dim index="1" value="n_ions"/>
                     </dimensions>
                 </field>
             </group>
             <group name="reconstruction" type="NXprocess">
+                <!--number_of_ions(NX_UINT):
+  doc: |
+    For now still a support field to store the total number of ions in the
+    dataset. This field will become deprecated when the new HDF5 I/O routines
+    come in place which detect the metadata to an entry automatically.
+    For now has to be the same value as n_ions.-->
                 <field name="reconstructed_positions" type="NX_FLOAT" units="NX_LENGTH">
                     <doc>
                          Three-dimensional reconstructed positions of the ions.
@@ -324,10 +406,90 @@
                         <field name="nuclid_list" type="NX_UINT" recommended="true"/>
                         <field name="charge_state" type="NX_INT"/>
                         <field name="mass_to_charge_range" type="NX_FLOAT"/>
+                        <group name="charge_model" type="NXprocess">
+                            <doc>
+                                 Details and results of the combinatorial analyses of this
+                                 range definition to identify the charge_state for an ion.
+                            </doc>
+                            <field name="charge_vector" type="NX_UINT" units="NX_UNITLESS">
+                                <doc>
+                                     Currently charge_state not charge!
+                                </doc>
+                                <dimensions rank="1">
+                                    <dim index="1" value="n_combinatorics"/>
+                                </dimensions>
+                            </field>
+                            <field name="isotope_matrix" type="NX_UINT" units="NX_UNITLESS">
+                                <doc>
+                                     Specific isotopes building each candidate matching the range.
+                                </doc>
+                                <dimensions rank="2">
+                                    <dim index="1" value="n_combinatorics"/>
+                                    <dim index="2" value="n_ivec_max"/>
+                                </dimensions>
+                            </field>
+                            <field name="mass_vector" type="NX_FLOAT" units="NX_ANY">
+                                <doc>
+                                     Accumulated mass of the isotopes in each candidate.
+                                     Not corrected for quantum effects.
+                                </doc>
+                                <dimensions rank="1">
+                                    <dim index="1" value="n_combinatorics"/>
+                                </dimensions>
+                            </field>
+                            <!--min_abundance(NX_FLOAT):
+  doc: |
+    Minimum natural abundance
+  unit: NX_DIMENSIONLESS-->
+                            <field name="natural_abundance_product_vector" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                                <doc>
+                                     Product of natural abundance of the isotopes per candidate.
+                                </doc>
+                                <dimensions rank="1">
+                                    <dim index="1" value="n_combinatorics"/>
+                                </dimensions>
+                            </field>
+                            <field name="min_abundance_product" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                                <doc>
+                                     Filter criterion on the product of the natural abundances
+                                     computed from each isotope building the (molecular) ion.
+                                     Such a filter can be used to reduce the number of possible
+                                     molecular ions considered when trying to find a unique solution
+                                     to the question which charge_state does a molecular ion
+                                     within a given range and given combination of elements have.
+                                </doc>
+                            </field>
+                            <field name="min_half_life" type="NX_FLOAT" units="NX_TIME">
+                                <doc>
+                                     Filter criterion on the minimum half life which all isotopes
+                                     building the (molecular) ion need to have to consider the
+                                     candidate.
+                                     Such a filter can be used to reduce the number of possible
+                                     molecular ions considered when trying to find a unique solution
+                                     to the question which charge_state does a molecular ion
+                                     within a given range and given combination of elements have.
+                                </doc>
+                            </field>
+                            <!--NEW ISSUE: value can be the string infinity!
+min_half_life_vector(NX_FLOAT):
+  doc: |
+    Needs to be documented
+  unit: NX_TIME-->
+                            <field name="sacrifice_isotopic_uniqueness" type="NX_BOOLEAN">
+                                <doc>
+                                     If the value is zero/false it means that non-unique solutions
+                                     are accepted. These are solutions where multiple candidates
+                                     differ in their isotopes but have the same charge.
+                                </doc>
+                            </field>
+                        </group>
                     </group>
                 </group>
             </group>
         </group>
+        <!--add further fields coming from using the charge state recovery
+workflow from the ifes_apt_tc_data_modeling library
+##MK::end of the tool-specific section-->
         <group name="performance" type="NXcs_profiling">
             <field name="current_working_directory"/>
             <field name="command_line_call" optional="true"/>
@@ -377,18 +539,21 @@
                     <field name="description"/>
                     <field name="elapsed_time" type="NX_NUMBER"/>
                     <field name="number_of_processes" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_processes
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
                     <field name="number_of_threads" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
                     <field name="number_of_gpus" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.

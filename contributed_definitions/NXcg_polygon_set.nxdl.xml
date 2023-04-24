@@ -22,6 +22,9 @@
 # For further information, see http://www.nexusformat.org
 -->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_polygon_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <!--Users can take advantage of NXcg_polygon_set to describe such complexes
+when using the defines_plc and related topological and boundary constraint
+descriptors.-->
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -36,12 +39,14 @@
                  The cardinality of the set, i.e. the number of polygons.
             </doc>
         </symbol>
+        <!--n_unique: Number of unique points supporting the polygons.-->
         <symbol name="n_total">
             <doc>
                  The total number of vertices when visiting every polygon.
             </doc>
         </symbol>
     </symbols>
+    <!--somewhat redundant as there is NXoff_geometry but easier to understand-->
     <doc>
          Computational geometry description of a set of polygons in Euclidean space.
          
@@ -95,14 +100,18 @@
         </dimensions>
     </field>
     <group name="polygons" type="NXcg_face_list_data_structure">
+        <!--exists: [min, 0, max, 1]-->
         <doc>
              A simple approach to describe the entire set of polygons when the
              main intention is to store the shape of the polygons for visualization.
         </doc>
     </group>
+    <!--detailed additional information eventually mesh-related data-->
     <group name="vertex_normal" type="NXcg_unit_normal_set"/>
     <group name="edge_normal" type="NXcg_unit_normal_set"/>
     <group name="face_normal" type="NXcg_unit_normal_set"/>
+    <!--triangles_half_edge(NXcg_half_edge_data_structure):
+properties of the polygon primitives-->
     <field name="area" type="NX_NUMBER" units="NX_AREA">
         <dimensions rank="1">
             <dim index="1" value="c"/>
@@ -153,4 +162,64 @@
              Axis-aligned or (approximate) (optimal) bounding boxes to each polygon.
         </doc>
     </group>
+    <!--##MK::ROI about the set ?
+a set of polygons can be interpreted as a descriptor for an object
+an, in TetGen terminology, piecewise-linear complex
+  defines_plc(NX_BOOLEAN):
+   doc: True, if the set describes a piecewise-linear complex.
+##MK::each polygon could be given a role with respect to what the polygon
+##MK::represents of the complex, this would allow to define a complex with
+##MK::holes
+  vertices(NXcg_point_set):
+    doc: |
+      The set of vertices supporting the polygons.
+
+      The dimensionality of the point set and this polygon set are the same.
+      The number of vertices is arbitrary because polygons may different in
+      their number of edges.
+
+      Like it is the case for NXcg_triangle_set instances, individual
+      polygons may make edge contact in which case a lower number of vertices
+      suffices than naively expected from a summation of the edges.
+
+      Users are encouraged to reduce the vertex set to a set of unique vertices
+      as this can often turn out to allow for a more efficient storage
+      of the geometry data. It is also possible though to store
+      the vertices naively in which case vertices_are_unique is likely False.
+    vertices_are_unique(NX_BOOLEAN):
+      doc: |
+        If true indicates that the vertices are all placed at different positions
+        and have different identifiers, i.e. no points overlap or are counted twice.
+  number_of_vertices(NX_POSINT):
+    doc: |
+      Array which specifies of how many vertices each polygon is built.
+      The number of vertices represent the total number of vertices for
+      each polygon, irrespectively whether vertices are shared or not.
+      See the docstring for polygons for further details about how
+      a set with different polyline members should be stored.
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 1
+      dimensions: [[1, c]]
+    # ##MK::there is nothing like value constraints... or minimum bitdepth
+  polygons(NX_INT):
+    doc: |
+      Array of identifiers from vertices which describe each polygon.
+
+      The first entry is the identifier of the start vertex of the first polyline,
+      followed by the second vertex of the first polyline, until the last vertex
+      of the polyline. Thereafter, the start vertex of the second polyline, and
+      so on and so forth. Using the (cumulated) counts in number_of_vertices,
+      the vertices of the n-th polyline can be accessed on the following
+      array index interval:
+      [$\sum_i = 0}^{i = n-1}$, $\sum_{i=0}^{i = n}$].
+
+      Users are advised to store the vertex identifiers, if possible and
+      ideally then for all of them, according to and using winding order.
+      If the winding_order field is given, it has to report the specific winding
+      order used.
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 1
+      dim: [[1, n_total]]-->
 </definition>
