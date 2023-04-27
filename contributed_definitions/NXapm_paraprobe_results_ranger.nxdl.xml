@@ -41,12 +41,15 @@
     <doc>
          Results of a paraprobe-ranger tool run.
     </doc>
+    <!--by default for appdefs the value of the exists keyword is required
+unless it is explicitly specified differently-->
     <group type="NXentry" minOccurs="1" maxOccurs="1">
         <attribute name="version">
             <doc>
                  Version specifier of this application definition.
             </doc>
         </attribute>
+        <!--##MK::begin of the tool-specific section-->
         <field name="definition">
             <doc>
                  Official NeXus NXDL schema with which this file was written.
@@ -55,6 +58,7 @@
                 <item value="NXapm_paraprobe_results_ranger"/>
             </enumeration>
         </field>
+        <!--##MK::end of the tool-specific section-->
         <field name="program">
             <doc>
                  Given name of the program/software/tool with which this NeXus
@@ -70,7 +74,7 @@
                 </doc>
             </attribute>
         </field>
-        <field name="analysis_identifier" optional="true">
+        <field name="analysis_identifier">
             <doc>
                  Ideally, a (globally persistent) unique identifier for referring
                  to this analysis.
@@ -113,7 +117,7 @@
                  current working directory.
             </doc>
         </field>
-        <field name="status" type="NX_CHAR">
+        <field name="status">
             <doc>
                  A statement whether the paraprobe-tool executable managed to
                  process the analysis or failed prematurely.
@@ -166,6 +170,7 @@
                 </doc>
             </group>
         </group>
+        <!--##MK::begin of the tool-specific section-->
         <group type="NXprocess" minOccurs="0" maxOccurs="1">
             <group name="apply_existent_ranging" type="NXprocess" minOccurs="0" maxOccurs="1">
                 <doc>
@@ -174,18 +179,13 @@
                      ion is considered of the default unknown type with a 0 as its
                      respective value in the iontypes array.
                 </doc>
+                <!--##MK::number_of_ion_types(NX_POSINT):-->
                 <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_POSINT" units="NX_UNITLESS">
                     <doc>
                          The length of the isotope_vector used to describe molecular ions.
                     </doc>
                 </field>
                 <group name="ION" type="NXion" minOccurs="1" maxOccurs="256">
-                    <field name="isotope_vector" type="NX_UINT"/>
-                    <field name="nuclid_list" type="NX_UINT" recommended="true"/>
-                    <field name="charge_state" type="NX_INT"/>
-                    <field name="mass_to_charge_range" type="NX_FLOAT"/>
-                </group>
-                <group name="charged_ION" type="NXion" minOccurs="1" maxOccurs="256">
                     <field name="isotope_vector" type="NX_UINT"/>
                     <field name="nuclid_list" type="NX_UINT" recommended="true"/>
                     <field name="charge_state" type="NX_INT"/>
@@ -205,34 +205,6 @@
                         <dim index="1" value="n_ions"/>
                     </dimensions>
                 </field>
-                <field name="charged_iontypes" type="NX_UINT" units="NX_UNITLESS">
-                    <doc>
-                         The iontype ID for each ion that was best matching, stored in the
-                         order of the evaporation sequence ID. For the here computed
-                         charged_iontypes the information for each (molecular) ion defined
-                         in e.g. RNG or RRNG files is analyzed for which differently charge
-                         states are possible. As an example while iontypes might only consider
-                         if an ion is Al charged_iontypes will resolve if it is Al1+, Al2+, or
-                         Al3+. To decide the charge state a recursive algorithm is used which
-                         enumerates first all possible isotopic variants of a given molecular
-                         ion build from a specific set of elements. All variants are then
-                         analyzed for their natural abundance and filtered. The sub-set of
-                         all significantly abundant variants is inspected if their charge
-                         states are all the same. If only one significant variant is found
-                         its charge state is assumed the relevant. If multiple significant
-                         variants are found and all their charge states is the same this
-                         charge state will be the decisive one. However, if multiple variants
-                         are found and their charge state differs such a case highlights that
-                         the charge state analysis is underconstrained and thus the charge
-                         state is set to 0. Underconstrained cases are possible because
-                         an arbitrary combination of elements into a molecular ion that is
-                         constrained only by an additional single interval of mass-to-charge
-                         state ratios is not necessarily sufficient.
-                    </doc>
-                    <dimensions rank="1">
-                        <dim index="1" value="n_ions"/>
-                    </dimensions>
-                </field>
                 <group name="window" type="NXcs_filter_boolean_mask">
                     <doc>
                          A bitmask which identifies exactly all those ions ranged irrespective
@@ -244,6 +216,7 @@
                              The mask value for most may be 0.
                         </doc>
                     </field>
+                    <!--which does paraprobe use-->
                     <field name="bitdepth" type="NX_UINT" units="NX_UNITLESS">
                         <doc>
                              Number of bits assumed matching on a default datatype.
@@ -300,6 +273,7 @@
                          The mass of each molecular ion without
                          considering relativistic or quantum effects.
                     </doc>
+                    <!--\@units: amu-->
                     <dimensions rank="1">
                         <dim index="1" value="i"/>
                     </dimensions>
@@ -358,6 +332,7 @@
                      does neither needs measured ion position nor mass-to-charge-state
                      ratio values.
                 </doc>
+                <!--##MK::number_of_ion_types(NX_POSINT):-->
                 <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_POSINT" units="NX_UNITLESS">
                     <doc>
                          The length of the isotope_vector used to describe molecular ions.
@@ -371,6 +346,7 @@
                 </group>
             </group>
         </group>
+        <!--##MK::end of the tool-specific section-->
         <group name="performance" type="NXcs_profiling">
             <field name="current_working_directory"/>
             <field name="command_line_call" optional="true"/>
@@ -420,18 +396,21 @@
                     <field name="description"/>
                     <field name="elapsed_time" type="NX_NUMBER"/>
                     <field name="number_of_processes" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_processes
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
                     <field name="number_of_threads" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.
                         </doc>
                     </field>
                     <field name="number_of_gpus" type="NX_POSINT">
+                        <!--exists: recommended-->
                         <doc>
                              Specify if it was different from the number_of_threads
                              in the NXcs_profiling super class.

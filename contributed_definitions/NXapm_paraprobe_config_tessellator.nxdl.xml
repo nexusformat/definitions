@@ -21,6 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
+<!-- n_control_points: The number of control points for tessellating regions instead of tessellating the volume about ion positions.-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXapm_paraprobe_config_tessellator" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
@@ -31,6 +32,8 @@
          Configuration of a paraprobe-tessellator tool run in atom probe microscopy.
     </doc>
     <group type="NXentry">
+        <!--by default for appdefs the value of the exists keyword is required
+unless it is explicitly specified differently-->
         <attribute name="version">
             <doc>
                  Version specifier of this application definition.
@@ -59,7 +62,7 @@
                 </doc>
             </attribute>
         </field>
-        <field name="analysis_identifier" optional="true">
+        <field name="analysis_identifier">
             <doc>
                  Ideally, a (globally persistent) unique identifier for referring
                  to this analysis.
@@ -133,6 +136,10 @@
                     <field name="identifier" type="NX_UINT"/>
                 </group>
             </group>
+            <!--a perfect example for limited conditions in NeXus
+if windowing_method is entire_dataset: no constraint on existence of NXcg and NXcs instances
+if windowing_method is union_of_primitives: sum of cardinality of NXcg >= 0
+if windowing_method is bitmasked_points: sum cardinality of NXcg := 0 and cardinality of NXcs_filter_boolean_mask == 1-->
             <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true"/>
             <group name="iontype_filter" type="NXmatch_filter" optional="true"/>
             <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true"/>
@@ -168,10 +175,44 @@
                          By default, a Voronoi tessellation is computed for all ions in the
                          filtered point cloud.
                     </doc>
+                    <!-- The value control_points will compute the tessellation for the
+ provided overlay_control_points irregardless of the ion point cloud.
+ This enables for instance computations as proposed by P. Felfer and
+ coworkers where, for the purpose of e.g. interfacial excess quantification,
+ a tessellation of the dataset into regions about manually-specified
+ control points is needed.
+ For this option, the overlay_control points.-->
                     <enumeration>
                         <item value="default"/>
                     </enumeration>
                 </field>
+                <!--overlay_control_points(NXprocess):
+   doc: |
+     Overlaying an additional set of control points onto the reconstruction
+     can be used as a first step to construct a tessellation of the dataset
+     into regions to segment the dataset or construct a model for internal
+     structural features in the dataset. Such an approach was suggested
+     e.g. by P. Felfer et al. which use a control points to locate
+     interfaces (grain/phase boundaries) in atom probe data to perform
+     e.g. interfacial excess computations. The control points can be
+     imported for example from some manual preprocessing of a dataset
+     where the user figured these control points could be of relevance
+     for the analysis.
+   # NEW ISSUE: dislocation lines
+   exists: optional
+   filename:
+     doc: |
+       Name of an HDF5 file which contains control point coordinates.
+     \@version:
+       doc: |
+         Version identifier of the file such as a secure hash which
+         documents the binary state of the file to add an additional
+         layer of reproducibility.
+   dataset_name:
+     doc: |
+       Absolute HDF5 path to the dataset which contains the array of
+       control points. This has to be an array of shape
+       (n_control_points, 3).-->
                 <field name="has_cell_volume" type="NX_BOOLEAN">
                     <doc>
                          Specifies if the tool should report the volume of each cell.
@@ -197,13 +238,14 @@
                          by the presence of the boundary.
                     </doc>
                 </field>
-                <field name="erosion_distance" type="NX_FLOAT" units="NX_LENGTH">
-                    <doc>
-                         Maximum distance for which cells are eroded.
-                    </doc>
-                </field>
             </group>
         </group>
+        <!--erosion_distance(NX_FLOAT):
+  doc: |
+    Maximum distance for which cells are eroded.
+  unit: NX_LENGTH
+  # \@units: nm
+  # minValue: EPSILON-->
         <group name="performance" type="NXcs_profiling">
             <field name="current_working_directory"/>
         </group>

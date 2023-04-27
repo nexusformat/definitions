@@ -26,6 +26,8 @@
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
+        <!--n_positions: Number of position values.
+n_disjoint_clusters: Number of disjoint cluster.-->
         <symbol name="n_ivecmax">
             <doc>
                  Maximum number of atoms per molecular ion. Should be 32 for paraprobe.
@@ -46,6 +48,8 @@
          Configuration of a paraprobe-clusterer tool run in atom probe microscopy.
     </doc>
     <group type="NXentry">
+        <!--by default for appdefs the value of the exists keyword is required
+unless it is explicitly specified differently-->
         <attribute name="version">
             <doc>
                  Version specifier of this application definition.
@@ -80,7 +84,7 @@
                  information included when this configuration file was created.
             </doc>
         </field>
-        <field name="analysis_identifier" optional="true">
+        <field name="analysis_identifier">
             <doc>
                  Ideally, a (globally persistent) unique identifier for referring
                  to this analysis.
@@ -139,6 +143,29 @@
                     </doc>
                 </field>
             </group>
+            <!--mapping_method:
+  doc: |
+    How should cluster labels be created from the cluster_labels information
+    especially when these areNcluste floating point values.
+ enumeration: [take_as_is, use_dictionary]
+mapping_dictionary_keyword(NX_NUMBER):
+  doc: |
+    The list of all keywords of a dictionary which maps implicit cluster
+    indices like those from IVAS/APSuite which were0ass-to-charge-state ratios.
+  unit: NX_UNITLESS
+  dimensions:
+    rank: 1
+    dim: [[1, n_disjoint_clusters]]
+mapping_dictionary_value(NX_UINT):
+  doc: |
+    The list of all values of a dictionary which maps implicit cluster
+    indices like those from IVAS/APSuite which were0ass-to-charge-state ratios.
+    The sequences of mapping_dictionary_keyword and mapping_dictionary_value
+    have to match.
+  unit: NX_UNITLESS
+  dimensions:
+    rank: 1
+    dim: [[1, n_disjoint_clusters]]-->
             <field name="recover_evaporation_id" type="NX_BOOLEAN">
                 <doc>
                      Specifies if the tool should try to recover for each position the closest
@@ -149,6 +176,13 @@
                 </doc>
             </field>
         </group>
+        <!--recover_bitmask(NX_BOOLEAN):
+  doc: |
+    Specifies if the tool should try to recover, after a recovery of the
+    evaporation IDs a bitmask which identifies which of the positions
+    in dataset/dataset/dataset_name_reconstruction where covered
+    by the IVAS/APSuite cluster analysis. This can be useful to recover
+    the region of interest.-->
         <group name="cluster_analysis" type="NXprocess" minOccurs="0" maxOccurs="1">
             <doc>
                  This process performs a cluster analysis on a reconstructed dataset
@@ -228,7 +262,14 @@
             <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true"/>
             <group name="iontype_filter" type="NXmatch_filter" optional="true"/>
             <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true"/>
-            <field name="ion_type_filter" type="NX_CHAR">
+            <!--clustering_algorithm:
+  doc: |
+    Name of the clustering algorithm used.
+  enumeration: [dbscan]  # , optics, hpdbscan]
+  dimensions:
+    rank: 1
+    dim: [[1, n_clust_algos]]-->
+            <field name="ion_type_filter">
                 <doc>
                      How should iontypes be interpreted/considered during the cluster analysis.
                      Different options exist how iontypes are interpreted (if considered at all)
@@ -258,6 +299,7 @@
                      at a position that the cluster has two members. This multiplicity
                      affects the size of the feature and chemical composition.
                 </doc>
+                <!--enumeration: [resolve_all, resolve_unknown, resolve_ion, resolve_element, resolve_isotope]-->
                 <enumeration>
                     <item value="resolve_element"/>
                 </enumeration>
@@ -289,7 +331,7 @@
                      specific modification known as the maximum-separation method in the
                      atom probe community consider `E. Jägle et al. &lt;https://dx.doi.org/10.1017/S1431927614013294&gt;`_
                 </doc>
-                <field name="high_throughput_method" type="NX_CHAR">
+                <field name="high_throughput_method">
                     <doc>
                          Strategy how runs are performed with different parameter:
                          
@@ -329,13 +371,16 @@
                     </dimensions>
                 </field>
             </group>
+            <!--THE IDEA BEHIND paraprobe-clusterer is that users can run a number of
+cluster analyses on their dataset on exactly the same point cloud and under
+the same conditions-->
             <group name="optics" type="NXprocess">
                 <doc>
                      Settings for the OPTICS clustering algorithm.
                      
                      * `M. Ankerest et al. &lt;https://dx.doi.org/10.1145/304181.304187&gt;`_
                 </doc>
-                <field name="high_throughput_method" type="NX_CHAR">
+                <field name="high_throughput_method">
                     <doc>
                          Strategy how runs are performed with different parameter:
                          
@@ -377,7 +422,7 @@
                      See also this documentation for details about the parameter.
                      Here we use the terminology of the hdbscan documentation.
                 </doc>
-                <field name="high_throughput_method" type="NX_CHAR">
+                <field name="high_throughput_method">
                     <doc>
                          Strategy how runs are performed with different parameter:
                          
@@ -427,4 +472,6 @@
             </group>
         </group>
     </group>
+    <!--ADD FURTHER ALGORITHMS, see L. Stephenson for further details
+e.g. https://doi.org/10.1017/S1431927607070900-->
 </definition>

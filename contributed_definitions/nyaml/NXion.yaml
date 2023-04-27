@@ -9,6 +9,14 @@ symbols:
   n_ranges: |
     Number of mass-to-charge-state-ratio range intervals for ion type.
 NXion:
+  identifier:
+    doc: |
+      A unique identifier whereby such an ion can be referred to
+      via the service offered as described in identifier_type.
+  identifier_type:
+    doc: |
+      How can the identifier be resolved?
+    enumeration: [inchi]
   ion_type(NX_UINT):
     doc: | 
       Ion type (ion species) identifier. The identifier zero
@@ -29,25 +37,41 @@ NXion:
       For the rationale behind this `M. Kühbach et al. (2021) <https://doi.org/10.1017/S1431927621012241>`_
     unit: NX_UNITLESS
     dimensions:
-      rank: 1
-      dim: [[1, n_ivecmax]]
+      rank: 2
+      dim: [[1, 1], [2, n_ivecmax]]
   nuclid_list(NX_UINT):
     doc: |
       A supplementary row vector which decodes the isotope_vector into
       a human-readable matrix of nuclids with the following formatting:
       
-      The first row specifies the isotope mass, i.e. using the hashvalues from
-      the isotope_vector this is :math:`Z + N`. As an example for a carbon-14
-      isotope the number is 14.
+      The first row specifies the isotope mass number, i.e. using the hashvalues
+      from the isotope_vector this is :math:`Z + N`. As an example for a
+      carbon-14 isotope the number is 14.
       The second row specifies the number of protons :math:`Z`, e.g. 6 for the
       carbon-14 example. This row matrix is thus a mapping the notation of
-      using superscribed isotope mass and subscripted number of protons to identify
-      isotopes.
-      Unused places filling up to n_ivecmax should be filled with zero.
+      using superscribed isotope mass and subscripted number of protons to
+      identify isotopes.
+      Unused places filling up to n_ivecmax need to be filled with zero.
     unit: NX_UNITLESS
     dimensions:
       rank: 2
       dim: [[1, 2], [2, n_ivecmax]]
+  color:
+    doc: |
+      Color code used for visualizing such ions.
+  volume(NX_FLOAT):
+    doc: |
+      Assumed volume of the ion.
+      
+      In atom probe microscopy this field can be used to store the reconstructed
+      volume per ion (average) which is typically stored in range files and will
+      be used when building a tomographic reconstruction of an atom probe
+      dataset.
+    unit: NX_VOLUME
+  charge(NX_FLOAT):
+    doc: |
+      Charge of the ion.
+    unit: NX_CHARGE
   charge_state(NX_INT):
     doc: |
       Signed charge state of the ion in multiples of electron charge.
@@ -67,7 +91,7 @@ NXion:
       is defined by the isotopes, which without knowing the charge leads
       to an underconstrained problem.
       Details on ranging can be found in the literature: `M. K. Miller <https://doi.org/10.1002/sia.1719>`_
-    unit: NX_CHARGE
+    unit: NX_UNITLESS
   name:
     doc: |
       Human-readable ion type name (e.g. Al +++)
@@ -75,14 +99,16 @@ NXion:
       ideally using LaTeX notation to specify the isotopes, ions, and charge
       state. Examples are 12C + or Al +++.
       Although this name may be human-readable and intuitive, parsing such
-      names becomes impractical for more complicated cases. Therefore, the
-      isotope_vector should be the preferred machine-readable format to use.
+      names becomes impractical for more complicated cases. Therefore, for the
+      field of atom probe microscopy the isotope_vector should be the
+      preferred machine-readable format to use.
   mass_to_charge_range(NX_FLOAT):
     doc: |
       Associated lower (mqmin) and upper (mqmax) bounds of 
       mass-to-charge-state ratio interval(s) [mqmin, mqmax]
-      (boundaries included) for which the respective ion is labelled
-      as an ion of the here referred to ion_type.
+      (boundaries included) for which the respective ion is one to be labelled
+      with ion_identifier. The field is primarily of interest to document the
+      result of indexing a ToF/mass spectrum.
     unit: NX_ANY
     # \@units: Da
     dimensions:

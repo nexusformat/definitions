@@ -84,7 +84,7 @@
                 </doc>
             </attribute>
         </field>
-        <field name="analysis_identifier" optional="true">
+        <field name="analysis_identifier">
             <doc>
                  Ideally, a (globally persistent) unique identifier for referring
                  to this analysis.
@@ -171,6 +171,7 @@
                      the edge of the dataset. This model can be used to detect and control
                      various sources of bias in the analyses.
                 </doc>
+                <!--NEW ISSUE: exists: optional-->
                 <field name="filename">
                     <doc>
                          Name of the HDF5 file which contains vertex coordinates and facet
@@ -203,6 +204,7 @@
                      The tool enables to inject precomputed distance information for each
                      point/ion which can be used for further post-processing and analysis.
                 </doc>
+                <!--NEW ISSUE: is this optional?-->
                 <field name="filename">
                     <doc>
                          Name of an HDF5 file which contains the ion distances.
@@ -221,13 +223,21 @@
                     </doc>
                 </field>
             </group>
-            <field name="number_of_delocalizations" type="NX_UINT" units="NX_UNITLESS">
-                <doc>
-                     For now a support field for the tool to identify how many individual
-                     delocalization analyses for the above-mentioned dataset and supplementary
-                     files are executed as part of the high-throughput analysis.
-                </doc>
-            </field>
+            <!--number_of_delocalizations(NX_UINT):
+  doc: |
+    For now a support field for the tool to identify how many individual
+    delocalization analyses for the above-mentioned dataset and supplementary
+    files are executed as part of the high-throughput analysis.
+  unit: NX_UNITLESS-->
+            <!--NEW ISSUE delocalization is all lower case meaning you cannot have right now multiple of these
+even though paraprobe-nanochem triggers a number of delocalizations for each of which triggering again isosurfaces
+currently the principal idea behind this design is that you normally focus iso-surface-based analyses
+on specific elements and for these you may have different discretization and isosurface computation demands
+for instance you might be super interested in analyzing in find details the iso-surfaces of carbon in a dataset
+but in addition you could be interested also to study chromium iso-surfaces but for completely different iso-contour values
+etc. this is what paraprobe-nanochem allows you to do
+you create one process for all your carbon related delocalizations, isosurfaces etc
+plus another process packing all your chromium delocalization and isosurfaces-->
             <group name="delocalization" type="NXprocess" minOccurs="0" maxOccurs="1">
                 <doc>
                      Discretization of the ion point cloud on a three-dimensional grid.
@@ -247,11 +257,13 @@
                          settings which were used for computing this already existent delocalization
                          are specified in the same manner as they were.
                     </doc>
+                    <!--NEW ISSUE: improve UX experience-->
                     <enumeration>
                         <item value="default"/>
                         <item value="load_existent"/>
                     </enumeration>
                 </field>
+                <!--NEW ISSUE: base class filter-->
                 <field name="isotope_whitelist" type="NX_UINT" units="NX_UNITLESS">
                     <doc>
                          Matrix of isotope vectors representing iontypes.
@@ -293,19 +305,21 @@
                          an edge length of values in gridresolutions.
                     </doc>
                 </field>
+                <!--\@units: nm-->
                 <field name="kernel_size" type="NX_UINT" units="NX_UNITLESS">
                     <doc>
-                         Half the width of a (2n+1)^3 cubic kernel of voxel beyond
-                         which the Gaussian Ansatz function will be truncated.
+                         Half the width of a :math:`{(2 \cdot n + 1)}^3` cubic kernel of voxel
+                         beyond which the Gaussian Ansatz function will be truncated.
                          Intensity beyond the kernel is refactored into the kernel via
                          a normalization procedure.
                     </doc>
                 </field>
                 <field name="kernel_variance" type="NX_FLOAT" units="NX_LENGTH">
                     <doc>
-                         Variance of the Gaussian Ansatz kernel sigma_x = sigma_y = 2*sigma_z.
+                         Variance of the Gaussian Ansatz kernel :math:`\sigma_x = \sigma_y = 2 \cdot \sigma_z`.
                     </doc>
                 </field>
+                <!--\@units: nm-->
                 <field name="normalization">
                     <doc>
                          How should the results of the kernel-density estimation be computed
@@ -326,6 +340,12 @@
                          Specifies if the tool should report the delocalization 3D field values.
                     </doc>
                 </field>
+                <!--number_of_isosurfaces:
+  doc: For now a support field for the tool to identify how many individual analyses the tool should execute during the analysis run.
+  unit: NX_UNITLESS-->
+                <!--NEW ISSUE: currently isosurface has to be a child of delocalization because otherwise
+you could construct the incorrect situation that you leave delocalization optional do not add sth there but fill isosurface
+and this does not work because without a delocalization/field quantity you cannot compute iso-surfaces-->
                 <group name="isosurfacing" type="NXprocess" minOccurs="0" maxOccurs="1">
                     <doc>
                          Optional computation of iso-surfaces after each computed delocalization
@@ -368,14 +388,21 @@
                              In the results of each paraprobe-nanochem run, these proxy objects
                              are listed separately to allow users to quantify and analyze in
                              detail the differences when accounting for these objects or not.
-                             Especially this is relevant in atom probe microscopy are small
-                             in the sense that they contain few (many a few dozen) objects.
-                             Even though such a dataset may give statistically significant
-                             results for compositions this does not mean it necessarily yields
-                             also statistically significant and unbiased results for three-dimensional
-                             object analyses. Being able to quantify these effects and making
-                             atom probers aware of these subtleties was one of the main reasons
-                             why the paraprobe-nanochem tool was implemented.
+                             Especially this is relevant in atom probe microscopy as objects
+                             can contain a few dozen atoms only.
+                             Users should be aware that results from fairing operations should
+                             be compared to results from analyses where all objects at the edge
+                             of the dataset have been removed.
+                             
+                             Also users should be careful with overestimating the statistical
+                             significance of their dataset especially when using atom probe
+                             to compare multiple descriptors: Even though a dataset may give
+                             statistically significant results for compositions, this does not
+                             necessarily mean it will yield also statistically significant
+                             and unbiased results for three-dimensional object analyses.
+                             Being able to quantify these effects and making atom probers
+                             aware of these subtleties was one of the main reasons why the
+                             paraprobe-nanochem tool was implemented.
                         </doc>
                         <enumeration>
                             <item value="default"/>
@@ -403,6 +430,7 @@
                              In short, a distance-based approach is rigorous and more flexible.
                         </doc>
                     </field>
+                    <!--\@units: nm-->
                     <field name="phi" type="NX_FLOAT" units="NX_ANY">
                         <doc>
                              Array of iso-contour values. For each value the tool computes
@@ -416,6 +444,7 @@
                              * concentration, candidates but normalized by voxel volume, i.e. ions/nm^3
                         </doc>
                     </field>
+                    <!--NEW ISSUE: details what these options activate need to be described in more detail !!!!!-->
                     <field name="has_triangle_soup" type="NX_BOOLEAN">
                         <doc>
                              Specifies if the tool should report the triangle soup which represents
@@ -480,6 +509,7 @@
                              (aspect ratios).
                         </doc>
                     </field>
+                    <!--NEW ISSUE: Addendum Alternatively it is possible to fit triaxial ellipsoids.-->
                     <field name="has_object_ions" type="NX_BOOLEAN">
                         <doc>
                              Specifies if the tool should report for each closed polyhedron
@@ -520,6 +550,9 @@
                              by the fact that the dataset is finite.
                         </doc>
                     </field>
+                    <!--the edge_threshold can be decided based on half the length of the diagonal of the delocalization kernel.
+as a consequence of which wider kernels result in larger threshold values causing more objects to become
+qualified as having edge contact.-->
                     <field name="has_proxy" type="NX_BOOLEAN">
                         <doc>
                              Specifies if the tool should analyze a doppelganger/proxy mesh for
@@ -593,6 +626,11 @@
                         </doc>
                     </field>
                 </group>
+                <!--has_object_mesh_smoothing(NX_BOOLEAN):
+ doc: Specifies if the tool should post-process each mesh to improve the mesh quality.
+mesh_smoothing(NXprocess):
+NEW ISSUE: here we need to specify how the meshes were smoothened
+##MK::is this group not at the previous level of the hierarchy?-->
                 <group name="interfacial_excess" type="NXprocess" optional="true">
                     <doc>
                          Analyses of interfacial excess.
@@ -671,6 +709,8 @@
                             <item value="external"/>
                         </enumeration>
                     </field>
+                    <!--NEW ISSUE: how to implement and also check consistently via NeXus that a
+NEW ISSUE: child group is required only when a field has a certain value?-->
                     <group name="external" type="NXprocess" optional="true">
                         <doc>
                              The interface model is the result of a previous (set of) processing
@@ -815,6 +855,7 @@
                          X, Y, Z coordinates of disjoint control point read from 
                          an HDF5 file named according to control_point_file.
                     </doc>
+                    <!--\@units: nm-->
                     <dimensions rank="2">
                         <dim index="1" value="N"/>
                         <dim index="2" value="n_control_pts"/>
@@ -859,6 +900,7 @@
                          which specify how the initial triangles of the mesh should be iteratively
                          refined by edge splitting and related mesh refinement operations.
                     </doc>
+                    <!--\@units: nm-->
                     <dimensions rank="1">
                         <dim index="1" value="n_fct_iterations"/>
                     </dimensions>
@@ -871,8 +913,11 @@
                          be eventually relocated. The larger the DCOM radius is relative to
                          the target_edge_length the more likely it is that vertices will be
                          relocated so substantially that eventually triangle self-intersections
-                         can occur.
+                         can occur. If the code detects these it warns and stops in a
+                         controlled manner so that the user can repeat the analyses
+                         with a smaller value.
                     </doc>
+                    <!--\@units: nm-->
                     <dimensions rank="1">
                         <dim index="1" value="n_fct_iterations"/>
                     </dimensions>
@@ -914,8 +959,8 @@
                      Users should be aware that the latter intersection analysis is strictly
                      speaking not a volumetric intersection analysis as such one is much
                      more involved because the edge model can be a closed non-convex polyhedron
-                     in which case one would have to test robustly if the cylinder piercing
-                     or laying completely inside the polyhedron. For this the polyhedron has
+                     in which case one would have to test robustly if the cylinder pierces
+                     or is laying completely inside the polyhedron. For this the polyhedron has
                      to be tessellated into convex polyhedra as otherwise tests like the
                      Gilbert-Johnson-Keerthi algorithm would not be applicable.
                      
@@ -936,6 +981,16 @@
                      Furthermore, the tool can be instructed to compute for each
                      (or a selected sub-set of facet) a set of differently oriented profiles.
                 </doc>
+                <!--In the second case, these profiles will be probed in the direction of
+ the outer unit surface normal vectors of a sphere. The sphere is
+ discretized via a geodesic sphere (according to ideas of M. Kühbach
+ et al. Journal of Applied Crystallography 2021) model with 40962
+ directions, some of which are duplicates (for now). This direction
+ sampling enables substantially more detailed analyses of the effect
+ of aligning the ROI because alignments of ROI based on triangle
+ surface normals of the feature mesh can result in larger direction
+ differences between neighboring ROIs when the mesh for rough
+ surface meshes.-->
                 <group name="feature_mesh" type="NXprocess">
                     <doc>
                          The feature mesh enables the injection of previously computed triangle
@@ -975,6 +1030,11 @@
                              normals of the facets.
                         </doc>
                     </field>
+                    <!--dataset_name_vertex_normals:
+ doc: Absolute path to the HDF5 dataset in the respective specified
+ HDF5 file under filename which details consistently oriented
+ vertex normals of the facets.
+ exists: optional-->
                     <group name="patch_identifier_filter" type="NXmatch_filter" optional="true">
                         <field name="method"/>
                         <field name="match" type="NX_NUMBER"/>
@@ -985,6 +1045,7 @@
                          The tool enables to inject precomputed distance information for each
                          point which can be used for further post-processing and analysis.
                     </doc>
+                    <!--NEW ISSUE: is this optional?-->
                     <field name="filename">
                         <doc>
                              Name of an HDF5 file which contains ion distances.
@@ -1012,6 +1073,7 @@
                         <item value="project_to_triangle_plane"/>
                     </enumeration>
                 </field>
+                <!--NEW ISSUE:, ion_to_feature]-->
                 <field name="direction_model">
                     <doc>
                          In which directions should the tool probe for each ROI.
@@ -1020,12 +1082,18 @@
                         <item value="triangle_outer_unit_normal"/>
                     </enumeration>
                 </field>
+                <!--NEW ISSUE:, angularly_geodesic_sphere]-->
                 <field name="roi_cylinder_height" type="NX_FLOAT" units="NX_LENGTH">
                     <doc>
                          For each ROI, how high (projected on the cylinder axis)
                          should the cylindrical ROI be.
                     </doc>
                 </field>
+                <!--\@units: nm
+all ROIs the same height
+dimensions:
+  rank: 1
+  dim: [[1, 1]]-->
                 <field name="roi_cylinder_radius" type="NX_FLOAT" units="NX_LENGTH">
                     <doc>
                          For each ROI, how wide (radius) should the cylindrical ROI be.
@@ -1033,6 +1101,11 @@
                 </field>
             </group>
         </group>
+        <!--\@units: nm
+all ROIs the same radius
+dimensions:
+  rank: 1
+  dim: [[1, 1]]-->
         <group name="performance" type="NXcs_profiling">
             <field name="current_working_directory"/>
         </group>

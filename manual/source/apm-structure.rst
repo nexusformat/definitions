@@ -68,8 +68,5 @@ a set of frequently on-the-fly processed computational data. For now we represen
 
 .. _ApmRemovedBC:
 
-Removed base classes
-####################
-
-We have removed the NXlens_apm base class and replaced it by :ref:`NXreflectron`.
-We have renamed NXmanufacturer to NXfabrication.
+.. Removed base classes
+.. ####################

@@ -16,9 +16,11 @@ https://www.nexusformat.org/
     ellipsometry-structure
     apm-structure
     transport-structure
+    stm-structure
     cgms-structure
     laboratory-structure
     north-structure
+
 
 
 -----------

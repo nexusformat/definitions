@@ -43,8 +43,8 @@ NXms_score_config:
       doc: |
         Relevant data to instantiate a starting configuration that is typically
         a microstructure in deformed conditions where stored (elastic) energy
-        is stored in the form of crystal defects (in SCORE) modelled as
-        dislocation content.
+        is stored in the form of crystal defects, which in the SCORE model are
+        is considered as mean-field dislocation content.
       type:
         doc: |
           Which model should be used to generate a starting microstructure.
@@ -55,7 +55,8 @@ NXms_score_config:
         unit: NX_LENGTH
       domain_size(NX_UINT):
         doc: |
-          Extend of each CA domain in voxel along the x, y, and z direction. Deformation of sheet material is assumed.
+          Extend of each CA domain in voxel along the x, y, and z direction.
+          Deformation of sheet material is assumed.
           The x axis is assumed pointing along the rolling direction.
           The y axis is assumed pointing along the transverse direction.
           The z axis is assumed pointing along the normal direction.
@@ -65,7 +66,7 @@ NXms_score_config:
           dim: [[1, 3]]
       grain_size(NX_FLOAT):
         doc: |
-          Extend of each deformed grain along the x, y, and z direction when type is cuboidal.
+          Extent of each deformed grain along the x, y, and z direction when type is cuboidal.
         unit: NX_LENGTH
         dimensions:
           rank: 1
@@ -82,7 +83,10 @@ NXms_score_config:
           rank: 2
           dim: [[1, n_dg_ori], [2, 3]]
       ebsd(NXprocess):
-        exists: optional  # when type is ebsd then required
+        exists: optional
+        doc: |
+          The EBSD dataset from which the initial microstructure is instantiated
+          if initial_microstructure/type has value ebsd.
         filename:
           doc: |
             Path and name of the EBSD dataset from which to generate the starting microstructure.
@@ -91,7 +95,8 @@ NXms_score_config:
               SHA256 checksum of the file which contains the EBSD dataset.
         stepsize(NX_FLOAT):
           doc: |
-            Size of the EBSD. The EBSD has to be on a regular grid of squares.
+            Size of the EBSD. The EBSD orientation mapping has to be on a
+            regular grid of square-shaped pixels.
           unit: NX_LENGTH
           dimensions:
             rank: 1
@@ -102,12 +107,19 @@ NXms_score_config:
         into the domain and assumed growing.
       spatial_distribution_model:
         doc: |
-          According to which model will the nuclei become distributed spatially. CSR means complete spatial randomness, custom is implementation specific, GB places nuclei at grain boundaries.
+          According to which model will the nuclei become distributed spatially.
+          CSR means complete spatial randomness.
+          Custom is implementation specific.
+          GB places nuclei at grain boundaries.
         enumeration: [csr, custom, gb]
       incubation_time_model:
         doc: |
           According to which model will the nuclei start to grow.
         enumeration: [site_saturation]
+      orientation_model:
+        doc: |
+          According to which model will the nuclei get their orientation assigned.
+        enumeration: [sample_from_nucleus_euler]
       nucleus_euler(NX_FLOAT):
         doc: |
           Set of Bunge-Euler angles to sample orientations of nuclei randomly from.
@@ -117,8 +129,8 @@ NXms_score_config:
           dim: [[1, n_rx_ori], [2, 3]]
     material_properties(NXprocess):
       doc: |
-        Mechanical properties of the material which scale the amount
-        of stored (elastic) energy in the system.
+        (Mechanical) properties of the material which scale the amount
+        of stored (elastic) energy in the ROI/system.
       reference_shear_modulus(NX_FLOAT):
         doc: |
           Shear modulus at zero Kelvin.
@@ -144,7 +156,7 @@ NXms_score_config:
           For the Sebald-Gottstein model the following equation is used.
           For the Rollett-Holm model the following equation is used.
         enumeration: [sebald_gottstein, rollett_holm]
-      sebald_gottstein_parameter(NXcollection):
+      sebald_gottstein_parameters(NXcollection):
         lagb_pre_factor(NX_FLOAT):
           unit: NX_ANY
         lagb_enthalpy(NX_FLOAT):
@@ -157,7 +169,7 @@ NXms_score_config:
           unit: NX_ANY
         special_enthalpy(NX_FLOAT):
           unit: NX_ANY
-      rollett_holm_parameter(NXcollection):
+      rollett_holm_parameters(NXcollection):
         hagb_pre_factor(NX_FLOAT):
           unit: NX_ANY
         hagb_enthalpy(NX_FLOAT):
@@ -223,7 +235,7 @@ NXms_score_config:
           dim: [[1, j]]
     stop_criteria(NXprocess):
       doc: |
-        Criteria which enable to stop the simulation.
+        Criteria which enable to stop the simulation in a controlled manner.
         Whichever criterion is fulfilled first stops the simulation.
       max_x(NX_FLOAT):
         doc: |

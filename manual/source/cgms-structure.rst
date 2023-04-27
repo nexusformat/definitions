@@ -1,7 +1,7 @@
 .. _CgmsFeatures-Structure:
 
 =========================
-Geometry & microstructure
+Geometry & Microstructure
 =========================
 
 .. index::
@@ -205,18 +205,10 @@ to hold metadata for these features:
         Metadata to a set of slip system/slip system family for
         a given crystal structure.
 
-    :ref:`NXms_atom_set`:
-        Metadata to a set of atoms.
-
-    :ref:`NXms_dislocation_set`:
-        Metadata of a set of dislocation/disconnection (line) defects.
-
-    :ref:`NXms_interface_set`:
-        Metadata to a set of interfaces between crystals.
-
-    :ref:`NXms_crystal_set`:
-        A set of crystals, for e.g. a polycrystal, phases, 
-        grains, precipitates.
+    :ref:`NXms_feature_set`:
+        Generic base class to describe any nested set of features
+        of a microstructure at the continuum-, micron-, nano-scale, or
+        to represent a topology of molecules and atoms.
 
     :ref:`NXms_snapshot`:
         A container to describe the state of microstructural features
