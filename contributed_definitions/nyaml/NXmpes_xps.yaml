@@ -3,63 +3,89 @@
 
 doc: This is the application definition for X-ray photoelectron spectroscopy.
 category: application
-NXmpes:
+NXmpes_xps(NXmpes):
   (NXentry):
-    title:
-    start_time(NX_DATE_TIME):
-      doc: "ISO8601 formatted Datetime of the start of the measurement."
     end_time(NX_DATE_TIME):
-      doc: "ISO8601 formatted Datetime of the end of the measurement."      
-    definition:
-      \@version:
+      exists: recommended
+      doc: "Datetime of the end of the measurement."      
+    definition(NX_CHAR):
+      \@version(NX_CHAR):
       enumeration: ["NXmpes_xps"]
-    (NXuser):
-      doc: "Contact information of at least the user of the instrument or the
-            investigator who performed this experiment.
-            Adding multiple users if relevant is recommended."
-      name(NX_CHAR):
-        exists: recommended
-        doc: "Name of the user."
-      affiliation(NX_CHAR):
-        exists: recommended
-        doc: "Name of the affiliation of the user at the point in time when the
-              experiment was performed."
-      address(NX_CHAR):
-        exists: recommended
-        doc: "Full address (street, street number, ZIP, city, country) of the
-          user's affiliation."
-      email(NX_CHAR):
-        doc: "Email address of the user."
-      orcid(NX_CHAR):
-        exists: recommended
-        doc: "Author ID defined by https://orcid.org/."
+    # (NXuser):                                                                #### nothing changed, can be removed from here?
+    #   doc: "Contact information of at least the user of the instrument or the
+    #         investigator who performed this experiment.
+    #         Adding multiple users if relevant is recommended."
+    #   name(NX_CHAR):
+    #     exists: recommended
+    #     doc: "Name of the user."
+    #   affiliation(NX_CHAR):
+    #     exists: recommended
+    #     doc: "Name of the affiliation of the user at the point in time when the
+    #           experiment was performed."
+    #   address(NX_CHAR):
+    #     exists: recommended
+    #     doc: "Full address (street, street number, ZIP, city, country) of the
+    #       user's affiliation."
+    #   email(NX_CHAR):
+    #     doc: "Email address of the user."
+    #   orcid(NX_CHAR):
+    #     exists: recommended
+    #     doc: "Author ID defined by https://orcid.org/."
     (NXinstrument):
       energy_resolution(NX_FLOAT):
-        exists: recommended
+        exists: recommended   ###### cannot be required. measured value (typically from Ag 3d5/2 FWHM of sputter-cleaned Ag foil), not known every time and cann update over time (detector degradation).
         unit: NX_ENERGY
+      manufacturer(NX_CHAR):
+        exists: recommended
+        doc: "The name of the company that manufactured the spectrometer."
+        enumeration: [
+            "SPECS GmbH",
+            "Kratos",
+            "Physical Electronics",
+            "Scienta",
+            "Thermo Fischer Scientific",
+          ]
       (NXsource):
-        doc: "The source used to generate the primary photons. Properties refer strictly to parameters of the source, not of the output beam. For example, the energy of the source is not the optical power of the beam, but the energy of the electron beam in a synchrotron and so on."
         type(NX_CHAR):
-          enumeration: [
+          enumeration: [                                ### removed some options from NXmpes
             "Synchrotron X-ray Source",
             "Rotating Anode X-ray",
             "Fixed Tube X-ray",
             "UV Laser",
             "Free-Electron Laser",
-            "Optical Laser",
             "UV Plasma Source",
             "Metal Jet X-ray",
-            "HHG laser"
           ]
-        name(NX_CHAR):
-          doc: "Free text description of the analyzer name used in the laboratory."
         probe(NX_CHAR):
-          doc: "Type of probe. In XPS it's always X-ray photons, so the full NIAC list is restricted."
-          enumeration: ["x-ray","ultraviolet"]
-      beam_probe(NXbeam):
+          doc: "Type of probe. In XPS it's always X-ray photons (or UV light in UPS), so the full NIAC list is restricted."
+          enumeration: ["x-ray", "ultraviolet"]
+      (NXmonochromator):
+          exists: optional
+          applied(NX_BOOLEAN):
+            doc: "Has the incident beam been monochromatized? "
+          type(NX_CHAR):
+            enumeration: [
+              "Crystal",
+              "Grating",
+              ]
+          crystal(NXcrystal):
+            exists: optional
+            doc: "For crystal based monochromators. Use as many crystals as necessary."
+          grating(NXgrating):
+            exists: optional
+            doc: "For diffraction grating based monochromators. Use as many crystals as necessary."
+          energy(NX_FLOAT):
+            doc: "The scalar energy of the monchromatic beam. This should link to /entry/instrument/beam/incident_energy."      ######how to do links?
+            unit: NX_ENERGY
+          energy_error(NX_FLOAT):
+            doc: "The energy spread FWHM for the corresponding energy in energy. This should link to /entry/instrument/beam/incident_energy_spread."
+            unit: NX_ENERGY
+          transformations(NXtransformations)          ###### should we describe the beam rotation by the mono?
+            exists: optional
+      (NXbeam):
         distance(NX_NUMBER):
-          doc: "Distance of the point of evaluation of the beam from the sample surface."
-          exists: recommended
+          exists: recommended                                                               ### cannot be required, hard to know???
+          doc: "Distance of the point of evaluation of the beam from the sample surface."             
           unit: NX_LENGTH
         incident_energy(NX_FLOAT):
           unit: NX_ENERGY
@@ -68,28 +94,24 @@ NXmpes:
           exists: recommended
           unit: NX_ENERGY
           doc: "The energy spread FWHM for the corresponding energy(ies) in incident_energy. In the case of shot-to-shot variation in the energy spread, this is a 2D array of dimension nP by m (slow to fast) of the spreads of the corresponding energy in incident_energy."
-        incident_polarization(NX_NUMBER):
-          exists: recommended
-          doc: "Incident polarization specified as a Stokes vector."
-          \@units(NX_CHAR):
-            doc: "The units for this observable are not included in the NIAC list. Responsibility on correct formatting and parsing is handed to the user by using ‘NX_ANY’. Correct parsing can still be implemented by using this attribute. Fill with: The unit unidata symbol if the unit has one (Example: ‘T’ for the unit of magnetic flux density tesla). The unit unidata name if the unit has a name (Example: ‘farad’ for capacitance). A string describing the units according to unidata unit operation notation, if the unit is a complex combination of named units and does not have a name. Example: for lightsource brilliance (SI) ‘1/(s.mm2.mrad2)’. Here: SI units are ‘V2/m2’."
+        #incident_polarization(NX_NUMBER):
+        #  exists: recommended
+        #  doc: "Incident polarization specified as a Stokes vector."
+        #  \@units(NX_CHAR):
+        #    doc: "The units for this observable are not included in the NIAC list. Responsibility on correct formatting and parsing is handed to the user by using ‘NX_ANY’. Correct parsing can still be implemented by using this attribute. Fill with: The unit unidata symbol if the unit has one (Example: ‘T’ for the unit of magnetic flux density tesla). The unit unidata name if the unit has a name (Example: ‘farad’ for capacitance). A string describing the units according to unidata unit operation notation, if the unit is a complex combination of named units and does not have a name. Example: for lightsource brilliance (SI) ‘1/(s.mm2.mrad2)’. Here: SI units are ‘V2/m2’."   
       (NXelectronanalyser):
         description(NX_CHAR):
           doc: "Free text description of the type of detector."
-        energy_resolution(NX_FLOAT):
-          exists: recommended
-          doc: "Energy resolution of the analyser with the current setting. May be linked from a NXcalibration."
-          unit: NX_ENERGY
-        fast_axes(NX_CHAR):
-          exists: optional
-          doc: "List of the axes that are acquired symultaneously by the detector. These refer only to the experimental variables recorded by the electron analyser. Other variables such as temperature, manipulator angles etc. are labeled as fast or slow in the data. Examples: Hemispherical in XPS mode: fast_axes: [energy] Hemispherical with channeltron, sweeping energy mode: slow_axes: [energy] axes can be less abstract than this, i.e. [detector_x, detector_y]."
-        slow_axes(NX_CHAR):
-          exists: optional
-          doc: "List of the axes that are acquired by scanning a physical parameter, listed in order of decreasing speed. See fast_axes for examples."
-        COLLECTIONCOLUMN(NXcollectioncolumn):
+      #  fast_axes(NX_CHAR):                                        ### how to use these?
+      #    exists: optional
+      #    doc: "List of the axes that are acquired symultaneously by the detector. These refer only to the experimental variables recorded by the electron analyser. Other variables such as temperature, manipulator angles etc. are labeled as fast or slow in the data. Hemispherical in XPS mode: fast_axes: [energy] Hemispherical with channeltron, sweeping energy mode: slow_axes: [energy] axes can be less abstract than this, i.e. [detector_x, detector_y]."
+      #  slow_axes(NX_CHAR):
+      #    exists: optional
+      #    doc: "List of the axes that are acquired by scanning a physical parameter, listed in order of decreasing speed. See fast_axes for examples."
+        (NXcollectioncolumn):
           scheme(NX_CHAR):
             doc: "Scheme of the electron collection column."
-            enumeration: [
+            enumeration: [                                          ### removed some options from NXmpes
               "Standard",
               "Angular dispersive",
               "Selective area",
@@ -98,11 +120,14 @@ NXmpes:
           mode(NX_CHAR):
             exists: recommended
             doc: "Labelling of the lens setting in use. Names are typically presets provided by the instrument vendor."
+          # projection(NX_CHAR):                                                #### what does this mean?
+          #   exists: recommended               
           tranmission_function(NX_FLOAT):
-            doc: "Transmission function in dependance of the electron kinetic energy. To be used in intensity calibration."
+            exists: recommended
+            doc: "Transmission function in dependance of the electron kinetic energy. To be used in intensity calibration."     ### does NX_FLOAT make sense?
         (NXenergydispersion):
           scheme(NX_CHAR):
-            enumeration:
+            enumeration:                                            ### removed some options from NXmpes
               [
                 "hemispherical",
                 "double hemispherical",
@@ -115,93 +140,122 @@ NXmpes:
             unit: NX_ENERGY
           energy_scan_mode(NX_CHAR):
             doc: "Way of scanning the energy axis."
-            enumeration: [
+            enumeration: [                                    ### could potentially add some more here.
               "fixed analyzer transmission",
               "fixed retarding ratio",
               "fixed energies",
               "snapshot",
+              "imaging",
               "detector voltage scan",
               "constant final state",
               "constant initial state",
               ]          
-          entrance_slit(NXaperture):
+          # entrance_slit(NXaperture):              ### is this level of description necessary -> most items exist in NXaperture already
+          #   exists: optional
+          #   doc: "Size, position, and shape of the entrance slit in dispersive analyzers (aperture generating the energy filtering)."
+          #   description(NX_CHAR):
+          #     exists: optional
+          #     doc: "Type of aperture inserted in the beam."
+          #     enumeration: ["slit", "pinhole", "iris"]
+          #   shape(NX_CHAR):
+          #     exists: optional            
+          #     doc: "Description of the shape of the active part of the aperture, curved or straight for horizontal slits, square or round for pinhole etc."
+          #     enumeration:
+          #       [
+          #         "straight slit",
+          #         "curved slit",
+          #         "pinhole",
+          #         "circle",
+          #         "square",
+          #         "hexagon",
+          #         "octagon",
+          #         "bladed",
+          #         "open",
+          #         "grid"
+          #       ]
+          #   size(NX_NUMBER):
+          #     exists: optional
+          #     doc: "The relevant dimension for the entrance_slit, i.e. slit width, pinhole and iris diameter."
+          # exit_slit(NXaperture):
+          #   exists: optional
+          #   doc: "Size, position and shape of the exit slit in dispersive analyzers."
+          #   description(NX_CHAR):
+          #     exists: optional
+          #     doc: "Type of aperture inserted in the beam."
+          #     enumeration: ["slit", "pinhole", "iris"]
+          #   shape(NX_CHAR):
+          #     exists: optional            
+          #     doc: "Description of the shape of the active part of the aperture, curved or straight for horizontal slits, square or round for pinhole etc."
+          #     enumeration:
+          #       [
+          #         "straight slit",
+          #         "curved slit",
+          #         "pinhole",
+          #         "circle",
+          #         "square",
+          #         "hexagon",
+          #         "octagon",
+          #         "bladed",
+          #         "open",
+          #         "grid"
+          #       ]
+          #   size(NX_NUMBER):
+          #     exists: optional
+          #     doc: "The relevant dimension for the entrance_slit, i.e. slit width, pinhole and iris diameter."
+          # iris(NXaperture):
+          #   exists: optional
+          #   doc: "Size, position, and shape of the iris in dispersive analyzers."
+          #   description(NX_CHAR):
+          #     exists: optional
+          #     doc: "Type of aperture inserted in the beam."
+          #     enumeration: ["slit", "pinhole", "iris"]
+          #   shape(NX_CHAR):
+          #     exists: optional            
+          #     doc: "Description of the shape of the active part of the aperture, curved or straight for horizontal slits, square or round for pinhole etc."
+          #     enumeration:
+          #       [
+          #         "straight slit",
+          #         "curved slit",
+          #         "pinhole",
+          #         "circle",
+          #         "square",
+          #         "hexagon",
+          #         "octagon",
+          #         "bladed",
+          #         "open",
+          #         "grid"
+          #       ]
+          #   size(NX_NUMBER):
+          #     exists: optional
+          #     doc: "The relevant dimension for the entrance_slit, i.e. slit width, pinhole and iris diameter."
+          analyzer_radius(NX_FLOAT):
             exists: optional
-            doc: "Size, position, and shape of the entrance slit in dispersive analyzers (aperture generating the energy filtering)."
-            description(NX_CHAR):
-              doc: "Type of aperture inserted in the beam."
-              enumeration: ["slit", "pinhole", "iris"]
-            shape(NX_CHAR):
-              doc: "Description of the shape of the active part of the aperture, curved or straight for horizontal slits, square or round for pinhole etc."
-              enumeration:
-                [
-                  "curved",
-                  "straight",
-                  "circle",
-                  "square",
-                  "hexagon",
-                  "octagon",
-                  "bladed",
-                ]
-          exit_slit(NXaperture):
-            exists: optional
-            doc: "Size, position and shape of the exit slit in dispersive analyzers."
-            description(NX_CHAR):
-              doc: "Type of aperture inserted in the beam."
-              enumeration: ["slit", "pinhole", "iris"]
-            shape(NX_CHAR):
-              doc: "Description of the shape of the active part of the aperture, curved or straight for horizontal slits, square or round for pinhole etc."
-              enumeration:
-                [
-                  "curved",
-                  "straight",
-                  "circle",
-                  "square",
-                  "hexagon",
-                  "octagon",
-                  "bladed",
-                ]
-          iris(NXaperture):
-            exists: optional
-            doc: "Size, position, and shape of the iris in dispersive analyzers."
-            description(NX_CHAR):
-              doc: "Type of aperture inserted in the beam."
-            shape(NX_CHAR):
-              doc: "Description of the shape of the active part of the aperture, curved or straight for horizontal slits, square or round for pinhole etc."
-              enumeration:
-                [
-                  "curved",
-                  "straight",
-                  "circle",
-                  "square",
-                  "hexagon",
-                  "octagon",
-                  "bladed",
-                ]
-
-        electron_detector(NXdetector):
-          amplifier_type(NX_CHAR):
-            exists: recommended
-            doc: "Type of electron amplifier in the first amplification step."
-            enumeration: ["MCP", "channeltron"]
-            # ToDo: Representation of count rate calibration
-          detector_type(NX_CHAR):
-            exists: recommended
-            doc: "Description of the detector type."
-            enumeration:
-              [
-                "DLD",
-                "Phosphor+CCD",
-                "Phosphor+CMOS",
-                "ECMOS",
-                "Anode",
-                "Multi-anode"]
-          (NXdata): # Raw signal without calibrated axes.
-            exists: recommended
-            \@signal:
-              enumeration: ['raw']
-            raw(NX_NUMBER): # There is a block of numbers named raw.
-              doc: "Raw data before calibration."
-        GEOMETRY(NXtransformations):
+            description: The radius of the hemispherical analyzer in mm (only if hemispherical analyzer is used.)
+        (NXdetector):
+          # amplifier:type(NX_CHAR):
+          #   exists: recommended
+          #   doc: "Description of the detector type."
+          #   enumeration:
+          #     ["MCP", "channeltron"]
+          # detector_type(NX_CHAR):
+          #   exists: recommended
+            # doc: "Description of the detector type."
+            # enumeration:
+            #   [
+            #     "DLD",
+            #     "Phosphor+CCD",
+            #     "Phosphor+CMOS",
+            #     "ECMOS",
+            #     "Anode",
+            #     "Multi-anode"
+            #    ]
+          # (NXdata): # Raw signal without calibrated axes.
+          #   exists: recommended
+          #   \@signal:
+          #     enumeration: ['raw']
+          #   raw(NX_NUMBER): # There is a block of numbers named raw.
+          #     doc: "Raw data before calibration."
+        GEOMETRY(NXtransformations):                ### took this from NXmpes_liqudidjet, how to describe geometry? on indicidual classes? would like to describe angles between different instrument parts here?
           exists: optional
           doc: "Transformations describing the transformation chain of all relevant vectors in the experiment."
           gravity_axis(NX_NUMBER):
@@ -230,94 +284,87 @@ NXmpes:
             \@depends_on(NX_CHAR):
               doc: "This should be a link to /entry/instrument/geometry/analyzer_lens_axis."              
       (NXmanipulator):
-        exists: optional
-        doc: "Manipulator for positioning of the sample."
-        sample_temperature(NX_FLOAT):
-          exists: recommended
-          doc: "Sample temperature during the experiment. Can be a single float or an array for temperature-programmed XPS."
-          unit: NX_TEMPERATURE
+        # exists: optional
+        # doc: "Manipulator for positioning of the sample."
+        # sample_temperature(NX_FLOAT):
+        #   exists: recommended
+        #   doc: "Sample temperature during the experiment. Can be a single float or an array for temperature-programmed XPS."
+        #   unit: NX_TEMPERATURE
         sample_heater(NX_CHAR):
           exists: optional
           doc: "Method of heating the sample. Can be e.g. electron beam heating, laser, halogen lamp"
-        drain_current(NX_FLOAT):
-          exists: recommended
-          doc: "Measured drain current of the sample."
-          unit: NX_CURRENT
-        sample_bias(NX_FLOAT):
-          exists: recommended
-          doc: "External sample bias."
-          unit: NX_CURRENT
-    calibration(NXprocess):
-        doc: "Document an event of data processing, reconstruction, or analysis for this data.
-          Describe the appropriate axis calibrations for your experiment using
-          one or more of the following NXcalibrations"
+        # heater_power(NX_FLOAT):
+        #   exists: optional
+        #   doc: "Power in the heater for temperature control."     
+        # sample_temperature(NX_FLOAT):
+        #   exists: optional
+        #   doc: "Temperature at the closest point to the sample. This field may also be found in NXsample if present."
+        # drain_current(NX_FLOAT):
+        #   exists: recommended
+        #   doc: "Measured drain current of the sample. This field may also be found in NXsample if present."
+        #   unit: NX_CURRENT
+        # sample_bias(NX_FLOAT):
+        #   exists: recommended
+        #   doc: "Possible bias of the sample with respect to analyser ground. This field may also be found in NXsample if present."
+        #   unit: NX_CURRENT
+    (NXprocess):
+        # doc: "Document an event of data processing, reconstruction, or analysis for this data.
+        #   Describe the appropriate axis calibrations for your experiment using
+        #   one or more of the following NXcalibrations."
         energy_calibration(NXcalibration):
-          exists: recommended
-          applied(NX_BOOLEAN):
-            doc: "Has an energy calibration been applied?"
+          # exists: recommended
+          # applied(NX_BOOLEAN):
+          #   doc: "Has an energy calibration been applied?"
           calibration_file(NX_CHAR):
             exists: recommended
             doc: "Name of the calibration file containing the calibration data."
-          calibrated_axis(NX_FLOAT):
-            exists: recommended
-            doc: "This is the calibrated energy axis to be used for data plotting."
+          # calibrated_axis(NX_FLOAT):
+          #   exists: recommended
+          #   doc: "This is the calibrated energy axis to be used for data plotting."
+        # spatial_calibration(NXcalibration):
+        #   exists: optional
+        #   applied(NX_BOOLEAN):
+        #     doc: "Has a spatial calibration been applied?"
+        #   calibrated_axis(NX_FLOAT):
+        #     exists: recommended
+        #     doc: "This is the calibrated spatial axis to be used for data plotting."          
         intensity_calibration(NXcalibration):
           exists: recommended
           applied(NX_BOOLEAN):
-            doc: "Has an intensity calibration been applied? I.e., has the transmission function of the analyzer been taken into account?"
+            doc: "Has an intensity calibration been applied? That is, has the transmission function of the analyzer been taken into account?"
           transmission_function(NX_FLOAT):
             exists: recommended
-            doc: "Transmission function of the electron collection column. This should be a link to /entry/instrument/collectioncolumn/tranmission_function."          
-          calibrated_axis(NX_FLOAT):
-            exists: recommended
-            doc: "This is the calibrated intensity axis to be used for data plotting."            
-        spatial_calibration(NXcalibration):
-          exists: optional
+            doc: "Transmission function of the electron collection column. This should be a link to /entry/instrument/collectioncolumn/tranmission_function."                  
+        energy_reference(NXcalibration):
+          exists: recommended
           applied(NX_BOOLEAN):
-            doc: "Has an spatial calibration been applied?"
+            doc: "Have the energy axes been adjusted (e.g., in cases where samples are not conductive)?"
+          emission_line(NX_CHAR):
+            exists: recommended
+            doc: "Emission line which was used for the calibration."
+          offset(NXfloat):
+            exists: recommended
+            doc: "Offset between measured binding energy and calibrated binding energy of the emission line."
+          binding_energy(NX_float):
+            exists: recommended
+            doc: "The binding energy that the specified emission line appeared at, after adjusting the binding energy scale, in units of eV"            
           calibrated_axis(NX_FLOAT):
             exists: recommended
-            doc: "This is the calibrated spatial axis to be used for data plotting."
+            doc: "This is the calibrated energy axis to be used for data plotting. This should be a link to /entry/data/energy."          ######????
     (NXsample):
-      name:
+      name(NX_CHAR):
         doc: "The user-assigned name of the sample."
-      chemical_formula:
-        exists: recommended
-        doc: "The chemical formula of the sample. For mixtures use the NXsample_component group in NXsample instead."
-      sample_history(NXnote):
-        exists: recommended
-        doc: "A descriptor to keep track of the treatment of the sample before entering the photoemission experiment. Ideally, a full report of the previous operations, in any format (NXnote allows to add pictures, audio, movies). Alternatively, a reference to the location or a unique identifier or other metadata file. In the case these are not available, free-text description."
-      atom_types:
-        exists: recommended
-        doc: "List of comma-separated elements from the periodic table that are contained in the sample. 
-          If the sample substance has multiple components, all elements from each component must be included in `atom_types`."
-      preparation_date(NX_DATE_TIME):
-        exists: recommended
-        doc: "Date of preparation of the sample for the XPS experiment (i.e. cleaving, last annealing)."
-      preparation_description(NXnote):
-        doc: "Description of the surface preparation technique for the XPS experiment, i.e. UHV cleaving, in-situ growth, sputtering/annealing etc. Ideally, a full report of the previous operations, in any format(NXnote allows to add pictures, audio, movies). Alternatively, a reference to the location or a unique identifier or other metadata file. In the case these are not available, free-text description."
-      temperature(NX_FLOAT):
-        doc: "In the case of a fixed temperature measurement this is the scalar temperature of the sample. In the case of an experiment in which the temperature is changed and recoded, this is an array of length m of temperatures. This should be a link to /entry/instrument/manipulator/sample_temperature."
-        unit: NX_TEMPERATURE
-      situation(NX_CHAR):
-        enumeration: 
-          [
-            "vacuum",
-            "inert atmosphere",
-            "oxidising atmosphere",
-            "reducing atmosphere"]
-      # Can be a single number or a log.
-      gas_pressure(NX_FLOAT):
-        unit: NX_PRESSURE
-        doc: "In the case of a fixed pressure measurement this is the scalar pressure. In the case of an experiment in which pressure changes, or anyway it is recorded, this is an array of length m of pressures."
-      gas_phase(NX_CHAR):
-        unit: NX_PRESSURE
-        doc: "In the case of a fixed pressure measurement this is the scalar pressure. In the case of an experiment in which pressure changes, or anyway it is recorded, this is an array of length m of pressures."        
-      electric_field(NX_FLOAT):
-        exists: recommended
-        unit: NX_VOLTAGE
-        doc: "Electric field applied to the sample with respect to ground / the system, e.g., via biasing."
-      type(NX_CHAR):
+      description(NX_CHAR):
+        exists: optional
+        doc: "Full description of the sample."        
+      # chemical_formula:
+      #   exists: recommended
+      #   doc: "The chemical formula of the sample. For mixtures use the NXsample_component group in NXsample instead."
+      # atom_types:
+      #   exists: recommended
+      #   doc: "List of comma-separated elements from the periodic table that are contained in the sample. 
+      #     If the sample substance has multiple components, all elements from each component must be included in `atom_types`."
+      form(NX_CHAR):
         exists: optional
         enumeration:
           [
@@ -326,14 +373,43 @@ NXmpes:
             "pellet",
             "powder",
             "calibration sample",
-          ]        
+          ]
+      # preparation_date(NX_DATE_TIME):
+      #   exists: recommended
+      #   doc: "Date of preparation of the sample for the XPS experiment (i.e. cleaving, last annealing)."
+      # temperature(NX_FLOAT):
+      #   doc: "In the case of a fixed temperature measurement this is the scalar temperature of the sample. In the case of an experiment in which the temperature is changed and recoded, this is an array of length m of temperatures. This should be a link to /entry/instrument/manipulator/sample_temperature."
+      #   unit: NX_TEMPERATURE
+      situation(NX_CHAR):           ### missing some enumerations here
+        enumeration: 
+          [
+            "vacuum",
+            "inert atmosphere",
+            "oxidising atmosphere",
+            "reducing atmosphere",
+            "other"
+            ]
+      gas_pressure(NX_FLOAT):   ######## Can be a single number or a log.
+        unit: NX_PRESSURE
+        doc: "In the case of a fixed pressure measurement this is the scalar pressure. In the case of an experiment in which pressure changes, or anyway it is recorded, this is an array of length m of pressures."
+      # sample_history(NXnote):
+      #   exists: recommended
+      #   doc: "A descriptor to keep track of the treatment of the sample before entering the photoemission experiment. Ideally, a full report of the previous operations, in any format (NXnote allows to add pictures, audio, movies). Alternatively, a reference to the location or a unique identifier or other metadata file. In the case these are not available, free-text description."  
+      # preparation_description(NXnote):
+      #   doc: "Description of the surface preparation technique for the XPS experiment, i.e. UHV cleaving, in-situ growth, sputtering/annealing etc. Ideally, a full report of the previous operations, in any format(NXnote allows to add pictures, audio, movies). Alternatively, a reference to the location or a unique identifier or other metadata file. In the case these are not available, free-text description."
+      gas_phase(NX_CHAR):
+        exists: optional
+        doc: "Description of the constitutent gases of the gas phase."        
+      electric_field(NX_FLOAT):
+        exists: optional
+        unit: NX_VOLTAGE
+        doc: "Electric field applied to the sample with respect to ground / the system, e.g., via biasing."
     (NXdata):
-      doc: "There is an object named data that contains the signal."
-      \@signal:
-        enumeration: ["data"] 
+      # \@signal:
+      #   enumeration: ["data"] 
       \@axes(NX_CHAR):
         doc: "The energy axis. Can be either scanned or derived from scanning of other energy axis."
-      energy(NX_NUMBER):
+      energy(NX_NUMBER):                                                                                    #### how to represent this here?
         \@units(NX_CHAR):
           exists: recommended
         \@long_name(NX_CHAR):
@@ -347,7 +423,7 @@ NXmpes:
               "energy"
             ] 
         step_size(NX_CHAR):
-          exists: recommended
+          exists: optional
           doc: "The step size between two consecutive energy values."
       data(NX_NUMBER): # There is a block of numbers named data.
         doc: "Processed plottable data. Represents a measure of one- or more-dimensional photoemission counts, where
