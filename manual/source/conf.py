@@ -91,7 +91,7 @@ html_sidebars = {
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-html_favicon = "../../../www/download.nexusformat.org/favicon.ico"
+html_favicon = "favicon.ico"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'NeXusManualdoc'
