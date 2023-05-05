@@ -34,10 +34,40 @@ NXbeam(NXobject):
   incident_energy(NX_FLOAT):
     unit: NX_ENERGY
     doc: |
-      Energy carried by each particle of the beam on entering the beamline component
+      Energy carried by each particle of the beam on entering the beamline component.
+      
+      In the case of a monochromatic beam this is the scalar energy.
+      Several other use cases are permitted, depending on the 
+      presence of other incident_energy_X fields.
+      
+      * In the case of a polychromatic beam this is an array of length m of energies, with the relative weights in incident_energy_weights.
+      * In the case of a monochromatic beam that varies shot-to-shot, this is an array of energies, one for each recorded shot.
+        Here, incident_energy_weights and incident_energy_spread are not set.
+      * In the case of a polychromatic beam that varies shot-to-shot,
+        this is an array of length m with the relative weights in incident_energy_weights as a 2D array.
+      * In the case of a polychromatic beam that varies shot-to-shot and where the channels also vary,
+        this is a 2D array of dimensions nP by m (slow to fast) with the relative weights in incident_energy_weights as a 2D array.
+      
+      Note, variants are a good way to represent several of these use cases in a single dataset,
+      e.g. if a calibrated, single-value energy value is available along with the original spectrum from which it was calibrated.
     dimensions:
       rank: 1
       dim: [[1, m]]
+  incident_energy_spread(NX_NUMBER):
+    unit: NX_ENERGY
+    doc: |
+      The energy spread FWHM for the corresponding energy(ies) in incident_energy. In the case of shot-to-shot variation in
+      the energy spread, this is a 2D array of dimension nP by m
+      (slow to fast) of the spreads of the corresponding
+      wavelength in incident_wavelength.
+  incident_energy_weights(NX_NUMBER):
+    unit: NX_ENERGY
+    doc: |
+      In the case of a polychromatic beam this is an array of length m of the relative
+      weights of the corresponding energies in incident_energy. In the case of a
+      polychromatic beam that varies shot-to-shot, this is a 2D array of dimensions np
+      by m (slow to fast) of the relative weights of the corresponding energies in
+      incident_energy.
   final_energy(NX_FLOAT):
     unit: NX_ENERGY
     doc: |
@@ -143,14 +173,32 @@ NXbeam(NXobject):
   incident_polarization(NX_NUMBER):
     unit: NX_ANY
     doc: |
-      Incident polarization as a Stokes vector on entering beamline component
+      Incident polarization as a Stokes vector
+      on entering beamline component
     dimensions:
       rank: 2
       dim: [[1, nP], [2, 2]]
+    \@units:
+      type: NX_CHAR
+      doc: |
+        The units for this observable are not included in the NIAC list. 
+        Responsibility on correct formatting and parsing is handed to the user
+        by using `NX_ANY`. Correct parsing can still be implemented by using
+        this attribute.
+        
+        | Fill with:
+        
+        * The unit unidata symbol if the unit has one (Example: T for the unit of magnetic flux density tesla).
+        * The unit unidata name if the unit has a name (Example: farad for capacitance).
+        * A string describing the units according to unidata unit operation notation, if the unit is a complex combination of named units and
+        does not have a name.
+        
+        Example: for lightsource brilliance (SI) 1/(s.mm2.mrad2).
+        Here: SI units are V2/m2.
   final_polarization(NX_NUMBER):
     unit: NX_ANY
     doc: |
-      Polarization as Strokes vector on leaving beamline component
+      Polarization as Stokes vector on leaving beamline component
     dimensions:
       rank: 2
       dim: [[1, nP], [2, 2]]
@@ -212,7 +260,7 @@ NXbeam(NXobject):
       dim: [[1, nP]]
   pulse_energy(NX_FLOAT):
     unit: NX_ENERGY
-    doc: |       
+    doc: |
       Energy of a single pulse at the diagnostic point
   average_power(NX_FLOAT):
     unit: NX_POWER
@@ -220,48 +268,48 @@ NXbeam(NXobject):
       Average power at the diagnostic point
   fluence(NX_FLOAT):
     unit: NX_ANY
-    doc: |       
+    doc: |
       Incident fluence at the diagnostic point
     \@units:
       type: NX_CHAR
-      doc: |         
-        Here':' SI units are ''J/m2'', customary ''mJ/cm2''.
+      doc: |
+        Here: SI units are 'J/m2', customary 'mJ/cm2'.
   pulse_duration(NX_FLOAT):
     unit: NX_TIME
-    doc: |       
+    doc: |
       FWHM duration of the pulses at the diagnostic point
   frog_trace(NX_FLOAT):
-    doc: |       
+    doc: |
       FROG trace of the pulse.
     dimensions:
       rank: 2
       dim: [[1, nx], [2, ny]]
   frog_delays(NX_FLOAT):
     unit: NX_TIME
-    doc: |       
+    doc: |
       Horizontal axis of a FROG trace, i.e. delay.
     dimensions:
       rank: 1
       dim: [[1, nx]]
   frog_frequencies(NX_FLOAT):
     unit: NX_FREQUENCY
-    doc: |       
+    doc: |
       Vertical axis of a FROG trace, i.e. frequency.
     dimensions:
       rank: 1
       dim: [[1, ny]]
   chirp_type(NX_CHAR):
-    doc: |       
+    doc: |
       The type of chirp implemented
   chirp_GDD(NX_FLOAT):
     unit: NX_TIME
-    doc: |       
+    doc: |
       Group delay dispersion of the pulse for linear chirp
   (NXdata):
     doc: |
-      Distribution of beam with respect to relevant variable e.g. wavelength. This is mainly
-      useful for simulations which need to store plottable information at each beamline
-      component.
+      Distribution of beam with respect to relevant variable e.g. wavelength.
+      This is mainly useful for simulations which need to store plottable
+      information at each beamline component.
   \@default:
     doc: |
       .. index:: plotting
