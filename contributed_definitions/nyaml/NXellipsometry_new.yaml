@@ -1,0 +1,210 @@
+# 05/2023
+# Application definition for ellipsometry based on NXopt
+
+# Open questions:
+# * Are the symbols inherited from NXopt or do we need to define them here?
+
+# To do:
+# [ ] Harmonize NXopt and NXellipsometry
+
+category: application
+doc: |
+  An application definition for ellipsometry.
+symbols:
+  doc: Variables used throughout the document, e.g. dimensions or parameters.
+  N_spectrum: |
+    Length of the spectrum array (e.g. wavelength or energy) of the measured
+    data.
+  N_sensors: |
+    Number of sensors used to measure parameters that influence the sample,
+    such as temperature or pressure.
+  N_measurements: |
+    Number of measurements (1st dimension of measured_data array). This is
+    equal to the number of parameters scanned. For example, if the experiment
+    was performed at three different temperatures and two different pressures
+    N_measurements = 2*3 = 6.
+  N_incident_angles: Number of angles of incidence of the incident beam.
+  N_observables: |
+    Number of observables that are saved in a measurement. e.g. one for
+    intensity, reflectivity or transmittance, two for Psi and Delta etc. This
+    is equal to the second dimension of the data array 'measured_data' and the
+    number of column names.
+
+NXellipsometry(Xopt):
+  (NXentry):
+    doc: |
+      This is the application definition describing ellipsometry experiments.
+
+      Such experiments may be as simple as identifying how a reflected
+      beam of light with a single wavelength changes its polarization state,
+      to a variable angle spectroscopic ellipsometry experiment.
+
+      The application definition defines:
+
+      * elements of the experimental instrument
+      * calibration information if available
+      * parameters used to tune the state of the sample
+      * sample description
+      
+    definition:
+      doc: An application definition describing a general optical experiment.
+      \@version:
+        doc: |
+          Version number to identify which definition of this application
+          definition was used for this entry/data.
+      \@url:
+        doc: |
+          URL where to find further material (documentation, examples) relevant
+          to the application definition.
+      enumeration: [NXellipsometry]
+    
+    (NXinstrument):
+      doc: |
+        General properties of the ellipsometry equipment including information
+        about the instrument (such as model, company etc.), information about
+        the calibration of the instrument, elements of the beam path including
+        the excitation or light source and the detector unit, the sample stage
+        (plus the sample environment, which also includes sensors used to
+        monitor external conditions) and elements of the beam path.
+
+        Meta data describing the sample should be specified in ENTRY/SAMPLE
+        outside of ENTRY/INSTRUMENT.
+      ellipsometry_type:
+        doc: What type of ellipsometry was used? See Fujiwara Table 4.2.
+        enumeration:
+          [
+            rotating analyzer,
+            rotating analyzer with analyzer compensator,
+            rotating analyzer with polarizer compensator,
+            rotating polarizer,
+            rotating compensator on polarizer side,
+            rotating compensator on analyzer side,
+            modulator on polarizer side,
+            modulator on analyzer side,
+            dual compensator,
+            phase modulation,
+            imaging ellipsometry,
+            null ellipsometry,
+          ]
+      incident_light(NXbeam_path):
+        doc: |
+          Describes the light source and the beam path between the source and
+          the sample.
+          If a beam splitter (i.e. a device that splits the incoming beam into
+          two or more beams) is part of the beam path, two or more NXbeam_path
+          fields may be needed to fully describe the beam paths and the correct
+          sequence of the beam path elements.
+        LIGHT_source(NXsource):
+          doc: |
+            Specify the used light source and its properties. In case of a
+            pump-probe setup, use one such field for the source of the probe
+            and one for the pump beam. It is suggested to use the names
+            'probe_source' or 'pump_source' instead of 'LIGHT_source'.
+          (NXopt_source):
+            doc: Specify the properties of the optical source.
+        (NXmonochromator):
+          exists: optional
+          doc: |
+            Monochromator placed before the sample. If the monochromator is
+            placed after the sample (before the detector), the information
+            should be provided in 'INSTRUMENT/detection/MONOCHROMATOR'.
+            The spectral values (wavelength, energy, wavenumber etc.) should
+            be provided in 'data/SPECTRUM'.
+          (NXgrating):
+            exists: optional
+            doc: "Diffraction grating, as could be used in a monochromator.
+              If two or more gratings were used, define the angular
+              dispersion and the wavelength range (min/max wavelength)
+              for each grating and make sure that the wavelength ranges
+              do not overlap. The dispersion should be defined for the
+              entire wavelength range of the experiment."
+            angular_dispersion(NX_NUMBER):
+              exists: optional
+              doc: "Dispersion of the grating in nm/mm used."
+            grating_wavelength_min(NX_NUMBER):
+              exists: optional
+              doc: "Minimum wavelength of the grating."
+              unit: NX_LENGTH
+            grating_wavelength_max(NX_NUMBER):
+              exists: optional
+              doc: "Maximum wavelength of the grating."
+              unit: NX_LENGTH
+          spectral_resolution(NX_NUMBER):
+            exists: optional
+            doc: "Spectral resolution of the instrument."
+            unit: NX_WAVENUMBER
+          (NXslit):
+            exists: optional
+            doc: "Define the width of the monochromator slit in the subfield x_gap."
+            fixed_slit(NX_BOOLEAN):
+              exists: optional
+              doc: "Was the slit width fixed?"
+            max_gap(NX_NUMBER):
+              exists: optional
+              doc: "If slit width was not fixed, define the maximum slit width."
+              unit: NX_LENGTH
+        focussing_probes(NX_BOOLEAN):
+          doc: Were focussing probes (lenses) used?
+        data_correction(NX_BOOLEAN):
+          exists: optional
+          doc: |
+            Were the recorded data corrected by the window effects of the lenses?
+        angular_spread(NX_NUMBER):
+          exists: optional
+          doc: Specify the angular spread caused by the focussing probes
+          unit: NX_ANGLE
+      detection(NXbeam_path):
+        doc: |
+          Describes the beam path between the sample and the detector unit, as
+          well as the detector itself. A detector can be a photomultiplier
+          (PMT), a CCD in a camera, or an array in a spectrometer. If so, the
+          whole detector unit goes in here. It is also possible that more than
+          one detector are part of the setup. Use as many NXdetector fields as
+          needed.
+
+          If a beam splitter (i.e. a device that splits the incoming beam into
+          two or more beams) is part of the beam path, two or more NXbeam_path
+          fields may be needed to fully describe the beam paths and the correct
+          sequence of the beam path elements.
+        (NXmonochromator):
+          exists: optional
+          doc: |
+            The spectroscope element of the ellipsometer before the detector,
+            but often integrated to form one closed unit.
+            If the monochromator is placed before the sample, it should be
+            specified in 'INSTRUMENT/incident_light/MONOCHROMATOR'.
+            The spectral values (wavelength, energy, wavenumber etc.) should
+            be provided in 'data/SPECTRUM'.
+            Information on the dispersive element can be specified in the
+            subfield GRATING. Note that different gratings might be used for
+            different wavelength ranges. The dispersion of the grating for each
+            wavelength range can be stored in grating_dispersion.
+    data(NXprocess):
+      doc: |
+        Measured data, data errors, and varied parameters. If reference data
+        were measured they should be considered a separate experiment and a
+        link to its NeXus file should be added in reference_data_link.
+      data_type:
+        doc: |
+          Select which type of data was recorded, for example Psi and Delta,
+          Mueller matrix, Jones matrix etc.
+          It is possible to have multiple selections. The enumeration list
+          depends on the type of experiment and may differ for different
+          application definitions.
+        enumeration:
+          [
+            Psi/Delta,
+            tan(Psi)/cos(Delta),
+            Mueller matrix,
+            Jones matrix,
+            N/C/S,
+            raw data,
+          ]
+      column_names:
+        doc: |
+          Please list in this array the column names used in your actual data.
+          That is ['Psi', 'Delta'] or ['MM1', 'MM2', 'MM3', ..., 'MM16'] for a
+          full Mueller matrix, etc.
+        dimensions:
+          rank: 1
+          dim: [[1, N_observables]] 
