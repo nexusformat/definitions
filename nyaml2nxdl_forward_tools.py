@@ -45,7 +45,7 @@ DOM_COMMENT = ("\n"
                "# This library is free software; you can redistribute it and/or\n"
                "# modify it under the terms of the GNU Lesser General Public\n"
                "# License as published by the Free Software Foundation; either\n"
-               "# version 2 of the License, or (at your option) any later version.\n"
+               "# version 3 of the License, or (at your option) any later version.\n"
                "#\n"
                "# This library is distributed in the hope that it will be useful,\n"
                "# but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
@@ -67,6 +67,41 @@ NX_UNIT_TYPES = nexus.get_nx_units()
 COMMENT_BLOCKS: CommentCollector
 
 
+def check_for_dom_comment_in_yaml():
+    """Check the yaml file has dom comment or dom comment needed to be hard coded.
+    """
+    dignature_keyword_list = ['NeXus',
+                              'GNU Lesser General Public',
+                              'Free Software Foundation',
+                              'Copyright (C)',
+                              'WITHOUT ANY WARRANTY']
+
+    # Check for dom comments in first three comments
+    dom_comment = ''
+    dom_comment_ind = 1
+    for ind, comnt in enumerate(COMMENT_BLOCKS[0:5]):
+        cmnt_list = comnt.get_comment_text()
+        if len(cmnt_list) == 1:
+            text = cmnt_list[0]
+        else:
+            continue
+        dom_comment = text
+        dom_comment_ind = ind
+        for keyword in dignature_keyword_list:
+            if keyword not in text:
+                dom_comment = ''
+                break
+        if dom_comment:
+            break
+
+    # deactivate the root dom_comment, So that the corresponding comment would not be
+    # considered as comment for definition xml element.
+    if dom_comment:
+        COMMENT_BLOCKS.remove_comment(dom_comment_ind)
+
+    return dom_comment
+
+
 def yml_reader(inputfile):
     """
     This function launches the LineLoader class.
@@ -78,6 +113,10 @@ def yml_reader(inputfile):
         loaded_yaml = loader.get_single_data()
     COMMENT_BLOCKS = CommentCollector(inputfile, loaded_yaml)
     COMMENT_BLOCKS.extract_all_comment_blocks()
+    dom_cmnt_frm_yaml = check_for_dom_comment_in_yaml()
+    global DOM_COMMENT
+    if dom_cmnt_frm_yaml:
+        DOM_COMMENT = dom_cmnt_frm_yaml
     return loaded_yaml
 
 
@@ -168,7 +207,7 @@ def check_for_mapping_char_other(text):
     for key, val in escape_reverter.items():
         if key in text:
             text = text.replace(key, val)
-    return str(text)
+    return str(text).strip()
 
 
 def xml_handle_doc(obj, value: str,

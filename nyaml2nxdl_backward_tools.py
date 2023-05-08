@@ -99,28 +99,27 @@ def parse(filepath):
 def handle_mapping_char(text, depth=-1, skip_n_line_on_top=False):
     """Check for ":" char and replace it by "':'". """
 
-    # This escape chars and sepeerator ':' is not allowed in yaml library
     escape_char = get_yaml_escape_char_dict()
     for esc_key, val in escape_char.items():
         if esc_key in text:
             text = text.replace(esc_key, val)
     if not skip_n_line_on_top:
         if depth > 0:
-            text = add_new_line_on_top(text, depth)
+            text = add_new_line_with_pipe_on_top(text, depth)
         else:
             raise ValueError("Need depth size to co-ordinate text line in yaml file.")
     return text
 
 
-def add_new_line_on_top(text, depth):
+def add_new_line_with_pipe_on_top(text, depth):
     """
-    Return char list for what we get error in converter. After adding a
-    new line at the start of text the eroor is solved.
+    Return modified text for what we get error in converter, such as ':'. After adding a
+    new line at the start of text the error is solved.
     """
     char_list_to_add_new_line_on_top_of_text = [":"]
     for char in char_list_to_add_new_line_on_top_of_text:
         if char in text:
-            return '\n' + depth * DEPTH_SIZE + text
+            return '|' + '\n' + depth * DEPTH_SIZE + text
     return text
 
 
@@ -217,10 +216,10 @@ class Nxdl2yaml():
                                 self.handle_not_root_level_doc(depth,
                                                                tag=child.attrib['name'],
                                                                text=symbol_doc.text))
-        self.stroe_root_level_comments('symbol_doc_comments', sbl_doc_cmnt_list)
-        self.stroe_root_level_comments('symbol_comments', symbol_cmnt_list)
+        self.store_root_level_comments('symbol_doc_comments', sbl_doc_cmnt_list)
+        self.store_root_level_comments('symbol_comments', symbol_cmnt_list)
 
-    def stroe_root_level_comments(self, holder, comment):
+    def store_root_level_comments(self, holder, comment):
         """Store yaml text or section line and the comments inteded for that lines or section"""
 
         self.root_level_comment[holder] = comment
@@ -864,7 +863,7 @@ class Nxdl2yaml():
                         last_comment = self.comvert_to_ymal_comment(depth * DEPTH_SIZE, child.text)
                         remove_cmnt_n = child
                     if tag_tmp == 'doc':
-                        self.stroe_root_level_comments('root_doc', last_comment)
+                        self.store_root_level_comments('root_doc', last_comment)
                         last_comment = ''
                         self.handle_root_level_doc(child)
                         node.remove(child)
@@ -872,7 +871,7 @@ class Nxdl2yaml():
                             node.remove(remove_cmnt_n)
                             remove_cmnt_n = None
                     if tag_tmp == 'symbols':
-                        self.stroe_root_level_comments('symbols', last_comment)
+                        self.store_root_level_comments('symbols', last_comment)
                         last_comment = ''
                         self.handle_symbols(depth, child)
                         node.remove(child)

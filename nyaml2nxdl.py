@@ -26,13 +26,36 @@ import os
 import xml.etree.ElementTree as ET
 
 import click
-
+from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import (get_sha256_hash,
+                                                    extend_yamlfile_with_comment,
+                                                    separate_hash_yaml_and_nxdl)
 from pynxtools.nyaml2nxdl.nyaml2nxdl_forward_tools import nyaml2nxdl, pretty_print_xml
 from pynxtools.nyaml2nxdl.nyaml2nxdl_backward_tools import (Nxdl2yaml,
                                                             compare_niac_and_my)
 
 
 DEPTH_SIZE = "    "
+
+
+def generate_nxdl_or_retrieve_nxdl(yaml_file, out_xml_file, verbose):
+    """
+        Generate yaml, nxdl and hash.
+        if the extracted hash is exactly the same as producd from generated yaml then
+        retrieve the nxdl part from provided yaml.
+        Else, generate nxdl from separated yaml with the help of nyaml2nxdl function
+    """
+    pa_path, rel_file = os.path.split(yaml_file)
+    sep_yaml = pa_path + f'temp_{rel_file}'
+    hash_found = separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, out_xml_file)
+
+    if hash_found:
+        gen_hash = get_sha256_hash(sep_yaml)
+        if hash_found == gen_hash:
+            os.remove(sep_yaml)
+            return
+
+    nyaml2nxdl(sep_yaml, out_xml_file, verbose)
+    os.remove(sep_yaml)
 
 
 # pylint: disable=too-many-locals
@@ -159,7 +182,7 @@ def launch_tool(input_file, verbose, append, check_consistency):
 
     if ext == 'yaml':
         xml_out_file = raw_name + '.nxdl.xml'
-        nyaml2nxdl(input_file, xml_out_file, verbose)
+        generate_nxdl_or_retrieve_nxdl(input_file, xml_out_file, verbose)
         if append:
             append_yml(raw_name + '.nxdl.xml',
                        append,
@@ -176,12 +199,22 @@ def launch_tool(input_file, verbose, append, check_consistency):
             yaml_out_file = raw_name + '_parsed' + '.yaml'
             converter = Nxdl2yaml([], [])
             converter.print_yml(input_file, yaml_out_file, verbose)
+            # Append nxdl.xml file with yaml output file
+            yaml_hash = get_sha256_hash(yaml_out_file)
+            # Lines as divider between yaml and nxdl
+            top_lines = [('\n# ++++++++++++++++++++++++++++++++++ SHA HASH'
+                         ' ++++++++++++++++++++++++++++++++++\n'),
+                         f'# {yaml_hash}\n']
+
+            extend_yamlfile_with_comment(yaml_file=yaml_out_file,
+                                         file_to_be_appended=input_file,
+                                         top_lines_list=top_lines)
         else:
             append_yml(input_file, append, verbose)
         # Taking care of consistency running
         if check_consistency:
             xml_out_file = raw_name + '_consistency.' + ext
-            nyaml2nxdl(yaml_out_file, xml_out_file, verbose)
+            generate_nxdl_or_retrieve_nxdl(yaml_out_file, xml_out_file, verbose)
             os.remove(yaml_out_file)
     else:
         raise ValueError("Provide correct file with extension '.yaml or '.nxdl.xml")

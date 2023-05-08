@@ -27,6 +27,7 @@ which details a hierarchy of data/metadata elements
 # Yaml library does not except the keys (escapechar "\t" and yaml separator ":")
 # So the corresponding value is to skip them and
 # and also carefull about this order
+import hashlib
 from yaml.composer import Composer
 from yaml.constructor import Constructor
 
@@ -34,7 +35,12 @@ from yaml.nodes import ScalarNode
 from yaml.resolver import BaseResolver
 from yaml.loader import Loader
 
-ESCAPE_CHAR_DICT = {"\t": "    "}
+# NOTE: If any one change one of the bellow dict please change it for both
+ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    ",
+                            "\':\'": ":"}
+
+ESCAPE_CHAR_DICT_IN_XML = {"    ": "\t",
+                           "\':\'": ":"}
 
 
 class LineLoader(Loader):  # pylint: disable=too-many-ancestors
@@ -67,15 +73,13 @@ class LineLoader(Loader):  # pylint: disable=too-many-ancestors
 
 def get_yaml_escape_char_dict():
     """Get escape char and the way to skip them in yaml."""
-    return ESCAPE_CHAR_DICT
+    return ESCAPE_CHAR_DICT_IN_YAML
 
 
 def get_yaml_escape_char_reverter_dict():
     """To revert yaml escape char in xml constructor from yaml."""
-    temp_dict = {}
-    for key, val in ESCAPE_CHAR_DICT.items():
-        temp_dict[val] = key
-    return temp_dict
+
+    return ESCAPE_CHAR_DICT_IN_XML
 
 
 def type_check(nx_type):
@@ -143,3 +147,72 @@ def nx_name_type_resolving(tmp):
     typ = ''
     nam = tmp
     return nam, typ
+
+
+def get_sha256_hash(file_name):
+    """Generate a sha256_hash for a given file.
+    """
+    sha_hash = hashlib.sha256()
+
+    with open(file=file_name, mode='rb',) as file_obj:
+        # Update hash for each 4k block of bytes
+        for b_line in iter(lambda: file_obj.read(4096), b""):
+            sha_hash.update(b_line)
+    return sha_hash.hexdigest()
+
+
+def extend_yamlfile_with_comment(yaml_file,
+                                 file_to_be_appended,
+                                 top_lines_list=None):
+    """Extend yaml file by the file_to_be_appended as comment.
+    """
+
+    with open(yaml_file, mode='a+', encoding='utf-8') as f1_obj:
+        if top_lines_list:
+            for line in top_lines_list:
+                f1_obj.write(line)
+
+        with open(file_to_be_appended, mode='r', encoding='utf-8') as f2_obj:
+            lines = f2_obj.readlines()
+            for line in lines:
+                f1_obj.write(f"# {line}")
+
+
+def separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, sep_xml):
+    """Separate the provided yaml file into yaml, nxdl and hash if yaml was extended with
+    nxdl at the end of yaml by
+        '\n# ++++++++++++++++++++++++++++++++++ SHA HASH \
+            ++++++++++++++++++++++++++++++++++\n'
+         # <has value>'
+    """
+    sha_hash = ''
+    with open(yaml_file, 'r', encoding='utf-8') as inp_file:
+        lines = inp_file.readlines()
+        # file to write yaml part
+        with open(sep_yaml, 'w', encoding='utf-8') as yml_f_ob, \
+                open(sep_xml, 'w', encoding='utf-8') as xml_f_ob:
+
+            last_line = ''
+            write_on_yaml = True
+            for ind, line in enumerate(lines):
+                if ind == 0:
+                    last_line = line
+                # Write in file when ensured that the nest line is not with '++ SHA HASH ++'
+                elif '++ SHA HASH ++' not in line and write_on_yaml:
+                    yml_f_ob.write(last_line)
+                    last_line = line
+                elif '++ SHA HASH ++' in line:
+                    write_on_yaml = False
+                    last_line = ''
+                elif not write_on_yaml and not last_line:
+                    # The first line of xml file has been found. Onward write lines directly
+                    # into xml file.
+                    if not sha_hash:
+                        sha_hash = line.split('# ', 1)[-1].strip()
+                    else:
+                        xml_f_ob.write(line[2:])
+            # If the yaml fiile does not contain any hash for nxdl then we may have last line.
+            if last_line:
+                yml_f_ob.write(last_line)
+
+    return sha_hash

@@ -27,6 +27,9 @@ Options:
    --input-file TEXT     The path to the input data file to read.
    --append TEXT         Parse xml NeXus file and append to specified base class,
                          write the base class name with no extension.
+   --check-consistency   Check consistency by generating another version of the input file.
+                         E.g. for input file: NXexample.nxdl.xml the output file
+                         NXexample_consistency.nxdl.xml.
    --verbose             Addictional std output info is printed to help debugging.
    --help                Show this message and exit.
 
