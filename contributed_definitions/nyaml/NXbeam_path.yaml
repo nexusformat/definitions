@@ -1,17 +1,13 @@
 # 05/2023
 # A draft of a new base class to describe a beam path consisting of one or
 # more optical elements (e.g. a beam path in a luminescence setup).
-# ------------------------------------------------------------------------------
-# Comments:
-# *
-# ------------------------------------------------------------------------------
+
 # To do:
 # [ ] Harmonize common fields/classes among base classes used in NXbeam_path,
 #     e.g. NXshape in NXbeam_splitter and NXpolarizer_opt, or NXsample used for
 #     describing substrates and coatings etc.
 # [ ] How to describe a setup or beam path? Order/sequence defined by
-#     NXtransformations? --> discussion needed
-# ______________________________________________________________________________
+#     NXtransformations? => discussion needed
 
 category: base
 symbols:
@@ -55,13 +51,42 @@ NXbeam_path:
       field, i.e. a link to the first element in the beam path. 
       Example: /entry/instrument/beam_path/radiation_source.
   
+  (NXsetup): # or NXorder, NXopt_setup, ...
+    exists: optional
+    doc: |
+      Specify the order of the optical elements by defining a dependency chain.
+      Each element or device through which the beam passes needs to have an
+      entry in this class, and the element's or device's name must be
+      consistend with the name outside of this class (i.e. the field in
+      NXbeam_path in which its properties are provided)
+      For each element, a '@depends_on' attribute should be used to state the
+      position of the element in the beam path by pointing to the previous
+      element. For the very first element, use the string "." instead.
+    ELEMENT:
+      doc: |
+        For each element in the beam path, one such field must exist with a
+        '@depends_on' attribute defined to specify its position in the beam
+        path. Note that also 'NXopt/ENTRY/INSTRUMENT/sample_stage' and windows
+        ('NXopt/ENTRY/INSTRUMENT/sample_stage/entry_window' and
+        'NXopt/ENTRY/INSTRUMENT/sample_stage/exit_window') may be added to the
+        dependency chain, i.e. may have an entry in this class even if they are
+        not described in the beam path.
+        ELEMENT is a place holder for the name of an optical beam path element.
+        Note that the name of this field must be exactly the same as the
+        element's field name.
+      \@depends_on:
+        doc: Add a link to the previous beam path element.
+      (NXtransformations):
+        exists: optional
+
   (NXtransformations):
   # Possibilities:
   # (1) Modify NXtransformations to include properties that modify the light beam
   # (e.g. polarization state) instead (or in addition) to transformations like
   # translation and rotation
   # (2) Base class similar to NXtransformations but for changes of optical
-  # properties (e.g. polarization state)
+  # properties (e.g. polarization state).
+    exists: optional
     doc: |
       Specify the order of the optical elements by defining a dependency chain.
       For each element, a '@depends_on' attribute should be used to state the
@@ -137,6 +162,7 @@ NXbeam_path:
     (NXbio_source): # input for experts from that field needed
     # is NXsource sufficient for x-rays?
     (NXopt_source):
+      doc: Specify the properties of the optical source.
       lifespan(NX_NUMBER):
         exists: recommended
         doc: Lifespan of the excitation (typically provided in hours).
