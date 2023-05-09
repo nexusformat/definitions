@@ -154,19 +154,25 @@ def test_fileline_error():
     In this test the yaml fileline in the error message is tested.
     """
     test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError1.yaml'
+    out_nxdl = 'tests/data/nyaml2nxdl/temp_NXfilelineError1.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', test_yml_file])
     assert result.exit_code == 1
     assert '13' in str(result.exception)
+    os.remove(out_nxdl)
 
     test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError2.yaml'
+    out_nxdl = 'tests/data/nyaml2nxdl/temp_NXfilelineError2.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', test_yml_file])
     assert result.exit_code == 1
     assert '21' in str(result.exception)
+    os.remove(out_nxdl)
 
     test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError3.yaml'
+    out_nxdl = 'tests/data/nyaml2nxdl/temp_NXfilelineError3.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', test_yml_file])
     assert result.exit_code == 1
     assert '25' in str(result.exception)
+    os.remove(out_nxdl)
 
     sys.stdout.write('Test on xml -> yml fileline error handling okay.\n')
 
