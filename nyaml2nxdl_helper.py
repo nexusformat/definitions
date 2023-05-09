@@ -28,6 +28,7 @@ which details a hierarchy of data/metadata elements
 # So the corresponding value is to skip them and
 # and also carefull about this order
 import hashlib
+import os
 from yaml.composer import Composer
 from yaml.constructor import Constructor
 
@@ -214,5 +215,7 @@ def separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, sep_xml):
             # If the yaml fiile does not contain any hash for nxdl then we may have last line.
             if last_line:
                 yml_f_ob.write(last_line)
+    if not sha_hash:
+        os.remove(sep_xml)
 
     return sha_hash

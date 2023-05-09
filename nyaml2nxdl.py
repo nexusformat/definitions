@@ -45,7 +45,7 @@ def generate_nxdl_or_retrieve_nxdl(yaml_file, out_xml_file, verbose):
         Else, generate nxdl from separated yaml with the help of nyaml2nxdl function
     """
     pa_path, rel_file = os.path.split(yaml_file)
-    sep_yaml = pa_path + f'temp_{rel_file}'
+    sep_yaml = os.path.join(pa_path, f'temp_{rel_file}')
     hash_found = separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, out_xml_file)
 
     if hash_found:
@@ -132,7 +132,7 @@ def split_name_and_extension(file_name):
     Split file name into extension and rest of the file name.
     return file raw nam and extension
     """
-    parts = file_name.rsplit('.', 2)
+    parts = file_name.rsplit('.', 3)
     if len(parts) == 2:
         raw = parts[0]
         ext = parts[1]
