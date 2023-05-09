@@ -1,5 +1,7 @@
 #Pincelli, Rettig, Arora at fhi-berlin.mpg.de, Dobener at hu-berlin.de, 06/2022
-#Draft version of a NeXus application definition for photoemission,
+#Draft version of a NeXus application definition for angle resolved photoemission.
+#This appdef aims to describe data produced from hemispherical anlysers, 
+#with at least an angular coordinate and one an energy coordinate.
 #It is designed to be extended by other application definitions
 #with higher granularity in the data description.
 
@@ -27,6 +29,26 @@ NXmpes_arpes(NXmpes):
               "Deflector",
             ]
         (NXenergydispersion):
+          scheme:
+            enumeration: ["hemispherical"]
+          pass_energy(NX_NUMBER):
+            unit: NX_ENERGY
+          center_energy(NX_NUMBER):
+            unit: NX_ENERGY
+          diameter(NX_NUMBER):
+            unit: NX_LENGTH
+          energy_scan_mode:
+          entrance_slit(NXaperture):
+            shape:
+              enumeration: [  
+                "straight slits",
+                "curved slits",
+                "open",
+                "grid",
+              ]
+            (NXtransformations): # Do we need to require the existence/use of a particular 
+            #rotation to determine slit orientation?
+              doc: "Set of transformations, describing the relative orientation of the slits with respect to the beam coordinate system (.)."
         (NXdetector):
           (NXdata): # Raw signal without calibrated axes.
             exists: recommended
@@ -37,7 +59,7 @@ NXmpes_arpes(NXmpes):
       depends_on(NX_CHAR):
         doc: "Reference to the transformation describing the orientation of the analyzer relative to the beam."
       (NXtransformations):
-        doc: "Set of transformations, describing the relative orienation of the analyzer with respect to the beam coordinate system (.)."
+        doc: "Set of transformations, describing the relative orientation of the analyzer with respect to the beam coordinate system (.)."
     (NXsample):
       situation:
         enumeration: ["vacuum"]
@@ -49,8 +71,28 @@ NXmpes_arpes(NXmpes):
     (NXdata):
       \@signal:
         enumeration: ["data"] # There is an object named data that contains the signal
-      \@axes:
-        enumeration: ["[fastAngle, Energy]", "[fastAngle, slowAngle, Energy]"]
+      \@axes: # There are at least two dimensions, an energy & (at least) an angular coordinate
+        enumeration: ["[energy, angular1]"]
+      \@energy_indices: # energy is a 1D array
+        enumeration: [1]
+      \@angular1_indices: # angular is a 1D array
+        enumeration: [1]
+      \@angular1_depends(NX_CHAR): # In ARPES, the angular coordinate can be generated in different ways.
+      # It can be a detector axis in a 2D detector, or scanned by changing the angle of a manipulator.
+      # We propose a structure similar to depends_on(NX_CHAR) of NXtransformations to reconstruct the
+      # metadata path that produced the angular coordinate. This allows to reconstruct the geometry programmatically.
+        doc: "Points to the path to a field defining the axis on which the angular axis depends. 
+          For example:
+          @angular1_depends: '/entry/sample/transformations/rot_phi' for a manipulator angular scan
+          @angular1_depends: '/entry/instrument/detector/sensor_x' for a 2D detector
+          @angular1_depends: '/entry/instrument/collectioncolumn/deflector' for a deflector scan
+          @angular1_depends: '/entry/process/calibration/angular_calibration/calibrated_axis' for a preprocessed axis."
+      \@energy_depends(NX_CHAR): # Similarly, energy can be dispersed according to different strategies
+        doc: "Points to the path to a field defining the axis on which the energy axis depends. 
+          For example:
+          @energy_depends: '/entry/instrument/detector/sensor_y' for a 2D detector
+          @energy_depends: '/entry/instrument/energydispersion/center_kinetic_energy' for a swept scan
+          @energy_depends: '/entry/process/calibration/energy_calibration/calibrated_axis' for a preprocessed axis."
       data(NX_NUMBER): # There is a block of numbers named data.
         doc: "Represents a measure of two- or more-dimensional photoemission counts, where
           the varied axes are energy, and one or more angular coordinates. Axes traces
