@@ -98,6 +98,25 @@ NXiv_sweep2(NXsensor_scan):
         #  doc: User outputs whose name can be modified in the corresponding module. (e.g. Input 24 (V))
         #output_slew_rate(NX_NUMBER):
         #  doc: The rate at which the one of the signal changes when ramping to the starting point. (V/s) (e.g. Inf)
+      piezo_config(NXcollection):
+        active_calib.:
+          doc: The name of caliberation type. (e.g. LHe)
+        calib._N(NX_NUMBER):
+          doc: N denotes X or Y or Z. There are 3 parameters in X, Y, and Z directions and there are 3 controls available: Calibr. (m/V), Range (m) and HV gain. Two of them are enough to define the calibration, so when changing any value one of the other values will be updated automatically. (e.g. 3.8E-9)
+        hv_gain_N(NX_NUMBER):
+          doc: N denotes X or Y or Z. For some systems HV gain readout is available, so for those systems the HV gain should be adjusted automatically when the gain is changed at the high voltage amplifier. (e.g. 14.5)
+        tilt_N(NX_NUMBER): (e.g. 0.318343)
+        unit: NX_ANGLE
+        doc: N denotes X or Y. There are 2 parameters in X and Y directions and this tab is used to set the sample tilt (in degrees, first order correction).
+        curvature_radius N(NX_NUMBER): Inf
+        unit: NX_LENGTH
+        doc: N denotes X or Y. There are 2 parameters in X and Y directions and this tab is used to set a curvature (can be set approximately to the length of the piezotube).
+        2nd_order_corr_N(NX_NUMBER):
+          doc: N denotes X or Y. There are 2 parameters in X and Y directions. If you know them, you can enter the 2nd order piezo characteristics to compensate for it. The following equation shows the interpretation of the 2nd order correction parameter: For the X-piezo: "Ux = 1/cx · X + cxx · X2" with units: [V] = [V/m] · [m] + [V/m2] · [m2] where cx is the calibration of the piezo X and cxx is the 2nd order correction. (V/m^2). (e.g. 0E+0)
+        drift_N(NX_NUMBER):
+          doc: N denotes X or Y. There are 2 parameters in X and Y directions. Define the drift speed for all three axes. When the compensation is on, the piezos will start to move at that speed. (e.g. 0E+0)
+        drift_correction_status(NX_BOOLEAN):
+          doc: Use the button to turn on/off the drift compensation. (e.g. FALSE)
       (NXenvironment):
         doc: |
           Describes an environment setup for a temperature-dependent IV measurement experiment.
@@ -107,194 +126,164 @@ NXiv_sweep2(NXsensor_scan):
         voltage_controller(NXsensor):
         temperature_controller(NXsensor):
         current_sensor(NXsensor):
-    (NXdata):
+        position(NXpositioner):
+          doc: Clarify the frame laboratory frame.
+          x(NX_NUMBER):
+            unit: NX_LENGTH
+            doc: The scanning area in x position in the frame. (e.g. -890.53E-12)
+          y(NX_NUMBER):
+            unit: NX_LENGTH
+            doc: The scanning area in y position in the frame. (e.g. 29.6968E-9)
+          z(NX_NUMBER):
+            unit: NX_LENGTH
+            doc: The scanning area in x position in the frame. (e.g. 130.5E-9)
+          z-controller(NB_NUMBER):
+            unit: NX_LENGTH
+            doc: Indicate the tip position Z between tip and sample. The tip position can also be varied when the controller is not running. (e.g. 130.5E-9)
+        sweep_control(NXcollection): # parameters for a measurement at a single location during the scan
+          bias_spectroscopy(NXcollection)):
+            integration time(NX_NUMBER):
+              unit: NX_TIME
+              doc:  Time during which the spectroscopy data are acquired and averaged. (e.g. 150E-6)
+            number_of_sweeps(NX_NUMBER):
+              doc: Number of sweeps to measure and average. (e.g. 100)
+            sweep_start(NX_NUMBER):
+              unit: NX_VOLTAGE
+              doc: The first bias values of the sweep. (e.g. -300E-3)
+            sweep_end(NX_NUMBER):
+              unit: NX_VOLTAGE
+              doc: The last bias values of the sweep. (e.g. 300E-3)
+            num_pixel(NX_NUMBER):
+              doc: Define the sweep number of points, that is, the maximum spectrum resolution eq. Bias window divide by Num Pixel. (e.g. 4096)
+            z_avg_time(NX_NUMBER):
+              unit: NX_TIME
+              doc: Duration over which the Z position is recorded and averaged before and after the sweep (the latter only if Record final Z position is selected in the Advanced section). After the initial Z averaging time, if Z-Controller to Hold is selected in the Advanced section, the Z-Controller is set to hold and the tip is placed at the previously averaged Z position (plus Z offset). (e.g. 100E-3)
+          circuit(NXcollection):
+            rt_frequency(NX_NUMBER):
+              unit: NX_FREQENCY
+              doc: The bandwitdh of the Hardware and/or Software (e.g. 20E+3)
+            signals_oversampling(NX_NUMBER):
+              doc: (Signals Periods) The Signals Period is the rate at which the signals are transferred to the host computer running the control software. This is usually lower by a factor of 10 than the sampling rate, because an internal oversampling of the signal is done on the real time engine. You can reduce the oversampling down to 1 in order to resolve higher frequencies in the Spectrum Analyzer. (e.g. 10)
+            acquisition_period(NX_NUMBER):
+              unit: NX_TIME
+              doc:  Update rate for several processes like History Graph, Auto-Approach, and for many Programming Interface functions. This is usually set to 20 ms. All additional timings (7-9) can only be integer multiples of this value. They can be set to different values, but the actual timing value will be coerced to a multiple of the Acquisition Period. (e.g. 20E-3)
+            animations_period(NX_NUMBER):
+              unit: NX_TIME
+              doc: Update rate of animated graphical indicators. These are e.g. some graphs & sliders. A reasonable value is 40 ms (25 updates per second). Increase this period to reduce the processor load for the graphical user interface, especially on slow computers. This value is purely a user interface update rate and does not affect measurements in any way. (e.g. 20E-3)
+            indicators_period(NX_NUMBER):
+              unit: NX_TIME
+              doc: Update rate of digital indicators, e.g. the numbers displayed besides each slider. Here, 3 updates per second, or 300 ms is enough. This value is purely a user interface update rate and does not affect measurements in any way. (e.g. 300E-3)
+            measurements_period (NX_NUMBER):
+              unit: NX_TIME
+              doc: The Measurements period is the integration time for precise measurements (averaging over specified period), mostly used in sweep modules. Examples are recording of a force-distance curve or a resonance of a cantilever. For fast measurements with small steps, a value of 40 ms may be reasonable. For normal use, 300-500 ms is a good value, but for recording a resonance of a high-Q cantilever, values of several seconds might be necessary. Usually this parameter doesn’t need to be set from this module; the sweep modules will set this value according to the sweep timings. (e.g. 500E-3)
+        scan_control(NXcollection): # parameters how to change the location from measurement to measurement during the scan
+          roi(NXtransformation):
+            frame:
+              doc: Also clarify the frame for the ROI of the scan (should depend on the lab frame)
+          circuit(NXcollection):
+            channels_current:
+              doc: The scan channels are selected by users. (e.g. (A);Bias (V);Z (m);LI Demod 2 X (A);LI Demod 2 Y (A);LI Demod 1 X (A);LI Demod 1 Y (A))
+          positioner(NXcollection)):
+            scanfield(NX_NUMBER):
+              doc: Configure the scan frame like x position; y position; width; height. (e.g. 3.11737E-9;29.1583E-9;15E-9;15E-9;0E+0)
+            pixels/line(NX_NUMBER):
+              doc: Scan resolution by setting the Lines equal to Pixels.  (e.g. 512)
+            lines(NX_NUMBER):
+              doc: Define the image resolution. (e.g. 512)
+            speed_forw.(NX_NUMBER):
+              doc: Define the scan forward speed in the forward direction. (m/s) (e.g. 11.7187E-9)
+            speed_backw.(NX_NUMBER):
+              doc: Define the scan backward speed in the forward direction. (m/s) (e.g. 11.7187E-9)
+    resolution_indicators(NXprocess): # RESOLUTION (calculation input)
+      temp_stm_head: #Temperature 1>link to INSTR/STM/head    Temperature 1 (K) (e.g. 4.92997E+0) # Temperature of STM head.
+      temp_cryo_bottom: #Temperature 2>link to                   Temperature 2 (K) - # Temperature of bottom of LHe helium cryostat.
+      temp_cryo_shield: #Temperature 3>link to                   Temperature 3 (K) - # Temperature of LN2 nitrogen shield.
+      modulated_signal_bias: #Lock-in>link to                         Modulated signal Bias (V) (e.g. 1E-3) # Applied modulation to the bias voltage.
+      integration_time: #link to                                 Integration time (s) (e.g. 150E-6) # Time during which the spectroscopy data are acquired and averaged.
+      number_of_sweps: #link to                                 Bias Spectroscopy>Number of sweeps (e.g. 100) # Number of sweeps to measure and average.
+      sweep_start: #link to                                 Bias Spectroscopy>Sweep Start (V) (e.g. -300E-3) # The first bias values of the sweep.
+      sweep_end: #link to                                 Bias Spectroscopy>Sweep End (V) (e.g. 300E-3) # The last bias values of the sweep.
+      number_of_pixels: #link to                                 Bias Spectroscopy>Num Pixel (e.g. 4096) # Define the sweep number of points, that is, the maximum spectrum resolution eq. Bias window divide by Num Pixel.
+      z_avg_time: #link to                                 Bias Spectroscopy>Z Avg time (s) (e.g. 100E-3) # Duration over which the Z position is recorded and averaged before and after the sweep (the latter only if Record final Z position is selected in the Advanced section). After the initial Z averaging time, if Z-Controller to Hold is selected in the Advanced section, the Z-Controller is set to hold and the tip is placed at the previously averaged Z position (plus Z offset).
+      rt_freq: #link to                                 SoftwareMain>RT Frequency (Hz) (e.g. 20E+3) # The bandwitdh of the Hardware and/or Software
+      oversampling: #link to                                 SoftwareMain>Signals Oversampling (e.g. 10) # (Signals Periods) The Signals Period is the rate at which the signals are transferred to the host computer running the control software. This is usually lower by a factor of 10 than the sampling rate, because an internal oversampling of the signal is done on the real time engine. You can reduce the oversampling down to 1 in order to resolve higher frequencies in the Spectrum Analyzer.
+      acquisition_period: #link to                                 SoftwareMain>Acquisition Period (s) (e.g. 20E-3) # Update rate for several processes like History Graph, Auto-Approach, and for many Programming Interface functions. This is usually set to 20 ms. All additional timings (7-9) can only be integer multiples of this value. They can be set to different values, but the actual timing value will be coerced to a multiple of the Acquisition Period.
+      animation_period: #link to                                 SoftwareMain>Animations Period (s) (e.g. 20E-3) # Update rate of animated graphical indicators. These are e.g. some graphs & sliders. A reasonable value is 40 ms (25 updates per second). Increase this period to reduce the processor load for the graphical user interface, especially on slow computers. This value is purely a user interface update rate and does not affect measurements in any way.
+      indicators_period: #link to                                 SoftwareMain>Indicators Period (s) (e.g. 300E-3) # Update rate of digital indicators, e.g. the numbers displayed besides each slider. Here, 3 updates per second, or 300 ms is enough. This value is purely a user interface update rate and does not affect measurements in any way.
+      measurement_period: #link to                                 SoftwareMain>Measurements Period (s) (e.g. 500E-3) # The Measurements period is the integration time for precise measurements (averaging over specified period), mostly used in sweep modules. Examples are recording of a force-distance curve or a resonance of a cantilever. For fast measurements with small steps, a value of 40 ms may be reasonable. For normal use, 300-500 ms is a good value, but for recording a resonance of a high-Q cantilever, values of several seconds might be necessary. Usually this parameter doesn’t need to be set from this module; the sweep modules will set this value according to the sweep timings.
+    reproducibility_indicators(NXprocess): #REPRODUCIBILITY
+      bias: #  Bias>Bias(NXBias) (V) (e.g. 100E-3) # Applied bias voltage.
+      current: #  Current>Current(NXcircuit) (A) (e.g. -5.3429E-15) # The tunneling current is displayed here.
+      bias_calibration: #  Bias>Calibration(NXbias) (V/V) (e.g. 1E+0) # Calibration of the Bias output. If you have a Range switch the calibration is stored per range setting.
+      bias_offset: #  Bias>Offset(NXbias) (V) (e.g. 0E+0) # Allows compensating for an offset in Bias.
+      current_calibration: #  Current>Calibration(NXcircuit) (A/V) (e.g. 100E-12) # The signals voltages are converted to real world physical values according to the calibration & offset parameters: Physical signal = (Voltage * calibration) + offset.
+      current_offset: #  Current>Offset(NXcircuit) (A) (e.g. 16.2897E-15) # The same as "Current>Calibration (A/V)" tag
+      current_gain: #  Current>Gain(NXcircuit) (e.g. Not switchable) # None
+      z_offset: #  Z offset(NXpositioner) (m) (e.g. 0E+0) # Offset added to the initial averaged position Zaver before starting to sweep. This parameter is disabled when Z-Controller to Hold is deselected in the Advanced section. The LED “Alt” next to the Z offset indicates if an alternate Z-controller setpoint is enabled.
+      settling_time: #  Settling time(NXbias) (s) (e.g. 2.1E-3) # Time to wait after changing the bias to the next level and before starting to acquire data. Adjust this parameter to avoid transient effect induced by the bias change. Integration time: time during which the data are acquired and averaged.
+      z_control_hold: #  Z-Ctrl hold(NXpositioner) (e.g. TRUE) # When selected, the Z-Controller is set to hold during the pulse. This means that the controller doesn't control the Z position during the pulse.
+      final_z: #  Final Z(NXpositioner) (m) (e.g. N/A)
+      start_time: #  Start time(NXlog) (e.g.23.11.2022 18:55:16) # Timestamp of the moment when the acquisition starts by pressing the Start button.
+      z_offset: !!! do not we have it already above ??? #  Bias Spectroscopy>Z offset(NXbias) (m) (e.g.0E+0) # Offset added to the initial averaged position Zaver before starting to sweep. This parameter is disabled when Z-Controller to Hold is deselected in the Advanced section. The LED “Alt” next to the Z offset indicates if an alternate Z-controller setpoint is enabled.
+      1st_settling_time: #  Bias Spectroscopy>1st Settling time(NXbias) (s) (e.g.2.1E-3) # See the "Settling time (s)" below.
+      settling_time: !!! #  Bias Spectroscopy>Settling time(NXbias) (s) (e.g.2.1E-3) # See the "Settling time (s)" below.
+      integration_time: #  Bias Spectroscopy>Integration time(NXbias) (s) (e.g.150E-6) # Time during which the data are acquired and averaged.
+      end_settling_time: #  Bias Spectroscopy>End Settling time(NXbias) (s) (e.g.4E-3) # Time to wait after the sweep has finished and the bias is ramped to the initial value.
+      z_contro_time: #  Bias Spectroscopy>Z control time(NXbias) (s) (e.g.200E-3) # Time during which the Z-Controller is enabled once a sweep has finished. When averaging multiple sweeps (i.e. Sweeps>1), the Z-Controller is enabled for this duration between each sweep. After the last sweep, it will wait the specified time before continuing a running scan. This ensures each sweep reliably starts from the same position. This parameter is disabled when Z-Controller to Hold is deselected in the Advanced section.
+      max_slew_rate: #  Bias Spectroscopy>Max Slew rate(NXbias) (V/s) (e.g.1E+0) # Maximum rate at which the bias changes (before, during and after sweeping).
+      backward_sweep: #  Bias Spectroscopy>backward sweep(NXbias) (e.g.TRUE) # Select whether to measure the backward (return) sweep or the forward only.
+      z_control_hold: !!! #  Bias Spectroscopy>Z-controller hold(NXbias) (e.g.TRUE # Select whether to set the Z-Controller on hold (i.e. disabled) during the sweep. It is selected by default. When deselected, Z-offset and Z control time parameters are disabled.
+      z_control_name: #  Z-Controller>Controller name(NXpositioner) (e.g.log Current) # Controller name. This name which will be displayed at places where you can select a controller.
+      z_control_status: #  Z-Controller>Controller status(NXpositioner) (e.g.OFF) # ON/OFF
+      z_sontrol_setpoint: #  Z-Controller>Setpoint(NXpositioner) (e.g.50E-12) # Set Point is the desired value of the control signal. It can be set by editing the number or using the slider bar. Click the "Set" button above the input field to use the actual value as Set Point. The slider shows the Set Point as well as the current value.
+      #  Z-Controller>Setpoint unit(NXpositioner) (e.g.A) # Angstrom
+      z_control_p_gain: ??? looks like an NXpid #  Z-Controller>P gain(NXpositioner) (e.g.6E-12) # The Type switches controller parameters between P/I (proportional gain/integral gain) and P/T (proportional gain/time constant). The formula for the controller in the frequency domain is: G(s) = P + I/s = P(1 + 1/(Ts)). The integral gain and time constant are related as follows: I = P/T.
+      z_control_i_gain: #  Z-Controller>I gain(NXpositioner) (e.g.39.8241E-9) # See "Z-Controller>P gain" below.
+      z_control_time_const: #  Z-Controller>Time const(NXpositioner) (s) (e.g.150.662E-6) # See "Z-Controller>P gain" below.
+      z_control_tip_lift: #  Z-Controller>TipLift(NXpositioner) (m) (e.g.0E+0) # Lifts the tip by the specified amount when then controller is switched off. This can be a positive or a negative number, i.e. the tip can also be moved towards the sample. Be careful with sign and value when using this feature.
+      z_control_switchoff_delay: #  Z-Controller>Switch off delay(NXpositioner) (s) (e.g.0E+0) # Use this parameter for a reproducible position when switching off the Z-controller. When >0 and the Z-controller is switched off, it doesn't switch off immediately but continues to run for the specified time and averages the Z position.
+    data(NXdata):
       doc: |
         This NXdata should contain separate fields for the current values at different temperature setpoints, for example current_at_100C.
         There should also be two more fields called temperature and voltage containing the setpoint values.
         There should also be a field with an array of rank equal to the number of different temperature setpoints and each child's dimension
         equal to the number of voltage setpoints.
-
-
-
-  INSTRUMENT
-    piezo_config(NXcollection):
-      active_calib.:
-        doc: The name of caliberation type. (e.g. LHe)
-      calib._N(NX_NUMBER):
-        doc: N denotes X or Y or Z. There are 3 parameters in X, Y, and Z directions and there are 3 controls available: Calibr. (m/V), Range (m) and HV gain. Two of them are enough to define the calibration, so when changing any value one of the other values will be updated automatically. (e.g. 3.8E-9)
-      hv_gain_N(NX_NUMBER):
-        doc: N denotes X or Y or Z. For some systems HV gain readout is available, so for those systems the HV gain should be adjusted automatically when the gain is changed at the high voltage amplifier. (e.g. 14.5)
-      tilt_N(NX_NUMBER): (e.g. 0.318343)
-       unit: NX_ANGLE
-       doc: N denotes X or Y. There are 2 parameters in X and Y directions and this tab is used to set the sample tilt (in degrees, first order correction).
-      curvature radius N(NX_NUMBER): Inf
-       unit: NX_LENGTH
-       doc: N denotes X or Y. There are 2 parameters in X and Y directions and this tab is used to set a curvature (can be set approximately to the length of the piezotube).
-      2nd_order_corr N(NX_NUMBER):
-        doc: N denotes X or Y. There are 2 parameters in X and Y directions. If you know them, you can enter the 2nd order piezo characteristics to compensate for it. The following equation shows the interpretation of the 2nd order correction parameter: For the X-piezo: "Ux = 1/cx · X + cxx · X2" with units: [V] = [V/m] · [m] + [V/m2] · [m2] where cx is the calibration of the piezo X and cxx is the 2nd order correction. (V/m^2). (e.g. 0E+0)
-      drift_N(NX_NUMBER):
-        doc: N denotes X or Y. There are 2 parameters in X and Y directions. Define the drift speed for all three axes. When the compensation is on, the piezos will start to move at that speed. (e.g. 0E+0)
-      drift_correction_status(NX_BOOLEAN):
-        doc: Use the button to turn on/off the drift compensation. (e.g. FALSE)
-
-  MEASUREMENT
-    Position(NXpositioner):
-      doc: Clarify the frame laboratory frame.
-      x(NX_NUMBER):
-        unit: NX_LENGTH
-        doc: The scanning area in x position in the frame. (e.g. -890.53E-12)
-      y(NX_NUMBER):
-        unit: NX_LENGTH
-        doc: The scanning area in y position in the frame. (e.g. 29.6968E-9)
-      z(NX_NUMBER):
-        unit: NX_LENGTH
-        doc: The scanning area in x position in the frame. (e.g. 130.5E-9)
-      z-controller(NB_NUMBER):
-        unit: NX_LENGTH
-        doc: Indicate the tip position Z between tip and sample. The tip position can also be varied when the controller is not running. (e.g. 130.5E-9)
-    sweep control # parameters for a measurement at a single location during the scan
-      (NXbias_spectroscopy):
-      integration time(NX_NUMBER):
-        unit: NX_TIME
-        doc:  Time during which the spectroscopy data are acquired and averaged. (e.g. 150E-6)
-      number_of_sweeps(NX_NUMBER):
-        doc: Number of sweeps to measure and average. (e.g. 100)
-      sweep_start(NX_NUMBER):
-        unit: NX_VOLTAGE
-        doc: The first bias values of the sweep. (e.g. -300E-3)
-      sweep_end(NX_NUMBER):
-        unit: NX_VOLTAGE
-        doc: The last bias values of the sweep. (e.g. 300E-3)
-      num_pixel(NX_NUMBER):
-        doc: Define the sweep number of points, that is, the maximum spectrum resolution eq. Bias window divide by Num Pixel. (e.g. 4096)
-      z_avg_time(NX_NUMBER):
-        unit: NX_TIME
-        doc: Duration over which the Z position is recorded and averaged before and after the sweep (the latter only if Record final Z position is selected in the Advanced section). After the initial Z averaging time, if Z-Controller to Hold is selected in the Advanced section, the Z-Controller is set to hold and the tip is placed at the previously averaged Z position (plus Z offset). (e.g. 100E-3)
-      (NXcircuit):
-      rt_frequency(NX_NUMBER):
-        unit: NX_FREQENCY
-        doc: The bandwitdh of the Hardware and/or Software (e.g. 20E+3)
-      signals_oversampling(NX_NUMBER):
-        doc: (Signals Periods) The Signals Period is the rate at which the signals are transferred to the host computer running the control software. This is usually lower by a factor of 10 than the sampling rate, because an internal oversampling of the signal is done on the real time engine. You can reduce the oversampling down to 1 in order to resolve higher frequencies in the Spectrum Analyzer. (e.g. 10)
-      acquisition_period(NX_NUMBER):
-        unit: NX_TIME
-        doc:  Update rate for several processes like History Graph, Auto-Approach, and for many Programming Interface functions. This is usually set to 20 ms. All additional timings (7-9) can only be integer multiples of this value. They can be set to different values, but the actual timing value will be coerced to a multiple of the Acquisition Period. (e.g. 20E-3)
-      animations_period(NX_NUMBER):
-        unit: NX_TIME
-        doc: Update rate of animated graphical indicators. These are e.g. some graphs & sliders. A reasonable value is 40 ms (25 updates per second). Increase this period to reduce the processor load for the graphical user interface, especially on slow computers. This value is purely a user interface update rate and does not affect measurements in any way. (e.g. 20E-3)
-      indicators_period(NX_NUMBER):
-        unit: NX_TIME
-        doc: Update rate of digital indicators, e.g. the numbers displayed besides each slider. Here, 3 updates per second, or 300 ms is enough. This value is purely a user interface update rate and does not affect measurements in any way. (e.g. 300E-3)
-      measurements_period (NX_NUMBER):
-        unit: NX_TIME
-        doc: The Measurements period is the integration time for precise measurements (averaging over specified period), mostly used in sweep modules. Examples are recording of a force-distance curve or a resonance of a cantilever. For fast measurements with small steps, a value of 40 ms may be reasonable. For normal use, 300-500 ms is a good value, but for recording a resonance of a high-Q cantilever, values of several seconds might be necessary. Usually this parameter doesn’t need to be set from this module; the sweep modules will set this value according to the sweep timings. (e.g. 500E-3)
-    Scan control # parameters how to change the location from measurement to measurement during the scan
-      (NXtransformation):
-      frame:
-        doc: Also clarify the frame for the ROI of the scan (should depend on the lab frame)
-      (NXcircuit):
-      channels_current:
-        doc: The scan channels are selected by users. (e.g. (A);Bias (V);Z (m);LI Demod 2 X (A);LI Demod 2 Y (A);LI Demod 1 X (A);LI Demod 1 Y (A))
-      (NXpositioner):
-      scanfield(NX_NUMBER):
-        doc: Configure the scan frame like x position; y position; width; height. (e.g. 3.11737E-9;29.1583E-9;15E-9;15E-9;0E+0)
-      pixels/line(NX_NUMBER):
-        doc: Scan resolution by setting the Lines equal to Pixels.  (e.g. 512)
-      lines(NX_NUMBER):
-        doc: Define the image resolution. (e.g. 512)
-      speed_forw.(NX_NUMBER):
-        doc: Define the scan forward speed in the forward direction. (m/s) (e.g. 11.7187E-9)
-      speed_backw.(NX_NUMBER):
-        doc: Define the scan backward speed in the forward direction. (m/s) (e.g. 11.7187E-9)
-
-    RESOLUTION (calculation input)
-      Temperature 1>link to INSTR/STM/head    Temperature 1 (K) (e.g. 4.92997E+0) # Temperature of STM head.
-      Temperature 2>link to                   Temperature 2 (K) - # Temperature of bottom of LHe helium cryostat.
-      Temperature 3>link to                   Temperature 3 (K) - # Temperature of LN2 nitrogen shield.
-      Lock-in>link to                         Modulated signal Bias (V) (e.g. 1E-3) # Applied modulation to the bias voltage.
-      link to                                 Integration time (s) (e.g. 150E-6) # Time during which the spectroscopy data are acquired and averaged.
-      link to                                 Bias Spectroscopy>Number of sweeps (e.g. 100) # Number of sweeps to measure and average.
-      link to                                 Bias Spectroscopy>Sweep Start (V) (e.g. -300E-3) # The first bias values of the sweep.
-      link to                                 Bias Spectroscopy>Sweep End (V) (e.g. 300E-3) # The last bias values of the sweep.
-      link to                                 Bias Spectroscopy>Num Pixel (e.g. 4096) # Define the sweep number of points, that is, the maximum spectrum resolution eq. Bias window divide by Num Pixel.
-      link to                                 Bias Spectroscopy>Z Avg time (s) (e.g. 100E-3) # Duration over which the Z position is recorded and averaged before and after the sweep (the latter only if Record final Z position is selected in the Advanced section). After the initial Z averaging time, if Z-Controller to Hold is selected in the Advanced section, the Z-Controller is set to hold and the tip is placed at the previously averaged Z position (plus Z offset).
-      link to                                 SoftwareMain>RT Frequency (Hz) (e.g. 20E+3) # The bandwitdh of the Hardware and/or Software
-      link to                                 SoftwareMain>Signals Oversampling (e.g. 10) # (Signals Periods) The Signals Period is the rate at which the signals are transferred to the host computer running the control software. This is usually lower by a factor of 10 than the sampling rate, because an internal oversampling of the signal is done on the real time engine. You can reduce the oversampling down to 1 in order to resolve higher frequencies in the Spectrum Analyzer.
-      link to                                 SoftwareMain>Acquisition Period (s) (e.g. 20E-3) # Update rate for several processes like History Graph, Auto-Approach, and for many Programming Interface functions. This is usually set to 20 ms. All additional timings (7-9) can only be integer multiples of this value. They can be set to different values, but the actual timing value will be coerced to a multiple of the Acquisition Period.
-      link to                                 SoftwareMain>Animations Period (s) (e.g. 20E-3) # Update rate of animated graphical indicators. These are e.g. some graphs & sliders. A reasonable value is 40 ms (25 updates per second). Increase this period to reduce the processor load for the graphical user interface, especially on slow computers. This value is purely a user interface update rate and does not affect measurements in any way.
-      link to                                 SoftwareMain>Indicators Period (s) (e.g. 300E-3) # Update rate of digital indicators, e.g. the numbers displayed besides each slider. Here, 3 updates per second, or 300 ms is enough. This value is purely a user interface update rate and does not affect measurements in any way.
-      link to                                 SoftwareMain>Measurements Period (s) (e.g. 500E-3) # The Measurements period is the integration time for precise measurements (averaging over specified period), mostly used in sweep modules. Examples are recording of a force-distance curve or a resonance of a cantilever. For fast measurements with small steps, a value of 40 ms may be reasonable. For normal use, 300-500 ms is a good value, but for recording a resonance of a high-Q cantilever, values of several seconds might be necessary. Usually this parameter doesn’t need to be set from this module; the sweep modules will set this value according to the sweep timings.
-    REPRODUCIBILITY
-      link to
-        Bias>Bias(NXBias) (V) (e.g. 100E-3) # Applied bias voltage.
-        Current>Current(NXcircuit) (A) (e.g. -5.3429E-15) # The tunneling current is displayed here.
-        Bias>Calibration(NXbias) (V/V) (e.g. 1E+0) # Calibration of the Bias output. If you have a Range switch the calibration is stored per range setting.
-        Bias>Offset(NXbias) (V) (e.g. 0E+0) # Allows compensating for an offset in Bias.
-        Current>Calibration(NXcircuit) (A/V) (e.g. 100E-12) # The signals voltages are converted to real world physical values according to the calibration & offset parameters: Physical signal = (Voltage * calibration) + offset.
-        Current>Offset(NXcircuit) (A) (e.g. 16.2897E-15) # The same as "Current>Calibration (A/V)" tag
-        Current>Gain(NXcircuit) (e.g. Not switchable) # None
-        Z offset(NXpositioner) (m) (e.g. 0E+0) # Offset added to the initial averaged position Zaver before starting to sweep. This parameter is disabled when Z-Controller to Hold is deselected in the Advanced section. The LED “Alt” next to the Z offset indicates if an alternate Z-controller setpoint is enabled.
-        Settling time(NXbias) (s) (e.g. 2.1E-3) # Time to wait after changing the bias to the next level and before starting to acquire data. Adjust this parameter to avoid transient effect induced by the bias change. Integration time: time during which the data are acquired and averaged.
-        Z-Ctrl hold(NXpositioner) (e.g. TRUE) # When selected, the Z-Controller is set to hold during the pulse. This means that the controller doesn't control the Z position during the pulse.
-        Final Z(NXpositioner) (m) (e.g. N/A)
-        Start time(NXlog) (e.g.23.11.2022 18:55:16) # Timestamp of the moment when the acquisition starts by pressing the Start button.
-        Bias Spectroscopy>Z offset(NXbias) (m) (e.g.0E+0) # Offset added to the initial averaged position Zaver before starting to sweep. This parameter is disabled when Z-Controller to Hold is deselected in the Advanced section. The LED “Alt” next to the Z offset indicates if an alternate Z-controller setpoint is enabled.
-        Bias Spectroscopy>1st Settling time(NXbias) (s) (e.g.2.1E-3) # See the "Settling time (s)" below.
-        Bias Spectroscopy>Settling time(NXbias) (s) (e.g.2.1E-3) # See the "Settling time (s)" below.
-        Bias Spectroscopy>Integration time(NXbias) (s) (e.g.150E-6) # Time during which the data are acquired and averaged.
-        Bias Spectroscopy>End Settling time(NXbias) (s) (e.g.4E-3) # Time to wait after the sweep has finished and the bias is ramped to the initial value.
-        Bias Spectroscopy>Z control time(NXbias) (s) (e.g.200E-3) # Time during which the Z-Controller is enabled once a sweep has finished. When averaging multiple sweeps (i.e. Sweeps>1), the Z-Controller is enabled for this duration between each sweep. After the last sweep, it will wait the specified time before continuing a running scan. This ensures each sweep reliably starts from the same position. This parameter is disabled when Z-Controller to Hold is deselected in the Advanced section.
-        Bias Spectroscopy>Max Slew rate(NXbias) (V/s) (e.g.1E+0) # Maximum rate at which the bias changes (before, during and after sweeping).
-        Bias Spectroscopy>backward sweep(NXbias) (e.g.TRUE) # Select whether to measure the backward (return) sweep or the forward only.
-        Bias Spectroscopy>Z-controller hold(NXbias) (e.g.TRUE # Select whether to set the Z-Controller on hold (i.e. disabled) during the sweep. It is selected by default. When deselected, Z-offset and Z control time parameters are disabled.
-        Z-Controller>Controller name(NXpositioner) (e.g.log Current) # Controller name. This name which will be displayed at places where you can select a controller.
-        Z-Controller>Controller status(NXpositioner) (e.g.OFF) # ON/OFF
-        Z-Controller>Setpoint(NXpositioner) (e.g.50E-12) # Set Point is the desired value of the control signal. It can be set by editing the number or using the slider bar. Click the "Set" button above the input field to use the actual value as Set Point. The slider shows the Set Point as well as the current value.
-        Z-Controller>Setpoint unit(NXpositioner) (e.g.A) # Angstrom
-        Z-Controller>P gain(NXpositioner) (e.g.6E-12) # The Type switches controller parameters between P/I (proportional gain/integral gain) and P/T (proportional gain/time constant). The formula for the controller in the frequency domain is: G(s) = P + I/s = P(1 + 1/(Ts)). The integral gain and time constant are related as follows: I = P/T.
-        Z-Controller>I gain(NXpositioner) (e.g.39.8241E-9) # See "Z-Controller>P gain" below.
-        Z-Controller>Time const(NXpositioner) (s) (e.g.150.662E-6) # See "Z-Controller>P gain" below.
-        Z-Controller>TipLift(NXpositioner) (m) (e.g.0E+0) # Lifts the tip by the specified amount when then controller is switched off. This can be a positive or a negative number, i.e. the tip can also be moved towards the sample. Be careful with sign and value when using this feature.
-        Z-Controller>Switch off delay(NXpositioner) (s) (e.g.0E+0) # Use this parameter for a reproducible position when switching off the Z-controller. When >0 and the Z-controller is switched off, it doesn't switch off immediately but continues to run for the specified time and averages the Z position.
-
-  DATA # multi dimensional array: multi I-V array per scan point;
-    doc: The format of the data here is similar to a column matrix.
-    Bias calc (V) #scanning parameter
-    Current (A) # current during forward direction scanning of bias - original NXsensor
-    LI Demod 2 X (A) lockin (NXsensor+lockin)
-    LI Demod 2 Y (A) lockin
-    LI Demod 1 X (A) lockin
-    LI Demod 1 Y (A) lockin
-    Current [bwd] (A) #bwd - backward (the positive direction shall be clarified by the reference bias scanning frame. Fwd means from left(neg) to right(pos). In the scannig image, the bottom(neg) to top(pos), the left(neg) to right(pos)
-    LI Demod 2 X [bwd] (A) lockin
-    LI Demod 2 Y [bwd] (A) lockin
-    LI Demod 1 X [bwd] (A) lockin
-    LI Demod 1 Y [bwd] (A) lockin
-    Current (A) [filt] # forward direction (maybe from lockin#2?)
-    LI Demod 2 X (A) [filt] lockin
-    LI Demod 2 Y (A) [filt] lockin
-    LI Demod 1 X (A) [filt] lockin
-    LI Demod 1 Y (A) [filt] lockin
-    Current (A) [bwd] [filt]
-    LI Demod 2 X (A) [bwd] [filt] lockin
-    LI Demod 2 Y (A) [bwd] [filt] lockin
-    LI Demod 1 X (A) [bwd] [filt] lockin
-    LI Demod 1 Y (A) [bwd] [filt] lockin
-    Temperature
-    x
-    y
-    z
-
- single point default plot # current(I) vs bias(V)
- line scan default plot # multi I vs. V curves
-       alternative plot # current(I) curve in the 2D space of (position(x), bias(V))
- mesh scan default plot # 2D slices of the above alternative plot
-
-
-
-
-
-
-
-
-
+        axes: bias_calc
+        signals:
+          li_demod_[1;2]_[X/Y]_[-;bwd;filt;bwd_filt]
+          current_[-;bwd;filt;bwd_filt]
+          temperature
+          x
+          y
+          z
+      # DATA # multi dimensional array: multi I-V array per scan point;
+      # doc: The format of the data here is similar to a column matrix.
+      # Bias calc (V) #scanning parameter
+      # Current (A) # current during forward direction scanning of bias - original NXsensor
+      # LI Demod 2 X (A) lockin (NXsensor+lockin)
+      # LI Demod 2 Y (A) lockin
+      # LI Demod 1 X (A) lockin
+      # LI Demod 1 Y (A) lockin
+      # Current [bwd] (A) #bwd - backward (the positive direction shall be clarified by the reference bias scanning frame. Fwd means from left(neg) to right(pos). In the scannig image, the bottom(neg) to top(pos), the left(neg) to right(pos)
+      # LI Demod 2 X [bwd] (A) lockin
+      # LI Demod 2 Y [bwd] (A) lockin
+      # LI Demod 1 X [bwd] (A) lockin
+      # LI Demod 1 Y [bwd] (A) lockin
+      # Current (A) [filt] # forward direction (maybe from lockin#2?)
+      # LI Demod 2 X (A) [filt] lockin
+      # LI Demod 2 Y (A) [filt] lockin
+      # LI Demod 1 X (A) [filt] lockin
+      # LI Demod 1 Y (A) [filt] lockin
+      # Current (A) [bwd] [filt]
+      # LI Demod 2 X (A) [bwd] [filt] lockin
+      # LI Demod 2 Y (A) [bwd] [filt] lockin
+      # LI Demod 1 X (A) [bwd] [filt] lockin
+      # LI Demod 1 Y (A) [bwd] [filt] lockin
+      # Temperature
+      # x
+      # y
+      # z
+    single_point(NXdata): # single point default plot # current(I) vs bias(V)
+    line_scan(NXdata): # line scan default plot # multi I vs. V curves
+    alternative_plot(NXdata): # alternative plot # current(I) curve in the 2D space of (position(x), bias(V))
+    mesh_scan(NXdata): # mesh scan default plot # 2D slices of the above alternative plot
