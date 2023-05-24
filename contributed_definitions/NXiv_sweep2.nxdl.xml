@@ -88,13 +88,14 @@
         </field>
         <group type="NXinstrument">
             <group name="hardware" type="NXfabrication"/>
+            <!--any or specifique 'harware' and 'software'?-->
             <group name="software" type="NXfabrication"/>
-            <!-- doc: |
-   Software and hardware for control, scanning and data collection in the SPM system
- hardware:
-   doc: Hardware type used in SPM experiment, includes hardware manufacturers and type. (e.g. Nanonis BP5e)
- softwareMain>Software:
-   doc: Type of software used in SPM experiments, e.g. software version serial number, UI and RT probe release method. (e.g. SW Version Generic 5e -\- SoftwareMain>UI Release 10771 -\- SoftwareMain>RT Release 10771)-->
+            <!--doc: |
+Software and hardware for control, scanning and data collection in the SPM system
+hardware:
+doc: Hardware type used in SPM experiment, includes hardware manufacturers and type. (e.g. Nanonis BP5e)
+softwareMain>Software:
+doc: Type of software used in SPM experiments, e.g. software version serial number, UI and RT probe release method. (e.g. SW Version Generic 5e -\- SoftwareMain>UI Release 10771 -\- SoftwareMain>RT Release 10771)-->
             <group name="current_amplifier" type="NXamplifier"/>
             <!--hardware: Current amplifier> hardware: CreaTec GmbH
 amplification: Current amplifier> factor (V/V): 1E-10
@@ -125,37 +126,43 @@ run:
  doc: Bias Spectroscopy>Lock-In run FALSE # Select whether to set the Lock-In to run during the measurement. When using this feature, make sure the Lock-In is configured correctly and settling times are set to twice the Lock-In period at least. This option is ignored when Lock-In is already running. This option is disabled if the Sweep Mode is MLS and the flag to configure the Lock-In per segment in the Multiline segment editor is set.-->
             <group name="sample_bias" type="NXiv_bias"/>
             <!--sample_bias(NXbias):
-Tip bias/Sample bias # If the spectroscopy V bias is applied to the
-Modulated signal Bias (V) 1E-3 # Applied modulation to the bias voltage.
+Tip bias/Sample bias If the spectroscopy V bias is applied to the
+Modulated signal Bias (V) 1E-3 Applied modulation to the bias voltage.
 ModulationBias> Tip bias/Sample bias
 modulated_signal_bias(NX_NUMBER):
- unit: NX_VOLTAGE
- doc: Same directional representation as bias. (e.g. 1E-3)-->
-            <field name="stm_head_temperature" type="NX_NUMBER" units="NX_TEMPERATURE">
+unit: NX_VOLTAGE
+doc: Same directional representation as bias. (e.g. 1E-3)-->
+            <field name="stm_head_temp" type="NX_NUMBER" optional="true" units="NX_TEMPERATURE">
                 <doc>
-                     Temperature of STM head. Temperature 1 (K) (e.g. 4.92997E+0)
+                     Temperature of STM head. Temperature 1 (K) (e.g. 4.92997E+0). Note: At least 
+                     one field from stm_head_temperature, cryo_bottom_temp and
+                     cryo_sheild_temp must be provided.
                 </doc>
             </field>
-            <field name="cryo_bottom_temp" type="NX_NUMBER" units="NX_TEMPERATURE">
+            <field name="cryo_bottom_temp" type="NX_NUMBER" optional="true" units="NX_TEMPERATURE">
                 <doc>
-                     Temperature of LHe helium cryostat. Temperature 2 (K) (e.g 4.92997E+0)
+                     Temperature of LHe helium cryostat. Temperature 2 (K) (e.g 4.92997E+0). Note: At 
+                     least one field from stm_head_temperature, cryo_bottom_temp and
+                     cryo_sheild_temp must be provided.
                 </doc>
             </field>
-            <field name="cryo_shield_temp" type="NX_NUMBER" units="NX_TEMPERATURE">
+            <field name="cryo_shield_temp" type="NX_NUMBER" optional="true" units="NX_TEMPERATURE">
                 <doc>
-                     Temperature of LN2 nitrogen shield. Temperature 3 (K) (e.g 78.00000E+0)
+                     Temperature of LN2 nitrogen shield. Temperature 3 (K) (e.g 78.00000E+0). Note: At 
+                     least one field from stm_head_temperature, cryo_bottom_temp and
+                     cryo_sheild_temp must be provided.
                 </doc>
             </field>
             <group name="output_cabling" type="NXcircuit"/>
             <!--Cabling & Config
 output_mode:
- doc: Number of output channels. (e.g. User Output)
+doc: Number of output channels. (e.g. User Output)
 output_value(NX_NUMBER):
- doc: The user output in each monitor mode. (e.g. 0E+0)
+doc: The user output in each monitor mode. (e.g. 0E+0)
 output_name:
- doc: User outputs whose name can be modified in the corresponding module. (e.g. Input 24 (V))
+doc: User outputs whose name can be modified in the corresponding module. (e.g. Input 24 (V))
 output_slew_rate(NX_NUMBER):
- doc: The rate at which the one of the signal changes when ramping to the starting point. (V/s) (e.g. Inf)-->
+doc: The rate at which the one of the signal changes when ramping to the starting point. (V/s) (e.g. Inf)-->
             <group name="piezo_config" type="NXcollection">
                 <field name="active_calib.">
                     <doc>
@@ -174,12 +181,14 @@ output_slew_rate(NX_NUMBER):
                          changed at the high voltage amplifier. (e.g. 14.5)
                     </doc>
                 </field>
+                <!--(e.g. 0.318343)-->
                 <field name="tilt_N" type="NX_NUMBER" units="NX_ANGLE">
                     <doc>
                          N denotes X or Y. There are 2 parameters in X and Y directions and this tab is
                          used to set the sample tilt (in degrees, first order correction).
                     </doc>
                 </field>
+                <!--Inf-->
                 <field name="curvature_radius N" type="NX_NUMBER" units="NX_LENGTH">
                     <doc>
                          N denotes X or Y. There are 2 parameters in X and Y directions and this tab is
@@ -212,7 +221,7 @@ output_slew_rate(NX_NUMBER):
                      The temperature and voltage must be present as independently scanned controllers and
                      the current sensor must also be present with its readings.
                 </doc>
-                <group name="voltage_controller" type="NXsensor"/>
+                <group name="voltage_controller" type="NXsensor" optional="true"/>
                 <group name="temperature_controller" type="NXsensor"/>
                 <group name="current_sensor" type="NXsensor"/>
                 <group name="position" type="NXpositioner">
@@ -234,15 +243,16 @@ output_slew_rate(NX_NUMBER):
                              The scanning area in x position in the frame. (e.g. 130.5E-9)
                         </doc>
                     </field>
-                    <group name="z-controller" type="NB_NUMBER" units="NX_LENGTH">
+                    <field name="z-controller" type="NX_NUMBER" units="NX_LENGTH">
                         <doc>
                              Indicate the tip position Z between tip and sample. The tip position can also be
                              varied when the controller is not running. (e.g. 130.5E-9)
                         </doc>
-                    </group>
+                    </field>
                 </group>
+                <!--parameters for a measurement at a single location during the scan-->
                 <group name="sweep_control" type="NXcollection">
-                    <field name="bias_spectroscopy(NXcollection))">
+                    <group name="bias_spectroscopy" type="NXbias_spectroscopy">
                         <field name="integration time" type="NX_NUMBER" units="NX_TIME">
                             <doc>
                                  Time during which the spectroscopy data are acquired and averaged. (e.g. 150E-6)
@@ -278,7 +288,7 @@ output_slew_rate(NX_NUMBER):
                                  placed at the previously averaged Z position (plus Z offset). (e.g. 100E-3)
                             </doc>
                         </field>
-                    </field>
+                    </group>
                     <group name="circuit" type="NXcollection">
                         <field name="rt_frequency" type="NX_NUMBER" units="NX_FREQENCY">
                             <doc>
@@ -335,8 +345,9 @@ output_slew_rate(NX_NUMBER):
                         </field>
                     </group>
                 </group>
-                <group name="scan_control" type="NXcollection">
-                    <group name="roi" type="NXtransformation">
+                <!--parameters how to change the location from measurement to measurement during the scan-->
+                <group name="scan_control" type="NXcollection" optional="true">
+                    <group name="roi" type="NXtransformations">
                         <field name="frame">
                             <doc>
                                  Also clarify the frame for the ROI of the scan (should depend on the lab frame)
@@ -382,51 +393,149 @@ output_slew_rate(NX_NUMBER):
                 </group>
             </group>
         </group>
-        <group name="resolution_indicators" type="NXprocess">
+        <!--RESOLUTION (calculation input)-->
+        <group name="resolution_indicators" type="NXprocess" optional="true">
+            <!--Temperature 1>link to INSTR/STM/head Temperature 1 (K) (e.g. 4.92997E+0) # Temperature of STM head.-->
             <field name="temp_stm_head"/>
+            <!--Temperature 2>link to Temperature 2 (K) - # Temperature of bottom of LHe helium cryostat.-->
             <field name="temp_cryo_bottom"/>
+            <!--Temperature 3>link to Temperature 3 (K) - # Temperature of LN2 nitrogen shield.-->
             <field name="temp_cryo_shield"/>
+            <!--Lock-in>link to Modulated signal Bias (V) (e.g. 1E-3) # Applied modulation to the bias voltage.-->
             <field name="modulated_signal_bias"/>
+            <!--link to Integration time (s) (e.g. 150E-6) # Time during which the spectroscopy data are acquired and averaged.-->
             <field name="integration_time"/>
+            <!--link to Bias Spectroscopy>Number of sweeps (e.g. 100) # Number of sweeps to measure and average.-->
             <field name="number_of_sweps"/>
+            <!--link to Bias Spectroscopy>Sweep Start (V) (e.g. -300E-3) # The first bias values of the sweep.-->
             <field name="sweep_start"/>
+            <!--link to Bias Spectroscopy>Sweep End (V) (e.g. 300E-3) # The last bias values of the sweep.-->
             <field name="sweep_end"/>
+            <!--link to Bias Spectroscopy>Num Pixel (e.g. 4096) # Define the sweep number of points, that is, the maximum spectrum resolution eq. Bias window divide by Num Pixel.-->
             <field name="number_of_pixels"/>
+            <!--link to Bias Spectroscopy>Z Avg time (s) (e.g. 100E-3) # Duration over which the Z
+position is recorded and averaged before and after the sweep (the latter only if Record
+final Z position is selected in the Advanced section). After the initial Z averaging
+time, if Z-Controller to Hold is selected in the Advanced section, the Z-Controller is
+set to hold and the tip is placed at the previously averaged Z position (plus Z offset).-->
             <field name="z_avg_time"/>
+            <!--link to SoftwareMain>RT Frequency (Hz) (e.g. 20E+3) # The bandwitdh of the
+Hardware and/or Software-->
             <field name="rt_freq"/>
+            <!--link to SoftwareMain>Signals Oversampling (e.g. 10) # (Signals Periods)
+The Signals Period is the rate at which the signals are transferred to the host computer
+running the control software. This is usually lower by a factor of 10 than the sampling
+rate, because an internal oversampling of the signal is done on the real time engine.
+You can reduce the oversampling down to 1 in order to resolve higher frequencies in the
+Spectrum Analyzer.-->
             <field name="oversampling"/>
+            <!--link to SoftwareMain>Acquisition Period (s) (e.g. 20E-3) # Update rate for several
+processes like History Graph, Auto-Approach, and for many Programming Interface functions.
+This is usually set to 20 ms. All additional timings (7-9) can only be integer multiples
+of this value. They can be set to different values, but the actual timing value will be
+coerced to a multiple of the Acquisition Period.-->
             <field name="acquisition_period"/>
+            <!--link to SoftwareMain>Animations Period (s) (e.g. 20E-3) # Update rate of animated
+graphical indicators. These are e.g. some graphs & sliders. A reasonable value is
+40 ms (25 updates per second). Increase this period to reduce the processor load
+for the graphical user interface, especially on slow computers. This value is purely a
+user interface update rate and does not affect measurements in any way.-->
             <field name="animation_period"/>
+            <!--link to SoftwareMain>Indicators Period (s) (e.g. 300E-3) # Update rate of digital
+indicators, e.g. the numbers displayed besides each slider. Here, 3 updates per
+second, or 300 ms is enough. This value is purely a user interface update rate and
+does not affect measurements in any way.-->
             <field name="indicators_period"/>
+            <!--link to SoftwareMain>Measurements Period (s) (e.g. 500E-3) # The Measurements
+period is the integration time for precise measurements (averaging over specified period),
+mostly used in sweep modules. Examples are recording of a force-distance curve or a
+resonance of a cantilever. For fast measurements with small steps, a value of 40 ms may be
+reasonable. For normal use, 300-500 ms is a good value, but for recording a resonance of a
+high-Q cantilever, values of several seconds might be necessary. Usually this parameter doesn’t need to be set from this module; the sweep modules will set this value according to the sweep timings.-->
             <field name="measurement_period"/>
         </group>
-        <group name="reproducibility_indicators" type="NXprocess">
+        <!--REPRODUCIBILITY-->
+        <group name="reproducibility_indicators" type="NXprocess" optional="true">
+            <!--Bias>Bias(NXBias) (V) (e.g. 100E-3) # Applied bias voltage.-->
             <field name="bias"/>
+            <!--Current>Current(NXcircuit) (A) (e.g. -5.3429E-15) # The tunneling current is displayed here.-->
             <field name="current"/>
+            <!--Bias>Calibration(NXbias) (V/V) (e.g. 1E+0) Calibration of the Bias output. If you have a Range switch the calibration is stored per range setting.-->
             <field name="bias_calibration"/>
+            <!--Bias>Offset(NXbias) (V) (e.g. 0E+0) Allows compensating for an offset in Bias.-->
             <field name="bias_offset"/>
+            <!--Current>Calibration(NXcircuit) (A/V) (e.g. 100E-12)
+The signals voltages are converted to real world physical values according to the calibration & offset parameters:
+Physical signal = (Voltage * calibration) + offset.-->
             <field name="current_calibration"/>
+            <!--Current>Offset(NXcircuit) (A) (e.g. 16.2897E-15) # The same as "Current>Calibration (A/V)" tag-->
             <field name="current_offset"/>
+            <!--Current>Gain(NXcircuit) (e.g. Not switchable) # None-->
             <field name="current_gain"/>
+            <!--Z offset(NXpositioner) (m) (e.g. 0E+0) # Offset added to the initial averaged position
+Zaver before starting to sweep. This parameter is disabled when Z-Controller to Hold is
+deselected in the Advanced section. The LED “Alt” next to the Z offset indicates if an
+alternate Z-controller setpoint is enabled.-->
             <field name="z_offset"/>
+            <!--Settling time(NXbias) (s) (e.g. 2.1E-3) Time to wait after changing the bias to the next
+level and before starting to acquire data. Adjust this parameter to avoid transient
+effect induced by the bias change. Integration time: time during which the data are
+acquired and averaged.-->
             <field name="settling_time"/>
+            <!--Z-Ctrl hold(NXpositioner) (e.g. TRUE) # When selected, the Z-Controller is set to hold
+during the pulse. This means that the controller doesn't control the Z position during the pulse.-->
             <field name="z_control_hold"/>
+            <!--Final Z(NXpositioner) (m) (e.g. N/A)-->
             <field name="final_z"/>
+            <!--Start time(NXlog) (e.g.23.11.2022 18:55:16) # Timestamp of the moment when the acquisition starts by pressing the Start button.-->
             <field name="start_time"/>
+            <!--Bias Spectroscopy>1st Settling time(NXbias) (s) (e.g.2.1E-3) # See the "Settling time (s)" below.-->
             <field name="1st_settling_time"/>
+            <!--Bias Spectroscopy>Integration time(NXbias) (s) (e.g.150E-6) # Time during which the data
+are acquired and averaged.-->
             <field name="integration_time"/>
+            <!--Bias Spectroscopy>End Settling time(NXbias) (s) (e.g.4E-3) # Time to wait after the sweep has finished and the bias is ramped to the initial value.-->
             <field name="end_settling_time"/>
+            <!--Bias Spectroscopy>Z control time(NXbias) (s) (e.g.200E-3) # Time during which the
+Z-Controller is enabled once a sweep has finished. When averaging multiple sweeps
+(i.e. Sweeps>1), the Z-Controller is enabled for this duration between each sweep.
+After the last sweep, it will wait the specified time before continuing a running scan.
+This ensures each sweep reliably starts from the same position. This parameter is
+disabled when Z-Controller to Hold is deselected in the Advanced section.-->
             <field name="z_contro_time"/>
+            <!--Bias Spectroscopy>Max Slew rate(NXbias) (V/s) (e.g.1E+0) # Maximum rate at which
+the bias changes (before, during and after sweeping).-->
             <field name="max_slew_rate"/>
+            <!--Bias Spectroscopy>backward sweep(NXbias) (e.g.TRUE) # Select whether to measure
+the backward (return) sweep or the forward only.-->
             <field name="backward_sweep"/>
+            <!--Z-Controller>Controller name(NXpositioner) (e.g.log Current) # Controller name.
+This name which will be displayed at places where you can select a controller.-->
             <field name="z_control_name"/>
+            <!--Z-Controller>Controller status(NXpositioner) (e.g.OFF) # ON/OFF-->
             <field name="z_control_status"/>
+            <!--Z-Controller>Setpoint(NXpositioner) (e.g.50E-12) # Set Point is the desired value
+of the control signal. It can be set by editing the number or using the slider bar.
+Click the "Set" button above the input field to use the actual value as Set Point. The slider shows the Set Point as well as the current value.
+Z-Controller>Setpoint unit(NXpositioner) (e.g.A) # Angstrom-->
             <field name="z_sontrol_setpoint"/>
-            <!-- Z-Controller>Setpoint unit(NXpositioner) (e.g.A) # Angstrom-->
+            <!--Z-Controller>P gain(NXpid) (e.g.6E-12) # The Type switches controller parameters
+between P/I (proportional gain/integral gain) and P/T (proportional gain/time constant).
+The formula for the controller in the frequency domain is: G(s) = P + I/s = P(1 + 1/(Ts)).
+The integral gain and time constant are related as follows: I = P/T.-->
             <field name="z_control_p_gain"/>
+            <!--Z-Controller>I gain(NXpid) (e.g.39.8241E-9) # See "Z-Controller>P gain" below.-->
             <field name="z_control_i_gain"/>
+            <!--Z-Controller>Time const(NXpid) (s) (e.g.150.662E-6) # See "Z-Controller>P gain" below.-->
             <field name="z_control_time_const"/>
+            <!--Z-Controller>TipLift(NXpositioner) (m) (e.g.0E+0) # Lifts the tip by the specified
+amount when then controller is switched off. This can be a positive or a negative number,
+i.e. the tip can also be moved towards the sample. Be careful with sign and value when
+using this feature.-->
             <field name="z_control_tip_lift"/>
+            <!--Z-Controller>Switch off delay(NXpositioner) (s) (e.g.0E+0) # Use this parameter for
+a reproducible position when switching off the Z-controller. When >0 and the Z-controller
+is switched off, it doesn't switch off immediately but continues to run for the specified time and averages the Z position.-->
             <field name="z_control_switchoff_delay"/>
         </group>
         <group name="data" type="NXdata">
@@ -471,10 +580,14 @@ LI Demod 1 Y (A) [bwd] [filt] lockin
 Temperature
 x
 y
-z-->
-        <group name="single_point" type="NXdata"/>
-        <group name="line_scan" type="NXdata"/>
-        <group name="alternative_plot" type="NXdata"/>
-        <group name="mesh_scan" type="NXdata"/>
+z
+single point default plot # current(I) vs bias(V)-->
+        <group name="single_point" type="NXdata" optional="true"/>
+        <!--line scan default plot # multi I vs. V curves-->
+        <group name="line_scan" type="NXdata" optional="true"/>
+        <!--alternative plot # current(I) curve in the 2D space of (position(x), bias(V))-->
+        <group name="alternative_plot" type="NXdata" optional="true"/>
+        <!--mesh scan default plot # 2D slices of the above alternative plot-->
+        <group name="mesh_scan" type="NXdata" optional="true"/>
     </group>
 </definition>
