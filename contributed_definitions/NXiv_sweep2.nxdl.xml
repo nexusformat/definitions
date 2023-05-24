@@ -60,7 +60,7 @@
                 <item value="sample"/>
             </enumeration>
         </field>
-        <field name="entry_identifier">
+        <field name="entry_identifier" optional="true">
             <doc>
                  The name of the output file, with the number of scans at the end.e.g. (e.g.
                  221122_Au_5K00014)
@@ -72,14 +72,14 @@
                  output file. (e.g. 221122_Au_5K)
             </doc>
         </field>
-        <field name="experiment_identifier">
+        <field name="experiment_identifier" optional="true">
             <doc>
                  Path to storage of output files. (e.g. Path C:\Users\SPM-
                  PEEM\Desktop\DATA_Nanonis\20220711_CreaTec_Service_Benchmarks_LHe\Nanonis-
                  Session-PMD100-HVHU_CreaTec_Service_PalmaLabBerlin220711)
             </doc>
         </field>
-        <field name="experiment_description">
+        <field name="experiment_description" optional="true">
             <doc>
                  Descriptive comments for this experiment, added by the experimenter, coming from
                  the output file. (e.g. Comment01 SYNC &amp; Filter LP 8order WITHDRAW 600 steps,
@@ -87,16 +87,16 @@
             </doc>
         </field>
         <group type="NXinstrument">
-            <group name="hardware" type="NXfabrication"/>
+            <group name="hardware" type="NXfabrication" optional="true"/>
             <!--any or specifique 'harware' and 'software'?-->
-            <group name="software" type="NXfabrication"/>
+            <group name="software" type="NXfabrication" optional="true"/>
             <!--doc: |
 Software and hardware for control, scanning and data collection in the SPM system
 hardware:
 doc: Hardware type used in SPM experiment, includes hardware manufacturers and type. (e.g. Nanonis BP5e)
 softwareMain>Software:
 doc: Type of software used in SPM experiments, e.g. software version serial number, UI and RT probe release method. (e.g. SW Version Generic 5e -\- SoftwareMain>UI Release 10771 -\- SoftwareMain>RT Release 10771)-->
-            <group name="current_amplifier" type="NXamplifier"/>
+            <group name="current_amplifier" type="NXamplifier" optional="true"/>
             <!--hardware: Current amplifier> hardware: CreaTec GmbH
 amplification: Current amplifier> factor (V/V): 1E-10
 crosstalk_compensation: Current amplifier> Capacitive cross-talk compensation: Yes/No-->
@@ -124,7 +124,13 @@ record_final_z:
  doc: Select whether to record the Z position during Z averaging time at the end of the sweep (after Z control time) and store the average value in the header of the file when saving. Using this option increases the sweep time by Z averaging time. (e.g. FALSE)
 run:
  doc: Bias Spectroscopy>Lock-In run FALSE # Select whether to set the Lock-In to run during the measurement. When using this feature, make sure the Lock-In is configured correctly and settling times are set to twice the Lock-In period at least. This option is ignored when Lock-In is already running. This option is disabled if the Sweep Mode is MLS and the flag to configure the Lock-In per segment in the Multiline segment editor is set.-->
-            <group name="sample_bias" type="NXiv_bias"/>
+            <group name="sample_bias" type="NXiv_bias">
+                <field name="bias" type="NX_NUMBER" units="NX_VOLTAGE">
+                    <doc>
+                         Applied a voltage between tip and sample.
+                    </doc>
+                </field>
+            </group>
             <!--sample_bias(NXbias):
 Tip bias/Sample bias If the spectroscopy V bias is applied to the
 Modulated signal Bias (V) 1E-3 Applied modulation to the bias voltage.
@@ -153,7 +159,8 @@ doc: Same directional representation as bias. (e.g. 1E-3)-->
                      cryo_sheild_temp must be provided.
                 </doc>
             </field>
-            <group name="output_cabling" type="NXcircuit"/>
+            <!--TODO: after fixing the sxm remove the optional field-->
+            <group name="output_cabling" type="NXcircuit" optional="true"/>
             <!--Cabling & Config
 output_mode:
 doc: Number of output channels. (e.g. User Output)
@@ -164,14 +171,17 @@ doc: User outputs whose name can be modified in the corresponding module. (e.g. 
 output_slew_rate(NX_NUMBER):
 doc: The rate at which the one of the signal changes when ramping to the starting point. (V/s) (e.g. Inf)-->
             <group name="piezo_config" type="NXcollection">
-                <field name="active_calib.">
+                <field name="active_calib">
                     <doc>
                          The name of caliberation type. (e.g. LHe)
                     </doc>
                 </field>
-                <field name="calib._N" type="NX_NUMBER">
+                <field name="calib_N" type="NX_NUMBER">
                     <doc>
-                         N denotes X or Y or Z. There are 3 parameters in X, Y, and Z directions and there are 3 controls availables: Calibr. (m/V), Range (m) and HV gain. Two of them are enough to define the calibration, so when changing any value one of the other values will be updated automatically. (e.g. 3.8E-9)
+                         N denotes X or Y or Z. There are 3 parameters in X, Y, and Z directions and there 
+                         are 3 controls availables: Calibr. (m/V), Range (m) and HV gain. Two of them are 
+                         enough to define the calibration, so when changing any value one of the other values
+                          will be updated automatically. (e.g. 3.8E-9)
                     </doc>
                 </field>
                 <field name="hv_gain_N" type="NX_NUMBER">
@@ -189,7 +199,7 @@ doc: The rate at which the one of the signal changes when ramping to the startin
                     </doc>
                 </field>
                 <!--Inf-->
-                <field name="curvature_radius N" type="NX_NUMBER" units="NX_LENGTH">
+                <field name="curvature_radius_N" type="NX_NUMBER" units="NX_LENGTH">
                     <doc>
                          N denotes X or Y. There are 2 parameters in X and Y directions and this tab is
                          used to set a curvature (can be set approximately to the length of the
@@ -203,9 +213,9 @@ doc: The rate at which the one of the signal changes when ramping to the startin
                 </field>
                 <field name="drift_N" type="NX_NUMBER">
                     <doc>
-                         N denotes X or Y. There are 2 parameters in X and Y directions. Define the drift
-                         speed for all three axes. When the compensation is on, the piezos will start to
-                         move at that speed. (e.g. 0E+0)
+                         N denotes X, Y or Z. There are 3 parameters in X, Y and Z directions. Define the
+                         drift speed for all three axes. When the compensation is on, the piezos will
+                         start to move at that speed. (e.g. 0E+0)
                     </doc>
                 </field>
                 <field name="drift_correction_status" type="NX_BOOLEAN">
@@ -246,7 +256,7 @@ current_sensor(NXsensor):-->
                              The scanning area in x position in the frame. (e.g. 130.5E-9)
                         </doc>
                     </field>
-                    <field name="z-controller" type="NX_NUMBER" units="NX_LENGTH">
+                    <field name="z_controller" type="NX_NUMBER" units="NX_LENGTH">
                         <doc>
                              Indicate the tip position Z between tip and sample. The tip position can also be
                              varied when the controller is not running. (e.g. 130.5E-9)
@@ -256,7 +266,7 @@ current_sensor(NXsensor):-->
                 <!--parameters for a measurement at a single location during the scan-->
                 <group name="sweep_control" type="NXcollection">
                     <group name="bias_spectroscopy" type="NXbias_spectroscopy">
-                        <field name="integration time" type="NX_NUMBER" units="NX_TIME">
+                        <field name="integration_time" type="NX_NUMBER" units="NX_TIME">
                             <doc>
                                  Time during which the spectroscopy data are acquired and averaged. (e.g. 150E-6)
                             </doc>
@@ -308,7 +318,7 @@ current_sensor(NXsensor):-->
                                  10)
                             </doc>
                         </field>
-                        <field name="acquisition_period" type="NX_NUMBER" units="NX_TIME">
+                        <field name="acquisition_period" type="NX_NUMBER" units="NX_TIME" optional="true">
                             <doc>
                                  Update rate for several processes like History Graph, Auto-Approach, and for
                                  many Programming Interface functions. This is usually set to 20 ms. All
@@ -317,7 +327,7 @@ current_sensor(NXsensor):-->
                                  multiple of the Acquisition Period. (e.g. 20E-3)
                             </doc>
                         </field>
-                        <field name="animations_period" type="NX_NUMBER" units="NX_TIME">
+                        <field name="animations_period" type="NX_NUMBER" units="NX_TIME" optional="true">
                             <doc>
                                  Update rate of animated graphical indicators. These are e.g. some graphs &amp;
                                  sliders. A reasonable value is 40 ms (25 updates per second). Increase this
@@ -382,12 +392,12 @@ current_sensor(NXsensor):-->
                                  Define the image resolution. (e.g. 512)
                             </doc>
                         </field>
-                        <field name="speed_forw." type="NX_NUMBER">
+                        <field name="speed_forw" type="NX_NUMBER">
                             <doc>
                                  Define the scan forward speed in the forward direction. (m/s) (e.g. 11.7187E-9)
                             </doc>
                         </field>
-                        <field name="speed_backw." type="NX_NUMBER">
+                        <field name="speed_backw" type="NX_NUMBER">
                             <doc>
                                  Define the scan backward speed in the forward direction. (m/s) (e.g. 11.7187E-9)
                             </doc>
@@ -396,7 +406,9 @@ current_sensor(NXsensor):-->
                 </group>
             </group>
         </group>
-        <!--RESOLUTION (calculation input)-->
+        <!--RESOLUTION (calculation input)
+TODO: After fix resolution_indicators back to required
+As all of the bellow are linked-->
         <group name="resolution_indicators" type="NXprocess" optional="true">
             <!--Temperature 1>link to INSTR/STM/head Temperature 1 (K) (e.g. 4.92997E+0) # Temperature of STM head.-->
             <field name="temp_stm_head"/>
@@ -457,7 +469,8 @@ reasonable. For normal use, 300-500 ms is a good value, but for recording a reso
 high-Q cantilever, values of several seconds might be necessary. Usually this parameter doesn’t need to be set from this module; the sweep modules will set this value according to the sweep timings.-->
             <field name="measurement_period"/>
         </group>
-        <!--REPRODUCIBILITY-->
+        <!--TODO: Later fix REPRODUCIBILITY_indicator
+as all of the bellow are linked-->
         <group name="reproducibility_indicators" type="NXprocess" optional="true">
             <!--Bias>Bias(NXBias) (V) (e.g. 100E-3) # Applied bias voltage.-->
             <field name="bias"/>
