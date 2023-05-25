@@ -104,6 +104,8 @@ We developed entirely new base classes. Some of them are also used for other tec
     :ref:`NXstage_lab`:
         As it was mentioned for atom probe microscopy, this is a base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities which modern stages of electron microscopes frequently offer.
 
+    :ref:`NXcircuit_board`:, :ref:`NXadc`, and :ref:`NXdac`:
+        Base classes to describe electronic components of an electron microscope. These base classes need still to be harmonized with those used in the field of low-temperature scanning probe microscopy.
 
 .. _EmCommonBC:
 
