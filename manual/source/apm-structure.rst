@@ -9,6 +9,7 @@ B5: Atom-probe tomography
    ApmAppDef
    ApmBC
    ApmRemovedBC
+   ApmFurtherDefs
 
 
 .. _IntroductionApm:
@@ -70,3 +71,20 @@ a set of frequently on-the-fly processed computational data. For now we represen
 
 .. Removed base classes
 .. ####################
+
+.. _ApmFurtherDefs:
+
+Further data schemas for atom probe
+###################################
+
+We have also developed a collection of application definition which exemplify how data post-processing workflows
+with typical steps specific for atom probe and reconstruction of microstructural features can be described with NeXus.
+These application definitions and base classes have an own section in the proposal which you can find on the landing
+page by inspection the section on computational geometry and microstructures.
+
+Furthermore, we are working with the NFDI-MatWerk consortium to explore how tools from the FAIRmat and the NFDI-MatWerk
+consortium can be used to describe research, data, metadata, and workflows. This work is organized in the infrastructure
+use case IUC09 within the NFDI-MatWerk project. One example how NeXus could be used to describe processing of
+atom probe data with a tool which was developed by Alaukik Saxena et al. at the Max-Planck-Institut für Eisenforschung GmbH
+in Düsseldorf is available as the so-called :ref:`NXapm_composition_space_results` application definition. 
+
