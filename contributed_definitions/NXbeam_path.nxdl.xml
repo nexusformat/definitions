@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--05/2023
+A draft of a new base class to describe a beam path consisting of one or
+more optical elements (e.g. a beam path in a luminescence setup).-->
+<!--To do:
+[ ] Harmonize common fields/classes among base classes used in NXbeam_path,
+    e.g. NXshape in NXbeam_splitter and NXpolarizer_opt, or NXsample used for
+    describing substrates and coatings etc.
+[ ] How to describe a setup or beam path? Order/sequence defined by
+    NXtransformations? => discussion needed-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXbeam_path" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         A beam path consisting of one or more optical elements.
+         
+         NXbeam_path is used in NXopt to describe the beam path, i.e. the arrangement
+         of optical elements between the excitation source and the sample, or between
+         the sample and the detector unit.
+         
+         To describe the order of the elements, use 'order(NXtransformations)', where
+         each element's position points to the preceding element via '@depends_on'.
+         Special case beam splitter: A beam splitter is a device which separates the
+         beam into two or more beams. If such a device is part of the beam path use
+         two or more NXbeam_paths to describe the beam paths after the beam splitter.
+         In this case, in the dependency chain of the new beam paths, the first
+         elements each point to the beam splitter, as this is the previous element.
+    </doc>
+    <doc>
+         Describe the relevant optical elements in the beam path by using the
+         appropriate base classes. in NXopt_element You may use as many elements as
+         needed, also several elements of the same type as long as each element has
+         its own name.
+    </doc>
+    <field name="depends_on">
+        <doc>
+             Entry point of the dependency chain defined by the NXtransformations
+             field, i.e. a link to the first element in the beam path.
+             Example: /entry/instrument/beam_path/radiation_source.
+        </doc>
+    </field>
+    <group type="NXtransformations">
+        <!--Possibilities:
+(1) Modify NXtransformations to include properties that modify the light beam
+(e.g. polarization state) instead (or in addition) to transformations like
+translation and rotation
+(2) Base class similar to NXtransformations but for changes of optical
+properties (e.g. polarization state).-->
+        <doc>
+             Specify the order of the optical elements by defining a dependency chain.
+             For each element, a '@depends_on' attribute should be used to state the
+             position of the element in the beam path by pointing to the previous
+             element. For the very first element, use the string &quot;.&quot; instead.
+        </doc>
+        <field name="AXISNAME" type="NX_NUMBER" units="NX_TRANSFORMATIONS">
+            <doc>
+                 For each element in the beam path, one such field must exist with a
+                 '@depends_on' attribute defined to specify its position in the beam
+                 path. Note that also 'NXopt/ENTRY/INSTRUMENT/sample_stage' and windows
+                 ('NXopt/ENTRY/INSTRUMENT/sample_stage/entry_window' and
+                 'NXopt/ENTRY/INSTRUMENT/sample_stage/exit_window') may be added to the
+                 dependency chain, i.e. may have an entry in this class even if they are
+                 not described in the beam path.
+                 ELEMENT is a place holder for the name of an optical beam path element.
+                 Note that the name of this field must be exactly the same as the
+                 element's field name.
+            </doc>
+            <attribute name="depends_on">
+                <doc>
+                     Add a link to the previous beam path element.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group type="NXopt_element" minOccurs="1">
+        <doc>
+             An optical element that is part of an optical setup or beam path.
+             If a commercial device, the company and model may be defined in the
+             respective fields.
+        </doc>
+        <field name="company" optional="true"/>
+        <field name="model" optional="true"/>
+    </group>
+</definition>
