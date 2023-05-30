@@ -1,0 +1,274 @@
+# 05/2023
+# Base class describing optical elements
+
+category: base
+symbols:
+  N_spectrum: |
+    Size of the wavelength or energy vector for which quantities of the optical
+    element, such as reflectivity or efficiency, are provided.
+  N_beam_profile_dim: |
+    Number of dimensions for which the beam profile is given.
+  N_beam_profile_points: |
+    Number of points of the beam profile.
+
+doc: |
+  Optical elements that may be part of an optical setup or beam path.
+
+NXopt_element:
+  doc: |
+    Describe the optical element by using the appropriate sub class.
+
+  (NXsource):
+    doc: |
+      Excitation source. One or more may be needed (e.g. two for a pump-probe
+      setup with one pump and one probe beam).
+      Depending on the source type, different properties are relevant, which
+      are provided through the respective base class (e.g. use NXopt_source for
+      lamps or lasers, NXchem_source for chemical reaction etc.).
+      Some base classes are incomplete (NXchem_source, NXbio_source); the
+      expertise of the respective communities is needed.
+    depends_on:
+      doc: Use this field to point to the previous optical element.
+    type:
+      exists: required
+      doc: Type of excitation source.
+      enumeration:
+      # Spallation Neutron Source
+      # Pulsed Reactor Neutron Source
+      # Reactor Neutron Source
+      # Synchrotron X-ray Source
+      # Pulsed Muon Source
+      # Rotating Anode X-ray
+      # Fixed Tube X-ray
+      # UV Laser
+      # Free-Electron Laser
+      # Optical Laser
+      # Ion Source
+      # UV Plasma Source
+      # Metal Jet X-ray
+        [
+          semiconductor laser, # NXopt_source
+          gas laser, # NXopt_source
+          other laser, # NXopt_source
+          lamp, # NXopt_source
+          X-rays, # NXsource ???
+          silicon carbide globar, # NXopt_source
+          super continuum, # NXopt_source
+          chemical reaction, # NXchem_source
+          ultrasound, # NXacoustic_source
+          sound, # NXacoustic_source
+          living organism, # NXbio_source
+          power supply, # NXpower_supply
+          electron source, # from NXem ???
+          other
+        ]
+    # separate base classes for different sources:
+    (NXacoustic_source): # needs to be developed
+      doc: |
+        Acoustic source, e.g. an ultrasonic transducero or a imploding gas
+        bubble (sonoluminescence).
+    (NXpower_supply): # needs to be developed
+    (NXchem_source): # input for experts from that field needed
+    (NXbio_source): # input for experts from that field needed
+    # is NXsource sufficient for x-rays?
+    (NXopt_source):
+      doc: Specify the properties of the optical source.
+      lifespan(NX_NUMBER):
+        doc: Lifespan of the excitation (typically provided in hours).
+        unit: NX_TIME
+      measure_time(NX_NUMBER):
+        doc: How many hours has the lamp been used?
+        unit: NX_TIME
+      excitation_wavelength(NX_FLOAT):
+        exists: required
+        doc: |
+          Wavelengths or energy vector of the excitation source. This can be a
+          single value or a spectrum, depending on the type of experiment.
+        unit: NX_ANY
+        \@units:
+          doc: Unit of wavelength or energy.
+      beam_profile:
+      # ??? What's the best way to enter this ???
+        doc: Two- or three-dimensional beam profile.
+        dimensions:
+          rank: 2
+          dim:
+            [
+              [1, N_beam_profile_dim],
+              [2, N_beam_profile_points]
+            ]
+      peak_power(NX_FLOAT):
+        doc: Power of one light pulse if the source is a pulsed source.
+        unit: NX_POWER
+      cw(NX_BOOLEAN):
+        exists: required
+        doc: Is the excitation source continuous wave (CW)?
+      cw_power(NX_FLOAT):
+        doc: Power of CW beam.
+      bandwidth(NX_FLOAT):
+        doc: FWHM bandwidth of the excitation source.
+        unit: NX_WAVELENGTH
+      coherence_length(NX_FLOAT):
+        doc: Coherence length.
+        unit: NX_LENGTH
+      divergence(NX_FLOAT):
+        doc: Divergence of the excitation beam.
+        unit: NX_ANGLE
+  (NXpinhole):
+    doc: |
+      Use this field to describe a simple pinhole (round geometry). Define its
+      dimension using 'diameter'. For more complex geometries, 'NXaperture'
+      should be used.
+  (NXslit):
+    doc: |
+      Use this field to describe a simple slit (rectangular geometry). Define
+      its dimensions using 'x_gap' and 'y_gap'. For more complex geometries,
+      'NXaperture' should be used.
+  aperture_NUMBER(NXaperture):
+    doc: |
+      Use this field to describe an aperture. To specify a window, use the
+      field 'window_NUMBER(NXaperture)'.
+  window_NUMBER(NXaperture):
+    doc: |
+      A window, e.g. an entry or exit window of a cryostat.
+    depends_on:
+      doc: Use this field to point to the previous optical element.
+    material(NX_CHAR):
+      exists: required
+      doc: The material of the window.
+      enumeration:
+        [
+          quartz,
+          diamond,
+          calcium fluoride,
+          zinc selenide,
+          thallium bromoiodide,
+          alkali halide compound,
+          Mylar,
+          other,
+        ]
+    other_material(NX_CHAR):
+      doc: |
+        If you specified 'other' as material, decsribe here what it is.
+    thickness(NX_FLOAT):
+      doc: Thickness of the window
+      unit: NX_LENGTH
+    orientation_angle(NX_FLOAT):
+      doc: |
+        Angle of the window normal (outer) vs. the substrate normal
+        (similar to the angle of incidence).
+      unit: NX_ANGLE
+    reference_data_link:
+      doc: |
+        If reference data were measured add a link to the NeXus file where they
+        are described.
+  (NXmirror):
+  filter_NUMBER(NXfilter):
+  (NXattenuator):
+    doc: A device that reduces the intensity of a beam by attenuation.
+    attenuator_transmission(NX_FLOAT):
+      doc: The transmitted intensity divided by the incident intensity.
+      unit: NX_DIMENSIONLESS
+    attenuation(NX_FLOAT):
+      doc: Attenuation of the attenuator in dB.
+      unit: NX_ANY
+      \@units:
+        doc: |
+          Unit of the measured data is not covered by NXDL units state
+          here which unit was used.
+    (NXaperture):
+      doc: Input and output aperture of the attenuator.
+    (NXgeomtry):
+      doc: Geometry (shape, size etc.) of the attenuator.
+  (NXgrating):
+    doc: |
+      A diffraction grating. Define relevant parameters in the corresponding
+      fields, e.g. order of diffration (diffraction_order) or angular
+      dispersion (angular_dispersion).
+    type:
+      exists: required
+      doc: Define the type of the grating.
+    angular_dispersion(NX_FLOAT):
+      doc: Dispersion of the grating in nm/mm (or e.g. nm/mrad).
+      unit: NX_UNITLESS
+    grooves(NX_FLOAT):
+      doc: Number of grooves per mm.
+      unit: NX_PER_LENGTH
+    blaze_wavelength(NX_FLOAT):
+      doc: Blaze wavelength of the grating.
+      unit: NX_WAVELENGTH
+    efficiency(NX_FLOAT):
+      doc: Efficiency curve versus wavelength or energy.
+      unit: NX_UNITLESS
+      dimensions:
+        rank: 1
+        dim:
+          [[1, N_spectrum]]
+    spectrum(NX_FLOAT):
+      doc: |
+        Spectral values, e.g. wavelength or energy. Vector of length
+        N_spectrum.
+      unit: NX_ANY
+      \@units:
+        doc: Unit of wavelength array (e.g. nanometer or Angstrom)
+  (NXdisk_chopper):
+    doc: |
+      A device blocking the beam in a temporal periodic pattern, e.g. a optical
+      chopper wheel. Specify the frequency range using 'min_frequency' and
+      'max_frequency'.
+    min_frequency(NX_FLOAT):
+      doc: Minimum frequency in Hertz.
+      unit: NX_FREQUENCY
+    max_frequency(NX_FLOAT):
+      doc: Maximum frequency in Hertz.
+      unit: NX_FREQUENCY
+    frequency_resolution(NX_FLOAT):
+      doc: Frequency resolution in Hertz.
+      unit: NX_FREQUENCY
+  (NXmonochromator):
+    doc: |
+      A monochromator or spectrometer.
+    spectrum(NX_FLOAT):
+      doc: |
+        Spectral values of the monochromator, e.g. wavelength or energy values
+        used for the measurement.
+      unit: NX_ANY
+      \@units:
+        doc: Unit of wavelength array (e.g. nanometer or Angstrom)
+    (NXgrating):
+      doc: |
+        Diffraction grating. If two or more gratings were used, define the
+        angular dispersion and the wavelength range (min/max wavelength) for
+        each grating and make sure that the wavelength ranges do not overlap.
+        The dispersion should be defined for the entire wavelength range of the
+        experiment.
+      angular_dispersion(NX_FLOAT):
+        doc: Dispersion of the grating in nm/mm.
+        unit: NX_DIMENSIONLESS
+      grating_wavelength_min(NX_FLOAT):
+        doc: Minimum wavelength of the grating.
+        unit: NX_WAVELENGTH
+      grating_wavelength_max(NX_FLOAT):
+        doc: Maximum wavelength of the grating.
+        unit: NX_WAVELENGTH
+    spectral_resolution(NX_FLOAT):
+        doc: Spectral resolution of the instrument.
+        unit: NX_WAVENUMBER
+    (NXslit):
+      doc: Define the width of the monochromator slit in the subfield x_gap.
+      fixed_slit(NX_BOOLEAN):
+        doc: Was the slit width fixed?
+      max_gap(NX_FLOAT):
+        doc: If slit width was not fixed, define the maximum slit width.
+        unit: NX_LENGTH
+
+  # x-ray optics:
+  (NXxraylens):
+  # what else?
+
+  # ====== New base classes: ======
+  (NXpolarizer_opt):
+  (NXbeam_splitter):
+  (NXwaveplate):
+  (NXlens_opt):
+  (NXfiber):
