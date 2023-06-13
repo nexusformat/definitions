@@ -154,25 +154,31 @@ def test_fileline_error():
     In this test the yaml fileline in the error message is tested.
     """
     test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError1.yaml'
-    out_nxdl = 'tests/data/nyaml2nxdl/temp_NXfilelineError1.yaml'
+    out_nxdl = 'tests/data/nyaml2nxdl/NXfilelineError1.nxdl.xml'
+    out_yaml = 'tests/data/nyaml2nxdl/temp_NXfilelineError1.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', test_yml_file])
     assert result.exit_code == 1
     assert '13' in str(result.exception)
     os.remove(out_nxdl)
+    os.remove(out_yaml)
 
     test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError2.yaml'
-    out_nxdl = 'tests/data/nyaml2nxdl/temp_NXfilelineError2.yaml'
+    out_nxdl = 'tests/data/nyaml2nxdl/NXfilelineError2.nxdl.xml'
+    out_yaml = 'tests/data/nyaml2nxdl/temp_NXfilelineError2.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', test_yml_file])
     assert result.exit_code == 1
     assert '21' in str(result.exception)
     os.remove(out_nxdl)
+    os.remove(out_yaml)
 
     test_yml_file = 'tests/data/nyaml2nxdl/NXfilelineError3.yaml'
-    out_nxdl = 'tests/data/nyaml2nxdl/temp_NXfilelineError3.yaml'
+    out_nxdl = 'tests/data/nyaml2nxdl/NXfilelineError3.nxdl.xml'
+    out_yaml = 'tests/data/nyaml2nxdl/temp_NXfilelineError3.yaml'
     result = CliRunner().invoke(nyml2nxdl.launch_tool, ['--input-file', test_yml_file])
     assert result.exit_code == 1
     assert '25' in str(result.exception)
     os.remove(out_nxdl)
+    os.remove(out_yaml)
 
     sys.stdout.write('Test on xml -> yml fileline error handling okay.\n')
 
@@ -196,13 +202,14 @@ def test_symbols():
 
 def test_attributes():
     """
-        Check the correct handling of empty attributes
-    or attributes fields, e.g. doc
+        Check expected attributes in NeXus fields, groups, and attributes.
+        Check proper doc elements.
     """
     ref_xml_attribute_file = 'tests/data/nyaml2nxdl/Ref_NXattributes.nxdl.xml'
     test_yml_attribute_file = 'tests/data/nyaml2nxdl/NXattributes.yaml'
     test_xml_attribute_file = 'tests/data/nyaml2nxdl/NXattributes.nxdl.xml'
-    desired_matches = ['<attribute', '</attribute>', '<doc>', '</doc>']
+    desired_matches = ['<attribute', '</attribute>', '<doc>', '</doc>',
+                       '<field', '</field>', '<group', '</group>']
     compare_matches(
         ref_xml_attribute_file,
         test_yml_attribute_file,
