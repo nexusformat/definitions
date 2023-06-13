@@ -28,7 +28,6 @@ which details a hierarchy of data/metadata elements
 # So the corresponding value is to skip them and
 # and also carefull about this order
 import hashlib
-import os
 from yaml.composer import Composer
 from yaml.constructor import Constructor
 
@@ -111,7 +110,6 @@ def cleaning_empty_lines(line_list):
     """
         Cleaning up empty lines on top and bottom.
     """
-
     if not isinstance(line_list, list):
         line_list = line_list.split('\n') if '\n' in line_list else ['']
 
@@ -120,11 +118,18 @@ def cleaning_empty_lines(line_list):
         if line_list[0].strip():
             break
         line_list = line_list[1:]
+        if len(line_list) == 0:
+            line_list.append('')
+            return line_list
+
     # Clining bottom empty lines
     while True:
         if line_list[-1].strip():
             break
         line_list = line_list[0:-1]
+        if len(line_list) == 0:
+            line_list.append('')
+            return line_list
 
     return line_list
 
@@ -215,7 +220,5 @@ def separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, sep_xml):
             # If the yaml fiile does not contain any hash for nxdl then we may have last line.
             if last_line:
                 yml_f_ob.write(last_line)
-    if not sha_hash:
-        os.remove(sep_xml)
 
     return sha_hash

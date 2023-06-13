@@ -270,7 +270,7 @@ class Nxdl2yaml():
         Handle docs field along the yaml file. In this function we also tried to keep
         the track of intended indentation. E.g. the bollow doc block.
             * Topic name
-              DEscription of topic
+                Description of topic
         """
 
         # Handling empty doc
@@ -280,14 +280,16 @@ class Nxdl2yaml():
             text = handle_mapping_char(text, -1, True)
         if "\n" in text:
             # To remove '\n' character as it will be added before text.
-            text = text.split('\n')
-            text = cleaning_empty_lines(text)
+            text = cleaning_empty_lines(text.split('\n'))
             text_tmp = []
             yaml_indent_n = len((depth + 1) * DEPTH_SIZE)
-            # Find indentaion in the first valid line with alphabet
+            # Find indentaion in the first text line with alphabet
             tmp_i = 0
             while tmp_i != -1:
                 first_line_indent_n = 0
+                # Taking care of empty text whitout any character
+                if len(text) == 1 and text[0] == '':
+                    break
                 for ch_ in text[tmp_i]:
                     if ch_ == ' ':
                         first_line_indent_n = first_line_indent_n + 1
@@ -538,8 +540,8 @@ class Nxdl2yaml():
           and attributes of dim has been handled inside this function here.
         """
         # pylint: disable=consider-using-f-string
-        possible_dim_attrs = ['ref', 'optional', 'recommended',
-                              'required', 'incr', 'refindex']
+        possible_dim_attrs = ['ref', 'required',
+                              'incr', 'refindex']
         possible_dimemsion_attrs = ['rank']
 
         # taking care of Dimension tag
@@ -851,7 +853,7 @@ class Nxdl2yaml():
             sys.stdout.write(f'Attributes: {node.attrib}\n')
         with open(output_yml, "a", encoding="utf-8") as file_out:
             tag = remove_namespace_from_tag(node.tag)
-            if tag == ('definition'):
+            if tag == 'definition':
                 self.found_definition = True
                 self.handle_definition(node)
                 # Taking care of root level doc and symbols
