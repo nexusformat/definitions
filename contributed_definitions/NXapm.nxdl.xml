@@ -8,7 +8,7 @@
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
-# version 2 of the License, or (at your option) any later version.
+# version 3 of the License, or (at your option) any later version.
 #
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -188,9 +188,12 @@ to describe also the upcoming technique of atomic scale analytical tomography ht
                  respective field and fill rather as completely as possible the fields
                  of the application definition behind instead of filling in these
                  details into the experiment_description free-text description field.
+                 
+                 Users are encouraged to add in this field eventual DOIs to papers
+                 which yield further details to the experiment.
             </doc>
         </field>
-        <field name="start_time" type="NX_DATE_TIME" recommended="true">
+        <field name="start_time" type="NX_DATE_TIME">
             <doc>
                  ISO 8601 time code with local time zone offset to UTC information
                  included when the microscope session started.
@@ -231,7 +234,7 @@ are required LAS root version camecaroot version analysis software-->
                 <attribute name="version"/>
             </field>
         </group>
-        <field name="run_number">
+        <field name="run_number" recommended="true">
             <doc>
                  Neither the specimen_name nor the experiment_identifier but the identifier
                  through which the experiment is referred to in the control software.
@@ -239,6 +242,10 @@ are required LAS root version camecaroot version analysis software-->
                  run_number. For other instruments, such as the one from Stuttgart or
                  Oxcart from Erlangen, or the instruments at GPM in Rouen, use the
                  identifier which is closest in meaning to the LEAP run number.
+                 The field does not have to be required if the information is recoverable
+                 in the dataset which for LEAP instruments is the case when RHIT or HITS
+                 files are also stored alongside a data artifact instance which is
+                 generated according to this NXapm application definition.
                  
                  As a destructive microscopy technique, a run can be performed only once.
                  It is possible, however, to interrupt a run and restart data acquisition
@@ -246,12 +253,12 @@ are required LAS root version camecaroot version analysis software-->
                  needs to be distinguished with different run numbers.
                  We follow this habit of most atom probe groups.
                  
-                 This application definition does currently not allow to store the
-                 entire set of such interrupted runs to be stored and covered. However,
-                 this is not because of a technical limitation within NeXus but
-                 because we have not seen a covering use case based on which we could
-                 have implemented and conceptualized this. Atom probers are invited to
-                 contact the respective people in the FAIRmat team to fix this.
+                 This application definition does currently not allow storing the
+                 entire set of such interrupted runs. Not because of a technical limitation
+                 within NeXus but because we have not seen a covering use case based
+                 on which we could have designed and implemented this case. 
+                 Atom probers are invited to contact the respective people in the
+                 FAIRmat team to fix this.
             </doc>
         </field>
         <group name="experiment_documentation" type="NXnote" optional="true">
@@ -301,12 +308,11 @@ are required LAS root version camecaroot version analysis software-->
         <!--description:
  exists: optional
  doc: |-->
-        <group type="NXuser" minOccurs="1" maxOccurs="unbounded">
+        <group type="NXuser" minOccurs="0" maxOccurs="unbounded">
             <doc>
-                 Contact information and eventually details of at least one person
-                 involved in the taking of the microscope session. This can be the
-                 principle investigator who performed this experiment.
-                 Adding multiple users if relevant is recommended.
+                 Contact information and eventually details person(s) involved in the
+                 microscope session. This can be the principle investigator who performed
+                 this experiment. Adding multiple users if relevant is recommended.
             </doc>
             <field name="name">
                 <doc>
@@ -370,6 +376,145 @@ are required LAS root version camecaroot version analysis software-->
                 </doc>
             </field>
         </group>
+        <group name="sample" type="NXsample" recommended="true">
+            <doc>
+                 Description of the sample from which the specimen was prepared or
+                 site-specifically cut out using e.g. a focused-ion beam instrument.
+                 
+                 The sample group is currently a place for storing suggestions from
+                 atom probers about other knowledge they have gained about the sample
+                 from which they cut the specimen which is field-evaporated during the
+                 experiment. Typically this is possible because the atom probe specimen
+                 is usually not heat treated as is but one assumes that one has the sample
+                 prepared as needed (i.e. with a specific grain diameter) and can thus
+                 just cut out the specimen from that material.
+                 
+                 There are cases though where the specimen is processed further, i.e. the
+                 specimen is machined further or exposed to external stimuli during the
+                 experiment. In this case, these details should not be stored in the
+                 sample group but atom probers should make suggestions how this application
+                 definition can be improved to find a better place and compromise
+                 how to improve this application definition.
+                 
+                 In the future also details like how the grain_diameter was characterized,
+                 how the sample was prepared, how the material was heat-treated etc.,
+                 should be stored as using specific application definitions/schemas
+                 which are then arranged and documented with a description of the workflow
+                 so that actionable graphs become instantiatable.
+            </doc>
+            <field name="grain_diameter" type="NX_FLOAT" optional="true" units="NX_LENGTH">
+                <doc>
+                     Qualitative information about the grain size, here specifically
+                     described as the equivalent spherical diameter of an assumed
+                     average grain size for the crystal ensemble.
+                     Users of this information should be aware that although the grain
+                     diameter or radius is often referred to as grain size and used in
+                     e.g. Hall-Petch-type materials models this is if at all an ensemble
+                     average whose reporting may be very informative or not if the specimen
+                     contains a few grains only. In atom probe the latter is often the case
+                     because grains are measured partially as their diameter can be in the
+                     order of magnitude of the physical diameter of the specimen.
+                     
+                     Reporting a grain size is useful though as it allows judging if
+                     specific features are expected to be found in the detector hit map.
+                </doc>
+            </field>
+            <field name="grain_diameter_error" type="NX_FLOAT" optional="true" units="NX_LENGTH">
+                <doc>
+                     Magnitude of the standard deviation of the grain_diameter.
+                </doc>
+            </field>
+            <field name="heat_treatment_temperature" type="NX_FLOAT" optional="true" units="NX_TEMPERATURE">
+                <doc>
+                     The temperature of the last heat treatment step before quenching.
+                     Knowledge about this value can give an idea how the sample
+                     was heat treated, however if available a documentation of the
+                     annealing treatment should be delivered by adding additional files
+                     which are uploaded alongside an NXapm instance.
+                     In the future there should better be an own schema used for the
+                     heat treatment.
+                </doc>
+            </field>
+            <field name="heat_treatment_temperature_error" type="NX_FLOAT" optional="true" units="NX_TEMPERATURE">
+                <doc>
+                     Magnitude of the standard deviation of the heat_treatment_temperature.
+                </doc>
+            </field>
+            <field name="heat_treatment_quenching_rate" type="NX_FLOAT" optional="true" units="NX_ANY">
+                <doc>
+                     Rate of the last quenching step.
+                     Knowledge about this value can give an idea how the specimen
+                     was heat treated, however there are many situations where one
+                     can imagine that the scalar value for just the quenching rate,
+                     i.e. the first derivative of the measured time-temperature profile
+                     is itself time-dependant. An example is when the specimen was
+                     left in the furnace after the furnace was switched off. In this case
+                     the specimen cools down with a specific rate of how this furnace
+                     cools down in the lab. Processes which in practice are often not
+                     documented with measuring the time-temperature profile.
+                     
+                     This can be problematic because when the furnace door was left open
+                     or the ambient temperature in the lab changes, i.e. for a series of
+                     experiments where one is conducted on a hot summer
+                     day and the next during winter as might have an effect on the
+                     evolution of the microstructure. There are many cases where this
+                     has been reported to be an issue in industry, e.g. think about aging
+                     aluminium samples left on the factory parking lot on a hot summer
+                     day.
+                </doc>
+            </field>
+            <field name="heat_treatment_quenching_rate_error" type="NX_FLOAT" optional="true" units="NX_ANY">
+                <doc>
+                     Magnitude of the standard deviation of the heat_treatment_quenching_rate.
+                </doc>
+            </field>
+            <field name="description" optional="true"/>
+            <group type="NXchemical_composition" recommended="true">
+                <doc>
+                     The chemical composition of the sample. Typically it is assumed that
+                     this more macroscopic composition is representative for the material
+                     so that the composition of the typically substantially less voluminous
+                     specimen probes from the more voluminous sample.
+                </doc>
+                <field name="normalization">
+                    <doc>
+                         Reporting compositions as atom and weight percent yields both
+                         dimensionless quantities but their conceptual interpretation
+                         differs. A normalization based on atom_percent counts relative to the
+                         total number of atoms are of a particular type. By contrast, weight_percent
+                         normalization factorizes in the respective mass of the elements.
+                         Python libraries like pint are challenged by these differences as
+                         at.-% and wt.-% both yield fractional quantities.
+                    </doc>
+                    <enumeration>
+                        <item value="atom_percent"/>
+                        <item value="weight_percent"/>
+                    </enumeration>
+                </field>
+                <group name="ION" type="NXion" minOccurs="1" maxOccurs="118">
+                    <field name="name">
+                        <doc>
+                             Human-readable name of the element/ion (e.g. Fe).
+                             Name has to be a symbol of an element from the periodic table.
+                             All symbols in the set of NXion instances inside the group
+                             chemical_composition need to be disjoint.
+                        </doc>
+                    </field>
+                    <field name="composition" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                        <doc>
+                             Composition value for the element/ion referred to under name.
+                             The value is normalized based on normalization, i.e. composition
+                             is either an atom or weight percent quantity.
+                        </doc>
+                    </field>
+                    <field name="composition_error" type="NX_FLOAT" optional="true" units="NX_DIMENSIONLESS">
+                        <doc>
+                             Magnitude of the standard deviation of the composition (value).
+                        </doc>
+                    </field>
+                </group>
+            </group>
+        </group>
         <group name="specimen" type="NXsample">
             <!--NEW ISSUE: inject the conclusion from the discussion with Andrea
 according to SAMPLE.yaml 0f8df14 2022/06/15
@@ -381,26 +526,30 @@ NEW ISSUE: it would be good to have an application definition NXicp for chemical
                 <doc>
                      Descriptive name or ideally (globally) unique persistent identifier.
                      The name distinguishes the specimen from all others and especially the
-                     predecessor/origin from where the specimen was cut.
-                     In cases where the specimen was e.g. site-specifically cut from
-                     samples or in cases of an instrument session during which multiple
-                     specimens are loaded, the name has to be descriptive enough to resolve
-                     which specimen on e.g. the microtip array was taken.
+                     predecessor/origin (see the sample group) from where this specimen was cut.
+                     In cases where the specimen was e.g. site-specifically cut from the
+                     sample referred to in the sample group or in cases of an instrument session
+                     during which multiple specimens are loaded, the name has to be descriptive
+                     enough to resolve which specimen on e.g. the microtip array was taken.
                      
-                     The user is advised to store the details how specimens were
-                     cut/prepared from samples in the sample history. This field must
-                     not be used for an alias of the specimen. Instead, use short_title.
+                     The user is advised to store the details how a specimen was cut/prepared
+                     from a specific sample in the sample_history. The sample_history field 
+                     must not be used for writing an alias of the specimen. Instead,
+                     use the field alias for this. As an example there may be a specimen/sample
+                     monitoring system in a lab with bar codes. The bar code is a good
+                     specimen/sample name. A shorter and more human readable alias like
+                     A0 can be an example for something to write in the alias field.
                      
                      In cases where multiple specimens have been loaded into the microscope
                      the name has to be the specific one, whose results are stored
-                     by this NXentry, because a single NXentry should be used only for
-                     the characterization of a single specimen in a single continuous run.
+                     by this NXentry, because a single NXentry is to be used for the 
+                     characterization of a single specimen in a single continuous run.
                      
                      Details about the specimen preparation should be stored in the
-                     sample history.
+                     sample_history or if this is not possible in the sample group.
                 </doc>
             </field>
-            <field name="sample_history">
+            <field name="sample_history" recommended="true">
                 <doc>
                      Ideally, a reference to the location of or a (globally) unique
                      persistent identifier of e.g. another file which should document
@@ -416,7 +565,7 @@ NEW ISSUE: it would be good to have an application definition NXicp for chemical
                      state and details of the preparation.
                 </doc>
             </field>
-            <field name="preparation_date" type="NX_DATE_TIME">
+            <field name="preparation_date" type="NX_DATE_TIME" recommended="true">
                 <doc>
                      ISO 8601 time code with local time zone offset to UTC information
                      when the specimen was prepared.
@@ -434,9 +583,9 @@ NEW ISSUE: it would be good to have an application definition NXicp for chemical
                      better be placed in resources which describe the sample_history.
                 </doc>
             </field>
-            <field name="short_title" optional="true">
+            <field name="alias" optional="true">
                 <doc>
-                     Possibility to give an abbreviation of the specimen name field.
+                     Short_name or abbreviation of the specimen name field.
                 </doc>
             </field>
             <field name="atom_types">
@@ -454,7 +603,14 @@ NEW ISSUE: it would be good to have an application definition NXicp for chemical
             <field name="description" optional="true">
                 <doc>
                      Discouraged free-text field in case properly designed records
-                     for the sample_history are not available.
+                     for the sample_history or sample section are not available.
+                </doc>
+            </field>
+            <field name="is_polycrystalline" type="NX_BOOLEAN" recommended="true">
+                <doc>
+                     Report if the specimen is polycrystalline, in which case it
+                     contains a grain or phase boundary, or if the specimen is a
+                     single crystal.
                 </doc>
             </field>
         </group>
@@ -733,10 +889,10 @@ laser_gun and laser_beam exists: [min, 0, max, 2]-->
                     <field name="wavelength" type="NX_FLOAT" recommended="true"/>
                     <field name="power" type="NX_FLOAT" recommended="true"/>
                     <field name="pulse_energy" type="NX_FLOAT" recommended="true"/>
-                </group>
-                <group name="laser_beam" type="NXbeam" recommended="true">
-                    <group name="pinhole_position" type="NXcollection" recommended="true"/>
-                    <group name="spot_position" type="NXcollection" recommended="true"/>
+                    <group type="NXbeam" minOccurs="0" maxOccurs="unbounded">
+                        <group name="pinhole_position" type="NXcollection" recommended="true"/>
+                        <group name="spot_position" type="NXcollection" recommended="true"/>
+                    </group>
                 </group>
             </group>
             <group name="stage_lab" type="NXstage_lab">
@@ -975,13 +1131,14 @@ post-processing of detector raw data to be specific they are listed
 under the atom_lab group because for experiment with commercial instrument
 these steps are currently not fully separatable as all processing in
 most cases the processing is done in commercial software.-->
-            <field name="status">
+            <field name="status" recommended="true">
                 <doc>
                      A statement whether the measurement was successful or failed prematurely.
                 </doc>
                 <enumeration>
                     <item value="success"/>
                     <item value="failure"/>
+                    <item value="unknown"/>
                 </enumeration>
             </field>
             <!--NEW ISSUE: atomic volume, detection efficiency, electric field (assumptions),
@@ -1530,7 +1687,7 @@ eventually processed via deconvolution methods-->
                         <field name="charge_state" type="NX_INT"/>
                         <field name="mass_to_charge_range" type="NX_FLOAT"/>
                         <field name="nuclid_list" type="NX_UINT" recommended="true"/>
-                        <field name="name"/>
+                        <field name="name" recommended="true"/>
                     </group>
                 </group>
             </group>
