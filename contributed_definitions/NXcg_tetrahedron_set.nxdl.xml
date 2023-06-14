@@ -8,7 +8,7 @@
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
-# version 2 of the License, or (at your option) any later version.
+# version 3 of the License, or (at your option) any later version.
 #
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,11 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
+<!--it is useful to define own base classes for frequently used classes
+a polyhedron is a specific polytope in 3d, do we need
+higher-dimensional polytopes? that could be useful for simplicies though
+as they are used in numerics etc. maybe reach out here to our friends
+from MarDI, for now let's assume we do not need polytopes for d > 3-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_tetrahedron_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
@@ -57,6 +62,7 @@
         </enumeration>
     </field>
     <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
+    <!--qualifiers and properties of tetrahedra-->
     <field name="volume" type="NX_NUMBER" units="NX_VOLUME">
         <doc>
              Interior volume
@@ -107,6 +113,18 @@
              which the qualifiers and mesh data are interpretable.
         </doc>
     </group>
+    <!--substantially more detailed descriptors of the shape, the mesh
+interior_angle(NX_NUMBER):
+  doc: |
+    Array of interior angle values. For each tetrahedron the quadruplet of
+    angles is a sequence following the order of the vertices. The angle
+    is the angle at the specific vertex. TODO lexiographical order.
+    Winding order has to be interpreted to resolve the individual angles
+    between edges of adjoining face triangles meeting at each corner/vertex.
+  unit: NX_ANGLE
+  dimensions:
+    rank: 2
+    dim: [[1, c], [2, 12]]-->
     <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Integer which specifies the first index to be used for distinguishing
@@ -131,7 +149,9 @@
     <group name="vertex_normal" type="NXcg_unit_normal_set"/>
     <group name="edge_normal" type="NXcg_unit_normal_set"/>
     <group name="face_normal" type="NXcg_unit_normal_set"/>
+    <!--detailed mesh-based representation-->
     <group name="tetrahedra" type="NXcg_face_list_data_structure">
+        <!--exists: [min, 0, max, 1]-->
         <doc>
              A simple approach to describe the entire set of tetrahedra when the
              main intention is to store the shape of the tetrahedra for visualization.
@@ -139,11 +159,13 @@
         </doc>
     </group>
     <group name="tetrahedron" type="NXcg_face_list_data_structure">
+        <!--exists: [min, 0, max, infty]  # can this be max, c?-->
         <doc>
              Disentangled representations of the mesh of specific tetrahedra.
         </doc>
     </group>
     <group name="tetrahedron_half_edge" type="NXcg_half_edge_data_structure">
+        <!--exists: [min, 0, max, infty]-->
         <doc>
              Disentangled representation of the planar graph that each tetrahedron
              represents. Such a description simplifies topological processing

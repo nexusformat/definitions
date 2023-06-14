@@ -8,7 +8,7 @@
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
-# version 2 of the License, or (at your option) any later version.
+# version 3 of the License, or (at your option) any later version.
 #
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,6 +21,15 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
+<!--it is useful to define own base classes for frequently used classes
+a polyhedron is a specific polytope in 3d, do we need
+higher-dimensional polytopes? that could be useful for simplicies though
+as they are used in numerics etc. maybe reach out here to our friends
+from MarDI, for now let's assume we do not need polytopes for d > 3
+NeXus already supports polyhedra via NXoff_geometry
+the here proposed base class extends the capabilities to qualifiers of
+polyhedra and also half_edge_data_structures that can be useful
+for clean graph-based descriptions of polyhedra.-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_polyhedron_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
@@ -61,6 +70,7 @@
         </enumeration>
     </field>
     <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
+    <!--qualifiers and properties of polyhedra-->
     <field name="volume" type="NX_NUMBER" units="NX_VOLUME">
         <doc>
              Interior volume
@@ -126,6 +136,7 @@
              which the qualifiers and mesh data are interpretable.
         </doc>
     </group>
+    <!--substantially more detailed descriptors of the shape, the mesh-->
     <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Integer which specifies the first index to be used for distinguishing
@@ -150,22 +161,34 @@
     <group name="vertex_normal" type="NXcg_unit_normal_set"/>
     <group name="edge_normal" type="NXcg_unit_normal_set"/>
     <group name="face_normal" type="NXcg_unit_normal_set"/>
+    <!--detailed mesh-based representation-->
     <group name="polyhedra" type="NXcg_face_list_data_structure">
+        <!--exists: [min, 0, max, 1]-->
         <doc>
              A simple approach to describe the entire set of polyhedra when the
              main intention is to store the shape of the polyhedra for visualization.
         </doc>
     </group>
     <group name="polyhedron" type="NXcg_face_list_data_structure">
+        <!--exists: [min, 0, max, infty]  # can this be max, c?-->
         <doc>
              Disentangled representations of the mesh of specific polyhedron.
         </doc>
     </group>
     <group name="polyhedron_half_edge" type="NXcg_half_edge_data_structure">
+        <!--exists: [min, 0, max, infty]-->
         <doc>
              Disentangled representation of the planar graph that each polyhedron
              represents. Such a description simplifies topological processing
              or analyses of mesh primitive operations and neighborhood queries.
         </doc>
     </group>
+    <!--  face_type(NX_UINT): #maybe a better name maybe topology, although this is misleading for the above-mentioned reasons
+    doc: A concatenated array, for each polygon face the number of vertices.
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 1
+      dim: [[1, nfaces]]
+intersections between members? as a graph
+contact with external primitives like simulation domain etc-->
 </definition>
