@@ -7,7 +7,6 @@ from typing import List
 from typing import Optional
 
 import lxml
-from pynxtools.dataconverter import helpers as pynxtools_helpers
 from pynxtools.nexus import nexus as pynxtools_nxlib
 
 from ..globals.directories import get_nxdl_root
