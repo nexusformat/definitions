@@ -588,7 +588,9 @@ class NXClassDocGenerator:
             # target = hTarget.replace(".. _", "").replace(":\n", "")
             # TODO: https://github.com/nexusformat/definitions/issues/1057
             self._print(f"{indent}{hTarget}")
-            self._print(f"{indent}**{name}**: {optional_text}{typ} {self.get_first_parent_ref(f'{parent_path}/{name}', 'group')}\n")
+            self._print(
+                f"{indent}**{name}**: {optional_text}{typ} {self.get_first_parent_ref(f'{parent_path}/{name}', 'group')}\n"
+            )
 
             self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
             self._print_doc(indent + self._INDENTATION_UNIT, ns, node)
@@ -629,23 +631,37 @@ class NXClassDocGenerator:
         self._rst_lines.append(" ".join(args) + end)
 
     def get_first_parent_ref(self, path, tag):
-        nx_name = path[1:path.find("/", 1)]
-        path = path[path.find("/", 1):]
-         
+        nx_name = path[1 : path.find("/", 1)]
+        path = path[path.find("/", 1) :]
+
         parents = pynxtools_nxlib.get_inherited_nodes(path, nx_name)[2]
         if len(parents) > 1:
             parent = parents[1]
-            parent_path = parent_display_name = parent.attrib['nxdlpath']
+            parent_path = parent_display_name = parent.attrib["nxdlpath"]
             parent_path_segments = parent_path[1:].split("/")
-            parent_def_name = parent.attrib["nxdlbase"][parent.attrib["nxdlbase"].rfind("/"):parent.attrib["nxdlbase"].rfind(".nxdl")]
+            parent_def_name = parent.attrib["nxdlbase"][
+                parent.attrib["nxdlbase"]
+                .rfind("/") : parent.attrib["nxdlbase"]
+                .rfind(".nxdl")
+            ]
 
             # Case where the first parent is a base_class
-            if parent_path_segments[0] == '':
+            if parent_path_segments[0] == "":
                 return f":ref:`<{parent_def_name[1:]}> <{parent_def_name[1:]}>`"
 
-            parent_display_name = f"{parent_def_name[1:]}/.../{parent_path_segments[-1]}" if len(parent_path_segments)>1 else f"{parent_def_name[1:]}/{parent_path_segments[-1]}"
+            parent_display_name = (
+                f"{parent_def_name[1:]}/.../{parent_path_segments[-1]}"
+                if len(parent_path_segments) > 1
+                else f"{parent_def_name[1:]}/{parent_path_segments[-1]}"
+            )
             if tag == "attribute":
                 pos_of_right_slash = parent_path.rfind("/")
-                parent_path = parent_path[:pos_of_right_slash] + "@" + parent_path[pos_of_right_slash + 1:]
-            return f":ref:`<{parent_display_name}> <{parent_def_name}{parent_path}-{tag}>`"
+                parent_path = (
+                    parent_path[:pos_of_right_slash]
+                    + "@"
+                    + parent_path[pos_of_right_slash + 1 :]
+                )
+            return (
+                f":ref:`<{parent_display_name}> <{parent_def_name}{parent_path}-{tag}>`"
+            )
         return ""
