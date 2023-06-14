@@ -1,17 +1,17 @@
-doc: | 
+doc: |
   Application definition for temperature-dependent IV curve measurements, #CAP with a focus on bias spectroscopy in scanning tunneling microscopy.
-  
+
   In this application definition, times should be specified always together
   with an UTC offset.
- 
+
   This is the application definition describing temperature (T) dependent current voltage (IV) curve
   measurements. For this a temperature is set. After reaching the temperature,
   a voltage sweep is performed. For each voltage a current is measured.
   Then, the next desired temperature is set and an IV measurement is performed.
-  #CAP the X, Y, Z, position of the probes or tip can be defined. #CAP The data can be visualized in a tensor with:  
+  #CAP the X, Y, Z, position of the probes or tip can be defined. #CAP The data can be visualized in a tensor with:
   I (NXsensor_C, NXsoftware_Read_offset, NXcircuit)
-  parameters: 
-  V has (NXsource+offset, NXsoftware_Scan_offset, NXsensor_V, NXcircuit)  
+  parameters:
+  V has (NXsource+offset, NXsoftware_Scan_offset, NXsensor_V, NXcircuit)
   T has (NXsource, NXsoftware_Scan_offset, NXsensor_T)
   x has (NXsoftware_Scan_offset)
   y has (NXsoftware_Scan_offset)
@@ -19,102 +19,94 @@ doc: |
 category: application
 NXiv_sweep2(NXsensor_scan):
   (NXentry):
-    definition(NX_CHAR):
+    definition:
       enumeration: [NXiv_sweep2]
+    type:
+      enumeration: [background, reference, sample]
+    experiment_identifier:
+      doc: e.g. finename -> description       (e.g. 221122_Au_5K00014)
+    collection_dentifier:
+      doc: series name -> description?   Scan>series name 221122_Au_5K
+    entry_identifier:
+      doc: session path (ELN?!)-> NanonisMain>Session Path C:\Users\SPM-PEEM\Desktop\DATA_Nanonis\20220711_CreaTec_Service_Benchmarks_LHe\Nanonis-Session-PMD100-HVHU_CreaTec_Service_PalmaLabBerlin220711
+    experiment_description:
+        doc: Comment01 SYNC & Filter LP 8order WITHDRAW 600 steps, locked Au(111), 50pA, 100 mV set point, 1mV DCA, 973Hz,138 1st H, -84 2nd H
     (NXinstrument):
-      Hardware:
-        doc: the name of the instrument device used....
+      (NXfabrication): # any or specifique 'harware' and 'software'?
+        doc: |
+          hardware and software
+          the name of the instrument device used.... e.g. Nanonis BP5e
+          Software: SoftwareMain>SW Version Generic 5e -- SoftwareMain>UI Release 10771 -- SoftwareMain>RT Release 10771
+      current_amplifier(NXamplifier):
+        # hardware: Current amplifier> hardware: CreaTec GmbH
+        # amplification: Current amplifier> factor (V/V): 1E-10
+        # crosstalk_compensation: Current amplifier> Capacitive cross-talk compensation: Yes/No
+      lock_in(NXlockin):
+        exists: optional
+        # status: Lock-in>Lock-in status ON # ON/OFF of Lock-in amplifier
+        amplifier_status:
+          doc:  Lock-in Amplifier>Yes/No # If a lock-in amplifier employed to filter or obtain the electronic derivatives dI/dV of the signal
+        # hardware:     Lock-in Amplifier>Hardware: Nanonis
+        bias_divider:
+          doc:  if Lock-in -- Bias Divider 1/10 or 1/100 # if the modulation
+        # modulate_signal: Lock-in>Modulated signal Bias (V) # This is the signal on which the modulation (sine) will be added.
+        # frequency: Lock-in>Frequency (Hz) 973E+0 # Sets the frequency of the sine modulation added to the signal to modulate. The frequency range is from 10 mHz to 40 kHz (corresponding to the SC5 output filter cut-off). When working with harmonics, make sure the harmonic frequencies don’t exceed ~100 kHz (SC5 input filter cut-off). Remember the SC5 hardware filters will affect the amplitude when getting close to their cut-off frequencies.
+        # amplitude: Lock-in>Amplitude 2E-3 # Sets the amplitude (in physical units of the modulated signal) of the sine modulation.
+        # demodulated_signal: Lock-in>Demodulated signal Current (A) # This is the signal which will be demodulated, in order to determine the amplitude and phase at the frequency set in the Frequency field (“4”) or harmonics.
+        # order_of_harmonics:
+        #   Lock-in>Harmonic D1 1 # Order of the harmonic oscillation to detect on the demodulated signal (with respect to the modulation frequency). If you work with higher harmonics make sure the frequency does not exceed the analog signal bandwidth (100 kHz).
+        #   Lock-in>Harmonic D2 2 # See below.
+        # ref_phase:
+        #   Lock-in>Reference phase D1 (deg) 137.597E+0 # Reference phase for the sine on the demodulated signal with respect to the modulation signal. The determined phase (phi) is displayed with respect to the reference phase.
+        #   Lock-in>Reference phase D2 (deg) -83.6562E+0 # See below.
+        # items below should go to bias/spectroscopy/...!!!
+        #recorded_channels:
+        #  doc: here??? Bias Spectroscopy>Channels Current (A);LI Demod 2 X (A);LI Demod 2 Y (A);LI Demod 1 X (A);LI Demod 1 Y (A) # Select the channels to record.
+        #bias_reset:
+        #  doc: here??? Bias Spectroscopy>Reset Bias TRUE # When selected, the Bias voltage returns to the initial value (before starting the sweep) at the end of the spectroscopy measurement (default). When not selected, Bias remains at the last value of the sweep. This is useful e.g. when combining several sweep segments. Example for an automated measurement (using Programming Interface): switch off Z-Controller, start spectroscopy sweep segments (only fwd sweep, no reset bias), set bias back to initial value, switch on Z-Controller.
+        #record_final_z:
+        #  doc: here??? Bias Spectroscopy>Record final Z FALSE # Select whether to record the Z position during Z averaging time at the end of the sweep (after Z control time) and store the average value in the header of the file when saving. Using this option increases the sweep time by Z averaging time.
+        #run:
+        #  doc: Bias Spectroscopy>Lock-In run FALSE # Select whether to set the Lock-In to run during the measurement. When using this feature, make sure the Lock-In is configured correctly and settling times are set to twice the Lock-In period at least. This option is ignored when Lock-In is already running. This option is disabled if the Sweep Mode is MLS and the flag to configure the Lock-In per segment in the Multiline segment editor is set.
+      tip_bias(NXbias):
+      sample_bias(NXbias):
+      # Tip bias/Sample bias # If the spectroscopy V bias is applied to the
+      # Modulated signal Bias (V) 1E-3 # Applied modulation to the bias voltage.
+      # ModulationBias> Tip bias/Sample bias
+      modulated_signal_bias:
+        doc: here??? Modulated signal Bias (V) 1E-3 # Applied modulation to the bias voltage.
+      stm_head_temperature(NX_NUMBER):
+        unit: NX_TEMPERATURE
+        doc: |
+          STM head
+          temp    Temperature 1 (K) 4.92997E+0 # Temperature of STM head.
+      cryo_bottom_temp:
+        unit: NX_TEMPERATURE
+        doc: bottom_temp     Temperature 2 (K) - # Temperature of bottom of LHe helium cryostat.
+      cryo_shield_temp:
+        unit: NX_TEMPERATURE
+        doc: shield_temp     Temperature 3 (K) - # Temperature of LN2 nitrogen shield.
+      output_cabling(NXcircuit):
+        # Cabling & Config
       (NXenvironment):
-        doc: | 
+        doc: |
           Describes an environment setup for a temperature-dependent IV measurement experiment.
-          
+
           The temperature and voltage must be present as independently scanned controllers and
           the current sensor must also be present with its readings.
         voltage_controller(NXsensor):
         temperature_controller(NXsensor):
         current_sensor(NXsensor):
     (NXdata):
-      doc: | 
+      doc: |
         This NXdata should contain separate fields for the current values at different temperature setpoints, for example current_at_100C.
         There should also be two more fields called temperature and voltage containing the setpoint values.
         There should also be a field with an array of rank equal to the number of different temperature setpoints and each child's dimension
         equal to the number of voltage setpoints.
-          
-          
-          
-  (file)type [background, reference, sample]
-  finename -> description       (e.g. 221122_Au_5K00014)
-  series name -> description?   Scan>series name 221122_Au_5K
-  session path (ELN?!)-> NanonisMain>Session Path C:\Users\SPM-PEEM\Desktop\DATA_Nanonis\20220711_CreaTec_Service_Benchmarks_LHe\Nanonis-Session-PMD100-HVHU_CreaTec_Service_PalmaLabBerlin220711
-  description: Comment01 SYNC & Filter LP 8order WITHDRAW 600 steps, locked Au(111), 50pA, 100 mV set point, 1mV DCA, 973Hz,138 1st H, -84 2nd H
+
+
+
   INSTRUMENT
-    Hardware:     Nanonis BP5e
-    Software:     SoftwareMain>SW Version Generic 5e -- SoftwareMain>UI Release 10771 -- SoftwareMain>RT Release 10771
-    Current amplifier (NXamplifier)
-      Current amplifier> hardware: CreaTec GmbH
-      Current amplifier> factor (V/V): 1E-10
-      Current amplifier> Capacitive cross-talk compensation: Yes/No
-      
-    Lock-in>Lock-in status ON # ON/OFF of Lock-in amplifier
-    Lock in (optional) (NXlockin)
-      Lock-in Amplifier>Yes/No # If a lock-in amplifier employed to filter or obtain the electronic derivatives dI/dV of the signal
-      Lock-in Amplifier>Hardware: Nanonis
-      if Lock-in -- Bias Divider 1/10 or 1/100 # if the modulation
-      
-      Bias Spectroscopy>Channels Current (A);LI Demod 2 X (A);LI Demod 2 Y (A);LI Demod 1 X (A);LI Demod 1 Y (A) # Select the channels to record.
-      Bias Spectroscopy>Reset Bias TRUE # When selected, the Bias voltage returns to the initial value (before starting the sweep) at the end of the spectroscopy measurement (default). When not selected, Bias remains at the last value of the sweep. This is useful e.g. when combining several sweep segments. Example for an automated measurement (using Programming Interface): switch off Z-Controller, start spectroscopy sweep segments (only fwd sweep, no reset bias), set bias back to initial value, switch on Z-Controller.
-      Bias Spectroscopy>Record final Z FALSE # Select whether to record the Z position during Z averaging time at the end of the sweep (after Z control time) and store the average value in the header of the file when saving. Using this option increases the sweep time by Z averaging time.
-      Bias Spectroscopy>Lock-In run FALSE # Select whether to set the Lock-In to run during the measurement. When using this feature, make sure the Lock-In is configured correctly and settling times are set to twice the Lock-In period at least. This option is ignored when Lock-In is already running. This option is disabled if the Sweep Mode is MLS and the flag to configure the Lock-In per segment in the Multiline segment editor is set.
-      Lock-in>Modulated signal Bias (V) # This is the signal on which the modulation (sine) will be added.
-      Lock-in>Frequency (Hz) 973E+0 # Sets the frequency of the sine modulation added to the signal to modulate. The frequency range is from 10 mHz to 40 kHz (corresponding to the SC5 output filter cut-off). When working with harmonics, make sure the harmonic frequencies don’t exceed ~100 kHz (SC5 input filter cut-off). Remember the SC5 hardware filters will affect the amplitude when getting close to their cut-off frequencies.
-      Lock-in>Amplitude 2E-3 # Sets the amplitude (in physical units of the modulated signal) of the sine modulation.
-      Lock-in>Demodulated signal Current (A) # This is the signal which will be demodulated, in order to determine the amplitude and phase at the frequency set in the Frequency field (“4”) or harmonics.
-      Lock-in>Harmonic D1 1 # Order of the harmonic oscillation to detect on the demodulated signal (with respect to the modulation frequency). If you work with higher harmonics make sure the frequency does not exceed the analog signal bandwidth (100 kHz).
-      Lock-in>Harmonic D2 2 # See below.
-      Lock-in>Reference phase D1 (deg) 137.597E+0 # Reference phase for the sine on the demodulated signal with respect to the modulation signal. The determined phase (phi) is displayed with respect to the reference phase.
-      Lock-in>Reference phase D2 (deg) -83.6562E+0 # See below.     
-      
-    Bias: Tip bias/Sample bias # If the spectroscopy V bias is applied to the
-    Modulated signal Bias (V) 1E-3 # Applied modulation to the bias voltage.
-    ModulationBias> Tip bias/Sample bias
-    STM head
-      temp    Temperature 1 (K) 4.92997E+0 # Temperature of STM head.
-    Cryo
-      bottom_temp     Temperature 2 (K) - # Temperature of bottom of LHe helium cryostat.
-      shield_temp     Temperature 3 (K) - # Temperature of LN2 nitrogen shield.
-    Cabling & Config
-      Outputs>Output 0 Mode User Output
-      Outputs>Output 1 Mode User Output
-      Outputs>Output 2 Mode User Output
-      Outputs>Output 3 Mode User Output
-      Outputs>Output 4 Mode User Output
-      Outputs>Output 5 Mode User Output
-      Outputs>Output 6 Mode User Output
-      Outputs>Output 7 Mode User Output
-      Outputs>Output 0 Value 0E+0
-      Outputs>Output 1 Value 0E+0
-      Outputs>Output 2 Value 0E+0
-      Outputs>Output 3 Value 2.5539E+0
-      Outputs>Output 4 Value 0E+0
-      Outputs>Output 5 Value 0E+0
-      Outputs>Output 6 Value 0E+0
-      Outputs>Output 7 Value 0E+0
-      Outputs>Output 0 Name Input 24 (V)
-      Outputs>Output 1 Name Bias (V)
-      Outputs>Output 2 Name Output 2 (V)
-      Outputs>Output 3 Name T1 Supply voltage (V)
-      Outputs>Output 4 Name Output 4 (V)
-      Outputs>Output 5 Name X (m)
-      Outputs>Output 6 Name Y (m)
-      Outputs>Output 7 Name Z (m)
-      Outputs>Output 0 Slew Rate Inf
-      Outputs>Output 1 Slew Rate Inf
-      Outputs>Output 2 Slew Rate Inf
-      Outputs>Output 3 Slew Rate Inf
-      Outputs>Output 4 Slew Rate Inf
-      Outputs>Output 5 Slew Rate Inf
-      Outputs>Output 6 Slew Rate Inf
-      Outputs>Output 7 Slew Rate Inf
     Piezo Config
       Piezo Configuration>Active Calib. LHe # Tne name of caliberation type.
       Piezo Configuration>Calib. X (m/V) 3.8E-9 # There are 3 controls available: Calibr. (m/V), Range (m) and HV gain. Two of them are enough to define the calibration, so when changing any value one of the other values will be updated automatically.
@@ -129,11 +121,11 @@ NXiv_sweep2(NXsensor_scan):
       Piezo Configuration>Curvature radius Y (m) Inf # See below.
       Piezo Configuration>2nd order corr X (V/m^2) 0E+0 # If you know them, you can enter the 2nd order piezo characteristics to compensate for it. The following equation shows the interpretation of the 2nd order correction parameter: For the X-piezo: "Ux = 1/cx · X + cxx · X2" with units: [V] = [V/m] · [m] + [V/m2] · [m2] where cx is the calibration of the piezo X and cxx is the 2nd order correction.
       Piezo Configuration>2nd order corr Y (V/m^2) 0E+0 # See below.
-      Piezo Configuration>Drift X (m/s) 0E+0 # Define the drift speed for all three axes. When the compensation is on, the piezos will start to move at that speed. 
+      Piezo Configuration>Drift X (m/s) 0E+0 # Define the drift speed for all three axes. When the compensation is on, the piezos will start to move at that speed.
       Piezo Configuration>Drift Y (m/s) 0E+0 # See below.
       Piezo Configuration>Drift Z (m/s) 0E+0 # See below.
       Piezo Configuration>Drift correction status (on/off) FALSE # Use the button to turn on/off the drift compensation.
-    
+
   MEASUREMENT
     Position (NXtransformation) # also clarify the frame laboratory frame
       X (m) -890.53E-12
@@ -157,11 +149,11 @@ NXiv_sweep2(NXsensor_scan):
       frame(NXtransformation) # also clarify the frame for the ROI of the scan (should depend on the lab frame)
       Scan>Scanfield 3.11737E-9;29.1583E-9;15E-9;15E-9;0E+0 # Configure the scan frame: x position; y position; width; height.
       Scan>channels Current (A);Bias (V);Z (m);LI Demod 2 X (A);LI Demod 2 Y (A);LI Demod 1 X (A);LI Demod 1 Y (A) # The scan channels are selected by users.
-      Scan>pixels/line 512 # Scan resolution by setting the Lines equal to Pixels. 
+      Scan>pixels/line 512 # Scan resolution by setting the Lines equal to Pixels.
       Scan>lines 512 # Define the image resolution.
-      Scan>speed forw. (m/s) 11.7187E-9 #  Define the scan forward speed in the forward direction. 
+      Scan>speed forw. (m/s) 11.7187E-9 #  Define the scan forward speed in the forward direction.
       Scan>speed backw. (m/s) 11.7187E-9 #  Define the scan backward speed in the forward direction.
-      
+
     SW Filter (PROCESS)
       type Butterworth # Select a filter to smooth the displayed data. Note: When saving, if any filter selected, filtered data are saved to file along with the unfiltered data.
       Order 1 # Filter order of a dynamic filter or width (in number of points) for the gaussian filter.
@@ -245,7 +237,7 @@ NXiv_sweep2(NXsensor_scan):
     LI Demod 2 Y (A) [filt] lockin
     LI Demod 1 X (A) [filt] lockin
     LI Demod 1 Y (A) [filt] lockin
-    Current (A) [bwd] [filt] 
+    Current (A) [bwd] [filt]
     LI Demod 2 X (A) [bwd] [filt] lockin
     LI Demod 2 Y (A) [bwd] [filt] lockin
     LI Demod 1 X (A) [bwd] [filt] lockin
@@ -254,17 +246,17 @@ NXiv_sweep2(NXsensor_scan):
     x
     y
     z
-    
+
  single point default plot # current(I) vs bias(V)
  line scan default plot # multi I vs. V curves
        alternative plot # current(I) curve in the 2D space of (position(x), bias(V))
  mesh scan default plot # 2D slices of the above alternative plot
-    
-    
-    
-    
-    
-    
-    
-      
-      
+
+
+
+
+
+
+
+
+
