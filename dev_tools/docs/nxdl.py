@@ -635,7 +635,7 @@ class NXClassDocGenerator:
 
         try:
             parents = pynxtools_nxlib.get_inherited_nodes(path, nx_name)[2]
-        except:
+        except FileNotFoundError:
             return ""
         if len(parents) > 1:
             parent = parents[1]
@@ -649,7 +649,11 @@ class NXClassDocGenerator:
 
             # Case where the first parent is a base_class
             if parent_path_segments[0] == "":
-                return f":ref:`<{parent_def_name[1:]}> <{parent_def_name[1:]}>`"
+                return ""
+            
+            #special treatment for NXnote@type
+            if tag == "attribute" and parent_def_name == "/NXnote" and parent_path == "/type":
+                return ""
 
             parent_display_name = (
                 f"{parent_def_name[1:]}/.../{parent_path_segments[-1]}"
