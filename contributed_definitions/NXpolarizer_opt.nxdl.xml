@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--A draft of a new base class to describe an optical polarizer
+(NXpolarizer describes a spin polarizer)-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXpolarizer_opt" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="N_spectrum">
+            <doc>
+                 Size of the wavelength array for which the refractive index of the material
+                 and/or coating is given.
+            </doc>
+        </symbol>
+        <symbol name="N_spectrum_RT">
+            <doc>
+                 Size of the wavelength array for which the reflectance or transmission of
+                 the polarizer is given.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         An optical polarizer.
+         
+         Information on the properties of polarizer is provided e.g.
+         [here](https://www.rp-photonics.com/polarizers.html).
+    </doc>
+    <field name="type">
+        <doc>
+             Type of the polarizer (e.g. dichroic, linear, circular etc.)
+        </doc>
+        <enumeration>
+            <item value="dichroic"/>
+            <item value="linear"/>
+            <item value="circular"/>
+            <item value="Glan-Thompson prism"/>
+            <item value="Nicol prism"/>
+            <item value="Glan-Taylor prism"/>
+            <item value="Glan-Focault prism"/>
+            <item value="Wollaston prism"/>
+            <item value="Normarski prism"/>
+            <item value="Senarmont prism"/>
+            <item value="thin-film polarizer"/>
+            <item value="wire grid polarizer"/>
+            <item value="other"/>
+        </enumeration>
+    </field>
+    <!--??? Any other common polarizer types ???-->
+    <field name="type_other">
+        <doc>
+             If you selected 'other' in type specify what it is.
+        </doc>
+    </field>
+    <field name="polarizer_angle" type="NX_NUMBER" recommended="true" units="NX_ANGLE">
+        <doc>
+             Angle of the polarizer.
+        </doc>
+    </field>
+    <field name="acceptance_angle" type="NX_NUMBER" recommended="true" units="NX_ANGLE">
+        <doc>
+             Acceptance angle of the polarizer (range).
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="2"/>
+        </dimensions>
+    </field>
+    <group type="NXshape" recommended="true">
+        <doc>
+             Describe the geometry (shape, dimension etc.) of the device.
+             Specify the dimensions in 'SHAPE/size'. A sketch of the device should be
+             provided in the 'sketch(NXdata)' field to clarify (i) the shape and
+             dimensions of the device, and (ii) the input and outputs (i.e. the
+             direction of the incoming and outcoming (split) beams).
+        </doc>
+        <!--!!! NOTE: this class is the same as for NXbeam_path !!!-->
+        <field name="shape">
+            <doc>
+                 Describe the shape (plate, cube, wedged, prism etc.).
+            </doc>
+            <enumeration>
+                <item value="cube"/>
+                <item value="cylinder"/>
+                <item value="plate"/>
+                <item value="prism"/>
+                <item value="wedged"/>
+                <item value="other"/>
+            </enumeration>
+        </field>
+        <field name="other_shape">
+            <doc>
+                 If you chose 'other' in 'shape' describe what it is.
+            </doc>
+        </field>
+        <group name="sketch" type="NXdata">
+            <doc>
+                 Sketch of thedevice showing its geometry. The paths of the
+                 incoming and outgoing beam should be illustrated and labelled (0 for
+                 the incoming beam, and 1, 2,..., N_outputs for the outputs).
+            </doc>
+        </group>
+        <field name="size">
+            <doc>
+                 Physical extent of the device. The device might be made up of one or
+                 more objects (NX_objects). The meaning and location of the axes used
+                 will vary according to the value of the 'shape' variable. 'N_shapepar'
+                 defines how many parameters:
+                 
+                 * For 'cube' the parameters are (width, length).
+                 * For 'cylinder' the parameters are (diameter, length).
+                 * For 'plate' the parameters are (width, height, length).
+                 * For 'prism' the parameters are (width, height, length).
+                 * For 'wedged' the parameters are (width, height, shortest length).
+                   The wedge angle should be provided in 'SHAPE/wedge_angle'.
+                 * For 'other' the parameters may be (A, B, C, ...) with the labels
+                   defined in the sketch plotted in 'SHAPE/sketch'.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="N_objects"/>
+                <dim index="2" value="N_shapepar"/>
+            </dimensions>
+        </field>
+        <field name="wedge_angle" type="NX_FLOAT" units="NX_ANGLE">
+            <doc>
+                 Wedge angle if 'shape' is 'wedged'.
+            </doc>
+        </field>
+    </group>
+    <field name="wavelength_range" type="NX_FLOAT" recommended="true" units="NX_WAVELENGTH">
+        <doc>
+             Wavelength range for which the polarizer is designed. Enter the minimum
+             and maximum wavelength (lower and upper limit) of the range.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="2"/>
+        </dimensions>
+    </field>
+    <group name="substrate" type="NXsample">
+        <doc>
+             Properties of the substrate material of the polarizer. If the device has
+             a coating specify the coating material and its properties in 'coating'.
+        </doc>
+        <field name="substrate_material">
+            <doc>
+                 Specify the substrate material of the polarizer.
+            </doc>
+        </field>
+        <field name="substrate_thickness" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                 Thickness of the polarizer substrate.
+            </doc>
+        </field>
+        <field name="index_of_refraction" type="NX_FLOAT" units="NX_UNITLESS">
+            <doc>
+                 Complex index of refraction of the polarizer material. Specify at given
+                 spectral values (wavelength, energy, wavenumber etc.).
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="2"/>
+                <dim index="2" value="N_spectrum"/>
+            </dimensions>
+        </field>
+    </group>
+    <group name="COATING" type="NXsample">
+        <!--Used captial letters for COATING so that more than one can be defined if
+the device has different coatings on the front and back side.-->
+        <doc>
+             If the device has a coating describe the material and its properties.
+             Some basic information can be found e.g. [here]
+             (https://www.opto-e.com/basics/reflection-transmission-and-coatings).
+             If the back and front side of the polarizer are coated with different
+             materials, you may define two coatings (e.g. COATING1 and COATING2).
+        </doc>
+        <field name="coating_type">
+            <doc>
+                 Specify the coating type (e.g. dielectric, anti-reflection (AR),
+                 multilayer coating etc.).
+            </doc>
+        </field>
+        <field name="coating_material">
+            <doc>
+                 Describe the coating material (e.g. MgF2).
+            </doc>
+        </field>
+        <field name="coating_thickness" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                 Thickness of the coating.
+            </doc>
+        </field>
+        <field name="index_of_refraction_coating" type="NX_FLOAT" units="NX_UNITLESS">
+            <doc>
+                 Complex index of refraction of the coating. Specify at given spectral
+                 values (wavelength, energy, wavenumber etc.).
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="2"/>
+                <dim index="2" value="N_spectrum_coating"/>
+            </dimensions>
+        </field>
+    </group>
+    <field name="extinction_ratio" type="NX_FLOAT" units="NX_UNITLESS">
+        <doc>
+             Extinction ratio (maximum to minimum transmission).
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_spectrum"/>
+        </dimensions>
+    </field>
+    <field name="reflection" type="NX_FLOAT" units="NX_UNITLESS">
+        <doc>
+             Reflection of the polarizer at given wavelength values.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_spectrum_RT"/>
+        </dimensions>
+    </field>
+    <field name="transmission" type="NX_FLOAT" units="NX_UNITLESS">
+        <doc>
+             Transmission of the polarizer at given wavelength values.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_spectrum_RT"/>
+        </dimensions>
+    </field>
+    <!--anything missing?-->
+</definition>

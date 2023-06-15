@@ -1,0 +1,94 @@
+name: Publish Sphinx Docs to GitHub Pages
+on: [push]
+
+# see: https://sphinx-notes.github.io/pages/
+# see: https://github.com/marketplace/actions/sphinx-to-github-pages
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@master
+      with:
+        fetch-depth: 0 # otherwise, you will fail to push refs to dest repo
+
+    - name: Install build requirements
+      run: |
+        pip install -r requirements.txt
+    - name: Diagnostic
+      run: |
+        pip list
+    - name: Run the test suite
+      run: |
+        # stops publishing when known problems are found
+        python utils/test_suite.py
+    - name: Prepare for out-of-source Sphinx build
+      run: |
+        rm -rf ./build
+        mkdir ./build
+        python ./utils/build_preparation.py . ./build
+    - name: Diagnostic
+      run: |
+        ls -lAFGh
+        ls -lAFGh ./build
+    - name: Install LaTeX
+      run: |
+        sudo apt-get update -y && \
+        sudo apt-get install -y \
+          latexmk \
+          texlive-latex-recommended \
+          texlive-latex-extra \
+          texlive-fonts-recommended
+    - name: Build impatient guide
+      run: |
+        make -C ./build/impatient-guide html latexpdf
+        ls -lAFGh ./build/impatient-guide/_build/latex/*.pdf
+        # Copy to documentation source directory
+        cp \
+          ./build/impatient-guide/_build/latex/NXImpatient.pdf \
+          ./build/manual/source/_static/
+    - name: Build PDF of manual
+      run: |
+        # expect next make (PDF) to fail (thus exit 0)
+        # since nexus.ind not found first time
+        # extra option for "levels nested too deeply" error
+        ( \
+          make latexpdf \
+            LATEXOPTS="--interaction=nonstopmode" \
+            -C build/manual \
+          || exit 0 \
+        )
+        # make that missing file
+        makeindex build/manual/build/latex/nexus.idx
+        # build the PDF, still a failure will be noted
+        # but we can ignore it without problem
+        ( \
+          make latexpdf \
+            LATEXOPTS="--interaction=nonstopmode" \
+            -C build/manual \
+          || exit 0\
+        )
+        # Copy to documentation source directory
+        cp \
+          ./build/manual/build/latex/nexus.pdf \
+          ./build/manual/source/_static/NeXusManual.pdf
+    - name: Include other PDFs
+      run: |
+        wget https://github.com/nexusformat/code/raw/master/doc/api/NeXusIntern.pdf -O ./build/manual/source/_static/NeXusIntern.pdf
+        wget https://github.com/nexusformat/code/raw/master/applications/NXtranslate/docs/NXtranslate.pdf -O ./build/manual/source/_static/NXtranslate.pdf
+    - name: Build (html) and Commit
+      uses: sphinx-notes/pages@master
+      with:
+        # path to conf.py directory
+        documentation_path: build/manual/source
+
+    - name: Publish if refs/tags
+      # remove/comment next line to push right away
+      if: startsWith(github.ref, 'refs/tags')
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        branch: gh-pages

@@ -1,0 +1,140 @@
+# A draft of a new base class describing an optical lens
+# (Note: NXlens_em describes an electro-magnetic lens or a compound lens)
+
+category: base
+symbols:
+  N_spectrum: |
+    Size of the wavelength array for which the refractive index of the material
+    is given.
+  N_spectrum_coating: |
+    Size of the wavelength array for which the refractive index of the coating
+    is given.
+  N_spectrum_RT: |
+    Size of the wavelength array for which the reflectance or transmission of
+    the lens is given.
+
+doc: Description of an optical lens.
+
+NXlens_opt:
+  type:
+    doc: Type of the lens (e.g. concave, convex etc.).
+    enumeration:
+      [
+        "biconcave",
+        "plano-concave",
+        "convexo-concave",
+        "biconvex",
+        "plano-convex",
+        "concavo-convex",
+        "Fresnel lens",
+        "other"
+      ]
+  other_type:
+    doc: If you chose 'other' as type specify what it is.
+
+  chromatic(NX_BOOLEAN): # chromatic or achromatic
+    doc: Is it a chromatic lens?
+
+  lens_diameter(NX_NUMBER):
+    doc: Diameter of the lens.
+    unit: NX_LENGTH
+
+  substrate(NXsample):
+    doc: |
+      Properties of the substrate material of the lens. If the lens has a
+      coating specify the coating material and its properties in 'coating'.
+    substrate_material:
+      doc: Specify the substrate material of the lens.
+    substrate_thickness(NX_NUMBER):
+      doc: Thickness of the lens substrate at the optical axis.
+      unit: NX_LENGTH
+    index_of_refraction(NX_NUMBER):
+      doc: |
+        Complex index of refraction of the lens material. Specify at given
+        wavelength (or energy, wavenumber etc.) values.
+      unit: NX_UNITLESS
+      dimensions:
+        rank: 2
+        dim:
+          [
+            [1, 2],
+            [2, N_spectrum]
+          ]
+
+  COATING(NXsample):
+  # Used captial letters for COATING so that more than one can be defined if
+  # the lens has different coatings on the front and back side.
+    doc: |
+      If the lens has a coating describe the material and its properties.
+      Some basic information can be found e.g. [here]
+      (https://www.opto-e.com/basics/reflection-transmission-and-coatings).
+      If the back and front side of the lens are coated with different
+      materials, use separate COATING(NXsample) fields to describe the coatings
+      on the front and back side, respectively. For example:
+      coating_front(NXsample) and coating_back(NXsample).
+    coating_type:
+      doc: |
+        Specify the coating type (e.g. dielectric, anti-reflection (AR),
+        multilayer coating etc.).
+    coating_material:
+      doc: Describe the coating material (e.g. MgF2).
+    coating_thickness(NX_NUMBER):
+      doc: Thickness of the coating.
+      unit: NX_LENGTH
+    index_of_refraction_coating(NX_NUMBER):
+      doc: |
+        Complex index of refraction of the coating. Specify at given spectral
+        values (wavelength, energy, wavenumber etc.).
+      unit: NX_UNITLESS
+      dimensions:
+        rank: 2
+        dim:
+          [
+            [1, 2],
+            [2, N_spectrum_coating]
+          ]
+
+  reflectance:
+    doc: Reflectance of the lens at given spectral values.
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 1
+      dim:
+        [
+          [1, N_spectrum_RT]
+        ]
+
+  transmission:
+    doc: Transmission of the lens at given spectral values.
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 1
+      dim:
+        [
+          [1, N_spectrum_RT]
+        ]
+
+  focal_length(NX_NUMBER):
+    exists: recommended
+    doc: |
+      Focal length of the lens on the front side (first value), i.e. where the
+      beam is incident, and on the back side (second value).
+    unit: NX_LENGTH
+    dimensions:
+      rank: 1
+      dim: [[1, 2]]
+
+  curvature_radius_FACE(NX_NUMBER):
+    exists: recommended
+    doc: |
+      Curvature radius of the lens.
+      Instead of 'FACE' in the name of this field, the user is advised to
+      specify for which surface (e.g. front or back) the curvature is provided:
+      e.g. curvature_front or curvature_back. The front face is the surface on
+      which the light beam is incident, while the back face is the one from
+      which the light beam exits the lens.
+    unit: NX_LENGTH
+
+  Abbe_number(NX_NUMBER):
+    doc: Abbe number (or V-number) of the lens.
+    unit: NX_UNITLESS

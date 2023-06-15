@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--A draft of a new base class to describe an optical fiber (e.g. glass fiber)-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXfiber" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="N_spectrum_core">
+            <doc>
+                 Length of the spectrum vector (e.g. wavelength or energy) for which the
+                 refractive index of the core material is given.
+            </doc>
+        </symbol>
+        <symbol name="N_spectrum_clad">
+            <doc>
+                 Length of the spectrum vector (e.g. wavelength or energy) for which the
+                 refractive index of the cladding material is given.
+            </doc>
+        </symbol>
+        <symbol name="N_spectrum_attenuation">
+            <doc>
+                 Length of the spectrum vector (e.g. wavelength or energy) for which the
+                 attenuation curve is given.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         An optical fiber, e.g. glass fiber.
+         
+         Specify the quantities that define the fiber. Fiber optics are described in
+         detail [here](https://www.photonics.com/Article.aspx?AID=25151&amp;PID=4), for
+         example.
+    </doc>
+    <field name="description" recommended="true">
+        <doc>
+             Descriptive name or brief description of the fiber, e.g. by stating its
+             dimension. The dimension of a fiber can be given as 60/100/200 which
+             refers to a core diameter of 60 micron, a clad diameter of 100 micron,
+             and a coating diameter of 200 micron.
+        </doc>
+    </field>
+    <field name="type">
+        <doc>
+             Type/mode of the fiber. Modes of fiber transmission are shown in
+             Fig. 5 [here](https://www.photonics.com/Article.aspx?AID=25151&amp;PID=4).
+        </doc>
+        <enumeration>
+            <item value="single mode"/>
+            <item value="multimode graded index"/>
+            <item value="multimode step index"/>
+        </enumeration>
+    </field>
+    <field name="dispersion_type">
+        <doc>
+             Type of dispersion.
+        </doc>
+        <enumeration>
+            <item value="modal"/>
+            <item value="material"/>
+            <item value="chromatic"/>
+        </enumeration>
+    </field>
+    <field name="dispersion" type="NX_FLOAT" units="NX_TIME">
+        <doc>
+             Spectrum-dependent (or refractive index-dependent) dispersion of the
+             fiber. Specify in ps/nm*km.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_spectrum_core"/>
+        </dimensions>
+    </field>
+    <group name="core" type="NXsample">
+        <doc>
+             Core of the fiber, i.e. the part of the fiber which transmits the light.
+        </doc>
+        <field name="core_material">
+            <doc>
+                 Specify the material of the core of the fiber.
+            </doc>
+        </field>
+        <field name="core_diameter" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                 Core diameter of the fiber (e.g. given in micrometer).
+            </doc>
+        </field>
+        <field name="core_index_of_refraction" type="NX_FLOAT" units="NX_UNITLESS">
+            <doc>
+                 Complex index of refraction of the fiber. Specify at given wavelength
+                 (or energy, wavenumber etc.) values.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="2"/>
+                <dim index="2" value="N_spectrum_core"/>
+            </dimensions>
+        </field>
+    </group>
+    <group name="cladding" type="NXsample">
+        <doc>
+             Core of the fiber, i.e. the part of the fiber which transmits the light.
+        </doc>
+        <field name="clad_material">
+            <doc>
+                 Specify the material of the core of the fiber.
+            </doc>
+        </field>
+        <field name="clad_diameter" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                 Clad diameter of the fiber (e.g. given in micrometer).
+            </doc>
+        </field>
+        <field name="clad_index_of_refraction" type="NX_FLOAT" units="NX_UNITLESS">
+            <doc>
+                 Complex index of refraction of the fiber. Specify at given wavelength
+                 (or energy, wavenumber etc.) values.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="2"/>
+                <dim index="2" value="N_spectrum_clad"/>
+            </dimensions>
+        </field>
+    </group>
+    <group name="coating" type="NXsample">
+        <doc>
+             Coating of the fiber.
+        </doc>
+        <field name="coating_material">
+            <doc>
+                 Specify the material of the coating of the fiber.
+            </doc>
+        </field>
+        <field name="coating_diameter" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                 Outer diameter of the fiber (e.g. given in micrometer).
+            </doc>
+        </field>
+    </group>
+    <field name="length" type="NX_FLOAT" units="NX_LENGTH">
+        <doc>
+             Length of the fiber.
+        </doc>
+    </field>
+    <field name="spectral_range" type="NX_FLOAT" recommended="true" units="NX_ANY">
+        <doc>
+             Spectral range for which the fiber is designed. Enter the minimum and
+             maximum values (lower and upper limit) of the wavelength range.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="2"/>
+        </dimensions>
+        <attribute name="units">
+            <doc>
+                 Unit of spectral array (e.g. nanometer or angstrom for wavelength, or
+                 electronvolt for energy etc.).
+            </doc>
+        </attribute>
+    </field>
+    <field name="transfer_rate" type="NX_FLOAT" units="NX_ANY">
+        <doc>
+             Transfer rate of the fiber (in GB per second).
+        </doc>
+        <attribute name="units">
+            <doc>
+                 GB/s
+            </doc>
+        </attribute>
+    </field>
+    <field name="numerical_aperture" type="NX_FLOAT" units="NX_UNITLESS">
+        <doc>
+             Numerical aperture (NA) of the fiber.
+        </doc>
+    </field>
+    <field name="attenuation" type="NX_FLOAT" units="NX_ANY">
+        <doc>
+             Wavelength-dependent attenuation of the fiber (specify in dB/km).
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_spectrum_attenuation"/>
+        </dimensions>
+        <attribute name="units">
+            <doc>
+                 Use dB/km.
+            </doc>
+            <enumeration>
+                <item value="dB/km"/>
+            </enumeration>
+        </attribute>
+    </field>
+    <field name="power_loss" type="NX_FLOAT" units="NX_UNITLESS">
+        <doc>
+             Power loss of the fiber in percentage.
+        </doc>
+    </field>
+    <field name="acceptance_angle" type="NX_FLOAT" units="NX_ANGLE">
+        <doc>
+             Acceptance angle of the fiber.
+        </doc>
+    </field>
+</definition>

@@ -1,0 +1,150 @@
+category: base
+symbols:
+  n_hkl: Number of reflectors (Miller crystallographic plane triplets).
+  n_pos: Number of atom positions.
+doc: |
+  Crystal structure phase models used for indexing Kikuchi pattern.
+  
+  This base class contains key metadata relevant to every physical
+  kinematic or dynamic diffraction model to be used for simulating
+  Kikuchi diffraction pattern.
+  The actual indexing of Kikuchi pattern however maybe use different
+  algorithms which build on these simulation results but evaluate different
+  workflows of comparing simulated and measured Kikuchi pattern to make
+  suggestions which orientation is the most likely (if any) for each
+  scan point investigated.
+  
+  Traditionally Hough transform based indexing has been the most frequently
+  used algorithm. More and more dictionary based alternatives are used.
+  Either way both algorithm need a crystal structure model.
+NXem_ebsd_crystal_structure_model:
+  # for EBSD specifically we need to know the assumed crystal structure
+  # with assumed statistically distributed atoms, i.e. structure and atom
+  # positions
+  crystallographic_database_identifier:
+    doc: |
+      Identifier of an entry from crystallographic_database which was used
+      for creating this structure model.
+  crystallographic_database:
+    doc: |
+      Name of the crystallographic database to resolve
+      crystallographic_database_identifier e.g. COD or others.
+  unit_cell_abc(NX_FLOAT):
+    doc: |
+      Crystallography unit cell parameters a, b, and c.
+    # defined using which convention?
+    unit: NX_LENGTH
+    dimensions:
+      rank: 1
+      dim: [[1, 3]]
+  unit_cell_alphabetagamma(NX_FLOAT):
+    doc: |
+      Crystallography unit cell parameters alpha, beta, and gamma.
+    # defined using which convention?
+    unit: NX_ANGLE
+    dimensions:
+      rank: 1
+      dim: [[1, 3]]
+  unit_cell_volume(NX_FLOAT):
+    doc: |
+      Volume of the unit cell
+    unit: NX_VOLUME
+  space_group:
+    doc: |
+      Crystallographic space group
+    # add enumeration all possible
+  is_centrosymmetric(NX_BOOLEAN):
+    doc: |
+      True if space group is considered a centrosymmetric one.
+      False if space group is considered a non-centrosymmetric one.
+      Centrosymmetric has all types and combinations of symmetry elements
+      (translation, rotational axis, mirror planes, center of inversion)
+      Non-centrosymmetric compared to centrosymmetric is constrained (no inversion).
+      Chiral compared to non-centrosymmetric is constrained (no mirror planes).
+  is_chiral(NX_BOOLEAN):
+    doc: |
+      True if space group is considered a chiral one.
+      False if space group is consider a non-chiral one.
+  laue_group:
+    doc: |
+      Laue group
+    # add enumeration all possible
+  point_group:
+    doc: |
+      Point group using International Notation.
+    # add enumeration all possible
+  unit_cell_class:
+    doc: |
+      Crystal system
+    enumeration: [triclinic, monoclinic, orthorhombic, tetragonal, rhombohedral, hexagonal, cubic]
+  phase_identifier(NX_UINT):
+    doc: |
+      Numeric identifier for each phase.
+      The value 0 is reserved for the unknown phase essentially representing the
+      null-model that no phase model was sufficiently significantly confirmed.
+      Consequently, the value 0 must not be used as a phase_identifier.
+    unit: NX_UNITLESS
+  phase_name:
+    doc: |
+      Name of the phase/alias.
+  atom_identifier:
+    doc: |
+      Labels for each atom position
+    dimensions:
+      rank: 1
+      dim: [[1, n_pos]]
+  atom(NX_UINT):
+    doc: |
+      The hash value :math:`H` is :math:`H = Z + N*256` with :math:`Z`
+      the number of protons and :math:`N` the number of neutrons
+      of each isotope respectively. Z and N have to be 8-bit unsigned integers.
+      For the rationale behind this `M. Kühbach et al. (2021) <https://doi.org/10.1017/S1431927621012241>`_
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 1
+      dim: [[1, n_pos]]
+  atom_positions(NX_FLOAT):
+    doc: |
+      Atom positions x, y, z.
+    unit: NX_LENGTH
+    dimensions:
+      rank: 2
+      dim: [[1, n_pos], [2, 3]]
+  # in addition we need to have a physical model e.g. kinematic or dynamical e-diffraction theory
+  # to describe the simulated Kikuchi pattern generated from such a model
+  atom_occupancy(NX_FLOAT):
+    doc: |
+      Relative occupancy of the atom position.
+    unit: NX_DIMENSIONLESS
+    dimensions:
+      rank: 1
+      dim: [[1, n_pos]]
+  number_of_planes(NX_UINT):
+    doc: |
+      How many reflectors are distinguished. Value has to be n_hkl.
+    unit: NX_UNITLESS
+  plane_miller(NX_NUMBER):
+    doc: |
+      Miller indices :math:`(hkl)`.
+    #  Miller indices :math:`(hkl)[uvw]`.
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 2
+      dim: [[1, n_hkl], [2, 3]]
+  dspacing(NX_FLOAT):
+    doc: |
+      D-spacing.
+    unit: NX_LENGTH
+    dimensions:
+      rank: 1
+      dim: [[1, n_hkl]]
+  relative_intensity(NX_FLOAT):
+    doc: |
+      Relative intensity of the signal for the plane.
+    unit: NX_DIMENSIONLESS
+    dimensions:
+      rank: 1
+      dim: [[1, n_hkl]]
+# here the theoreticians expert (Marc deGraeff, Aimo Winkelmann, Peter Rez)
+# can give some good suggestions on how to improve and ideally make even
+# more general this section

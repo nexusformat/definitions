@@ -1,0 +1,112 @@
+# redundant as there is NXcsg, NXquadric, NXsolid_geometry with which
+# cylinder could be constructed, but NXcylinder is easier to understand
+category: base
+doc: |
+  Computational geometry description of a set of cylinders in Euclidean space.
+  
+  The members of the set can have different size. For each member the position
+  of the center and the height is mandatory. The radius can either be defined
+  in the radius field or by filling both the upper and the lower radius field.
+  The latter case can be used to represent truncated cones.
+symbols:
+  doc: The symbols used in the schema to specify e.g. dimensions of arrays.
+  c: The cardinality of the set, i.e. the number of cylinders or cones.
+NXcg_cylinder_set:
+  dimensionality(NX_POSINT):
+    unit: NX_UNITLESS
+    enumeration: [3]
+  cardinality(NX_POSINT):
+    unit: NX_UNITLESS
+  identifier_offset(NX_INT):
+    doc: |
+      Integer which specifies the first index to be used for distinguishing
+      identifiers for cylinders. Identifiers are defined either implicitly
+      or explicitly. For implicit indexing the identifiers are defined on the
+      interval [identifier_offset, identifier_offset+c-1].
+      For explicit indexing the identifier array has to be defined.
+      
+      The identifier_offset field can for example be used to communicate if the
+      identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
+      or from 0 (referred to as C-, Python-style index notation) respectively.
+    unit: NX_UNITLESS
+  identifier(NX_INT):
+    doc: Integer used to distinguish members for explicit indexing.
+    dimensions:
+      rank: 1
+      dim: [[1, c]]
+  center(NX_NUMBER):
+    doc: |
+      The geometric center of each member.
+    unit: NX_LENGTH
+    dimensions:
+      rank: 2
+      dim: [[1, c], [2, 3]]
+  height(NX_NUMBER):
+    doc: |
+      A direction vector which is parallel to the cylinder/cone axis and
+      whose magnitude is the height of the cylinder/cone.
+    unit: NX_LENGTH
+    dimensions:
+      rank: 2
+      dim: [[1, c], [2, 3]]
+  # alternatively one could store the center of the lower and upper cap but
+  # these are then no longer necessarily on the same axis
+  # maybe a future feature for representing skewed cylinder, but then
+  # one should really better use NXquadric...
+  radii(NX_NUMBER):
+    unit: NX_LENGTH
+    dimensions:
+      rank: 1
+      dim: [[1, c]]
+  upper_cap_radius(NX_NUMBER):
+    doc: |
+      The radius of the upper circular cap.
+      This field, combined with lower_cap_radius can be used to
+      describe (eventually truncated) circular cones.
+    unit: NX_LENGTH
+    dimensions:
+      rank: 1
+      dim: [[1, c]]
+  lower_cap_radius(NX_NUMBER):
+    doc: |
+      The radius of the upper circular cap.
+      This field, combined with lower_cap_radius can be used to
+      describe (eventually truncated) circular cones.
+    unit: NX_LENGTH
+    dimensions:
+      rank: 1
+      dim: [[1, c]]
+  (NXtransformations):
+    doc: |
+      Reference to or definition of a coordinate system with
+      which the positions and directions are interpretable.
+  # properties of the cylinder
+  volume(NX_NUMBER):
+    doc: Interior volume of each cylinder
+    unit: NX_VOLUME
+    dimensions:
+      rank: 1
+      dim: [[1, c]]
+  lateral_surface_area(NX_NUMBER):
+    doc: Lateral surface area
+    unit: NX_AREA
+    dimensions:
+      rank: 1
+      dim: [[1, c]]
+  cap_surface_area(NX_NUMBER):
+    doc: Area of the upper and the lower cap of each cylinder respectively.
+    unit: NX_AREA
+    dimensions:
+      rank: 2
+      dim: [[1, c], [2, 2]]
+  surface_area(NX_NUMBER):
+    doc: Cap and lateral surface area for each cylinder.
+    unit: NX_AREA
+    dimensions:
+      rank: 1
+      dim: [[1, c]]
+# again cap, lateral surface area and volume are so trivial to compute
+# do we need really storage for this or recompute on-the-fly?
+# similarly to hollow sphere discussion, hollow cylinder, cylinder stack
+# do wish to define intersections?, if this is the case, one
+# should use the NXcsg and NXquadric descriptions?
