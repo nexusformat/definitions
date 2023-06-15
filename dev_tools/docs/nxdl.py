@@ -659,11 +659,6 @@ class NXClassDocGenerator:
             ):
                 return ""
 
-            parent_display_name = (
-                f"{parent_def_name[1:]}/.../{parent_path_segments[-1]}"
-                if len(parent_path_segments) > 1
-                else f"{parent_def_name[1:]}/{parent_path_segments[-1]}"
-            )
             if tag == "attribute":
                 pos_of_right_slash = parent_path.rfind("/")
                 parent_path = (
@@ -671,8 +666,9 @@ class NXClassDocGenerator:
                     + "@"
                     + parent_path[pos_of_right_slash + 1 :]
                 )
+            parent_display_name = f"{parent_def_name[1:]}{parent_path}"
             return (
-                f"<:abbr:`parent (parent definition: {parent_def_name[1:]}"
-                + f"/{parent_path_segments[-1]})`:ref:`🔗 <{parent_def_name}{parent_path}-{tag}>`>"
+                f"<:abbr:`parent (parent definition: {parent_display_name})"
+                + f"`:ref:`🔗 </{parent_display_name}-{tag}>`>"
             )
         return ""
