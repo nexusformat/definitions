@@ -89,6 +89,26 @@ nexus-fairmat-proposal ::
 	$(MAKE) prepare
 	$(SPHINX) -b html $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
 
+nyaml ::
+	$(MAKE) clean
+	contributed_nyaml = /home/rubel/NOMAD-FAIRmat/GH/nexus_definitions/contributed_definitions/
+	base_nymal = /home/rubel/NOMAD-FAIRmat/GH/nexus_definitions/base_classes/
+	application_nymal = /home/rubel/NOMAD-FAIRmat/GH/nexus_definitions/base_classes/
+	rm -rf contributed_definitions/nyaml base_classes/nyaml application_nymal/nyaml
+    mkdir contributed_definitions/nyaml base_nymal/nyaml application_nymal/nyaml
+	cd contributed_definitions
+
+	# Generate nyaml in contributed_definitions
+	for file in `ls | grep 'nxdl.xml'`; 
+	do 
+		raw_name=${file:0: -8}; 
+		echo "Input file: $(file)"; 
+		output_file=${raw_name}.yaml;
+		echo "outpu_file: $(output_file)"; 
+	done;
+	mv *.yaml ./nyaml
+
+
 # NeXus - Neutron and X-ray Common Data Format
 #
 # Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
