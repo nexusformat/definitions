@@ -93,6 +93,8 @@ htmlhelp_basename = 'NeXusManualdoc'
 
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {
-    'maxlistdepth':7, # some application definitions are deeply nested
-    'preamble': '\\usepackage{amsbsy}\n'
+    'maxlistdepth':25, # some application definitions are deeply nested
+    'preamble': r'''
+    \usepackage{amsbsy}
+    \listfiles'''
 }
