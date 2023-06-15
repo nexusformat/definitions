@@ -7,7 +7,7 @@ from typing import List
 from typing import Optional
 
 import lxml
-from pynxtools.nexus import nexus as pynxtools_nxlib
+from ..utils import nexus as pynxtools_nxlib
 
 from ..globals.directories import get_nxdl_root
 from ..globals.errors import NXDLParseError
