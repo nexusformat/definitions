@@ -672,6 +672,7 @@ class NXClassDocGenerator:
                     + parent_path[pos_of_right_slash + 1 :]
                 )
             return (
-                f":ref:`<{parent_display_name}> <{parent_def_name}{parent_path}-{tag}>`"
+                f"<:abbr:`parent (parent definition: {parent_def_name[1:]}" +
+                f"/{parent_path_segments[-1]})`:ref:`🔗 <{parent_def_name}{parent_path}-{tag}>`>"
             )
         return ""
