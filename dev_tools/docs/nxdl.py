@@ -650,9 +650,13 @@ class NXClassDocGenerator:
             # Case where the first parent is a base_class
             if parent_path_segments[0] == "":
                 return ""
-            
-            #special treatment for NXnote@type
-            if tag == "attribute" and parent_def_name == "/NXnote" and parent_path == "/type":
+
+            # special treatment for NXnote@type
+            if (
+                tag == "attribute"
+                and parent_def_name == "/NXnote"
+                and parent_path == "/type"
+            ):
                 return ""
 
             parent_display_name = (
