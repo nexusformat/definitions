@@ -95,4 +95,5 @@ htmlhelp_basename = 'NeXusManualdoc'
 latex_elements = {
     'maxlistdepth':7, # some application definitions are deeply nested
     'preamble': '\\usepackage{amsbsy}\n'
+    \DeclareUnicodeCharacter{1F517}{X}
 }
