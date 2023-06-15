@@ -2,15 +2,16 @@
 """Read files from different format and print it in a standard NeXus format
 """
 
+import logging
 import os
+import sys
+import textwrap
 import xml.etree.ElementTree as ET
 from functools import lru_cache
 from glob import glob
-import sys
-import logging
-import textwrap
-import h5py
+
 import click
+import h5py
 
 
 class NxdlAttributeError(Exception):
