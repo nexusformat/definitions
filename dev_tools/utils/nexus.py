@@ -45,7 +45,7 @@ def get_nexus_definitions_path():
         return os.environ["NEXUS_DEF_PATH"]
     except KeyError:  # or it should be available locally under the dir 'definitions'
         local_dir = os.path.abspath(os.path.dirname(__file__))
-        return os.path.join(local_dir, f"..{os.sep}definitions")
+        return os.path.join(local_dir, f"..{os.sep}..")
 
 
 def get_hdf_root(hdf_node):
