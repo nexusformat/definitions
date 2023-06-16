@@ -96,6 +96,6 @@ latex_elements = {
     'maxlistdepth':7, # some application definitions are deeply nested
     'preamble': r'''
     \usepackage{amsbsy}
-    \DeclareUnicodeCharacter{1F517}{X}'''
+    \DeclareUnicodeCharacter{1F517}{X}
     \DeclareUnicodeCharacter{2906}{<-}'''
 }
