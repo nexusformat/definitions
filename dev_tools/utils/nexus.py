@@ -1557,7 +1557,7 @@ class HandleNexus:
 
 @click.command()
 @click.argument(
-    'nexus_file',
+    "nexus_file",
 )
 @click.option(
     "-d",
