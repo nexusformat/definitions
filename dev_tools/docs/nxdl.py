@@ -668,7 +668,7 @@ class NXClassDocGenerator:
                 )
             parent_display_name = f"{parent_def_name[1:]}{parent_path}"
             return (
-                f":abbr:`... (override: {parent_display_name})"
-                + f"`:ref:`🔗 </{parent_display_name}-{tag}>`"
+                f":abbr:`⤆ (override: {parent_display_name})"
+                + f"`:ref:`... </{parent_display_name}-{tag}>`"
             )
         return ""
