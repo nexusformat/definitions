@@ -110,7 +110,7 @@ class NXClassDocGenerator:
         # print official description of this class
         self._print("")
         self._print("**Description**:\n")
-        self._print_doc(self._INDENTATION_UNIT, ns, root, required=True)
+        self._print_doc_enum("", ns, root, required=True)
 
         # print symbol list
         node_list = root.xpath("nx:symbols", namespaces=ns)
@@ -120,7 +120,7 @@ class NXClassDocGenerator:
         elif len(node_list) > 1:
             raise Exception(f"Invalid symbol table in {nxclass_name}")
         else:
-            self._print_doc(self._INDENTATION_UNIT, ns, node_list[0])
+            self._print_doc_enum("", ns, node_list[0])
             for node in node_list[0].xpath("nx:symbol", namespaces=ns):
                 doc = self._get_doc_line(ns, node)
                 self._print(f"  **{node.get('name')}**", end="")
@@ -499,6 +499,35 @@ class NXClassDocGenerator:
                     self._print(f"{indent}{line}")
                 self._print()
 
+    def long_doc(self, ns, node):
+        length = 0
+        line = "documentation"
+        fnd = False
+        blocks = self._get_doc_blocks(ns, node)
+        for block in blocks:
+            lines = block.splitlines()
+            length += len(lines)
+            for single_line in lines:
+                if len(single_line) > 2 and single_line[0] != "." and not fnd:
+                    fnd = True
+                    line = single_line
+        return (length, line, blocks)
+
+    def _print_doc_enum(self, indent, ns, node, required=False):
+        collapse_indent = indent
+        node_list = node.xpath("nx:enumeration", namespaces=ns)
+        (doclen, line, blocks) = self.long_doc(ns, node)
+        if len(node_list) + doclen > 1:
+            collapse_indent = f"{indent}    "
+            self._print(f"{indent}{self._INDENTATION_UNIT}.. collapse:: {line} ...\n")
+        self._print_doc(
+            collapse_indent + self._INDENTATION_UNIT, ns, node, required=required
+        )
+        if len(node_list) == 1:
+            self._print_enumeration(
+                collapse_indent + self._INDENTATION_UNIT, ns, node_list[0]
+            )
+
     def _print_attribute(self, ns, kind, node, optional, indent, parent_path):
         name = node.get("name")
         index_name = name
@@ -509,10 +538,7 @@ class NXClassDocGenerator:
         self._print(
             f"{indent}**@{name}**: {optional}{self._format_type(node)}{self._format_units(node)} {self.get_first_parent_ref(f'{parent_path}/{name}', 'attribute')}\n"
         )
-        self._print_doc(indent + self._INDENTATION_UNIT, ns, node)
-        node_list = node.xpath("nx:enumeration", namespaces=ns)
-        if len(node_list) == 1:
-            self._print_enumeration(indent + self._INDENTATION_UNIT, ns, node_list[0])
+        self._print_doc_enum(indent, ns, node)
 
     def _print_if_deprecated(self, ns, node, indent):
         deprecated = node.get("deprecated", None)
@@ -555,13 +581,7 @@ class NXClassDocGenerator:
             )
 
             self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
-            self._print_doc(indent + self._INDENTATION_UNIT, ns, node)
-
-            node_list = node.xpath("nx:enumeration", namespaces=ns)
-            if len(node_list) == 1:
-                self._print_enumeration(
-                    indent + self._INDENTATION_UNIT, ns, node_list[0]
-                )
+            self._print_doc_enum(indent, ns, node)
 
             for subnode in node.xpath("nx:attribute", namespaces=ns):
                 optional = self._get_required_or_optional_text(subnode)
@@ -592,7 +612,7 @@ class NXClassDocGenerator:
             )
 
             self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
-            self._print_doc(indent + self._INDENTATION_UNIT, ns, node)
+            self._print_doc_enum(indent, ns, node)
 
             for subnode in node.xpath("nx:attribute", namespaces=ns):
                 optional = self._get_required_or_optional_text(subnode)
@@ -623,7 +643,7 @@ class NXClassDocGenerator:
                 f"(suggested target: ``{node.get('target')}``)"
                 "\n"
             )
-            self._print_doc(indent + self._INDENTATION_UNIT, ns, node)
+            self._print_doc_enum(indent, ns, node)
 
     def _print(self, *args, end="\n"):
         # TODO: change instances of \t to proper indentation
@@ -667,8 +687,5 @@ class NXClassDocGenerator:
                     + parent_path[pos_of_right_slash + 1 :]
                 )
             parent_display_name = f"{parent_def_name[1:]}{parent_path}"
-            return (
-                f":abbr:`⤆ (override: {parent_display_name})"
-                + f"`:ref:`... </{parent_display_name}-{tag}>`"
-            )
+            return f":ref:`⤆ </{parent_display_name}-{tag}>`"
         return ""
