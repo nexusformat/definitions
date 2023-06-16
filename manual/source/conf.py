@@ -97,5 +97,5 @@ latex_elements = {
     'preamble': r'''
     \usepackage{amsbsy}
     \DeclareUnicodeCharacter{1F517}{X}
-    \DeclareUnicodeCharacter{2906}{<-}'''
+    \DeclareUnicodeCharacter{2906}{<=}'''
 }
