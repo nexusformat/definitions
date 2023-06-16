@@ -1457,13 +1457,11 @@ class HandleNexus:
 
     def __init__(self, logger, nexus_file, d_inq_nd=None, c_inq_nd=None):
         self.logger = logger
-        local_dir = os.path.abspath(os.path.dirname(__file__))
 
-        self.input_file_name = (
-            nexus_file
-            if nexus_file is not None
-            else os.path.join(local_dir, "../../tests/data/nexus/201805_WSe2_arpes.nxs")
-        )
+        if nexus_file is None:
+            raise ValueError("Nexus file not specified. Cannot proceed.")
+
+        self.input_file_name = nexus_file
         self.parser = None
         self.in_file = None
         self.d_inq_nd = d_inq_nd
@@ -1558,15 +1556,8 @@ class HandleNexus:
 
 
 @click.command()
-@click.option(
-    "-f",
-    "--nexus-file",
-    required=False,
-    default=None,
-    help=(
-        "NeXus file with extension .nxs to learn NeXus different concept"
-        " documentation and concept."
-    ),
+@click.argument(
+    'nexus_file',
 )
 @click.option(
     "-d",
