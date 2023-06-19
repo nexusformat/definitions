@@ -28,13 +28,14 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
 import yaml
-from .nyaml2nxdl_helper import remove_namespace_from_tag
+
 from ..utils import nexus as pynxtools_nxlib
 from .nyaml2nxdl.comment_collector import CommentCollector
 from .nyaml2nxdl_helper import LineLoader
 from .nyaml2nxdl_helper import cleaning_empty_lines
 from .nyaml2nxdl_helper import get_yaml_escape_char_reverter_dict
 from .nyaml2nxdl_helper import nx_name_type_resolving
+from .nyaml2nxdl_helper import remove_namespace_from_tag
 
 # pylint: disable=too-many-lines, global-statement, invalid-name
 DOM_COMMENT = (
