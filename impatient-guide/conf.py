@@ -42,7 +42,7 @@ master_doc = 'index'
 # General information about the project.
 year = '2022' # str(datetime.datetime.now().year)
 project = u'NeXus for the Impatient'
-copyright = u'2014-{}, http://nexusformat.org'.format(year)
+copyright = f'2014-{year}, http://nexusformat.org'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
