@@ -978,8 +978,8 @@ def xml_handle_comment(
     """
 
     line_info = (line_annotation, int(line_loc_no))
-    if line_info in COMMENT_BLOCKS:
-        cmnt = COMMENT_BLOCKS.get_coment_by_line_info(line_info)
+    if line_info in COMMENT_BLOCKS:  # noqa: F821
+        cmnt = COMMENT_BLOCKS.get_coment_by_line_info(line_info)  # noqa: F821
         cmnt_text = cmnt.get_comment_text()
 
         if is_def_cmnt:
@@ -1227,8 +1227,8 @@ keyword has an invalid pattern, or is too short!"
         recursive_build(xml_root, yml_appdef[name_extends], verbose)
     # Taking care of comments that comes at the end of file that is might not be intended for
     # any nxdl elements.
-    if COMMENT_BLOCKS[-1].has_post_comment:
-        post_comment = COMMENT_BLOCKS[-1]
+    if COMMENT_BLOCKS[-1].has_post_comment:  # noqa: F821
+        post_comment = COMMENT_BLOCKS[-1]  # noqa: F821
         (lin_annot, line_loc) = post_comment.get_line_info()
         xml_handle_comment(xml_root, lin_annot, line_loc)
 
