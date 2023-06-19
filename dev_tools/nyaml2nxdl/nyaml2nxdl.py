@@ -26,13 +26,14 @@ import os
 import xml.etree.ElementTree as ET
 
 import click
-from pynxtools.nyaml2nxdl.nyaml2nxdl_backward_tools import Nxdl2yaml
-from pynxtools.nyaml2nxdl.nyaml2nxdl_backward_tools import compare_niac_and_my
-from pynxtools.nyaml2nxdl.nyaml2nxdl_forward_tools import nyaml2nxdl
-from pynxtools.nyaml2nxdl.nyaml2nxdl_forward_tools import pretty_print_xml
-from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import extend_yamlfile_with_comment
-from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import get_sha256_hash
-from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import separate_hash_yaml_and_nxdl
+
+from .nyaml2nxdl_backward_tools import Nxdl2yaml
+from .nyaml2nxdl_backward_tools import compare_niac_and_my
+from .nyaml2nxdl_forward_tools import nyaml2nxdl
+from .nyaml2nxdl_forward_tools import pretty_print_xml
+from .nyaml2nxdl_helper import extend_yamlfile_with_comment
+from .nyaml2nxdl_helper import get_sha256_hash
+from .nyaml2nxdl_helper import separate_hash_yaml_and_nxdl
 
 DEPTH_SIZE = 4 * " "
 
@@ -152,15 +153,18 @@ def split_name_and_extension(file_name):
     Split file name into extension and rest of the file name.
     return file raw nam and extension
     """
-    parts = file_name.rsplit(".", 3)
+    path = file_name.rsplit("/", 1)
+    (pathn, filen) = ["", path[0]] if len(path) == 1 else [path[0] + "/", path[1]]
+    parts = filen.rsplit(".", 2)
+    raw = ext = ""
     if len(parts) == 2:
         raw = parts[0]
         ext = parts[1]
-    if len(parts) == 3:
+    elif len(parts) == 3:
         raw = parts[0]
         ext = ".".join(parts[1:])
 
-    return raw, ext
+    return pathn + raw, ext
 
 
 @click.command()

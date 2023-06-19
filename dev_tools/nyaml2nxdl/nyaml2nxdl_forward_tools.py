@@ -30,7 +30,7 @@ from xml.dom import minidom
 import yaml
 
 from ..utils import nexus as pynxtools_nxlib
-from .nyaml2nxdl.comment_collector import CommentCollector
+from .comment_collector import CommentCollector
 from .nyaml2nxdl_helper import LineLoader
 from .nyaml2nxdl_helper import cleaning_empty_lines
 from .nyaml2nxdl_helper import get_yaml_escape_char_reverter_dict
