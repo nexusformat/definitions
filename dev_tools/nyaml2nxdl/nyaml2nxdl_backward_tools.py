@@ -27,10 +27,10 @@ import xml.etree.ElementTree as ET
 from typing import Dict
 from typing import List
 
-from pynxtools.dataconverter.helpers import remove_namespace_from_tag
-from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import cleaning_empty_lines
-from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import get_node_parent_info
-from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import get_yaml_escape_char_dict
+from .nyaml2nxdl_helper import remove_namespace_from_tag
+from .nyaml2nxdl_helper import cleaning_empty_lines
+from .nyaml2nxdl_helper import get_node_parent_info
+from .nyaml2nxdl_helper import get_yaml_escape_char_dict
 
 DEPTH_SIZE = "  "
 CMNT_TAG = "!--"

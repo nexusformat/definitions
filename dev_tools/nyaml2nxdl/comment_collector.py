@@ -38,7 +38,7 @@ from typing import Tuple
 from typing import Type
 from typing import Union
 
-from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import LineLoader
+from .nyaml2nxdl_helper import LineLoader
 
 __all__ = ["Comment", "CommentCollector", "XMLComment", "YAMLComment"]
 
