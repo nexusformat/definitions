@@ -28,13 +28,13 @@ import xml.etree.ElementTree as ET
 from xml.dom import minidom
 
 import yaml
-from pynxtools.dataconverter.helpers import remove_namespace_from_tag
-from pynxtools.nexus import nexus
-from pynxtools.nyaml2nxdl.comment_collector import CommentCollector
-from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import LineLoader
-from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import cleaning_empty_lines
-from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import get_yaml_escape_char_reverter_dict
-from pynxtools.nyaml2nxdl.nyaml2nxdl_helper import nx_name_type_resolving
+from .nyaml2nxdl_helper import remove_namespace_from_tag
+from ..utils import nexus as pynxtools_nxlib
+from .nyaml2nxdl.comment_collector import CommentCollector
+from .nyaml2nxdl_helper import LineLoader
+from .nyaml2nxdl_helper import cleaning_empty_lines
+from .nyaml2nxdl_helper import get_yaml_escape_char_reverter_dict
+from .nyaml2nxdl_helper import nx_name_type_resolving
 
 # pylint: disable=too-many-lines, global-statement, invalid-name
 DOM_COMMENT = (
@@ -59,13 +59,13 @@ DOM_COMMENT = (
     "#\n"
     "# For further information, see http://www.nexusformat.org\n"
 )
-NX_CLSS = nexus.get_nx_classes()
+NX_CLSS = pynxtools_nxlib.get_nx_classes()
 NX_NEW_DEFINED_CLASSES = ["NX_COMPLEX"]
-NX_TYPE_KEYS = nexus.get_nx_attribute_type()
+NX_TYPE_KEYS = pynxtools_nxlib.get_nx_attribute_type()
 NX_ATTR_IDNT = "\\@"
 NX_UNIT_IDNT = "unit"
 DEPTH_SIZE = "    "
-NX_UNIT_TYPES = nexus.get_nx_units()
+NX_UNIT_TYPES = pynxtools_nxlib.get_nx_units()
 COMMENT_BLOCKS: CommentCollector
 CATEGORY = ""  # Definition would be either 'base' or 'application'
 
