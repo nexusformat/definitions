@@ -34,12 +34,15 @@ NXiv_sweep2(NXsensor_scan):
         are used during the experiments used in the scanning tunneling microscopy(STM).
     entry_identifier:
       exists: optional
-      doc: The name of the output file, with the number of scans at the end.e.g. (e.g. 221122_Au_5K00014)
+      doc: |
+        The name of the output file, with the number of scans at the end.e.g. (e.g. 221122_Au_5K00014)
     collection_dentifier:
       doc: The name of the series output file, which represents only the public part of the output file. (e.g. 221122_Au_5K)
     experiment_identifier:
       exists: optional
-      doc: Path to storage of output files. (e.g. Path C:\Users\SPM-PEEM\Desktop\DATA_Nanonis\20220711_CreaTec_Service_Benchmarks_LHe\Nanonis-Session-PMD100-HVHU_CreaTec_Service_PalmaLabBerlin220711)
+      doc: |
+        Path to storage of output files. 
+        (e.g. Path C:\Users\SPM-PEEM\Desktop\DATA_Nanonis\20220711_CreaTec_Service_Benchmarks_LHe\Nanonis-Session-PMD100-HVHU_CreaTec_Service_PalmaLabBerlin220711)
     experiment_description:
       exists: optional
       doc: |
@@ -64,7 +67,8 @@ NXiv_sweep2(NXsensor_scan):
       current_amplifier(NXamplifier):
         exists: optional
         doc: |
-          The Amplifier description that improves or helps to determine tunnel current (current between tip and bias).
+          The Amplifier description that improves or helps to determine tunnel current (current 
+          between tip and bias).
       lock_in(NXlockin):
         status:
           # status: Lock-in>Lock-in status ON # ON/OFF of Lock-in amplifier
@@ -230,6 +234,17 @@ NXiv_sweep2(NXsensor_scan):
           exists: optional
         temperature_controller(NXsensor):
         current_sensor(NXsensor):
+          current:
+            doc: |
+              This is set-point of tip current.
+            unit: NX_CURRENT
+          current_calibration:
+            doc: |
+              Value of calibration that comes as A/V.
+            unit: NX_NUMBER
+          current_offset:
+            unit: NX_CURRENT
+          current_gain:
         position(NXpositioner):
           doc: Clarify the frame laboratory frame.
           x(NX_NUMBER):
@@ -244,9 +259,10 @@ NXiv_sweep2(NXsensor_scan):
             exists: optional
             unit: NX_LENGTH
             doc: The scanning area in x position in the frame. (e.g. 130.5E-9)
-          z_controller(NX_NUMBER):
-            unit: NX_LENGTH
-            doc: Indicate the tip position Z between tip and sample. The tip position can also be varied when the controller is not running. (e.g. 130.5E-9)
+          z_controller(NXcollection):
+            z:
+              unit: NX_LENGTH
+              doc: Indicate the tip position Z between tip and sample. The tip position can also be varied when the controller is not running. (e.g. 130.5E-9)
         # parameters for a measurement at a single location during the scan
         sweep_control(NXcollection): 
           bias_spectroscopy(NXbias_spectroscopy):
@@ -269,9 +285,17 @@ NXiv_sweep2(NXsensor_scan):
           circuit(NXcollection):
             rt_frequency(NX_NUMBER):
               unit: NX_FREQENCY
-              doc: The bandwitdh of the Hardware and/or Software (e.g. 20E+3)
+              doc: |
+                The bandwitdh of the Hardware and/or Software which is insturment specific. 
+                For example: Nanonis Generic 5 has 'RT Frequency' 20E-3.
             signals_oversampling(NX_NUMBER):
-              doc: (Signals Periods) The Signals Period is the rate at which the signals are transferred to the host computer running the control software. This is usually lower by a factor of 10 than the sampling rate, because an internal oversampling of the signal is done on the real time engine. You can reduce the oversampling down to 1 in order to resolve higher frequencies in the Spectrum Analyzer. (e.g. 10)
+              doc: |
+                (Signals Periods) The Signals Period is the rate at which the signals are 
+                transferred to the host computer running the control software. This is 
+                usually lower by a factor of 10 than the sampling rate, because an internal
+                oversampling of the signal is done on the real time engine. You can reduce 
+                the oversampling down to 1 in order to resolve higher frequencies in the 
+                Spectrum Analyzer. (e.g. 10)
             acquisition_period(NX_NUMBER):
               unit: NX_TIME
               exists: optional
@@ -311,150 +335,197 @@ NXiv_sweep2(NXsensor_scan):
     # TODO: After fix resolution_indicators back to required
     # As all of the bellow are linked
     resolution_indicators(NXprocess):
-      exists: optional
       # Temperature 1>link to INSTR/STM/head Temperature 1 (K) (e.g. 4.92997E+0) # Temperature of STM head.
-      temp_stm_head:
+      temp_stm_head(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/stm_head_temp
       # Temperature 2>link to Temperature 2 (K) - # Temperature of bottom of LHe helium cryostat.
-      temp_cryo_bottom:
+      temp_cryo_bottom(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/temp_cryo_bottom
        # Temperature 3>link to Temperature 3 (K) - # Temperature of LN2 nitrogen shield.
-      temp_cryo_shield:
+      temp_cryo_shield(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/temp_cryo_shield
       # Lock-in>link to Modulated signal Bias (V) (e.g. 1E-3) # Applied modulation to the bias voltage.
-      modulated_signal_bias:
-      # link to Integration time (s) (e.g. 150E-6) # Time during which the spectroscopy data are acquired and averaged. 
-      integration_time:
-      # link to Bias Spectroscopy>Number of sweeps (e.g. 100) # Number of sweeps to measure and average. 
-      number_of_sweps:
+      modulated_signal_bias(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/lock_in/modulation_signal
+      # link to Integration time (s) (e.g. 150E-6) 
+      # Time during which the spectroscopy data are acquired and averaged. 
+      integration_time(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/integration_time
+      # link to Bias Spectroscopy>Number of sweeps (e.g. 100) 
+      # Number of sweeps to measure and average.
+      number_of_sweps(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/number_of_sweeps
       # link to Bias Spectroscopy>Sweep Start (V) (e.g. -300E-3) # The first bias values of the sweep. 
-      sweep_start:
+      sweep_start(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/sweep_start
       # link to Bias Spectroscopy>Sweep End (V) (e.g. 300E-3) # The last bias values of the sweep. 
-      sweep_end:
+      sweep_end(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/sweep_end
       # link to Bias Spectroscopy>Num Pixel (e.g. 4096) # Define the sweep number of points, that is, the maximum spectrum resolution eq. Bias window divide by Num Pixel.
-      number_of_pixels:
+      num_pixel(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/num_pixel
       # link to Bias Spectroscopy>Z Avg time (s) (e.g. 100E-3) # Duration over which the Z 
       # position is recorded and averaged before and after the sweep (the latter only if Record
       # final Z position is selected in the Advanced section). After the initial Z averaging 
       # time, if Z-Controller to Hold is selected in the Advanced section, the Z-Controller is
       # set to hold and the tip is placed at the previously averaged Z position (plus Z offset).
-      z_avg_time:
+      z_avg_time(link):
+        target: /ENTRY[entry]/resolution_indicators/z_avg_time
       # link to SoftwareMain>RT Frequency (Hz) (e.g. 20E+3) # The bandwitdh of the 
       # Hardware and/or Software
-      rt_freq:     
+      rt_freq(link):     
+        target: /ENTRY[entry]/resolution_indicators/rt_freq  
       # link to SoftwareMain>Signals Oversampling (e.g. 10) # (Signals Periods) 
       # The Signals Period is the rate at which the signals are transferred to the host computer
       # running the control software. This is usually lower by a factor of 10 than the sampling 
       # rate, because an internal oversampling of the signal is done on the real time engine. 
       # You can reduce the oversampling down to 1 in order to resolve higher frequencies in the 
-      # Spectrum Analyzer.  
-      oversampling:
+      # Spectrum Analyzer.
+      oversampling(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/circuit/signals_oversampling
       # link to SoftwareMain>Acquisition Period (s) (e.g. 20E-3) # Update rate for several 
       # processes like History Graph, Auto-Approach, and for many Programming Interface functions.
       # This is usually set to 20 ms. All additional timings (7-9) can only be integer multiples 
       # of this value. They can be set to different values, but the actual timing value will be
       # coerced to a multiple of the Acquisition Period.
-      acquisition_period:
+      acquisition_period(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/circuit/acquisition_period 
       # link to SoftwareMain>Animations Period (s) (e.g. 20E-3) # Update rate of animated 
       # graphical indicators. These are e.g. some graphs & sliders. A reasonable value is 
       # 40 ms (25 updates per second). Increase this period to reduce the processor load 
       # for the graphical user interface, especially on slow computers. This value is purely a 
-      # user interface update rate and does not affect measurements in any way. 
-      animation_period:
+      # user interface update rate and does not affect measurements in any way.
+      animation_period(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/circuit/animations_period
       # link to SoftwareMain>Indicators Period (s) (e.g. 300E-3) # Update rate of digital 
       # indicators, e.g. the numbers displayed besides each slider. Here, 3 updates per 
       # second, or 300 ms is enough. This value is purely a user interface update rate and
       # does not affect measurements in any way.
-      indicators_period:
+      indicators_period(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/circuit/indicators_period
       # link to SoftwareMain>Measurements Period (s) (e.g. 500E-3) # The Measurements 
       # period is the integration time for precise measurements (averaging over specified period),
       # mostly used in sweep modules. Examples are recording of a force-distance curve or a 
       # resonance of a cantilever. For fast measurements with small steps, a value of 40 ms may be
       # reasonable. For normal use, 300-500 ms is a good value, but for recording a resonance of a
       # high-Q cantilever, values of several seconds might be necessary. Usually this parameter doesn’t need to be set from this module; the sweep modules will set this value according to the sweep timings.
-      measurement_period: 
+      measurement_period(link): 
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/circuit/measurements_period
     # TODO: Later fix REPRODUCIBILITY_indicator
     # as all of the bellow are linked
     reproducibility_indicators(NXprocess):
       exists: optional
       # Bias>Bias(NXBias) (V) (e.g. 100E-3) # Applied bias voltage.
-      bias:
+      bias(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/sample_bias/bias
       # Current>Current(NXcircuit) (A) (e.g. -5.3429E-15) # The tunneling current is displayed here.
-      current:
-      # Bias>Calibration(NXbias) (V/V) (e.g. 1E+0) Calibration of the Bias output. If you have a Range switch the calibration is stored per range setting.
-      bias_calibration:
-      # Bias>Offset(NXbias) (V) (e.g. 0E+0) Allows compensating for an offset in Bias. 
-      bias_offset:
+      current(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/current_sensor/current
+      # Bias>Calibration(NXbias) (V/V) (e.g. 1E+0) Calibration of the Bias output. If you have
+      # a Range switch the calibration is stored per range setting.
+      bias_calibration(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/sample_bias/calibration
+      # Bias>Offset(NXbias) (V) (e.g. 0E+0) Allows compensating for an offset in Bias.
+      bias_offset(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/sample_bias/offset
       # Current>Calibration(NXcircuit) (A/V) (e.g. 100E-12) 
       # The signals voltages are converted to real world physical values according to the calibration & offset parameters: 
       # Physical signal = (Voltage * calibration) + offset. 
-      current_calibration:
+      current_calibration(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/current_sensor/current_calibration
       # Current>Offset(NXcircuit) (A) (e.g. 16.2897E-15) # The same as "Current>Calibration (A/V)" tag 
-      current_offset:
+      current_offset(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/current_sensor/current_offset
       # Current>Gain(NXcircuit) (e.g. Not switchable) # None 
-      current_gain:
+      current_gain(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/current_sensor/current_gain 
       # Z offset(NXpositioner) (m) (e.g. 0E+0) # Offset added to the initial averaged position 
       # Zaver before starting to sweep. This parameter is disabled when Z-Controller to Hold is
       # deselected in the Advanced section. The LED “Alt” next to the Z offset indicates if an
-      # alternate Z-controller setpoint is enabled. 
-      z_offset: 
+      # alternate Z-controller setpoint is enabled.
+      z_offset(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/z_offset 
       # Settling time(NXbias) (s) (e.g. 2.1E-3) Time to wait after changing the bias to the next
       # level and before starting to acquire data. Adjust this parameter to avoid transient 
       # effect induced by the bias change. Integration time: time during which the data are 
       # acquired and averaged.
-      settling_time:
+      settling_time(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/settling_time
       # Z-Ctrl hold(NXpositioner) (e.g. TRUE) # When selected, the Z-Controller is set to hold 
       # during the pulse. This means that the controller doesn't control the Z position during the pulse.
-      z_control_hold:
+      z_control_hold(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/z_ccontroller_hold
       # Final Z(NXpositioner) (m) (e.g. N/A)
-      final_z:
-      # Start time(NXlog) (e.g.23.11.2022 18:55:16) # Timestamp of the moment when the acquisition starts by pressing the Start button.
-      start_time:
-      # Bias Spectroscopy>1st Settling time(NXbias) (s) (e.g.2.1E-3) # See the "Settling time (s)" below.
-      1st_settling_time:
+      final_z(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/record_final_z
+      # Start time(NXlog) (e.g.23.11.2022 18:55:16) # Timestamp of the moment
+      # when the acquisition starts by pressing the Start button.
+      # TODO: no available concept is found for the  below link 
+      # start_time(link):
+      #   exists: optional
+      #   target: none
+      # Bias Spectroscopy>1st Settling time(NXbias) (s) (e.g.2.1E-3) # See the "Settling time (s)" below.        
+      1st_settling_time(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/first_settling_time
       # Bias Spectroscopy>Integration time(NXbias) (s) (e.g.150E-6) # Time during which the data
       # are acquired and averaged. 
-      integration_time:
+      integration_time(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/integration_time
       # Bias Spectroscopy>End Settling time(NXbias) (s) (e.g.4E-3) # Time to wait after the sweep has finished and the bias is ramped to the initial value.
-      end_settling_time:
+      end_settling_time(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/end_settling_time
       # Bias Spectroscopy>Z control time(NXbias) (s) (e.g.200E-3) # Time during which the 
       # Z-Controller is enabled once a sweep has finished. When averaging multiple sweeps
       # (i.e. Sweeps>1), the Z-Controller is enabled for this duration between each sweep.
       # After the last sweep, it will wait the specified time before continuing a running scan.
       # This ensures each sweep reliably starts from the same position. This parameter is 
       # disabled when Z-Controller to Hold is deselected in the Advanced section.
-      z_contro_time:
+      z_control_time(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/z_control_time
       # Bias Spectroscopy>Max Slew rate(NXbias) (V/s) (e.g.1E+0) # Maximum rate at which
       # the bias changes (before, during and after sweeping).
-      max_slew_rate:
+      max_slew_rate(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/max_slew_rate
       # Bias Spectroscopy>backward sweep(NXbias) (e.g.TRUE) # Select whether to measure
       # the backward (return) sweep or the forward only.
-      backward_sweep:
+      backward_sweep(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/backward_sweep
       # Z-Controller>Controller name(NXpositioner) (e.g.log Current) # Controller name.
       # This name which will be displayed at places where you can select a controller.
-      z_control_name:
+      z_control_name(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/position/z_controller/controller_name
       # Z-Controller>Controller status(NXpositioner) (e.g.OFF) # ON/OFF
-      z_control_status:
+      z_control_status(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/position/z_controller/controller_status
       # Z-Controller>Setpoint(NXpositioner) (e.g.50E-12) # Set Point is the desired value
       # of the control signal. It can be set by editing the number or using the slider bar. 
       # Click the "Set" button above the input field to use the actual value as Set Point. The slider shows the Set Point as well as the current value.
       # Z-Controller>Setpoint unit(NXpositioner) (e.g.A) # Angstrom
-      z_sontrol_setpoint:
+      z_control_setpoint(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/position/z_controller/set_point
       # Z-Controller>P gain(NXpid) (e.g.6E-12) # The Type switches controller parameters
       # between P/I (proportional gain/integral gain) and P/T (proportional gain/time constant).
       # The formula for the controller in the frequency domain is: G(s) = P + I/s = P(1 + 1/(Ts)).
       # The integral gain and time constant are related as follows: I = P/T. 
-      z_control_p_gain:
+      z_control_p_gain(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/position/z_controller/p_gain
       # Z-Controller>I gain(NXpid) (e.g.39.8241E-9) # See "Z-Controller>P gain" below. 
-      z_control_i_gain:
+      z_control_i_gain(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/position/z_controller/i_gain
       # Z-Controller>Time const(NXpid) (s) (e.g.150.662E-6) # See "Z-Controller>P gain" below.
-      z_control_time_const:
+      z_control_time_const(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/position/z_controller/time_const
       # Z-Controller>TipLift(NXpositioner) (m) (e.g.0E+0) # Lifts the tip by the specified
       # amount when then controller is switched off. This can be a positive or a negative number,
       # i.e. the tip can also be moved towards the sample. Be careful with sign and value when
       # using this feature.
-      z_control_tip_lift:
+      z_control_tip_lift(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/position/z_controller/tip_lift
       # Z-Controller>Switch off delay(NXpositioner) (s) (e.g.0E+0) # Use this parameter for 
       # a reproducible position when switching off the Z-controller. When >0 and the Z-controller
       # is switched off, it doesn't switch off immediately but continues to run for the specified time and averages the Z position.
-      z_control_switchoff_delay: 
+      z_control_switchoff_delay(link):
+        target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/position/z_controller/switchoff_delay
     # TODO: discuss convertion data to DATA
     (NXdata):
       doc: |
