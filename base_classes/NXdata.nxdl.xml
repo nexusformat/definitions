@@ -51,10 +51,10 @@
 	<doc>
 		The :ref:`NXdata` class is designed to encapsulate all the information required for a set of data to be plotted.
 		NXdata groups contain plottable data (sometimes referred to as *signals* or *dependent variables*) and their
-		associated axis coordinates (sometimes referred to as *axes* or *independent variables*)."
+		associated axis coordinates (sometimes referred to as *axes* or *independent variables*).
 
 		The actual names of the :ref:`DATA &lt;/NXdata/DATA-field&gt;` and :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields
-		can be chosen :ref:`freely &lt;validItemName>`, as indicated by the upper case (this is a common convention in all NeXus classes).
+		can be chosen :ref:`freely &lt;validItemName&gt;`, as indicated by the upper case (this is a common convention in all NeXus classes).
 		
 		.. note:: ``NXdata`` provides data and coordinates to be plotted but
 			does not describe how the data is to be plotted or even the dimensionality of the plot.
@@ -66,122 +66,170 @@
 		
 		The :ref:`DATA &lt;/NXdata/DATA-field&gt;` fields contain the signal values to be plotted. The name of the field
 		to be used as the *default plot signal* is provided by the :ref:`signal &lt;/NXdata@signal-attribute&gt;` attribute.
-		The names of the fields to be used as *secondary plot signals* are provided by the :ref:`auxiliary_signals&lt;/NXdata@auxiliary_signals-attribute&gt;` attribute.
-		
+		The names of the fields to be used as *secondary plot signals* are provided by the
+		:ref:`auxiliary_signals&lt;/NXdata@auxiliary_signals-attribute&gt;` attribute.
+
+		An example with three signals, one of which being the default
+
+		.. code-block::
+
+			data:NXdata
+			  @signal = "data1"
+			  @auxiliary_signals = ["data2", "data3"]
+			  data1: float[10,20,30]  --> the default signal
+			  data2: float[10,20,30]
+			  data3: float[10,20,30]
+
 		**Axes:**
 
 		.. index:: axes (attribute)
 		.. index:: coordinates
 
-		The :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields contain the axis coordinates associated with the data values. The names of all :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;`
-		fields are listed in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute.
+		The :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields contain the axis coordinates associated with the data values.
+		The names of all :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields are listed in the
+		:ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute.
 
 		`Rank`
 
-		:ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields are typically one-dimensional arrays, which annotate one of the dimensions. However, the fields can also have a rank greater than 1,
-		in which case the rank of each :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` must be equal to the number of data dimensions it spans.
+		:ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields are typically one-dimensional arrays, which annotate one of the dimensions.
+
+		An example of this would be
+
+		.. code-block::
+
+			data:NXdata
+			  @signal = "data"
+			  @axes = ["x", "y"]  --> the order matters
+			  data: float[10,20]
+			  x: float[10]        --> coordinates along the first dimension
+			  y: float[20]        --> coordinates along the second dimension
+
+		In this example each data point ``data[i,j]`` has axis coordinates ``[x[i], y[j]]``.
+
+		However, the fields can also have a rank greater than 1, in which case the rank of each
+		:ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` must be equal to the number of data dimensions it spans.
+
+		An example of this would be
+
+		.. code-block::
+
+			data:NXdata
+			  @signal = "data"
+			  @axes = ["x", "y"]  --> the order does NOT matter
+			  @x_indices = [0, 1]
+			  @y_indices = [0, 1]
+			  data: float[10,20]
+			  x: float[10,20]     --> coordinates along both dimensions
+			  y: float[10,20]     --> coordinates along both dimension
+
+		In this example each data point ``data[i,j]`` has axis coordinates ``[x[i,j], y[i,j]]``.
 
 		`Dimensions`
 
-		The data dimensions annotated by an :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field are defined by the :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attribute.
-		When this attribute is missing, the position(s) of the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` string in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute are used.
+		The data dimensions annotated by an :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field are defined by the
+		:ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attribute. When this attribute is missing,
+		the position(s) of the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` string in the
+		:ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute are used.
 
-		When all :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields are one-dimensional, and none of the data dimensions have more than one axis, the
-		:ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes are often omitted. If one of the data dimensions has no :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field,
+		When all :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields are one-dimensional, and none of the data dimensions
+		have more than one axis, the :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes
+		are often omitted. If one of the data dimensions has no :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field,
 		the string “.” can be used in the corresponding index of the axes list.
 
-		When providing :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes it is recommended to do it for all axes.
+		An example of this would be
+
+		.. code-block::
+
+			data:NXdata
+			  @signal = "data"
+			  @axes = ["x", ".", "z"]  --> the order matters
+			  data: float[10,20,30]
+			  x: float[10]             --> coordinates along the first dimension
+			  z: float[30]             --> coordinates along the third dimension
+
+		When using :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` this becomes
+
+		.. code-block::
+
+			data:NXdata
+			  @signal = "data"
+			  @axes = ["x", "z"]       --> the order does NOT matter
+			  data: float[10,20,30]
+			  @x_indices = 0
+			  @z_indices = 2
+			  x: float[10]             --> coordinates along the first dimension
+			  z: float[30]             --> coordinates along the third dimension
+
+		When providing :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes it is recommended
+		to do it for all axes.
+
+		`Non-trivial axes`
+
+		What follows are two examples where :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes
+		cannot be omitted.
+
+		The first is an example where data dimensions have alternative axis coordinates. The NXdata group represents
+		a stack of images collected at different energies. The ``wavelength`` is an alternative axis of ``energy``
+		for the last dimension (or vice versa).
+
+		.. code-block::
+
+			data:NXdata
+			  @signal = "data"
+			  @axes = ["x", "y", "energy", "wavelength"]  --> the order does NOT matter
+			  @x_indices = 0
+			  @y_indices = 1
+			  @energy_indices = 2
+			  @wavelength_indices = 2
+			  data: float[10,20,30]
+			  x: float[10]              --> coordinates along the first dimension
+			  y: float[20]              --> coordinates along the second dimension
+			  energy: float[30]         --> coordinates along the third dimension
+			  wavelength: float[30]     --> coordinates along the third dimension
+
+		The second is an example with coordinates that span more than one dimension. The NXdata group represents data
+		from 2D mesh scans performed at multiple energies. Each data point ``data[i,j,k]`` has axis coordinates
+		``[x[i,j,k], y[i,j,k], energy[k]]``.
+
+		.. code-block::
+
+			data:NXdata
+			  @signal = "data"
+			  @axes = ["x", "y", "energy"]  --> the order does NOT matter
+			  @x_indices = [0, 1, 2]
+			  @y_indices = [0, 1, 2]
+			  @energy_indices = 2
+			  data: float[10,20,30]
+			  x: float[10,20,30]            --> coordinates along all dimensions
+			  y: float[10,20,30]            --> coordinates along all dimensions
+			  energy: float[30]             --> coordinates along the third dimension
 
 		**Uncertainties:**
 
-		Standard deviations on data values as well as coordinates can be provided by :ref:`FIELDNAME_errors &lt;/NXdata/FIELDNAME_errors-field&gt;` fields
-		where ``FIELDNAME`` is the name of a :ref:`DATA &lt;/NXdata/DATA-field&gt;` field or an :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field.
+		Standard deviations on data values as well as coordinates can be provided by
+		:ref:`FIELDNAME_errors &lt;/NXdata/FIELDNAME_errors-field&gt;` fields where ``FIELDNAME`` is the name of a
+		:ref:`DATA &lt;/NXdata/DATA-field&gt;` field or an :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field.
 
-		**Examples:**
+		An example of uncertainties on the signal, auxiliary signals and axis coordinates
 
-		 1. Two-dimensional data with coordinates on both data dimensions::
-		
-			data:NXdata
-			    @signal = "data"
-			    @axes = ["y", "x"]      --> the order does matter
-			    data: float[10,20]      --> the default signal
-			    y: float[10]            --> coordinates along the first dimension
-			    x: float[20]            --> coordinates along the second dimension
-
-		 2. Three-dimensional data with coordinates and uncertainties::
-		
-			data:NXdata
-			    @signal = "data1"
-			    @auxiliary_signals = ["data2", "data3"]
-			    @axes = ["x", "z"]      --> the order does NOT matter
-			    @x_indices = 0
-			    @z_indices = 2
-			    data1: float[10,20,30]  --> the default signal
-			    data2: float[10,20,30]
-			    data3: float[10,20,30]
-			    x: float[10]            --> coordinates along the first dimension
-			    z: float[30]            --> coordinates along the last dimension
-			    data1_errors: float[10,20,30]
-			    data2_errors: float[10,20,30]
-			    data3_errors: float[10,20,30]
-			    x_errors: float[10]
-			    z_errors: float[30]
-
-		   Note that the second data dimension has no coordinates.
-
-		 3. An example with a data dimension with more than one axis::
+		.. code-block::
 
 			data:NXdata
-			    @signal = "data1"
-			    @auxiliary_signals = ["data2", "data3"]
-			    @axes = ["x", "y", "z", "time"]  --> the order does NOT matter
-			    @x_indices = 0
-			    @y_indices = 1
-			    @z_indices = 2
-			    @time_indices = 2
-			    data1: float[10,20,30]  --> the default signal
-			    data2: float[10,20,30]
-			    data3: float[10,20,30]
-			    x: float[10]     --> coordinates along the first dimension
-			    y: float[20]     --> coordinates along the second dimension
-			    z: float[30]     --> coordinates along the last dimension
-			    time: float[30]  --> coordinates along the last dimension
-
-		   Note that ``time`` is an alternative axis of ``z`` for the last dimension (or vice versa).
-
-		 4. An example with coordinates that span more than one data dimension::
-		
-			data:NXdata
-			    @signal = "data1"
-			    @auxiliary_signals = ["data2", "data3"]
-			    @axes = ["x", "y", "z"]  --> the order does NOT matter
-			    @x_indices = [0, 1]
-			    @y_indices = [0, 1]
-			    @z_indices = 2
-			    data1: float[10,20,30]  --> the default signal
-			    data2: float[10,20,30]
-			    data3: float[10,20,30]
-			    x: float[10,20]  --> coordinates along the first two dimensions
-			    y: float[10,20]  --> coordinates along the first two dimensions
-			    z: float[30]     --> coordinates along the last dimension
-
-		   Note that each signal value ``data1[i,j,k]`` has axis coordinates ``[x[i,j], y[i,j], z[k]]``.
-		   The same goes for the auxiliary signals ``data2`` and ``data3``.
-
-		 5. An example without :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes
-		    and a data dimension without axis coordinates::
-		
-			data:NXdata
-			    @signal = "data1"
-			    @auxiliary_signals = ["data2", "data3"]
-			    @axes = ["x", ".", "z"]  --> the order matters
-			    data1: float[10,20,30]   --> the default signal
-			    data2: float[10,20,30]
-			    data3: float[10,20,30]
-			    x: float[10]  --> coordinates along the first dimension
-			    z: float[30]  --> coordinates along the last dimension
-
-		   This implicitely defines ``@x_indices = 0`` and ``@z_indices = 2``. Note that the second data dimension has no coordinates.
+			  @signal = "data1"
+			  @auxiliary_signals = ["data2", "data3"]
+			  @axes = ["x", "z"]
+			  @x_indices = 0
+			  @z_indices = 2
+			  data1: float[10,20,30]
+			  data2: float[10,20,30]
+			  data3: float[10,20,30]
+			  x: float[10]
+			  z: float[30]
+			  data1_errors: float[10,20,30]
+			  data2_errors: float[10,20,30]
+			  data3_errors: float[10,20,30]
+			  x_errors: float[10]
+			  z_errors: float[30]
 
 	</doc>
 
@@ -192,7 +240,7 @@
 			.. index:: plotting
 			.. index:: signal attribute value
 			
-			The value is the :ref:`name &lt;validItemName>` of the signal that contains
+			The value is the :ref:`name &lt;validItemName&gt;` of the signal that contains
 			the default plottable data. This field or link *must* exist and be a direct child
 			of this NXdata group.
 			
@@ -206,7 +254,7 @@
 		<doc>
 			.. index:: plotting
 			
-			Array of strings holding the :ref:`names &lt;validItemName>` of additional
+			Array of strings holding the :ref:`names &lt;validItemName&gt;` of additional
 			signals to be plotted with the :ref:`default signal &lt;/NXdata@signal-attribute&gt;`.
 			These fields or links *must* exist and be direct children of this NXdata group.
 			
@@ -251,7 +299,7 @@
 			Coordinate values along one or more :ref:`data &lt;/NXdata/DATA-field&gt;` dimensions. The rank must be equal
 			to the number of dimensions it spans.
 			
-			As the upper case ``AXISNAME`` indicates, the names of the ``AXISNAME`` fields can be chosen :ref:`freely &lt;validItemName>`.
+			As the upper case ``AXISNAME`` indicates, the names of the ``AXISNAME`` fields can be chosen :ref:`freely &lt;validItemName&gt;`.
 			The :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute can be used to find all datasets in the
 			``NXdata`` that contain coordinate values.
 		</doc>
@@ -286,7 +334,7 @@
 			.. index:: plotting
 			
 			Data values to be used as the NeXus *plottable data*. As the upper case ``DATA``
-			indicates, the names of the ``DATA`` fields can be chosen :ref:`freely &lt;validItemName>`. The :ref:`signal attribute &lt;/NXdata@signal-attribute&gt;`
+			indicates, the names of the ``DATA`` fields can be chosen :ref:`freely &lt;validItemName&gt;`. The :ref:`signal attribute &lt;/NXdata@signal-attribute&gt;`
 			and :ref:`auxiliary_signals attribute&lt;/NXdata@auxiliary_signals-attribute&gt;` can be used to find all datasets in the ``NXdata``
 			that contain data values.
 
