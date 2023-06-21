@@ -127,16 +127,70 @@
 
 		as needed.
 
-		**Example**
+		**Example 1: goniometer**
+
+		Position a sample mounted on a goniometer in the :ref:`McSTAS coordinate frame&lt;Design-CoordinateSystem&gt;`.
+
+		The sample is oriented as follows
+
+		.. math:: X_\text{lab} = R(\vec{v}_\omega, \omega) . 
+								 T(\vec{v}_z, \text{sam}_z) . 
+								 T(\vec{v}_y, \text{sam}_y) . 
+								 T(\vec{v}_x, \text{sam}_x) . 
+								 R(\vec{v}_\chi, \chi) . 
+								 R(\vec{v}_\varphi, \varphi) . X_s
+
+		where
+
+		* :math:`R(\vec{v},a)` is a rotation around vector :math:`\vec{v}` with angle :math:`a`
+		* :math:`T(\vec{u},t)` is a translation along vector :math:`\vec{u}` over a distance :math:`t`
+		* :math:`X_s` a coordinate in the sample reference frame.
+
+		.. code-block::
+
+		  entry:NXentry
+		    sample:NXsample
+		      depends_on=transformations/phi
+		      transformations:NXtransformations
+		        phi=0
+		          @depends_on=chi
+		          @transformation_type=rotation
+		          @vector=[-1 -0.0037 -0.002]
+		          @units=degrees
+		        chi=0
+		          @depends_on=sam_x
+		          @transformation_type=rotation
+		          @vector=[0.0046 0.0372 0.9993]
+		          @units=degrees
+		        sam_x=0
+		          @depends_on=sam_y
+		          @transformation_type=translation
+		          @vector=[1 0 0]
+		          @units=mm
+		        sam_y=0
+		          @depends_on=sam_z
+		          @transformation_type=translation
+		          @vector=[0 1 0]
+		          @units=mm
+		        sam_z=0
+		          @depends_on=omega
+		          @transformation_type=translation
+		          @vector=[0 0 1]
+		          @units=mm
+		        omega=174
+		          @depends_on=.
+		          @transformation_type=rotation
+		          @vector=[-1 0 0]
+		          @units=degrees
+
+		**Example 2: different coordinate system**
 
 		Define a laboratory reference frame with the X-axis along the beam and the Z-axis opposite to the direction of gravity.
-		The sample and three point detectors are positioned in this reference:
+		Three point detectors are positioned in this reference:
 
-		* *sample*:
-			* diffractometer angles define the orientation with respect to the coordinate system
 		* *transmission*:
 			* point detector in the beam
-			* 20 cm downstream from the sample
+			* 20 cm downstream from the sample (the origin of the reference frame)
 		* *vertical*:
 			* point detector 10 cm downstream from the sample
 			* making an angle of 5 degrees with the beam w.r.t. the sample
@@ -152,43 +206,17 @@
 		* *vertical*: :math:`X_\text{lab} = R_y(-5) . T_x(10) . X_d`
 		* *horizontal*: :math:`X_\text{lab} = R_x(-90) . R_y(-6) . T_x(11) . X_d`
 
-		where :math:`X_d` is a coordinate in the detector reference frame. As these are
-		point detectors we only have one coordinate :math:`X_d=[0,0,0,1]^T`.
+		where
 
-		The sample is oriented as follows
+		* :math:`T_x`, :math:`T_y`, :math:`T_z`: active transformation matrices for translation along the X, Y and Z axes
+		* :math:`R_x`, :math:`R_y`, :math:`R_z`: active transformation matrices for rotation around the X, Y and Z axes
+		* :math:`X_d` is a coordinate in the detector reference frame.
 
-		.. math:: X_\text{lab} = R_y(-90) . R_x(30) . R_z(-45) . X_s
-
-		where :math:`X_s` a coordinate in the sample reference frame.
+		Note that as these are point detectors, we only have one coordinate :math:`X_d=[0,0,0,1]^T`.
 
 		.. code-block::
 
 		  entry:NXentry
-		    coordinate_system:NXtransformations
-		      beam=NaN                   # value is never used
-		        @depends_on=gravity
-		        @vector=[1 0 0]          # X-axis points in the beam direction
-		      gravity=NaN                # value is never used
-		        @depends_on=.            # end of the chain
-		        @vector=[0 0 -1]         # Z-axis points up
-		    sample:NXsample
-		      depends_on=diffr/phi
-		      diffr:NXtransformations
-		        phi=45
-		          @depends_on=chi
-		          @transformation_type=rotation
-		          @vector=[0 0 -1]
-		          @units=degrees
-		        chi=30
-		          @depends_on=omega
-		          @transformation_type=rotation
-		          @vector=[1 0 0]
-		          @units=degrees
-		        omega=90
-		          @depends_on=../../coordinate_system/beam
-		          @transformation_type=rotation
-		          @vector=[0 -1 0]
-		          @units=degrees
 		    instrument:NXinstrument
 		      vertical:NXdetector
 		        depends_on=position/distance
@@ -202,7 +230,7 @@
 		            @units=degrees
 		            @vector=[0 -1 0]
 		          azimuth=0              # stay in the vertical plane
-		            @depends_on=../../coordinate_system/beam
+		            @depends_on=/entry/coordinate_system/beam
 		            @units=degrees
 		            @vector=[-1 0 0]
 		      horizontal:NXdetector
@@ -217,16 +245,23 @@
 		            @units=degrees
 		            @vector=[0 -1 0]
 		          azimuth=90             # rotate to the horizontal plane
-		            @depends_on=../../coordinate_system/beam
+		            @depends_on=/entry/coordinate_system/beam
 		            @units=degrees
 		            @vector=[-1 0 0]
 		      transmission:NXdetector
-		        depends_on=position/azimuth
+		        depends_on=position/distance
 		        position:NXtransformations
 		          distance=20            # move downstream from the sample
-		            @depends_on=../../coordinate_system/beam
+		            @depends_on=/entry/coordinate_system/beam
 		            @units=cm
 		            @vector=[1 0 0]
+		    coordinate_system:NXtransformations
+		      beam=NaN                   # value is never used
+		        @depends_on=gravity
+		        @vector=[1 0 0]          # X-axis points in the beam direction
+		      gravity=NaN                # value is never used
+		        @depends_on=.            # end of the chain
+		        @vector=[0 0 -1]         # Z-axis points up
 
 	</doc>
 	<field name="AXISNAME" nameType="any" units="NX_TRANSFORMATION" type="NX_NUMBER" maxOccurs="unbounded">
