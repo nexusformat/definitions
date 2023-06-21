@@ -3,7 +3,7 @@ import os
 from click.testing import CliRunner
 
 from ..nyaml2nxdl import nyaml2nxdl as conv
-from ..utils.nexus import find_definition_file
+from ..utils.nxdl_utils import find_definition_file
 
 # import subprocess
 
