@@ -29,7 +29,7 @@ from xml.dom import minidom
 
 import yaml
 
-from ..utils import nexus as pynxtools_nxlib
+from ..utils import nxdl_utils as pynxtools_nxlib
 from .comment_collector import CommentCollector
 from .nyaml2nxdl_helper import LineLoader
 from .nyaml2nxdl_helper import cleaning_empty_lines
