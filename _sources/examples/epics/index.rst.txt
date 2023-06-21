@@ -1,6 +1,6 @@
 .. index:: !EPICS; instrument examples
 
-..Example-EPICS:
+.. _Example-EPICS:
 
 EPICS Area Detector Examples
 ############################
