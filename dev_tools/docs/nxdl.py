@@ -12,7 +12,7 @@ from ..globals.directories import get_nxdl_root
 from ..globals.errors import NXDLParseError
 from ..globals.nxdl import NXDL_NAMESPACE
 from ..globals.urls import REPO_URL
-from ..utils import nexus as pynxtools_nxlib
+from ..utils import nxdl_utils as pynxtools_nxlib
 from ..utils.types import PathLike
 from .anchor_list import AnchorRegistry
 
