@@ -25,6 +25,14 @@ Open the HTML manual in a web brower for visual verification
 
     firefox build/manual/build/html/index.html
 
+### HTML pages with contributor information
+
+To build the html pages that contains contributor information on the sidebar set a github access token to an environment variable called GH_TOKEN.
+
+Note: If set this will increase the build time of the documentation by approximately a factor of 4.
+
+    setenv GH_TOKEN <access token>
+
 ## Repository content
 
 These are the components that define the structure of NeXus data files 
