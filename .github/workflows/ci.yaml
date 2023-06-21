@@ -76,6 +76,8 @@ jobs:
         run: |
           make impatient-guide
           ls -lAFgh build/impatient-guide/build/html/index.html
+          mkdir -p build/deploy
+          mv build/impatient-guide/build/html build/deploy/impatient
           ls -lAFgh build/impatient-guide/build/latex/NXImpatient.pdf
 
       - name: Build User Manual
@@ -83,25 +85,13 @@ jobs:
           make pdf
           make html
           ls -lAFgh build/manual/build/html/index.html
+          mkdir -p build/deploy
+          mv build/manual/build/html/* build/deploy
           ls -lAFgh build/manual/build/latex/nexus.pdf
-
-      - name: Build and Commit the User Manual
-        if: ${{ github.event.inputs.deploy && env.python_version == env.python_deploy_version }}
-        uses: sphinx-notes/pages@v3
-        with:
-          # path to the conf.py directory
-          documentation_path: build/manual/source
-
-      - name: Build and Commit the Impatient Guide
-        if: ${{ github.event.inputs.deploy && env.python_version == env.python_deploy_version }}
-        uses: sphinx-notes/pages@v3
-        with:
-          # path to the conf.py directory
-          documentation_path: build/impatient-guide
 
       - name: Deploy both the User Manual and the Impatient Guide
         if: ${{ github.event.inputs.deploy && env.python_version == env.python_deploy_version }}
-        uses: ad-m/github-push-action@master
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
+          token: ${{ secrets.GITHUB_TOKEN }}
+          folder: build/deploy
