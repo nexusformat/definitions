@@ -146,6 +146,27 @@ class NXClassDocGenerator:
                     self._print(f": {doc}", end="")
                 self._print("\n")
 
+        # print group references
+        self._print("**Groups cited**:")
+        node_list = root.xpath("//nx:group", namespaces=ns)
+        groups = []
+        for node in node_list:
+            g = node.get("type")
+            if g.startswith("NX") and g not in groups:
+                groups.append(g)
+        if len(groups) == 0:
+            self._print("  none\n")
+        else:
+            out = [(f":ref:`{g}`") for g in groups]
+            txt = ", ".join(sorted(out))
+            self._print(f"  {txt}\n")
+            out = [
+                ("%s (base class); used in %s" % (g, self._listing_category))
+                for g in groups
+            ]
+            txt = ", ".join(out)
+            self._print(f".. index:: {txt}\n")
+
         # print full tree
         self._print("**Structure**:\n")
         for subnode in root.xpath("nx:attribute", namespaces=ns):
