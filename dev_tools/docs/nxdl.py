@@ -294,7 +294,7 @@ class NXClassDocGenerator:
                             re.sub(r"\t", "\\\\t", line),
                         )
                     )
-                out_lines.append(line[len(indent):])
+                out_lines.append(line[len(indent) :])
             out_blocks.append("\n".join(out_lines))
         return out_blocks
 
