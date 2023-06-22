@@ -45,6 +45,7 @@ def get_file_contributors_via_api(repo_name, file_path):
     else:
         # because the environment does not contain GH_TOKEN, assume the user wants to build the
         # docs without contributor info
+        print("get_file_contributors_via_api: GH_TOKEN is not set in env")
         return None
 
     contrib_skip_list = ["GitHub"]
