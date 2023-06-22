@@ -113,11 +113,14 @@ class NXClassDocGenerator:
             self._print("")
             self._print("..")
             self._print("    Contributors List")
-            i = 0
-            for date_str in list(contribs_dct.keys()):
+            for date_str, contrib_dct in contribs_dct.items():
+                date_str = date_str.split("T")[0]
+                name = contrib_dct['name']
+                gh_login_nm = contrib_dct['committer']['commit']['committer']['name']
+                gh_avatar_url = contrib_dct['committer']['committer']['avatar_url']
                 self._print("")
-                self._print(f"    .. |contrib_name| replace:: {contribs_dct[date_str]['name']}|{contribs_dct[date_str]['committer']['committer']['login']}|{contribs_dct[date_str]['committer']['committer']['avatar_url']}|{date_str.split('T')[0]}")
-                i += 1
+                s = "|".join([name, gh_login_nm, gh_avatar_url, date_str])
+                self._print(f"    .. |contrib_info| replace:: {s}")
 
         self._print("")
         self._print("**Status**:\n")
