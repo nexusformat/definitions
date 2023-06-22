@@ -80,7 +80,7 @@ def get_file_contributors_via_api(repo_name, file_path):
                     "name": format_author_name(
                         commit_dct["commit"]["committer"]["name"]
                     ),
-                    "committer": commit_dct,
+                    "commit_dct": commit_dct,
                 }
 
     # sort them so they are in descending order from newest to oldest

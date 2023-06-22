@@ -114,8 +114,8 @@ class NXClassDocGenerator:
             for date_str, contrib_dct in contribs_dct.items():
                 date_str = date_str.split("T")[0]
                 name = contrib_dct["name"]
-                gh_login_nm = contrib_dct["committer"]["committer"]["login"]
-                gh_avatar_url = contrib_dct["committer"]["committer"]["avatar_url"]
+                gh_login_nm = contrib_dct["commit_dct"]["committer"]["login"]
+                gh_avatar_url = contrib_dct["commit_dct"]["committer"]["avatar_url"]
                 self._print("")
                 s = "|".join([name, gh_login_nm, gh_avatar_url, date_str])
                 self._print(f"    .. |contrib_name| replace:: {s}")
