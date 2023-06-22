@@ -62,6 +62,11 @@ There is a set of base classes for describing an optical experiment.
     :ref:`NXwaveplate`
        A waveplate or retarder.
 
+    :ref:`NXenvironment`
+       Specify external parameters that have influenced the sample,
+       such as the surrounding medium, and varied parameters e.g.
+       temperature, pressure, pH value, optical excitation etc.
+
 
 
 .. _DispersiveMaterial:
