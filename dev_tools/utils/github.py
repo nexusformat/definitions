@@ -1,25 +1,24 @@
-
 import os
 import requests
+
 
 def format_author_name(nm):
     """
     make sure all words in name start with a capital
     """
-    s = ""
     nms = nm.split(" ")
-    for n in nms:
-        s += n[0].upper() + n[1:] + " "
-    s = s[:-1]
-    return(s)
+    auth_nm = " ".join([n.capitalize() for n in nms])
+    return auth_nm
+
 
 def get_github_profile_name(email):
     """
     given an email addr return the github login name
     """
-    email = email.replace(' ', '')
-    idx1 = email.find("@")
-    return(email[:idx1])
+    email = email.replace(" ", "")
+    nm = email.split("@")[0]
+    return nm
+
 
 def get_file_contributors_via_api(repo_name, file_path):
     """
@@ -45,7 +44,7 @@ def get_file_contributors_via_api(repo_name, file_path):
     else:
         # because the environment does not contain GH_TOKEN, assume the user wants to build the
         # docs without contributor info
-        return(None)
+        return None
 
     contrib_skip_list = ["GitHub"]
     url = f"https://api.github.com/repos/nexusformat/{repo_name}/commits"
@@ -54,14 +53,14 @@ def get_file_contributors_via_api(repo_name, file_path):
     if have_token:
         # Set the headers with the access token
         headers = {
-            'Authorization': f'token {access_token}',
-            'Accept': 'application/vnd.github.v3+json'
+            "Authorization": f"token {access_token}",
+            "Accept": "application/vnd.github.v3+json",
         }
 
     response = requests.get(url, params=params, headers=headers)
     commits = response.json()
-    if response.status_code == 403:
-        # the max rate per hour has been reached
+    if response.status_code != 200:
+        # if its 403: the max rate per hour has been reached
         raise Exception(f"{commits['message']},{commits['documentation_url']}")
 
     contributor_names = set()
@@ -76,14 +75,15 @@ def get_file_contributors_via_api(repo_name, file_path):
             if commit_dct["commit"]["committer"]["email"] not in _email_lst:
                 _email = commit_dct["commit"]["committer"]["email"]
                 _email_lst.append(_email)
-                contribs_dct[commit_dct["commit"]['committer']["date"]] = {
-                    "name": format_author_name(commit_dct["commit"]["committer"]["name"]), "committer": commit_dct}
+                contribs_dct[commit_dct["commit"]["committer"]["date"]] = {
+                    "name": format_author_name(
+                        commit_dct["commit"]["committer"]["name"]
+                    ),
+                    "committer": commit_dct,
+                }
 
-    #sort them so they are in descending order from newest to oldest
+    # sort them so they are in descending order from newest to oldest
     sorted_keys = sorted(contribs_dct.keys(), reverse=True)
     sorted_dict = {key: contribs_dct[key] for key in sorted_keys}
 
-    return (sorted_dict)
-
-
-
+    return sorted_dict
