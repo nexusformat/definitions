@@ -31,6 +31,38 @@ Application Definitions
        An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
 
 
+Base Classes
+------------
+
+There is a set of base classes for describing an optical experiment.
+
+    :ref:`NXbeam_path`
+       A beam path consisting of one or more optical elements.
+       
+       NXbeam_path is used in NXopt to describe the beam path, i.e. the arrangement
+       of optical elements between the excitation source and the sample, or between
+       the sample and the detector unit.
+              
+    :ref:`NXbeam_splitter`
+       A beam splitter, i.e. a device splitting the light into two or more beams.
+       
+       Use two or more NXbeam_paths to describe the beam paths after the beam
+       splitter. In the dependency chain of the new beam paths, the first elements
+       each point to this beam splitter, as this is the previous element.
+
+    :ref:`NXfiber`
+       An optical fiber, e.g. glass fiber.
+
+    :ref:`NXlens_opt`
+       Description of an optical lens.
+       
+    :ref:`NXpolarizer_opt`
+       A spin polarizer.
+
+    :ref:`NXwaveplate`
+       A waveplate or retarder.
+
+
 
 .. _DispersiveMaterial:
 
