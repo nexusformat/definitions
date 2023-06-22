@@ -7,6 +7,8 @@ import re
 # contributor information on the for right sidebar of the html pages
 
 variables_re = re.compile(r"\|(\w+)\| replace::\s(.+)")
+
+
 def extract_contributor_vars(app, docname, source):
     # Read the RST file content
     content = source[0]
