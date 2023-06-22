@@ -1,6 +1,5 @@
 import os
 import re
-import datetime
 
 from collections import OrderedDict
 from html import parser as HTMLParser
