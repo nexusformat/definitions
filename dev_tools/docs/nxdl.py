@@ -1,6 +1,5 @@
 import os
 import re
-
 from collections import OrderedDict
 from html import parser as HTMLParser
 from pathlib import Path
@@ -13,8 +12,8 @@ from ..globals.directories import get_nxdl_root
 from ..globals.errors import NXDLParseError
 from ..globals.nxdl import NXDL_NAMESPACE
 from ..globals.urls import REPO_URL
-from ..utils.types import PathLike
 from ..utils.github import get_file_contributors_via_api
+from ..utils.types import PathLike
 from .anchor_list import AnchorRegistry
 
 
@@ -295,7 +294,7 @@ class NXClassDocGenerator:
                             re.sub(r"\t", "\\\\t", line),
                         )
                     )
-                out_lines.append(line[len(indent) :])
+                out_lines.append(line[len(indent):])
             out_blocks.append("\n".join(out_lines))
         return out_blocks
 
