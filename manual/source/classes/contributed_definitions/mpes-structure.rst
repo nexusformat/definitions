@@ -35,22 +35,21 @@ Application Definitions
 Base Classes
 ############
 
-New base classes:
-    :ref:`NXelectronanalyser`:
-       A base class to describe electron kinetic energy analizers. Contains the collective characteristics of the instrument such as energy resolution, and includes the following subclasses:
+:ref:`NXelectronanalyser`:
+   A base class to describe electron kinetic energy analizers. Contains the collective characteristics of the instrument such as energy resolution, and includes the following subclasses:
 
-          :ref:`NXcollectioncolumn`:
-             Base class to describe the set of electronic lenses in the electron collection column (standard, PEEM, momentum-microscope, etc.).
+      :ref:`NXcollectioncolumn`:
+         Base class to describe the set of electronic lenses in the electron collection column (standard, PEEM, momentum-microscope, etc.).
 
-          :ref:`NXenergydispersion`:
-             Base class to describe the energy dispersion sytem (hemispherical, time-of-flight, etc.).
+      :ref:`NXenergydispersion`:
+         Base class to describe the energy dispersion sytem (hemispherical, time-of-flight, etc.).
 
-          :ref:`NXspindispersion`:
-             Base class to describe the set of electronic lenses in the electron collection column.
+      :ref:`NXspindispersion`:
+         Base class to describe the set of electronic lenses in the electron collection column.
 
-    :ref:`NXmanipulator`:
-       A base class to describe the complex manipulators used in photoemission experiments, often with > 4 degrees of freedom, 
-       cryogenic cooling and other advanced features.
+:ref:`NXmanipulator`:
+   A base class to describe the complex manipulators used in photoemission experiments, often with > 4 degrees of freedom, 
+   cryogenic cooling and other advanced features.
 
 Three base classes to describe data processing, which can be used as subclasses of :ref:`NXprocess` if describing post-processing or as subclasses of :ref:`NXdetector` if describing live, electronics level processing:
 
@@ -74,35 +73,4 @@ There are two related base classes that are common to other techniques:
        A class to describe all types of lenses. Includes electrostatic lenses for electron energy analysers.
 
     :ref:`NXdeflector`
-       A class to describe all kinds of deflectors, including electrostatic and magnetostatic deflectors for electron energy analysers.  
-
-.. _MpesExtendedBC:
-
-Base Classes Extended in Application Definitions
-################################################
-
-The following existent base classes are used in application definitions (with added descriptors):
-
-    :ref:`NXaperture`
-       Added fileds to describe analyser apertures and slits.
-
-    :ref:`NXbeam`
-       Adedd fields to describe utrafast laser beams.
-
-    :ref:`NXdetector`
-       Added fields to describe electron detectors (MCP+Phospor screen, delay lines etc.).
-
-    :ref:`NXentry`
-       Added fields to describe an experiment.
-
-    :ref:`NXprocess`
-       Added subclasses and collective processing descriptors.
-
-    :ref:`NXsample`
-       Added descriptors specific to photoemission experiments.
-
-    :ref:`NXsource`
-       Added descriptors for laboratory sources (X-ray, UV lamps) but mostly for ultrafast lasers with complex time structures.
-
-    :ref:`NXinstrument`
-      Added descriptors for the overall resolutions of the experiment (energy, momentum, angular, spatial, temporal).
+       A class to describe all kinds of deflectors, including electrostatic and magnetostatic deflectors for electron energy analysers.
