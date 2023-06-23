@@ -63,7 +63,7 @@ def get_file_contributors_via_api(repo_name, file_path):
     if response.status_code != 200:
         # if its 403: the max rate per hour has been reached
         raise Exception(
-            f"len_access_token={len(access_token)},access_token={access_token}, {commits['message']},{commits['documentation_url']}"
+            f"access_token={access_token}, {commits['message']},{commits['documentation_url']}"
         )
 
     contributor_names = set()
