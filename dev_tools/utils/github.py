@@ -39,7 +39,9 @@ def get_file_contributors_via_api(repo_name, file_path):
     """
     have_token = False
     access_token = os.getenv("GH_TOKEN")
-    if access_token is not None and access_token != 'NONE': # latter clause is false in most CI cases
+    if (
+        access_token is not None and access_token != "NONE"
+    ):  # latter clause is false in most CI cases
         if len(access_token) > 0:
             have_token = True
     else:
