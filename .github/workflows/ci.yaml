@@ -85,7 +85,6 @@ jobs:
           ls -lAFgh build/impatient-guide/build/html/index.html
           mkdir -p build/html
           mv build/impatient-guide/build/html build/html/impatient
-          ls -lAFgh build/impatient-guide/build/latex/NXImpatient.pdf
 
       - name: Build User Manual
         run: |
@@ -94,7 +93,6 @@ jobs:
           ls -lAFgh build/manual/build/html/index.html
           mkdir -p build/html
           mv build/manual/build/html/* build/html
-          ls -lAFgh build/manual/build/latex/nexus.pdf
 
       - name: Deploy both the User Manual and the Impatient Guide
         if: ${{ github.event.inputs.deploy && env.python_version == env.python_deploy_version }}
@@ -105,10 +103,10 @@ jobs:
 
       - name: Upload the User Manual and the Impatient Guide
         if: ${{ github.event.inputs.upload && env.python_version == env.python_deploy_version }}
+        run: |
+          ln -s build/html/_static/NeXusManual.pdf build/html
+          ln -s build/html/_static/NXImpatient.pdf build/html
         uses: actions/upload-artifact@v3
         with:
           name: nexus-definitions-docs
-          path: |
-            build/html
-            build/impatient-guide/build/*/NXImpatient.pdf
-            build/manual/build/*/nexus.pdf
+          path: build/html
