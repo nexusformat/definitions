@@ -38,8 +38,8 @@ def get_file_contributors_via_api(repo_name, file_path):
     returns a sorted dict of unique contributors to a file, or None if no GH_TOKEN has been defined in os.environ
     """
     have_token = False
-    if "GH_TOKEN" in os.environ.keys():
-        access_token = os.environ["GH_TOKEN"]
+    access_token = os.getenv("GH_TOKEN")
+    if access_token is not None and access_token != 'NONE': # latter clause is false in most CI cases
         if len(access_token) > 0:
             have_token = True
     else:
