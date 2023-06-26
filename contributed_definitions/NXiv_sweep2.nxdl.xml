@@ -8,7 +8,7 @@
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
-# version 2 of the License, or (at your option) any later version.
+# version 3 of the License, or (at your option) any later version.
 #
 # This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -48,7 +48,7 @@ CAP The data can be visualized in a tensor with:-->
            y has (NXsoftware_Scan_offset)
            z has (NXsoftware_Scan_offset)
     </doc>
-    <group type="NXentry">
+    <group type="NXentry" optional="true">
         <field name="definition">
             <enumeration>
                 <item value="NXiv_sweep2"/>
@@ -69,7 +69,8 @@ What is about [constant current mode, constand height mode]-->
         </field>
         <field name="entry_identifier" optional="true">
             <doc>
-                 The name of the output file, with the number of scans at the end.e.g. (e.g. 221122_Au_5K00014)
+                 The name of the output file, with the number of scans at the end.e.g. (e.g.
+                 221122_Au_5K00014)
             </doc>
         </field>
         <field name="collection_dentifier">
@@ -93,7 +94,6 @@ What is about [constant current mode, constand height mode]-->
         </field>
         <group type="NXinstrument">
             <group name="hardware" type="NXfabrication" optional="true">
-                <!--NOTE_: No documentaion available-->
                 <doc>
                      Hardware type used in SPM experiment, includes hardware manufacturers and type.
                      (e.g. Nanonis BP5e)
@@ -295,14 +295,12 @@ doc: The rate at which the one of the signal changes when ramping to the startin
                     </doc>
                 </field>
             </group>
-            <group type="NXenvironment">
+            <group type="NXenvironment" optional="false">
                 <doc>
                      Describes an environment setup for a temperature-dependent IV measurement experiment.
                      The temperature and voltage must be present as independently scanned controllers and
                      the current sensor must also be present with its readings.
                 </doc>
-                <group name="voltage_controller" type="NXsensor" optional="true"/>
-                <group name="temperature_controller" type="NXsensor"/>
                 <group name="current_sensor" type="NXsensor">
                     <field name="current" units="NX_CURRENT">
                         <doc>
@@ -345,7 +343,10 @@ doc: The rate at which the one of the signal changes when ramping to the startin
                         </field>
                     </group>
                 </group>
-                <!--parameters for a measurement at a single location during the scan-->
+                <!--TODO: Is if this are uncomment than getting error.
+voltage_controller(NXsensor):
+temperature_controller(NXsensor):
+parameters for a measurement at a single location during the scan-->
                 <group name="sweep_control" type="NXcollection">
                     <group name="bias_spectroscopy" type="NXbias_spectroscopy">
                         <field name="integration_time" type="NX_NUMBER" units="NX_TIME">
@@ -491,8 +492,9 @@ doc: The rate at which the one of the signal changes when ramping to the startin
         </group>
         <!--RESOLUTION (calculation input)
 TODO: After fix resolution_indicators back to required
-As all of the bellow are linked-->
-        <group name="resolution_indicators" type="NXprocess">
+As all of the bellow are linked
+should be NXcollection not NXprocess-->
+        <group name="resolution_indicators" type="NXprocess" optional="true">
             <!--Temperature 1>link to INSTR/STM/head Temperature 1 (K) (e.g. 4.92997E+0) # Temperature of STM head.-->
             <link name="temp_stm_head" target="/ENTRY[entry]/INSTRUMENT[instrument]/stm_head_temp"/>
             <!--Temperature 2>link to Temperature 2 (K) - # Temperature of bottom of LHe helium cryostat.-->
@@ -518,10 +520,10 @@ position is recorded and averaged before and after the sweep (the latter only if
 final Z position is selected in the Advanced section). After the initial Z averaging
 time, if Z-Controller to Hold is selected in the Advanced section, the Z-Controller is
 set to hold and the tip is placed at the previously averaged Z position (plus Z offset).-->
-            <link name="z_avg_time" target="/ENTRY[entry]/resolution_indicators/z_avg_time"/>
+            <link name="z_avg_time" target="None"/>
             <!--link to SoftwareMain>RT Frequency (Hz) (e.g. 20E+3) # The bandwitdh of the
 Hardware and/or Software-->
-            <link name="rt_freq" target="/ENTRY[entry]/resolution_indicators/rt_freq"/>
+            <link name="rt_freq" target="None"/>
             <!--link to SoftwareMain>Signals Oversampling (e.g. 10) # (Signals Periods)
 The Signals Period is the rate at which the signals are transferred to the host computer
 running the control software. This is usually lower by a factor of 10 than the sampling
@@ -598,9 +600,10 @@ start_time(link):
 Bias Spectroscopy>1st Settling time(NXbias) (s) (e.g.2.1E-3) # See the "Settling time (s)" below.-->
             <link name="1st_settling_time" target="/ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/first_settling_time"/>
             <!--Bias Spectroscopy>Integration time(NXbias) (s) (e.g.150E-6) # Time during which the data
-are acquired and averaged.-->
-            <link name="integration_time" target="/ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/integration_time"/>
-            <!--Bias Spectroscopy>End Settling time(NXbias) (s) (e.g.4E-3) # Time to wait after the sweep has finished and the bias is ramped to the initial value.-->
+are acquired and averaged.
+     integration_time(link):
+       target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/integration_time
+Bias Spectroscopy>End Settling time(NXbias) (s) (e.g.4E-3) # Time to wait after the sweep has finished and the bias is ramped to the initial value.-->
             <link name="end_settling_time" target="/ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/sweep_control/bias_spectroscopy/end_settling_time"/>
             <!--Bias Spectroscopy>Z control time(NXbias) (s) (e.g.200E-3) # Time during which the
 Z-Controller is enabled once a sweep has finished. When averaging multiple sweeps
