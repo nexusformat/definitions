@@ -1,16 +1,13 @@
 doc: | 
-  Application definition for temperature-dependent IV curve measurements, 
-  NOTE_: What is CAP
+  Application definition for temperature-dependent IV curve measurements, NOTE_: What is CAP
   #CAP with a focus on bias spectroscopy in scanning tunneling microscopy.
   
-  In this application definition, times should be specified always together
-  with an UTC offset.
+  In this application definition, times should be specified always together with an UTC offset.
  
   This is the application definition describing temperature (T) dependent current voltage (IV) curve
-  measurements. For this a temperature is set. After reaching the temperature,
-  a voltage sweep is performed. For each voltage a current is measured.
+  measurements. For this a temperature is set. After reaching the temperature, a voltage sweep
+  is performed. For each voltage a current is measured.
   Then, the next desired temperature is set and an IV measurement is performed.
-  NOTE_ : The text below is not comprehensive Should they be in symbol
     #CAP the X, Y, Z, position of the probes or tip can be defined. 
     #CAP The data can be visualized in a tensor with:  
     I (NXsensor_C, NXsoftware_Read_offset, NXcircuit)
@@ -37,7 +34,7 @@ NXiv_sweep2(NXsensor_scan):
       exists: optional
       doc: |
         The name of the output file, with the number of scans at the end.e.g. (e.g. 221122_Au_5K00014)
-    collection_dentifier:
+    collection_identifier:
       doc: The name of the series output file, which represents only the public part of the output file. (e.g. 221122_Au_5K)
     experiment_identifier:
       exists: optional
@@ -115,21 +112,21 @@ NXiv_sweep2(NXsensor_scan):
         #      (phi) is displayed with respect to the reference phase.
         #   Lock-in>Reference phase D2 (deg) -83.6562E+0 # See below.
         # items below should go to bias/spectroscopy/...!!!
-        #recorded_channels:
+        # recorded_channels:
         #  doc: Select the channels to record. (e.g. Current (A);LI Demod 2 X (A);LI Demod 2 Y (A);
         #     LI Demod 1 X (A);LI Demod 1 Y (A) # Select the channels to record.)
-        #bias_reset:
+        # bias_reset:
         #  doc: When selected, the Bias voltage returns to the initial value (before starting the 
         #     sweep) at the end of the spectroscopy measurement (default). When not selected, Bias
         #     remains at the last value of the sweep. This is useful e.g. when combining several 
         #     sweep segments. Example for an automated measurement (using Programming Interface): 
         #     switch off Z-Controller, start spectroscopy sweep segments (only fwd sweep, no reset
         #     bias), set bias back to initial value, switch on Z-Controller.  (e.g. TRUE)
-        #record_final_z:
+        # record_final_z:
         #  doc: Select whether to record the Z position during Z averaging time at the end of the
         #     sweep (after Z control time) and store the average value in the header of the file
         #     when saving. Using this option increases the sweep time by Z averaging time. (e.g. FALSE)
-        #run:
+        # run:
         #  doc: Bias Spectroscopy>Lock-In run FALSE # Select whether to set the Lock-In to run 
         #     during the measurement. When using this feature, make sure the Lock-In is configured
         #     correctly and settling times are set to twice the Lock-In period at least. This 
@@ -140,6 +137,9 @@ NXiv_sweep2(NXsensor_scan):
         bias(NX_NUMBER):
           unit: NX_VOLTAGE
           doc: Applied a voltage between tip and sample.
+        bias_calibration(NX_NUMBER):
+        bias_offset:
+          unit: NX_VOLTAGE
         # sample_bias(NXbias):
         # Tip bias/Sample bias If the spectroscopy V bias is applied to the
         # Modulated signal Bias (V) 1E-3 Applied modulation to the bias voltage.
@@ -288,7 +288,12 @@ NXiv_sweep2(NXsensor_scan):
               doc: Define the sweep number of points, that is, the maximum spectrum resolution eq. Bias window divide by Num Pixel. (e.g. 4096)
             z_avg_time(NX_NUMBER):
               unit: NX_TIME
-              doc: Duration over which the Z position is recorded and averaged before and after the sweep (the latter only if Record final Z position is selected in the Advanced section). After the initial Z averaging time, if Z-Controller to Hold is selected in the Advanced section, the Z-Controller is set to hold and the tip is placed at the previously averaged Z position (plus Z offset). (e.g. 100E-3)
+              doc: |
+                Duration over which the Z position is recorded and averaged before and after the 
+                sweep (the latter only if Record final Z position is selected in the Advanced 
+                section). After the initial Z averaging time, if Z-Controller to Hold is selected
+                in the Advanced section, the Z-Controller is set to hold and the tip is placed at
+                the previously averaged Z position (plus Z offset). (e.g. 100E-3)
           circuit(NXcollection):
             rt_frequency(NX_NUMBER):
               unit: NX_FREQENCY
@@ -323,7 +328,8 @@ NXiv_sweep2(NXsensor_scan):
           exists: optional
           roi(NXtransformations):
             frame:
-              doc: Also clarify the frame for the ROI of the scan (should depend on the lab frame)
+              doc: |
+                Also clarify the frame for the ROI of the scan (should depend on the lab frame). Note_: Need to be reconfirmed??
           circuit(NXcollection):
             channels_current:
               doc: The scan channels are selected by users. (e.g. (A);Bias (V);Z (m);LI Demod 2 X (A);LI Demod 2 Y (A);LI Demod 1 X (A);LI Demod 1 Y (A))
@@ -535,6 +541,12 @@ NXiv_sweep2(NXsensor_scan):
       # is switched off, it doesn't switch off immediately but continues to run for the specified time and averages the Z position.
       z_control_switchoff_delay(link):
         target: /ENTRY[entry]/INSTRUMENT[instrument]/ENVIRONMENT[environment]/position/z_controller/switchoff_delay
+    sample(NXsample):
+      doc:
+        To describe sample and other constaints that applied on sample.
+      sample_prep_descripton:
+        doc: |
+          At this moment no base class available that can track entire sample preparation.
     # TODO: discuss convertion data to DATA
     (NXdata):
       doc: |
