@@ -7,6 +7,10 @@
 
 ## NeXus definition developers
 
+Note if this package was not properly installed using pip, it has to be first done by  
+
+    pip install -e  .
+
 After making a change to the NeXus class definitions there are two important checks
 to be made before commiting the change:
 
@@ -24,6 +28,14 @@ Then verify syntax and build the HTML manual with this command
 Open the HTML manual in a web brower for visual verification
 
     firefox build/manual/build/html/index.html
+
+Convenient editting of definitinos is available in nyaml format. For this, definitinos need to be converted first from xml to yaml format by the command
+
+    make nyaml
+
+After editing the definitions in nyaml format in the nyaml subdirectories, the following command can be used to update the definitins in nxdl.xml format:
+
+    make nxdl
 
 ### HTML pages with contributor information
 

@@ -96,6 +96,15 @@ nyaml : $(DIRS) $(NXDLS)
 		mv -- "$${file%.nxdl.xml}_parsed.yaml" "$${file%/*}/nyaml/$${FNAME%.nxdl.xml}.yaml";\
 	done
 
+NYAMLS := $(foreach dir,$(NXDL_DIRS),$(wildcard $(dir)/nyaml/*.yaml))
+nxdl : $(DIRS) $(NYAMLS)
+	for file in $^; do\
+		mkdir -p "$${file%/*}/nyaml";\
+		nyaml2nxdl --input-file $${file};\
+		FNAME=$${file##*/};\
+		mv -- "$${file%.yaml}.nxdl.xml" "$${file%/*}/../$${FNAME%.yaml}.nxdl.xml";\
+	done
+
 
 # NeXus - Neutron and X-ray Common Data Format
 #
