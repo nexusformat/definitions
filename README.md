@@ -29,11 +29,11 @@ Open the HTML manual in a web brower for visual verification
 
     firefox build/manual/build/html/index.html
 
-Convenient editting of definitinos is available in nyaml format. For this, definitinos need to be converted first from xml to yaml format by the command
+Convenient editting of definitions is available in nyaml format. For this, definitions need to be converted first from xml to yaml format by the command
 
     make nyaml
 
-After editing the definitions in nyaml format in the nyaml subdirectories, the following command can be used to update the definitins in nxdl.xml format:
+After editing the definitions in nyaml format in the nyaml subdirectories, the following command can be used to update the definitions in nxdl.xml format:
 
     make nxdl
 

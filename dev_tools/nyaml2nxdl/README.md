@@ -7,7 +7,7 @@ such as base or contributed classes. Users either create NeXus instances by writ
 The forward (YAML -> NXDL.XML) and backward (NXDL.XML -> YAML) conversions are implemented.
 
 **How the tool works**:
-- yaml2nxdl.py
+- nyaml2nxdl.py
 1. Reads the user-specified NeXus instance, either in YML or XML format.
 2. If input is in YAML, creates an instantiated NXDL schema XML tree by walking the dictionary nest.
    If input is in XML, creates a YML file walking the dictionary nest.
@@ -16,12 +16,12 @@ The forward (YAML -> NXDL.XML) and backward (NXDL.XML -> YAML) conversions are i
    the XML or YAML input file is interpreted as an extension of a base class and the entries contained in it
    are appended below a standard NeXus base class.
    You need to specify both your input file (with YAML or XML extension) and NeXus class (with no extension).
-   Both .yml and .nxdl.xml file of the extended class are printed.
+   Both .yaml and .nxdl.xml file of the extended class are printed.
 
 ```console
-user@box:~$ python yaml2nxdl.py
+user@box:~$ python nyaml2nxdl.py
 
-Usage: python yaml2nxdl.py [OPTIONS]
+Usage: python nyaml2nxdl.py [OPTIONS]
 
 Options:
    --input-file TEXT     The path to the input data file to read.

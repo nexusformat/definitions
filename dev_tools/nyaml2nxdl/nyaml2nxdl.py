@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Main file of yaml2nxdl tool.
+"""Main file of nyaml2nxdl tool.
 Users create NeXus instances by writing a YAML file
 which details a hierarchy of data/metadata elements
 
