@@ -6,6 +6,7 @@
 PYTHON = python3
 SPHINX = sphinx-build
 BUILD_DIR = "build"
+NXDL_DIRS := contributed_definitions applications base_classes
 
 .PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local
 
@@ -49,6 +50,9 @@ test ::
 
 clean ::
 	$(RM) -rf $(BUILD_DIR)
+	for dir in $(NXDL_DIRS); do\
+		$(RM) -rf $${dir}/nyaml;\
+	done
 
 prepare ::
 	$(PYTHON) -m dev_tools manual --prepare --build-root $(BUILD_DIR)
@@ -82,6 +86,15 @@ all ::
 	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/latex/NXImpatient.pdf`"
 	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/manual/build/html/index.html`"
 	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus.pdf`"
+
+NXDLS := $(foreach dir,$(NXDL_DIRS),$(wildcard $(dir)/*.nxdl.xml))
+nyaml : $(DIRS) $(NXDLS)
+	for file in $^; do\
+		mkdir -p "$${file%/*}/nyaml";\
+		nyaml2nxdl --input-file $${file};\
+		FNAME=$${file##*/};\
+		mv -- "$${file%.nxdl.xml}_parsed.yaml" "$${file%/*}/nyaml/$${FNAME%.nxdl.xml}.yaml";\
+	done
 
 
 # NeXus - Neutron and X-ray Common Data Format
