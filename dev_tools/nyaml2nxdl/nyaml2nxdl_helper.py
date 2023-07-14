@@ -41,6 +41,12 @@ ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    ", "':'": ":"}
 ESCAPE_CHAR_DICT_IN_XML = {"    ": "\t", "':'": ":"}
 
 
+def remove_namespace_from_tag(tag):
+    """Helper function to remove the namespace from an XML tag."""
+
+    return tag.split("}")[-1]
+
+
 class LineLoader(Loader):  # pylint: disable=too-many-ancestors
     """
     LineLoader parses a yaml into a python dictionary extended with extra items.
