@@ -8,8 +8,6 @@ Atom-probe tomography
    IntroductionApm
    ApmAppDef
    ApmBC
-   ApmRemovedBC
-   IntroductionApmParaprobe
    WhatHasBeenAchieved
    ApmParaprobeAppDef
    ApmParaprobeNewBC
@@ -27,70 +25,72 @@ Set of data storage objects to describe the acquisition/measurement side, the re
 
 .. _ApmAppDef:
 
-Application Definitions
-#######################
+Application Definition
+######################
 
-We created one new application definition whose intention is to serve both the description of atom probe tomography and field-ion microscopy measurements:
+It is proposed to use one application definition to serve atom probe tomography
+and field-ion microscopy measurements, i.e. the data collection with the instrument:
 
     :ref:`NXapm`:
-       A general application definition with many detailed places for leaving metadata and computational steps described which are commonly used when reporting the measurement of atom probe data including also detector hit data, as well as how to proceed with reconstructing atom positions from these data, and how to store details about definitions made, which describe how mass-to-charge-state ratio values are mapped to iontypes (ranging).
+       A general application definition with many detailed places for leaving metadata and computational steps described which are commonly used when reporting the measurement of atom probe data including also detector hit data, as well as how to proceed with reconstructing atom positions from these data, and how to store details about definitions made, which describe how mass-to-charge-state ratio values are mapped to iontypes in a process called ranging.
 
 .. _ApmBC:
 
 Base Classes
 ############
 
-We developed new base classes to structure the application definition into lab experiment and computational steps:
+The following base classes are proposed to support modularizing the storage of pieces of information:
 
     :ref:`NXchamber`:
-        A base class to describe a component of the instrument which houses other components. A chamber may offer a controlled atmosphere to execute an experiment and/or offer functionalities for storing and loading specimens.
+        A base class to describe a component of the instrument which houses other components.
+        A chamber may offer a controlled atmosphere to execute an experiment and/or offer functionalities for storing and loading specimens.
 
     :ref:`NXcoordinate_system_set`
-        A base class to describe different coordinate systems used and/or to be harmonized or transformed into one another when interpreting the dataset.
+        A base class to describe different coordinate systems used and/or to be harmonized
+        or transformed into one another when interpreting the dataset.
 
     :ref:`NXion`:
-       A base class to describe charged molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion is 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with which all possible isotopes can be described.
+       A base class to describe charged molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion
+       is 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with
+       which all possible isotopes can be described.
 
     :ref:`NXfabrication`:
-        A base class to bundle manufacturer/technology-partner-specific details about a component or device of an instrument.
+        A base class to bundle manufacturer/technology-partner-specific details about a
+        component or device of an instrument.
 
     :ref:`NXpeak`:
-        A base class to describe peaks mathematically so that it can be used to detail how peaks in mass-to-charge-state ratio histograms (aka mass spectra) are defined and labelled as iontypes.
+        A base class to describe peaks mathematically to detail how peaks in
+        mass-to-charge-state ratio histograms (aka mass spectra) are
+        defined and labelled as iontypes.
 
     :ref:`NXpump`:
-        A base class to describe details about a pump in an instrument.
+        A base class to describe details about pump(s) of an instrument.
 
     :ref:`NXpulser_apm`:
-        A base class to describe the high-voltage and/or laser pulsing capabilities of an atom probe microscope.
+        A base class to describe the high-voltage and/or laser pulsing capabilities of
+        an atom probe microscope.
 
     :ref:`NXreflectron`:
-        A base class to describe a kinetic-energy-sensitive filtering device for time of flight (ToF).
+        A base class to describe a kinetic-energy-sensitive filtering device
+        for time of flight (ToF) mass spectrometry.
 
     :ref:`NXstage_lab`:
-        A base class to describe the specimen fixture including the cryo-head. This base class is an example that the so far used :ref:`NXstage_lab` base class is insufficiently detailed to represent the functionalities which modern stages of an
-        atom probe microscope or especially an electron microscope offer. Nowadays, these stages represent small-scale laboratory platforms. Hence, there is a need to define their characteristics in more detail, especially in light of in-situ experiments. We see many similarities between a stage in an electron microscope and one in an atom probe instrument, given that both offer fixture functionalities and additional components for applying e.g. stimuli on the specimen. For this reason, we use this base class currently for atom probe and electron microscopy.
+        A base class to describe the specimen fixture including the cryo-head.
+        Nowadays, these stages represent small-scale laboratory platforms.
+        Therefore, there is a need to define the characteristics of such stages in more detail,
+        especially in light of in-situ experiments. Many similarities exists between a stage
+        in an electron microscope and one in an atom probe instrument. Both offer fixture functionalities and additional components for applying e.g. stimuli on the specimen.
 
-Microscopy experiments, not only taking into account those performed on commercial instruments, offer the user usually
-a set of frequently on-the-fly processed computational data. For now we represent these steps with specifically named instances of the :ref:`NXprocess` base class.
-
-.. _ApmRemovedBC:
-
-.. Removed base classes
-.. ####################
+Microscopy experiments, not only taking into account those performed on commercial instruments, offer the user usually to apply a set of data processing steps. Some of them are frequently applied on-the-fly. For now we represent these steps with specifically named instances of the :ref:`NXprocess` base class.
 
 
+Like every research community data processing steps are essential to transform measurements
+into knowledge. These processing steps should be documented to enable reproducible research
+and learn how pieces of information were connected. In what follows, an example is presented
+how an open-source community software can be modified to use descriptions of these computational
+steps. The respective research software here is the `paraprobe-toolbox <https://paraprobe-toolbox.readthedocs.io/>`_
 
 .. _IntroductionApmParaprobe:
-
-Introduction
-##############
-
-NORTH (the NOMAD Oasis Remote Tools Hub) is a NOMAD Oasis service which makes
-preconfigured scientific software of different communities available and coupled
-to Oasis and accessible via the webbrowser. This part of the proposal documents
-examples for specific NeXus-related work to some of the tools and containers
-available in NORTH.
-
 
 apmtools
 ########
@@ -98,16 +98,18 @@ apmtools
 One tool is the paraprobe-toolbox software package in the the apmtools container.
 The software is developed by `M. Kühbach et al. <https://arxiv.org/abs/2205.13510>`_.
 
-Here we show how NeXus is used to consistently define application definitions
-for scientific software in the field of atom probe. In this community the paraprobe-toolbox is an example of an open-source parallelized
-software for analyzing point cloud data, for assessing meshes in 3D continuum
-space, and analyzing the effects of parameterization on descriptors
-about the microstructure of materials which were studied with atom probe microscopy.
+Here we show how NeXus is used to consistently define application definitions for scientific software
+in the field of atom probe. In this community the paraprobe-toolbox is an example of an
+open-source parallelized software for analyzing point cloud data, for assessing meshes in
+3D continuum space, and for studying the effects of parameterization on descriptors
+which describe the micro- and nanostructure of materials that are studied with
+atom probe microscopy.
 
-The need for a thorough documentation of the tools in not only the paraprobe-toolbox was motivated by several needs:
+The need for a thorough documentation of the tools in not only the paraprobe-toolbox
+was motivated by several needs:
 
 First, users of software would like to better understand and also be able to
-study themselves which individual parameter and settings for each tool exist
+study for themselves which individual parameters and settings for each tool exist
 and how configuring these affects their analyses quantitatively.
 
 Second, scientific software like the tools in the paraprobe-toolbox implement a
@@ -115,10 +117,10 @@ numerical/algorithmical (computational) workflow whereby data from multiple inpu
 (like previous analysis results) are processed and carried through more involved analysis
 within several steps inside the tool. The tool then creates output as files.
 
-Individual tools are developed in C/C++ and/or Python. Here, having a possibility
-for provenance tracking is useful as it is one component and requirement for
-making workflows exactly numerically reproducible and thus to empower scientists
-to fullfill better the "R", i.e. reproducibility of daily FAIR research practices.
+Individual tools of paraprobe-toolbox are developed in C/C++ and/or Python.
+Provenance tracking is useful as it is one component and requirement for making
+workflows exactly numerically reproducible and thereby empower scientists
+to fulfill better the "R", i.e. reproducibility of their daily FAIR research practices.
 
 The paraprobe-toolbox is one example of a software which implements a workflow
 via a sequence of operations executed within a jupyter notebook
@@ -138,17 +140,20 @@ files generated from each tool run using other software.
 What has been achieved so far?
 ##############################
 
-This proposal summarizes both of the steps which we worked on between Q3/2022-Q1/2023 to change the interface and
-file interaction in all tools of the paraprobe-toolbox to accept exclusively
-well-defined configuration files and yield exclusively specific output.
+This proposal summarizes work of members of the FAIRmat project, which is part
+of the German National Research Data Infrastructure aimed at a change of the paraprobe-toolbox
+and its interaction with files for all tools so that only well-defined configuration files
+are accepted as input and results end up as specifically formatted output. For this
+NeXus application definitions are used.
 
 Data and metadata between the tools are exchanged with NeXus/HDF5 files.
 Specifically, we created for each tool an application definition (see below)
 which details all possible settings and options for the configuration as to
-guide users. The config(uration) files are HDF5 files, whose content matches
-to the naming conventions of the respective `config` application definition for each tool.
-As an example NXapm_paraprobe_config_surfacer specifies how a configuration file
-for the paraprobe-surfacer tool should be formatted and which parameter it contains.
+guide users. The config(uration) files are currently implemented as HDF5 files,
+whose content matches to the naming conventions of the respective `config` application
+definition for each tool. As an example NXapm_paraprobe_config_surfacer specifies
+how a configuration file for the paraprobe-surfacer tool should be formatted
+and which parameter it should and/or may contain.
 
 That is each config file uses a controlled vocabulary of terms. Furthermore,
 the config files store a SHA256 checksum for each input file.
@@ -164,8 +169,7 @@ application definition. This results file and the reconstruction is
 imported by the spatial statistics tool which again keeps track of all files.
 
 This design makes it possible to rigorously trace which numerical results
-were achieved with a specific chain of input and
-settings using specifically-versioned tools.
+were achieved with a specific input and settings using specifically-versioned tools.
 
 We understand that this additional handling of metadata and provenance tracking
 may not be at first glance super relevant for scientists or appears to be an
@@ -181,7 +185,7 @@ automated provenance tracking which happens silently in the background.
 Application Definitions
 #######################
 
-Firstly, we define application definitions for the input side (configuration) of each tool.
+Application definitions for the input side (configuration) of each tool were defined.
 
     :ref:`NXapm_paraprobe_config_transcoder`:
         Configuration of paraprobe-transcoder
@@ -227,7 +231,7 @@ Firstly, we define application definitions for the input side (configuration) of
         Import cluster analysis results of IVAS/APSuite and perform clustering
         analyses in a Python ecosystem.
 
-Secondly, we define application definitions for the output side (results) of each tool.
+Application definitions for the output side (results) of each tool were defined.
 
     :ref:`NXapm_paraprobe_results_transcoder`:
         Results of paraprobe-transcoder
@@ -279,41 +283,38 @@ Base Classes
 We envision that the above-mentioned definitions can be useful not only to take
 inspiration for other software tools in the field of atom probe but also to support
 a discussion towards a stronger standardization of the vocabulary used.
-Therefore, we are happy for your comments and suggestions on this and the related
-pages via the hypothesis web annotation service or as your issues posted on GitHub.
+Therefore, we are happy for comments and suggestions.
 
-We are convinced that the majority of data analyses in atom probe use
-an in fact common set of operations and conditions on the input data
-even though this might not be immediately evident. In particular this is not
-the case for some community built tools with a very specific scope where oftentimes
-the algorithms are hardcoded for specific material systems. A typical example is a
-reseacher who implements a ranging tool and uses that all the examples are on a
-specific material. We are convinced it is better to follow a much more generalized approach.
+The majority of data analyses in atom probe use a common set of operations and
+conditions on the input data even though this might not be immediately evident
+or might not have been so explicitly communicated in the literature.
+Some tools have a specific scope because of which algorithms are hardcoded
+to work for specific material systems. A typical example is a ranging tool
+which exploits that all the examples it is used for apply to a specific material
+and thus specific iontypes can be hardcoded.
 
-In this spirit, we propose the following base classes and the above application
-definitions as examples how very flexible constraints can be implemented which
-restrict which ions in the dataset should be processed or not. We see that these
-suggestions complement the proposal on computational geometry base classes:
+Instead, we are convinced it is better to follow a more generalized approach.
+The following base classes and the above application definitions present examples
+how one can use NeXus for this.
 
     :ref:`NXapm_input_reconstruction`:
         A description from which file the reconstructed ion positions are imported.
 
     :ref:`NXapm_input_ranging`:
         A description from which file the ranging definitions are imported.
-        The design of the ranging definitions is, thanks to :ref:`NXion` so
-        general that all possible nuclids can be considered, be they observationally stable, 
-        be they radioactive or transuranium nuclids.
+        The design of the ranging definitions is, thanks to :ref:`NXion`, so
+        general that all possible nuclids can be considered, be they observationally
+        stable, be they radioactive or transuranium nuclids.
 
-A detailed inspection of spatial and other type of filters used in atom probe microscopy
-data analysis revealed that it is better to define atom probe agnostic, i.e. more
-general filters:
+A detailed inspection of spatial and other type of filters frequently used in
+analysis of atom probe data revealed that it is better to define atom-probe-agnostic,
+i.e. more general filters:
 
     :ref:`NXspatial_filter`:
-        A proposal how a point cloud can be spatial filtered in a very specific,
-        flexible, yet general manner. This base class takes advantage of
-        :ref:`NXcg_ellipsoid_set`, :ref:`NXcg_cylinder_set`, and :ref:`NXcg_hexahedron_set`
-        to cater for all of the most commonly used geometric primitives in
-        atom probe.
+        A proposal how a point cloud can be spatially filtered in a specific yet general manner.
+        This base class takes advantage of :ref:`NXcg_ellipsoid_set`, :ref:`NXcg_cylinder_set`,
+        and :ref:`NXcg_hexahedron_set` to cater for all of the most commonly used
+        geometric primitives in atom probe.
 
     :ref:`NXsubsampling_filter`:
         A proposal for a filter that can also be used for specifying how entries
@@ -323,9 +324,3 @@ general filters:
         A proposal for a filter that can also be used for specifying how entries
         like ions can be filtered based on their type (ion species)
         or hit multiplicity.
-
-In summary, we report with this proposal our experience made in an experimental
-project that is about using NeXus for standardizing a set of non-trivial scientific software tools.
-During the implementation we learned that for handling computational geometry
-and microstructure-related terms many subtilities have to be considered which
-makes a controlled vocabulary valuable not only to avoid a reimplementing of the wheel.

@@ -72,6 +72,8 @@ def nxdl_indices() -> Dict[str, dict]:
             rst_lines.append(f"{indentation}mpes-structure\n")
             rst_lines.append(f"{indentation}apm-structure\n")
             rst_lines.append(f"{indentation}transport-structure\n")
+            rst_lines.append(f"{indentation}cgms-structure\n")
+
         for cname in sorted(classes):
             rst_lines.append(f"{indentation}{cname}\n")
 
@@ -167,6 +169,8 @@ Some contributions are groupped together:
   :ref:`Electron Microscopy <Em-Structure>`
 
   :ref:`Transport Measurements <Transport-Structure>`
+
+  :ref:`Geomerty and Microstructures  <CgmsFeatures-Structure>`
 
 
 and others are simply listed here:
