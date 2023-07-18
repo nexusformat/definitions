@@ -14,7 +14,9 @@ Optical Spectroscopy
 Ellipsometry
 ##############
 
-Ellipsometry is an optical characterization method to describe optical properties of interfaces and thickness of films. The measurements are based on determining how the polarization state of light changes upon transmission and reflection. Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
+Ellipsometry is an optical characterization method to describe optical properties of interfaces and thickness of films.
+The measurements are based on determining how the polarization state of light changes upon transmission and reflection.
+Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
 
 In the application definition we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
 
@@ -22,35 +24,52 @@ In the application definition we provide a minimum set of description elements a
 Application Definitions
 -----------------------
 
-We created a generic application definition for every kind of Optical Spectroscopy experiments, and also a specialisation for Ellipsometry:
-
     :ref:`NXopt`:
        A generic application definition for optial spectorscopy measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
 
     :ref:`NXellipsometry`:
-       A general application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
+       An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
 
 
+Base Classes
+------------
 
-Base Classes Extended in Application Definitions
-------------------------------------------------
+There is a set of base classes for describing an optical experiment.
 
-We use existent base classes in application definitions and add descriptors:
-
-    :ref:`NXinstrument`
-       Added fields to add information that is important for an ellipsometry setup, such as the ellipsometer type, the light source, the type of the sample stage, or the angle(s) of incidence, as well as information on calibration, focussing probes, data correction etc. 
+    :ref:`NXbeam_path`
+       A beam path consisting of one or more optical elements.
+       
+       NXbeam_path is used in NXopt to describe the beam path, i.e. the arrangement
+       of optical elements between the excitation source and the sample, or between
+       the sample and the detector unit.
               
-    :ref:`NXdetector`
-       Added fields to describe spectroscopic detection with polarization (e.g. rotating analyzer).
+    :ref:`NXbeam_splitter`
+       A beam splitter, i.e. a device splitting the light into two or more beams.
        
-    :ref:`NXaperture`
-       Added fields to define parameters that describe windows (e.g. windows of a UHV cryostat), such as the thickness and the orientation angle of the window, as well as reference data to calculate window effects.
+       Use two or more NXbeam_paths to describe the beam paths after the beam
+       splitter. In the dependency chain of the new beam paths, the first elements
+       each point to this beam splitter, as this is the previous element.
+
+    :ref:`NXfiber`
+       An optical fiber, e.g. glass fiber.
+
+    :ref:`NXlens_opt`
+       Description of an optical lens.
        
-    :ref:`NXsample`
-       Added fields to specify the sample and material properties, as well as the sample environment (e.g. refractive index of surrounding medium) and experimental conditions (e.g. temperature, pressure, pH value etc.).
+    :ref:`NXpolarizer_opt`
+       A spin polarizer.
+
+    :ref:`NXwaveplate`
+       A waveplate or retarder.
+
+    :ref:`NXenvironment`
+       Specify external parameters that have influenced the sample,
+       such as the surrounding medium, and varied parameters e.g.
+       temperature, pressure, pH value, optical excitation etc.
+
+
 
 .. _DispersiveMaterial:
-
 
 Dispersive Material
 ###################
