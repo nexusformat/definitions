@@ -1,18 +1,18 @@
-.. _Mpes-Structure:
+.. _Mpes-Structure1:
 
 ==============================================
 B2/B3: Photoemission & core-level spectroscopy
 ==============================================
 
 .. index::
-   IntroductionMpes
-   MpesAppDef
-   MpesBC
-   MpesCommonBC
-   MpesExtendedBC
+   IntroductionMpes1
+   MpesAppDef1
+   MpesBC1
+   MpesCommonBC1
+   MpesExtendedBC1
 
 
-.. _IntroductionMpes:
+.. _IntroductionMpes1:
 
 Introduction
 ############
@@ -22,7 +22,7 @@ hard x-ray photoelectron spectroscopy (HAXPES), angle-resolved photoemission spe
 and photoemission electron microscopy (PEEM). We also included descriptors for advanced specializations, such as spin-resolution, time resolution, 
 near-ambient pressure conditions, dichroism etc.
 
-.. _MpesAppDef:
+.. _MpesAppDef1:
 
 Application Definitions
 #######################
@@ -32,7 +32,7 @@ We created two new application definitions:
     :ref:`NXmpes`:
        A general appdef with minimalistic metadata requirements, apt to describe all photemission experiments.
 
-.. _MpesBC:
+.. _MpesBC1:
 
 Base Classes
 ############
@@ -66,7 +66,7 @@ We developed three base classes to describe data processing, which can be used a
     :ref:`NXregistration`:
        A base class to describe the rigid transformations that are applied to an image. May be redundant as they can be described with :ref:`NXtransformations`.
 
-.. _MpesCommonBC:
+.. _MpesCommonBC1:
 
 Common Base Classes
 ###################
@@ -79,7 +79,7 @@ We developed two classes that are common to other techniques:
     :ref:`NXdeflector`
        A class to describe all kinds of deflectors, including electrostatic and magnetostatic deflectors for electron energy analysers.  
 
-.. _MpesExtendedBC:
+.. _MpesExtendedBC1:
 
 Base Classes Extended in Application Definitions
 ################################################
