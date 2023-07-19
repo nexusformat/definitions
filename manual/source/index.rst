@@ -7,7 +7,8 @@ Welcome to the user manual of the NeXus for FAIRmat project.
 https://www.nexusformat.org/
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 5
+    :numbered: 5
 
     fairmat-cover
     nexus-index
@@ -20,6 +21,9 @@ https://www.nexusformat.org/
     cgms-structure
     laboratory-structure
     north-structure
+    napi
+    history
+
 
 
 
