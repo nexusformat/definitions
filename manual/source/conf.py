@@ -8,14 +8,13 @@
 
 import sys, os, datetime
 
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
+# add the abs path to the custom extension for collecting the contributor variables from the rst files
+sys.path.insert(0, os.path.abspath('../../../dev_tools/ext'))
 
 # -- Project information -----------------------------------------------------
 
@@ -49,7 +48,8 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx_comments',
     'sphinx.ext.todo',
-    'sphinx_tabs.tabs'
+    'sphinx_tabs.tabs',
+    'contrib_ext'
 ]
 
 # Show `.. todo` directives in the output
@@ -98,7 +98,9 @@ elif html_theme== 'alabaster': # Alabaster allows a very high degree of control 
     '**': [
         'about.html',
         'navigation.html',
+        'localtoc.html',
         'relations.html',
+        'sourcelink.html',
         'searchbox.html',
         'google_search.html'
         ],
@@ -136,6 +138,11 @@ else:
         'google_search.html'
         ],
     }
+
+# The name of an image file (within the static path) to use as favicon of the
+# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# pixels large.
+html_favicon = "../../../common/favicon.ico"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'NeXusManualdoc'
