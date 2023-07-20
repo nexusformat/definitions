@@ -66,22 +66,13 @@ def nxdl_indices() -> Dict[str, dict]:
         else:
             file = ""
             print("---------++++++++-", section)
-        if file.endswith(("applications/index.rst", "base_classes/index.rst")):
-            rst_lines.append(f"{indentation}em-structure\n")
-            rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
-            rst_lines.append(f"{indentation}mpes-structure\n")
-            rst_lines.append(f"{indentation}apm-structure\n")
-
         if file.endswith("contributed_definitions/index.rst"):
             rst_lines.append(f"{indentation}em-structure\n")
-            rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
+            rst_lines.append(f"{indentation}ellipsometry-structure\n")
             rst_lines.append(f"{indentation}mpes-structure\n")
             rst_lines.append(f"{indentation}apm-structure\n")
             rst_lines.append(f"{indentation}transport-structure\n")
-            rst_lines.append(f"{indentation}sts-structure\n")
             rst_lines.append(f"{indentation}cgms-structure\n")
-            rst_lines.append(f"{indentation}icme-structure\n")
-            rst_lines.append(f"{indentation}sample-prep-structure\n")
 
         for cname in sorted(classes):
             rst_lines.append(f"{indentation}{cname}\n")
@@ -119,18 +110,6 @@ NeXus base class definitions define the set of terms that
 *might* be used in an instance of that class.
 Consider the base classes as a set of *components*
 that are used to construct a data file.
-
-Some contributions are grouped together:
-  :ref:`Optical Spectroscopy <Optical-Spectroscopy-Structure-BC>`
-
-  :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure-BC>`
-
-  :ref:`Atomprobe Microscopy <Apm-Structure-BC>`
-
-  :ref:`Electron Microscopy <Em-Structure-BC>`
-
-and others are simply listed here:
-
     """,
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     "applications": """
@@ -159,19 +138,6 @@ Use NeXus links liberally in data files to reduce duplication of data.
 In application definitions involving raw data,
 write the raw data in the :ref:`NXinstrument` tree and then link to it
 from the location(s) defined in the relevant application definition.
-
-Some contributions are grouped together:
-  :ref:`Optical Spectroscopy <Optical-Spectroscopy-Structure-APP>`
-
-  :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure-APP>`
-
-  :ref:`Atomprobe Microscopy <Apm-Structure-APP>`
-
-  :ref:`Electron Microscopy <Em-Structure-APP>`
-
-
-and others are simply listed here:
-
     """,
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     "contributed_definitions": """
@@ -194,7 +160,7 @@ definitions and provide feedback to the authors before ratification
 and acceptance as either a base class or application definition.
 
 Some contributions are grouped together:
-  :ref:`Optical Spectroscopy <Optical-Spectroscopy-Structure>`
+  :ref:`Optical Spectroscopy <Ellipsometry-Structure>`
 
   :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure>`
 
