@@ -159,7 +159,7 @@ case not for general use.  The :ref:`NIAC` is charged to review any new contribu
 definitions and provide feedback to the authors before ratification
 and acceptance as either a base class or application definition.
 
-Some contributions are groupped together:
+Some contributions are grouped together:
   :ref:`Optical Spectroscopy <Ellipsometry-Structure>`
 
   :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure>`
@@ -170,7 +170,7 @@ Some contributions are groupped together:
 
   :ref:`Transport Measurements <Transport-Structure>`
 
-  :ref:`Geomerty and Microstructures  <CgmsFeatures-Structure>`
+  :ref:`Geometry and Microstructures  <CgmsFeatures-Structure>`
 
 
 and others are simply listed here:
