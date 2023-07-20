@@ -7,7 +7,7 @@ Welcome to the user manual of the NeXus for FAIRmat project.
 https://www.nexusformat.org/
 
 .. toctree::
-    :maxdepth: 5
+    :maxdepth: 2
     :numbered: 5
 
     fairmat-cover
