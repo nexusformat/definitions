@@ -1,6 +1,7 @@
 doc: | 
-  Application definition for temperature-dependent IV curve measurements, NOTE_: What is CAP
-  #CAP with a focus on bias spectroscopy in scanning tunneling microscopy.
+  Application definition for temperature-dependent IV curve measurements
+  #2023.19.7 This Nexus file is currently only for STS data, it will be updated to handle the 
+  STM image mode in the future with a focus on bias spectroscopy in scanning tunneling microscopy.
   
   In this application definition, times should be specified always together with an UTC offset.
  
@@ -8,8 +9,8 @@ doc: |
   measurements. For this a temperature is set. After reaching the temperature, a voltage sweep
   is performed. For each voltage a current is measured.
   Then, the next desired temperature is set and an IV measurement is performed.
-    #CAP the X, Y, Z, position of the probes or tip can be defined. 
-    #CAP The data can be visualized in a tensor with:  
+    #The X, Y, Z, position of the probes or tip can be defined. 
+    #The data can be visualized in a tensor with:  
     I (NXsensor_C, NXsoftware_Read_offset, NXcircuit)
     parameters: 
     V has (NXsource+offset, NXsoftware_Scan_offset, NXsensor_V, NXcircuit)  
@@ -88,11 +89,12 @@ NXiv_sweep2(NXsensor_scan):
         modulation_frequency(NX_NUMBER): 
         # Lock-in>Frequency (Hz) 973E+0 
           doc: |
-            The frequency of the sine modulation is added to the signal to modulate. The frequency 
-            range is from 10 mHz to 40 kHz (corresponding to the SC5 output filter cut-off). When
-            working with harmonics, make sure the harmonic frequencies don’t exceed ~100 kHz 
-            (SC5 input filter cut-off). Remember the SC5 hardware filters will affect the amplitude
-            when getting close to their cut-off frequencies. (e.g. 973E+0)
+            The signal is modulated by adding the frequency of the sine modulation. The 
+            modulation frequency spans can be from 10 mHz to 40 kHz, corresponding to the output filter 
+            cut-off range. When dealing with harmonics, it's essential to ensure that the 
+            harmonic frequencies remain below ~100 kHz, which aligns with the input filter cut-off. 
+            Be mindful that hardware filters might impact the amplitude as the signal approaches 
+            their cut-off frequencies." (e.g. 973E+0)
           unit: NX_FREQUENCY
         modulation_amplitude(NX_NUMBER):
         # amplitude: Lock-in>Amplitude 2E-3 
@@ -112,15 +114,16 @@ NXiv_sweep2(NXsensor_scan):
           #   Lock-in>Harmonic D1 1 
           #   Lock-in>Harmonic D2 2 # See below.
           doc: |
-            N denotes 1 or 2. Order of the harmonic oscillation to detect on the demodulated signal (with respect
-            to the modulation frequency). If you work with higher harmonics make sure the 
-            frequency does not exceed the analog signal bandwidth (e.g. harmonic_order_1).
+            N denotes 1 or 2. The order of the harmonic oscillation to be detected in the demodulated
+            signal should be considered relative to the modulation frequency. When dealing with 
+            higher harmonics, it's essential to ensure that their frequencies do not surpass
+            the analogue signal bandwidth (e.g. harmonic_order_1).
         ref_phase_N(NX_NUMBER):
         #   Lock-in>Reference phase D1 (deg) 137.597E+0 
         #   Lock-in>Reference phase D2 (deg) -83.6562E+0 # See below.
           doc: |
             Reference phase for the sine on the demodulated signal with respect to the
-            modulation signal. The determined phase (phi) is displayed with respect to the
+            modulation signal. The determined phase is displayed with respect to the
             reference phase.
         lock_in_data_flip_number(NX_NUMBER):
 
@@ -196,35 +199,35 @@ NXiv_sweep2(NXsensor_scan):
       piezo_config(NXcollection):
         doc: |
           Configuration for piezoelectric scanner used to move tip along X and Y direction. The 
-          material of the Piezoelectric scanner composed of polycrystalline solids and nsensitve to 
+          material of the Piezoelectric scanner composed of polycrystalline solids and sensitive to 
           applied voltage.
         active_calib:
-          doc: The name of caliberation type. (e.g. LHe)
+          doc: The name of calibration type. (e.g. LHe)
         calib_N(NX_NUMBER):
           exists: optional
           doc: |
-            N denotes X or Y or Z. There are 3 parameters in X, Y, and Z directions and there 
-            are 3 controls availables: Calibr. (m/V), Range (m) and HV gain. Two of them are 
-            enough to define the calibration, so when changing any value one of the other values
-            will be updated automatically. (e.g. calib_X = 3.8E-9)
+            N denotes X or Y or Z. There are three parameters in the X, Y, and Z directions, 
+            along with three available controls: Calibration (m/V), Range (m), and HV gain. Only 
+            two of these parameters are required to define the calibration. Consequently, when any 
+            value is changed, one of the other values will be automatically updated. (e.g. calib_X = 3.8E-9)
         hv_gain_N(NX_NUMBER):
           exists: optional
-          doc: N denotes X or Y or Z. For some systems HV gain readout is available,
-               so for those systems the HV gain should be adjusted automatically when the gain
-               is changed at the high voltage amplifier. (e.g. 14.5)
+          doc: N denotes X or Y or Z. In some systems, there is an HV gain readout feature. 
+            For these systems, the HV gain should be automatically adjusted whenever 
+            the gain is changed at the high voltage amplifier. (e.g. 14.5)
         # (e.g. 0.318343)
         tilt_N(NX_NUMBER):
           exists: optional
           unit: NX_ANGLE
           doc: |
-            N denotes X or Y. There are 2 parameters in X and Y directions and this tab 
-            is used to set the sample tilt (in degrees, first order correction).
+            N denotes X or Y. There are 2 parameters in X and Y directions, and tilt needs to be 
+            adjusted according to the actual surface. (in degrees, first order correction).
         # Inf
         curvature_radius_N(NX_NUMBER):
           exists: optional
           unit: NX_LENGTH
-          doc: N denotes X or Y. There are 2 parameters in X and Y directions and this tab 
-            is used to set a curvature (can be set approximately to the length of the piezotube).
+          doc: N denotes X or Y. There are 2 parameters in X and Y directions.
+               (can be set approximately to the length of the piezotube).
         2nd_order_corr_N(NX_NUMBER):
           exists: optional
           doc: |
@@ -241,7 +244,7 @@ NXiv_sweep2(NXsensor_scan):
             drift speed for all three axes. When the compensation is on, the piezos will start to
             move at that speed. (e.g. 0E+0)
         drift_correction_status(NX_BOOLEAN):
-          doc: Use the button to turn on/off the drift compensation. (e.g. FALSE)
+          doc: Use the button to enable or disable the drift compensation. (e.g. FALSE)
       (NXenvironment):
         doc: |
           Describes an environment setup for a temperature-dependent IV measurement experiment.
@@ -251,7 +254,7 @@ NXiv_sweep2(NXsensor_scan):
         current_sensor(NXsensor):
           current(NX_NUMBER):
             doc: |
-              This is set-point of tip current (in the constant current mode is equal to set-point, 
+              This is set-point of tip current (in the constant current mode should be equal to set-point, 
               in the constant height mode means the real tunnelling current between tip and sample).
             unit: NX_CURRENT
           current_calibration(NX_NUMBER):
@@ -279,12 +282,12 @@ NXiv_sweep2(NXsensor_scan):
           z(NX_NUMBER):
             exists: optional
             unit: NX_LENGTH
-            doc: The scanning area in x position in the frame. (e.g. 130.5E-9)
+            doc: The scanning area in z position in the frame. (e.g. 130.5E-9)
           z_controller(NXcollection):
             z(NX_NUMBER):
               unit: NX_LENGTH
               doc: |
-               Indicate the tip position Z between tip and sample. The tip position can also 
+               Indicate the relative tip position z between tip and sample. The tip position can also 
                be varied when the z_controller is not running. (e.g. 130.5E-9)
         # TODO: Is if this are uncomment than getting error.
         # voltage_controller(NXsensor):
@@ -299,66 +302,67 @@ NXiv_sweep2(NXsensor_scan):
               doc: Number of sweeps to measure and average. (e.g. 100)
             sweep_start(NX_NUMBER):
               unit: NX_VOLTAGE
-              doc: The first bias values of the sweep. (e.g. -300E-3)
+              doc: The start bias values of the sweep. (e.g. -300E-3)
             sweep_end(NX_NUMBER):
               unit: NX_VOLTAGE
-              doc: The last bias values of the sweep. (e.g. 300E-3)
+              doc: The end bias values of the sweep. (e.g. 300E-3)
             num_pixel(NX_NUMBER):
-              doc: Define the sweep number of points, that is, the maximum spectrum
-                 resolution eq. Bias window divide by Num Pixel. (e.g. 4096)
+              doc: The sweep number of points is defined as the maximum spectrum resolution, which 
+                   is equal to the bias sweep window divided by the number of pixels. (e.g. 4096)
             z_avg_time(NX_NUMBER):
               unit: NX_TIME
               doc: |
-                Duration over which the Z position is recorded and averaged before and after the 
-                sweep (the latter only if Record final Z position is selected in the Advanced 
-                section). After the initial Z averaging time, if Z-Controller to Hold is selected
-                in the Advanced section, the Z-Controller is set to hold and the tip is placed at
-                the previously averaged Z position (plus Z offset). (e.g. 100E-3)
+                The Z position is recorded and averaged for a certain duration both before and 
+                after the sweep. After the initial Z averaging time, if "Z-Controller to Hold" 
+                is selected, the Z-Controller is set to hold mode, and the tip is positioned at
+                the previously averaged Z position (adjusted by the Z offset). (e.g. 100E-3)
           circuit(NXcollection):
             rt_frequency(NX_NUMBER):
               unit: NX_FREQUENCY
               doc: |
                 The bandwidth of the Hardware and/or Software is instrument specific. 
-                For example, Nanonis Generic 5 has 'RT Frequency' 20E-3.
+                For example, Nanonis Generic 5 has 'RT Frequency' (e.g. 20E+3).
             signals_oversampling(NX_NUMBER):
               doc: |
-                The Signals Period is the rate at which the signals are 
-                transferred to the host computer running the control software. This is 
-                usually lower by a factor of 10 than the sampling rate, because an internal
-                oversampling of the signal is done on the real time engine. You can reduce 
-                the oversampling down to 1 in order to resolve higher frequencies in the 
-                Spectrum Analyzer. (e.g. 10)
+                The Signals Period represents the rate at which signals are transferred to 
+                the host computer, which operates the control software. This rate may 
+                be 10 times lower than the sampling rate, as the real-time engine internally 
+                oversamples the signal. If desired, you may have the option to reduce the oversampling
+                to 1, enabling higher frequency resolution in the Spectrum Analyzer. (e.g. 10)
             acquisition_period(NX_NUMBER):
               unit: NX_TIME
               exists: optional
-              doc:  Update rate for several processes like History Graph, Auto-Approach, 
-                and for many Programming Interface functions. This is usually set to 20 ms. 
-                All additional timings (7-9) can only be integer multiples of this value. 
-                They can be set to different values, but the actual timing value will be 
-                coerced to a multiple of the Acquisition Period. (e.g. 20E-3)
+              doc:  The update rate is utilized in various processes, including the History 
+                Graph, Auto-Approach, and multiple Programming Interface functions.  
+                It may be configured to a 20 ms interval. Any additional timings must strictly 
+                be integer multiples of this base value. While it is possible to set 
+                these additional timings to different values, the actual timing value will 
+                automatically be adjusted to become a multiple of the Acquisition Period. (e.g. 20E-3)
             animations_period(NX_NUMBER):
               unit: NX_TIME
               exists: optional
-              doc: Update rate of animated graphical indicators. These are e.g. some 
-                graphs & sliders. A reasonable value is 40 ms (25 updates per second). 
-                Increase this period to reduce the processor load for the graphical 
-                user interface, especially on slow computers. This value is purely a user 
-                interface update rate and does not affect measurements in any way. (e.g. 20E-3)
+              doc: The update rate of animated graphical indicators, such as graphs and sliders, 
+                can be adjusted. A normal value may be 40 ms, which corresponds to 25 updates 
+                per second. Increasing this period can help reduce the processor load on the 
+                graphical user interface, particularly on slower computers. It is important to note
+                that this update rate solely impacts the user interface and does not affect 
+                measurements in any manner. (e.g. 20E-3)
             indicators_period(NX_NUMBER):
               unit: NX_TIME
-              doc: Update rate of digital indicators, e.g. the numbers displayed besides each slider. 
-                Here, 3 updates per second, or 300 ms is enough. This value is purely a user 
-                interface update rate and does not affect measurements in any way. (e.g. 300E-3)
+              doc: The update rate of digital indicators, such as the numbers displayed, can 
+                be set to 3 updates per second, equivalent to 300 ms. This interval
+                is sufficient for the user interface and does not impact measurements in any 
+                manner. (e.g. 300E-3)
             measurements_period(NX_NUMBER):
               exists: optional
               unit: NX_TIME
-              doc: The Measurements period is the integration time for precise measurements 
-                (averaging over specified period), mostly used in sweep modules. Examples are recording
-                 of a force-distance curve or a resonance of a cantilever. For fast measurements with small 
-                 steps, a value of 40 ms may be reasonable. For normal use, 300-500 ms is a good value, 
-                 but for recording a resonance of a high-Q cantilever, values of several seconds might be
-                 necessary. Usually this parameter doesn’t need to be set from this module; the sweep 
-                 modules will set this value according to the sweep timings. (e.g. 500E-3)
+              doc: The Measurements period determines the integration time required for precise measurements,
+                primarily utilized in sweep modules. It is particularly useful for tasks such as recording 
+                force-distance curves or cantilever resonances. For swift measurements with small steps, a value 
+                of 40 ms is often adequate. For regular use, a range of 300-500 ms may be recommended, but when 
+                capturing the resonance of a high-Q cantilever, longer values in the range of several seconds 
+                might be necessary. Usually, this parameter does not require manual adjustment within this module, 
+                as the sweep modules automatically set this value according to the sweep timings. (e.g. 500E-3)
         # parameters how to change the location from measurement to measurement during the scan
         scan_control(NXcollection):
           exists: optional
