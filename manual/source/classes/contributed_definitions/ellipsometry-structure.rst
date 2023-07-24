@@ -1,8 +1,8 @@
 .. _Ellipsometry-Structure:
 
-========================
+====================
 Optical Spectroscopy
-========================
+====================
 
 .. index::
    Ellipsometry
@@ -12,7 +12,7 @@ Optical Spectroscopy
 .. _Ellipsometry:
 
 Ellipsometry
-##############
+############
 
 Ellipsometry is an optical characterization method to describe optical properties of interfaces and thickness of films.
 The measurements are based on determining how the polarization state of light changes upon transmission and reflection.

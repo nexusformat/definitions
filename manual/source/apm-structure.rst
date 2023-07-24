@@ -1,27 +1,9 @@
-.. _Apm-Structure1:
+.. _Apm-Structure-Fairmat:
 
 =========================
 B5: Atom-probe tomography
 =========================
 
-.. index::
-   IntroductionApm1
-   ApmAppDef1
+Atom probe tomography and related field-ion microscopy, aka atom probe microscopy (techniques) cover metrology methods with an origin in the materials science and condensed-matter physics communities. With its maturation and commercialization in the last two decades atom probe is increasingly being used for characterization of bio materials and fundamental science of field evaporation physics.
 
-
-.. _IntroductionApm1:
-
-Introduction
-##############
-
-Set of data storage objects to describe the acquisition/measurement side, the reconstruction, and the ranging for atom probe microscopy experiments. The data storage objects can be useful as well for field-ion microscopy experiments.
-
-.. _ApmAppDef1:
-
-Application Definitions
-#######################
-
-We created one new application definition whose intention is to serve both the description of atom probe tomography and field-ion microscopy measurements:
-
-    :ref:`NXapm`:
-       A general application definition with many detailed places for leaving metadata and computational steps described which are commonly used when reporting the measurement of atom probe data including also detector hit data, as well as how to proceed with reconstructing atom positions from these data, and how to store details about definitions made, which describe how mass-to-charge-state ratio values are mapped to iontypes (ranging).
+A status report of the ongoing work on data schemas for atom probe using NeXus is available here: :ref:`Apm-Structure`.

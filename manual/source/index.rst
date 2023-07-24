@@ -19,8 +19,9 @@ https://www.nexusformat.org/
     transport-structure
     stm-structure
     cgms-structure
-    laboratory-structure
     north-structure
+    laboratory-structure
+    icme-structure
     napi
     history
 
