@@ -28,27 +28,6 @@ We created one application definition:
        A general application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
 
 
-
-Base Classes Extended in Application Definitions
-------------------------------------------------
-
-We use existent base classes in application definitions and add descriptors:
-
-    :ref:`NXinstrument`
-       Added fields to add information that is important for an ellipsometry setup, such as the ellipsometer type, the light source, the type of the sample stage, or the angle(s) of incidence, as well as information on calibration, focussing probes, data correction etc. 
-              
-    :ref:`NXdetector`
-       Added fields to describe spectroscopic detection with polarization (e.g. rotating analyzer).
-       
-    :ref:`NXaperture`
-       Added fields to define parameters that describe windows (e.g. windows of a UHV cryostat), such as the thickness and the orientation angle of the window, as well as reference data to calculate window effects.
-       
-    :ref:`NXsample`
-       Added fields to specify the sample and material properties, as well as the sample environment (e.g. refractive index of surrounding medium) and experimental conditions (e.g. temperature, pressure, pH value etc.).
-
-.. _DispersiveMaterial1:
-
-
 Dispersive Material
 ###################
 
