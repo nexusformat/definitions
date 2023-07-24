@@ -60,7 +60,7 @@ prepare ::
 
 pdf ::
 	$(SPHINX) -M latexpdf $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build
-	cp $(BUILD_DIR)/manual/build/latex/nexus.pdf $(BUILD_DIR)/manual/source/_static/NeXusManual.pdf
+	cp $(BUILD_DIR)/manual/build/latex/nexus-fairmat.pdf $(BUILD_DIR)/manual/source/_static/NeXusManual.pdf
 
 html ::
 	$(SPHINX) -b html -W $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
@@ -85,7 +85,7 @@ all ::
 	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/html/index.html`"
 	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/latex/NXImpatient.pdf`"
 	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/manual/build/html/index.html`"
-	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus.pdf`"
+	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus-fairmat.pdf`"
 
 NXDLS := $(foreach dir,$(NXDL_DIRS),$(wildcard $(dir)/*.nxdl.xml))
 nyaml : $(DIRS) $(NXDLS)

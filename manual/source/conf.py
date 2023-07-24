@@ -153,9 +153,10 @@ comments_config = {
 
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {
-    'maxlistdepth':7, # some application definitions are deeply nested
+    'maxlistdepth': 25, # some application definitions are deeply nested
     'preamble': r'''
     \usepackage{amsbsy}
+    \listfiles
     \DeclareUnicodeCharacter{1F517}{X}
     \DeclareUnicodeCharacter{2906}{<=}'''
 }
