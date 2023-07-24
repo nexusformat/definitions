@@ -80,7 +80,7 @@ html_static_path = ['_static']
 
 # Add extra files
 html_extra_path = ['CNAME']
-html_logo = 'img/FAIRmat.png'
+html_logo = 'img/FAIRmat_new.png'
 
 if html_theme== 'sphinx_rtd_theme':
     html_theme_options = {

@@ -1,15 +1,14 @@
 .. _CgmsFeatures-Structure:
 
-=========================
-Geometry & Microstructure
-=========================
+============================
+Geometry and microstructures
+============================
 
 .. index::
    IntroductionCgms
    PhysicsCgms
    CgmsAppDef
    CgmsBC
-   IcmeMsModels
 
 
 .. _IntroductionCgms:
@@ -20,30 +19,23 @@ Introduction
 The computational-geometry/microstructure-modeling-based part of the proposal
 has the following aims:
 
-First, we would like to contribute to efforts on standardizing a controlled
-vocabulary, definitions for these terms, and relations between the terms, for
-computational-geometry-based descriptions of the structure of materials and
-atomic configurations used when characterizing materials in experiments
+First, to contribute to efforts on standardizing a controlled vocabulary, definitions for terms,
+and relations between terms, for computational-geometry-based descriptions of the structure of
+materials and atomic configurations used when characterizing materials in experiments
 and computer simulations.
 
-As far as NeXus is concerned, the here proposed distinct sets of simple
-geometric primitives and shapes offer a complementary alternative to the
-already existent base classes in NeXus for constructive solid geometry
-such as :ref:`NXcsg`, :ref:`NXoff_geometry`, or :ref:`NXquadric` to name but a few.
+As far as NeXus is concerned, the here proposed distinct sets of geometric primitives offer
+a complementary alternative to the already existent base classes in NeXus for
+constructive solid geometry (CSG) such as :ref:`NXcsg`, :ref:`NXoff_geometry`, or :ref:`NXquadric`.
 
-Second, we would like to explore with this proposal how we can harmonize terms
-frequently used by materials scientists in the field of condensed-matter physics
-with definitions and terms offer by the NOMAD MetaInfo description.
+Second, to explore how terms which are frequently used by materials scientists in the field of
+condensed-matter physics can be harmonized with definitions and terms offer by the NOMAD MetaInfo
+description. NOMAD MetaInfo is the data schema of the NOMAD research data management system.
 
-Third, the proposal should yield a substantiated set of arguments and suggestions
-how descriptors for the structure and atomic architecture of materials can be
-harmonized. With this we especially would like to reach out and intensify the
-cooperation between the materials-science-related consortia of the German
-National Research Infrastructure, specifically, FAIRmat, NFDI-MatWerk, NFDI4Ing,
-NFDI4Chem, NFDI4Cat, MaRDi, and DAPHNE.
-
-.. The proposal reaches out to our colleagues in the materials engineering-based
-.. consortia to document that there is value in discussing about controlled vocabulary.
+Third, to yield a substantiated set of arguments and suggestions how descriptors for the structure
+and the atomic architecture of materials can be harmonized. Especially this proposal reaches out to
+other materials-science-related projects and consortia including the activities in the German NFDI
+FAIRmat, NFDI-MatWerk, NFDI4Ing, NFDI4Chem, NFDI4Cat, MaRDI, and DAPHNE.
 
 .. _PhysicsCgms:
 
@@ -51,47 +43,38 @@ Physics background
 ##################
 Microstructural features or crystal defects are spatial arrangements of atoms.
 Given their specific atomic arrangement and composition, such features have
-specific constraints on the degrees of freedom how atoms can arrange. This causes
-that these defects have specific properties.
-Provided well-defined coarse-graining procedures are used and regions-of-interest
-and/or regions-of-applicability are defined, microstructural features are often
-characterized and modelled to have associated thermodynamic descriptors.
+specific constraints on the degrees of freedom. This equips these defects with specific
+properties (thermodynamic observables/descriptors). Provided well-defined coarse-graining procedures
+are used and regions-of-interest and/or regions-of-applicability are defined, microstructural
+features are often characterized and modelled to have associated thermodynamic descriptors.
 
 Another motivation for the proposal was the observation that frequently the design
 of file formats for simulation software in the computational materials science especially
-those tools at the interface between condensed-matter physics and materials engineering
-are frequently reimplementing the wheel (at least partly) when it comes to decide how to store
-e.g. atom and feature positions or shape of regions-of-interest, grids, crystals,
-grains, precipitates, and dislocations.
+at the interface between condensed-matter physics and materials engineering are frequently
+reimplementing the wheel when it comes to making decision how to store e.g. atom and feature positions
+or how to document the shape of regions-of-interest, grids, crystals, grains, precipitates, and dislocations.
+This generates a diversity of file formats and data schemas which hampers semantic interpretation
+and interoperability.
 
-Maybe this is a historical burden given the large set of technical terms and jargon
-in place, which then motivated pragmatic solutions that resulted in many research groups
-have developed similar formats using similar descriptions.
+Maybe this is a historical burden given the large set of technical terms in place which then
+motivated pragmatic solutions that have resulted in many research groups having developed
+similar formats using similar descriptions.
 
-We see this work on base classes and application definitions not primarily an
-effort to improve and extend NeXus for now. Rather this part of the proposal
-is an effort to support activities in materials science to work towards
-common terminology and using controlled vocabularies more frequently.
-These are the foundation for more sophisticated thoughts about practically
-useful ontologies.
+Defining crystal defects is a question of how to coarse-grain a given spatio-temporal set of atoms,
+each having a nuclid type and position/trajectory. In most cases, such a coarse-graining is an ill-posed
+task because different mathematical/geometrical methods exists how a point, a line, a surface, or a volumetric
+defect can be described and be spatio-temporally constrained through a geometrical model
+with defined primitives and associated observables.
 
-Defining crystal defects is a question of how to coarse-grain a given spatio-
-temporal set of atoms, each having a nuclid type and position/trajectory.
-In most cases, such a coarse-graining is an ill-posed task because different
-mathematical/geometrical methods exists how a point, a line, a surface, or a volumetric defect
-can be described and be spatio-temporally constrained through a geometrical model
-with defined geometric primitives and associated coarser-scale properties.
-
-The key motivation to such coarse-graining is to reduce the complexity of the
-description. On the one hand to support visualization and scientific analyses - not only
-of crystal defect arrangements. On the other hand it is the hope that using descriptors
-at a coarser level, i.e. nanometer, micrometer, and larger, it is still possible
-to find sufficiently accurate and precise descriptors which avoid that one has
+The key motivation to such coarse-graining is to reduce the complexity of the description.
+On the one hand to support visualization and scientific analyses - not only of crystal defect arrangements.
+On the other hand it is the hope that using descriptors at a coarser level, i.e. nanometer, micrometer, and larger,
+are still sufficiently accurate and precise to yield descriptors which avoid that one has
 to account for the dynamics of each atom to predict or understand the properties
 of defects and their dynamics.
 
-Nevertheless, experience has shown that computational-geometry-based descriptions
-when combined with hierarchical clustering/labeling methods, applied on set of
+Experience has shown that computational-geometry-based descriptions
+when combined with hierarchical clustering/labeling methods, applied on sets of
 atoms and features turn out to yield useful descriptors. Examples include point,
 line, surface defects, such as vacancies, solute cluster, dislocations,
 disconnections, interfaces to name but a few.
@@ -101,68 +84,68 @@ disconnections, interfaces to name but a few.
 Base Classes
 ############
 
-The following base classes are defined to incentivize the use of NeXus for
-using computational-geometry-based descriptions. In what follows, base classes
+The following base classes are defined to incentivize the use of NeXus for using
+computational-geometry-based descriptions. In what follows, base classes
 for frequently used shapes and geometric primitives are proposed:
 
     :ref:`NXcg_sphere_set`:
-        A description for a set of possibly dissimilar spheres.
+        A base class for a set of possibly dissimilar spheres.
 
     :ref:`NXcg_ellipsoid_set`:
-        A description for a set of possibly dissimilar rotated ellipsoids.
+        A base class for a set of possibly dissimilar rotated ellipsoids.
 
     :ref:`NXcg_cylinder_set`:
-        A description for a set of possibly dissimilar rotated cylinders.
+        A base class for a set of possibly dissimilar rotated cylinders.
 
     :ref:`NXcg_point_set`:
-        A collection of points with labels or mark data.
+        A base class for a collection of points with labels or mark data.
 
     :ref:`NXcg_polyline_set`:
-        A collection of lines and linearized segments.
+        A base class for a collection of lines and linearized segments.
 
     :ref:`NXcg_triangle_set`:
-        A collection (or soup) of triangles.
+        A base class for a collection (or soup) of triangles.
 
     :ref:`NXcg_parallelogram_set`:
-        A collection of possibly dissimilar parallelograms.
+        A base class for a collection of possibly dissimilar parallelograms.
 
     :ref:`NXcg_triangulated_surface_mesh`:
-        A mesh of triangles.
+        A base class for a collection and/or mesh of triangles.
 
     :ref:`NXcg_polygon_set`:
-        A collection (or soup) of polygons.
+        A base class for a collection (or soup) of polygons.
 
     :ref:`NXcg_polyhedron_set`:
-        A collection (or soup) of polyhedra.
+        A base class for a collection (or soup) of polyhedra.
 
     :ref:`NXcg_roi_set`:
         A container to host a number of different types of primitives.
 
     :ref:`NXcg_tetrahedron_set`:
-        A collection (or soup) of tetrahedra.
+        A base class for a collection (or soup) of tetrahedra.
 
     :ref:`NXcg_hexahedron_set`:
-        A collection (or soup) of hexahedra with capabilities to represent
-        also simpler (bounding) boxes for e.g. binary trees.
+        A base class for a collection (or soup) of hexahedra to represent
+        e.g. simpler (bounding) boxes for e.g. binary trees.
 
 These base classes make use of base classes which describe data structures:
 
     :ref:`NXcg_face_list_data_structure`:
-        In essence, the usual way how polygon/polyhedra data are reported:
-        Via a list of vertices and faces with identifier and properties.
+        A base class to store the usual way how polygon/polyhedra data are reported:
+        Via a list of vertices and faces with identifiers and properties.
 
     :ref:`NXcg_half_edge_data_structure`:
+        A base class for more advanced but more efficiently traversable data structure:
         A half-edge data structure is a useful complementary descriptor for
-        polygon/polyhedra which enables topological analyses and traversal
-        of the graph how polygons and polyhedra can alternatively be described.
+        polygon/polyhedra which enables topological analyses and traversal of half-edges
+        about a topology of primitives.
 
     :ref:`NXcg_unit_normal_set`:
-        As an additional structuring element especially for meshes, well-documented
-        normal information is crucial for distance computations.
+        A base class for storing primitive unit normal vectors.
 
     :ref:`NXcg_geodesic_mesh`:
-        Geodesic meshes are useful for all applications when meshing the surface
-        of a sphere.
+        Geodesic meshes are useful for all applications when meshing the surface of a sphere
+        with many applications in the analyses of diffraction data.
 
     :ref:`NXcg_alpha_complex`:
         Alpha shapes and alpha wrappings, specifically the special case of the
@@ -174,113 +157,84 @@ discretized representations of material (area or volume) which can be useful
 not only for stencil-based methods:
 
     :ref:`NXcg_grid`:
-        A grid of cells.
+        A base class for a grid of cells discretizing e.g. a computational domain
+        or computation with models using representative volume elements (RVEs).
 
     :ref:`NXisocontour`:
-        A description for isocontour descriptions.
+        A base class for isocontour descriptions.
 
     :ref:`NXcg_marching_cubes`:
-        An approach to store metadata of a specific implementation of
+        A base class to store metadata of a specific implementation of
         the Marching Cubes algorithm, whose sensitivity to specific topological
         configurations is known to result in different triangle soups.
+        This is relevant e.g. for computations of isocontours.
 
     :ref:`NXdelocalization`:
-        An approach to document procedures whereby a scalar field
-        is smoothened in a controlled manner.
+        A base class to document procedures whereby a scalar field
+        is smoothened in a controlled manner (typically using kernel methods).
 
     :ref:`NXsimilarity_grouping`:
-        An alias for NXclustering.
+        A base class defining an alias for NXclustering.
 
     :ref:`NXclustering`:
-        A description for clustering of objects (such as atoms or features).
+        A base class to describe clustering of objects (such as atoms or features).
 
     :ref:`NXorientation_set`:
-        A set of rotations to describe the relative orientation of members of a set of features/objects.
+        A base class to describe the relative orientation or rotation members
+        of a set of features/objects.
 
     :ref:`NXslip_system_set`:
-        Metadata to a set of slip system/slip system family for
+        A base class to describe a set of slip system/slip system family for
         a given crystal structure.
 
     :ref:`NXms_feature_set`:
-        Generic base class to describe any nested set of features
-        of a microstructure at the continuum-, micron-, nano-scale, or
-        to represent a topology of molecules and atoms.
+        A base class to describe any nested set of features of a material at the
+        continuum-, micron-, or nano-scale, including representation of a topology
+        of molecules and atoms.
 
     :ref:`NXms_snapshot`:
-        A container to describe the state of microstructural features
+        A base class to describe the state of microstructural features
         at a given point in time.
 
     :ref:`NXms_snapshot_set`:
-        The corresponding class to hold a set of :ref:`NXms_snapshot` objects.
+        A base class to store a set of :ref:`NXms_snapshot` objects.
 
     :ref:`NXchemical_composition`:
-        (Chemical) composition of a sample or a set of things.
+        A base class to document (chemical) composition of a sample or a set of things.
 
-Furthermore, it can be useful to have a set of base classes with
-which software documents it state and gives a summary for users about the performance
-and elapsed time measured while processing data. These utility classes include:
+Furthermore, it can be useful to have a set of base classes whereby software tools can
+documents their state and return summaries for users about the performance
+and elapsed time measured while processing data. These utility base classes are:
 
     :ref:`NXprogram`:
-        A named and version of a program of library/component.
+        A base class for a specifically named and versioned program or library/component.
 
     :ref:`NXcs_filter_boolean_mask`:
-        A boolean mask.
+        A base class for a boolean mask.
 
     :ref:`NXcs_prng`:
-        Metadata of a pseudo-random number generator (PRNG) algorithm.
+        A base class for settings of a pseudo-random number generator (PRNG) algorithm.
 
     :ref:`NXcs_profiling`:
-        A structuring group holding a set of :ref:`NXcs_profiling_event` instances.
+        A base class for holding a set of :ref:`NXcs_profiling_event` instances.
 
     :ref:`NXcs_profiling_event`:
-        Profiling/benchmark data to an event of
-        tracking an algorithm/computational step.
+        A base class for documenting profiling/benchmark for an algorithm or computational step.
 
     :ref:`NXcs_computer`:
-        Metadata of a computer.
+        A base class for documenting a computer.
 
     :ref:`NXcs_cpu`:
-        Metadata of a central processing unit.
+        A base class for documenting a central processing unit.
 
     :ref:`NXcs_gpu`:
-        Metadata of a graphical processing unit / accelerator.
+        A base class for documenting a graphical processing unit / accelerator.
 
     :ref:`NXcs_mm_sys`:
-        Metadata of the (main) memory (sub-)system.
+        A base class for documenting the (main) memory (sub-)system.
 
     :ref:`NXcs_io_sys`:
-        Metadata of the input/output system.
+        A base class for documenting the input/output system.
 
     :ref:`NXcs_io_obj`:
-        Metadata of a component storing data of an :ref:`NXcs_io_sys` instance.
-
-.. _IcmeMsModels:
-
-Application definitions for ICME models
-#######################################
-
-It is important to embrace the large research community of materials engineers
-as they are frequent users of electron microscopy and atom probe microscopy.
-In this community frequently ICME microstructure models are used. ICME is an
-abbreviation for Integrated Computational Materials Engineering, which is a
-design strategy and workflow whereby physics-based modelling of microstructure
-evolution at the mesoscopic scale is used to understand the relations between
-the microstructure and technological relevant descriptors for the properties
-of materials.
-
-The following application definitions are proposed to support the discussion
-how materials engineering-specific data models and connect to or be mapped on
-concepts which are equally modellable with NeXus:
-
-    :ref:`NXms`:
-        An application definition for arbitrary spatiotemporally resolved simulations.
-
-    :ref:`NXms_score_config`:
-        A specific example how :ref:`NXapm_paraprobe_config_ranger` can be
-        specialized for documenting the configuration of a computer simulation
-        with the static recrystallization cellular automata model SCORE.
-
-    :ref:`NXms_score_results`:
-        A specific example how :ref:`NXms` can be specialized for documenting
-        results of computer simulations with the static recrystallization
-        cellular automata model SCORE.
+        A base class for storing data inside an :ref:`NXcs_io_sys` instance.
