@@ -6,6 +6,7 @@
 PYTHON = python3
 SPHINX = sphinx-build
 BUILD_DIR = "build"
+NXDL_DIRS := contributed_definitions applications base_classes
 
 .PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local
 
@@ -49,6 +50,9 @@ test ::
 
 clean ::
 	$(RM) -rf $(BUILD_DIR)
+	for dir in $(NXDL_DIRS); do\
+		$(RM) -rf $${dir}/nyaml;\
+	done
 
 prepare ::
 	$(PYTHON) -m dev_tools manual --prepare --build-root $(BUILD_DIR)
@@ -56,10 +60,10 @@ prepare ::
 
 pdf ::
 	$(SPHINX) -M latexpdf $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build
-	cp $(BUILD_DIR)/manual/build/latex/nexus.pdf $(BUILD_DIR)/manual/source/_static/NeXusManual.pdf
+	cp $(BUILD_DIR)/manual/build/latex/nexus-fairmat.pdf $(BUILD_DIR)/manual/source/_static/NeXusManual.pdf
 
 html ::
-	$(SPHINX) -b html $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
+	$(SPHINX) -b html -W $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
 
 impatient-guide ::
 	$(SPHINX) -b html -W $(BUILD_DIR)/impatient-guide/ $(BUILD_DIR)/impatient-guide/build/html
@@ -81,13 +85,26 @@ all ::
 	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/html/index.html`"
 	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/latex/NXImpatient.pdf`"
 	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/manual/build/html/index.html`"
-	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus.pdf`"
+	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus-fairmat.pdf`"
 
-nexus-fairmat-proposal ::
-	$(MAKE) test
-	$(MAKE) clean
-	$(MAKE) prepare
-	$(SPHINX) -b html $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
+NXDLS := $(foreach dir,$(NXDL_DIRS),$(wildcard $(dir)/*.nxdl.xml))
+nyaml : $(DIRS) $(NXDLS)
+	for file in $^; do\
+		mkdir -p "$${file%/*}/nyaml";\
+		nyaml2nxdl --input-file $${file};\
+		FNAME=$${file##*/};\
+		mv -- "$${file%.nxdl.xml}_parsed.yaml" "$${file%/*}/nyaml/$${FNAME%.nxdl.xml}.yaml";\
+	done
+
+NYAMLS := $(foreach dir,$(NXDL_DIRS),$(wildcard $(dir)/nyaml/*.yaml))
+nxdl : $(DIRS) $(NYAMLS)
+	for file in $^; do\
+		mkdir -p "$${file%/*}/nyaml";\
+		nyaml2nxdl --input-file $${file};\
+		FNAME=$${file##*/};\
+		mv -- "$${file%.yaml}.nxdl.xml" "$${file%/*}/../$${FNAME%.yaml}.nxdl.xml";\
+	done
+
 
 # NeXus - Neutron and X-ray Common Data Format
 #
