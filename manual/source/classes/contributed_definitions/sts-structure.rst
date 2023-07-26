@@ -1,31 +1,47 @@
-.. _Stm-Structure-Fairmat:
+.. _Stm-Structure:
 
-=============================
-Scanning Tunneling Microscopy
-=============================
-
+===============================
+Scanning Tunneling Spectroscopy
+===============================
 
 .. index::
-   IntroductionStm
-   StmAppDef
-   StmNewBC
+   StsAppDef
+   StsBC
 
+.. _StsAppDef:
 
-.. _IntroductionStm:
+Application Definition
+######################
 
-Introduction
+    :ref:`NXsts`:
+       An application definition for scanning tunneling spectroscopy experiments.
+
+.. _StsNewBC:
+
+Base Classes
 ############
 
-Scientists of the scanning tunneling microscopy community and FAIRmat have worked together to create an application definition and related base classes for
-documenting scanning tunneling spectroscopy. This is one community under the large umbrella of scanning (probe) microscopy methods. A status report of these efforts will be reported here.
+    :ref:`NXamplifier`:
+    A base class
 
-.. _StmAppDef:
+    :ref:`NXbias_spectroscopy`:
+    A base class
 
-.. Application Definitions
-.. #######################
+    :ref:`NXcircuit`:
+    A base class
 
-.. _StmNewBC:
+    :ref:`NXiv_bias`:
+    A base class
 
-.. Base Classes
-.. ############
+    :ref:`NXlockin`:
+    A base class
+
+    :ref:`NXpid`:
+    A base class
+
+    :ref:`NXpositioner_sts`:
+    A base class
+
+    :ref:`NXsensor_scan`:
+    A base class
 
