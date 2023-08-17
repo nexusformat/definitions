@@ -50,6 +50,8 @@ test ::
 
 clean ::
 	$(RM) -rf $(BUILD_DIR)
+
+clean-nyaml ::
 	for dir in $(NXDL_DIRS); do\
 		$(RM) -rf $${dir}/nyaml;\
 	done
