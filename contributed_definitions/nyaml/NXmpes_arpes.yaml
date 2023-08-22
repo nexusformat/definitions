@@ -1,6 +1,6 @@
 #Pincelli, Rettig, Arora at fhi-berlin.mpg.de, Dobener at hu-berlin.de, 06/2022
 #Draft version of a NeXus application definition for angle resolved photoemission.
-#This appdef aims to describe data produced from hemispherical anlysers, 
+#This appdef aims to describe data produced from hemispherical anlysers,
 #with at least an angular coordinate and one an energy coordinate.
 #It is designed to be extended by other application definitions
 #with higher granularity in the data description.
@@ -11,9 +11,22 @@ NXmpes_arpes(NXmpes):
     definition:
       \@version:
       enumeration: ["NXmpes_arpes"]
+    geometries(NXcollection):
+      arpesgeometry(NXcollection):
+        depends_on(NX_CHAR):
+          doc: "Link to transformations defining an APRES base coordinate system, which is defined such that the positive z-axis points towards the analyzer entry, and the x-axis lies within the beam/analyzer plane."
+        (NXtransformations):
+          doc: "Set of transformations, describing the orientation of the ARPES coordinate system with respect to the beam coordinate system (.)."
     (NXinstrument):
       angular_resolution(NX_FLOAT):
         unit: NX_ANGLE
+      depends_on(NX_CHAR):
+        doc: "Reference to the transformation describing the orientation of the analyzer relative to the beam."
+      (NXtransformations):
+        doc: "Set of transformations, describing the relative orientation of the analyzer with respect to the beam coordinate system (.)."
+        # Do we need to require the existence/use of a particular rotation to determine slit orientation?
+        analyzer_rotation(NX_NUMBER):
+          doc: "Rotation about the analyzer axis. This needs to be defined in the transformation chain."
       (NXelectronanalyser):
         description:
         angular_resolution(NX_FLOAT):
@@ -30,36 +43,57 @@ NXmpes_arpes(NXmpes):
             ]
         (NXenergydispersion):
           scheme:
-            enumeration: ["hemispherical"]
-          pass_energy(NX_NUMBER):
-            unit: NX_ENERGY
+            enumeration: ["hemispherical", "tof"]
           center_energy(NX_NUMBER):
+            exists: recommended
             unit: NX_ENERGY
           diameter(NX_NUMBER):
+            exists: recommended
             unit: NX_LENGTH
-          energy_scan_mode:
           entrance_slit(NXaperture):
             shape:
-              enumeration: [  
-                "straight slits",
-                "curved slits",
+              enumeration: [
+                "straight slit",
+                "curved slit",
                 "open",
-                "grid",
               ]
-            (NXtransformations): # Do we need to require the existence/use of a particular 
-            #rotation to determine slit orientation?
-              doc: "Set of transformations, describing the relative orientation of the slits with respect to the beam coordinate system (.)."
         (NXdetector):
-          (NXdata): # Raw signal without calibrated axes.
+          data(NX_NUMBER): # Raw signal without calibrated axes.
             exists: recommended
-            \@signal:
-              enumeration: ['raw']
-            raw(NX_NUMBER): # There is a block of numbers named raw.
-              doc: "Raw data before calibration."
-      depends_on(NX_CHAR):
-        doc: "Reference to the transformation describing the orientation of the analyzer relative to the beam."
-      (NXtransformations):
-        doc: "Set of transformations, describing the relative orientation of the analyzer with respect to the beam coordinate system (.)."
+            doc: "Raw data before calibration."
+      (NXprocess):
+        doc: "Document an event of data processing, reconstruction, or analysis for this data.
+          Describe the appropriate axis calibrations for your experiment using
+          one or more of the following NXcalibrations"
+        energy_calibration(NXcalibration):
+          exists: optional
+          applied(NX_BOOLEAN):
+            doc: "Has an energy calibration been applied?"
+          calibrated_axis(NX_FLOAT):
+            exists: recommended
+            doc: "This is the calibrated energy axis to be used for data plotting."
+        angular1_calibration(NXcalibration):
+          exists: optional
+          applied(NX_BOOLEAN):
+            doc: "Has an angular calibration been applied to dispersive axis 1?"
+          calibrated_axis(NX_FLOAT):
+            exists: recommended
+            doc: "This is the calibrated angular axis to be used for data plotting."
+          depends_on(NX_CHAR):
+            doc: "Reference to the transformation describing the orientation of the first dispersed analyzer angle."
+          (NXtransformations):
+            doc: "Set of transformations, describing the relation of the dispersing analyzer angles and analyzer roations with respect to the reference coordinate system (.)."
+        angular2_calibration(NXcalibration):
+          exists: optional
+          applied(NX_BOOLEAN):
+            doc: "Has an angular calibration been applied to dispersive axis 2?"
+          calibrated_axis(NX_FLOAT):
+            exists: recommended
+            doc: "This is the calibrated angular axis to be used for data plotting."
+          depends_on(NX_CHAR):
+            doc: "Reference to the transformation describing the orientation of the second dispersed analyzer angle."
+          (NXtransformations):
+            doc: "Set of transformations, describing the relation of the dispersing analyzer angles and analyzer roations with respect to the reference coordinate system (.)."
     (NXsample):
       situation:
         enumeration: ["vacuum"]
@@ -71,30 +105,45 @@ NXmpes_arpes(NXmpes):
     (NXdata):
       \@signal:
         enumeration: ["data"] # There is an object named data that contains the signal
-      \@axes: # There are at least two dimensions, an energy & (at least) an angular coordinate
-        enumeration: ["[energy, angular1]"]
-      \@energy_indices: # energy is a 1D array
-        enumeration: [1]
-      \@angular1_indices: # angular is a 1D array
-        enumeration: [1]
+      \@axes: # There are three dimensions, one energy & two angular coordinates. Any coordinates that do not move, are represented by one point.
+        enumeration: ["[angular1, angluar2, energy]"]
+      \@energy_indices: # energy indices have to be provided
+      \@angular1_indices: # angular1 indices have to be provided
+      \@angular2_indices: # angular2 indices have to be provided
       \@angular1_depends(NX_CHAR): # In ARPES, the angular coordinate can be generated in different ways.
       # It can be a detector axis in a 2D detector, or scanned by changing the angle of a manipulator.
       # We propose a structure similar to depends_on(NX_CHAR) of NXtransformations to reconstruct the
       # metadata path that produced the angular coordinate. This allows to reconstruct the geometry programmatically.
-        doc: "Points to the path to a field defining the axis on which the angular axis depends. 
+        doc: "Points to the path to a field defining the axis on which the angular axis depends.
           For example:
           @angular1_depends: '/entry/sample/transformations/rot_phi' for a manipulator angular scan
           @angular1_depends: '/entry/instrument/detector/sensor_x' for a 2D detector
           @angular1_depends: '/entry/instrument/collectioncolumn/deflector' for a deflector scan
-          @angular1_depends: '/entry/process/calibration/angular_calibration/calibrated_axis' for a preprocessed axis."
+          @angular1_depends: '/entry/process/calibration/angular1_calibration/calibrated_axis' for a preprocessed axis."
+      \@angular2_depends(NX_CHAR): # In ARPES, the angular coordinate can be generated in different ways.
+      # It can be a detector axis in a 2D detector, or scanned by changing the angle of a manipulator.
+      # We propose a structure similar to depends_on(NX_CHAR) of NXtransformations to reconstruct the
+      # metadata path that produced the angular coordinate. This allows to reconstruct the geometry programmatically.
+        doc: "Points to the path to a field defining the axis on which the angular axis depends.
+          For example:
+          @angular2_depends: '/entry/sample/transformations/rot_tht' for a manipulator angular scan
+          @angular2_depends: '/entry/instrument/detector/sensor_x' for a 2D detector
+          @angular2_depends: '/entry/instrument/collectioncolumn/deflector' for a deflector scan
+          @angular2_depends: '/entry/process/calibration/angular2_calibration/calibrated_axis' for a preprocessed axis."
       \@energy_depends(NX_CHAR): # Similarly, energy can be dispersed according to different strategies
-        doc: "Points to the path to a field defining the axis on which the energy axis depends. 
+        doc: "Points to the path to a field defining the axis on which the energy axis depends.
           For example:
           @energy_depends: '/entry/instrument/detector/sensor_y' for a 2D detector
           @energy_depends: '/entry/instrument/energydispersion/center_kinetic_energy' for a swept scan
           @energy_depends: '/entry/process/calibration/energy_calibration/calibrated_axis' for a preprocessed axis."
+      energy(NX_NUMBER):
+        doc: "Trace of the energy axis. Could be linked from the respective 'AXISNAME_depends' field."
+      angular1(NX_NUMBER):
+        doc: "Trace of the first angular axis. Could be linked from the respective 'AXISNAME_depends' field."
+      angular2(NX_NUMBER):
+        doc: "Trace of the second axis. Could be linked from the respective 'AXISNAME_depends' field."
       data(NX_NUMBER): # There is a block of numbers named data.
-        doc: "Represents a measure of two- or more-dimensional photoemission counts, where
+        doc: "Represents a measure of three-dimensional photoemission counts, where
           the varied axes are energy, and one or more angular coordinates. Axes traces
           should be linked to the actual encoder position in NXinstrument or calibrated axes in NXprocess."
         unit: NX_ANY
