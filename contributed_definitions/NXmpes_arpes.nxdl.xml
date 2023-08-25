@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXmpes_arpes" extends="NXmpes" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <!--Pincelli, Rettig, Arora at fhi-berlin.mpg.de, Dobener at hu-berlin.de, 06/2022
+Draft version of a NeXus application definition for angle resolved photoemission.
+This appdef aims to describe data produced from hemispherical anlysers,
+with at least an angular coordinate and one an energy coordinate.
+It is designed to be extended by other application definitions
+with higher granularity in the data description.-->
+    <doc>
+         This is an general application definition for angle-resolved multidimensional
+         photoelectron spectroscopy.
+    </doc>
+    <group type="NXentry">
+        <field name="definition">
+            <attribute name="version"/>
+            <enumeration>
+                <item value="NXmpes_arpes"/>
+            </enumeration>
+        </field>
+        <group name="geometries" type="NXcollection">
+            <group name="arpesgeometry" type="NXcollection">
+                <field name="depends_on" type="NX_CHAR">
+                    <doc>
+                         Link to transformations defining an APRES base coordinate system, which is
+                         defined such that the positive z-axis points towards the analyzer entry, and the
+                         x-axis lies within the beam/analyzer plane.
+                    </doc>
+                </field>
+                <group type="NXtransformations">
+                    <doc>
+                         Set of transformations, describing the orientation of the ARPES coordinate
+                         system with respect to the beam coordinate system (.).
+                    </doc>
+                </group>
+            </group>
+        </group>
+        <group type="NXinstrument">
+            <field name="angular_resolution" type="NX_FLOAT" recommended="true" units="NX_ANGLE"/>
+            <group type="NXelectronanalyser">
+                <field name="description"/>
+                <field name="angular_resolution" type="NX_FLOAT" recommended="true" units="NX_ANGLE">
+                    <doc>
+                         Angular resolution of the electron analyser with the current setting. May be
+                         linked from a NXcalibration.
+                    </doc>
+                </field>
+                <field name="depends_on" type="NX_CHAR" recommended="true">
+                    <doc>
+                         Reference to the transformation describing the orientation of the analyzer
+                         relative to the beam.
+                    </doc>
+                </field>
+                <group type="NXtransformations">
+                    <doc>
+                         Set of transformations, describing the relative orientation of the analyzer with
+                         respect to the beam coordinate system (.).
+                    </doc>
+                    <!--Do we need to require the existence/use of a particular rotation to determine slit orientation?-->
+                    <field name="analyzer_rotation" type="NX_NUMBER" units="NX_ANGLE">
+                        <doc>
+                             Rotation about the analyzer axis. This needs to be defined in the transformation
+                             chain.
+                        </doc>
+                    </field>
+                </group>
+                <group type="NXcollectioncolumn">
+                    <field name="scheme" recommended="true">
+                        <doc>
+                             Scheme of the electron collection column.
+                        </doc>
+                        <enumeration>
+                            <item value="Standard"/>
+                            <item value="Angular dispersive"/>
+                            <item value="Deflector"/>
+                        </enumeration>
+                    </field>
+                </group>
+                <group type="NXenergydispersion">
+                    <field name="scheme" recommended="true">
+                        <enumeration>
+                            <item value="hemispherical"/>
+                            <item value="tof"/>
+                        </enumeration>
+                    </field>
+                    <field name="center_energy" type="NX_NUMBER" recommended="true" units="NX_ENERGY"/>
+                    <field name="diameter" type="NX_NUMBER" recommended="true" units="NX_LENGTH"/>
+                    <group name="entrance_slit" type="NXaperture" recommended="true">
+                        <field name="shape">
+                            <enumeration>
+                                <item value="straight slit"/>
+                                <item value="curved slit"/>
+                                <item value="open"/>
+                            </enumeration>
+                        </field>
+                    </group>
+                </group>
+                <group type="NXdetector">
+                    <field name="data" type="NX_NUMBER" recommended="true">
+                        <doc>
+                             Raw data before calibration.
+                        </doc>
+                    </field>
+                </group>
+            </group>
+        </group>
+        <group type="NXprocess" optional="true">
+            <doc>
+                 Document an event of data processing, reconstruction, or analysis for this data.
+                 Describe the appropriate axis calibrations for your experiment using one or more
+                 of the following NXcalibrations
+            </doc>
+            <group name="energy_calibration" type="NXcalibration" optional="true">
+                <field name="applied" type="NX_BOOLEAN">
+                    <doc>
+                         Has an energy calibration been applied?
+                    </doc>
+                </field>
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
+                    <doc>
+                         This is the calibrated energy axis to be used for data plotting.
+                    </doc>
+                </field>
+            </group>
+            <group name="angular1_calibration" type="NXcalibration" optional="true">
+                <field name="applied" type="NX_BOOLEAN">
+                    <doc>
+                         Has an angular calibration been applied to dispersive axis 1?
+                    </doc>
+                </field>
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
+                    <doc>
+                         This is the calibrated angular axis to be used for data plotting.
+                    </doc>
+                </field>
+                <field name="depends_on" type="NX_CHAR">
+                    <doc>
+                         Reference to the transformation describing the orientation of the first
+                         dispersed analyzer angle.
+                    </doc>
+                </field>
+                <group type="NXtransformations" recommended="true">
+                    <doc>
+                         Set of transformations, describing the relation of the dispersing analyzer
+                         angles and analyzer roations with respect to the reference coordinate system
+                         (.).
+                    </doc>
+                </group>
+            </group>
+            <group name="angular2_calibration" type="NXcalibration" optional="true">
+                <field name="applied" type="NX_BOOLEAN">
+                    <doc>
+                         Has an angular calibration been applied to dispersive axis 2?
+                    </doc>
+                </field>
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
+                    <doc>
+                         This is the calibrated angular axis to be used for data plotting.
+                    </doc>
+                </field>
+                <field name="depends_on" type="NX_CHAR">
+                    <doc>
+                         Reference to the transformation describing the orientation of the second
+                         dispersed analyzer angle.
+                    </doc>
+                </field>
+                <group type="NXtransformations" recommended="true">
+                    <doc>
+                         Set of transformations, describing the relation of the dispersing analyzer
+                         angles and analyzer roations with respect to the reference coordinate system
+                         (.).
+                    </doc>
+                </group>
+            </group>
+        </group>
+        <group type="NXsample">
+            <field name="situation">
+                <enumeration>
+                    <item value="vacuum"/>
+                </enumeration>
+            </field>
+            <!--Similar situation here, ca be a single number or a log.-->
+            <field name="depends_on" type="NX_CHAR">
+                <doc>
+                     Reference to a transformation describing the orientation of the sample relative
+                     to the beam coordinate system (.).
+                </doc>
+            </field>
+            <group type="NXtransformations">
+                <doc>
+                     Set of transformations, describing the relative orientation of the sample with
+                     respect to the beam coordinate system (.).
+                </doc>
+            </group>
+        </group>
+        <group type="NXdata">
+            <attribute name="signal">
+                <enumeration>
+                    <item value="data"/>
+                </enumeration>
+            </attribute>
+            <attribute name="axes">
+                <enumeration>
+                    <item value="[angular1, angluar2, energy]"/>
+                </enumeration>
+            </attribute>
+            <attribute name="energy_indices"/>
+            <attribute name="angular1_indices"/>
+            <attribute name="angular2_indices"/>
+            <attribute name="angular1_depends" type="NX_CHAR">
+                <doc>
+                     Points to the path to a field defining the axis on which the angular axis
+                     depends. For example: @angular1_depends: '/entry/sample/transformations/rot_phi'
+                     for a manipulator angular scan @angular1_depends:
+                     '/entry/instrument/detector/sensor_x' for a 2D detector @angular1_depends:
+                     '/entry/instrument/collectioncolumn/deflector' for a deflector scan
+                     @angular1_depends:
+                     '/entry/process/calibration/angular1_calibration/calibrated_axis' for a
+                     preprocessed axis.
+                </doc>
+            </attribute>
+            <attribute name="angular2_depends" type="NX_CHAR">
+                <doc>
+                     Points to the path to a field defining the axis on which the angular axis
+                     depends. For example: @angular2_depends: '/entry/sample/transformations/rot_tht'
+                     for a manipulator angular scan @angular2_depends:
+                     '/entry/instrument/detector/sensor_x' for a 2D detector @angular2_depends:
+                     '/entry/instrument/collectioncolumn/deflector' for a deflector scan
+                     @angular2_depends:
+                     '/entry/process/calibration/angular2_calibration/calibrated_axis' for a
+                     preprocessed axis.
+                </doc>
+            </attribute>
+            <attribute name="energy_depends" type="NX_CHAR">
+                <doc>
+                     Points to the path to a field defining the axis on which the energy axis
+                     depends. For example: @energy_depends: '/entry/instrument/detector/sensor_y' for
+                     a 2D detector @energy_depends:
+                     '/entry/instrument/energydispersion/center_kinetic_energy' for a swept scan
+                     @energy_depends: '/entry/process/calibration/energy_calibration/calibrated_axis'
+                     for a preprocessed axis.
+                </doc>
+            </attribute>
+            <field name="energy" type="NX_NUMBER" units="NY_ENERGY">
+                <doc>
+                     Trace of the energy axis. Could be linked from the respective 'AXISNAME_depends'
+                     field.
+                </doc>
+            </field>
+            <field name="angular1" type="NX_NUMBER" units="NX_ANGLE">
+                <doc>
+                     Trace of the first angular axis. Could be linked from the respective
+                     'AXISNAME_depends' field.
+                </doc>
+            </field>
+            <field name="angular2" type="NX_NUMBER" units="ANX_ANGLE">
+                <doc>
+                     Trace of the second axis. Could be linked from the respective 'AXISNAME_depends'
+                     field.
+                </doc>
+            </field>
+            <field name="data" type="NX_NUMBER" units="NX_ANY">
+                <doc>
+                     Represents a measure of three-dimensional photoemission counts, where the varied
+                     axes are energy, and one or more angular coordinates. Axes traces should be
+                     linked to the actual encoder position in NXinstrument or calibrated axes in
+                     NXprocess.
+                </doc>
+            </field>
+        </group>
+    </group>
+</definition>
