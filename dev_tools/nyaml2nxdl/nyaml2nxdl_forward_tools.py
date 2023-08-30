@@ -468,6 +468,7 @@ def xml_handle_dimensions(dct, obj, keyword, value: dict):
     if isinstance(value, dict) and value != {}:
         recursive_build(dims, value, verbose=None)
 
+
 def xml_handle_dim(dct, obj, keyword, value):
     """
     This function creates a 'dimensions' element instance, and appends it to an existing element.
@@ -495,6 +496,7 @@ def xml_handle_dim(dct, obj, keyword, value):
                     dim.set("index", str(dim_idx))
                     dim.set("value", str(dim_name))
                     dim_idx += 1
+
 
 # pylint: disable=too-many-locals, too-many-arguments
 def xml_handle_dim_from_dimension_dict(
