@@ -208,6 +208,7 @@ def check_for_skiped_attributes(component, value, allowed_attr=None, verbose=Fal
                 and "\\@" not in attr
                 and attr not in allowed_attr
                 and "NX" not in attr
+                and attr != "dim"
                 and val
             ):
                 raise ValueError(
@@ -467,6 +468,33 @@ def xml_handle_dimensions(dct, obj, keyword, value: dict):
     if isinstance(value, dict) and value != {}:
         recursive_build(dims, value, verbose=None)
 
+def xml_handle_dim(dct, obj, keyword, value):
+    """
+    This function creates a 'dimensions' element instance, and appends it to an existing element.
+
+    Allows for handling numpy tensor notation of dimensions. That is,
+    dimensions:
+      rank: 1
+      dim: (1, 3)
+    can be replaced by
+    dim: (3,)
+
+    """
+    if isinstance(value, str) is True:
+        if value[0] == "(" and value[-1] == ")":
+            valid_dims = []
+            for entry in value[1:-1].replace(" ", "").split(","):
+                if len(entry) > 0:  # ignore trailing comma and empty mnemonics
+                    valid_dims.append(entry)
+            if len(valid_dims) > 0:
+                dims = ET.SubElement(obj, "dimensions")
+                dims.set("rank", str(len(valid_dims)))
+                dim_idx = 1
+                for dim_name in valid_dims:
+                    dim = ET.SubElement(dims, "dim")
+                    dim.set("index", str(dim_idx))
+                    dim.set("value", str(dim_name))
+                    dim_idx += 1
 
 # pylint: disable=too-many-locals, too-many-arguments
 def xml_handle_dim_from_dimension_dict(
@@ -1046,6 +1074,8 @@ def recursive_build(obj, dct, verbose):
 
         elif keyword == "dimensions":
             xml_handle_dimensions(dct, obj, keyword, value)
+        elif keyword == "dim":
+            xml_handle_dim(dct, obj, keyword, value)
 
         elif keyword == "exists":
             xml_handle_exists(dct, obj, keyword, value)
