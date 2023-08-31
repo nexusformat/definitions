@@ -528,8 +528,9 @@ class NXClassDocGenerator:
         line = "documentation"
         fnd = False
         blocks = self._get_doc_blocks(ns, node)
-        max_characters = max(MIN_COLLAPSE_HINT_LINE_LENGTH,
-                             (MAX_COLLAPSE_HINT_LINE_LENGTH - left_margin))
+        max_characters = max(
+            MIN_COLLAPSE_HINT_LINE_LENGTH, (MAX_COLLAPSE_HINT_LINE_LENGTH - left_margin)
+        )
         for block in blocks:
             lines = block.splitlines()
             length += len(lines)
