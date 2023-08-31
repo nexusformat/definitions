@@ -2,7 +2,6 @@
 """Main file of yaml2nxdl tool.
 Users create NeXus instances by writing a YAML file
 which details a hierarchy of data/metadata elements
-
 """
 # -*- coding: utf-8 -*-
 #
@@ -175,7 +174,9 @@ def get_sha256_hash(file_name):
     return sha_hash.hexdigest()
 
 
-def extend_yamlfile_with_comment(yaml_file, file_to_be_appended, top_lines_list=None):
+def extend_yamlfile_by_nxdl_as_comment(
+    yaml_file, file_to_be_appended, top_lines_list=None
+):
     """Extend yaml file by the file_to_be_appended as comment."""
 
     with open(yaml_file, mode="a+", encoding="utf-8") as f1_obj:
