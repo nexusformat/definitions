@@ -35,7 +35,7 @@ if nxdl_version is not None:
 # -- General configuration ---------------------------------------------------
 
 # https://github.com/nexusformat/definitions/issues/659#issuecomment-577438319
-needs_sphinx = '2.3'
+needs_sphinx = '2.5'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
@@ -51,6 +51,7 @@ extensions = [
     'sphinx_tabs.tabs',
     'contrib_ext'
 ]
+
 
 # Show `.. todo` directives in the output
 # todo_include_todos = True
@@ -113,8 +114,9 @@ elif html_theme== 'alabaster': # Alabaster allows a very high degree of control 
         'github_repo': 'nexus_definitions/tree/fairmat',
         'github_user': 'FAIRmat-Experimental',
         'github_count': 'false', # We don't get the cute counter baloon if we want to point to the branch
-        'sidebar_width': '235px',
-        'page_width': '1000px',
+        'sidebar_width': '300px',
+        'body_max_width': 'auto',
+        'page_width': 'auto',
         'font_size': '12pt',
         'font_family': 'Arial',
         'description': 'Proposal of NeXus expansion for FAIRmat data.',
@@ -149,7 +151,7 @@ htmlhelp_basename = 'NeXusManualdoc'
 
 comments_config = {
     "hypothesis": True
- }
+}
 
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {

@@ -36,6 +36,12 @@ https://www.nexusformat.org/
 | This commit identifier <<AUTO_INJECT_COMMIT_ID>>.
 | This manual built |today|.
 
+.. rubric:: Acknowledgements
+
+| The FAIRmat project is funded by the Deutsche Forschungsgemeinschaft
+| (`DFG <https://www.dfg.de/en/index.jsp>`_, German Research Foundation) - project 460197019.
+| FAIRmat is a consortium within the `German NFDI <https://www.nfdi.de/?lang=en>`_.
+
 
 .. seealso:: 
 
