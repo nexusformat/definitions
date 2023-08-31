@@ -17,6 +17,10 @@ from ..utils.github import get_file_contributors_via_api
 from ..utils.types import PathLike
 from .anchor_list import AnchorRegistry
 
+# controlling the length of progressively more indented sub-node
+MIN_COLLAPSE_HINT_LINE_LENGTH = 20
+MAX_COLLAPSE_HINT_LINE_LENGTH = 80
+
 
 class NXClassDocGenerator:
     """Generate documentation in reStructuredText markup
@@ -519,27 +523,30 @@ class NXClassDocGenerator:
                     self._print(f"{indent}{line}")
                 self._print()
 
-    def long_doc(self, ns, node):
+    def long_doc(self, ns, node, left_margin):
         length = 0
         line = "documentation"
         fnd = False
         blocks = self._get_doc_blocks(ns, node)
+        max_characters = max(
+            MIN_COLLAPSE_HINT_LINE_LENGTH, (MAX_COLLAPSE_HINT_LINE_LENGTH - left_margin)
+        )
         for block in blocks:
             lines = block.splitlines()
             length += len(lines)
             for single_line in lines:
                 if len(single_line) > 2 and single_line[0] != "." and not fnd:
                     fnd = True
-                    line = single_line
+                    line = single_line[:max_characters]
         return (length, line, blocks)
 
     def _print_doc_enum(self, indent, ns, node, required=False):
         collapse_indent = indent
         node_list = node.xpath("nx:enumeration", namespaces=ns)
-        (doclen, line, blocks) = self.long_doc(ns, node)
-        # if len(node_list) + doclen > 1:
-        #    collapse_indent = f"{indent}    "
-        #    self._print(f"{indent}{self._INDENTATION_UNIT}.. collapse:: {line} ...\n")
+        (doclen, line, blocks) = self.long_doc(ns, node, len(indent))
+        if len(node_list) + doclen > 1:
+            collapse_indent = f"{indent}    "
+            self._print(f"{indent}{self._INDENTATION_UNIT}.. collapse:: {line} ...\n")
         self._print_doc(
             collapse_indent + self._INDENTATION_UNIT, ns, node, required=required
         )
