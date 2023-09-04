@@ -537,9 +537,6 @@ class NXClassDocGenerator:
         collapse_indent = indent
         node_list = node.xpath("nx:enumeration", namespaces=ns)
         (doclen, line, blocks) = self.long_doc(ns, node)
-        # if len(node_list) + doclen > 1:
-        #    collapse_indent = f"{indent}    "
-        #    self._print(f"{indent}{self._INDENTATION_UNIT}.. collapse:: {line} ...\n")
         self._print_doc(
             collapse_indent + self._INDENTATION_UNIT, ns, node, required=required
         )
@@ -670,8 +667,9 @@ class NXClassDocGenerator:
         self._rst_lines.append(" ".join(args) + end)
 
     def get_first_parent_ref(self, path, tag):
-        nx_name = path[1 : path.find("/", 1)]
-        path = path[path.find("/", 1) :]
+        spliter = path.find("/", 1)
+        nx_name = path[1 : spliter]
+        path = path[spliter :]
 
         try:
             parents = pynxtools_nxlib.get_inherited_nodes(path, nx_name)[2]
@@ -681,10 +679,9 @@ class NXClassDocGenerator:
             parent = parents[1]
             parent_path = parent_display_name = parent.attrib["nxdlpath"]
             parent_path_segments = parent_path[1:].split("/")
-            parent_def_name = parent.attrib["nxdlbase"][
-                parent.attrib["nxdlbase"]
-                .rfind("/") : parent.attrib["nxdlbase"]
-                .rfind(".nxdl")
+            nxdl_attr = parent.attrib["nxdlbase"]
+            parent_def_name = nxdl_attr[nxdl_attr.rfind("/") :
+                                        nxdl_attr.rfind(".nxdl")
             ]
 
             # Case where the first parent is a base_class
