@@ -34,11 +34,16 @@ from .nyaml2nxdl_helper import remove_namespace_from_tag
 
 DEPTH_SIZE = "  "
 CMNT_TAG = "!--"
+CMNT_TAG_END = "--"
+CMNT_START = "<!--"
+CMNT_END = "-->"
 
 
 def separate_pi_comments(input_file):
     """
-    Separate PI comments from ProcessesInstruction (pi)
+    Separate PI comments from ProcessesInstruction (PI)
+    Separeate the comments that comes immediately after XML process instruction part,
+    i.e. copyright comment part.
     """
     comments_list = []
     comment = []
@@ -48,21 +53,21 @@ def separate_pi_comments(input_file):
         lines = file.readlines()
         has_pi = True
         for line in lines:
-            c_start = "<!--"
-            cmnt_end = "-->"
+            # c_start = "<!--"
+            # cmnt_end = "-->"
             def_tag = "<definition"
 
-            if c_start in line and has_pi:
-                line = line.replace(c_start, "")
-                if cmnt_end in line:
-                    line = line.replace(cmnt_end, "")
+            if CMNT_START in line and has_pi:
+                line = line.replace(CMNT_START, "")
+                if CMNT_END in line:
+                    line = line.replace(CMNT_END, "")
                     comments_list.append(line)
                 else:
                     comment.append(line)
-            elif cmnt_end in line and len(comment) > 0 and has_pi:
-                comment.append(line.replace(cmnt_end, ""))
+            elif CMNT_END in line and len(comment) > 0 and has_pi:
+                comment.append(line.replace(CMNT_END, ""))
                 comments_list.append("".join(comment))
-                comment = []
+                comment.clear()
             elif def_tag in line or not has_pi:
                 has_pi = False
                 xml_lines.append(line)
@@ -79,9 +84,9 @@ class _CommentedTreeBuilder(ET.TreeBuilder):
         """
         defining comment builder in TreeBuilder
         """
-        self.start("!--", {})
+        self.start(CMNT_TAG, {})
         self.data(text)
-        self.end("--")
+        self.end(CMNT_TAG_END)
 
 
 def parse(filepath):
@@ -189,7 +194,7 @@ class Nxdl2yaml:
                 )
             if tag == "doc":
                 symbol_cmnt_list.append(last_comment)
-                # The bellow line is for handling lenth of 'symbol_comments' and
+                # The line bellow is for handling lenth of 'symbol_comments' and
                 # 'symbol_doc_comments'. Otherwise print_root_level_info() gets inconsistency
                 # over for the loop while writting comment on file
                 sbl_doc_cmnt_list.append("")
@@ -235,7 +240,7 @@ class Nxdl2yaml:
     def handle_definition(self, node):
         """
         Handle definition group and its attributes
-        NOTE: Here we tried to store the order of the xml element attributes. So that we get
+        NOTE: Here we try to store the order of the xml element attributes. So that we get
         exactly the same file in nxdl from yaml.
         """
         # pylint: disable=consider-using-f-string
@@ -247,12 +252,12 @@ class Nxdl2yaml:
         # for tracking the order of name and type
         keyword_order = -1
         for item in attribs:
-            if "name" in item:
+            if "name" == item:
                 keyword = keyword + attribs[item]
                 if keyword_order == -1:
                     self.root_level_definition.append(tmp_word)
                     keyword_order = self.root_level_definition.index(tmp_word)
-            elif "extends" in item:
+            elif "extends" == item:
                 keyword = f"{keyword}({attribs[item]})"
                 if keyword_order == -1:
                     self.root_level_definition.append(tmp_word)
@@ -266,16 +271,16 @@ class Nxdl2yaml:
         """
         Handle the documentation field found at root level.
         """
-        # tag = remove_namespace_from_tag(node.tag)
         text = node.text
         text = self.handle_not_root_level_doc(depth=0, text=text)
         self.root_level_doc = text
 
     # pylint: disable=too-many-branches
     def handle_not_root_level_doc(self, depth, text, tag="doc", file_out=None):
-        """
+        """Handle doc field of group, field but not root.
+
         Handle docs field along the yaml file. In this function we also tried to keep
-        the track of intended indentation. E.g. the bollow doc block.
+        the track of indentation. E.g. the bollow doc block.
             * Topic name
                 Description of topic
         """
@@ -286,24 +291,27 @@ class Nxdl2yaml:
         else:
             text = handle_mapping_char(text, -1, True)
         if "\n" in text:
-            # To remove '\n' character as it will be added before text.
+            # To remove '\n' with non-space character as it will be added before text.
             text = cleaning_empty_lines(text.split("\n"))
             text_tmp = []
             yaml_indent_n = len((depth + 1) * DEPTH_SIZE)
-            # Find indentaion in the first text line with alphabet
-            tmp_i = 0
-            while tmp_i != -1:
-                first_line_indent_n = 0
-                # Taking care of empty text whitout any character
-                if len(text) == 1 and text[0] == "":
-                    break
-                for ch_ in text[tmp_i]:
-                    if ch_ == " ":
-                        first_line_indent_n = first_line_indent_n + 1
-                    elif ch_ != "":
-                        tmp_i = -2
-                        break
-                tmp_i = tmp_i + 1
+# TODO: delete this if converter works 
+            # tmp_i = 0
+            # while tmp_i != -1:
+            #     first_line_indent_n = 0
+            #     # Taking care of empty text whitout any character and non-space character
+            #     if len(text) == 1 and text[0] == "":
+            #         break
+            #     for ch_ in text[tmp_i]:
+            #         if ch_ == " ":
+            #             first_line_indent_n = first_line_indent_n + 1
+            #         elif ch_ != "":
+            #             tmp_i = -2
+            #             break
+            #     tmp_i = tmp_i + 1
+# TODO: delete up if converter works
+            # Find indentaion in the first line text with alphabet
+            first_line_indent_n = len(text[0]) - len(text[0].lstrip())
             # Taking care of doc like bellow:
             # <doc>Text liness
             # text continues</doc>
@@ -317,14 +325,17 @@ class Nxdl2yaml:
             indent_diff = yaml_indent_n - first_line_indent_n
             # CHeck for first line empty if not keep first line empty
 
-            for _, line in enumerate(text):
+            for line in text:
                 line_indent_n = 0
-                # Collect first empty space without alphabate
-                for ch_ in line:
-                    if ch_ == " ":
-                        line_indent_n = line_indent_n + 1
-                    else:
-                        break
+                # count first empty spaces without alphabate
+                line_indent_n = len(line) - len(line.lstrip())
+# TODO remove the code below
+                # for ch_ in line:
+                #     if ch_ == " ":
+                #         line_indent_n = line_indent_n + 1
+                #     else:
+                #         break
+# TODO remove the code above
                 line_indent_n = line_indent_n + indent_diff
                 if line_indent_n < yaml_indent_n:
                     # if line still under yaml identation

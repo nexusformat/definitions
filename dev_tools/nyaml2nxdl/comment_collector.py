@@ -84,7 +84,7 @@ class CommentCollector:
 
     def extract_all_comment_blocks(self):
         """
-        Collect all comments. Note that here comment means (comment text + element or line info
+        Collect all comments. Note here that comment means (comment text + element or line info
         intended for comment.
         """
         id_ = 0
@@ -403,7 +403,7 @@ class YAMLComment(Comment):
 
     def has_post_comment(self):
         """
-        Ensure is this a post coment or not.
+        Ensure if this is a post coment or not.
         Post comment means the comment that come at the very end without having any
         nxdl element(class, group, filed and attribute.)
         """
@@ -413,12 +413,13 @@ class YAMLComment(Comment):
         return False
 
     def append_comment(self, text: str) -> None:
-        """
+        """Append comment texts to associated comment.
+
             Collects all the line of the same comment and
         append them with that single comment.
         """
         # check for escape char
-        text = self.replace_scape_char(text)
+        text = self.replace_escape_char(text)
         # Empty line after last line of comment
         if not text and self._comnt_start_found:
             self._comnt_end_found = True
@@ -463,7 +464,7 @@ class YAMLComment(Comment):
 
     def get_line_number(self, line_key):
         """
-        Return line number for which line the comment is created
+        Return line no for which line the comment is created.
         """
         return self._elemt[line_key]
 
