@@ -9,10 +9,20 @@ NXmpes(NXobject):
     start_time(NX_DATE_TIME):
       doc: |
         Datetime of the start of the measurement.
+    end_time(NX_DATE_TIME):
+      doc: |
+        Datetime of the end of the measurement.
+    method:
+      doc: |
+        A name of the experimental method according
+        to the `ISO 18115-1:2023`_ specification.
+        
+        .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
     definition:
       \@version:
       enumeration: [NXmpes]
     (NXuser):
+      exists: recommended
       doc: |
         Contact information of at least the user of the instrument or the investigator
         who performed this experiment. Adding multiple users if relevant is recommended.
@@ -39,23 +49,38 @@ NXmpes(NXobject):
     (NXinstrument):
       energy_resolution(NX_FLOAT):
         unit: NX_ENERGY
-      (NXsource):
+        exists: recommended
+      source_beam(NXsource):
+        
+        # Comment from mpes may workshop:
+        # - Add linking between source and beam
+        # - There is much more information which can be provided for NXsource
         doc: |
           The source used to generate the primary photons. Properties refer strictly to
           parameters of the source, not of the output beam. For example, the energy of the
           source is not the optical power of the beam, but the energy of the electron beam
           in a synchrotron and so on.
         type:
-          enumeration: [Synchrotron X-ray Source, Rotating Anode X-ray, Fixed Tube X-ray, UV Laser, Free-Electron Laser, Optical Laser, UV Plasma Source, Metal Jet X-ray, HHG laser]
+          enumeration: [Synchrotron X-ray Source, Rotating Anode X-ray, Fixed Tube X-ray, UV Laser, Free-Electron Laser, Optical Laser, UV Plasma Source, Metal Jet X-ray, HHG laser, UV lamp, Monochromatized electron source, other]
+        type_other:
+          exists: optional
+          doc: |
+            Specification of type, may also go to name.
         name:
+          exists: recommended
         probe:
           doc: |
             Type of probe. In photoemission it's always photons, so the full NIAC list is
             restricted.
-          enumeration: [x-ray, ultraviolet, visible light]
-      (NXbeam):
+          enumeration: [photons]
+      beam_probe(NXbeam):
+        
+        # Comment from mpes may workshop: Add linking between source and beam
+        
+        # Add extent as recommended?
         distance(NX_NUMBER):
           unit: NX_LENGTH
+          exists: recommended
           doc: |
             Distance of the point of evaluation of the beam from the sample surface.
         incident_energy(NX_FLOAT):
@@ -67,6 +92,14 @@ NXmpes(NXobject):
           exists: recommended
           unit: NX_ANY
       (NXelectronanalyser):
+        model(NXfabrication):
+          exists: recommended
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
+          identifier:
+            exists: recommended
         description:
         energy_resolution(NX_FLOAT):
           exists: recommended
@@ -79,12 +112,18 @@ NXmpes(NXobject):
         slow_axes:
           exists: recommended
         (NXcollectioncolumn):
+          
+          # TODO: Comment from Anders Frisk on proposal page
+          # What is the definition of a collection column?
+          # Optional constant settings (like lens focusing parameters on the sample: position_x, position_y, working_distance)
           scheme:
             doc: |
               Scheme of the electron collection column.
-            enumeration: [Standard, Angular dispersive, Selective area, Deflector, PEEM, Momentum Microscope]
+            enumeration: [Standard, Angular dispersive, Spatial dispersive, Selective area, Deflector, PEEM, Momentum Microscope]
           mode:
             exists: recommended
+          
+          # TODO: What does this refer to. It is currently not in the collection column base class
           projection:
             exists: recommended
           field_aperture(NXaperture):
@@ -126,6 +165,9 @@ NXmpes(NXobject):
             enumeration: [DLD, Phosphor+CCD, Phosphor+CMOS, ECMOS, Anode, Multi-anode]
           (NXdata):
             exists: recommended
+            
+            # TODO: Anders Frisk on proposal page
+            # It could be a lot of raw data from a detector. Shpould be optional.
             \@signal:
               enumeration: [raw]
             raw(NX_NUMBER):
@@ -135,7 +177,9 @@ NXmpes(NXobject):
         exists: optional
         doc: |
           Manipulator for positioning of the sample.
-        sample_temperature(NX_FLOAT):
+        
+        # These fields should be NXenvironments and should be changed once NXmanipulator is refactored.
+        sample_temperature(NXenvironment):
           exists: recommended
           unit: NX_TEMPERATURE
         drain_current(NX_FLOAT):
@@ -145,6 +189,7 @@ NXmpes(NXobject):
           exists: recommended
           unit: NX_CURRENT
     (NXprocess):
+      exists: recommended
       doc: |
         Document an event of data processing, reconstruction, or analysis for this data.
         Describe the appropriate axis calibrations for your experiment using one or more
@@ -188,13 +233,13 @@ NXmpes(NXobject):
     (NXsample):
       name:
       (NXsubstance):
-        doc: 
-          For samples containing a single pure substances. For mixtures use the NXsample_component_set
-          and NXsample_component group in NXsample instead.
+        doc: |
+          For samples containing a single pure substances. For mixtures use the
+          NXsample_component_set and NXsample_component group in NXsample instead.
         molecular_formula_hill:
           exists: recommended
           doc: |
-            The chemical formula of the sample. 
+            The chemical formula of the sample.
       atom_types:
         exists: recommended
         doc: |
@@ -221,7 +266,7 @@ NXmpes(NXobject):
             annealing).
           start_time(NX_DATE_TIME):
           end_time(NX_DATE_TIME):
-            exists: recommended      
+            exists: recommended
           method:
             exists: optional
             doc: |
@@ -229,67 +274,96 @@ NXmpes(NXobject):
           notes:
             exists: optional
       temperature(NXenvironment):
+        exists: recommended
         doc: |
           Measured sample temperature.
-        exists: recommended          
+          
+          This field may also be found in NXmanipulator if present.
+          In that case, this should be a link to /entry/instrument/manipulator/sample_temperature.
         thermocouple(NXsensor):
           name:
           type:
             exists: recommended
           value(NX_FLOAT):
             exists: recommended
+            unit: NX_TEMPERATURE
             doc: |
               In the case of a fixed temperature measurement, this is the scalar temperature of
               the sample.
-            unit: NX_TEMPERATURE
           value_log(NXlog):
             exists: optional
-            doc: |
-              In the case of an experiment in which the temperature is changed and recorded, 
-              this is an array of length m of temperatures. This should be a link to
-              /entry/instrument/manipulator/sample_temperature.
             unit: NX_TEMPERATURE
+            doc: |
+              In the case of an experiment in which the temperature is changed and recorded,
+              this is an array of length m of temperatures.
       gas_pressure(NXenvironment):
+        exists: recommended
         doc: |
-          Gas pressure surrounding the sample.      
-        exists: recommended       
+          Gas pressure surrounding the sample.
+          
+          This field may also be found in NXinstrument if present.
+          In that case, this should be a link to /entry/instrument/gas_pressure.
         pressure_gauge(NXsensor):
           name:
           type:
             exists: recommended
           value(NX_FLOAT):
             exists: recommended
+            unit: NX_PRESSURE
             doc: |
               In the case of a fixed gas pressure measurement, this is the scalar gas pressure around
               the sample.
-            unit: NX_PRESSURE
           value_log(NXlog):
             exists: optional
-            doc: |
-              In the case of an experiment in which the gas pressure is changed and recorded, 
-              this is an array of length m of gas pressures. This should be a link to
-              /entry/instrument/manipulator/sample_temperature.
             unit: NX_PRESSURE
-      bias(NX_FLOAT):
+            doc: |
+              In the case of an experiment in which the gas pressure is changed and recorded,
+              this is an array of length m of gas pressures.
+      bias(NXenvironment):
+        exists: recommended
         doc: |
           Voltage applied to sample and sample holder.
-        exists: recommended       
+          
+          This field may also be found in NXmanipulator if present.
+          In that case, this should be a link to /entry/instrument/manipulator/sample_bias.
         voltmeter(NXsensor):
           name:
           type:
             exists: recommended
           value(NX_FLOAT):
             exists: recommended
-            doc: |
-              In the case of a fixed applied bias, this is the scalar voltage applied to sample and sample holder.
             unit: NX_VOLTAGE
+            doc: |
+              In the case of a fixed applied bias, this is the scalar voltage applied to
+              sample and sample holder.
           value_log(NXlog):
             exists: optional
-            doc: |
-              In the case of an experiment in which the bias is changed and recorded, 
-              this is an array of length m of voltages. This should be a link to
-              /entry/instrument/manipulator/sample_temperature.
             unit: NX_VOLTAGE
+            doc: |
+              In the case of an experiment in which the bias is changed and recorded,
+              this is an array of length m of voltages.
+      drain_current(NXenvironment):
+        exists: optional
+        doc: |
+          Drain current of the sample and sample holder.
+          This field may also be found in NXmanipulator if present.
+          In that case, this should be a link to /entry/instrument/manipulator/drain_current.
+        amperemeter(NXsensor):
+          name:
+          type:
+            exists: recommended
+          value(NX_FLOAT):
+            exists: recommended
+            unit: NX_CURRENT
+            doc: |
+              In the case of a fixed current, this is the scalar drain current of the sample
+              and sample holder.
+          value_log(NXlog):
+            exists: optional
+            unit: NX_CURRENT
+            doc: |
+              In the case of an experiment in which the current changes and is recorded,
+              this is an array of length m of drain currents.
     (NXdata):
       \@signal:
         enumeration: [data]
@@ -302,14 +376,14 @@ NXmpes(NXobject):
           actual encoder position in NXinstrument or calibrated axes in NXprocess.
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# e618cc098656aa72e4a5bd743c85c5d9c9caa79cbe85d96b6e06fafd1d165d1b
+# 6deee0a1dfba19577fde9b5db71dbd078b2ea7a8a3f9c35dfc5ae43d6c5af0a6
 # <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
 # # NeXus - Neutron and X-ray Common Data Format
-# #
+# # 
 # # Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
-# #
+# # 
 # # This library is free software; you can redistribute it and/or
 # # modify it under the terms of the GNU Lesser General Public
 # # License as published by the Free Software Foundation; either
@@ -338,13 +412,26 @@ NXmpes(NXobject):
 #                  Datetime of the start of the measurement.
 #             </doc>
 #         </field>
+#         <field name="end_time" type="NX_DATE_TIME">
+#             <doc>
+#                  Datetime of the end of the measurement.
+#             </doc>
+#         </field>
+#         <field name="method">
+#             <doc>
+#                  A name of the experimental method according
+#                  to the `ISO 18115-1:2023`_ specification.
+#                  
+#                  .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
+#             </doc>
+#         </field>
 #         <field name="definition">
 #             <attribute name="version"/>
 #             <enumeration>
 #                 <item value="NXmpes"/>
 #             </enumeration>
 #         </field>
-#         <group type="NXuser">
+#         <group type="NXuser" recommended="true">
 #             <doc>
 #                  Contact information of at least the user of the instrument or the investigator
 #                  who performed this experiment. Adding multiple users if relevant is recommended.
@@ -378,8 +465,11 @@ NXmpes(NXobject):
 #             </field>
 #         </group>
 #         <group type="NXinstrument">
-#             <field name="energy_resolution" type="NX_FLOAT" units="NX_ENERGY"/>
-#             <group type="NXsource">
+#             <field name="energy_resolution" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
+#             <group name="source_beam" type="NXsource">
+#                 <!--Comment from mpes may workshop:
+# - Add linking between source and beam
+# - There is much more information which can be provided for NXsource-->
 #                 <doc>
 #                      The source used to generate the primary photons. Properties refer strictly to
 #                      parameters of the source, not of the output beam. For example, the energy of the
@@ -397,23 +487,31 @@ NXmpes(NXobject):
 #                         <item value="UV Plasma Source"/>
 #                         <item value="Metal Jet X-ray"/>
 #                         <item value="HHG laser"/>
+#                         <item value="UV lamp"/>
+#                         <item value="Monochromatized electron source"/>
+#                         <item value="other"/>
 #                     </enumeration>
 #                 </field>
-#                 <field name="name"/>
+#                 <field name="type_other" optional="true">
+#                     <doc>
+#                          Specification of type, may also go to name.
+#                     </doc>
+#                 </field>
+#                 <field name="name" recommended="true"/>
 #                 <field name="probe">
 #                     <doc>
 #                          Type of probe. In photoemission it's always photons, so the full NIAC list is
 #                          restricted.
 #                     </doc>
 #                     <enumeration>
-#                         <item value="x-ray"/>
-#                         <item value="ultraviolet"/>
-#                         <item value="visible light"/>
+#                         <item value="photons"/>
 #                     </enumeration>
 #                 </field>
 #             </group>
-#             <group type="NXbeam">
-#                 <field name="distance" type="NX_NUMBER" units="NX_LENGTH">
+#             <group name="beam_probe" type="NXbeam">
+#                 <!--Comment from mpes may workshop: Add linking between source and beam-->
+#                 <!--Add extent as recommended?-->
+#                 <field name="distance" type="NX_NUMBER" units="NX_LENGTH" recommended="true">
 #                     <doc>
 #                          Distance of the point of evaluation of the beam from the sample surface.
 #                     </doc>
@@ -423,6 +521,11 @@ NXmpes(NXobject):
 #                 <field name="incident_polarization" type="NX_NUMBER" recommended="true" units="NX_ANY"/>
 #             </group>
 #             <group type="NXelectronanalyser">
+#                 <group name="model" type="NXfabrication" recommended="true">
+#                     <field name="vendor" recommended="true"/>
+#                     <field name="model" recommended="true"/>
+#                     <field name="identifier" recommended="true"/>
+#                 </group>
 #                 <field name="description"/>
 #                 <field name="energy_resolution" type="NX_FLOAT" recommended="true" units="NX_ENERGY">
 #                     <doc>
@@ -433,6 +536,9 @@ NXmpes(NXobject):
 #                 <field name="fast_axes" type="NX_CHAR" recommended="true"/>
 #                 <field name="slow_axes" recommended="true"/>
 #                 <group type="NXcollectioncolumn">
+#                     <!--TODO: Comment from Anders Frisk on proposal page
+# What is the definition of a collection column?
+# Optional constant settings (like lens focusing parameters on the sample: position_x, position_y, working_distance)-->
 #                     <field name="scheme">
 #                         <doc>
 #                              Scheme of the electron collection column.
@@ -440,6 +546,7 @@ NXmpes(NXobject):
 #                         <enumeration>
 #                             <item value="Standard"/>
 #                             <item value="Angular dispersive"/>
+#                             <item value="Spatial dispersive"/>
 #                             <item value="Selective area"/>
 #                             <item value="Deflector"/>
 #                             <item value="PEEM"/>
@@ -447,6 +554,7 @@ NXmpes(NXobject):
 #                         </enumeration>
 #                     </field>
 #                     <field name="mode" recommended="true"/>
+#                     <!--TODO: What does this refer to. It is currently not in the collection column base class-->
 #                     <field name="projection" recommended="true"/>
 #                     <group name="field_aperture" type="NXaperture" optional="true">
 #                         <doc>
@@ -511,6 +619,8 @@ NXmpes(NXobject):
 #                         </enumeration>
 #                     </field>
 #                     <group type="NXdata" recommended="true">
+#                         <!--TODO: Anders Frisk on proposal page
+# It could be a lot of raw data from a detector. Shpould be optional.-->
 #                         <attribute name="signal">
 #                             <enumeration>
 #                                 <item value="raw"/>
@@ -528,12 +638,13 @@ NXmpes(NXobject):
 #                 <doc>
 #                      Manipulator for positioning of the sample.
 #                 </doc>
-#                 <field name="sample_temperature" type="NX_FLOAT" recommended="true" units="NX_TEMPERATURE"/>
+#                 <!--These fields should be NXenvironments and should be changed once NXmanipulator is refactored.-->
+#                 <group name="sample_temperature" type="NXenvironment" recommended="true" units="NX_TEMPERATURE"/>
 #                 <field name="drain_current" type="NX_FLOAT" recommended="true" units="NX_CURRENT"/>
 #                 <field name="sample_bias" type="NX_FLOAT" recommended="true" units="NX_CURRENT"/>
 #             </group>
 #         </group>
-#         <group type="NXprocess">
+#         <group type="NXprocess" recommended="true">
 #             <doc>
 #                  Document an event of data processing, reconstruction, or analysis for this data.
 #                  Describe the appropriate axis calibrations for your experiment using one or more
@@ -590,20 +701,16 @@ NXmpes(NXobject):
 #         </group>
 #         <group type="NXsample">
 #             <field name="name"/>
-#             <field name="chemical_formula" recommended="true">
+#             <group type="NXsubstance">
 #                 <doc>
-#                      The chemical formula of the sample. For mixtures use the NXsample_component
-#                      group in NXsample instead.
+#                      For samples containing a single pure substances. For mixtures use the
+#                      NXsample_component_set and NXsample_component group in NXsample instead.
 #                 </doc>
-#             </field>
-#             <group name="sample_history" type="NXnote" recommended="true">
-#                 <doc>
-#                      A descriptor to keep track of the treatment of the sample before entering the
-#                      photoemission experiment. Ideally, a full report of the previous operations, in
-#                      any format (NXnote allows to add pictures, audio, movies). Alternatively, a
-#                      reference to the location or a unique identifier or other metadata file. In the
-#                      case these are not available, free-text description.
-#                 </doc>
+#                 <field name="molecular_formula_hill" recommended="true">
+#                     <doc>
+#                          The chemical formula of the sample.
+#                     </doc>
+#                 </field>
 #             </group>
 #             <field name="atom_types" recommended="true">
 #                 <doc>
@@ -611,29 +718,6 @@ NXmpes(NXobject):
 #                      that are contained in the sample.
 #                      If the sample substance has multiple components, all
 #                      elements from each component must be included in `atom_types`.
-#                 </doc>
-#             </field>
-#             <field name="preparation_date" type="NX_DATE_TIME" recommended="true">
-#                 <doc>
-#                      Date of preparation of the sample for the XPS experiment (i.e. cleaving, last
-#                      annealing).
-#                 </doc>
-#             </field>
-#             <group name="preparation_description" type="NXnote">
-#                 <doc>
-#                      Description of the surface preparation technique for the XPS experiment, i.e.
-#                      UHV cleaving, in-situ growth, sputtering/annealing etc. Ideally, a full report
-#                      of the previous operations, in any format(NXnote allows to add pictures, audio,
-#                      movies). Alternatively, a reference to the location or a unique identifier or
-#                      other metadata file. In the case these are not available, free-text description.
-#                 </doc>
-#             </group>
-#             <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
-#                 <doc>
-#                      In the case of a fixed temperature measurement this is the scalar temperature of
-#                      the sample. In the case of an experiment in which the temperature is changed and
-#                      recoded, this is an array of length m of temperatures. This should be a link to
-#                      /entry/instrument/manipulator/sample_temperature.
 #                 </doc>
 #             </field>
 #             <field name="situation">
@@ -644,12 +728,126 @@ NXmpes(NXobject):
 #                     <item value="reducing atmosphere"/>
 #                 </enumeration>
 #             </field>
-#             <field name="gas_pressure" type="NX_FLOAT" units="NX_PRESSURE"/>
-#             <field name="bias" type="NX_FLOAT" units="NX_VOLTAGE" optional="true">
+#             <group type="NXsample_history" recommended="true">
 #                 <doc>
-#                     Voltage applied to sample and sample holder.
+#                      A set of activities that occurred to the sample prior to/during photoemission experiment.
+#                      
+#                      Ideally, a full report of the previous operations (or links to a chain of operations).
+#                      Alternatively, notes allow for additional descriptors in any format
+#                      (NXnote allows to add pictures, audio, movies). Alternatively, a
+#                      reference to the location or a unique identifier or other metadata file. In the
+#                      case these are not available, free-text description.
 #                 </doc>
-#             </field>
+#                 <group name="sample_preparation" type="NXphysical_process" recommended="true">
+#                     <doc>
+#                          Details about the sample preparation for the MPES experiment (i.e. cleaving, last
+#                          annealing).
+#                     </doc>
+#                     <field name="start_time" type="NX_DATE_TIME"/>
+#                     <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+#                     <field name="method" optional="true">
+#                         <doc>
+#                              Details about the method of sample preparation before the MPES experiment.
+#                         </doc>
+#                     </field>
+#                     <field name="notes" optional="true"/>
+#                 </group>
+#             </group>
+#             <group name="temperature" type="NXenvironment" recommended="true">
+#                 <doc>
+#                      Measured sample temperature.
+#                      
+#                      This field may also be found in NXmanipulator if present.
+#                      In that case, this should be a link to /entry/instrument/manipulator/sample_temperature.
+#                 </doc>
+#                 <group name="thermocouple" type="NXsensor">
+#                     <field name="name"/>
+#                     <field name="type" recommended="true"/>
+#                     <field name="value" type="NX_FLOAT" recommended="true" units="NX_TEMPERATURE">
+#                         <doc>
+#                              In the case of a fixed temperature measurement, this is the scalar temperature of
+#                              the sample.
+#                         </doc>
+#                     </field>
+#                     <group name="value_log" type="NXlog" optional="true" units="NX_TEMPERATURE">
+#                         <doc>
+#                              In the case of an experiment in which the temperature is changed and recorded, 
+#                              this is an array of length m of temperatures.
+#                         </doc>
+#                     </group>
+#                 </group>
+#             </group>
+#             <group name="gas_pressure" type="NXenvironment" recommended="true">
+#                 <doc>
+#                      Gas pressure surrounding the sample.
+#                      
+#                      This field may also be found in NXinstrument if present.
+#                      In that case, this should be a link to /entry/instrument/gas_pressure.
+#                 </doc>
+#                 <group name="pressure_gauge" type="NXsensor">
+#                     <field name="name"/>
+#                     <field name="type" recommended="true"/>
+#                     <field name="value" type="NX_FLOAT" recommended="true" units="NX_PRESSURE">
+#                         <doc>
+#                              In the case of a fixed gas pressure measurement, this is the scalar gas pressure around
+#                              the sample.
+#                         </doc>
+#                     </field>
+#                     <group name="value_log" type="NXlog" optional="true" units="NX_PRESSURE">
+#                         <doc>
+#                              In the case of an experiment in which the gas pressure is changed and recorded, 
+#                              this is an array of length m of gas pressures.
+#                         </doc>
+#                     </group>
+#                 </group>
+#             </group>
+#             <group name="bias" type="NXenvironment" recommended="true">
+#                 <doc>
+#                      Voltage applied to sample and sample holder.
+#                      
+#                      This field may also be found in NXmanipulator if present.
+#                      In that case, this should be a link to /entry/instrument/manipulator/sample_bias.
+#                 </doc>
+#                 <group name="voltmeter" type="NXsensor">
+#                     <field name="name"/>
+#                     <field name="type" recommended="true"/>
+#                     <field name="value" type="NX_FLOAT" recommended="true" units="NX_VOLTAGE">
+#                         <doc>
+#                              In the case of a fixed applied bias, this is the scalar voltage applied to
+#                              sample and sample holder.
+#                         </doc>
+#                     </field>
+#                     <group name="value_log" type="NXlog" optional="true" units="NX_VOLTAGE">
+#                         <doc>
+#                              In the case of an experiment in which the bias is changed and recorded, 
+#                              this is an array of length m of voltages.
+#                         </doc>
+#                     </group>
+#                 </group>
+#             </group>
+#             <group name="drain_current" type="NXenvironment" optional="true">
+#                 <doc>
+#                      Drain current of the sample and sample holder.
+#                      This field may also be found in NXmanipulator if present.
+#                      In that case, this should be a link to /entry/instrument/manipulator/drain_current.
+#                 </doc>
+#                 <group name="amperemeter" type="NXsensor">
+#                     <field name="name"/>
+#                     <field name="type" recommended="true"/>
+#                     <field name="value" type="NX_FLOAT" recommended="true" units="NX_CURRENT">
+#                         <doc>
+#                              In the case of a fixed current, this is the scalar drain current of the sample
+#                              and sample holder.
+#                         </doc>
+#                     </field>
+#                     <group name="value_log" type="NXlog" optional="true" units="NX_CURRENT">
+#                         <doc>
+#                              In the case of an experiment in which the current changes and is recorded, 
+#                              this is an array of length m of drain currents.
+#                         </doc>
+#                     </group>
+#                 </group>
+#             </group>
 #         </group>
 #         <group type="NXdata">
 #             <attribute name="signal">
