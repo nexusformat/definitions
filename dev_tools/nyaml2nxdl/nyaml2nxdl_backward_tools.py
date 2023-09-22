@@ -962,38 +962,3 @@ class Nxdl2yaml:
         depth += 1
         # Write nested nodes
         self.recursion_in_xml_tree(depth, xml_tree, output_yml, verbose)
-
-
-def compare_niac_and_my(tree, tree2, verbose, node, root_no_duplicates):
-    """This function creates two trees with NIAC XML file and My XML file.
-    The main aim is to compare the two trees and create a new one that is the
-    union of the two initial trees.
-    """
-    root = tree.getroot()
-    root2 = tree2.getroot()
-    attrs_list_niac = []
-    for nodo in root.iter(node):
-        attrs_list_niac.append(nodo.attrib)
-    if verbose:
-        sys.stdout.write("Attributes found in Niac file: \n")
-        sys.stdout.write(str(attrs_list_niac) + "\n")
-        sys.stdout.write("  \n")
-        sys.stdout.write("Started merging of Niac and My file... \n")
-    for elem in root.iter(node):
-        if verbose:
-            sys.stdout.write("- Niac element inserted: \n")
-            sys.stdout.write(str(elem.attrib) + "\n")
-        index = get_node_parent_info(tree, elem)[1]
-        root_no_duplicates.insert(index, elem)
-
-    for elem2 in root2.iter(node):
-        index = get_node_parent_info(tree2, elem2)[1]
-        if elem2.attrib not in attrs_list_niac:
-            if verbose:
-                sys.stdout.write("- My element inserted: \n")
-                sys.stdout.write(str(elem2.attrib) + "\n")
-            root_no_duplicates.insert(index, elem2)
-
-    if verbose:
-        sys.stdout.write("     \n")
-    return root_no_duplicates
