@@ -1,0 +1,110 @@
+category: base
+doc: |
+  An actuator used to control an external condition.
+  
+  The condition itself is described in :ref:`NXenvironment`.
+type: group
+NXactuator(NXobject):
+  model:
+    doc: |
+      Actuator identification code/model number
+  name:
+    doc: |
+      Name for the actuator
+  short_name:
+    doc: |
+      Short name of actuator used e.g. on monitor display program
+  attached_to:
+    doc: |
+      where actuator is attached to ("sample" | "can")
+  geometry(NXgeometry):
+    deprecated: |
+      Use the field `depends_on` and :ref:`NXtransformations` to position the beamstop and NXoff_geometry to describe its shape instead
+    doc: |
+      Defines the axes for logged vector quantities if they are not the global instrument axes.
+  actuation_type:
+    doc: |
+      name for measured signal
+    enumeration: [temperature, pH, magnetic_field, electric_field, conductivity, resistance, voltage, pressure, flow, stress, strain, shear, surface_pressure]
+  hardware_type:
+    doc: |
+      The type of hardware used for the actuation.
+
+      Examples (suggestions but not restrictions):
+      :Temperature:
+        laser | gas lamp | filament | resistive
+      :Pressure:
+        anvil cell
+      :Voltage:
+        potentiostat
+  value(NX_FLOAT):
+    unit: NX_ANY
+    doc: |
+      Nominal setpoint. Can be a scalar or a vector (of [n] actuations).
+    dimensions:
+      dim: [[1, n]]
+  value_deriv1(NX_FLOAT):
+    unit: NX_ANY
+    doc: |
+      Nominal/average first derivative of value
+      e.g. strain rate
+      - same dimensions as "value" (may be a vector)
+    dimensions:
+      dim: [[1, ]]
+      dim_parameters:
+        ref: ['value']
+  value_deriv2(NX_FLOAT):
+    unit: NX_ANY
+    doc: |
+      Nominal/average second derivative of value
+      - same dimensions as "value" (may be a vector)
+    dimensions:
+      dim: [[1, ]]
+      dim_parameters:
+        ref: ['value']
+  value_log(NXlog):
+    doc: |
+      Time history of actuator outputs.
+  value_deriv1_log(NXlog):
+    doc: |
+      Time history of first derivative of actuator outputs
+  value_deriv2_log(NXlog):
+    doc: |
+      Time history of second derivative of actuator outputs
+  external_field_brief:
+    enumeration: [along beam, across beam, transverse, solenoidal, flow shear gradient, flow vorticity]
+  external_field_full(NXorientation):
+    doc: |
+      For complex external fields not satisfied by External_field_brief
+  (NXoff_geometry):
+    exists: ['min', '0']
+    doc: |
+      This group describes the shape of the actuator when necessary.
+  \@default:
+    doc: |
+      .. index:: plotting
+      
+      Declares which child group contains a path leading
+      to a :ref:`NXdata` group.
+      
+      It is recommended (as of NIAC2014) to use this attribute
+      to help define the path to the default dataset to be plotted.
+      See https://www.nexusformat.org/2014_How_to_find_default_data.html
+      for a summary of the discussion.
+  depends_on(NX_CHAR):
+    doc: |
+      NeXus positions components by applying a set of translations and rotations
+      to apply to the component starting from 0, 0, 0. The order of these operations
+      is critical and forms what NeXus calls a dependency chain. The depends_on
+      field defines the path to the top most operation of the dependency chain or the
+      string "." if located in the origin. Usually these operations are stored in a
+      NXtransformations group. But NeXus allows them to be stored anywhere.
+      
+      .. todo::
+        Add a definition for the reference point of a actuator.
+  (NXtransformations):
+    doc: |
+      This is the group recommended for holding the chain of translation
+      and rotation operations necessary to position the component within
+      the instrument. The dependency chain may however traverse similar groups in
+      other component groups.
