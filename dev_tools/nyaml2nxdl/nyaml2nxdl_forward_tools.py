@@ -85,7 +85,7 @@ def check_for_dom_comment_in_yaml():
     dom_comment = ""
     dom_comment_ind = 1
     for ind, comnt in enumerate(COMMENT_BLOCKS[0:5]):
-        cmnt_list = comnt.get_comment_text()
+        cmnt_list = comnt.get_comment_text_list()
         if len(cmnt_list) == 1:
             text = cmnt_list[0]
         else:
@@ -981,7 +981,7 @@ def xml_handle_comment(
     line_info = (line_annotation, int(line_loc_no))
     if line_info in COMMENT_BLOCKS:  # noqa: F821
         cmnt = COMMENT_BLOCKS.get_coment_by_line_info(line_info)  # noqa: F821
-        cmnt_text = cmnt.get_comment_text()
+        cmnt_text = cmnt.get_comment_text_list()
 
         if is_def_cmnt:
             return cmnt_text

@@ -34,7 +34,7 @@ from .nyaml2nxdl_backward_tools import Nxdl2yaml
 from .nyaml2nxdl_backward_tools import compare_niac_and_my
 from .nyaml2nxdl_forward_tools import nyaml2nxdl
 from .nyaml2nxdl_forward_tools import pretty_print_xml
-from .nyaml2nxdl_helper import extend_yamlfile_with_comment
+from .nyaml2nxdl_helper import extend_yamlfile_by_nxdl_as_comment
 from .nyaml2nxdl_helper import get_sha256_hash
 from .nyaml2nxdl_helper import separate_hash_yaml_and_nxdl
 
@@ -194,13 +194,23 @@ a YAML or XML file from, respectively.",
     ),
 )
 @click.option(
+    "--do-not-store-nxdl",
+    is_flag=True,
+    default=False,
+    help=(
+        "Whether the input nxdl file will be stored as a comment"
+        " at the end of output yaml file."
+    ),
+)
+@click.option(
     "--verbose",
     is_flag=True,
     default=False,
     help="Print in standard output keywords and value types to help \
 possible issues in yaml files",
 )
-def launch_tool(input_file, verbose, check_consistency):
+# def launch_tool(input_file, verbose, check_consistency):
+def launch_tool(input_file, verbose, do_not_store_nxdl, check_consistency):
     """
     Main function that distinguishes the input file format and launches the tools.
     """
@@ -226,7 +236,7 @@ def launch_tool(input_file, verbose, check_consistency):
         yaml_out_file = raw_name + "_parsed" + ".yaml"
         converter = Nxdl2yaml([], [])
         converter.print_yml(input_file, yaml_out_file, verbose)
-        # Append nxdl.xml file with yaml output file
+        # Store nxdl.xml file in output yaml file under SHA HASH
         yaml_hash = get_sha256_hash(yaml_out_file)
         # Lines as divider between yaml and nxdl
         top_lines = [
@@ -236,12 +246,12 @@ def launch_tool(input_file, verbose, check_consistency):
             ),
             f"# {yaml_hash}\n",
         ]
-
-        extend_yamlfile_with_comment(
-            yaml_file=yaml_out_file,
-            file_to_be_appended=input_file,
-            top_lines_list=top_lines,
-        )
+        if not do_not_store_nxdl:
+            extend_yamlfile_by_nxdl_as_comment(
+                yaml_file=yaml_out_file,
+                file_to_be_appended=input_file,
+                top_lines_list=top_lines,
+            )
         # else:
         #     append_yml(input_file, append, verbose)
         # Taking care of consistency running

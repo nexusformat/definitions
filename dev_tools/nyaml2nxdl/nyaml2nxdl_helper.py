@@ -37,8 +37,7 @@ from yaml.resolver import BaseResolver
 
 # NOTE: If any one change one of the bellow dict please change it for both
 ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    ", "':'": ":"}
-
-ESCAPE_CHAR_DICT_IN_XML = {"    ": "\t", "':'": ":"}
+ESCAPE_CHAR_DICT_IN_XML = {"    ": "\t", ":": "':'"}
 
 
 def remove_namespace_from_tag(tag):
@@ -175,7 +174,9 @@ def get_sha256_hash(file_name):
     return sha_hash.hexdigest()
 
 
-def extend_yamlfile_with_comment(yaml_file, file_to_be_appended, top_lines_list=None):
+def extend_yamlfile_by_nxdl_as_comment(
+    yaml_file, file_to_be_appended, top_lines_list=None
+):
     """Extend yaml file by the file_to_be_appended as comment."""
 
     with open(yaml_file, mode="a+", encoding="utf-8") as f1_obj:
