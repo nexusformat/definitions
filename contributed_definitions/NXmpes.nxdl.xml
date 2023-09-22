@@ -259,10 +259,98 @@ It could be a lot of raw data from a detector. Shpould be optional.-->
                 <doc>
                      Manipulator for positioning of the sample.
                 </doc>
-                <!--These fields should be NXenvironments and should be changed once NXmanipulator is refactored.-->
-                <group name="sample_temperature" type="NXenvironment" recommended="true" units="NX_TEMPERATURE"/>
-                <field name="drain_current" type="NX_FLOAT" recommended="true" units="NX_CURRENT"/>
-                <field name="sample_bias" type="NX_FLOAT" recommended="true" units="NX_CURRENT"/>
+                <group name="sample_thermocouple" type="NXsensor">
+                    <field name="name" recommended="true"/>
+                    <field name="type" recommended="true"/>
+                    <field name="value" type="NX_FLOAT" recommended="true" units="NX_TEMPERATURE">
+                        <doc>
+                             In the case of a fixed temperature measurement, this is the scalar temperature measured
+                             by the sample thermocouple.
+                        </doc>
+                    </field>
+                    <group name="value_log" type="NXlog" optional="true" units="NX_TEMPERATURE">
+                        <doc>
+                             In the case of an experiment in which the temperature is changed and recorded,
+                             this is an array of length m of temperatures.
+                        </doc>
+                    </group>
+                </group>
+                <group name="sample_heater" type="NXsensor">
+                    <field name="name" recommended="true"/>
+                    <field name="type" recommended="true"/>
+                    <field name="value" type="NX_FLOAT" recommended="true" units="NX_TEMPERATURE">
+                        <doc>
+                             In the case of a fixed temperature measurement, this is the scalar temperature
+                             setpoint.
+                        </doc>
+                    </field>
+                    <group name="value_log" type="NXlog" optional="true" units="NX_TEMPERATURE">
+                        <doc>
+                             In the case of an experiment in which the temperature is changed and recorded,
+                             this is an array of length m of temperatures.
+                        </doc>
+                    </group>
+                </group>
+                <group name="drain_current_amperemeter" type="NXsensor" recommended="true">
+                    <doc>
+                         Amperemeter measuring the drain current of the sample and sample holder.
+                    </doc>
+                    <group name="amperemeter" type="NXsensor">
+                        <field name="name" recommended="true"/>
+                        <field name="type" recommended="true"/>
+                        <field name="value" type="NX_FLOAT" recommended="true" units="NX_CURRENT">
+                            <doc>
+                                 In the case of a fixed current, this is the scalar drain current of the sample
+                                 and sample holder.
+                            </doc>
+                        </field>
+                    </group>
+                    <group name="value_log" type="NXlog" optional="true" units="NX_CURRENT">
+                        <doc>
+                             In the case of an experiment in which the current changes and is recorded,
+                             this is an array of length m of drain currents.
+                        </doc>
+                    </group>
+                </group>
+                <group name="sample_bias_voltmeter" type="NXsensor">
+                    <doc>
+                         Sensor setting/measuring the voltage applied to sample and sample holder.
+                    </doc>
+                    <field name="name" recommended="true"/>
+                    <field name="type" recommended="true"/>
+                    <field name="value" type="NX_FLOAT" recommended="true" units="NX_VOLTAGE">
+                        <doc>
+                             In the case of a fixed applied bias, this is the scalar voltage applied to
+                             sample and sample holder.
+                        </doc>
+                    </field>
+                    <group name="value_log" type="NXlog" optional="true" units="NX_VOLTAGE">
+                        <doc>
+                             In the case of an experiment in which the bias is changed and recorded,
+                             this is an array of length m of voltages.
+                        </doc>
+                    </group>
+                </group>
+            </group>
+            <group name="pressure_gauge" type="NXsensor">
+                <doc>
+                     This field may also be found in NXinstrument if present.
+                     In that case, this should be a link to /entry/instrument/gas_pressure.
+                </doc>
+                <field name="name" recommended="true"/>
+                <field name="type" recommended="true"/>
+                <field name="value" type="NX_FLOAT" recommended="true" units="NX_PRESSURE">
+                    <doc>
+                         In the case of a fixed gas pressure measurement, this is the scalar gas pressure around
+                         the sample.
+                    </doc>
+                </field>
+                <group name="value_log" type="NXlog" optional="true" units="NX_PRESSURE">
+                    <doc>
+                         In the case of an experiment in which the gas pressure is changed and recorded,
+                         this is an array of length m of gas pressures.
+                    </doc>
+                </group>
             </group>
         </group>
         <group type="NXprocess" recommended="true">
@@ -376,97 +464,57 @@ It could be a lot of raw data from a detector. Shpould be optional.-->
             </group>
             <group name="temperature" type="NXenvironment" recommended="true">
                 <doc>
-                     Measured sample temperature.
-                     
-                     This field may also be found in NXmanipulator if present.
-                     In that case, this should be a link to /entry/instrument/manipulator/sample_temperature.
+                     Sample temperature (either controlled or just measured).
                 </doc>
                 <group name="thermocouple" type="NXsensor">
-                    <field name="name"/>
-                    <field name="type" recommended="true"/>
-                    <field name="value" type="NX_FLOAT" recommended="true" units="NX_TEMPERATURE">
-                        <doc>
-                             In the case of a fixed temperature measurement, this is the scalar temperature of
-                             the sample.
-                        </doc>
-                    </field>
-                    <group name="value_log" type="NXlog" optional="true" units="NX_TEMPERATURE">
-                        <doc>
-                             In the case of an experiment in which the temperature is changed and recorded,
-                             this is an array of length m of temperatures.
-                        </doc>
-                    </group>
+                    <doc>
+                         Thermocouple measuring the sample temperature.
+                         
+                         This should be a link to /entry/instrument/manipulator/sample_thermocouple.
+                    </doc>
+                </group>
+                <group name="sample_heater" type="NXsensor" optional="true">
+                    <doc>
+                         Device to heat the sample.
+                         
+                         This should be a link to /entry/instrument/manipulator/sample_heater.
+                    </doc>
                 </group>
             </group>
             <group name="gas_pressure" type="NXenvironment" recommended="true">
                 <doc>
                      Gas pressure surrounding the sample.
-                     
-                     This field may also be found in NXinstrument if present.
-                     In that case, this should be a link to /entry/instrument/gas_pressure.
                 </doc>
                 <group name="pressure_gauge" type="NXsensor">
-                    <field name="name"/>
-                    <field name="type" recommended="true"/>
-                    <field name="value" type="NX_FLOAT" recommended="true" units="NX_PRESSURE">
-                        <doc>
-                             In the case of a fixed gas pressure measurement, this is the scalar gas pressure around
-                             the sample.
-                        </doc>
-                    </field>
-                    <group name="value_log" type="NXlog" optional="true" units="NX_PRESSURE">
-                        <doc>
-                             In the case of an experiment in which the gas pressure is changed and recorded,
-                             this is an array of length m of gas pressures.
-                        </doc>
-                    </group>
+                    <doc>
+                         Pressure gauge measuring the gas pressure.
+                         
+                         This should be a link to /entry/instrument/pressure_gauge.
+                    </doc>
                 </group>
             </group>
             <group name="bias" type="NXenvironment" recommended="true">
                 <doc>
                      Voltage applied to sample and sample holder.
-                     
-                     This field may also be found in NXmanipulator if present.
-                     In that case, this should be a link to /entry/instrument/manipulator/sample_bias.
                 </doc>
                 <group name="voltmeter" type="NXsensor">
-                    <field name="name"/>
-                    <field name="type" recommended="true"/>
-                    <field name="value" type="NX_FLOAT" recommended="true" units="NX_VOLTAGE">
-                        <doc>
-                             In the case of a fixed applied bias, this is the scalar voltage applied to
-                             sample and sample holder.
-                        </doc>
-                    </field>
-                    <group name="value_log" type="NXlog" optional="true" units="NX_VOLTAGE">
-                        <doc>
-                             In the case of an experiment in which the bias is changed and recorded,
-                             this is an array of length m of voltages.
-                        </doc>
-                    </group>
+                    <doc>
+                         Sensor setting/measuring the applied voltage.
+                         
+                         This should be a link to /entry/instrument/manipulator/sample_bias_voltmeter.
+                    </doc>
                 </group>
             </group>
-            <group name="drain_current" type="NXenvironment" optional="true">
+            <group name="drain_current" type="NXenvironment" recommended="true">
                 <doc>
                      Drain current of the sample and sample holder.
-                     This field may also be found in NXmanipulator if present.
-                     In that case, this should be a link to /entry/instrument/manipulator/drain_current.
                 </doc>
                 <group name="amperemeter" type="NXsensor">
-                    <field name="name"/>
-                    <field name="type" recommended="true"/>
-                    <field name="value" type="NX_FLOAT" recommended="true" units="NX_CURRENT">
-                        <doc>
-                             In the case of a fixed current, this is the scalar drain current of the sample
-                             and sample holder.
-                        </doc>
-                    </field>
-                    <group name="value_log" type="NXlog" optional="true" units="NX_CURRENT">
-                        <doc>
-                             In the case of an experiment in which the current changes and is recorded,
-                             this is an array of length m of drain currents.
-                        </doc>
-                    </group>
+                    <doc>
+                         Amperemeter measuring the drain current of the sample and sample holder.
+                         
+                         This should be a link to /entry/instrument/manipulator/drain_current_amperemeter.
+                    </doc>
                 </group>
             </group>
         </group>
