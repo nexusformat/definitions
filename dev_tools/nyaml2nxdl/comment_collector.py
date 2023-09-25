@@ -19,9 +19,9 @@
 #
 
 """
-Collect comments in a list by CommentCollector class and each comment is a instance of Comment 
-class. Comment (sometimes refered as 'comment block') instance consists of text and line info or neighbours info where the
-comment must be placed.
+Collect comments in a list by CommentCollector class and each comment is an instance of Comment 
+class. Each `Comment` instance(sometimes refered as 'comment block') consists of text and line 
+info or neighbours info where the comment must be placed.
 
 The class Comment is an abstract class for general functions or method to be implemented
 XMLComment and YAMLComment class.
@@ -83,8 +83,9 @@ class CommentCollector:
             raise ValueError("Incorrect inputs for CommentCollector")
 
     def extract_all_comment_blocks(self):
-        """
-        Collect all comments. Note here that comment means (comment text + element or line info
+        """Collect all comments. 
+        
+        Note here that comment means (comment text + element or line info
         intended for comment.
         """
         id_ = 0
@@ -125,7 +126,7 @@ class CommentCollector:
         """
         return self._comment_chain[self._comment_tracker]
 
-    def get_coment_by_line_info(self, comment_locs: Tuple[str, Union[int, str]]):
+    def get_comment_by_line_info(self, comment_locs: Tuple[str, Union[int, str]]):
         """
         Get comment using line information.
         """
@@ -376,7 +377,9 @@ class YAMLComment(Comment):
         )
 
     def process_each_line(self, text, line_num):
-        """Take care of each line of text. Through which function the text
+        """Process each line.
+
+        Take care of each line of text. Through which function the text
         must be passed should be decide here.
         """
         text = text.strip()
@@ -402,8 +405,8 @@ class YAMLComment(Comment):
                     self.store_element(line_key, line_num)
 
     def has_post_comment(self):
-        """
-        Ensure if this is a post coment or not.
+        """Ensure if this is a post coment or not.
+
         Post comment means the comment that come at the very end without having any
         nxdl element(class, group, filed and attribute.)
         """
@@ -413,7 +416,7 @@ class YAMLComment(Comment):
         return False
 
     def append_comment(self, text: str) -> None:
-        """Append comment texts to associated comment.
+        """Append comment texts to the associated comment.
 
             Collects all the line of the same comment and
         append them with that single comment.
@@ -447,9 +450,7 @@ class YAMLComment(Comment):
 
     # pylint: disable=arguments-differ
     def store_element(self, line_key, line_number):
-        """
-        Store comment contents and information of comment location (for what comment is
-        created.).
+        """Store comment contents and information of comment location.
         """
         self._elemt = {}
         self._elemt[line_key] = int(line_number)
@@ -482,8 +483,7 @@ class YAMLComment(Comment):
         return text
 
     def get_element_location(self):
-        """
-        Return yaml line '__line__KEY' info and and line numner
+        """Return yaml line '__line__<KEYY>' info and and line numner
         """
         if len(self._elemt) == 1:
             raise ValueError(f"Comment element should be one but got " f"{self._elemt}")
@@ -502,7 +502,7 @@ class YAMLComment(Comment):
                 self.collect_yaml_line_info(val, line_info_dict)
 
     def __contains__(self, line_key):
-        """For checking whether __line__NAME is in _elemt dict or not."""
+        """For checking whether __line__<NAME> is in _elemt dict or not."""
         return line_key in self._elemt
 
     def __eq__(self, comment_obj):

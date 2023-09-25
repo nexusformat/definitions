@@ -508,7 +508,7 @@ def xml_handle_dim_from_dimension_dict(
         line_loc = value[line_number]
         # dim comes in precedence
         if attr == "dim":
-            # dim consists of list of [index, value]
+            # dim consists of [index, value] list
             llist_ind_value = vvalue
             assert isinstance(llist_ind_value, list), (
                 f"Line {value[line_number]}: dim argument not a list !"
@@ -994,7 +994,7 @@ def xml_handle_comment(
     
     line_info = (line_annotation, int(line_loc_no))
     if line_info in COMMENT_BLOCKS:  # noqa: F821
-        cmnt = COMMENT_BLOCKS.get_coment_by_line_info(line_info)  # noqa: F821
+        cmnt = COMMENT_BLOCKS.get_comment_by_line_info(line_info)  # noqa: F821
         cmnt_text = cmnt.get_comment_text_list()
         
         # Check comment for definition element

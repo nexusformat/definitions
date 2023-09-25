@@ -112,7 +112,7 @@ NXDLS := $(foreach dir,$(NXDL_DIRS),$(wildcard $(dir)/*.nxdl.xml))
 nyaml : $(DIRS) $(NXDLS)
 	for file in $^; do\
 		mkdir -p "$${file%/*}/nyaml";\
-		nyaml2nxdl --input-file $${file} --do-not-store-nxdl;\
+		nyaml2nxdl --input-file $${file};\
 		FNAME=$${file##*/};\
 		mv -- "$${file%.nxdl.xml}_parsed.yaml" "$${file%/*}/nyaml/$${FNAME%.nxdl.xml}.yaml";\
 	done

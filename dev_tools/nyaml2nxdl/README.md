@@ -45,7 +45,7 @@ Options:
 
 **Special keywords**: Several keywords can be used as childs of groups, fields, and attributes to specify the members of these. Groups, fields and attributes are nodes of the XML tree.
 * **doc**: A human-readable description/docstring
-* **exists** Options are recommended, required, [min, 1, max, infty] numbers like here 1 can be replaced by any uint, or infty to indicate no restriction on how frequently the entry can occur inside the NXDL schema at the same hierarchy level.
+* **exists** Options are recommended, required, [min, 1, max, `infty`] numbers like here 1 can be replaced by any `uint` (unsigned integer), or `infty` to indicate no restriction on how frequently the entry can occur inside the NXDL schema at the same hierarchy level.
 * **link** Define links between nodes.
 * **units** A statement introducing NeXus-compliant NXDL units arguments, like NX_VOLTAGE
 * **dimensions** Details which dimensional arrays to expect
@@ -60,13 +60,9 @@ dimensions:
       ref: [ref_value_1, ref_value_2, ...]
       incr: [incr_value_1, incr_value_2, ...]
 ```
-Keep in mind that length of all the lists must be same.
+Keep in mind that length of all the lists must have the **same size**.
+**Important Note**: The attributes `ref`, `incr`, `index` are deprecated. 
 
 ## Next steps
 
-The NOMAD team is currently working on the establishing of a one-to-one mapping between
-NeXus definitions and the NOMAD MetaInfo. As soon as this is in place the YAML files will
-be annotated with further metadata so that they can serve two purposes.
-On the one hand they can serve as an instance for a schema to create a GUI representation
-of a NOMAD Oasis ELN schema. On the other hand the YAML to NXDL converter will skip all
-those pieces of information which are irrelevant from a NeXus perspective.
+The NOMAD team is currently working to establish a one-to-one mapping between NeXus definitions and the NOMAD MetaInfo(scientific data model in nomad). As soon as this is in place the YAML files will be annotated with further metadata so that they can serve two purposes. On the one hand they can serve as an instance for a schema to create a GUI representation of a NOMAD Oasis ELN schema. On the other hand the YAML to NXDL converter will skip all those pieces of information which are irrelevant from a NeXus perspective.
