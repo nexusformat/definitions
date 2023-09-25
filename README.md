@@ -29,7 +29,7 @@ Open the HTML manual in a web brower for visual verification
 
     firefox build/manual/build/html/index.html
 
-Convenient editting of definitions is available in nyaml format. For this, definitions need to be converted first from xml to yaml format by the command
+Convenient editing of definitions is available in nyaml format. For this, definitions need to be converted first from xml to yaml format by the command
 
     make nyaml
 
