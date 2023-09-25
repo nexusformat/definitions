@@ -9,18 +9,21 @@ from functools import lru_cache
 from glob import glob
 
 
-class NxdlAttributeError(Exception):
-    """An exception for throwing an error when an Nxdl attribute is not found."""
+class NxdlAttributeNotFoundError(Exception):
+    """An exception to throw when an Nxdl attribute is not found."""
 
 
 def get_app_defs_names():
     """Returns all the AppDef names without their extension: .nxdl.xml"""
-    app_def_path_glob = (
-        f"{get_nexus_definitions_path()}{os.sep}applications{os.sep}*.nxdl*"
+    app_def_path_glob = os.path.join(
+        get_nexus_definitions_path(),
+        "applications",
+        "*.nxdl*"
     )
-    contrib_def_path_glob = (
-        f"{get_nexus_definitions_path()}{os.sep}"
-        f"contributed_definitions{os.sep}*.nxdl*"
+    contrib_def_path_glob = os.path.join(
+        get_nexus_definitions_path(),
+        "contributed_definitions",
+        "*.nxdl*"
     )
     files = sorted(glob(app_def_path_glob)) + sorted(glob(contrib_def_path_glob))
     return [os.path.basename(file).split(".")[0] for file in files] + ["NXroot"]
@@ -40,7 +43,9 @@ def get_nexus_definitions_path():
         return os.environ["NEXUS_DEF_PATH"]
     except KeyError:  # or it should be available locally under the dir 'definitions'
         local_dir = os.path.abspath(os.path.dirname(__file__))
-        return os.path.join(local_dir, f"..{os.sep}..")
+        for _ in range(2):
+            local_dir = os.path.dirname(local_dir)
+        return local_dir
 
 
 def get_hdf_root(hdf_node):
@@ -60,7 +65,7 @@ def get_hdf_parent(hdf_info):
         if "hdf_root" not in hdf_info
         else hdf_info["hdf_root"]
     )
-    for child_name in hdf_info["hdf_path"].split("/"):
+    for child_name in hdf_info["hdf_path"].rsplit("/"):
         node = node[child_name]
     return node
 
@@ -86,24 +91,21 @@ def get_hdf_info_parent(hdf_info):
 
 def get_nx_class(nxdl_elem):
     """Get the nexus class for a NXDL node"""
-    if "category" in nxdl_elem.attrib.keys():
+    if "category" in nxdl_elem.attrib:
         return None
-    try:
-        return nxdl_elem.attrib["type"]
-    except KeyError:
-        return "NX_CHAR"
+    return nxdl_elem.attrib.get("type", "NX_CHAR")
 
 
 def get_nx_namefit(hdf_name, name, name_any=False):
     """Checks if an HDF5 node name corresponds to a child of the NXDL element
-    uppercase letters in front can be replaced by arbitraty name, but
+    uppercase letters in front can be replaced by arbitrary name, but
     uppercase to lowercase match is preferred,
     so such match is counted as a measure of the fit"""
     if name == hdf_name:
         return len(name) * 2
     # count leading capitals
     counting = 0
-    while counting < len(name) and name[counting].upper() == name[counting]:
+    while counting < len(name) and name[counting].isupper():
         counting += 1
     if (
         name_any
@@ -198,7 +200,7 @@ def get_node_name(node):
     Either as specified by the 'name' or taken from the type (nx_class).
     Note that if only class name is available, the NX prefix is removed and
     the string is converted to UPPER case."""
-    if "name" in node.attrib.keys():
+    if "name" in node.attrib:
         name = node.attrib["name"]
     else:
         name = node.attrib["type"]
@@ -837,7 +839,7 @@ def get_node_at_nxdl_path(
         (class_path, nxdlpath, elist) = get_inherited_nodes(nxdl_path, nx_name, elem)
     except ValueError as value_error:
         if exc:
-            raise NxdlAttributeError(
+            raise NxdlAttributeNotFoundError(
                 f"Attributes were not found for {nxdl_path}. "
                 "Please check this entry in the template dictionary."
             ) from value_error
@@ -847,7 +849,7 @@ def get_node_at_nxdl_path(
     else:
         elem = None
         if exc:
-            raise NxdlAttributeError(
+            raise NxdlAttributeNotFoundError(
                 f"Attributes were not found for {nxdl_path}. "
                 "Please check this entry in the template dictionary."
             )
