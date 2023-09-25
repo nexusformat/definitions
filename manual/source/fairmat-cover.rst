@@ -33,7 +33,7 @@ and strategies how to exchange these pieces of information.
 
 .. _IntroductionCover:
 
-The FAIRmat proposal to NeXus is an effort by the community of scientists of the `FAIRmat consortium <https://www.fairmat-nfdi.eu/fairmat/fairmat_/consortium>`_
+The FAIRmat proposal to NeXus is an effort by the community of scientists of the `FAIRmat consortium <https://www.fairmat-nfdi.eu/fairmat/about-fairmat/consortium-fairmat>`_
 to refine and expand the structure of NeXus. As a project which aims at creating an infrastructure
 for experimental data to be findable, accessible, interoperable, and reusable (FAIR) in the fields of
 condensed-matter physics and the chemical physics of solids, FAIRmat has adopted NeXus as the common format.
@@ -121,7 +121,7 @@ tool from the journalism community. The commenting function for each page of the
 creation of a more consistent and practical NeXus structure which, in our firm belief, can serve your community and beyond.
 
 If you do not find your specific experimental technique but would be interested in participating in the development
-of a standard using NeXus, feel also very much invited to contact us directly at the `FAIRmat-Team <https://www.fair-di.eu/fairmat/fairmat_/fairmatteam>`_.
+of a standard using NeXus, feel also very much invited to contact us directly at the `FAIRmat-Team <https://www.fair-di.eu/fairmat/about-fairmat/team-fairmat>`_.
 
 .. _WhichData:
 
