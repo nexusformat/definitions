@@ -25,7 +25,13 @@ def get_app_defs_names():
         "contributed_definitions",
         "*.nxdl*"
     )
-    files = sorted(glob(app_def_path_glob)) + sorted(glob(contrib_def_path_glob))
+
+    files = sorted(glob(app_def_path_glob))
+    for nexus_file in sorted(contrib_def_path_glob):
+        root = get_xml_root(nexus_file)
+        if root.attrib["category"] == "application":
+            files.append(nexus_file)
+
     return [os.path.basename(file).split(".")[0] for file in files] + ["NXroot"]
 
 
@@ -65,27 +71,21 @@ def get_hdf_parent(hdf_info):
         if "hdf_root" not in hdf_info
         else hdf_info["hdf_root"]
     )
-    for child_name in hdf_info["hdf_path"].rsplit("/"):
+    for child_name in hdf_info["hdf_path"].split("/"):
         node = node[child_name]
     return node
 
 
 def get_parent_path(hdf_name):
     """Get parent path"""
-    return "/".join(hdf_name.split("/")[:-1])
+    return hdf_name.rsplit("/", 1)[0]
 
 
 def get_hdf_info_parent(hdf_info):
     """Get the hdf_info for the parent of an hdf_node in an hdf_info"""
     if "hdf_path" not in hdf_info:
         return {"hdf_node": hdf_info["hdf_node"].parent}
-    node = (
-        get_hdf_root(hdf_info["hdf_node"])
-        if "hdf_root" not in hdf_info
-        else hdf_info["hdf_root"]
-    )
-    for child_name in hdf_info["hdf_path"].split("/")[1:-1]:
-        node = node[child_name]
+    node = get_hdf_parent(hdf_info)
     return {"hdf_node": node, "hdf_path": get_parent_path(hdf_info["hdf_path"])}
 
 
@@ -142,13 +142,12 @@ def get_nx_classes():
             )
         )
     )
-    nx_clss = []
+    nx_class = []
     for nexus_file in base_classes + applications + contributed:
         root = get_xml_root(nexus_file)
         if root.attrib["category"] == "base":
-            nx_clss.append(str(nexus_file[nexus_file.rindex(os.sep) + 1 :])[:-9])
-    nx_clss = sorted(nx_clss)
-    return nx_clss
+            nx_class.append(os.path.basename(nexus_file).split(".")[0])
+    return sorted(nx_class)
 
 
 def get_nx_units():
@@ -179,9 +178,9 @@ def get_nx_attribute_type():
     root = get_xml_root(filepath)
     units_and_type_list = []
     for child in root:
-        for i in child.attrib.values():
-            units_and_type_list.append(i)
+        units_and_type_list.extend(child.attrib.values())
     flag = False
+    nx_types = []
     for line in units_and_type_list:
         if line == "primitiveType":
             flag = True
@@ -234,7 +233,7 @@ def belongs_to_capital(params):
     (act_htmlname, chk_name, name_any, nxdl_elem, child, name) = params
     # or starts with capital and no reserved words used
     if (
-        (name_any or "A" <= act_htmlname[0] <= "Z")
+        (act_htmlname[0].isalpha() and act_htmlname[0].isupper())
         and name != "doc"
         and name != "enumeration"
     ):
@@ -262,18 +261,19 @@ def belongs_to_capital(params):
 
 def get_local_name_from_xml(element):
     """Helper function to extract the element tag without the namespace."""
-    return element.tag[element.tag.rindex("}") + 1 :]
+    return element.tag.rsplit("}")[-1]
 
 
 def get_own_nxdl_child_reserved_elements(child, name, nxdl_elem):
     """checking reserved elements, like doc, enumeration"""
-    if get_local_name_from_xml(child) == "doc" and name == "doc":
+    local_name = get_local_name_from_xml(child)
+    if local_name == "doc" and name == "doc":
         if nxdl_elem.get("nxdlbase"):
             child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
             child.set("nxdlbase_class", nxdl_elem.get("nxdlbase_class"))
             child.set("nxdlpath", nxdl_elem.get("nxdlpath") + "/doc")
         return child
-    if get_local_name_from_xml(child) == "enumeration" and name == "enumeration":
+    if local_name == "enumeration" and name == "enumeration":
         if nxdl_elem.get("nxdlbase"):
             child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
             child.set("nxdlbase_class", nxdl_elem.get("nxdlbase_class"))
@@ -283,28 +283,16 @@ def get_own_nxdl_child_reserved_elements(child, name, nxdl_elem):
 
 
 def get_own_nxdl_child_base_types(child, class_type, nxdl_elem, name, hdf_name):
-    """checking base types of group, field,m attribute"""
+    """checking base types of group, field, attribute"""
     if get_local_name_from_xml(child) == "group":
         if (
             class_type is None or (class_type and get_nx_class(child) == class_type)
         ) and belongs_to(nxdl_elem, child, name, class_type, hdf_name):
-            if nxdl_elem.get("nxdlbase"):
-                child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
-                child.set("nxdlbase_class", nxdl_elem.get("nxdlbase_class"))
-                child.set(
-                    "nxdlpath", nxdl_elem.get("nxdlpath") + "/" + get_node_name(child)
-                )
-            return child
+            return set_nxdlpath(child, nxdl_elem)
     if get_local_name_from_xml(child) == "field" and belongs_to(
         nxdl_elem, child, name, None, hdf_name
     ):
-        if nxdl_elem.get("nxdlbase"):
-            child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
-            child.set("nxdlbase_class", nxdl_elem.get("nxdlbase_class"))
-            child.set(
-                "nxdlpath", nxdl_elem.get("nxdlpath") + "/" + get_node_name(child)
-            )
-        return child
+        return set_nxdlpath(child, nxdl_elem)
     if get_local_name_from_xml(child) == "attribute" and belongs_to(
         nxdl_elem, child, name, None, hdf_name
     ):
@@ -314,7 +302,7 @@ def get_own_nxdl_child_base_types(child, class_type, nxdl_elem, name, hdf_name):
             child.set(
                 "nxdlpath", nxdl_elem.get("nxdlpath") + "/" + get_node_name(child)
             )
-        return child
+        return set_nxdlpath(child, nxdl_elem)
     return False
 
 
@@ -335,7 +323,7 @@ def get_own_nxdl_child(
                 )
             return child
     for child in nxdl_elem:
-        if "name" in child.attrib and child.attrib["name"] == name:
+        if child.attrib.get("name") == name:
             child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
             return child
 
@@ -422,11 +410,8 @@ def get_required_string(nxdl_elem):
     if is_optional or is_minoccurs:
         return "<<OPTIONAL>>"
     # default optionality: in BASE CLASSES is true; in APPLICATIONS is false
-    try:
-        if nxdl_elem.get("nxdlbase_class") == "base":
-            return "<<OPTIONAL>>"
-    except TypeError:
-        return "<<REQUIRED>>"
+    if nxdl_elem.get("nxdlbase_class") == "base":
+        return "<<OPTIONAL>>"
     return "<<REQUIRED>>"
 
 
@@ -434,7 +419,7 @@ def get_required_string(nxdl_elem):
 def write_doc_string(logger, doc, attr):
     """Simple function that prints a line in the logger if doc exists"""
     if doc:
-        logger.debug("@" + attr + " [NX_CHAR]")
+        logger.debug("@%s [NX_CHAR]", attr)
     return logger, doc, attr
 
 
@@ -567,7 +552,7 @@ def other_attrs(
 
 def get_node_concept_path(elem):
     """get the short version of nxdlbase:nxdlpath"""
-    return str(elem.get("nxdlbase").split("/")[-1] + ":" + elem.get("nxdlpath"))
+    return f'{elem.get("nxdlbase").split("/")[-1]}:{elem.get("nxdlpath")}'
 
 
 def get_doc(node, ntype, nxhtml, nxpath):
@@ -590,7 +575,7 @@ def get_doc(node, ntype, nxhtml, nxpath):
     if index:
         enum_str = (
             "\n "
-            + ("Possible values:" if len(enums.split(",")) > 1 else "Obligatory value:")
+            + ("Possible values:" if enums.count(",") else "Obligatory value:")
             + "\n   "
             + enums
             + "\n"
@@ -639,8 +624,9 @@ def get_enums(node):
 
 
 def add_base_classes(elist, nx_name=None, elem: ET.Element = None):
-    """Add the base classes corresponding to the last eleme in elist to the list. Note that if
-    elist is empty, a nxdl file with the name of nx_name or a rather room elem is used if provided
+    """
+    Add the base classes corresponding to the last elemenent in elist to the list. Note that if
+    elist is empty, a nxdl file with the name of nx_name or a placeholder elem is used if provided
     """
     if elist and nx_name is None:
         nx_name = get_nx_class(elist[-1])
@@ -681,7 +667,7 @@ def set_nxdlpath(child, nxdl_elem):
 
 def get_direct_child(nxdl_elem, html_name):
     """returns the child of nxdl_elem which has a name
-    corresponding to the the html documentation name html_name"""
+    corresponding to the html documentation name html_name"""
     for child in nxdl_elem:
         if get_local_name_from_xml(child) in (
             "group",
@@ -785,9 +771,7 @@ def walk_elist(elist, html_name):
                     if fitting_child is not None:
                         child = fitting_child
                     break
-        elist[ind] = child
-        if elist[ind] is None:
-            del elist[ind]
+        if child is None:
             continue
         # override: remove low priority inheritance classes if class_type is overriden
         if len(elist) > ind + 1 and get_nx_class(elist[ind]) != get_nx_class(
@@ -814,11 +798,9 @@ def get_inherited_nodes(
     nxdl_elem_path = [elist[0]]
 
     class_path = []  # type: ignore[var-annotated]
-    html_path = nxdl_path.split("/")[1:]
-    path = html_path
-    for pind in range(len(path)):
-        html_name = html_path[pind]
-        elist, html_name = walk_elist(elist, html_name)
+    html_paths = nxdl_path.split("/")[1:]
+    for html_name in html_paths:
+        elist, _ = walk_elist(elist, html_name)
         if elist:
             class_path.append(get_nx_class(elist[0]))
             nxdl_elem_path.append(elist[0])
