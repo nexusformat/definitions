@@ -36,8 +36,8 @@ from yaml.nodes import ScalarNode
 from yaml.resolver import BaseResolver
 
 # NOTE: If any one change one of the bellow dict please change it for both
-ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    ", "':'": ":"}
-ESCAPE_CHAR_DICT_IN_XML = {"    ": "\t", ":": "':'"}
+ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    "}
+ESCAPE_CHAR_DICT_IN_XML = {"    ": "\t"}
 
 
 def remove_namespace_from_tag(tag):

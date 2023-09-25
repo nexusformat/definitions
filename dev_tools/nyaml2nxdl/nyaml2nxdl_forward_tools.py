@@ -24,8 +24,10 @@
 import os
 import sys
 import textwrap
+import datetime
 import xml.etree.ElementTree as ET
 from xml.dom import minidom
+import warnings
 
 import yaml
 
@@ -39,26 +41,26 @@ from .nyaml2nxdl_helper import remove_namespace_from_tag
 
 # pylint: disable=too-many-lines, global-statement, invalid-name
 DOM_COMMENT = (
-    "\n"
-    "# NeXus - Neutron and X-ray Common Data Format\n"
-    "# \n"
-    "# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)\n"
-    "# \n"
-    "# This library is free software; you can redistribute it and/or\n"
-    "# modify it under the terms of the GNU Lesser General Public\n"
-    "# License as published by the Free Software Foundation; either\n"
-    "# version 3 of the License, or (at your option) any later version.\n"
-    "#\n"
-    "# This library is distributed in the hope that it will be useful,\n"
-    "# but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
-    "# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n"
-    "# Lesser General Public License for more details.\n"
-    "#\n"
-    "# You should have received a copy of the GNU Lesser General Public\n"
-    "# License along with this library; if not, write to the Free Software\n"
-    "# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n"
-    "#\n"
-    "# For further information, see http://www.nexusformat.org\n"
+    f"\n"
+    f"# NeXus - Neutron and X-ray Common Data Format\n"
+    f"# \n"
+    f"# Copyright (C) 2014-{datetime.date.today().year} NeXus International Advisory Committee (NIAC)\n"
+    f"# \n"
+    f"# This library is free software; you can redistribute it and/or\n"
+    f"# modify it under the terms of the GNU Lesser General Public\n"
+    f"# License as published by the Free Software Foundation; either\n"
+    f"# version 3 of the License, or (at your option) any later version.\n"
+    f"#\n"
+    f"# This library is distributed in the hope that it will be useful,\n"
+    f"# but WITHOUT ANY WARRANTY; without even the implied warranty of\n"
+    f"# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU\n"
+    f"# Lesser General Public License for more details.\n"
+    f"#\n"
+    f"# You should have received a copy of the GNU Lesser General Public\n"
+    f"# License along with this library; if not, write to the Free Software\n"
+    f"# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA\n"
+    f"#\n"
+    f"# For further information, see http://www.nexusformat.org\n"
 )
 NX_CLSS = pynxtools_nxlib.get_nx_classes()
 NX_NEW_DEFINED_CLASSES = ["NX_COMPLEX"]
@@ -67,13 +69,15 @@ NX_ATTR_IDNT = "\\@"
 NX_UNIT_IDNT = "unit"
 DEPTH_SIZE = "    "
 NX_UNIT_TYPES = pynxtools_nxlib.get_nx_units()
+# Initialised in yml_reader() funtion
 COMMENT_BLOCKS: CommentCollector
 CATEGORY = ""  # Definition would be either 'base' or 'application'
 
 
 def check_for_dom_comment_in_yaml():
     """Check the yaml file has dom comment or dom comment needed to be hard coded."""
-    dignature_keyword_list = [
+    # some signature keywords to distingush dom comments from other comments.
+    signature_keyword_list = [
         "NeXus",
         "GNU Lesser General Public",
         "Free Software Foundation",
@@ -84,7 +88,7 @@ def check_for_dom_comment_in_yaml():
     # Check for dom comments in first three comments
     dom_comment = ""
     dom_comment_ind = 1
-    for ind, comnt in enumerate(COMMENT_BLOCKS[0:5]):
+    for ind, comnt in enumerate(COMMENT_BLOCKS[0:3]):
         cmnt_list = comnt.get_comment_text_list()
         if len(cmnt_list) == 1:
             text = cmnt_list[0]
@@ -92,7 +96,7 @@ def check_for_dom_comment_in_yaml():
             continue
         dom_comment = text
         dom_comment_ind = ind
-        for keyword in dignature_keyword_list:
+        for keyword in signature_keyword_list:
             if keyword not in text:
                 dom_comment = ""
                 break
@@ -134,11 +138,11 @@ def yml_reader(inputfile):
 
 
 def check_for_default_attribute_and_value(xml_element):
-    """NeXus Groups, fields and attributes might have xml default attributes and valuesthat must
+    """NeXus Groups, fields and attributes might have xml default attributes and values that must
     come. For example: 'optional' which is 'true' by default for base class and false otherwise.
     """
 
-    # base:Default attributes and value for all elements of base class except dimension element
+    # base: Default attributes and value for all elements of base class except dimension element
     base_attr_to_val = {"optional": "true"}
 
     # application: Default attributes and value for all elements of application class except
@@ -150,7 +154,7 @@ def check_for_default_attribute_and_value(xml_element):
     application_dim_attr_to_val = {"required": "true"}
 
     # Eligible tag for default attr and value
-    elegible_tag = ["group", "field", "attribute"]
+    eligible_tag = ["group", "field", "attribute"]
 
     def set_default_attribute(xml_elem, default_attr_to_val):
         for deflt_attr, deflt_val in default_attr_to_val.items():
@@ -163,7 +167,7 @@ def check_for_default_attribute_and_value(xml_element):
                 xml_elem.set(deflt_attr, deflt_val)
 
     for child in list(xml_element):
-        # skiping comment 'function' that mainly collect comment from yaml file.
+        # skipping comment 'function' that mainly collect comment from yaml file.
         if not isinstance(child.tag, str):
             continue
         tag = remove_namespace_from_tag(child.tag)
@@ -172,9 +176,9 @@ def check_for_default_attribute_and_value(xml_element):
             set_default_attribute(child, base_dim_attr_to_val)
         if tag == "dim" and CATEGORY == "application":
             set_default_attribute(child, application_dim_attr_to_val)
-        if tag in elegible_tag and CATEGORY == "base":
+        if tag in eligible_tag and CATEGORY == "base":
             set_default_attribute(child, base_attr_to_val)
-        if tag in elegible_tag and CATEGORY == "application":
+        if tag in eligible_tag and CATEGORY == "application":
             set_default_attribute(child, application_attr_to_val)
         check_for_default_attribute_and_value(child)
 
@@ -188,7 +192,7 @@ def yml_reader_nolinetag(inputfile):
     return parsed_yaml
 
 
-def check_for_skiped_attributes(component, value, allowed_attr=None, verbose=False):
+def check_for_skipped_attributes(component, value, allowed_attr=None, verbose=False):
     """
     Check for any attributes have been skipped or not.
     NOTE: We should keep in mind about 'doc'
@@ -196,7 +200,7 @@ def check_for_skiped_attributes(component, value, allowed_attr=None, verbose=Fal
     block_tag = ["enumeration"]
     if value:
         for attr, val in value.items():
-            if attr in ["doc"]:
+            if attr == "doc":
                 continue
             if "__line__" in attr or attr in block_tag:
                 continue
@@ -212,8 +216,8 @@ def check_for_skiped_attributes(component, value, allowed_attr=None, verbose=Fal
             ):
                 raise ValueError(
                     f"An attribute '{attr}' in part '{component}' has been found"
-                    f". Please check arround line '{value[line_number]}. At this "
-                    f"moment. The allowed attrbutes are {allowed_attr}"
+                    f". Please check around line '{value[line_number]}. At this "
+                    f"time, the allowed attrbutes are {allowed_attr}."
                 )
 
 
@@ -221,10 +225,11 @@ def format_nxdl_doc(string):
     """NeXus format for doc string"""
     string = check_for_mapping_char_other(string)
     formatted_doc = ""
+    string_len = 80
     if "\n" not in string:
-        if len(string) > 80:
+        if len(string) > string_len:
             wrapped = textwrap.TextWrapper(
-                width=80, break_long_words=False, replace_whitespace=False
+                width=string_len, break_long_words=False, replace_whitespace=False
             )
             string = "\n".join(wrapped.wrap(string))
         formatted_doc = "\n" + f"{string}"
@@ -255,7 +260,7 @@ def check_for_mapping_char_other(text):
     for key, val in escape_reverter.items():
         if key in text:
             text = text.replace(key, val)
-    return str(text).strip()
+    return text.strip()
 
 
 def xml_handle_doc(obj, value: str, line_number=None, line_loc=None):
@@ -284,29 +289,30 @@ def xml_handle_exists(dct, obj, keyword, value):
         value is not None
     ), f"Line {dct[line_number]}: exists argument must not be None !"
     if isinstance(value, list):
-        if len(value) == 4 and value[0] == "min" and value[2] == "max":
-            obj.set("minOccurs", str(value[1]))
-            if str(value[3]) != "infty":
-                obj.set("maxOccurs", str(value[3]))
-            else:
-                obj.set("maxOccurs", "unbounded")
+        if len(value) == 4:
+            if value[0] == "min" and value[2] == "max":
+                obj.set("minOccurs", str(value[1]))
+                if str(value[3]) != "infty":
+                    obj.set("maxOccurs", str(value[3]))
+                else:
+                    obj.set("maxOccurs", "unbounded")
+            elif value[0] == "max" and value[2] == "min":
+                obj.set("minOccurs", str(value[3]))
+                if str(value[1]) != "infty":
+                    obj.set("maxOccurs", str(value[3]))
+                else:
+                    obj.set("maxOccurs", "unbounded")
+            elif value[0] != "min" or value[2] != "max":
+                raise ValueError(
+                    f"Line {dct[line_number]}: exists keyword"
+                    f"needs to go either with an optional [recommended] list with two "
+                    f"entries either [min, <uint>] or [max, <uint>], or a list of four "
+                    f"entries [min, <uint>, max, <uint>] !"
+                )
         elif len(value) == 2 and value[0] == "min":
             obj.set("minOccurs", str(value[1]))
         elif len(value) == 2 and value[0] == "max":
             obj.set("maxOccurs", str(value[1]))
-        elif len(value) == 4 and value[0] == "max" and value[2] == "min":
-            obj.set("minOccurs", str(value[3]))
-            if str(value[1]) != "infty":
-                obj.set("maxOccurs", str(value[3]))
-            else:
-                obj.set("maxOccurs", "unbounded")
-        elif len(value) == 4 and (value[0] != "min" or value[2] != "max"):
-            raise ValueError(
-                f"Line {dct[line_number]}: exists keyword"
-                f"needs to go either with an optional [recommended] list with two "
-                f"entries either [min, <uint>] or [max, <uint>], or a list of four "
-                f"entries [min, <uint>, max, <uint>] !"
-            )
         else:
             raise ValueError(
                 f"Line {dct[line_number]}: exists keyword "
@@ -315,7 +321,7 @@ def xml_handle_exists(dct, obj, keyword, value):
                 f"entries [min, <uint>, max, <uint>] !"
             )
     else:
-        # This clause take optional in all concept except dimension where 'required' key is allowed
+        # This clause take optional in all cases except dimension where 'required' key is allowed
         # not the 'optional' key.
         if value == "optional":
             obj.set("optional", "true")
@@ -353,8 +359,10 @@ def xml_handle_group(dct, obj, keyword, value, verbose=False):
         r_bracket = keyword.index(")")
 
     keyword_name, keyword_type = nx_name_type_resolving(keyword)
-    if not keyword_name and not keyword_type:
-        raise ValueError("A group must have both value and name. Check for group.")
+    if not keyword_type:
+    # if not keyword_name and not keyword_type:
+        raise ValueError(f"A group must have a type class from base, application"
+                         f" or contributed class. Check around line: {line_number}.")
     grp = ET.SubElement(obj, "group")
 
     if l_bracket == 0 and r_bracket > 0:
@@ -397,8 +405,8 @@ def xml_handle_group(dct, obj, keyword, value, verbose=False):
         for key in rm_key_list:
             del value[key]
         # Check for skipped attrinutes
-        check_for_skiped_attributes("group", value, list_of_attr, verbose)
-    if isinstance(value, dict) and value != {}:
+        check_for_skipped_attributes("group", value, list_of_attr, verbose)
+    if isinstance(value, dict) and len(value) != 0:
         recursive_build(grp, value, verbose)
 
 
@@ -423,11 +431,11 @@ def xml_handle_dimensions(dct, obj, keyword, value: dict):
     line_number = f"__line__{keyword}"
     line_loc = dct[line_number]
     assert "dim" in value.keys(), (
-        f"Line {line_loc}: No dim as child of dimension has " f"been found."
+        f"Line {line_loc}: No dim as child of dimension has been found."
     )
     xml_handle_comment(obj, line_number, line_loc)
     dims = ET.SubElement(obj, "dimensions")
-    # Consider all the childs under dimension is dim element and
+    # Consider all the children under dimension is dim element and
     # its attributes
 
     rm_key_list = []
@@ -442,7 +450,7 @@ def xml_handle_dimensions(dct, obj, keyword, value: dict):
             if isinstance(rank, int) and rank < 0:
                 raise ValueError(
                     f"Dimension must have some info about rank which is not "
-                    f"available. Please check arround Line: {dct[line_number]}"
+                    f"available. Please check around Line: {dct[line_number]}"
                 )
             dims.set(key, str(val))
             rm_key_list.append(key)
@@ -477,8 +485,8 @@ def xml_handle_dim_from_dimension_dict(
     NOTE: The inputs 'keyword' and 'value' are as input for xml_handle_dimensions
     function. please also read note in xml_handle_dimensions.
     """
-
-    possible_dim_attrs = ["ref", "incr", "refindex", "required"]
+    deprecated_dim_attrs = ["ref", "incr", "refindex"]
+    possible_dim_attrs = [*deprecated_dim_attrs, "required"]
 
     # Some attributes might have equivalent name e.g. 'required' is correct one and
     # 'optional' could be another name. Then change attribute to the correct one.
@@ -502,7 +510,7 @@ def xml_handle_dim_from_dimension_dict(
             # dim consists of list of [index, value]
             llist_ind_value = vvalue
             assert isinstance(llist_ind_value, list), (
-                f"Line {value[line_number]}: dim" f"argument not a list !"
+                f"Line {value[line_number]}: dim argument not a list !"
             )
             xml_handle_comment(dims_obj, line_number, line_loc)
             if isinstance(rank, int) and rank > 0:
@@ -548,6 +556,10 @@ def xml_handle_dim_from_dimension_dict(
                         elif isinstance(vvval, list) and i >= len(vvval):
                             pass
                 else:
+                    if kkkey in deprecated_dim_attrs:
+                        dep_text = (f"Attrbute {kkkey} is deprecated. "
+                                    f"Check attributes after line {cmnt_loc}")
+                        warnings.warn(dep_text, DeprecationWarning)
                     for i, dim in enumerate(dim_list):
                         # all atribute of dims comes as list
                         if isinstance(vvval, list) and i < len(vvval):
@@ -572,7 +584,7 @@ def xml_handle_dim_from_dimension_dict(
     for key in rm_key_list:
         del value[key]
 
-    check_for_skiped_attributes("dim", value, possible_dim_attrs, verbose)
+    check_for_skipped_attributes("dim", value, possible_dim_attrs, verbose)
 
 
 def xml_handle_enumeration(dct, obj, keyword, value, verbose):
@@ -642,7 +654,7 @@ def xml_handle_link(dct, obj, keyword, value, verbose):
         for key in rm_key_list:
             del value[key]
         # Check for skipped attrinutes
-        check_for_skiped_attributes("link", value, possible_attrs, verbose)
+        check_for_skipped_attributes("link", value, possible_attrs, verbose)
 
     if isinstance(value, dict) and value != {}:
         recursive_build(link_obj, value, verbose=None)
@@ -655,8 +667,8 @@ def xml_handle_choice(dct, obj, keyword, value, verbose=False):
     line_number = f"__line__{keyword}"
     line_loc = dct[line_number]
     xml_handle_comment(obj, line_number, line_loc)
-    # Add attributes in possible if new attributs have been added nexus definition.
-    possible_attr = []
+    # Add to this tuple if new attributs have been added to nexus definition.
+    possible_attr = ()
     choice_obj = ET.SubElement(obj, "choice")
     # take care of special attributes
     name = keyword[:-8]
@@ -683,7 +695,7 @@ def xml_handle_choice(dct, obj, keyword, value, verbose=False):
         for key in rm_key_list:
             del value[key]
         # Check for skipped attrinutes
-        check_for_skiped_attributes("choice", value, possible_attr, verbose)
+        check_for_skipped_attributes("choice", value, possible_attr, verbose)
 
     if isinstance(value, dict) and value != {}:
         recursive_build(choice_obj, value, verbose=None)
@@ -694,7 +706,7 @@ def xml_handle_symbols(dct, obj, keyword, value: dict):
     line_number = f"__line__{keyword}"
     line_loc = dct[line_number]
     assert (
-        len(list(value.keys())) >= 1
+        len(list(value.keys())) > 0
     ), f"Line {line_loc}: symbols table must not be empty !"
     xml_handle_comment(obj, line_number, line_loc)
     syms = ET.SubElement(obj, "symbols")
@@ -716,7 +728,7 @@ def xml_handle_symbols(dct, obj, keyword, value: dict):
                 vvalue, str
             ), f"Line {line_loc}: put a comment in doc string !"
             sym = ET.SubElement(syms, "symbol")
-            sym.set("name", str(kkeyword))
+            sym.set("name", kkeyword)
             # sym_doc = ET.SubElement(sym, 'doc')
             xml_handle_doc(sym, vvalue)
             rm_key_list.append(kkeyword)
@@ -733,7 +745,7 @@ def check_keyword_variable(verbose, dct, keyword, value):
     """
     keyword_name, keyword_type = nx_name_type_resolving(keyword)
     if verbose:
-        sys.stdout.write(
+        print(
             f"{keyword_name}({keyword_type}): value type is {type(value)}\n"
         )
     if keyword_name == "" and keyword_type == "":
@@ -764,7 +776,7 @@ def xml_handle_attributes(dct, obj, keyword, value, verbose):
     line_number = f"__line__{keyword}"
     line_loc = dct[line_number]
     xml_handle_comment(obj, line_number, line_loc)
-    # list of possible attribute of xml attribute elementsa
+    # list of possible attribute of xml attribute elements
     attr_attr_list = [
         "name",
         "type",
@@ -823,7 +835,7 @@ def xml_handle_attributes(dct, obj, keyword, value, verbose):
         for key in rm_key_list:
             del value[key]
         # Check cor skiped attribute
-        check_for_skiped_attributes("Attribute", value, attr_attr_list, verbose)
+        check_for_skipped_attributes("Attribute", value, attr_attr_list, verbose)
     if value:
         recursive_build(elemt_obj, value, verbose)
 
@@ -842,7 +854,7 @@ def validate_field_attribute_and_value(v_attr, vval, allowed_attribute, value):
             f" Please check arround line {value[line_number]}"
         )
 
-    # The bellow elements might come as child element
+    # The below elements might come as child element
     skipped_child_name = ["doc", "dimension", "enumeration", "choice", "exists"]
     # check for invalid key or attributes
     if (
@@ -956,7 +968,7 @@ def xml_handle_fields(obj, keyword, value, line_annot, line_loc, verbose=False):
         for key in rm_key_list:
             del value[key]
         # Check for skipped attrinutes
-        check_for_skiped_attributes("field", value, allowed_attr, verbose)
+        check_for_skipped_attributes("field", value, allowed_attr, verbose)
 
     if isinstance(value, dict) and value != {}:
         recursive_build(elemt_obj, value, verbose)
@@ -971,18 +983,20 @@ def xml_handle_comment(
 ):
     """
         Add xml comment: check for comments that has the same 'line_annotation'
-    (e.g. __line__data) and the same line_loc_no (e.g. 30). After that, i
-    does of three tasks:
+    (e.g. __line__data) and the same line_loc_no (e.g. 30). After that, it
+    does following tasks:
     1. Returns list of comments texts (multiple members if element has multiple comments)
-    2. Rearrange comment element and xml_ele where comment comes first.
-    3. Append comment element when no xml_ele will no be provided.
+        or [] if no intended comments are found 
+    2. Rearrange comment elements of xml_ele and xml_ele where comment comes first.
+    3. Append comment element when no xml_ele found as general comments.
     """
-
+    
     line_info = (line_annotation, int(line_loc_no))
     if line_info in COMMENT_BLOCKS:  # noqa: F821
         cmnt = COMMENT_BLOCKS.get_coment_by_line_info(line_info)  # noqa: F821
         cmnt_text = cmnt.get_comment_text_list()
-
+        
+        # Check comment for definition element
         if is_def_cmnt:
             return cmnt_text
         if xml_ele is not None:
@@ -993,20 +1007,21 @@ def xml_handle_comment(
             obj.append(xml_ele)
         elif not is_def_cmnt and xml_ele is None:
             for string in cmnt_text:
-                si_comnt = ET.Comment(string)
-                obj.append(si_comnt)
-        else:
-            raise ValueError("Provied correct parameter values.")
-    return ""
+                obj.append(ET.Comment(string))
+    return []
 
 
 def recursive_build(obj, dct, verbose):
-    """obj is the current node of the XML tree where we want to append to,
-    dct is a dictionary object which represents the content of a child to obj
-    dct may contain further dictionary nests, representing NXDL groups,
-    which trigger recursive processing
-    NXDL fields may contain attributes but trigger no recursion so attributes are leafs.
-
+    """Walk through nested dictionary.
+    Parameters:
+    -----------
+    obj : ET.Element 
+        Obj is the current node of the XML tree where we want to append to.
+    dct : dict
+     dct is the nested python dictionary which represents the content of a child and 
+     its successors.
+    
+    Note: NXDL fields may contain attributes but trigger no recursion so attributes are leafs.
     """
     for keyword, value in iter(dct.items()):
         if "__line__" in keyword:
@@ -1043,10 +1058,8 @@ def recursive_build(obj, dct, verbose):
             xml_handle_units(obj, value)
         elif keyword == "enumeration":
             xml_handle_enumeration(dct, obj, keyword, value, verbose)
-
         elif keyword == "dimensions":
             xml_handle_dimensions(dct, obj, keyword, value)
-
         elif keyword == "exists":
             xml_handle_exists(dct, obj, keyword, value)
         # Handles fileds e.g. AXISNAME
@@ -1054,8 +1067,8 @@ def recursive_build(obj, dct, verbose):
             xml_handle_fields(obj, keyword, value, line_number, line_loc, verbose)
         else:
             raise ValueError(
-                f"An unfamiliar type of element {keyword} has been found which is "
-                f"not be able to be resolved. Chekc arround line {dct[line_number]}"
+                f"An unknown type of element {keyword} has been found which is "
+                f"not be able to be resolved. Chekc around line {dct[line_number]}"
             )
 
 
@@ -1065,12 +1078,12 @@ def pretty_print_xml(xml_root, output_xml, def_comments=None):
     built-in libraries and preceding XML processing instruction
     """
     dom = minidom.parseString(ET.tostring(xml_root, encoding="utf-8", method="xml"))
-    proc_instractionn = dom.createProcessingInstruction(
+    proc_instruction = dom.createProcessingInstruction(
         "xml-stylesheet", 'type="text/xsl" href="nxdlformat.xsl"'
     )
     dom_comment = dom.createComment(DOM_COMMENT)
     root = dom.firstChild
-    dom.insertBefore(proc_instractionn, root)
+    dom.insertBefore(proc_instruction, root)
     dom.insertBefore(dom_comment, root)
 
     if def_comments:
@@ -1105,8 +1118,8 @@ def pretty_print_xml(xml_root, output_xml, def_comments=None):
 def nyaml2nxdl(input_file: str, out_file, verbose: bool):
     """
     Main of the nyaml2nxdl converter, creates XML tree, namespace and
-    schema, definitions then evaluates a dictionary nest of groups recursively and
-    fields or (their) attributes as childs of the groups
+    schema, definitions then evaluates a nested dictionary of groups recursively and
+    fields or (their) attributes as children of the groups
     """
 
     def_attributes = [
@@ -1149,13 +1162,13 @@ application and base are valid categories!"
             cmnt_text = xml_handle_comment(
                 xml_root, line_number, line_loc_no, is_def_cmnt=True
             )
-            def_cmnt_text += cmnt_text if cmnt_text else []
+            def_cmnt_text += cmnt_text
 
             del yml_appdef[line_number]
             del yml_appdef[kkey]
         # Taking care or name and extends
         elif "NX" in kkey:
-            # Tacking the attribute order but the correct value will be stored later
+            # Taking the attribute order but the correct value will be stored later
             # check for name first or type first if (NXobject)NXname then type first
             l_bracket_ind = kkey.rfind("(")
             r_bracket_ind = kkey.rfind(")")
@@ -1188,8 +1201,8 @@ application and base are valid categories!"
         "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
         "xsi:schemaLocation": "http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd",
     }
-    for key, ns_ in namespaces.items():
-        xml_root.attrib[key] = ns_
+    for key, ns in namespaces.items():
+        xml_root.attrib[key] = ns
     # Taking care of Symbols elements
     if "symbols" in yml_appdef.keys():
         xml_handle_symbols(yml_appdef, xml_root, "symbols", yml_appdef["symbols"])
@@ -1233,7 +1246,7 @@ keyword has an invalid pattern, or is too short!"
         (lin_annot, line_loc) = post_comment.get_line_info()
         xml_handle_comment(xml_root, lin_annot, line_loc)
 
-    # Note: Just to keep the functionality if we need this functionality later.
+    # Note: Just to keep the functionality if we need this later.
     default_attr = False
     if default_attr:
         check_for_default_attribute_and_value(xml_root)
