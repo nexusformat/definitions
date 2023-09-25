@@ -27,7 +27,7 @@ import xml.etree.ElementTree as ET
 from typing import Dict
 from typing import List
 
-from .nyaml2nxdl_helper import cleaning_empty_lines
+from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_node_parent_info
 from .nyaml2nxdl_helper import get_yaml_escape_char_dict
 from .nyaml2nxdl_helper import remove_namespace_from_tag
@@ -331,7 +331,7 @@ class Nxdl2yaml:
             text = handle_mapping_char(text, -1, True)
         if "\n" in text:
             # To remove '\n' with non-space character as it will be added before text.
-            text = cleaning_empty_lines(text.split("\n"))
+            text = clean_empty_lines(text.split("\n"))
             text_tmp = []
             yaml_indent_n = len((depth + 1) * DEPTH_SIZE)
             

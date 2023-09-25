@@ -34,10 +34,11 @@ import yaml
 from ..utils import nxdl_utils as pynxtools_nxlib
 from .comment_collector import CommentCollector
 from .nyaml2nxdl_helper import LineLoader
-from .nyaml2nxdl_helper import cleaning_empty_lines
+from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_yaml_escape_char_reverter_dict
 from .nyaml2nxdl_helper import nx_name_type_resolving
 from .nyaml2nxdl_helper import remove_namespace_from_tag
+
 
 # pylint: disable=too-many-lines, global-statement, invalid-name
 DOM_COMMENT = (
@@ -235,7 +236,7 @@ def format_nxdl_doc(string):
         formatted_doc = "\n" + f"{string}"
     else:
         text_lines = string.split("\n")
-        text_lines = cleaning_empty_lines(text_lines)
+        text_lines = clean_empty_lines(text_lines)
         formatted_doc += "\n" + "\n".join(text_lines)
     if not formatted_doc.endswith("\n"):
         formatted_doc += "\n"
@@ -1121,7 +1122,6 @@ def nyaml2nxdl(input_file: str, out_file, verbose: bool):
     schema, definitions then evaluates a nested dictionary of groups recursively and
     fields or (their) attributes as children of the groups
     """
-
     def_attributes = [
         "deprecated",
         "ignoreExtraGroups",
@@ -1209,11 +1209,9 @@ application and base are valid categories!"
 
         del yml_appdef["symbols"]
         del yml_appdef["__line__symbols"]
-
     assert (
         isinstance(yml_appdef["doc"], str) and yml_appdef["doc"] != ""
-    ), "Doc \
-has to be a non-empty string!"
+    ), "Doc has to be a non-empty string!"
 
     line_number = "__line__doc"
     line_loc_no = yml_appdef[line_number]
