@@ -12,12 +12,14 @@ NXmpes(NXobject):
     end_time(NX_DATE_TIME):
       doc: |
         Datetime of the end of the measurement.
+      exists: recommended
     method:
       doc: |
         A name of the experimental method according
         to the `ISO 18115-1:2023`_ specification.
         
         .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
+      exists: recommended
     definition:
       \@version:
       enumeration: [NXmpes]
@@ -47,10 +49,11 @@ NXmpes(NXobject):
         doc: |
           Author ID defined by https://orcid.org/.
     (NXinstrument):
-      energy_resolution(NX_FLOAT):
-        unit: NX_ENERGY
+      energy_resolution(NXresolution):
         exists: recommended
-      source_beam(NXsource):
+        resolution:
+          unit: NX_ENERGY
+      source_TYPE(NXsource):
         
         # Comment from mpes may workshop:
         # - Add linking between source and beam
@@ -73,7 +76,26 @@ NXmpes(NXobject):
             Type of probe. In photoemission it's always photons, so the full NIAC list is
             restricted.
           enumeration: [photons]
-      beam_probe(NXbeam):
+        device_information(NXfabrication):
+          exists: recommended
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
+          identifier:
+            exists: recommended
+        associated_beam(NXbeam):
+          doc: |
+            The beam emitted by this source.
+            Should be named with the same appendix, e.g.,
+            for `source_probe` it should refer to `beam_probe`.
+            Refers to the same concept as /NXentry/NXinstrument/source_TYPE
+            and may be linked.
+
+        # It would be nice if we had the notion of linking in nexus or if
+        # we have a subdefinition NXlink to refer to a path.
+        # This would also be helpful for NXtransformations
+      beam_TYPE(NXbeam):
         
         # Comment from mpes may workshop: Add linking between source and beam
         
@@ -91,8 +113,17 @@ NXmpes(NXobject):
         incident_polarization(NX_NUMBER):
           exists: recommended
           unit: NX_ANY
+        extent(NX_FLOAT):
+          exists: recommended
+        associated_source(NXsource):
+          doc: |
+            The beam emitted by this source.
+            Should be named with the same appendix, e.g.,
+            for `beam_probe` it should refer to `source_probe`.
+            Refers to the same concept as /NXentry/NXinstrument/beam_TYPE
+            and may be linked.
       (NXelectronanalyser):
-        model(NXfabrication):
+        device_information(NXfabrication):
           exists: recommended
           vendor:
             exists: recommended
@@ -121,9 +152,9 @@ NXmpes(NXobject):
               Scheme of the electron collection column.
             enumeration: [Standard, Angular dispersive, Spatial dispersive, Selective area, Deflector, PEEM, Momentum Microscope]
           mode:
+            doc: |
+              Labelling of the lens setting in use.
             exists: recommended
-          
-          # TODO: What does this refer to. It is currently not in the collection column base class
           projection:
             exists: recommended
           field_aperture(NXaperture):
@@ -165,9 +196,6 @@ NXmpes(NXobject):
             enumeration: [DLD, Phosphor+CCD, Phosphor+CMOS, ECMOS, Anode, Multi-anode]
           (NXdata):
             exists: recommended
-            
-            # TODO: Anders Frisk on proposal page
-            # It could be a lot of raw data from a detector. Shpould be optional.
             \@signal:
               enumeration: [raw]
             raw(NX_NUMBER):

@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-#
+# 
 # Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
-#
+# 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -33,16 +33,16 @@
                  Datetime of the start of the measurement.
             </doc>
         </field>
-        <field name="end_time" type="NX_DATE_TIME">
+        <field name="end_time" type="NX_DATE_TIME" recommended="true">
             <doc>
                  Datetime of the end of the measurement.
             </doc>
         </field>
-        <field name="method">
+        <field name="method" recommended="true">
             <doc>
                  A name of the experimental method according
                  to the `ISO 18115-1:2023`_ specification.
-
+                 
                  .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
             </doc>
         </field>
@@ -86,12 +86,13 @@
             </field>
         </group>
         <group type="NXinstrument">
-            <field name="energy_resolution" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
-            <group name="source_beam" type="NXsource">
-                <!-- Comment from mpes may workshop: 
-                    - Add linking between source and beam
-                    - There is much more information which can be provided for NXsource
-                -->
+            <group name="energy_resolution" type="NXresolution" recommended="true">
+                <field name="resolution" units="NX_ENERGY"/>
+            </group>
+            <group name="source_TYPE" type="NXsource">
+                <!--Comment from mpes may workshop:
+- Add linking between source and beam
+- There is much more information which can be provided for NXsource-->
                 <doc>
                      The source used to generate the primary photons. Properties refer strictly to
                      parameters of the source, not of the output beam. For example, the energy of the
@@ -116,7 +117,7 @@
                 </field>
                 <field name="type_other" optional="true">
                     <doc>
-                        Specification of type, may also go to name.
+                         Specification of type, may also go to name.
                     </doc>
                 </field>
                 <field name="name" recommended="true"/>
@@ -129,10 +130,22 @@
                         <item value="photons"/>
                     </enumeration>
                 </field>
+                <group name="associated_beam" type="NXbeam">
+                    <doc>
+                         The beam emitted by this source.
+                         Should be named with the same appendix, e.g.,
+                         for `source_probe` it should refer to `beam_probe`.
+                         Refers to the same concept as /NXentry/NXinstrument/source_TYPE
+                         and may be linked.
+                    </doc>
+                </group>
             </group>
-            <group name="beam_probe" type="NXbeam">
-                <!-- Comment from mpes may workshop: Add linking between source and beam-->
-                <!-- Add extent as recommended?-->
+            <!--It would be nice if we had the notion of linking in nexus or if
+we have a subdefinition NXlink to refer to a path.
+This would also be helpful for NXtransformations-->
+            <group name="beam_TYPE" type="NXbeam">
+                <!--Comment from mpes may workshop: Add linking between source and beam-->
+                <!--Add extent as recommended?-->
                 <field name="distance" type="NX_NUMBER" units="NX_LENGTH" recommended="true">
                     <doc>
                          Distance of the point of evaluation of the beam from the sample surface.
@@ -141,9 +154,19 @@
                 <field name="incident_energy" type="NX_FLOAT" units="NX_ENERGY"/>
                 <field name="incident_energy_spread" type="NX_NUMBER" recommended="true" units="NX_ENERGY"/>
                 <field name="incident_polarization" type="NX_NUMBER" recommended="true" units="NX_ANY"/>
+                <field name="extent" type="NX_FLOAT" recommended="true"/>
+                <group name="associated_source" type="NXsource">
+                    <doc>
+                         The beam emitted by this source.
+                         Should be named with the same appendix, e.g.,
+                         for `beam_probe` it should refer to `source_probe`.
+                         Refers to the same concept as /NXentry/NXinstrument/beam_TYPE
+                         and may be linked.
+                    </doc>
+                </group>
             </group>
             <group type="NXelectronanalyser">
-                <group name="model" type="NXfabrication" recommended="true">
+                <group name="device_information" type="NXfabrication" recommended="true">
                     <field name="vendor" recommended="true"/>
                     <field name="model" recommended="true"/>
                     <field name="identifier" recommended="true"/>
@@ -158,12 +181,9 @@
                 <field name="fast_axes" type="NX_CHAR" recommended="true"/>
                 <field name="slow_axes" recommended="true"/>
                 <group type="NXcollectioncolumn">
-                    <!--
-                        TODO: Comment from Anders Frisk on proposal page
-                        What is the definition of a collection column?
-
-                        Optional constant settings (like lens focusing parameters on the sample: position_x, position_y, working_distance)
-                    -->
+                    <!--TODO: Comment from Anders Frisk on proposal page
+What is the definition of a collection column?
+Optional constant settings (like lens focusing parameters on the sample: position_x, position_y, working_distance)-->
                     <field name="scheme">
                         <doc>
                              Scheme of the electron collection column.
@@ -178,7 +198,11 @@
                             <item value="Momentum Microscope"/>
                         </enumeration>
                     </field>
-                    <field name="mode" recommended="true"/> <!-- TODO: What does this refer to. It is currently not in the collection column base class -->
+                    <field name="mode" recommended="true">
+                        <doc>
+                             Labelling of the lens setting in use.
+                        </doc>
+                    </field>
                     <field name="projection" recommended="true"/>
                     <group name="field_aperture" type="NXaperture" optional="true">
                         <doc>
@@ -243,10 +267,6 @@
                         </enumeration>
                     </field>
                     <group type="NXdata" recommended="true">
-                        <!--
-                            TODO: Anders Frisk on proposal page
-                                It could be a lot of raw data from a detector. Shpould be optional.
-                        -->
                         <attribute name="signal">
                             <enumeration>
                                 <item value="raw"/>
@@ -380,10 +400,10 @@
                     <item value="reducing atmosphere"/>
                 </enumeration>
             </field>
-            <field name="gas_pressure" type="NX_FLOAT" units="NX_PRESSURE" optional="true" />
+            <field name="gas_pressure" type="NX_FLOAT" units="NX_PRESSURE" optional="true"/>
             <field name="bias" type="NX_FLOAT" units="NX_VOLTAGE" optional="true">
                 <doc>
-                    Voltage applied to sample and sample holder.
+                     Voltage applied to sample and sample holder.
                 </doc>
             </field>
         </group>
