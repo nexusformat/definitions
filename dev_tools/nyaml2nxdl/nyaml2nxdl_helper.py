@@ -38,6 +38,68 @@ from yaml.resolver import BaseResolver
 ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    "}
 ESCAPE_CHAR_DICT_IN_XML = {val : key for key, val in ESCAPE_CHAR_DICT_IN_YAML.items()}
 
+# Set up attributes for nxdl version
+NXDL_GROUP_ATTRIBUTES = (
+        "optional",
+        "recommended",
+        "name",
+        "type",
+        "maxOccurs",
+        "minOccurs",
+        "deprecated")
+NXDL_FIELD_ATTRIBUTES = (
+    "optional",
+    "recommended",
+    "name",
+    "type",
+    "axes",
+    "axis",
+    "data_offset",
+    "interpretation",
+    "long_name",
+    "maxOccurs",
+    "minOccurs",
+    "nameType",
+    "primary",
+    "signal",
+    "stride",
+    "required",
+    "deprecated",
+    "units",
+)
+
+NXDL_ATTRIBUTES_ATTRIBUTES = (
+    "name",
+    "type",
+    "recommended",
+    "optional",
+    "deprecated",
+)
+
+NXDL_LINK_ATTRIBUTES = ("name",
+                        "target", 
+                        "napimount")
+
+# Set up attributes for yaml version
+YAML_GROUP_ATTRIBUTES = (
+        *NXDL_GROUP_ATTRIBUTES,
+        "exists"
+        )
+
+YAML_FIELD_ATTRIBUTES = (
+   *NXDL_FIELD_ATTRIBUTES[0:-1],
+    "unit",
+    "exists"
+)
+
+YAML_ATTRIBUTES_ATTRIBUTES = (
+        *NXDL_ATTRIBUTES_ATTRIBUTES,        
+        "minOccurs",
+        "maxOccurs",
+        "exists",
+)
+
+YAML_LINK_ATTRIBUTES = NXDL_LINK_ATTRIBUTES
 
 def remove_namespace_from_tag(tag):
     """Helper function to remove the namespace from an XML tag."""

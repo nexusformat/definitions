@@ -37,6 +37,10 @@ from .nyaml2nxdl_helper import LineLoader
 from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_yaml_escape_char_reverter_dict
 from .nyaml2nxdl_helper import nx_name_type_resolving
+from .nyaml2nxdl_helper import (YAML_ATTRIBUTES_ATTRIBUTES,
+                                YAML_FIELD_ATTRIBUTES,
+                                YAML_GROUP_ATTRIBUTES,
+                                YAML_LINK_ATTRIBUTES)
 from .nyaml2nxdl_helper import remove_namespace_from_tag
 
 
@@ -342,16 +346,7 @@ def xml_handle_group(dct, obj, keyword, value, verbose=False):
     line_number = f"__line__{keyword}"
     line_loc = dct[line_number]
     xml_handle_comment(obj, line_number, line_loc)
-    list_of_attr = [
-        "name",
-        "type",
-        "nameType",
-        "deprecated",
-        "optional",
-        "recommended",
-        "exists",
-        "unit",
-    ]
+
     l_bracket = -1
     r_bracket = -1
     if keyword.count("(") == 1:
@@ -396,8 +391,8 @@ def xml_handle_group(dct, obj, keyword, value, verbose=False):
             elif attr == "unit":
                 xml_handle_units(grp, vval)
                 xml_handle_comment(obj, line_number, line_loc, grp)
-            elif attr in list_of_attr and not isinstance(vval, dict) and vval:
-                validate_field_attribute_and_value(attr, vval, list_of_attr, value)
+            elif attr in YAML_GROUP_ATTRIBUTES and not isinstance(vval, dict) and vval:
+                validate_field_attribute_and_value(attr, vval, YAML_GROUP_ATTRIBUTES, value)
                 grp.set(attr, check_for_mapping_char_other(vval))
                 rm_key_list.append(attr)
                 rm_key_list.append(line_number)
@@ -406,7 +401,7 @@ def xml_handle_group(dct, obj, keyword, value, verbose=False):
         for key in rm_key_list:
             del value[key]
         # Check for skipped attrinutes
-        check_for_skipped_attributes("group", value, list_of_attr, verbose)
+        check_for_skipped_attributes("group", value, YAML_GROUP_ATTRIBUTES, verbose)
     if isinstance(value, dict) and len(value) != 0:
         recursive_build(grp, value, verbose)
 
@@ -629,7 +624,6 @@ def xml_handle_link(dct, obj, keyword, value, verbose):
     line_number = f"__line__{keyword}"
     line_loc = dct[line_number]
     xml_handle_comment(obj, line_number, line_loc)
-    possible_attrs = ["name", "target", "napimount"]
     name = keyword[:-6]
     link_obj = ET.SubElement(obj, "link")
     link_obj.set("name", str(name))
@@ -645,7 +639,7 @@ def xml_handle_link(dct, obj, keyword, value, verbose):
                 xml_handle_doc(link_obj, vval, line_number, line_loc)
                 rm_key_list.append(attr)
                 rm_key_list.append(line_number)
-            elif attr in possible_attrs and not isinstance(vval, dict):
+            elif attr in YAML_LINK_ATTRIBUTES and not isinstance(vval, dict):
                 if vval:
                     link_obj.set(attr, str(vval))
                 rm_key_list.append(attr)
@@ -655,7 +649,7 @@ def xml_handle_link(dct, obj, keyword, value, verbose):
         for key in rm_key_list:
             del value[key]
         # Check for skipped attrinutes
-        check_for_skipped_attributes("link", value, possible_attrs, verbose)
+        check_for_skipped_attributes("link", value, YAML_LINK_ATTRIBUTES, verbose)
 
     if isinstance(value, dict) and value != {}:
         recursive_build(link_obj, value, verbose=None)
@@ -768,7 +762,7 @@ def verbose_flag(verbose, keyword, value):
     Verbose stdout printing for nested levels of yaml file, if verbose flag is active
     """
     if verbose:
-        sys.stdout.write(f"  key:{keyword}; value type is {type(value)}\n")
+        print(f"key:{keyword}; value type is {type(value)}\n")
 
 
 def xml_handle_attributes(dct, obj, keyword, value, verbose):
@@ -777,19 +771,6 @@ def xml_handle_attributes(dct, obj, keyword, value, verbose):
     line_number = f"__line__{keyword}"
     line_loc = dct[line_number]
     xml_handle_comment(obj, line_number, line_loc)
-    # list of possible attribute of xml attribute elements
-    attr_attr_list = [
-        "name",
-        "type",
-        "unit",
-        "nameType",
-        "optional",
-        "recommended",
-        "minOccurs",
-        "maxOccurs",
-        "deprecated",
-        "exists",
-    ]
     # as an attribute identifier
     keyword_name, keyword_typ = nx_name_type_resolving(keyword)
     line_number = f"__line__{keyword}"
@@ -810,7 +791,7 @@ def xml_handle_attributes(dct, obj, keyword, value, verbose):
                 continue
             line_number = f"__line__{attr}"
             line_loc = value[line_number]
-            if attr in ["doc", *attr_attr_list] and not isinstance(attr_val, dict):
+            if attr in ["doc", *YAML_ATTRIBUTES_ATTRIBUTES] and not isinstance(attr_val, dict):
                 if attr == "unit":
                     elemt_obj.set(f"{attr}s", str(value[attr]))
                     rm_key_list.append(attr)
@@ -836,7 +817,7 @@ def xml_handle_attributes(dct, obj, keyword, value, verbose):
         for key in rm_key_list:
             del value[key]
         # Check cor skiped attribute
-        check_for_skipped_attributes("Attribute", value, attr_attr_list, verbose)
+        check_for_skipped_attributes("Attribute", value, YAML_ATTRIBUTES_ATTRIBUTES, verbose)
     if value:
         recursive_build(elemt_obj, value, verbose)
 
@@ -886,27 +867,6 @@ def xml_handle_fields(obj, keyword, value, line_annot, line_loc, verbose=False):
     then the not empty keyword_name is a field!
     This simple function will define a new node of xml tree
     """
-    # List of possible attributes of xml elements
-    allowed_attr = [
-        "name",
-        "type",
-        "nameType",
-        "unit",
-        "minOccurs",
-        "long_name",
-        "axis",
-        "signal",
-        "deprecated",
-        "axes",
-        "exists",
-        "data_offset",
-        "interpretation",
-        "maxOccurs",
-        "primary",
-        "recommended",
-        "optional",
-        "stride",
-    ]
 
     xml_handle_comment(obj, line_annot, line_loc)
     l_bracket = -1
@@ -959,8 +919,8 @@ def xml_handle_fields(obj, keyword, value, line_annot, line_loc, verbose=False):
             elif attr == "unit":
                 xml_handle_units(elemt_obj, vval)
                 xml_handle_comment(obj, line_number, line_loc, elemt_obj)
-            elif attr in allowed_attr and not isinstance(vval, dict) and vval:
-                validate_field_attribute_and_value(attr, vval, allowed_attr, value)
+            elif attr in YAML_FIELD_ATTRIBUTES and not isinstance(vval, dict) and vval:
+                validate_field_attribute_and_value(attr, vval, YAML_FIELD_ATTRIBUTES, value)
                 elemt_obj.set(attr, check_for_mapping_char_other(vval))
                 rm_key_list.append(attr)
                 rm_key_list.append(line_number)
@@ -969,7 +929,7 @@ def xml_handle_fields(obj, keyword, value, line_annot, line_loc, verbose=False):
         for key in rm_key_list:
             del value[key]
         # Check for skipped attrinutes
-        check_for_skipped_attributes("field", value, allowed_attr, verbose)
+        check_for_skipped_attributes("field", value, YAML_FIELD_ATTRIBUTES, verbose)
 
     if isinstance(value, dict) and value != {}:
         recursive_build(elemt_obj, value, verbose)

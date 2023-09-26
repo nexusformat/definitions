@@ -31,6 +31,11 @@ from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_node_parent_info
 from .nyaml2nxdl_helper import get_yaml_escape_char_dict
 from .nyaml2nxdl_helper import remove_namespace_from_tag
+from .nyaml2nxdl_helper import (NXDL_FIELD_ATTRIBUTES, 
+                                NXDL_GROUP_ATTRIBUTES,
+                                NXDL_ATTRIBUTES_ATTRIBUTES,
+                                NXDL_LINK_ATTRIBUTES)
+
 
 DEPTH_SIZE = "  "
 CMNT_TAG = "!--"
@@ -40,8 +45,8 @@ CMNT_END = "-->"
 DEFINITION_CATEGORIES = ("category: application", "category: base")
 
 def separate_pi_comments(input_file):
-    """
-    Separate PI comments from ProcessesInstruction (PI)
+    """Separate PI comments from ProcessesInstruction (PI)
+
     Separeate the comments that comes immediately after XML process instruction part,
     i.e. copyright comment part.
     """
@@ -158,42 +163,7 @@ class Nxdl2yaml:
         #       The 'symbol_comments' contains comments for 'symbols doc' and all 'symbol'
         #                      'symbol_comments': [comments]}
         self.root_level_comment: Dict[str, str] = {}
-        self.grp_fld_allowed_attr = (
-            "optional",
-            "recommended",
-            "name",
-            "type",
-            "axes",
-            "axis",
-            "data_offset",
-            "interpretation",
-            "long_name",
-            "maxOccurs",
-            "minOccurs",
-            "nameType",
-            "optional",
-            "primary",
-            "signal",
-            "stride",
-            "units",
-            "required",
-            "deprecated",
-            "exists",
-        )
-        self.attr_allowed_attr = (
-            "name",
-            "type",
-            "units",
-            "nameType",
-            "recommended",
-            "optional",
-            "minOccurs",
-            "maxOccurs",
-            "deprecated",
-        )
-        self.link_allowed_attr = ("name",
-                                  "target", 
-                                  "napimount")
+
         self.optionality_keys = ("minOccurs",
                                  "maxOccurs", 
                                  "optional", 
@@ -543,7 +513,7 @@ class Nxdl2yaml:
                 name_type = name_type + val
                 rm_key_list.append(key)
             elif key == "type":
-                name_type = name_type + "(%s)" % val
+                name_type = f"{name_type}({val})"
                 rm_key_list.append(key)
         if not name_type:
             raise ValueError(
@@ -560,11 +530,8 @@ class Nxdl2yaml:
         tmp_dict = {}
         exists_dict = {}
         for key, val in node_attr.items():
-            if key not in self.grp_fld_allowed_attr:
-                raise ValueError(
-                    f"An attribute ({key}) in 'field' or 'group' has been found "
-                    f"that is not allowed. The allowed attr is {self.grp_fld_allowed_attr}."
-                )
+            # Check for any unwanted attributes
+            self.check_for_unwanted_attributes(node=node)
             # As both 'minOccurs', 'maxOccurs' and optionality move to the 'exists'
             if key in self.optionality_keys:
                 if "exists" not in tmp_dict:
@@ -591,6 +558,25 @@ class Nxdl2yaml:
                 f"{handle_mapping_char(val, depth_ + 1, False)}\n"
             )
 
+    def check_for_unwanted_attributes(self, node, allowed_attributes_li=None, tag=None):
+        """Check for any attributes that NeXus does not allow."""
+        node_tag = remove_namespace_from_tag(node.tag)
+        if node_tag == "field":
+            for key in node.attrib.keys():
+                if key not in NXDL_FIELD_ATTRIBUTES:
+                    raise ValueError(f"Field has got an unwanted attribute {key}."
+                                     f"NeXus field allows attributes from {NXDL_FIELD_ATTRIBUTES}")
+        elif node_tag == "group":
+            for key in node.attrib.keys():
+                if key not in NXDL_GROUP_ATTRIBUTES:
+                    raise ValueError(f"Attribute has got an unwanted attribute {key}."
+                                     f"NeXus attribute allows attributes from {NXDL_GROUP_ATTRIBUTES}")
+        elif node_tag == tag:
+            for key in node.attrib.keys():
+                if key not in allowed_attributes_li:
+                    raise ValueError(f"{tag.capitalized()} has got an unwanted attribute {key}."
+                                     f"NeXus {tag.capitalized()} allows attributes from {allowed_attributes_li}")
+    
     # pylint: disable=too-many-branches, too-many-locals
     def handle_dimension(self, depth, node, file_out):
         """
@@ -776,10 +762,10 @@ class Nxdl2yaml:
         tmp_dict = {}
         exists_dict = {}
         for key, val in node_attr.items():
-            if key not in self.attr_allowed_attr:
+            if key not in NXDL_ATTRIBUTES_ATTRIBUTES:
                 raise ValueError(
                     f"An attribute ({key}) has been found that is not allowed."
-                    f"The allowed attr is {self.attr_allowed_attr}."
+                    f"The allowed attr is {NXDL_ATTRIBUTES_ATTRIBUTES}."
                 )
             # As both 'minOccurs', 'maxOccurs' and optionality move to the 'exists'
             if key in self.optionality_keys:
@@ -834,13 +820,13 @@ class Nxdl2yaml:
         depth_ = depth + 1
         # Handle general cases
         for attr_key, val in node_attr.items():
-            if attr_key in self.link_allowed_attr:
+            if attr_key in NXDL_LINK_ATTRIBUTES:
                 indent = depth_ * DEPTH_SIZE
                 file_out.write(f"{indent}{attr_key}: {val}\n")
             else:
                 raise ValueError(
                     f"An unexpected attribute '{attr_key}' of link has found."
-                    f"At this moment the alloed keys are {self.link_allowed_attr}"
+                    f"At this moment the alloed keys are {NXDL_LINK_ATTRIBUTES}"
                 )
 
     def handle_choice(self, depth, node, file_out):
@@ -934,7 +920,7 @@ class Nxdl2yaml:
                             node.remove(remove_cmnt_n)
                             remove_cmnt_n = None
 
-            if tag == ("doc") and depth != 1:
+            if tag == "doc" and depth != 1:
                 parent = get_node_parent_info(tree, node)[0]
                 doc_parent = remove_namespace_from_tag(parent.tag)
                 if doc_parent != "item":
