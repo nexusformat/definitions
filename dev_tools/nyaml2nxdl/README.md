@@ -51,7 +51,7 @@ Options:
 * **dimensions** Details which dimensional arrays to expect
 * **enumeration** Python list of strings which are considered as recommended entries to choose from.
 * **dim_parameters** `dim` which is a child of `dimension` and the `dim` might have several attributes `ref`,
-`incr` including `index` and `value`. So while writting `yaml` file schema definition please following structure:
+`incr` including `index` and `value`. So while writing `yaml` file schema definition please following structure:
 ```
 dimensions:
    rank: integer value

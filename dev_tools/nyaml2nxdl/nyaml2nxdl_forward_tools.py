@@ -259,8 +259,8 @@ def check_for_mapping_char_other(text):
         text = "true"
     if text == "False":
         text = "false"
-    # Some escape char is not valid in yaml libray which is written while writting
-    # yaml file. In the time of writting nxdl revert to that escape char.
+    # Some escape char is not valid in yaml libray which is written while writing
+    # yaml file. In the time of writing nxdl revert to that escape char.
     escape_reverter = get_yaml_escape_char_reverter_dict()
     for key, val in escape_reverter.items():
         if key in text:
