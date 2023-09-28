@@ -346,7 +346,6 @@ class Nxdl2yaml:
                 tag = remove_namespace_from_tag(tag)
             indent = depth * DEPTH_SIZE
         else:
-            text = ""
             if "}" in tag:
                 tag = remove_namespace_from_tag(tag)
             indent = depth * DEPTH_SIZE

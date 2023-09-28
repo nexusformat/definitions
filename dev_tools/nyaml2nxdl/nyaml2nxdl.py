@@ -90,7 +90,7 @@ a YAML or XML file from, respectively.",
     is_flag=True,
     default=False,
     help=(
-        "Check if yaml and nxdl can be convertered from one to another version recursively and"
+        "Check if yaml and nxdl can be converted from one to another version recursively and"
         " get the same version of file. E.g. from NXexample.nxdl.xml to NXexample_consistency.nxdl.xml."
     ),
 )

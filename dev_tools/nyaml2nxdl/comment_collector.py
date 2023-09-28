@@ -204,7 +204,7 @@ class Comment:
         """Comment object can be considered as a block element that includes
         document element (an entity for what the comment is written).
         """
-        self._elemt: Any = None
+        self._elemt: Dict[str, Any] = {}
         self._elemt_text: str = None
         self._is_elemt_found: bool = None
         self._is_elemt_stored: bool = None
@@ -485,8 +485,8 @@ class YAMLComment(Comment):
     def get_element_location(self):
         """Return yaml line '__line__<KEYY>' info and and line numner
         """
-        if len(self._elemt) == 1:
-            raise ValueError(f"Comment element should be one but got " f"{self._elemt}")
+        if len(self._elemt) == 0:
+            raise ValueError(f"Comment element should be one or more but got {self._elemt}")
         return next(self._elemt.items())
 
     def collect_yaml_line_info(self, yaml_dict, line_info_dict):

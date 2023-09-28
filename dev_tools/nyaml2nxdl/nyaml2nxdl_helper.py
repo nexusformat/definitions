@@ -176,23 +176,22 @@ def clean_empty_lines(line_list):
     if not isinstance(line_list, list):
         line_list = line_list.split("\n") if "\n" in line_list else [""]
 
-    start_non_empty_line = 0
+    start_non_empty_line = -1
     ends_non_empty_line = None
     # Find the index of first non-empty line
     for ind, line in enumerate(line_list):
-        if not line.isspace():
+        if len(line.strip()) > 1 :
             start_non_empty_line = ind
             break
 
     # Find the index of the last non-empty line
     for ind, line in enumerate(reversed(line_list)):
-        if not line.isspace():
+        if len(line.strip()) > 1:
             ends_non_empty_line = -ind
             break
 
     if ends_non_empty_line == 0 :
         ends_non_empty_line = None
-
     return line_list[start_non_empty_line : ends_non_empty_line]
 
 

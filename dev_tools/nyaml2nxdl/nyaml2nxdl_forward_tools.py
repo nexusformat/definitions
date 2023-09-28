@@ -228,7 +228,6 @@ def check_for_skipped_attributes(component, value, allowed_attr=None, verbose=Fa
 def format_nxdl_doc(string):
     """NeXus format for doc string"""
     string = check_for_mapping_char_other(string)
-    formatted_doc = ""
     string_len = 80
     if "\n" not in string:
         if len(string) > string_len:
@@ -301,11 +300,11 @@ def xml_handle_exists(dct, obj, keyword, value):
                 else:
                     obj.set("maxOccurs", "unbounded")
             elif value[0] == "max" and value[2] == "min":
-                obj.set("minOccurs", str(value[3]))
                 if str(value[1]) != "infty":
-                    obj.set("maxOccurs", str(value[3]))
+                    obj.set("maxOccurs", str(value[1]))
                 else:
                     obj.set("maxOccurs", "unbounded")
+                obj.set("minOccurs", str(value[3]))
             else:
                 raise ValueError(
                     f"Line {dct[line_number]}: exists keyword"
