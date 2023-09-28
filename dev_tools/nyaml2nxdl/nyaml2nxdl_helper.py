@@ -23,10 +23,6 @@ to convert from nyaml to nxdl and vice versa.
 # limitations under the License.
 #
 
-
-# Yaml library does not except the keys (escape char "\t" and yaml separator ":")
-# So the corresponding value is to skip them and
-# and also careful about this order
 import hashlib
 
 from yaml.composer import Composer
@@ -35,6 +31,7 @@ from yaml.loader import Loader
 from yaml.nodes import ScalarNode
 from yaml.resolver import BaseResolver
 
+# Yaml library does not except the keys (escape char "\t" and yaml separator ":")
 ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    "}
 ESCAPE_CHAR_DICT_IN_XML = {val : key for key, val in ESCAPE_CHAR_DICT_IN_YAML.items()}
 
@@ -168,7 +165,7 @@ def get_node_parent_info(tree, node):
     index = index of grand child node of tree
     """
 
-    # map from grand child to child parent of tree
+    # map from grand child to parent which is child tree
     parent_map = {c: p for p in tree.iter() for c in p}
     parent = parent_map[node]
     return parent, list(parent).index(node)
@@ -188,7 +185,7 @@ def clean_empty_lines(line_list):
             break
 
     # Find the index of the last non-empty line
-    for ind, line in enumerate(line_list[::-1]):
+    for ind, line in enumerate(reversed(line_list)):
         if not line.isspace():
             ends_non_empty_line = -ind
             break
@@ -202,7 +199,7 @@ def clean_empty_lines(line_list):
 def nx_name_type_resolving(tmp):
     """Separate name and NeXus type
 
-    Extracts the eventually custom name {optional_string}
+    Extracts the eventual custom name {optional_string}
     and type {nexus_type} from a YML section string.
     YML section string syntax: optional_string(nexus_type)
     """
@@ -250,8 +247,7 @@ def extend_yamlfile_by_nxdl_as_comment(
                 f1_obj.write(line)
 
         with open(file_to_be_appended, mode="r", encoding="utf-8") as f2_obj:
-            lines = f2_obj.readlines()
-            for line in lines:
+            for line in f2_obj:
                 f1_obj.write(f"# {line}")
 
 

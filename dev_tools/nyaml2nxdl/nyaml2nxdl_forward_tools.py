@@ -22,7 +22,6 @@
 #
 
 import os
-import sys
 import textwrap
 import datetime
 import xml.etree.ElementTree as ET
@@ -307,7 +306,7 @@ def xml_handle_exists(dct, obj, keyword, value):
                     obj.set("maxOccurs", str(value[3]))
                 else:
                     obj.set("maxOccurs", "unbounded")
-            elif value[0] != "min" or value[2] != "max":
+            else:
                 raise ValueError(
                     f"Line {dct[line_number]}: exists keyword"
                     f"needs to go either with an optional [recommended] list with two "
@@ -336,74 +335,6 @@ def xml_handle_exists(dct, obj, keyword, value):
             obj.set("optional", "false")
         else:
             obj.set("minOccurs", "0")
-
-
-# pylint: disable=too-many-branches, too-many-locals, too-many-statements
-def xml_handle_group(dct, obj, keyword, value, verbose=False):
-    """
-    The function deals with group instances
-    """
-    line_number = f"__line__{keyword}"
-    line_loc = dct[line_number]
-    xml_handle_comment(obj, line_number, line_loc)
-
-    l_bracket = -1
-    r_bracket = -1
-    if keyword.count("(") == 1:
-        l_bracket = keyword.index("(")
-    if keyword.count(")") == 1:
-        r_bracket = keyword.index(")")
-
-    keyword_name, keyword_type = nx_name_type_resolving(keyword)
-    if not keyword_type:
-    # if not keyword_name and not keyword_type:
-        raise ValueError(f"A group must have a type class from base, application"
-                         f" or contributed class. Check around line: {line_number}.")
-    grp = ET.SubElement(obj, "group")
-
-    if l_bracket == 0 and r_bracket > 0:
-        grp.set("type", keyword_type)
-        if keyword_name:
-            grp.set("name", keyword_name)
-    elif l_bracket > 0:
-        grp.set("name", keyword_name)
-        if keyword_type:
-            grp.set("type", keyword_type)
-    else:
-        grp.set("name", keyword_name)
-
-    if value:
-        rm_key_list = []
-        for attr, vval in value.items():
-            if "__line__" in attr:
-                continue
-            line_number = f"__line__{attr}"
-            line_loc = value[line_number]
-            if attr == "doc":
-                xml_handle_doc(grp, vval, line_number, line_loc)
-                rm_key_list.append(attr)
-                rm_key_list.append(line_number)
-            elif attr == "exists" and vval:
-                xml_handle_exists(value, grp, attr, vval)
-                rm_key_list.append(attr)
-                rm_key_list.append(line_number)
-                xml_handle_comment(obj, line_number, line_loc, grp)
-            elif attr == "unit":
-                xml_handle_units(grp, vval)
-                xml_handle_comment(obj, line_number, line_loc, grp)
-            elif attr in YAML_GROUP_ATTRIBUTES and not isinstance(vval, dict) and vval:
-                validate_field_attribute_and_value(attr, vval, YAML_GROUP_ATTRIBUTES, value)
-                grp.set(attr, check_for_mapping_char_other(vval))
-                rm_key_list.append(attr)
-                rm_key_list.append(line_number)
-                xml_handle_comment(obj, line_number, line_loc, grp)
-
-        for key in rm_key_list:
-            del value[key]
-        # Check for skipped attrinutes
-        check_for_skipped_attributes("group", value, YAML_GROUP_ATTRIBUTES, verbose)
-    if isinstance(value, dict) and len(value) != 0:
-        recursive_build(grp, value, verbose)
 
 
 def xml_handle_dimensions(dct, obj, keyword, value: dict):
@@ -574,7 +505,7 @@ def xml_handle_dim_from_dimension_dict(
         else:
             raise ValueError(
                 f"Got unexpected block except 'dim' and 'dim_parameters'."
-                f"Please check arround line {line_number}"
+                f"Please check around line {line_number}"
             )
 
     for key in rm_key_list:
@@ -648,7 +579,7 @@ def xml_handle_link(dct, obj, keyword, value, verbose):
 
         for key in rm_key_list:
             del value[key]
-        # Check for skipped attrinutes
+        # Check for skipped attributes
         check_for_skipped_attributes("link", value, YAML_LINK_ATTRIBUTES, verbose)
 
     if isinstance(value, dict) and value != {}:
@@ -662,7 +593,7 @@ def xml_handle_choice(dct, obj, keyword, value, verbose=False):
     line_number = f"__line__{keyword}"
     line_loc = dct[line_number]
     xml_handle_comment(obj, line_number, line_loc)
-    # Add to this tuple if new attributs have been added to nexus definition.
+    # Add to this tuple if new attributes have been added to nexus definition.
     possible_attr = ()
     choice_obj = ET.SubElement(obj, "choice")
     # take care of special attributes
@@ -689,7 +620,7 @@ def xml_handle_choice(dct, obj, keyword, value, verbose=False):
 
         for key in rm_key_list:
             del value[key]
-        # Check for skipped attrinutes
+        # Check for skipped attributes
         check_for_skipped_attributes("choice", value, possible_attr, verbose)
 
     if isinstance(value, dict) and value != {}:
@@ -724,11 +655,9 @@ def xml_handle_symbols(dct, obj, keyword, value: dict):
             ), f"Line {line_loc}: put a comment in doc string !"
             sym = ET.SubElement(syms, "symbol")
             sym.set("name", kkeyword)
-            # sym_doc = ET.SubElement(sym, 'doc')
             xml_handle_doc(sym, vvalue)
             rm_key_list.append(kkeyword)
             rm_key_list.append(line_number)
-            # sym_doc.text = '\n' + textwrap.fill(vvalue, width=70) + '\n'
     for key in rm_key_list:
         del value[key]
 
@@ -750,7 +679,7 @@ def check_keyword_variable(verbose, dct, keyword, value):
 
 def helper_keyword_type(kkeyword_type):
     """
-    This function is returning a value of keyword_type if it belong to NX_TYPE_KEYS
+    Return a value of keyword_type if it belong to NX_TYPE_KEYS
     """
     if kkeyword_type in NX_TYPE_KEYS:
         return kkeyword_type
@@ -816,7 +745,7 @@ def xml_handle_attributes(dct, obj, keyword, value, verbose):
 
         for key in rm_key_list:
             del value[key]
-        # Check cor skiped attribute
+        # Check cor skipped attribute
         check_for_skipped_attributes("Attribute", value, YAML_ATTRIBUTES_ATTRIBUTES, verbose)
     if value:
         recursive_build(elemt_obj, value, verbose)
@@ -828,12 +757,11 @@ def validate_field_attribute_and_value(v_attr, vval, allowed_attribute, value):
         and invalid value.
     """
 
-    # check for empty val
     if not isinstance(vval, dict) and not str(vval):  # check for empty value
         line_number = f"__line__{v_attr}"
         raise ValueError(
             f"In a field a valid attrbute ('{v_attr}') found that is not stored."
-            f" Please check arround line {value[line_number]}"
+            f" Please check around line {value[line_number]}"
         )
 
     # The below elements might come as child element
@@ -849,25 +777,15 @@ def validate_field_attribute_and_value(v_attr, vval, allowed_attribute, value):
         line_number = f"__line__{v_attr}"
         raise ValueError(
             f"In a field or group a invalid attribute ('{v_attr}') or child has found."
-            f" Please check arround line {value[line_number]}."
+            f" Please check around line {value[line_number]}."
         )
 
 
-def xml_handle_fields(obj, keyword, value, line_annot, line_loc, verbose=False):
+def xml_handle_fields_or_group(dct, obj, keyword, value, ele_type, allowed_attr, verbose=False):
+    """Handle a field or group in yaml file.
     """
-    Handle a field in yaml file.
-        When a keyword is NOT:
-            symbol,
-            NX baseclass member,
-            attribute (\\@),
-            doc,
-            enumerations,
-            dimension,
-            exists,
-    then the not empty keyword_name is a field!
-    This simple function will define a new node of xml tree
-    """
-
+    line_annot = f"__line__{keyword}"
+    line_loc = dct[line_annot]
     xml_handle_comment(obj, line_annot, line_loc)
     l_bracket = -1
     r_bracket = -1
@@ -877,9 +795,14 @@ def xml_handle_fields(obj, keyword, value, line_annot, line_loc, verbose=False):
         r_bracket = keyword.index(")")
 
     keyword_name, keyword_type = nx_name_type_resolving(keyword)
-    if not keyword_type and not keyword_name:
-        raise ValueError("Check for name or type in field.")
-    elemt_obj = ET.SubElement(obj, "field")
+    if ele_type == 'field' and not keyword_name:
+        raise ValueError(f"No name for NeXus {ele_type} has been found."
+                         f"Check around line:{line_loc}")
+    elif not keyword_type and not keyword_name:
+        raise ValueError(f"No name or type for NeXus {ele_type} has been found."
+                         f"Check around line: {line_loc}")
+    
+    elemt_obj = ET.SubElement(obj, ele_type)
 
     # type come first
     if l_bracket == 0 and r_bracket > 0:
@@ -916,11 +839,11 @@ def xml_handle_fields(obj, keyword, value, line_annot, line_loc, verbose=False):
                 rm_key_list.append(attr)
                 rm_key_list.append(line_number)
                 xml_handle_comment(obj, line_number, line_loc, elemt_obj)
-            elif attr == "unit":
+            elif ele_type == "field" and attr == "unit":
                 xml_handle_units(elemt_obj, vval)
                 xml_handle_comment(obj, line_number, line_loc, elemt_obj)
-            elif attr in YAML_FIELD_ATTRIBUTES and not isinstance(vval, dict) and vval:
-                validate_field_attribute_and_value(attr, vval, YAML_FIELD_ATTRIBUTES, value)
+            elif attr in allowed_attr and not isinstance(vval, dict) and vval:
+                validate_field_attribute_and_value(attr, vval, allowed_attr, value)
                 elemt_obj.set(attr, check_for_mapping_char_other(vval))
                 rm_key_list.append(attr)
                 rm_key_list.append(line_number)
@@ -928,8 +851,8 @@ def xml_handle_fields(obj, keyword, value, line_annot, line_loc, verbose=False):
 
         for key in rm_key_list:
             del value[key]
-        # Check for skipped attrinutes
-        check_for_skipped_attributes("field", value, YAML_FIELD_ATTRIBUTES, verbose)
+        # Check for skipped attributes
+        check_for_skipped_attributes(ele_type, value, allowed_attr, verbose)
 
     if isinstance(value, dict) and value != {}:
         recursive_build(elemt_obj, value, verbose)
@@ -942,12 +865,14 @@ def xml_handle_comment(
     xml_ele: ET.Element = None,
     is_def_cmnt: bool = False,
 ):
-    """
-        Add xml comment: check for comments that has the same 'line_annotation'
-    (e.g. __line__data) and the same line_loc_no (e.g. 30). After that, it
+    """Handle comment.
+
+        Add xml comment: check for comments searched by 'line_annotation'
+    (e.g. __line__data) and line_loc_no (e.g. 30). It
     does following tasks:
-    1. Returns list of comments texts (multiple members if element has multiple comments)
-        or [] if no intended comments are found 
+
+    1. Returns list of comments texts, if comment is intended for definition element.
+        other return always []. 
     2. Rearrange comment elements of xml_ele and xml_ele where comment comes first.
     3. Append comment element when no xml_ele found as general comments.
     """
@@ -957,7 +882,7 @@ def xml_handle_comment(
         cmnt = COMMENT_BLOCKS.get_comment_by_line_info(line_info)  # noqa: F821
         cmnt_text = cmnt.get_comment_text_list()
         
-        # Check comment for definition element
+        # Check comment for definition element and return
         if is_def_cmnt:
             return cmnt_text
         if xml_ele is not None:
@@ -969,6 +894,8 @@ def xml_handle_comment(
         elif not is_def_cmnt and xml_ele is None:
             for string in cmnt_text:
                 obj.append(ET.Comment(string))
+    
+    # The searched comment is not related with definition element 
     return []
 
 
@@ -992,7 +919,7 @@ def recursive_build(obj, dct, verbose):
         keyword_name, keyword_type = nx_name_type_resolving(keyword)
         check_keyword_variable(verbose, dct, keyword, value)
         if verbose:
-            sys.stdout.write(
+            print(
                 f"keyword_name:{keyword_name} keyword_type {keyword_type}\n"
             )
 
@@ -1000,7 +927,7 @@ def recursive_build(obj, dct, verbose):
             xml_handle_link(dct, obj, keyword, value, verbose)
         elif keyword[-8:] == "(choice)":
             xml_handle_choice(dct, obj, keyword, value)
-        # The bellow xml_symbol clause is for the symbols that come ubde filed or attributes
+        # The below xml_symbol clause is for the symbols that come ubde filed or attributes
         # Root level symbols has been inside nyaml2nxdl()
         elif keyword_type == "" and keyword_name == "symbols":
             xml_handle_symbols(dct, obj, keyword, value)
@@ -1008,8 +935,10 @@ def recursive_build(obj, dct, verbose):
         elif (keyword_type in NX_CLSS) or (
             keyword_type not in [*NX_TYPE_KEYS, "", *NX_NEW_DEFINED_CLASSES]
         ):
+            elem_type = 'group'
             # we can be sure we need to instantiate a new group
-            xml_handle_group(dct, obj, keyword, value, verbose)
+            xml_handle_fields_or_group(dct, obj, keyword, value, elem_type,
+                                       YAML_GROUP_ATTRIBUTES, verbose=False)
 
         elif keyword_name[0:2] == NX_ATTR_IDNT:  # check if obj qualifies
             xml_handle_attributes(dct, obj, keyword, value, verbose)
@@ -1025,11 +954,13 @@ def recursive_build(obj, dct, verbose):
             xml_handle_exists(dct, obj, keyword, value)
         # Handles fileds e.g. AXISNAME
         elif keyword_name != "" and "__line__" not in keyword_name:
-            xml_handle_fields(obj, keyword, value, line_number, line_loc, verbose)
+            elem_type = 'field'
+            xml_handle_fields_or_group(dct, obj, keyword, value, elem_type,
+                                       YAML_FIELD_ATTRIBUTES, verbose=False)
         else:
             raise ValueError(
                 f"An unknown type of element {keyword} has been found which is "
-                f"not be able to be resolved. Chekc around line {dct[line_number]}"
+                f"not be able to be resolved. Check around line {dct[line_number]}"
             )
 
 
@@ -1094,11 +1025,11 @@ def nyaml2nxdl(input_file: str, out_file, verbose: bool):
     yml_appdef = yml_reader(input_file)
     def_cmnt_text = []
     if verbose:
-        sys.stdout.write(f"input-file: {input_file}\n")
-        sys.stdout.write(
+        print(f"input-file: {input_file}\n")
+        print(
             "application/base contains the following root-level entries:\n"
         )
-        sys.stdout.write(str(yml_appdef.keys()))
+        print(str(yml_appdef.keys()))
     xml_root = ET.Element("definition", {})
     assert (
         "category" in yml_appdef.keys()
@@ -1126,7 +1057,7 @@ application and base are valid categories!"
 
             del yml_appdef[line_number]
             del yml_appdef[kkey]
-        # Taking care or name and extends
+        # Taking care of name and extends
         elif "NX" in kkey:
             # Taking the attribute order but the correct value will be stored later
             # check for name first or type first if (NXobject)NXname then type first
@@ -1210,4 +1141,4 @@ keyword has an invalid pattern, or is too short!"
         check_for_default_attribute_and_value(xml_root)
     pretty_print_xml(xml_root, out_file, def_cmnt_text)
     if verbose:
-        sys.stdout.write("Parsed YAML to NXDL successfully\n")
+        print("Parsed YAML to NXDL successfully\n")

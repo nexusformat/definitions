@@ -196,7 +196,7 @@ class Nxdl2yaml:
         for child in list(node):
             tag = remove_namespace_from_tag(child.tag)
             if tag == CMNT_TAG and self.include_comment:
-                last_comment = self.convert_to_ymal_comment(
+                last_comment = self.convert_to_yaml_comment(
                     depth * DEPTH_SIZE, child.text
                 )
             if tag == "doc":
@@ -223,7 +223,7 @@ class Nxdl2yaml:
                     for symbol_doc in list(child):
                         tag = remove_namespace_from_tag(symbol_doc.tag)
                         if tag == CMNT_TAG and self.include_comment:
-                            last_comment = self.convert_to_ymal_comment(
+                            last_comment = self.convert_to_yaml_comment(
                                 depth * DEPTH_SIZE, symbol_doc.text
                             )
                         if tag == "doc":
@@ -310,7 +310,7 @@ class Nxdl2yaml:
                 if len(line.lstrip()) != 0:
                     first_line_indent_n = len(line) - len(line.lstrip())
                     break
-            # Taking care of doc like bellow:
+            # Taking care of doc like below:
             # <doc>Text lines
             # text continues</doc>
             # So no indentation at the start of doc. So doc group will come along general
@@ -376,7 +376,7 @@ class Nxdl2yaml:
         self.write_out(indent, text, file_out)
         self.root_level_doc = ""
 
-    def convert_to_ymal_comment(self, indent, text):
+    def convert_to_yaml_comment(self, indent, text):
         """
         Convert into yaml comment by adding exta '#' char in front of comment lines
         """
@@ -404,7 +404,6 @@ class Nxdl2yaml:
         for def_line in self.root_level_definition:
             if def_line in DEFINITION_CATEGORIES:
                 self.write_out(indent=0 * DEPTH_SIZE, text=def_line, file_out=file_out)
-                # file_out.write(f"{def_line}\n")
                 has_category = True
 
         if not has_category:
@@ -450,7 +449,7 @@ class Nxdl2yaml:
             # The first comment is top level copyright doc string
             for comment in self.pi_comments[1:]:
                 self.write_out(
-                    indent, self.convert_to_ymal_comment(indent, comment), file_out
+                    indent, self.convert_to_yaml_comment(indent, comment), file_out
                 )
         if self.root_level_definition:
             # Store NXname for writing at end of definition attributes
@@ -516,7 +515,7 @@ class Nxdl2yaml:
         for key in rm_key_list:
             del node_attr[key]
 
-        # tmp_dict intended to perserve order of attributes
+        # tmp_dict intended to preserve order of attributes
         tmp_dict = {}
         exists_dict = {}
         for key, val in node_attr.items():
@@ -559,12 +558,12 @@ class Nxdl2yaml:
         elif node_tag == "group":
             for key in node.attrib.keys():
                 if key not in NXDL_GROUP_ATTRIBUTES:
-                    raise ValueError(f"Attribute has got an unwanted attribute {key}."
+                    raise ValueError(f"Attribute has an unwanted attribute {key}."
                                      f"NeXus attribute allows attributes from {NXDL_GROUP_ATTRIBUTES}")
         elif node_tag == tag:
             for key in node.attrib.keys():
                 if key not in allowed_attributes_li:
-                    raise ValueError(f"{tag.capitalized()} has got an unwanted attribute {key}."
+                    raise ValueError(f"{tag.capitalized()} has an unwanted attribute {key}."
                                      f"NeXus {tag.capitalized()} allows attributes from {allowed_attributes_li}")
     
     # pylint: disable=too-many-branches, too-many-locals
@@ -588,7 +587,7 @@ class Nxdl2yaml:
                 file_out.write(f"{indent}{attr}: {value}\n")
             else:
                 raise ValueError(
-                    f"Dimension has got an attribute {attr} that is not valid."
+                    f"Dimension has an attribute {attr} that is not valid."
                     f"Current the allowd atributes are {possible_dimemsion_attrs}."
                     f" Please have a look"
                 )
@@ -610,11 +609,9 @@ class Nxdl2yaml:
             # taking care of index and value attributes
             if tag == "dim":
                 # taking care of index and value in format [[index, value]]
-                index = child_attrs.get("index", "")
-                value = child_attrs.get("value", "")
+                index = child_attrs.pop("index", "")
+                value = child_attrs.pop("value", "")
                 dim_index_value = f"{dim_index_value}[{index}, {value}], "
-                child_attrs.pop("index", None)
-                child_attrs.pop("value", None)
 
                 # Taking care of doc comes as child of dim
                 for cchild in list(child):
@@ -679,11 +676,12 @@ class Nxdl2yaml:
 
         """
 
-        check_doc = []
+        check_doc = False
         node_children = list(node)
         for child in node_children:
             if list(child):
-                check_doc.append(list(child))
+                check_doc = True
+                break
         # pylint: disable=too-many-nested-blocks
         if check_doc:
             indent = depth * DEPTH_SIZE
@@ -849,7 +847,7 @@ class Nxdl2yaml:
         Collect comment element and pass to write_out function
         """
         indent = depth * DEPTH_SIZE
-        text = self.convert_to_ymal_comment(indent, node.text)
+        text = self.convert_to_yaml_comment(indent, node.text)
         self.write_out(indent, text, file_out)
 
 
@@ -887,7 +885,7 @@ class Nxdl2yaml:
                 for child in list(node):
                     tag_tmp = remove_namespace_from_tag(child.tag)
                     if tag_tmp == CMNT_TAG and self.include_comment:
-                        last_comment = self.convert_to_ymal_comment(
+                        last_comment = self.convert_to_yaml_comment(
                             depth * DEPTH_SIZE, child.text
                         )
                         remove_cmnt_n = child
