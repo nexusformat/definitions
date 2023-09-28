@@ -888,8 +888,7 @@ def xml_handle_comment(
         if xml_ele is not None:
             obj.remove(xml_ele)
             for string in cmnt_text:
-                si_comnt = ET.Comment(string)
-                obj.append(si_comnt)
+                obj.append(ET.Comment(string))
             obj.append(xml_ele)
         elif not is_def_cmnt and xml_ele is None:
             for string in cmnt_text:
