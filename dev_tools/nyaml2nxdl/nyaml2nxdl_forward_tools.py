@@ -21,7 +21,7 @@
 # limitations under the License.
 #
 
-import os
+import pathlib
 import textwrap
 import datetime
 import xml.etree.ElementTree as ET
@@ -89,10 +89,10 @@ def check_for_dom_comment_in_yaml():
         "WITHOUT ANY WARRANTY",
     ]
 
-    # Check for dom comments in first three comments
+    # Check for dom comments in first five comments
     dom_comment = ""
     dom_comment_ind = 1
-    for ind, comnt in enumerate(COMMENT_BLOCKS[0:3]):
+    for ind, comnt in enumerate(COMMENT_BLOCKS[0:5]):
         cmnt_list = comnt.get_comment_text_list()
         if len(cmnt_list) == 1:
             text = cmnt_list[0]
@@ -982,12 +982,12 @@ def pretty_print_xml(xml_root, output_xml, def_comments=None):
         for string in def_comments:
             def_comt_ele = dom.createComment(string)
             dom.insertBefore(def_comt_ele, root)
-
+    tmp_xml = "tmp.xml"
     xml_string = dom.toprettyxml(indent=1 * DEPTH_SIZE, newl="\n", encoding="UTF-8")
-    with open("tmp.xml", "wb") as file_tmp:
+    with open(tmp_xml, "wb") as file_tmp:
         file_tmp.write(xml_string)
     flag = False
-    with open("tmp.xml", "r", encoding="utf-8") as file_out:
+    with open(tmp_xml, "r", encoding="utf-8") as file_out:
         with open(output_xml, "w", encoding="utf-8") as file_out_mod:
             for i in file_out.readlines():
                 if "<doc>" not in i and "</doc>" not in i and flag is False:
@@ -1003,7 +1003,8 @@ def pretty_print_xml(xml_root, output_xml, def_comments=None):
                 elif "<doc>" not in i and "</doc>" in i and flag is True:
                     file_out_mod.write(white_spaces * " " + i)
                     flag = False
-    os.remove("tmp.xml")
+    tmp_xml_path = pathlib.Path(tmp_xml)
+    pathlib.Path.unlink(tmp_xml_path)
 
 
 # pylint: disable=too-many-statements

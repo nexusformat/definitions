@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """This file collects the functions for conversion from nxdl.xml to yaml version.
 """
-import os
 
 # -*- coding: utf-8 -*-
 #
@@ -25,6 +24,7 @@ import os
 import xml.etree.ElementTree as ET
 from typing import Dict
 from typing import List
+from pathlib import Path
 
 from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_node_parent_info
@@ -172,8 +172,9 @@ class Nxdl2yaml:
     def print_yml(self, input_file, output_yml, verbose):
         """Parse an XML file provided as input and print a YML file.
         """
-        if os.path.isfile(output_yml):
-            os.remove(output_yml)
+        output_file_path = Path(output_yml)
+        if output_file_path.is_file():
+            output_file_path.unlink()
 
         depth = 0
 

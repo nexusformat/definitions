@@ -46,7 +46,7 @@ def generate_nxdl_or_retrieve_nxdl(yaml_file, out_xml_file, verbose):
     """
     Generate yaml, nxdl and hash.
 
-    If the extracted hash is exactly the same as producd from generated yaml then
+    If the extracted hash is exactly the same as produced from generated yaml then
     retrieve the nxdl part from provided yaml.
     Else, generate nxdl from separated yaml with the help of nyaml2nxdl function
     """
@@ -58,12 +58,10 @@ def generate_nxdl_or_retrieve_nxdl(yaml_file, out_xml_file, verbose):
         gen_hash = get_sha256_hash(sep_yaml)
         if hash_found == gen_hash:
             Path(sep_yaml).unlink()
-            # os.remove(sep_yaml)
             return
 
     nyaml2nxdl(sep_yaml, out_xml_file, verbose)
     Path(sep_yaml).unlink()
-    # os.remove(sep_yaml)
 
 
 def split_name_and_extension(file_path):
@@ -92,9 +90,8 @@ a YAML or XML file from, respectively.",
     is_flag=True,
     default=False,
     help=(
-        "Check if yaml or nxdl has followed general rules of whether schema or not"
-        "check whether your comment in the right place or not. The option render an "
-        "output file of the same extension(*_consistency.yaml or *_consistency.nxdl.xml)"
+        "Check if yaml and nxdl can be convertered from one to another version recursively and"
+        " get the same version of file. E.g. from NXexample.nxdl.xml to NXexample_consistency.nxdl.xml."
     ),
 )
 @click.option(
@@ -133,7 +130,6 @@ def launch_tool(input_file, verbose, do_not_store_nxdl, check_consistency):
             converter = Nxdl2yaml([], [])
             converter.print_yml(xml_out_file, yaml_out_file, verbose)
             Path(xml_out_file).unlink()
-            # os.remove(xml_out_file)
     elif ext == "nxdl.xml":
         # if not append:
         yaml_out_file = raw_name + "_parsed" + ".yaml"
