@@ -22,6 +22,16 @@
 # For further information, see http://www.nexusformat.org
 -->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXmpes" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays
+        </doc>
+        <symbol name="n_transmission_function">
+            <doc>
+                 Number of data points in the transmission function.
+            </doc>
+        </symbol>
+    </symbols>
     <doc>
          This is the most general application definition for multidimensional
          photoelectron spectroscopy.
@@ -354,22 +364,6 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                     </doc>
                 </field>
             </group>
-            <group name="intensity_calibration" type="NXcalibration" optional="true">
-                <field name="applied" type="NX_BOOLEAN">
-                    <doc>
-                         Has an intensity calibration been applied? 
-                         
-                         That is, has the transmission function of the analyser been taken into account?
-                    </doc>
-                </field>
-                <field name="transmission_function" type="NX_FLOAT" recommended="true" units="NX_ANY">
-                    <doc>
-                         Transmission function of the electron analyser.
-                         
-                         This can be a link to /entry/instrument/electronanalyser/transmission_function.&quot;
-                    </doc>
-                </field>
-            </group>
             <group name="angular_calibration" type="NXcalibration" optional="true">
                 <field name="applied" type="NX_BOOLEAN">
                     <doc>
@@ -415,13 +409,15 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                 </field>
                 <field name="emission_line" recommended="true">
                     <doc>
-                         Emission line which was used for the calibration
+                         Emission line which was used for the calibration.
+                         
+                         For example: C1s C-C | Ag 3d5/2 metal | Si 2p3/2 elemental | Fermi edge
                     </doc>
                 </field>
                 <field name="offset" type="NX_FLOAT" recommended="true">
                     <doc>
                          Offset between measured binding energy and calibrated binding energy of the
-                         emission line.&quot;
+                         emission line.
                     </doc>
                 </field>
                 <field name="binding_energy" type="NX_FLOAT" recommended="true">
@@ -432,10 +428,56 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                 </field>
                 <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
                     <doc>
-                         This is the calibrated energy axis to be used for data plotting. 
-                         This should be a link to /entry/data/energy.&quot;
+                         This is the calibrated energy axis to be used for data plotting.
+                         
+                         This should link to /entry/data/energy.
                     </doc>
                 </field>
+            </group>
+            <group name="transmission_correction" type="NXcalibration" optional="true">
+                <field name="applied" type="NX_BOOLEAN">
+                    <doc>
+                         Has an intensity calibration been applied? 
+                         
+                         That is, has the transmission function of the analyser been taken into account?
+                    </doc>
+                </field>
+                <group name="calibration_input_data" type="NXdata" recommended="true">
+                    <doc>
+                         Transmission function of the electron analyser.
+                         
+                         The transmission function (TF) specifies the detection efficiency for electrons of 
+                         different kinetic energy passing through the electron analyser.
+                         
+                         This can be a link to /entry/instrument/electronanalyser/transmission_function.
+                    </doc>
+                    <attribute name="signal">
+                        <enumeration>
+                            <item value="relative_intensity"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="axes">
+                        <enumeration>
+                            <item value="kinetic_energy"/>
+                        </enumeration>
+                    </attribute>
+                    <field name="kinetic_energy" type="NX_FLOAT" units="NX_ENERGY">
+                        <doc>
+                             Kinetic energy values
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_transmission_function"/>
+                        </dimensions>
+                    </field>
+                    <field name="relative_intensity" type="NX_FLOAT" units="NX_UNITLESS">
+                        <doc>
+                             Relative transmission efficiency for the given kinetic energies
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_transmission_function"/>
+                        </dimensions>
+                    </field>
+                </group>
             </group>
         </group>
         <group type="NXsample">
@@ -518,12 +560,19 @@ Optional constant settings (like lens focusing parameters on the sample: positio
             </field>
             <field name="energy" type="NX_NUMBER" recommended="true">
                 <doc>
+                     Calibrated energy axis.
+                     
                      The calibrated energy axis can be either in binding or kinetic energy.
                      This should be a link to either
                      /entry/process/energy_calibration/calibrated_axis or 
                      /entry/process/energy_correction/calibrated_axis.
                 </doc>
-                <attribute name="type" type="NX_CHAR" recommended="true"/>
+                <attribute name="type" type="NX_CHAR" recommended="true">
+                    <enumeration>
+                        <item value="kinetic"/>
+                        <item value="binding"/>
+                    </enumeration>
+                </attribute>
             </field>
         </group>
     </group>
