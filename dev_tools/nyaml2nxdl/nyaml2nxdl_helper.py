@@ -168,7 +168,7 @@ def get_node_parent_info(tree, node):
     index = index of grand child node of tree
     """
 
-    # map from grand child to parent which is child tree
+    # map from grand child to parent which is child of tree
     parent_map = {c: p for p in tree.iter() for c in p}
     parent = parent_map[node]
     return parent, list(parent).index(node)

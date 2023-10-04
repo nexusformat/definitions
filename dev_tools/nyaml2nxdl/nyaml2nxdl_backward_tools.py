@@ -247,8 +247,8 @@ class Nxdl2yaml:
     def handle_definition(self, node):
         """Handle definition group and its attributes.
 
-        NOTE: Here we try to store the order of the xml element attributes. So that we get
-        exactly the same file in nxdl from yaml.
+        NOTE: Here we try to store the order of the xml element attributes, so that we get
+        the same order in nxdl from yaml.
         """
         keyword = ""
         # tmp_word for reseving the location
