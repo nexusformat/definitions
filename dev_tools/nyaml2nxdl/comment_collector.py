@@ -405,10 +405,10 @@ class YAMLComment(Comment):
                     self.store_element(line_key, line_num)
 
     def has_post_comment(self):
-        """Ensure if this is a post coment or not.
+        """Ensure if this is a post comment or not.
 
-        Post comment means the comment that come at the very end without having any
-        nxdl element(class, group, filed and attribute.)
+        Post comment means the comment that comes at the very end without having any
+        nxdl element(class, group, filed and attribute.).
         """
         for key, _ in self._elemt.items():
             if "__line__post_comment" == key:

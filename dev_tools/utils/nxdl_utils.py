@@ -3,8 +3,11 @@
 """
 
 import os
+
+from pathlib import Path
 import textwrap
-import xml.etree.ElementTree as ET
+import lxml.etree as ET
+from lxml.etree import ParseError as xmlER
 from functools import lru_cache
 from glob import glob
 
@@ -15,24 +18,17 @@ class NxdlAttributeNotFoundError(Exception):
 
 def get_app_defs_names():
     """Returns all the AppDef names without their extension: .nxdl.xml"""
-    app_def_path_glob = os.path.join(
-        get_nexus_definitions_path(),
-        "applications",
-        "*.nxdl*"
-    )
-    contrib_def_path_glob = os.path.join(
-        get_nexus_definitions_path(),
-        "contributed_definitions",
-        "*.nxdl*"
-    )
-
+    app_def_path_glob = get_nexus_definitions_path() / "applications" / "*.nxdl*"
+      
+    contrib_def_path_glob = Path(get_nexus_definitions_path()) / "contributed_definitions" / "*.nxdl*" 
+    
     files = sorted(glob(app_def_path_glob))
     for nexus_file in sorted(contrib_def_path_glob):
         root = get_xml_root(nexus_file)
         if root.attrib["category"] == "application":
             files.append(nexus_file)
 
-    return [os.path.basename(file).split(".")[0] for file in files] + ["NXroot"]
+    return [Path(file).stem for file in files] + ["NXroot"]
 
 
 @lru_cache(maxsize=None)
@@ -48,9 +44,9 @@ def get_nexus_definitions_path():
     try:  # either given by sys env
         return os.environ["NEXUS_DEF_PATH"]
     except KeyError:  # or it should be available locally under the dir 'definitions'
-        local_dir = os.path.abspath(os.path.dirname(__file__))
+        local_dir = Path(__file__).resolve().parent
         for _ in range(2):
-            local_dir = os.path.dirname(local_dir)
+            local_dir = local_dir.parent
         return local_dir
 
 
@@ -129,30 +125,24 @@ def get_nx_classes():
     """Read base classes from the NeXus definition folder.
     Check each file in base_classes, applications, contributed_definitions.
     If its category attribute is 'base', then it is added to the list."""
-    base_classes = sorted(
-        glob(os.path.join(get_nexus_definitions_path(), "base_classes", "*.nxdl.xml"))
-    )
-    applications = sorted(
-        glob(os.path.join(get_nexus_definitions_path(), "applications", "*.nxdl.xml"))
-    )
-    contributed = sorted(
-        glob(
-            os.path.join(
-                get_nexus_definitions_path(), "contributed_definitions", "*.nxdl.xml"
-            )
-        )
-    )
+    nexus_definition_path = get_nexus_definitions_path()
+    base_classes = sorted(nexus_definition_path.glob("base_classes/*.nxdl.xml"))
+    applications = sorted(nexus_definition_path.glob("applications/*.nxdl.xml"))
+    contributed = sorted(nexus_definition_path.glob("contributed_definitions/*.nxdl.xml"))
     nx_class = []
     for nexus_file in base_classes + applications + contributed:
-        root = get_xml_root(nexus_file)
+        try:
+            root = get_xml_root(nexus_file)
+        except xmlER as e:
+            raise ValueError(f"Getting an issue while parsing file {nexus_file}") from e
         if root.attrib["category"] == "base":
-            nx_class.append(os.path.basename(nexus_file).split(".")[0])
+            nx_class.append(nexus_file.stem)
     return sorted(nx_class)
 
 
 def get_nx_units():
     """Read unit kinds from the NeXus definition/nxdlTypes.xsd file"""
-    filepath = f"{get_nexus_definitions_path()}{os.sep}nxdlTypes.xsd"
+    filepath = get_nexus_definitions_path() / "nxdlTypes.xsd"
     root = get_xml_root(filepath)
     units_and_type_list = []
     for child in root:
@@ -172,7 +162,8 @@ def get_nx_units():
 
 def get_nx_attribute_type():
     """Read attribute types from the NeXus definition/nxdlTypes.xsd file"""
-    filepath = get_nexus_definitions_path() + "/nxdlTypes.xsd"
+    filepath = get_nexus_definitions_path() / "nxdlTypes.xsd"
+    
     root = get_xml_root(filepath)
     units_and_type_list = []
     for child in root:
@@ -320,15 +311,13 @@ def find_definition_file(bc_name):
     """find the nxdl file corresponding to the name.
     Note that it first checks in contributed and goes beyond only if no contributed found
     """
+    nexus_def_path = get_nexus_definitions_path()
     bc_filename = None
     for nxdl_folder in ["contributed_definitions", "base_classes", "applications"]:
-        if os.path.exists(
-            f"{get_nexus_definitions_path()}{os.sep}"
-            f"{nxdl_folder}{os.sep}{bc_name}.nxdl.xml"
-        ):
+        nxdl_file = nexus_def_path / nxdl_folder/ f"{bc_name}.nxdl.xml"
+        if nxdl_file.exists():
             bc_filename = (
-                f"{get_nexus_definitions_path()}{os.sep}"
-                f"{nxdl_folder}{os.sep}{bc_name}.nxdl.xml"
+                nexus_def_path / nxdl_folder / f"{bc_name}.nxdl.xml"
             )
             break
     return bc_filename

@@ -30,6 +30,7 @@ from yaml.constructor import Constructor
 from yaml.loader import Loader
 from yaml.nodes import ScalarNode
 from yaml.resolver import BaseResolver
+from typing import Callable
 
 # Yaml library does not except the keys (escape char "\t" and yaml separator ":")
 ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    "}
@@ -100,8 +101,10 @@ YAML_LINK_ATTRIBUTES = NXDL_LINK_ATTRIBUTES
 
 def remove_namespace_from_tag(tag):
     """Helper function to remove the namespace from an XML tag."""
-
-    return tag.split("}")[-1]
+    if isinstance(tag, Callable) and tag.__name__ == 'Comment':
+        return '!--'
+    else:
+        return tag.split("}")[-1]
 
 
 class LineLoader(Loader):  # pylint: disable=too-many-ancestors
@@ -292,3 +295,24 @@ def separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, sep_xml):
                 yml_f_ob.write(last_line)
 
     return sha_hash
+
+
+def is_dom_comment(text):
+    """Analyze a comment, whether it is a dom comment or not.
+    
+    Return true if dom comment.
+    """
+    
+    # some signature keywords to distingush dom comments from other comments.
+    signature_keyword_list = [
+    "NeXus",
+    "GNU Lesser General Public",
+    "Free Software Foundation",
+    "Copyright (C)",
+    "WITHOUT ANY WARRANTY",
+    ]
+    for keyword in signature_keyword_list:
+        if keyword not in text:
+            return False
+    
+    return True

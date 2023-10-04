@@ -24,8 +24,8 @@
 import pathlib
 import textwrap
 import datetime
-import xml.etree.ElementTree as ET
-from xml.dom import minidom
+import lxml.etree as ET
+from urllib.parse import unquote
 import warnings
 
 import yaml
@@ -40,12 +40,12 @@ from .nyaml2nxdl_helper import (YAML_ATTRIBUTES_ATTRIBUTES,
                                 YAML_FIELD_ATTRIBUTES,
                                 YAML_GROUP_ATTRIBUTES,
                                 YAML_LINK_ATTRIBUTES)
-from .nyaml2nxdl_helper import remove_namespace_from_tag
+from .nyaml2nxdl_helper import (remove_namespace_from_tag,
+                                is_dom_comment)
 
 
 # pylint: disable=too-many-lines, global-statement, invalid-name
 DOM_COMMENT = (
-    f"\n"
     f"# NeXus - Neutron and X-ray Common Data Format\n"
     f"# \n"
     f"# Copyright (C) 2014-{datetime.date.today().year} NeXus International Advisory Committee (NIAC)\n"
@@ -80,14 +80,6 @@ CATEGORY = ""  # Definition would be either 'base' or 'application'
 
 def check_for_dom_comment_in_yaml():
     """Check the yaml file has dom comment or dom comment needed to be hard coded."""
-    # some signature keywords to distingush dom comments from other comments.
-    signature_keyword_list = [
-        "NeXus",
-        "GNU Lesser General Public",
-        "Free Software Foundation",
-        "Copyright (C)",
-        "WITHOUT ANY WARRANTY",
-    ]
 
     # Check for dom comments in first five comments
     dom_comment = ""
@@ -98,13 +90,9 @@ def check_for_dom_comment_in_yaml():
             text = cmnt_list[0]
         else:
             continue
-        dom_comment = text
-        dom_comment_ind = ind
-        for keyword in signature_keyword_list:
-            if keyword not in text:
-                dom_comment = ""
-                break
-        if dom_comment:
+        if is_dom_comment(text):
+            dom_comment = text
+            dom_comment_ind = ind
             break
 
     # deactivate the root dom_comment, So that the corresponding comment would not be
@@ -239,7 +227,7 @@ def format_nxdl_doc(string):
     else:
         text_lines = string.split("\n")
         text_lines = clean_empty_lines(text_lines)
-        formatted_doc += "\n" + "\n".join(text_lines)
+        formatted_doc = "\n" + "\n".join(text_lines)
     if not formatted_doc.endswith("\n"):
         formatted_doc += "\n"
     return formatted_doc
@@ -870,10 +858,8 @@ def xml_handle_comment(
     (e.g. __line__data) and line_loc_no (e.g. 30). It
     does following tasks:
 
-    1. Returns list of comments texts, if comment is intended for definition element.
-        other return always []. 
-    2. Rearrange comment elements of xml_ele and xml_ele where comment comes first.
-    3. Append comment element when no xml_ele found as general comments.
+    1. Rearrange comment elements of xml_ele and xml_ele where comment comes first.
+    2. Append comment element when no xml_ele found as general comments.
     """
     
     line_info = (line_annotation, int(line_loc_no))
@@ -887,6 +873,8 @@ def xml_handle_comment(
         if xml_ele is not None:
             obj.remove(xml_ele)
             for string in cmnt_text:
+                # Format comment string to preserve text nxdl to yaml and vice versa
+                string = format_nxdl_doc(string)
                 obj.append(ET.Comment(string))
             obj.append(xml_ele)
         elif not is_def_cmnt and xml_ele is None:
@@ -962,32 +950,45 @@ def recursive_build(obj, dct, verbose):
             )
 
 
-def pretty_print_xml(xml_root, output_xml, def_comments=None):
+def extend_doc_type(doc_type, new_component, comment=False):
+    """Extend doc type for etree.tostring function
+
+    Extend doc type to build DOM and process instruction comments.
     """
+    start_sym = '<?'
+    end_sym = '?>'
+    if comment:
+        start_sym = '<!--\n'
+        end_sym ='-->'
+    return doc_type + '\n' + start_sym + new_component + end_sym 
+
+
+def pretty_print_xml(xml_root, output_xml, def_comments=None):
+    """Print in nxdl.xml file.
+
     Print better human-readable indented and formatted xml file using
     built-in libraries and preceding XML processing instruction
     """
-    dom = minidom.parseString(ET.tostring(xml_root, encoding="utf-8", method="xml"))
-    proc_instruction = dom.createProcessingInstruction(
-        "xml-stylesheet", 'type="text/xsl" href="nxdlformat.xsl"'
-    )
-    dom_comment = dom.createComment(DOM_COMMENT)
-    root = dom.firstChild
-    dom.insertBefore(proc_instruction, root)
-    dom.insertBefore(dom_comment, root)
+    # Handle DOM as doc_type
+    doc_type = '<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>'
 
+    if DOM_COMMENT:
+        doc_type = extend_doc_type(doc_type, DOM_COMMENT, comment=True)
     if def_comments:
         for string in def_comments:
-            def_comt_ele = dom.createComment(string)
-            dom.insertBefore(def_comt_ele, root)
+            doc_type = extend_doc_type(doc_type, string, comment=True)
+
     tmp_xml = "tmp.xml"
-    xml_string = dom.toprettyxml(indent=1 * DEPTH_SIZE, newl="\n", encoding="UTF-8")
+    xml_string = ET.tostring(xml_root, pretty_print=True, 
+                             encoding="UTF-8", xml_declaration=True,
+                             doctype=doc_type)
     with open(tmp_xml, "wb") as file_tmp:
         file_tmp.write(xml_string)
     flag = False
     with open(tmp_xml, "r", encoding="utf-8") as file_out:
         with open(output_xml, "w", encoding="utf-8") as file_out_mod:
             for i in file_out.readlines():
+                i = unquote(i.encode())
                 if "<doc>" not in i and "</doc>" not in i and flag is False:
                     file_out_mod.write(i)
                 elif "<doc>" in i and "</doc>" in i:
@@ -1029,7 +1030,10 @@ def nyaml2nxdl(input_file: str, out_file, verbose: bool):
             "application/base contains the following root-level entries:\n"
         )
         print(str(yml_appdef.keys()))
-    xml_root = ET.Element("definition", {})
+    # etree does not allow to set namespace-map after root creation
+    # So, mimic a nsmap and fill it later as dict has hash property
+    nsmap = {None: "http://definition.nexusformat.org/nxdl/3.1",}
+    xml_root = ET.Element("definition", attrib={}, nsmap=nsmap)
     assert (
         "category" in yml_appdef.keys()
     ), "Required root-level keyword category is missing!"
@@ -1087,12 +1091,13 @@ application and base are valid categories!"
         xml_root.set("type", "group")
     # Taking care of namespaces
     namespaces = {
-        "xmlns": "http://definition.nexusformat.org/nxdl/3.1",
-        "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
-        "xsi:schemaLocation": "http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd",
-    }
-    for key, ns in namespaces.items():
-        xml_root.attrib[key] = ns
+        "xsi": "http://www.w3.org/2001/XMLSchema-instance",
+        }
+    # Fill nsmap variable here
+    nsmap.update(namespaces)
+    xml_root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = \
+        "http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd".replace(' ', "%20")
+
     # Taking care of Symbols elements
     if "symbols" in yml_appdef.keys():
         xml_handle_symbols(yml_appdef, xml_root, "symbols", yml_appdef["symbols"])
