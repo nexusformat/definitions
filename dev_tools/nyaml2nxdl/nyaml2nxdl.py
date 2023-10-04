@@ -71,10 +71,10 @@ def split_name_and_extension(file_path):
     return file raw name and extension
     """
     path = Path(file_path)
-    ext = ''.join(path.suffixes)
+    ext = "".join(path.suffixes)
     full_path_stem = file_path[0 : file_path.index(ext)]
     return full_path_stem, ext[1:]
-    
+
 
 @click.command()
 @click.option(
@@ -84,7 +84,6 @@ def split_name_and_extension(file_path):
     help="The path to the XML or YAML input data file to read and create \
 a YAML or XML file from, respectively.",
 )
-
 @click.option(
     "--check-consistency",
     is_flag=True,
@@ -115,7 +114,7 @@ def launch_tool(input_file, verbose, do_not_store_nxdl, check_consistency):
     """
     Main function that distinguishes the input file format and launches the tools.
     """
-    
+
     if Path(input_file).is_file():
         raw_name, ext = split_name_and_extension(input_file)
     else:
@@ -123,7 +122,7 @@ def launch_tool(input_file, verbose, do_not_store_nxdl, check_consistency):
     if ext == "yaml":
         xml_out_file = raw_name + _nxdl
         generate_nxdl_or_retrieve_nxdl(input_file, xml_out_file, verbose)
-  
+
         # For consistency running
         if check_consistency:
             yaml_out_file = raw_name + "_consistency." + ext

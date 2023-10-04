@@ -19,9 +19,11 @@ class NxdlAttributeNotFoundError(Exception):
 def get_app_defs_names():
     """Returns all the AppDef names without their extension: .nxdl.xml"""
     app_def_path_glob = get_nexus_definitions_path() / "applications" / "*.nxdl*"
-      
-    contrib_def_path_glob = Path(get_nexus_definitions_path()) / "contributed_definitions" / "*.nxdl*" 
-    
+
+    contrib_def_path_glob = (
+        Path(get_nexus_definitions_path()) / "contributed_definitions" / "*.nxdl*"
+    )
+
     files = sorted(glob(app_def_path_glob))
     for nexus_file in sorted(contrib_def_path_glob):
         root = get_xml_root(nexus_file)
@@ -128,7 +130,9 @@ def get_nx_classes():
     nexus_definition_path = get_nexus_definitions_path()
     base_classes = sorted(nexus_definition_path.glob("base_classes/*.nxdl.xml"))
     applications = sorted(nexus_definition_path.glob("applications/*.nxdl.xml"))
-    contributed = sorted(nexus_definition_path.glob("contributed_definitions/*.nxdl.xml"))
+    contributed = sorted(
+        nexus_definition_path.glob("contributed_definitions/*.nxdl.xml")
+    )
     nx_class = []
     for nexus_file in base_classes + applications + contributed:
         try:
@@ -156,14 +160,14 @@ def get_nx_units():
             nx_units.append(line)
         elif line == "primitiveType":
             flag = False
-        
+
     return nx_units
 
 
 def get_nx_attribute_type():
     """Read attribute types from the NeXus definition/nxdlTypes.xsd file"""
     filepath = get_nexus_definitions_path() / "nxdlTypes.xsd"
-    
+
     root = get_xml_root(filepath)
     units_and_type_list = []
     for child in root:
@@ -314,11 +318,9 @@ def find_definition_file(bc_name):
     nexus_def_path = get_nexus_definitions_path()
     bc_filename = None
     for nxdl_folder in ["contributed_definitions", "base_classes", "applications"]:
-        nxdl_file = nexus_def_path / nxdl_folder/ f"{bc_name}.nxdl.xml"
+        nxdl_file = nexus_def_path / nxdl_folder / f"{bc_name}.nxdl.xml"
         if nxdl_file.exists():
-            bc_filename = (
-                nexus_def_path / nxdl_folder / f"{bc_name}.nxdl.xml"
-            )
+            bc_filename = nexus_def_path / nxdl_folder / f"{bc_name}.nxdl.xml"
             break
     return bc_filename
 
@@ -619,8 +621,7 @@ def add_base_classes(elist, nx_name=None, elem: ET.Element = None):
 
 
 def set_nxdlpath(child, nxdl_elem, tag_name=None):
-    """Setting up child nxdlbase, nxdlpath and nxdlbase_class from nxdl_element.
-    """
+    """Setting up child nxdlbase, nxdlpath and nxdlbase_class from nxdl_element."""
     if nxdl_elem.get("nxdlbase"):
         child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
         child.set("nxdlbase_class", nxdl_elem.get("nxdlbase_class"))
@@ -628,7 +629,9 @@ def set_nxdlpath(child, nxdl_elem, tag_name=None):
         if tag_name:
             child.set("nxdlpath", nxdl_elem.get("nxdlpath") + "/" + tag_name)
         else:
-            child.set("nxdlpath", nxdl_elem.get("nxdlpath") + "/" + get_node_name(child))
+            child.set(
+                "nxdlpath", nxdl_elem.get("nxdlpath") + "/" + get_node_name(child)
+            )
 
     return child
 

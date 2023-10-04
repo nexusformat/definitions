@@ -36,12 +36,13 @@ from .nyaml2nxdl_helper import LineLoader
 from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_yaml_escape_char_reverter_dict
 from .nyaml2nxdl_helper import nx_name_type_resolving
-from .nyaml2nxdl_helper import (YAML_ATTRIBUTES_ATTRIBUTES,
-                                YAML_FIELD_ATTRIBUTES,
-                                YAML_GROUP_ATTRIBUTES,
-                                YAML_LINK_ATTRIBUTES)
-from .nyaml2nxdl_helper import (remove_namespace_from_tag,
-                                is_dom_comment)
+from .nyaml2nxdl_helper import (
+    YAML_ATTRIBUTES_ATTRIBUTES,
+    YAML_FIELD_ATTRIBUTES,
+    YAML_GROUP_ATTRIBUTES,
+    YAML_LINK_ATTRIBUTES,
+)
+from .nyaml2nxdl_helper import remove_namespace_from_tag, is_dom_comment
 
 
 # pylint: disable=too-many-lines, global-statement, invalid-name
@@ -344,9 +345,9 @@ def xml_handle_dimensions(dct, obj, keyword, value: dict):
     possible_dimension_attrs = ["rank"]  # nxdl attributes
     line_number = f"__line__{keyword}"
     line_loc = dct[line_number]
-    assert "dim" in value.keys(), (
-        f"Line {line_loc}: No dim as child of dimension has been found."
-    )
+    assert (
+        "dim" in value.keys()
+    ), f"Line {line_loc}: No dim as child of dimension has been found."
     xml_handle_comment(obj, line_number, line_loc)
     dims = ET.SubElement(obj, "dimensions")
     # Consider all the children under dimension is dim element and
@@ -423,9 +424,9 @@ def xml_handle_dim_from_dimension_dict(
         if attr == "dim":
             # dim consists of [index, value] list
             llist_ind_value = vvalue
-            assert isinstance(llist_ind_value, list), (
-                f"Line {value[line_number]}: dim argument not a list !"
-            )
+            assert isinstance(
+                llist_ind_value, list
+            ), f"Line {value[line_number]}: dim argument not a list !"
             xml_handle_comment(dims_obj, line_number, line_loc)
             if isinstance(rank, int) and rank > 0:
                 assert rank == len(llist_ind_value), (
@@ -471,8 +472,10 @@ def xml_handle_dim_from_dimension_dict(
                             pass
                 else:
                     if kkkey in deprecated_dim_attrs:
-                        dep_text = (f"Attrbute {kkkey} is deprecated. "
-                                    f"Check attributes after line {cmnt_loc}")
+                        dep_text = (
+                            f"Attrbute {kkkey} is deprecated. "
+                            f"Check attributes after line {cmnt_loc}"
+                        )
                         warnings.warn(dep_text, DeprecationWarning)
                     for i, dim in enumerate(dim_list):
                         # all atribute of dims comes as list
@@ -656,9 +659,7 @@ def check_keyword_variable(verbose, dct, keyword, value):
     """
     keyword_name, keyword_type = nx_name_type_resolving(keyword)
     if verbose:
-        print(
-            f"{keyword_name}({keyword_type}): value type is {type(value)}\n"
-        )
+        print(f"{keyword_name}({keyword_type}): value type is {type(value)}\n")
     if keyword_name == "" and keyword_type == "":
         line_number = f"__line__{keyword}"
         raise ValueError(f"Line {dct[line_number]}: found an improper yaml key !")
@@ -707,7 +708,9 @@ def xml_handle_attributes(dct, obj, keyword, value, verbose):
                 continue
             line_number = f"__line__{attr}"
             line_loc = value[line_number]
-            if attr in ["doc", *YAML_ATTRIBUTES_ATTRIBUTES] and not isinstance(attr_val, dict):
+            if attr in ["doc", *YAML_ATTRIBUTES_ATTRIBUTES] and not isinstance(
+                attr_val, dict
+            ):
                 if attr == "unit":
                     elemt_obj.set(f"{attr}s", str(value[attr]))
                     rm_key_list.append(attr)
@@ -733,7 +736,9 @@ def xml_handle_attributes(dct, obj, keyword, value, verbose):
         for key in rm_key_list:
             del value[key]
         # Check cor skipped attribute
-        check_for_skipped_attributes("Attribute", value, YAML_ATTRIBUTES_ATTRIBUTES, verbose)
+        check_for_skipped_attributes(
+            "Attribute", value, YAML_ATTRIBUTES_ATTRIBUTES, verbose
+        )
     if value:
         recursive_build(elemt_obj, value, verbose)
 
@@ -768,9 +773,10 @@ def validate_field_attribute_and_value(v_attr, vval, allowed_attribute, value):
         )
 
 
-def xml_handle_fields_or_group(dct, obj, keyword, value, ele_type, allowed_attr, verbose=False):
-    """Handle a field or group in yaml file.
-    """
+def xml_handle_fields_or_group(
+    dct, obj, keyword, value, ele_type, allowed_attr, verbose=False
+):
+    """Handle a field or group in yaml file."""
     line_annot = f"__line__{keyword}"
     line_loc = dct[line_annot]
     xml_handle_comment(obj, line_annot, line_loc)
@@ -782,13 +788,17 @@ def xml_handle_fields_or_group(dct, obj, keyword, value, ele_type, allowed_attr,
         r_bracket = keyword.index(")")
 
     keyword_name, keyword_type = nx_name_type_resolving(keyword)
-    if ele_type == 'field' and not keyword_name:
-        raise ValueError(f"No name for NeXus {ele_type} has been found."
-                         f"Check around line:{line_loc}")
+    if ele_type == "field" and not keyword_name:
+        raise ValueError(
+            f"No name for NeXus {ele_type} has been found."
+            f"Check around line:{line_loc}"
+        )
     elif not keyword_type and not keyword_name:
-        raise ValueError(f"No name or type for NeXus {ele_type} has been found."
-                         f"Check around line: {line_loc}")
-    
+        raise ValueError(
+            f"No name or type for NeXus {ele_type} has been found."
+            f"Check around line: {line_loc}"
+        )
+
     elemt_obj = ET.SubElement(obj, ele_type)
 
     # type come first
@@ -861,12 +871,12 @@ def xml_handle_comment(
     1. Rearrange comment elements of xml_ele and xml_ele where comment comes first.
     2. Append comment element when no xml_ele found as general comments.
     """
-    
+
     line_info = (line_annotation, int(line_loc_no))
     if line_info in COMMENT_BLOCKS:  # noqa: F821
         cmnt = COMMENT_BLOCKS.get_comment_by_line_info(line_info)  # noqa: F821
         cmnt_text = cmnt.get_comment_text_list()
-        
+
         # Check comment for definition element and return
         if is_def_cmnt:
             return cmnt_text
@@ -880,8 +890,8 @@ def xml_handle_comment(
         elif not is_def_cmnt and xml_ele is None:
             for string in cmnt_text:
                 obj.append(ET.Comment(string))
-    
-    # The searched comment is not related with definition element 
+
+    # The searched comment is not related with definition element
     return []
 
 
@@ -889,12 +899,12 @@ def recursive_build(obj, dct, verbose):
     """Walk through nested dictionary.
     Parameters:
     -----------
-    obj : ET.Element 
+    obj : ET.Element
         Obj is the current node of the XML tree where we want to append to.
     dct : dict
-     dct is the nested python dictionary which represents the content of a child and 
+     dct is the nested python dictionary which represents the content of a child and
      its successors.
-    
+
     Note: NXDL fields may contain attributes but trigger no recursion so attributes are leafs.
     """
     for keyword, value in iter(dct.items()):
@@ -905,9 +915,7 @@ def recursive_build(obj, dct, verbose):
         keyword_name, keyword_type = nx_name_type_resolving(keyword)
         check_keyword_variable(verbose, dct, keyword, value)
         if verbose:
-            print(
-                f"keyword_name:{keyword_name} keyword_type {keyword_type}\n"
-            )
+            print(f"keyword_name:{keyword_name} keyword_type {keyword_type}\n")
 
         if keyword[-6:] == "(link)":
             xml_handle_link(dct, obj, keyword, value, verbose)
@@ -921,10 +929,17 @@ def recursive_build(obj, dct, verbose):
         elif (keyword_type in NX_CLSS) or (
             keyword_type not in [*NX_TYPE_KEYS, "", *NX_NEW_DEFINED_CLASSES]
         ):
-            elem_type = 'group'
+            elem_type = "group"
             # we can be sure we need to instantiate a new group
-            xml_handle_fields_or_group(dct, obj, keyword, value, elem_type,
-                                       YAML_GROUP_ATTRIBUTES, verbose=False)
+            xml_handle_fields_or_group(
+                dct,
+                obj,
+                keyword,
+                value,
+                elem_type,
+                YAML_GROUP_ATTRIBUTES,
+                verbose=False,
+            )
 
         elif keyword_name[0:2] == NX_ATTR_IDNT:  # check if obj qualifies
             xml_handle_attributes(dct, obj, keyword, value, verbose)
@@ -940,9 +955,16 @@ def recursive_build(obj, dct, verbose):
             xml_handle_exists(dct, obj, keyword, value)
         # Handles fileds e.g. AXISNAME
         elif keyword_name != "" and "__line__" not in keyword_name:
-            elem_type = 'field'
-            xml_handle_fields_or_group(dct, obj, keyword, value, elem_type,
-                                       YAML_FIELD_ATTRIBUTES, verbose=False)
+            elem_type = "field"
+            xml_handle_fields_or_group(
+                dct,
+                obj,
+                keyword,
+                value,
+                elem_type,
+                YAML_FIELD_ATTRIBUTES,
+                verbose=False,
+            )
         else:
             raise ValueError(
                 f"An unknown type of element {keyword} has been found which is "
@@ -955,12 +977,12 @@ def extend_doc_type(doc_type, new_component, comment=False):
 
     Extend doc type to build DOM and process instruction comments.
     """
-    start_sym = '<?'
-    end_sym = '?>'
+    start_sym = "<?"
+    end_sym = "?>"
     if comment:
-        start_sym = '<!--\n'
-        end_sym ='-->'
-    return doc_type + '\n' + start_sym + new_component + end_sym 
+        start_sym = "<!--\n"
+        end_sym = "-->"
+    return doc_type + "\n" + start_sym + new_component + end_sym
 
 
 def pretty_print_xml(xml_root, output_xml, def_comments=None):
@@ -979,9 +1001,13 @@ def pretty_print_xml(xml_root, output_xml, def_comments=None):
             doc_type = extend_doc_type(doc_type, string, comment=True)
 
     tmp_xml = "tmp.xml"
-    xml_string = ET.tostring(xml_root, pretty_print=True, 
-                             encoding="UTF-8", xml_declaration=True,
-                             doctype=doc_type)
+    xml_string = ET.tostring(
+        xml_root,
+        pretty_print=True,
+        encoding="UTF-8",
+        xml_declaration=True,
+        doctype=doc_type,
+    )
     with open(tmp_xml, "wb") as file_tmp:
         file_tmp.write(xml_string)
     flag = False
@@ -1026,13 +1052,13 @@ def nyaml2nxdl(input_file: str, out_file, verbose: bool):
     def_cmnt_text = []
     if verbose:
         print(f"input-file: {input_file}\n")
-        print(
-            "application/base contains the following root-level entries:\n"
-        )
+        print("application/base contains the following root-level entries:\n")
         print(str(yml_appdef.keys()))
     # etree does not allow to set namespace-map after root creation
     # So, mimic a nsmap and fill it later as dict has hash property
-    nsmap = {None: "http://definition.nexusformat.org/nxdl/3.1",}
+    nsmap = {
+        None: "http://definition.nexusformat.org/nxdl/3.1",
+    }
     xml_root = ET.Element("definition", attrib={}, nsmap=nsmap)
     assert (
         "category" in yml_appdef.keys()
@@ -1092,11 +1118,12 @@ application and base are valid categories!"
     # Taking care of namespaces
     namespaces = {
         "xsi": "http://www.w3.org/2001/XMLSchema-instance",
-        }
+    }
     # Fill nsmap variable here
     nsmap.update(namespaces)
-    xml_root.attrib["{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"] = \
-        "http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd".replace(' ', "%20")
+    xml_root.attrib[
+        "{http://www.w3.org/2001/XMLSchema-instance}schemaLocation"
+    ] = "http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd".replace(" ", "%20")
 
     # Taking care of Symbols elements
     if "symbols" in yml_appdef.keys():

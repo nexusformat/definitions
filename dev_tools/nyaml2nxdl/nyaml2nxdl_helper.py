@@ -34,17 +34,18 @@ from typing import Callable
 
 # Yaml library does not except the keys (escape char "\t" and yaml separator ":")
 ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    "}
-ESCAPE_CHAR_DICT_IN_XML = {val : key for key, val in ESCAPE_CHAR_DICT_IN_YAML.items()}
+ESCAPE_CHAR_DICT_IN_XML = {val: key for key, val in ESCAPE_CHAR_DICT_IN_YAML.items()}
 
 # Set up attributes for nxdl version
 NXDL_GROUP_ATTRIBUTES = (
-        "optional",
-        "recommended",
-        "name",
-        "type",
-        "maxOccurs",
-        "minOccurs",
-        "deprecated")
+    "optional",
+    "recommended",
+    "name",
+    "type",
+    "maxOccurs",
+    "minOccurs",
+    "deprecated",
+)
 NXDL_FIELD_ATTRIBUTES = (
     "optional",
     "recommended",
@@ -74,35 +75,27 @@ NXDL_ATTRIBUTES_ATTRIBUTES = (
     "deprecated",
 )
 
-NXDL_LINK_ATTRIBUTES = ("name",
-                        "target", 
-                        "napimount")
+NXDL_LINK_ATTRIBUTES = ("name", "target", "napimount")
 
 # Set up attributes for yaml version
-YAML_GROUP_ATTRIBUTES = (
-        *NXDL_GROUP_ATTRIBUTES,
-        "exists"
-        )
+YAML_GROUP_ATTRIBUTES = (*NXDL_GROUP_ATTRIBUTES, "exists")
 
-YAML_FIELD_ATTRIBUTES = (
-   *NXDL_FIELD_ATTRIBUTES[0:-1],
-    "unit",
-    "exists"
-)
+YAML_FIELD_ATTRIBUTES = (*NXDL_FIELD_ATTRIBUTES[0:-1], "unit", "exists")
 
 YAML_ATTRIBUTES_ATTRIBUTES = (
-        *NXDL_ATTRIBUTES_ATTRIBUTES,        
-        "minOccurs",
-        "maxOccurs",
-        "exists",
+    *NXDL_ATTRIBUTES_ATTRIBUTES,
+    "minOccurs",
+    "maxOccurs",
+    "exists",
 )
 
 YAML_LINK_ATTRIBUTES = NXDL_LINK_ATTRIBUTES
 
+
 def remove_namespace_from_tag(tag):
     """Helper function to remove the namespace from an XML tag."""
-    if isinstance(tag, Callable) and tag.__name__ == 'Comment':
-        return '!--'
+    if isinstance(tag, Callable) and tag.__name__ == "Comment":
+        return "!--"
     else:
         return tag.split("}")[-1]
 
@@ -136,7 +129,7 @@ class LineLoader(Loader):  # pylint: disable=too-many-ancestors
             )
             node_pair_lst_for_appending.append((shadow_key_node, shadow_value_node))
 
-        node.value =  node.value + node_pair_lst_for_appending
+        node.value = node.value + node_pair_lst_for_appending
         return Constructor.construct_mapping(self, node, deep=deep)
 
 
@@ -183,7 +176,7 @@ def clean_empty_lines(line_list):
     ends_non_empty_line = None
     # Find the index of first non-empty line
     for ind, line in enumerate(line_list):
-        if len(line.strip()) > 1 :
+        if len(line.strip()) > 1:
             start_non_empty_line = ind
             break
 
@@ -193,9 +186,9 @@ def clean_empty_lines(line_list):
             ends_non_empty_line = -ind
             break
 
-    if ends_non_empty_line == 0 :
+    if ends_non_empty_line == 0:
         ends_non_empty_line = None
-    return line_list[start_non_empty_line : ends_non_empty_line]
+    return line_list[start_non_empty_line:ends_non_empty_line]
 
 
 def nx_name_type_resolving(tmp):
@@ -211,9 +204,13 @@ def nx_name_type_resolving(tmp):
         index_start = tmp.index("(")
         index_end = tmp.index(")", index_start + 1)
         if index_start > index_end:
-            raise ValueError(f"Check name and type combination {tmp} which can not be resolved.")
+            raise ValueError(
+                f"Check name and type combination {tmp} which can not be resolved."
+            )
         if index_end - index_start == 1:
-            raise ValueError(f"Check name(type) combination {tmp}, properly not defined.") 
+            raise ValueError(
+                f"Check name(type) combination {tmp}, properly not defined."
+            )
         typ = tmp[index_start + 1 : index_end]
         nam = tmp.replace("(" + typ + ")", "")
         return nam, typ
@@ -273,7 +270,7 @@ def separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, sep_xml):
             sep_xml, "w", encoding="utf-8"
         ) as xml_f_ob:
             write_on_yaml = True
-        
+
             last_line = lines[0]
             for line in lines[1:]:
                 # Write in file when ensured that the next line is not with '++ SHA HASH ++'
@@ -299,20 +296,20 @@ def separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, sep_xml):
 
 def is_dom_comment(text):
     """Analyze a comment, whether it is a dom comment or not.
-    
+
     Return true if dom comment.
     """
-    
+
     # some signature keywords to distingush dom comments from other comments.
     signature_keyword_list = [
-    "NeXus",
-    "GNU Lesser General Public",
-    "Free Software Foundation",
-    "Copyright (C)",
-    "WITHOUT ANY WARRANTY",
+        "NeXus",
+        "GNU Lesser General Public",
+        "Free Software Foundation",
+        "Copyright (C)",
+        "WITHOUT ANY WARRANTY",
     ]
     for keyword in signature_keyword_list:
         if keyword not in text:
             return False
-    
+
     return True

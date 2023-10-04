@@ -29,12 +29,13 @@ import lxml.etree as ET
 from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_node_parent_info
 from .nyaml2nxdl_helper import get_yaml_escape_char_dict
-from .nyaml2nxdl_helper import (remove_namespace_from_tag,
-                                is_dom_comment)
-from .nyaml2nxdl_helper import (NXDL_FIELD_ATTRIBUTES,
-                                NXDL_GROUP_ATTRIBUTES,
-                                NXDL_ATTRIBUTES_ATTRIBUTES,
-                                NXDL_LINK_ATTRIBUTES)
+from .nyaml2nxdl_helper import remove_namespace_from_tag, is_dom_comment
+from .nyaml2nxdl_helper import (
+    NXDL_FIELD_ATTRIBUTES,
+    NXDL_GROUP_ATTRIBUTES,
+    NXDL_ATTRIBUTES_ATTRIBUTES,
+    NXDL_LINK_ATTRIBUTES,
+)
 
 
 DEPTH_SIZE = "  "
@@ -48,7 +49,7 @@ DEFINITION_CATEGORIES = ("category: application", "category: base")
 def separate_pi_comments(input_file):
     """Separate PI comments from ProcessesInstruction (PI).
 
-    ProcessesInstruction refers xml element process and version 
+    ProcessesInstruction refers xml element process and version
     Separate the comments that comes immediately after XML process instruction part,
     i.e. copyright comment part.
     """
@@ -59,7 +60,6 @@ def separate_pi_comments(input_file):
         lines = file.readlines()
         def_tag = "<definition"
         for line in lines:
-
             if CMNT_START in line:
                 line = line.replace(CMNT_START, "")
                 if CMNT_END in line:
@@ -73,7 +73,7 @@ def separate_pi_comments(input_file):
                 comment.clear()
             elif len(comment) > 0:
                 comment.append(line)
-            elif def_tag in line: 
+            elif def_tag in line:
                 break
     return comments_list
 
@@ -82,10 +82,9 @@ def separate_pi_comments(input_file):
 class _CommentedTreeBuilder(ET.TreeBuilder):
     def start(self, tag, attrs):
         super().start(tag=tag, attrs=attrs)
-    
+
     def Comment(self, text):
-        """Defining comment builder in TreeBuilder
-        """
+        """Defining comment builder in TreeBuilder"""
         self.start(CMNT_TAG, {})
         self.data(text)
         self.end(CMNT_TAG_END)
@@ -99,14 +98,13 @@ def parse(filepath):
     """
     comments = separate_pi_comments(filepath)
     ctb = _CommentedTreeBuilder()
-    xp_parser = ET.XMLParser(target=ctb, encoding='UTF-8')
+    xp_parser = ET.XMLParser(target=ctb, encoding="UTF-8")
     root = ET.parse(filepath, xp_parser)
     return comments, root
 
 
 def handle_mapping_char(text, depth=-1, skip_n_line_on_top=False):
-    """Check for escape character and replace by alternative character.
-    """
+    """Check for escape character and replace by alternative character."""
 
     escape_char = get_yaml_escape_char_dict()
     for esc_key, val in escape_char.items():
@@ -160,17 +158,18 @@ class Nxdl2yaml:
         #                      'symbol_comments': [comments]}
         self.root_level_comment: Dict[str, str] = {}
 
-        self.optionality_keys = ("minOccurs",
-                                 "maxOccurs", 
-                                 "optional", 
-                                 "recommended", 
-                                 "required")
+        self.optionality_keys = (
+            "minOccurs",
+            "maxOccurs",
+            "optional",
+            "recommended",
+            "required",
+        )
         # "Take care of general attributes. Note other choices may be allowed in the future"
         self.choice_allowed_attr = ()
 
     def print_yml(self, input_file, output_yml, verbose):
-        """Parse an XML file provided as input and print a YML file.
-        """
+        """Parse an XML file provided as input and print a YML file."""
         output_file_path = Path(output_yml)
         if output_file_path.is_file():
             output_file_path.unlink()
@@ -196,9 +195,7 @@ class Nxdl2yaml:
         for child in list(node):
             tag = remove_namespace_from_tag(child.tag)
             if tag == CMNT_TAG and self.include_comment:
-                last_comment = self.convert_to_yaml_comment(
-                    depth, child.text
-                )
+                last_comment = self.convert_to_yaml_comment(depth, child.text)
             if tag == "doc":
                 symbol_cmnt_list.append(last_comment)
                 # The line below is for handling length of 'symbol_comments' and
@@ -279,7 +276,7 @@ class Nxdl2yaml:
         text = node.text
         text = self.handle_not_root_level_doc(depth=0, text=text)
         self.root_level_doc = text
-    
+
     def clean_and_organise_text(self, text, depth):
         """Reconstruct text from doc and comment.
 
@@ -295,13 +292,12 @@ class Nxdl2yaml:
             text = clean_empty_lines(text.split("\n"))
             text_tmp = []
             yaml_indent_n = len((depth + 1) * DEPTH_SIZE)
-            
 
             # Find indentation in the first line of text having alphabet
             first_line_indent_n = 0
             for line in text:
                 # Consider only the lines that has at least one non-space character
-                # and skip starting lines of a text block are empty 
+                # and skip starting lines of a text block are empty
                 if len(line.lstrip()) != 0:
                     first_line_indent_n = len(line) - len(line.lstrip())
                     break
@@ -333,7 +329,7 @@ class Nxdl2yaml:
 
         elif text:
             text = "\n" + (depth + 1) * DEPTH_SIZE + text.strip()
-        
+
         return text
 
     # pylint: disable=too-many-branches
@@ -365,8 +361,7 @@ class Nxdl2yaml:
         file_out.write(line_string)
 
     def print_root_level_doc(self, file_out):
-        """Print at the root level of YML file the general documentation field found in XML file
-        """
+        """Print at the root level of YML file the general documentation field found in XML file"""
         indent = 0 * DEPTH_SIZE
 
         text = self.root_level_comment.get("root_doc")
@@ -554,19 +549,25 @@ class Nxdl2yaml:
         if node_tag == "field":
             for key in node.attrib.keys():
                 if key not in NXDL_FIELD_ATTRIBUTES:
-                    raise ValueError(f"Field has an unwanted attribute {key}."
-                                     f"NeXus field allows attributes from {NXDL_FIELD_ATTRIBUTES}")
+                    raise ValueError(
+                        f"Field has an unwanted attribute {key}."
+                        f"NeXus field allows attributes from {NXDL_FIELD_ATTRIBUTES}"
+                    )
         elif node_tag == "group":
             for key in node.attrib.keys():
                 if key not in NXDL_GROUP_ATTRIBUTES:
-                    raise ValueError(f"Attribute has an unwanted attribute {key}."
-                                     f"NeXus attribute allows attributes from {NXDL_GROUP_ATTRIBUTES}")
+                    raise ValueError(
+                        f"Attribute has an unwanted attribute {key}."
+                        f"NeXus attribute allows attributes from {NXDL_GROUP_ATTRIBUTES}"
+                    )
         elif node_tag == tag:
             for key in node.attrib.keys():
                 if key not in allowed_attributes_li:
-                    raise ValueError(f"{tag.capitalized()} has an unwanted attribute {key}."
-                                     f"NeXus {tag.capitalized()} allows attributes from {allowed_attributes_li}")
-    
+                    raise ValueError(
+                        f"{tag.capitalized()} has an unwanted attribute {key}."
+                        f"NeXus {tag.capitalized()} allows attributes from {allowed_attributes_li}"
+                    )
+
     # pylint: disable=too-many-branches, too-many-locals
     def handle_dimension(self, depth, node, file_out):
         """Handle the dimension field.
@@ -664,7 +665,7 @@ class Nxdl2yaml:
                         f"{indent}{key}: "
                         f"{handle_mapping_char(value, depth + 3, False)}\n"
                     )
-    
+
     def handle_enumeration(self, depth, node, file_out):
         """
             Handle the enumeration field parsed from the xml file.
@@ -726,10 +727,10 @@ class Nxdl2yaml:
                     remove_nodes.append(item_child)
             for ch_node in remove_nodes:
                 node.remove(ch_node)
-            
+
             indent = depth * DEPTH_SIZE
             tag = remove_namespace_from_tag(node.tag)
-            enum_list = ', '.join(enum_list)
+            enum_list = ", ".join(enum_list)
             file_out.write(f"{indent}{tag}: [{enum_list}]\n")
 
     def handle_attributes(self, depth, node, file_out):
@@ -847,7 +848,6 @@ class Nxdl2yaml:
         text = self.convert_to_yaml_comment(depth, node.text)
         self.write_out(indent, text, file_out)
 
-
     def recursion_in_xml_tree(self, depth, xml_tree, output_yml, verbose):
         """
             Descend lower level in xml tree. If we are in the symbols branch, the recursive
@@ -886,9 +886,7 @@ class Nxdl2yaml:
                 for child in node:
                     tag_tmp = remove_namespace_from_tag(child.tag)
                     if tag_tmp == CMNT_TAG and self.include_comment:
-                        last_comment = self.convert_to_yaml_comment(
-                            depth, child.text
-                        )
+                        last_comment = self.convert_to_yaml_comment(depth, child.text)
                         remove_cmnt_n = child
                     if tag_tmp == "doc":
                         self.store_root_level_comments("root_doc", last_comment)
