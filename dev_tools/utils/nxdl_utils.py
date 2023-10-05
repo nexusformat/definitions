@@ -8,8 +8,10 @@ from pathlib import Path
 import textwrap
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
+from ..nyaml2nxdl.nyaml2nxdl_helper import remove_namespace_from_tag
 from functools import lru_cache
 from glob import glob
+
 
 
 class NxdlAttributeNotFoundError(Exception):
@@ -90,7 +92,7 @@ def get_hdf_info_parent(hdf_info):
 def get_nx_class(nxdl_elem):
     """Get the nexus class for a NXDL node"""
     if "category" in nxdl_elem.attrib:
-        return None
+        return ""
     return nxdl_elem.attrib.get("type", "NX_CHAR")
 
 
@@ -250,7 +252,7 @@ def belongs_to_capital(params):
 
 def get_local_name_from_xml(element):
     """Helper function to extract the element tag without the namespace."""
-    return element.tag.rsplit("}")[-1]
+    return remove_namespace_from_tag(element.tag)
 
 
 def get_own_nxdl_child_reserved_elements(child, name, nxdl_elem):
@@ -605,7 +607,16 @@ def add_base_classes(elist, nx_name=None, elem: ET.Element = None):
         nxdl_file_path = find_definition_file(nx_name)
         if nxdl_file_path is None:
             nxdl_file_path = f"{nx_name}.nxdl.xml"
-        elem = ET.parse(nxdl_file_path).getroot()
+
+        try:
+            elem = ET.parse(os.path.abspath(nxdl_file_path)).getroot()
+            # elem = ET.parse(nxdl_file_path).getroot()
+        except OSError:
+            with open(nxdl_file_path, 'r') as f:
+                elem = ET.parse(f).getroot()
+
+        if not isinstance(nxdl_file_path, str):
+            nxdl_file_path = str(nxdl_file_path)
         elem.set("nxdlbase", nxdl_file_path)
     else:
         elem.set("nxdlbase", "")
@@ -756,7 +767,7 @@ def walk_elist(elist, html_name):
 
 
 @lru_cache(maxsize=None)
-def get_inherited_nodes(
+def get_inherited_nodes( ### Make it compatible for pathlib
     nxdl_path: str = None,  # pylint: disable=too-many-arguments,too-many-locals
     nx_name: str = None,
     elem: ET.Element = None,
