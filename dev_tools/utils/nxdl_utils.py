@@ -13,17 +13,29 @@ from functools import lru_cache
 from glob import glob
 
 
-
 class NxdlAttributeNotFoundError(Exception):
     """An exception to throw when an Nxdl attribute is not found."""
 
 
+def get_nexus_definitions_path():
+    """Check NEXUS_DEF_PATH variable.
+    If it is empty, this function is filling it"""
+    try:  # either given by sys env
+        return os.environ["NEXUS_DEF_PATH"]
+    except KeyError:  # or it should be available locally under the dir 'definitions'
+        local_dir = Path(__file__).resolve().parent
+        for _ in range(2):
+            local_dir = local_dir.parent
+        return local_dir
+
+nexus_def_path = get_nexus_definitions_path()
+
 def get_app_defs_names():
     """Returns all the AppDef names without their extension: .nxdl.xml"""
-    app_def_path_glob = get_nexus_definitions_path() / "applications" / "*.nxdl*"
+    app_def_path_glob = nexus_def_path / "applications" / "*.nxdl*"
 
     contrib_def_path_glob = (
-        Path(get_nexus_definitions_path()) / "contributed_definitions" / "*.nxdl*"
+        Path(nexus_def_path) / "contributed_definitions" / "*.nxdl*"
     )
 
     files = sorted(glob(app_def_path_glob))
@@ -40,18 +52,6 @@ def get_xml_root(file_path):
     """Reducing I/O time by caching technique"""
 
     return ET.parse(file_path).getroot()
-
-
-def get_nexus_definitions_path():
-    """Check NEXUS_DEF_PATH variable.
-    If it is empty, this function is filling it"""
-    try:  # either given by sys env
-        return os.environ["NEXUS_DEF_PATH"]
-    except KeyError:  # or it should be available locally under the dir 'definitions'
-        local_dir = Path(__file__).resolve().parent
-        for _ in range(2):
-            local_dir = local_dir.parent
-        return local_dir
 
 
 def get_hdf_root(hdf_node):
@@ -129,7 +129,7 @@ def get_nx_classes():
     """Read base classes from the NeXus definition folder.
     Check each file in base_classes, applications, contributed_definitions.
     If its category attribute is 'base', then it is added to the list."""
-    nexus_definition_path = get_nexus_definitions_path()
+    nexus_definition_path = nexus_def_path
     base_classes = sorted(nexus_definition_path.glob("base_classes/*.nxdl.xml"))
     applications = sorted(nexus_definition_path.glob("applications/*.nxdl.xml"))
     contributed = sorted(
@@ -148,7 +148,7 @@ def get_nx_classes():
 
 def get_nx_units():
     """Read unit kinds from the NeXus definition/nxdlTypes.xsd file"""
-    filepath = get_nexus_definitions_path() / "nxdlTypes.xsd"
+    filepath = nexus_def_path / "nxdlTypes.xsd"
     root = get_xml_root(filepath)
     units_and_type_list = []
     for child in root:
@@ -168,7 +168,7 @@ def get_nx_units():
 
 def get_nx_attribute_type():
     """Read attribute types from the NeXus definition/nxdlTypes.xsd file"""
-    filepath = get_nexus_definitions_path() / "nxdlTypes.xsd"
+    filepath = nexus_def_path / "nxdlTypes.xsd"
 
     root = get_xml_root(filepath)
     units_and_type_list = []
@@ -317,7 +317,6 @@ def find_definition_file(bc_name):
     """find the nxdl file corresponding to the name.
     Note that it first checks in contributed and goes beyond only if no contributed found
     """
-    nexus_def_path = get_nexus_definitions_path()
     bc_filename = None
     for nxdl_folder in ["contributed_definitions", "base_classes", "applications"]:
         nxdl_file = nexus_def_path / nxdl_folder / f"{bc_name}.nxdl.xml"
@@ -767,7 +766,7 @@ def walk_elist(elist, html_name):
 
 
 @lru_cache(maxsize=None)
-def get_inherited_nodes( ### Make it compatible for pathlib
+def get_inherited_nodes( 
     nxdl_path: str = None,  # pylint: disable=too-many-arguments,too-many-locals
     nx_name: str = None,
     elem: ET.Element = None,
