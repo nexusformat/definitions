@@ -111,8 +111,8 @@ $(APPDEF_DIR)/%.nxdl.xml : $(APPDEF_DIR)/$(NYAML_SUBDIR)/%.yaml
 	mv $(APPDEF_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
 
 NXDLS := $(foreach dir,$(NXDL_DIRS),$(wildcard $(dir)/*.nxdl.xml))
-nyaml : $(DIRS) $(NXDLS)
-	for file in $^; do\
+nyaml : $(DIRS)
+	for file in $(NXDLS); do\
 		mkdir -p "$${file%/*}/nyaml";\
 		nyaml2nxdl --input-file $${file};\
 		FNAME=$${file##*/};\
