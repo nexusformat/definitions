@@ -97,22 +97,22 @@ all ::
 	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus.pdf`"
 
 $(BASE_CLASS_DIR)/%.nxdl.xml : $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)/%.yaml
-	nyaml2nxdl --input-file $<
+	$(PYTHON) -m dev_tools.nyaml2nxdl.nyaml2nxdl --input-file $<
 	mv $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
 
 $(CONTRIB_DIR)/%.nxdl.xml : $(CONTRIB_DIR)/$(NYAML_SUBDIR)/%.yaml
-	nyaml2nxdl --input-file $<
+	$(PYTHON) -m dev_tools.nyaml2nxdl.nyaml2nxdl --input-file $<
 	mv $(CONTRIB_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
 
 $(APPDEF_DIR)/%.nxdl.xml : $(APPDEF_DIR)/$(NYAML_SUBDIR)/%.yaml
-	nyaml2nxdl --input-file $<
+	$(PYTHON) -m dev_tools.nyaml2nxdl.nyaml2nxdl --input-file $<
 	mv $(APPDEF_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
 
 NXDLS := $(foreach dir,$(NXDL_DIRS),$(wildcard $(dir)/*.nxdl.xml))
 nyaml : $(DIRS)
 	for file in $(NXDLS); do\
 		mkdir -p "$${file%/*}/nyaml";\
-		nyaml2nxdl --input-file $${file};\
+		$(PYTHON) -m dev_tools.nyaml2nxdl.nyaml2nxdl --input-file $${file};\
 		FNAME=$${file##*/};\
 		mv -- "$${file%.nxdl.xml}_parsed.yaml" "$${file%/*}/nyaml/$${FNAME%.nxdl.xml}.yaml";\
 	done
