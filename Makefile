@@ -109,7 +109,7 @@ $(APPDEF_DIR)/%.nxdl.xml : $(APPDEF_DIR)/$(NYAML_SUBDIR)/%.yaml
 	mv $(APPDEF_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
 
 NXDLS := $(foreach dir,$(NXDL_DIRS),$(wildcard $(dir)/*.nxdl.xml))
-nyaml : $(DIRS)
+nyaml :
 	for file in $(NXDLS); do\
 		mkdir -p "$${file%/*}/nyaml";\
 		$(PYTHON) -m dev_tools.nyaml2nxdl.nyaml2nxdl --input-file $${file};\
