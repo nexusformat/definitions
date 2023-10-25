@@ -668,8 +668,8 @@ class NXClassDocGenerator:
 
     def get_first_parent_ref(self, path, tag):
         spliter = path.find("/", 1)
-        nx_name = path[1 : spliter]
-        path = path[spliter :]
+        nx_name = path[1:spliter]
+        path = path[spliter:]
 
         try:
             parents = pynxtools_nxlib.get_inherited_nodes(path, nx_name)[2]
@@ -680,9 +680,7 @@ class NXClassDocGenerator:
             parent_path = parent_display_name = parent.attrib["nxdlpath"]
             parent_path_segments = parent_path[1:].split("/")
             nxdl_attr = parent.attrib["nxdlbase"]
-            parent_def_name = nxdl_attr[nxdl_attr.rfind("/") :
-                                        nxdl_attr.rfind(".nxdl")
-            ]
+            parent_def_name = nxdl_attr[nxdl_attr.rfind("/") : nxdl_attr.rfind(".nxdl")]
 
             # Case where the first parent is a base_class
             if parent_path_segments[0] == "":

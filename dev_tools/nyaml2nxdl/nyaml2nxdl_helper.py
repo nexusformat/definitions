@@ -24,13 +24,13 @@ to convert from nyaml to nxdl and vice versa.
 #
 
 import hashlib
+from typing import Callable
 
 from yaml.composer import Composer
 from yaml.constructor import Constructor
 from yaml.loader import Loader
 from yaml.nodes import ScalarNode
 from yaml.resolver import BaseResolver
-from typing import Callable
 
 # Yaml library does not except the keys (escape char "\t" and yaml separator ":")
 ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    "}
@@ -254,9 +254,9 @@ def separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, sep_xml):
     """Separate yaml, SHA hash and nxdl parts.
 
     Separate the provided yaml file into yaml, nxdl and hash if yaml was extended with
-    nxdl at the end of yaml as 
-        
-                    <yaml part> 
+    nxdl at the end of yaml as
+
+                    <yaml part>
         '\n# ++++++++++++++++++++++++++++++++++ SHA HASH \
             ++++++++++++++++++++++++++++++++++\n'
          # <has value>'

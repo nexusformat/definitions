@@ -21,22 +21,22 @@
 # limitations under the License.
 #
 
-from typing import Dict, Callable
-from typing import List
 from pathlib import Path
+from typing import Callable
+from typing import Dict
+from typing import List
+
 import lxml.etree as ET
 
+from .nyaml2nxdl_helper import NXDL_ATTRIBUTES_ATTRIBUTES
+from .nyaml2nxdl_helper import NXDL_FIELD_ATTRIBUTES
+from .nyaml2nxdl_helper import NXDL_GROUP_ATTRIBUTES
+from .nyaml2nxdl_helper import NXDL_LINK_ATTRIBUTES
 from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_node_parent_info
 from .nyaml2nxdl_helper import get_yaml_escape_char_dict
-from .nyaml2nxdl_helper import remove_namespace_from_tag, is_dom_comment
-from .nyaml2nxdl_helper import (
-    NXDL_FIELD_ATTRIBUTES,
-    NXDL_GROUP_ATTRIBUTES,
-    NXDL_ATTRIBUTES_ATTRIBUTES,
-    NXDL_LINK_ATTRIBUTES,
-)
-
+from .nyaml2nxdl_helper import is_dom_comment
+from .nyaml2nxdl_helper import remove_namespace_from_tag
 
 DEPTH_SIZE = "  "
 CMNT_TAG = "!--"

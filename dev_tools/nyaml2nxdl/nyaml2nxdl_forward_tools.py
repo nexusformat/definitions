@@ -21,29 +21,27 @@
 # limitations under the License.
 #
 
+import datetime
 import pathlib
 import textwrap
-import datetime
-import lxml.etree as ET
-from urllib.parse import unquote
 import warnings
+from urllib.parse import unquote
 
+import lxml.etree as ET
 import yaml
 
 from ..utils import nxdl_utils as pynxtools_nxlib
 from .comment_collector import CommentCollector
+from .nyaml2nxdl_helper import YAML_ATTRIBUTES_ATTRIBUTES
+from .nyaml2nxdl_helper import YAML_FIELD_ATTRIBUTES
+from .nyaml2nxdl_helper import YAML_GROUP_ATTRIBUTES
+from .nyaml2nxdl_helper import YAML_LINK_ATTRIBUTES
 from .nyaml2nxdl_helper import LineLoader
 from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_yaml_escape_char_reverter_dict
+from .nyaml2nxdl_helper import is_dom_comment
 from .nyaml2nxdl_helper import nx_name_type_resolving
-from .nyaml2nxdl_helper import (
-    YAML_ATTRIBUTES_ATTRIBUTES,
-    YAML_FIELD_ATTRIBUTES,
-    YAML_GROUP_ATTRIBUTES,
-    YAML_LINK_ATTRIBUTES,
-)
-from .nyaml2nxdl_helper import remove_namespace_from_tag, is_dom_comment
-
+from .nyaml2nxdl_helper import remove_namespace_from_tag
 
 # pylint: disable=too-many-lines, global-statement, invalid-name
 DOM_COMMENT = (

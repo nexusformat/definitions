@@ -19,8 +19,8 @@
 #
 
 """
-Collect comments in a list by CommentCollector class and each comment is an instance of Comment 
-class. Each `Comment` instance(sometimes refered as 'comment block') consists of text and line 
+Collect comments in a list by CommentCollector class and each comment is an instance of Comment
+class. Each `Comment` instance(sometimes refered as 'comment block') consists of text and line
 info or neighbours info where the comment must be placed.
 
 The class Comment is an abstract class for general functions or method to be implemented
@@ -67,9 +67,7 @@ class CommentCollector:
                     loader = LineLoader(plain_text_yaml)
                     self.comment.__yaml_dict__ = loader.get_single_data()
             else:
-                raise ValueError(
-                    "Input file must be a 'yaml' or 'nxdl.xml' type."
-                )
+                raise ValueError("Input file must be a 'yaml' or 'nxdl.xml' type.")
         elif self.file and loaded_obj:
             if self.file.split(".")[-1] == "yaml" and isinstance(loaded_obj, dict):
                 self.comment = YAMLComment
@@ -83,8 +81,8 @@ class CommentCollector:
             raise ValueError("Incorrect inputs for CommentCollector")
 
     def extract_all_comment_blocks(self):
-        """Collect all comments. 
-        
+        """Collect all comments.
+
         Note here that comment means (comment text + element or line info
         intended for comment.
         """
@@ -101,9 +99,7 @@ class CommentCollector:
                     # If the last comment comes without post nxdl fields, groups and attributes
                     if "++ SHA HASH ++" in line:
                         # Handle with stored nxdl.xml file that is not part of yaml
-                        single_comment.process_each_line(
-                            "post_comment", (line_num + 1)
-                        )
+                        single_comment.process_each_line("post_comment", (line_num + 1))
                         self._comment_chain.append(single_comment)
                         break
                     if line_num < end_line_num:
@@ -450,8 +446,7 @@ class YAMLComment(Comment):
 
     # pylint: disable=arguments-differ
     def store_element(self, line_key, line_number):
-        """Store comment contents and information of comment location.
-        """
+        """Store comment contents and information of comment location."""
         self._elemt = {}
         self._elemt[line_key] = int(line_number)
         self._is_elemt_found = False
@@ -483,10 +478,11 @@ class YAMLComment(Comment):
         return text
 
     def get_element_location(self):
-        """Return yaml line '__line__<KEYY>' info and and line numner
-        """
+        """Return yaml line '__line__<KEYY>' info and and line numner"""
         if len(self._elemt) == 0:
-            raise ValueError(f"Comment element should be one or more but got {self._elemt}")
+            raise ValueError(
+                f"Comment element should be one or more but got {self._elemt}"
+            )
         return next(self._elemt.items())
 
     def collect_yaml_line_info(self, yaml_dict, line_info_dict):

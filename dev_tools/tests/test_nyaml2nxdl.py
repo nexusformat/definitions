@@ -11,7 +11,7 @@ def test_conversion():
     result = CliRunner().invoke(conv.launch_tool, ["--input-file", root])
     assert result.exit_code == 0
     # Replace suffixes
-    yaml = root.with_suffix('').with_suffix('.yaml')
+    yaml = root.with_suffix("").with_suffix(".yaml")
     yaml = yaml.with_stem(yaml.stem + "_parsed")
     result = CliRunner().invoke(conv.launch_tool, ["--input-file", yaml])
     assert result.exit_code == 0
