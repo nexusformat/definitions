@@ -37,6 +37,9 @@ After editing the definitions in nyaml format in the nyaml subdirectories, the f
 
     make nxdl
 
+> [!WARNING]  
+> Please be aware that your nyaml files might be out of sync with the nxdl files when you update your repo. So it's best practice to stash your changes to the nyaml files and regenerate the files with `make nyaml` before adding any changes.
+
 ### HTML pages with contributor information
 
 To build the html pages that contains contributor information on the sidebar set a github access token to an environment variable called GH_TOKEN.
