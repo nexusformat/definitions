@@ -9,7 +9,6 @@ BUILD_DIR = "build"
 BASE_CLASS_DIR := base_classes
 CONTRIB_DIR := contributed_definitions
 APPDEF_DIR := applications
-NXDL_DIRS := $(BASE_CLASS_DIR) $(CONTRIB_DIR) $(APPDEF_DIR)
 NYAML_SUBDIR := nyaml
 NYAML_APPENDIX := _parsed
 
@@ -108,7 +107,7 @@ $(APPDEF_DIR)/%.nxdl.xml : $(APPDEF_DIR)/$(NYAML_SUBDIR)/%.yaml
 	$(PYTHON) -m dev_tools.nyaml2nxdl.nyaml2nxdl --input-file $<
 	mv $(APPDEF_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
 
-NXDLS := $(foreach dir,$(NXDL_DIRS),$(wildcard $(dir)/*.nxdl.xml))
+NXDLS := $(NXDL_APPDEF) + $(NXDL_CONTRIB) + $(NXDL_BC)
 nyaml :
 	for file in $(NXDLS); do\
 		mkdir -p "$${file%/*}/nyaml";\
