@@ -378,6 +378,7 @@ class Nxdl2yaml:
         """
         # To store indentation text from comment
         lines = self.clean_and_organise_text(text, depth).split("\n")
+        indent = DEPTH_SIZE * depth
         mod_lines = []
         for line in lines:
             line = line.strip()
@@ -386,7 +387,7 @@ class Nxdl2yaml:
                     line = "# " + line
                 mod_lines.append(line)
         # The starting '\n' to keep multiple comments separate
-        return "\n" + "\n".join(mod_lines)
+        return "\n" + indent + "\n".join(mod_lines)
 
     def print_root_level_info(self, depth, file_out):
         """
