@@ -45,6 +45,36 @@
     <doc>
          Subclass of NXprocess to describe post-processing calibrations.
     </doc>
+    <field name="description" type="NX_CHAR">
+        <doc>
+             A description of the procedures employed.
+        </doc>
+    </field>
+    <group name="calibration_method" type="NXidentifier">
+        <doc>
+             A digital persistent identifier (e.g., doi, ISO standard) referring to a detailed description of a 
+             calibration method but no actual calibration data.
+        </doc>
+    </group>
+    <group name="calibration_reference" type="NXidentifier">
+        <doc>
+             A digital persistent identifier (e.g., a doi) referring to a 
+             publicly available calibration measurement used for this instrument
+             , e.g., a measurement of a known standard containing calibration information.
+             The axis values may be copied or linked in the appropriate NXcalibration fields for reference.
+        </doc>
+    </group>
+    <group name="calibration_object" type="NXserialized">
+        <doc>
+             A file serialisation of a calibration which may not be publicly available (externally from the nexus file).
+             
+             This metadata can be a documentation of the source (file) or database (entry) from which pieces
+             of information have been extracted for consumption in e.g. a research data management system (RDMS).
+             It is also possible to include the actual file by using the `file` field.
+             
+             The axis values may be copied or linked in the appropriate NXcalibration fields for reference.
+        </doc>
+    </group>
     <field name="last_process" type="NX_CHAR">
         <doc>
              Indicates the name of the last operation applied in the NXprocess sequence.
@@ -54,6 +84,47 @@
         <doc>
              Has the calibration been applied?
         </doc>
+    </field>
+    <field name="original_axis" type="NX_FLOAT" units="NX_ANY">
+        <doc>
+             Vector containing the data coordinates in the original uncalibrated axis
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="ncal"/>
+        </dimensions>
+        <attribute name="symbol">
+            <doc>
+                 The symbol of the axis to be used in the fit_function, e.g., `energy`, `E`.
+                 This should comply to the following naming rules (similar to python's naming rules):
+                 
+                   * A variable name must start with a letter or the underscore character
+                   * A variable name cannot start with a number
+                   * A variable name can only contain alpha-numeric characters and underscores (A-z, 0-9, and _ )
+                   * Variable names are case-sensitive (age, Age and AGE are three different variables)
+            </doc>
+        </attribute>
+        <attribute name="input_path">
+            <doc>
+                 The path from which this data is derived, e.g., raw detector axis.
+                 Should be a valid NeXus path name, e.g., /entry/instrument/detector/raw.
+            </doc>
+        </attribute>
+    </field>
+    <field name="input_SYMBOL" type="NX_FLOAT" units="NX_ANY">
+        <doc>
+             Additional input axis to be used in the formula.
+             The part after `input_` is used as the symbol to be used in the `fit_function`, i.e.,
+             if the field name is `input_my_field` you should refer to this axis by `my_field` in the `fit_function`.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="ncal"/>
+        </dimensions>
+        <attribute name="input_path">
+            <doc>
+                 The path from which this data is derived, e.g., raw detector axis.
+                 Should be a valid NeXus path name, e.g., /entry/instrument/detector/raw.
+            </doc>
+        </attribute>
     </field>
     <field name="coefficients" type="NX_FLOAT" units="NX_ANY">
         <doc>
@@ -72,7 +143,13 @@
              
              Use a0, a1, ..., an for the coefficients, corresponding to the values in the coefficients field.
              
-             Use x0, x1, ..., xn for the variables.
+             Use x0, x1, ..., xn for the nth position in the `original_axis` field.
+             If there is the symbol attribute specified for the `original_axis` this may be used instead of x.
+             If you want to use the whole axis use `x`.
+             Alternate axis can also be available as specified by the `input_SYMBOL` field.
+             The data should then be referred here by the `SYMBOL` name, e.g., for a field
+             name `input_my_field` it should be referred here by `my_field` or `my_field0` if
+             you want to read the zeroth element of the array.
              
              The formula should be numpy compliant.
         </doc>
@@ -80,11 +157,21 @@
     <field name="scaling" type="NX_FLOAT" units="NX_ANY">
         <doc>
              For linear calibration. Scaling parameter.
+             This is should yield the relation `calibrated_axis` = `scaling` * `original_axis` + `offset`.
         </doc>
     </field>
     <field name="offset" type="NX_FLOAT" units="NX_ANY">
         <doc>
              For linear calibration. Offset parameter.
+             This is should yield the relation `calibrated_axis` = `scaling` * `original_axis` + `offset`.
+        </doc>
+    </field>
+    <field name="MAPPING" type="NX_FLOAT">
+        <doc>
+             Mapping data for calibration.
+             
+             This can be used to map data points from uncalibrated to calibrated values,
+             i.e., by multiplying each point in the input axis by the corresponding point in the mapping data.
         </doc>
     </field>
     <field name="calibrated_axis" type="NX_FLOAT" units="NX_ANY">
@@ -94,32 +181,11 @@
         <dimensions rank="1">
             <dim index="1" value="ncal"/>
         </dimensions>
+        <attribute name="output_path">
+            <doc>
+                 The path to which this data is written, e.g., the calibrated energy.
+                 Should be a valid NeXus path name, e.g., /entry/data/energy.
+            </doc>
+        </attribute>
     </field>
-    <field name="original_axis" type="NX_FLOAT" units="NX_ANY">
-        <doc>
-             Vector containing the data coordinates in the original uncalibrated axis
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="ncal"/>
-        </dimensions>
-    </field>
-    <field name="description">
-        <doc>
-             A description of the procedures employed.
-        </doc>
-    </field>
-    <group name="calibration_file" type="NXnote">
-        <doc>
-             File containing the input data for calibration.
-        </doc>
-    </group>
-    <group name="mapping" type="NXdata">
-        <doc>
-             Mapping data for calibration.
-             
-             This can be used to map data points from uncalibrated 
-             to calibrated values, e.g., by multiplying each point by the
-             corresponding point in the mapping data.
-        </doc>
-    </group>
 </definition>
