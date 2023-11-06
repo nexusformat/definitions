@@ -41,14 +41,7 @@ from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_yaml_escape_char_reverter_dict
 from .nyaml2nxdl_helper import is_dom_comment
 from .nyaml2nxdl_helper import nx_name_type_resolving
-from .nyaml2nxdl_helper import (
-    YAML_ATTRIBUTES_ATTRIBUTES,
-    YAML_FIELD_ATTRIBUTES,
-    YAML_GROUP_ATTRIBUTES,
-    YAML_LINK_ATTRIBUTES,
-)
-from .nyaml2nxdl_helper import remove_namespace_from_tag, is_dom_comment
-
+from .nyaml2nxdl_helper import remove_namespace_from_tag
 
 # pylint: disable=too-many-lines, global-statement, invalid-name
 DOM_COMMENT = (

@@ -12,7 +12,12 @@ def test_conversion():
     result = CliRunner().invoke(conv.launch_tool, ["--input-file", root])
     assert result.exit_code == 0
     # Replace suffixes
+<<<<<<< HEAD
     yaml = root.parent / Path(root.with_suffix("").stem + "_parsed.yaml")
+=======
+    yaml = root.with_suffix("").with_suffix(".yaml")
+    yaml = yaml.with_stem(yaml.stem + "_parsed")
+>>>>>>> 8cfbb6f3 (Fix codestyle)
     result = CliRunner().invoke(conv.launch_tool, ["--input-file", yaml])
     assert result.exit_code == 0
     new_root = yaml.with_suffix(".nxdl.xml")

@@ -3,15 +3,16 @@
 """
 
 import os
-
-from pathlib import Path
 import textwrap
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
 from ..nyaml2nxdl.nyaml2nxdl_helper import remove_namespace_from_tag
 >>>>>>> 3ef8b382 (Resolving requested changes.)
+=======
+>>>>>>> 8cfbb6f3 (Fix codestyle)
 from functools import lru_cache
 from glob import glob
 from pathlib import Path
@@ -41,16 +42,19 @@ def get_nexus_definitions_path():
             local_dir = local_dir.parent
         return local_dir
 
+
 nexus_def_path = get_nexus_definitions_path()
 
+<<<<<<< HEAD
 >>>>>>> 3ef8b382 (Resolving requested changes.)
+=======
+
+>>>>>>> 8cfbb6f3 (Fix codestyle)
 def get_app_defs_names():
     """Returns all the AppDef names without their extension: .nxdl.xml"""
     app_def_path_glob = nexus_def_path / "applications" / "*.nxdl*"
 
-    contrib_def_path_glob = (
-        Path(nexus_def_path) / "contributed_definitions" / "*.nxdl*"
-    )
+    contrib_def_path_glob = Path(nexus_def_path) / "contributed_definitions" / "*.nxdl*"
 
     files = sorted(glob(app_def_path_glob))
     for nexus_file in sorted(contrib_def_path_glob):
@@ -724,10 +728,14 @@ def add_base_classes(elist, nx_name=None, elem: ET.Element = None):
             # elem = ET.parse(nxdl_file_path).getroot()
         except OSError:
 <<<<<<< HEAD
+<<<<<<< HEAD
             with open(nxdl_file_path, "r") as f:
 =======
             with open(nxdl_file_path, 'r') as f:
 >>>>>>> 3ef8b382 (Resolving requested changes.)
+=======
+            with open(nxdl_file_path, "r") as f:
+>>>>>>> 8cfbb6f3 (Fix codestyle)
                 elem = ET.parse(f).getroot()
 
         if not isinstance(nxdl_file_path, str):
@@ -882,7 +890,7 @@ def walk_elist(elist, html_name):
 
 
 @lru_cache(maxsize=None)
-def get_inherited_nodes( 
+def get_inherited_nodes(
     nxdl_path: str = None,  # pylint: disable=too-many-arguments,too-many-locals
     nx_name: str = None,
     elem: ET.Element = None,

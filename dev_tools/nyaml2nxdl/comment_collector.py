@@ -20,12 +20,17 @@
 
 """
 <<<<<<< HEAD
+<<<<<<< HEAD
 Collect comments in a list by CommentCollector class and each comment is an instance of Comment
 class. Each `Comment` instance(sometimes refered as 'comment block') consists of text and line
 =======
 Collect comments in a list by CommentCollector class and each comment is an instance of Comment 
 class. Each `Comment` instance(sometimes refered as 'comment block') consists of text and line 
 >>>>>>> 3ef8b382 (Resolving requested changes.)
+=======
+Collect comments in a list by CommentCollector class and each comment is an instance of Comment
+class. Each `Comment` instance(sometimes refered as 'comment block') consists of text and line
+>>>>>>> 8cfbb6f3 (Fix codestyle)
 info or neighbours info where the comment must be placed.
 
 The class Comment is an abstract class for general functions or method to be implemented
@@ -87,12 +92,17 @@ class CommentCollector:
 
     def extract_all_comment_blocks(self):
 <<<<<<< HEAD
+<<<<<<< HEAD
         """Collect all comments.
 
 =======
         """Collect all comments. 
         
 >>>>>>> 3ef8b382 (Resolving requested changes.)
+=======
+        """Collect all comments.
+
+>>>>>>> 8cfbb6f3 (Fix codestyle)
         Note here that comment means (comment text + element or line info
         intended for comment.
         """
@@ -489,6 +499,7 @@ class YAMLComment(Comment):
 
     def get_element_location(self):
 <<<<<<< HEAD
+<<<<<<< HEAD
         """Return yaml line '__line__<KEYY>' info and and line numner"""
         if len(self._elemt) == 0:
             raise ValueError(
@@ -500,6 +511,13 @@ class YAMLComment(Comment):
         if len(self._elemt) == 0:
             raise ValueError(f"Comment element should be one or more but got {self._elemt}")
 >>>>>>> 3ef8b382 (Resolving requested changes.)
+=======
+        """Return yaml line '__line__<KEYY>' info and and line numner"""
+        if len(self._elemt) == 0:
+            raise ValueError(
+                f"Comment element should be one or more but got {self._elemt}"
+            )
+>>>>>>> 8cfbb6f3 (Fix codestyle)
         return next(self._elemt.items())
 
     def collect_yaml_line_info(self, yaml_dict, line_info_dict):
