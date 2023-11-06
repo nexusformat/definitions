@@ -78,7 +78,7 @@ def get_hdf_parent(hdf_info):
         if "hdf_root" not in hdf_info
         else hdf_info["hdf_root"]
     )
-    for child_name in hdf_info["hdf_path"].rsplit("/"):
+    for child_name in hdf_info["hdf_path"].split("/"):
         node = node[child_name]
     return node
 
