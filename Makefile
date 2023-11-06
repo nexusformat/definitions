@@ -9,6 +9,7 @@ BUILD_DIR = "build"
 BASE_CLASS_DIR := base_classes
 CONTRIB_DIR := contributed_definitions
 APPDEF_DIR := applications
+NXDL_DIRS := $(BASE_CLASS_DIR) $(CONTRIB_DIR) $(APPDEF_DIR)
 NYAML_SUBDIR := nyaml
 NYAML_APPENDIX := _parsed
 
@@ -58,6 +59,8 @@ test ::
 
 clean ::
 	$(RM) -rf $(BUILD_DIR)
+
+clean-nyaml ::
 	$(RM) -rf $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)
 	$(RM) -rf $(APPDEF_DIR)/$(NYAML_SUBDIR)
 	$(RM) -rf $(CONTRIB_DIR)/$(NYAML_SUBDIR)

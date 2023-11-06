@@ -21,17 +21,8 @@
 # limitations under the License.
 #
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-from pathlib import Path
-from typing import Callable
-from typing import Dict
-=======
-from typing import Dict, Callable
->>>>>>> 3ef8b382 (Resolving requested changes.)
-from typing import List
-=======
->>>>>>> 8cfbb6f3 (Fix codestyle)
+import re
+import textwrap
 from pathlib import Path
 from typing import Callable
 from typing import Dict
@@ -39,42 +30,15 @@ from typing import List
 
 import lxml.etree as ET
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-import lxml.etree as ET
-
-=======
->>>>>>> 8cfbb6f3 (Fix codestyle)
 from .nyaml2nxdl_helper import NXDL_ATTRIBUTES_ATTRIBUTES
 from .nyaml2nxdl_helper import NXDL_FIELD_ATTRIBUTES
 from .nyaml2nxdl_helper import NXDL_GROUP_ATTRIBUTES
 from .nyaml2nxdl_helper import NXDL_LINK_ATTRIBUTES
-<<<<<<< HEAD
-=======
->>>>>>> ad17b64e (rebase ...)
-from .nyaml2nxdl_helper import clean_empty_lines
-from .nyaml2nxdl_helper import get_node_parent_info
-from .nyaml2nxdl_helper import get_yaml_escape_char_dict
-<<<<<<< HEAD
-from .nyaml2nxdl_helper import is_dom_comment
-from .nyaml2nxdl_helper import remove_namespace_from_tag
-=======
-from .nyaml2nxdl_helper import remove_namespace_from_tag, is_dom_comment
-from .nyaml2nxdl_helper import (
-    NXDL_FIELD_ATTRIBUTES,
-    NXDL_GROUP_ATTRIBUTES,
-    NXDL_ATTRIBUTES_ATTRIBUTES,
-    NXDL_LINK_ATTRIBUTES,
-)
-
->>>>>>> 3ef8b382 (Resolving requested changes.)
-=======
 from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_node_parent_info
 from .nyaml2nxdl_helper import get_yaml_escape_char_dict
 from .nyaml2nxdl_helper import is_dom_comment
 from .nyaml2nxdl_helper import remove_namespace_from_tag
->>>>>>> 8cfbb6f3 (Fix codestyle)
 
 DEPTH_SIZE = "  "
 CMNT_TAG = "!--"
@@ -195,16 +159,6 @@ class Nxdl2yaml:
         #       The 'symbol_comments' contains comments for 'symbols doc' and all 'symbol'
         #                      'symbol_comments': [comments]}
         self.root_level_comment: Dict[str, str] = {}
-
-        self.optionality_keys = (
-            "minOccurs",
-            "maxOccurs",
-            "optional",
-            "recommended",
-            "required",
-        )
-        # "Take care of general attributes. Note other choices may be allowed in the future"
-        self.choice_allowed_attr = ()
 
         self.optionality_keys = (
             "minOccurs",
@@ -379,6 +333,51 @@ class Nxdl2yaml:
 
         return text
 
+    def check_and_handle_doc_xref_and_other_doc(self, text, indent):
+        """Check for xref doc which comes as a block of text.
+
+        The doc part bellow is the example how xref comes:
+        '''
+        This concept is related to term `<term>`_ of the <spec> standard.
+        .. _<term>: <url>
+        '''
+        converter as
+        '''
+        <indent>  "xref:
+        <indent>    xpec: <value>
+        <indent>    erm: <value>
+        <indent>    url: <value>"
+        '''
+
+        Parameters
+        ----------
+        text: str
+            plain text.
+        Returns
+        -------
+        str
+            return part of doc as formatted
+        """
+
+        xref_key, spec_key, term_key, url_key = ("xref", "spec", "term", "url")
+        spec, term, url = (None, None, None)
+        matches = re.search(
+            r"This concept is related to term `([^`]+)`_ of the"
+            r" ([^\s]+) standard\.\s*\.\. _([^:]+): ([^\s]+)",
+            text,
+        )
+        if matches:
+            term = matches.group(1)
+            spec = matches.group(2)
+            url = matches.group(4)
+            indent = indent + DEPTH_SIZE  # see example in func doc
+            return (
+                f'{indent}"{xref_key}:\n{indent + DEPTH_SIZE}{spec_key}: {spec}'
+                f"\n{indent + DEPTH_SIZE}{term_key}"
+                f': {term}\n{indent + DEPTH_SIZE}{url_key}: {url}"'
+            )
+        return text
+
     # pylint: disable=too-many-branches
     def handle_not_root_level_doc(self, depth, text, tag="doc", file_out=None):
         """Handle docs field of group and field but not root.
@@ -388,13 +387,39 @@ class Nxdl2yaml:
             * Topic name
                 Description of topic
         """
-
-        text = self.clean_and_organise_text(text, depth)
         if "}" in tag:
             tag = remove_namespace_from_tag(tag)
         indent = depth * DEPTH_SIZE
+        text = self.clean_and_organise_text(text, depth)  # starts with '\n'
+        docs = re.split(r"\n\s*\n", text)
+        modified_docs = []
+        for doc_part in docs:
+            if not doc_part.isspace():
+                modified_docs.append(
+                    self.check_and_handle_doc_xref_and_other_doc(doc_part, indent)
+                )
+        # doc example:
+        # doc:
+        #  - |
+        #   text
+        #  - |
+        #   xref:
+        #       spec:
+        #       term:
+        if len(modified_docs) > 1:
+            doc_str = f"{indent}{tag}:\n"
+            for mod_doc in modified_docs:
+                if not re.match(
+                    r"^\s*\n", mod_doc
+                ):  # if not starts with 'spaces and/or \n'
+                    mod_doc = "\n" + mod_doc
+                # doc_str = f"{doc_str}{indent} - |\n{textwrap.indent(mod_doc, indent+'  ')}\n"
+                doc_str = f"{doc_str}{indent} - |{textwrap.indent(mod_doc, '')}\n"
+        elif len(modified_docs) == 1:
+            doc_str = f"{indent}{tag}: |{modified_docs[0]}\n"
+        else:
+            doc_str = f"{indent}{tag}: |{text}\n"
 
-        doc_str = f"{indent}{tag}: |{text}\n"
         if file_out:
             file_out.write(doc_str)
             return None
@@ -425,10 +450,7 @@ class Nxdl2yaml:
         """
         # To store indentation text from comment
         lines = self.clean_and_organise_text(text, depth).split("\n")
-<<<<<<< HEAD
         indent = DEPTH_SIZE * depth
-=======
->>>>>>> 3ef8b382 (Resolving requested changes.)
         mod_lines = []
         for line in lines:
             line = line.strip()

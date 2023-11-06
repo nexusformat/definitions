@@ -3,7 +3,7 @@
 Main file of nyaml2nxdl tool.
 
 To write a definition for a instrument, experiment and/or process in nxdl.xml file from a YAML
-file which details a hierarchy of data/metadata elements. It also allows both way
+file which details a hierarchy of data/metadata elements. It also allows both wa
 conversion beteen YAML and nxdl.xml files that follows rules of NeXus ontology or data format.
 """
 # -*- coding: utf-8 -*-
@@ -122,6 +122,7 @@ def launch_tool(input_file, verbose, do_not_store_nxdl, check_consistency):
     if ext == "yaml":
         xml_out_file = raw_name + _nxdl
         generate_nxdl_or_retrieve_nxdl(input_file, xml_out_file, verbose)
+
         # For consistency running
         if check_consistency:
             yaml_out_file = raw_name + "_consistency." + ext
