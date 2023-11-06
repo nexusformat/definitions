@@ -43,6 +43,7 @@ from .nyaml2nxdl_helper import is_dom_comment
 from .nyaml2nxdl_helper import nx_name_type_resolving
 from .nyaml2nxdl_helper import remove_namespace_from_tag
 
+
 # pylint: disable=too-many-lines, global-statement, invalid-name
 DOM_COMMENT = (
     f"# NeXus - Neutron and X-ray Common Data Format\n"

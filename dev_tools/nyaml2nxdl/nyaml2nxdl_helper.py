@@ -270,7 +270,6 @@ def separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, sep_xml):
             sep_xml, "w", encoding="utf-8"
         ) as xml_f_ob:
             write_on_yaml = True
-
             last_line = lines[0]
             for line in lines[1:]:
                 # Write in file when ensured that the next line is not with '++ SHA HASH ++'

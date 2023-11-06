@@ -26,12 +26,15 @@ from typing import Callable
 from typing import Dict
 from typing import List
 
+<<<<<<< HEAD
 import lxml.etree as ET
 
 from .nyaml2nxdl_helper import NXDL_ATTRIBUTES_ATTRIBUTES
 from .nyaml2nxdl_helper import NXDL_FIELD_ATTRIBUTES
 from .nyaml2nxdl_helper import NXDL_GROUP_ATTRIBUTES
 from .nyaml2nxdl_helper import NXDL_LINK_ATTRIBUTES
+=======
+>>>>>>> ad17b64e (rebase ...)
 from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_node_parent_info
 from .nyaml2nxdl_helper import get_yaml_escape_char_dict
