@@ -59,8 +59,6 @@ test ::
 
 clean ::
 	$(RM) -rf $(BUILD_DIR)
-
-clean-nyaml ::
 	$(RM) -rf $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)
 	$(RM) -rf $(APPDEF_DIR)/$(NYAML_SUBDIR)
 	$(RM) -rf $(CONTRIB_DIR)/$(NYAML_SUBDIR)

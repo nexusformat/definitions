@@ -869,7 +869,7 @@ def xml_handle_comment(
     1. Rearrange comment elements of xml_ele and xml_ele where comment comes first.
     2. Append comment element when no xml_ele found as general comments.
     """
-
+    
     line_info = (line_annotation, int(line_loc_no))
     if line_info in COMMENT_BLOCKS:  # noqa: F821
         cmnt = COMMENT_BLOCKS.get_comment_by_line_info(line_info)  # noqa: F821
@@ -895,6 +895,7 @@ def xml_handle_comment(
 
 def recursive_build(obj, dct, verbose):
     """Walk through nested dictionary.
+    
     Parameters:
     -----------
     obj : ET.Element

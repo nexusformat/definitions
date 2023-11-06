@@ -157,6 +157,49 @@ class Nxdl2yaml:
         #       The 'symbol_comments' contains comments for 'symbols doc' and all 'symbol'
         #                      'symbol_comments': [comments]}
         self.root_level_comment: Dict[str, str] = {}
+        self.grp_fld_allowed_attr = (
+            "optional",
+            "recommended",
+            "name",
+            "type",
+            "axes",
+            "axis",
+            "data_offset",
+            "interpretation",
+            "long_name",
+            "maxOccurs",
+            "minOccurs",
+            "nameType",
+            "optional",
+            "primary",
+            "signal",
+            "stride",
+            "units",
+            "required",
+            "deprecated",
+            "exists",
+        )
+        self.attr_allowed_attr = (
+            "name",
+            "type",
+            "units",
+            "nameType",
+            "recommended",
+            "optional",
+            "minOccurs",
+            "maxOccurs",
+            "deprecated",
+        )
+        self.link_allowed_attr = ("name",
+                                  "target", 
+                                  "napimount")
+        self.optionality_keys = ("minOccurs",
+                                 "maxOccurs", 
+                                 "optional", 
+                                 "recommended", 
+                                 "required")
+        # "Take care of general attributes. Note other choices may be allowed in the future"
+        self.choice_allowed_attr = ()
 
         self.optionality_keys = (
             "minOccurs",
@@ -273,8 +316,7 @@ class Nxdl2yaml:
         """
         Handle the documentation field found at root level.
         """
-        text = node.text
-        text = self.handle_not_root_level_doc(depth=0, text=text)
+        text = self.handle_not_root_level_doc(depth=0, text=node.text)
         self.root_level_doc = text
 
     def clean_and_organise_text(self, text, depth):
@@ -666,7 +708,7 @@ class Nxdl2yaml:
                         f"{indent}{key}: "
                         f"{handle_mapping_char(value, depth + 3, False)}\n"
                     )
-
+    
     def handle_enumeration(self, depth, node, file_out):
         """
             Handle the enumeration field parsed from the xml file.
