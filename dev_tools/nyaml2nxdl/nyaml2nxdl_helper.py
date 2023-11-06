@@ -31,6 +31,7 @@ from yaml.constructor import Constructor
 from yaml.loader import Loader
 from yaml.nodes import ScalarNode
 from yaml.resolver import BaseResolver
+from typing import Callable
 
 # Yaml library does not except the keys (escape char "\t" and yaml separator ":")
 ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    "}

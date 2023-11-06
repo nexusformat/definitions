@@ -21,10 +21,16 @@
 # limitations under the License.
 #
 
+<<<<<<< HEAD
 from pathlib import Path
 from typing import Callable
 from typing import Dict
+=======
+from typing import Dict, Callable
+>>>>>>> 3ef8b382 (Resolving requested changes.)
 from typing import List
+from pathlib import Path
+import lxml.etree as ET
 
 <<<<<<< HEAD
 import lxml.etree as ET
@@ -38,8 +44,19 @@ from .nyaml2nxdl_helper import NXDL_LINK_ATTRIBUTES
 from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_node_parent_info
 from .nyaml2nxdl_helper import get_yaml_escape_char_dict
+<<<<<<< HEAD
 from .nyaml2nxdl_helper import is_dom_comment
 from .nyaml2nxdl_helper import remove_namespace_from_tag
+=======
+from .nyaml2nxdl_helper import remove_namespace_from_tag, is_dom_comment
+from .nyaml2nxdl_helper import (
+    NXDL_FIELD_ATTRIBUTES,
+    NXDL_GROUP_ATTRIBUTES,
+    NXDL_ATTRIBUTES_ATTRIBUTES,
+    NXDL_LINK_ATTRIBUTES,
+)
+
+>>>>>>> 3ef8b382 (Resolving requested changes.)
 
 DEPTH_SIZE = "  "
 CMNT_TAG = "!--"
@@ -160,47 +177,14 @@ class Nxdl2yaml:
         #       The 'symbol_comments' contains comments for 'symbols doc' and all 'symbol'
         #                      'symbol_comments': [comments]}
         self.root_level_comment: Dict[str, str] = {}
-        self.grp_fld_allowed_attr = (
+
+        self.optionality_keys = (
+            "minOccurs",
+            "maxOccurs",
             "optional",
             "recommended",
-            "name",
-            "type",
-            "axes",
-            "axis",
-            "data_offset",
-            "interpretation",
-            "long_name",
-            "maxOccurs",
-            "minOccurs",
-            "nameType",
-            "optional",
-            "primary",
-            "signal",
-            "stride",
-            "units",
             "required",
-            "deprecated",
-            "exists",
         )
-        self.attr_allowed_attr = (
-            "name",
-            "type",
-            "units",
-            "nameType",
-            "recommended",
-            "optional",
-            "minOccurs",
-            "maxOccurs",
-            "deprecated",
-        )
-        self.link_allowed_attr = ("name",
-                                  "target", 
-                                  "napimount")
-        self.optionality_keys = ("minOccurs",
-                                 "maxOccurs", 
-                                 "optional", 
-                                 "recommended", 
-                                 "required")
         # "Take care of general attributes. Note other choices may be allowed in the future"
         self.choice_allowed_attr = ()
 
@@ -423,7 +407,10 @@ class Nxdl2yaml:
         """
         # To store indentation text from comment
         lines = self.clean_and_organise_text(text, depth).split("\n")
+<<<<<<< HEAD
         indent = DEPTH_SIZE * depth
+=======
+>>>>>>> 3ef8b382 (Resolving requested changes.)
         mod_lines = []
         for line in lines:
             line = line.strip()
@@ -711,7 +698,7 @@ class Nxdl2yaml:
                         f"{indent}{key}: "
                         f"{handle_mapping_char(value, depth + 3, False)}\n"
                     )
-    
+
     def handle_enumeration(self, depth, node, file_out):
         """
             Handle the enumeration field parsed from the xml file.

@@ -3,7 +3,15 @@
 """
 
 import os
+
+from pathlib import Path
 import textwrap
+<<<<<<< HEAD
+=======
+import lxml.etree as ET
+from lxml.etree import ParseError as xmlER
+from ..nyaml2nxdl.nyaml2nxdl_helper import remove_namespace_from_tag
+>>>>>>> 3ef8b382 (Resolving requested changes.)
 from functools import lru_cache
 from glob import glob
 from pathlib import Path
@@ -19,18 +27,29 @@ class NxdlAttributeNotFoundError(Exception):
 
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+def get_nexus_definitions_path():
+    """Check NEXUS_DEF_PATH variable.
+    If it is empty, this function is filling it"""
+    try:  # either given by sys env
+        return os.environ["NEXUS_DEF_PATH"]
+    except KeyError:  # or it should be available locally under the dir 'definitions'
+        local_dir = Path(__file__).resolve().parent
+        for _ in range(2):
+            local_dir = local_dir.parent
+        return local_dir
+
+nexus_def_path = get_nexus_definitions_path()
+
+>>>>>>> 3ef8b382 (Resolving requested changes.)
 def get_app_defs_names():
     """Returns all the AppDef names without their extension: .nxdl.xml"""
-    app_def_path_glob = os.path.join(
-        get_nexus_definitions_path(),
-        "applications",
-        "*.nxdl*"
-    )
-    contrib_def_path_glob = os.path.join(
-        get_nexus_definitions_path(),
-        "contributed_definitions",
-        "*.nxdl*"
+    app_def_path_glob = nexus_def_path / "applications" / "*.nxdl*"
+
+    contrib_def_path_glob = (
+        Path(nexus_def_path) / "contributed_definitions" / "*.nxdl*"
     )
 
     files = sorted(glob(app_def_path_glob))
@@ -39,7 +58,7 @@ def get_app_defs_names():
         if root.attrib["category"] == "application":
             files.append(nexus_file)
 
-    return [os.path.basename(file).split(".")[0] for file in files] + ["NXroot"]
+    return [Path(file).stem for file in files] + ["NXroot"]
 
 
 @lru_cache(maxsize=None)
@@ -49,6 +68,7 @@ def get_xml_root(file_path):
     return ET.parse(file_path).getroot()
 
 
+<<<<<<< HEAD
 >>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
 def get_nexus_definitions_path():
     """Check NEXUS_DEF_PATH variable.
@@ -87,6 +107,8 @@ def get_xml_root(file_path):
     return ET.parse(file_path).getroot()
 
 
+=======
+>>>>>>> 3ef8b382 (Resolving requested changes.)
 def get_hdf_root(hdf_node):
     """Get the root HDF5 node"""
     node = hdf_node
@@ -176,10 +198,14 @@ def get_nx_classes():
             raise ValueError(f"Getting an issue while parsing file {nexus_file}") from e
         if root.attrib["category"] == "base":
 <<<<<<< HEAD
+<<<<<<< HEAD
             nx_class.append(nexus_file.stem)
 =======
             nx_class.append(os.path.basename(nexus_file).split(".")[0])
 >>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
+=======
+            nx_class.append(nexus_file.stem)
+>>>>>>> 3ef8b382 (Resolving requested changes.)
     return sorted(nx_class)
 
 
@@ -290,16 +316,21 @@ def belongs_to_capital(params):
 def get_local_name_from_xml(element):
     """Helper function to extract the element tag without the namespace."""
 <<<<<<< HEAD
+<<<<<<< HEAD
     return remove_namespace_from_tag(element.tag)
 =======
     return element.tag.rsplit("}")[-1]
 >>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
+=======
+    return remove_namespace_from_tag(element.tag)
+>>>>>>> 3ef8b382 (Resolving requested changes.)
 
 
 def get_own_nxdl_child_reserved_elements(child, name, nxdl_elem):
     """checking reserved elements, like doc, enumeration"""
     local_name = get_local_name_from_xml(child)
     if local_name == "doc" and name == "doc":
+<<<<<<< HEAD
 <<<<<<< HEAD
         return set_nxdlpath(child, nxdl_elem, tag_name=name)
 
@@ -318,6 +349,12 @@ def get_own_nxdl_child_reserved_elements(child, name, nxdl_elem):
             child.set("nxdlpath", nxdl_elem.get("nxdlpath") + "/enumeration")
         return child
 >>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
+=======
+        return set_nxdlpath(child, nxdl_elem, tag_name=name)
+
+    if local_name == "enumeration" and name == "enumeration":
+        return set_nxdlpath(child, nxdl_elem, tag_name=name)
+>>>>>>> 3ef8b382 (Resolving requested changes.)
     return False
 
 
@@ -336,6 +373,7 @@ def get_own_nxdl_child_base_types(child, class_type, nxdl_elem, name, hdf_name):
         nxdl_elem, child, name, None, hdf_name
     ):
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
         if nxdl_elem.get("nxdlbase"):
             child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
@@ -344,6 +382,8 @@ def get_own_nxdl_child_base_types(child, class_type, nxdl_elem, name, hdf_name):
                 "nxdlpath", nxdl_elem.get("nxdlpath") + "/" + get_node_name(child)
             )
 >>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
+=======
+>>>>>>> 3ef8b382 (Resolving requested changes.)
         return set_nxdlpath(child, nxdl_elem)
     return False
 
@@ -657,10 +697,14 @@ def get_enums(node):
 def add_base_classes(elist, nx_name=None, elem: ET.Element = None):
     """
 <<<<<<< HEAD
+<<<<<<< HEAD
     Add the base classes corresponding to the last element in elist to the list. Note that if
 =======
     Add the base classes corresponding to the last elemenent in elist to the list. Note that if
 >>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
+=======
+    Add the base classes corresponding to the last element in elist to the list. Note that if
+>>>>>>> 3ef8b382 (Resolving requested changes.)
     elist is empty, a nxdl file with the name of nx_name or a placeholder elem is used if provided
     """
     if elist and nx_name is None:
@@ -679,7 +723,11 @@ def add_base_classes(elist, nx_name=None, elem: ET.Element = None):
             elem = ET.parse(os.path.abspath(nxdl_file_path)).getroot()
             # elem = ET.parse(nxdl_file_path).getroot()
         except OSError:
+<<<<<<< HEAD
             with open(nxdl_file_path, "r") as f:
+=======
+            with open(nxdl_file_path, 'r') as f:
+>>>>>>> 3ef8b382 (Resolving requested changes.)
                 elem = ET.parse(f).getroot()
 
         if not isinstance(nxdl_file_path, str):
@@ -834,7 +882,7 @@ def walk_elist(elist, html_name):
 
 
 @lru_cache(maxsize=None)
-def get_inherited_nodes(
+def get_inherited_nodes( 
     nxdl_path: str = None,  # pylint: disable=too-many-arguments,too-many-locals
     nx_name: str = None,
     elem: ET.Element = None,

@@ -41,7 +41,13 @@ from .nyaml2nxdl_helper import clean_empty_lines
 from .nyaml2nxdl_helper import get_yaml_escape_char_reverter_dict
 from .nyaml2nxdl_helper import is_dom_comment
 from .nyaml2nxdl_helper import nx_name_type_resolving
-from .nyaml2nxdl_helper import remove_namespace_from_tag
+from .nyaml2nxdl_helper import (
+    YAML_ATTRIBUTES_ATTRIBUTES,
+    YAML_FIELD_ATTRIBUTES,
+    YAML_GROUP_ATTRIBUTES,
+    YAML_LINK_ATTRIBUTES,
+)
+from .nyaml2nxdl_helper import remove_namespace_from_tag, is_dom_comment
 
 
 # pylint: disable=too-many-lines, global-statement, invalid-name
@@ -870,7 +876,7 @@ def xml_handle_comment(
     1. Rearrange comment elements of xml_ele and xml_ele where comment comes first.
     2. Append comment element when no xml_ele found as general comments.
     """
-    
+
     line_info = (line_annotation, int(line_loc_no))
     if line_info in COMMENT_BLOCKS:  # noqa: F821
         cmnt = COMMENT_BLOCKS.get_comment_by_line_info(line_info)  # noqa: F821
