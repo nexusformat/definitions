@@ -18,6 +18,38 @@ class NxdlAttributeNotFoundError(Exception):
     """An exception to throw when an Nxdl attribute is not found."""
 
 
+<<<<<<< HEAD
+=======
+def get_app_defs_names():
+    """Returns all the AppDef names without their extension: .nxdl.xml"""
+    app_def_path_glob = os.path.join(
+        get_nexus_definitions_path(),
+        "applications",
+        "*.nxdl*"
+    )
+    contrib_def_path_glob = os.path.join(
+        get_nexus_definitions_path(),
+        "contributed_definitions",
+        "*.nxdl*"
+    )
+
+    files = sorted(glob(app_def_path_glob))
+    for nexus_file in sorted(contrib_def_path_glob):
+        root = get_xml_root(nexus_file)
+        if root.attrib["category"] == "application":
+            files.append(nexus_file)
+
+    return [os.path.basename(file).split(".")[0] for file in files] + ["NXroot"]
+
+
+@lru_cache(maxsize=None)
+def get_xml_root(file_path):
+    """Reducing I/O time by caching technique"""
+
+    return ET.parse(file_path).getroot()
+
+
+>>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
 def get_nexus_definitions_path():
     """Check NEXUS_DEF_PATH variable.
     If it is empty, this function is filling it"""
@@ -72,7 +104,7 @@ def get_hdf_parent(hdf_info):
         if "hdf_root" not in hdf_info
         else hdf_info["hdf_root"]
     )
-    for child_name in hdf_info["hdf_path"].rsplit("/"):
+    for child_name in hdf_info["hdf_path"].split("/"):
         node = node[child_name]
     return node
 
@@ -143,7 +175,11 @@ def get_nx_classes():
         except xmlER as e:
             raise ValueError(f"Getting an issue while parsing file {nexus_file}") from e
         if root.attrib["category"] == "base":
+<<<<<<< HEAD
             nx_class.append(nexus_file.stem)
+=======
+            nx_class.append(os.path.basename(nexus_file).split(".")[0])
+>>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
     return sorted(nx_class)
 
 
@@ -253,17 +289,35 @@ def belongs_to_capital(params):
 
 def get_local_name_from_xml(element):
     """Helper function to extract the element tag without the namespace."""
+<<<<<<< HEAD
     return remove_namespace_from_tag(element.tag)
+=======
+    return element.tag.rsplit("}")[-1]
+>>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
 
 
 def get_own_nxdl_child_reserved_elements(child, name, nxdl_elem):
     """checking reserved elements, like doc, enumeration"""
     local_name = get_local_name_from_xml(child)
     if local_name == "doc" and name == "doc":
+<<<<<<< HEAD
         return set_nxdlpath(child, nxdl_elem, tag_name=name)
 
     if local_name == "enumeration" and name == "enumeration":
         return set_nxdlpath(child, nxdl_elem, tag_name=name)
+=======
+        if nxdl_elem.get("nxdlbase"):
+            child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
+            child.set("nxdlbase_class", nxdl_elem.get("nxdlbase_class"))
+            child.set("nxdlpath", nxdl_elem.get("nxdlpath") + "/doc")
+        return child
+    if local_name == "enumeration" and name == "enumeration":
+        if nxdl_elem.get("nxdlbase"):
+            child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
+            child.set("nxdlbase_class", nxdl_elem.get("nxdlbase_class"))
+            child.set("nxdlpath", nxdl_elem.get("nxdlpath") + "/enumeration")
+        return child
+>>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
     return False
 
 
@@ -281,6 +335,15 @@ def get_own_nxdl_child_base_types(child, class_type, nxdl_elem, name, hdf_name):
     if get_local_name_from_xml(child) == "attribute" and belongs_to(
         nxdl_elem, child, name, None, hdf_name
     ):
+<<<<<<< HEAD
+=======
+        if nxdl_elem.get("nxdlbase"):
+            child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
+            child.set("nxdlbase_class", nxdl_elem.get("nxdlbase_class"))
+            child.set(
+                "nxdlpath", nxdl_elem.get("nxdlpath") + "/" + get_node_name(child)
+            )
+>>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
         return set_nxdlpath(child, nxdl_elem)
     return False
 
@@ -593,7 +656,11 @@ def get_enums(node):
 
 def add_base_classes(elist, nx_name=None, elem: ET.Element = None):
     """
+<<<<<<< HEAD
     Add the base classes corresponding to the last element in elist to the list. Note that if
+=======
+    Add the base classes corresponding to the last elemenent in elist to the list. Note that if
+>>>>>>> 9866fa5f (Addresses comments in nxdl_utils)
     elist is empty, a nxdl file with the name of nx_name or a placeholder elem is used if provided
     """
     if elist and nx_name is None:
