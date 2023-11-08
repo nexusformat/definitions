@@ -2,21 +2,17 @@
 
 **NOTE: Please use python3.8 or above to run this converter**
 
-**Tools purpose**: Offer a simple YAML-based schema and a XML-based schema to describe NeXus instances. These can be NeXus application definitions or classes
-such as base or contributed classes. Users either create NeXus instances by writing a YAML file or a XML file which details a hierarchy of data/metadata elements.
-The forward (YAML -> NXDL.XML) and backward (NXDL.XML -> YAML) conversions are implemented.
+**Tools purpose**: Offer a simple way to edit NeXus definitions in YAML format. These can be NeXus application definitions or base classes. 
+Both forward (YAML -> NXDL.XML) and backward (NXDL.XML -> YAML) conversions are implemented.
 
 **How the tool works**:
 - nyaml2nxdl.py
-1. Reads the user-specified NeXus instance, either in YML or XML format.
-2. If input is in YAML, creates an instantiated NXDL schema XML tree by walking the dictionary nest.
-   If input is in XML, creates a YML file walking the dictionary nest.
-3. Write the tree into a YAML file or a properly formatted NXDL XML schema file to disk.
-4. Optionally, if --append argument is given,
-   the XML or YAML input file is interpreted as an extension of a base class and the entries contained in it
-   are appended below a standard NeXus base class.
-   You need to specify both your input file (with YAML or XML extension) and NeXus class (with no extension).
-   Both .yaml and .nxdl.xml file of the extended class are printed.
+1. Reads the user-specified NeXus definition, either in YAML or XML format.
+2. If input is in YAML, it creates the definition in NXDL's XML format.
+   If input is an NXDL definition in XML format, it creates a corresponding YAML file.
+3. Optionally, if --append argument is given,
+   the XML or YAML input file is interpreted as an extension of the existing definition,
+   so instead of creating a new file from scratch, the original file is rather extended.
 
 ```console
 user@box:~$ python nyaml2nxdl.py
