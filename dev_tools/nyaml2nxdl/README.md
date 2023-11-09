@@ -44,7 +44,44 @@ Options:
 * Optionality: For all fields, groups and attributes in `application definitions` are `required` by default, except anything (`recommended` or `optional`) mentioned.
 
 **Special keywords**: Several keywords can be used as childs of groups, fields, and attributes to specify the members of these. Groups, fields and attributes are nodes of the XML tree.
-* **doc**: A human-readable description/docstring
+* **doc**: 
+   - A human-readable description/docstring
+   - Doc string may also come as a list of doc parts when user wants to add `reference` for a concept. Or doc string could be a single doc block.
+      ```yaml
+         energy:  # field
+            doc:
+               - | 
+               Part1 of the entire doc.
+               part1 of the entire doc.
+               - |  # Reference for concept
+               "xref:   
+                  spec: <spec>
+                  term: <term>
+                  url: <url>"
+               - | 
+               Rest of the doc
+               rest of the doc
+         velocity:  # field
+            doc: |
+               A single block of doc string.
+      ```
+      Such structure of doc would be appreared in `nxdl` as
+      ```xml
+      ...
+         <doc>
+            Part1 of the entire doc.
+            part1 of the entire doc.
+
+                This concept is related to term `<term>`_ of the <spec> standard.
+           .. <term>: <url>. 
+           
+            Rest of the doc.
+            rest of the doc.
+         </doc>
+      ```
+
+
+
 * **exists** Options are recommended, required, [min, 1, max, `infty`] numbers like here 1 can be replaced by any `uint` (unsigned integer), or `infty` to indicate no restriction on how frequently the entry can occur inside the NXDL schema at the same hierarchy level.
 * **link** Define links between nodes.
 * **units** A statement introducing NeXus-compliant NXDL units arguments, like NX_VOLTAGE
@@ -52,7 +89,7 @@ Options:
 * **enumeration** Python list of strings which are considered as recommended entries to choose from.
 * **dim_parameters** `dim` which is a child of `dimension` and the `dim` might have several attributes `ref`,
 `incr` including `index` and `value`. So while writing `yaml` file schema definition please following structure:
-```
+```yaml
 dimensions:
    rank: integer value
    dim: [[ind_1, val_1], [ind_2, val_2], ...]
