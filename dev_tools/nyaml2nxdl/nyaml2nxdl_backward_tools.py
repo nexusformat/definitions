@@ -362,14 +362,14 @@ class Nxdl2yaml:
         xref_key, spec_key, term_key, url_key = ("xref", "spec", "term", "url")
         spec, term, url = (None, None, None)
         matches = re.search(
-            r"This concept is related to term `([^`]+)`_ of the"
-            r" ([^\s]+) standard\.\s*\.\. _([^:]+): ([^\s]+)",
+            r"This concept is related to term `([^`:]+)`_ of the"
+            r" ([^\s]+) standard\.\s+\.\. _\1: ([^\s]+)",
             text,
         )
         if matches:
             term = matches.group(1)
             spec = matches.group(2)
-            url = matches.group(4)
+            url = matches.group(3)
             indent = indent + DEPTH_SIZE  # see example in func doc
             return (
                 f'{indent}"{xref_key}:\n{indent + DEPTH_SIZE}{spec_key}: {spec}'

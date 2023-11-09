@@ -39,7 +39,8 @@ def test_yaml2nxdl_doc():
     # Test yaml2nxdl
     # Generates '../data/doc_text.nxdl.xml'
     result = CliRunner().invoke(conv.launch_tool, ["--input-file", str(doc_file)])
-
+    if result.exit_code != 0:
+        Path.unlink(out_doc_file)
     assert result.exit_code == 0, f"Error: Having issue running input file {doc_file}."
 
     ref_nxdl = ET.parse(str(ref_doc_file)).getroot()
@@ -74,7 +75,12 @@ def test_nxdl2yaml_doc():
     result = CliRunner().invoke(
         conv.launch_tool, ["--input-file", str(nxdl_file), "--do-not-store-nxdl"]
     )
+
+    if result.exit_code != 0:
+        Path.unlink(parsed_yaml_file)
+
     assert result.exit_code == 0, "Error in converter execuation."
+
     with open(ref_yaml, mode="r", encoding="utf-8") as yaml1, open(
         parsed_yaml_file, mode="r", encoding="utf-8"
     ) as yaml2:
@@ -86,7 +92,7 @@ def test_nxdl2yaml_doc():
             key1, val1 = k_val1
             key2, val2 = k_val2
             if key1 == "doc" and key2 == "doc":
-                assert val1 == val2, "Doc text was not produced properly."
+                assert val1 == val2, "Doc texts are not the same."
             elif isinstance(val1, dict) and isinstance(val2, dict):
                 compare_yaml_doc(val1, val2)
 
