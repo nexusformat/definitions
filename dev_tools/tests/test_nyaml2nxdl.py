@@ -1,9 +1,11 @@
 from pathlib import Path
 
 import lxml.etree as ET
+import pytest
 from click.testing import CliRunner
 
 from ..nyaml2nxdl import nyaml2nxdl as conv
+from ..nyaml2nxdl.nyaml2nxdl_forward_tools import handle_each_part_doc
 from ..nyaml2nxdl.nyaml2nxdl_helper import LineLoader
 from ..nyaml2nxdl.nyaml2nxdl_helper import remove_namespace_from_tag
 from ..utils.nxdl_utils import find_definition_file
@@ -98,3 +100,25 @@ def test_nxdl2yaml_doc():
 
     compare_yaml_doc(yaml_dict1, yaml_dict2)
     Path.unlink(parsed_yaml_file)
+
+
+@pytest.mark.parametrize(
+    "test_input,output",
+    [
+        (
+            """
+    xref:
+        spec: <spec>
+        term: <term>
+        url: <url>
+    """,
+            "    This concept is related to term `<term>`_ "
+            "of the <spec> standard.\n.. _<term>: <url>",
+        ),
+    ],
+)
+def test_handle_xref(test_input, output):
+    """
+    Tests whether the xref generates a correct docstring.
+    """
+    assert handle_each_part_doc(test_input) == output
