@@ -3,7 +3,6 @@ from pathlib import Path
 import lxml.etree as ET
 import pytest
 from click.testing import CliRunner
-from yaml.scanner import ScannerError
 
 from ..nyaml2nxdl import nyaml2nxdl as conv
 from ..nyaml2nxdl.nyaml2nxdl_forward_tools import handle_each_part_doc
