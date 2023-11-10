@@ -285,7 +285,7 @@ def handle_each_part_doc(text):
     Formated text
     """
 
-    clean_txt = text.strip()
+    clean_txt = text.strip().strip('"')
 
     if not clean_txt.startswith("xref:"):
         return format_nxdl_doc(check_for_mapping_char_other(clean_txt)).strip()
