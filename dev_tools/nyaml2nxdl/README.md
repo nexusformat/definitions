@@ -30,7 +30,7 @@ Options:
    --check-consistency   Check consistency by generating another version of the input file.
                          E.g. for input file: NXexample.nxdl.xml the output file
                          NXexample_consistency.nxdl.xml.
-   --verbose             Addictional std output info is printed to help debugging.
+   --verbose             Additional std output info is printed to help debugging.
    --help                Show this message and exit.
 
 ```
@@ -40,19 +40,56 @@ Options:
 **Rule set**: From transcoding YAML files we need to follow several rules.
 * Named NeXus groups, which are instances of NeXus classes especially base or contributed classes. Creating (NXbeam) is a simple example of a request to define a group named according to NeXus default rules. mybeam1(NXbeam) or mybeam2(NXbeam) are examples how to create multiple named instances at the same hierarchy level.
 * Members of groups so-called fields or attributes. A simple example of a member is voltage. Here the datatype is implied automatically as the default NeXus NX_CHAR type.  By contrast, voltage(NX_FLOAT) can be used to instantiate a member of class which should be of NeXus type NX_FLOAT.
-* And attributes of either groups or fields. Names of attributes have to be preceeded by \@ to mark them as attributes.
+* And attributes of either groups or fields. The mark '\@' have to precede the name of attributes.
 * Optionality: For all fields, groups and attributes in `application definitions` are `required` by default, except anything (`recommended` or `optional`) mentioned.
 
 **Special keywords**: Several keywords can be used as childs of groups, fields, and attributes to specify the members of these. Groups, fields and attributes are nodes of the XML tree.
-* **doc**: A human-readable description/docstring
-* **exists** Options are recommended, required, [min, 1, max, infty] numbers like here 1 can be replaced by any uint, or infty to indicate no restriction on how frequently the entry can occur inside the NXDL schema at the same hierarchy level.
+* **doc**: 
+   - A human-readable description/docstring
+   - Doc string may also come as a list of doc parts when user wants to add `reference` for a concept. Or doc string could be a single doc block.
+      ```yaml
+         energy:  # field
+            doc:
+               - | 
+               Part1 of the entire doc.
+               part1 of the entire doc.
+               - |  # Reference for concept
+               "xref:   
+                  spec: <spec>
+                  term: <term>
+                  url: <url>"
+               - | 
+               Rest of the doc
+               rest of the doc
+         velocity:  # field
+            doc: |
+               A single block of doc string.
+      ```
+      Such structure of doc would be appreared in `nxdl` as
+      ```xml
+      ...
+         <doc>
+            Part1 of the entire doc.
+            part1 of the entire doc.
+
+                This concept is related to term `<term>`_ of the <spec> standard.
+           .. <term>: <url>. 
+           
+            Rest of the doc.
+            rest of the doc.
+         </doc>
+      ```
+
+
+
+* **exists** Options are recommended, required, [min, 1, max, `infty`] numbers like here 1 can be replaced by any `uint` (unsigned integer), or `infty` to indicate no restriction on how frequently the entry can occur inside the NXDL schema at the same hierarchy level.
 * **link** Define links between nodes.
 * **units** A statement introducing NeXus-compliant NXDL units arguments, like NX_VOLTAGE
 * **dimensions** Details which dimensional arrays to expect
 * **enumeration** Python list of strings which are considered as recommended entries to choose from.
 * **dim_parameters** `dim` which is a child of `dimension` and the `dim` might have several attributes `ref`,
-`incr` including `index` and `value`. So while writting `yaml` file schema definition please following structure:
-```
+`incr` including `index` and `value`. So while writing `yaml` file schema definition please following structure:
+```yaml
 dimensions:
    rank: integer value
    dim: [[ind_1, val_1], [ind_2, val_2], ...]
@@ -60,13 +97,9 @@ dimensions:
       ref: [ref_value_1, ref_value_2, ...]
       incr: [incr_value_1, incr_value_2, ...]
 ```
-Keep in mind that length of all the lists must be same.
+Keep in mind that length of all the lists must have the **same size**.
+**Important Note**: The attributes `ref`, `incr`, `index` are deprecated. 
 
 ## Next steps
 
-The NOMAD team is currently working on the establishing of a one-to-one mapping between
-NeXus definitions and the NOMAD MetaInfo. As soon as this is in place the YAML files will
-be annotated with further metadata so that they can serve two purposes.
-On the one hand they can serve as an instance for a schema to create a GUI representation
-of a NOMAD Oasis ELN schema. On the other hand the YAML to NXDL converter will skip all
-those pieces of information which are irrelevant from a NeXus perspective.
+The NOMAD team is currently working to establish a one-to-one mapping between NeXus definitions and the NOMAD MetaInfo(scientific data model in nomad). As soon as this is in place the YAML files will be annotated with further metadata so that they can serve two purposes. On the one hand they can serve as an instance for a schema to create a GUI representation of a NOMAD Oasis ELN schema. On the other hand the YAML to NXDL converter will skip all those pieces of information which are irrelevant from a NeXus perspective.
