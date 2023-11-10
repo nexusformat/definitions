@@ -284,32 +284,21 @@ def handle_each_part_doc(text):
     ------
     Formated text
     """
-    if re.match(r"^\s*\"", text):
-        text = text.split('"', 1)[-1]
-    if re.search(r"\"[^\n\s]*$", text):
-        text = text.rsplit('"', 1)[0]
 
-    search_keys = ("xref", "spec", "term", "url")
-    spec, term, url = ("NO SPECIFICATION", "NO TERM", "NO URL")
-    # Check with the signiture keys
-    if all(key in text for key in search_keys):
-        lines = text.split("\n")
-        if len(lines) > 0:
-            pattern = r"\s*(\w+)\s*:\s*(.*)"
-            # key combination could be in any order
-            for line in lines:
-                match = re.match(pattern, line)
-                if search_keys[1] == match.group(1):  # spec
-                    spec = match.group(2)
-                elif search_keys[2] == match.group(1):  # term
-                    term = match.group(2)
-                elif search_keys[3] == match.group(1):  # url
-                    url = match.group(2)
-                    url = url[0:-1] if url.endswith('"') else url
-            return f"""    This concept is related to term `{term}`_ of the {spec} standard.
-.. _{term}: {url}"""
-    else:
-        return format_nxdl_doc(check_for_mapping_char_other(text)).strip()
+    clean_txt = text.strip().strip('"')
+
+    if not clean_txt.startswith("xref:"):
+        return format_nxdl_doc(check_for_mapping_char_other(clean_txt)).strip()
+
+    xref_dict = yaml.safe_load(clean_txt)
+    xref_entries = xref_dict.get("xref", {})
+
+    return (
+        f"    This concept is related to term `{xref_entries.get('term', 'NO TERM')}`_ "
+        f"of the {xref_entries.get('spec', 'NO TERM')} standard.\n"
+        f".. _{xref_entries.get('term', 'NO SPECIFICATION')}: "
+        f"{xref_entries.get('url', 'NO URL')}"
+    )
 
 
 def xml_handle_doc(obj, value: Union[str, list], line_number=None, line_loc=None):
