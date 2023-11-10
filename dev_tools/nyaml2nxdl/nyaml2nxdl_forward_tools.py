@@ -289,20 +289,23 @@ def handle_each_part_doc(text):
     if re.search(r"\"[^\n\s]*$", text):
         text = text.rsplit('"', 1)[0]
 
-    search_keys = ("xref:", "spec:", "term:", "url:")
+    search_keys = ("xref", "spec", "term", "url")
     spec, term, url = ("NO SPECIFICATION", "NO TERM", "NO URL")
     # Check with the signiture keys
     if all(key in text for key in search_keys):
         lines = text.split("\n")
         if len(lines) > 0:
+            pattern = r"\s*(\w+)\s*:\s*(.*)"
             # key combination could be in any order
             for line in lines:
-                if search_keys[1] in line:  # spec
-                    spec = line.split(search_keys[1])[-1].strip()
-                elif search_keys[2] in line:  # term
-                    term = line.split(search_keys[2])[-1].strip()
-                elif search_keys[3] in line:  # url
-                    url = line.split(search_keys[3])[-1].strip()
+                match = re.match(pattern, line)
+                if search_keys[1] == match.group(1):  # spec
+                    spec = match.group(2)
+                elif search_keys[2] == match.group(1):  # term
+                    term = match.group(2)
+                elif search_keys[3] == match.group(1):  # url
+                    url = match.group(2)
+                    url = url[0:-1] if url.endswith('"') else url
             return f"""    This concept is related to term `{term}`_ of the {spec} standard.
 .. _{term}: {url}"""
     else:
