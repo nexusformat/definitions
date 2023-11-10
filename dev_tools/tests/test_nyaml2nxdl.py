@@ -3,6 +3,7 @@ from pathlib import Path
 import lxml.etree as ET
 import pytest
 from click.testing import CliRunner
+from yaml.scanner import ScannerError
 
 from ..nyaml2nxdl import nyaml2nxdl as conv
 from ..nyaml2nxdl.nyaml2nxdl_forward_tools import handle_each_part_doc
@@ -103,7 +104,7 @@ def test_nxdl2yaml_doc():
 
 
 @pytest.mark.parametrize(
-    "test_input,output",
+    "test_input,output,is_valid",
     [
         (
             """
@@ -114,11 +115,27 @@ def test_nxdl2yaml_doc():
     """,
             "    This concept is related to term `<term>`_ "
             "of the <spec> standard.\n.. _<term>: <url>",
+            True,
+        ),
+        (
+            """
+    xref:
+        spec: <spec>
+         term: <term>
+        url: <url>
+    """,
+            "",
+            False,
         ),
     ],
 )
-def test_handle_xref(test_input, output):
+def test_handle_xref(test_input, output, is_valid):
     """
     Tests whether the xref generates a correct docstring.
     """
-    assert handle_each_part_doc(test_input) == output
+    if is_valid:
+        assert handle_each_part_doc(test_input) == output
+        return
+
+    with pytest.raises(ScannerError):
+        handle_each_part_doc(test_input)
