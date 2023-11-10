@@ -124,7 +124,50 @@ def test_nxdl2yaml_doc():
          term: <term>
         url: <url>
     """,
-            "",
+            "Found invalid xref. Please make sure that your xref entries are valid yaml.",
+            False,
+        ),
+        (
+            """
+    xref:
+        spec: <spec>
+        term: <term>
+        url: <url>
+        term: <term2>
+    """,
+            "Invalid xref. It contains nested or duplicate keys.",
+            False,
+        ),
+        (
+            """
+    xref:
+        spec: <spec>
+        term: <term>
+        url: <url>
+        hallo: <term2>
+    """,
+            "Invalid xref. Too many keys.",
+            False,
+        ),
+        (
+            """
+    xref:
+        spec: <spec>
+        my_key: <term>
+        url: <url>
+    """,
+            "Invalid xref key `my_key`. Must be one of `term`, `spec` or `url`.",
+            False,
+        ),
+        (
+            """
+    xref:
+        spec: <spec>
+        term:
+            test: <nested_value>
+        url: <url>
+    """,
+            "Invalid xref. It contains nested or duplicate keys.",
             False,
         ),
     ],
@@ -137,5 +180,7 @@ def test_handle_xref(test_input, output, is_valid):
         assert handle_each_part_doc(test_input) == output
         return
 
-    with pytest.raises(ScannerError):
+    with pytest.raises(ValueError) as err:
         handle_each_part_doc(test_input)
+
+    assert output == err.value.args[0]

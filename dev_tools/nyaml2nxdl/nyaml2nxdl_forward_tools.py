@@ -30,6 +30,7 @@ from urllib.parse import unquote
 
 import lxml.etree as ET
 import yaml
+from yaml.scanner import ScannerError
 
 from ..utils import nxdl_utils as pynxtools_nxlib
 from .comment_collector import CommentCollector
@@ -284,13 +285,31 @@ def handle_each_part_doc(text):
     Formated text
     """
 
-    clean_txt = text.strip().strip('"')
+    clean_txt = text.strip()
 
     if not clean_txt.startswith("xref:"):
         return format_nxdl_doc(check_for_mapping_char_other(clean_txt)).strip()
 
-    xref_dict = yaml.safe_load(clean_txt)
+    no_lines = len(clean_txt.splitlines())
+    try:
+        xref_dict = yaml.safe_load(clean_txt)
+    except ScannerError as scan_err:
+        raise ValueError(
+            "Found invalid xref. Please make sure that your xref entries are valid yaml."
+        ) from scan_err
     xref_entries = xref_dict.get("xref", {})
+
+    if no_lines != len(xref_entries) + 1:
+        raise ValueError("Invalid xref. It contains nested or duplicate keys.")
+
+    if no_lines > 4:
+        raise ValueError("Invalid xref. Too many keys.")
+
+    for key in xref_entries:
+        if key not in ("term", "spec", "url"):
+            raise ValueError(
+                f"Invalid xref key `{key}`. Must be one of `term`, `spec` or `url`."
+            )
 
     return (
         f"    This concept is related to term `{xref_entries.get('term', 'NO TERM')}`_ "
