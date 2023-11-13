@@ -23,7 +23,6 @@
 
 import datetime
 import pathlib
-import re
 import textwrap
 import warnings
 from typing import Union
@@ -31,6 +30,7 @@ from urllib.parse import unquote
 
 import lxml.etree as ET
 import yaml
+from yaml.scanner import ScannerError
 
 from ..utils import nxdl_utils as pynxtools_nxlib
 from .comment_collector import CommentCollector
@@ -284,29 +284,39 @@ def handle_each_part_doc(text):
     ------
     Formated text
     """
-    if re.match(r"^\s*\"", text):
-        text = text.split('"', 1)[-1]
-    if re.search(r"\"[^\n\s]*$", text):
-        text = text.rsplit('"', 1)[0]
 
-    search_keys = ("xref:", "spec:", "term:", "url:")
-    spec, term, url = ("NO SPECIFICATION", "NO TERM", "NO URL")
-    # Check with the signiture keys
-    if all(key in text for key in search_keys):
-        lines = text.split("\n")
-        if len(lines) > 0:
-            # key combination could be in any order
-            for line in lines:
-                if search_keys[1] in line:  # spec
-                    spec = line.split(search_keys[1])[-1].strip()
-                elif search_keys[2] in line:  # term
-                    term = line.split(search_keys[2])[-1].strip()
-                elif search_keys[3] in line:  # url
-                    url = line.split(search_keys[3])[-1].strip()
-            return f"""    This concept is related to term `{term}`_ of the {spec} standard.
-.. _{term}: {url}"""
-    else:
-        return format_nxdl_doc(check_for_mapping_char_other(text)).strip()
+    clean_txt = text.strip()
+
+    if not clean_txt.startswith("xref:"):
+        return format_nxdl_doc(check_for_mapping_char_other(clean_txt)).strip()
+
+    no_lines = len(clean_txt.splitlines())
+    try:
+        xref_dict = yaml.safe_load(clean_txt)
+    except ScannerError as scan_err:
+        raise ValueError(
+            "Found invalid xref. Please make sure that your xref entries are valid yaml."
+        ) from scan_err
+    xref_entries = xref_dict.get("xref", {})
+
+    if no_lines != len(xref_entries) + 1:
+        raise ValueError("Invalid xref. It contains nested or duplicate keys.")
+
+    if no_lines > 4:
+        raise ValueError("Invalid xref. Too many keys.")
+
+    for key in xref_entries:
+        if key not in ("term", "spec", "url"):
+            raise ValueError(
+                f"Invalid xref key `{key}`. Must be one of `term`, `spec` or `url`."
+            )
+
+    return (
+        f"    This concept is related to term `{xref_entries.get('term', 'NO TERM')}`_ "
+        f"of the {xref_entries.get('spec', 'NO TERM')} standard.\n"
+        f".. _{xref_entries.get('term', 'NO SPECIFICATION')}: "
+        f"{xref_entries.get('url', 'NO URL')}"
+    )
 
 
 def xml_handle_doc(obj, value: Union[str, list], line_number=None, line_loc=None):

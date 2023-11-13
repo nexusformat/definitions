@@ -1,9 +1,11 @@
 from pathlib import Path
 
 import lxml.etree as ET
+import pytest
 from click.testing import CliRunner
 
 from ..nyaml2nxdl import nyaml2nxdl as conv
+from ..nyaml2nxdl.nyaml2nxdl_forward_tools import handle_each_part_doc
 from ..nyaml2nxdl.nyaml2nxdl_helper import LineLoader
 from ..nyaml2nxdl.nyaml2nxdl_helper import remove_namespace_from_tag
 from ..utils.nxdl_utils import find_definition_file
@@ -98,3 +100,86 @@ def test_nxdl2yaml_doc():
 
     compare_yaml_doc(yaml_dict1, yaml_dict2)
     Path.unlink(parsed_yaml_file)
+
+
+@pytest.mark.parametrize(
+    "test_input,output,is_valid",
+    [
+        (
+            """
+    xref:
+        spec: <spec>
+        term: <term>
+        url: <url>
+    """,
+            "    This concept is related to term `<term>`_ "
+            "of the <spec> standard.\n.. _<term>: <url>",
+            True,
+        ),
+        (
+            """
+    xref:
+        spec: <spec>
+         term: <term>
+        url: <url>
+    """,
+            "Found invalid xref. Please make sure that your xref entries are valid yaml.",
+            False,
+        ),
+        (
+            """
+    xref:
+        spec: <spec>
+        term: <term>
+        url: <url>
+        term: <term2>
+    """,
+            "Invalid xref. It contains nested or duplicate keys.",
+            False,
+        ),
+        (
+            """
+    xref:
+        spec: <spec>
+        term: <term>
+        url: <url>
+        hallo: <term2>
+    """,
+            "Invalid xref. Too many keys.",
+            False,
+        ),
+        (
+            """
+    xref:
+        spec: <spec>
+        my_key: <term>
+        url: <url>
+    """,
+            "Invalid xref key `my_key`. Must be one of `term`, `spec` or `url`.",
+            False,
+        ),
+        (
+            """
+    xref:
+        spec: <spec>
+        term:
+            test: <nested_value>
+        url: <url>
+    """,
+            "Invalid xref. It contains nested or duplicate keys.",
+            False,
+        ),
+    ],
+)
+def test_handle_xref(test_input, output, is_valid):
+    """
+    Tests whether the xref generates a correct docstring.
+    """
+    if is_valid:
+        assert handle_each_part_doc(test_input) == output
+        return
+
+    with pytest.raises(ValueError) as err:
+        handle_each_part_doc(test_input)
+
+    assert output == err.value.args[0]

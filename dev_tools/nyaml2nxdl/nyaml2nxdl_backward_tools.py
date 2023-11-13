@@ -363,7 +363,7 @@ class Nxdl2yaml:
         spec, term, url = (None, None, None)
         matches = re.search(
             r"This concept is related to term `([^`:]+)`_ of the"
-            r" ([^\s]+) standard\.\s+\.\. _\1: ([^\s]+)",
+            r" (.*?) standard\.\s+\.\. _\1: ([^\s]+)",
             text,
         )
         if matches:
