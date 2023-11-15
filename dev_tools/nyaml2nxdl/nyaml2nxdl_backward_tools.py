@@ -336,7 +336,7 @@ class Nxdl2yaml:
     def check_and_handle_doc_xref_and_other_doc(self, text, indent):
         """Check for xref doc which comes as a block of text.
 
-        The doc part bellow is the example how xref comes:
+        The doc part below is the example how xref comes:
         '''
         This concept is related to term `<term>`_ of the <spec> standard.
         .. _<term>: <url>
