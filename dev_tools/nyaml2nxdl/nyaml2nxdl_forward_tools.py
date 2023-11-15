@@ -1201,9 +1201,11 @@ application and base are valid categories!"
         del yml_appdef["symbols"]
         del yml_appdef["__line__symbols"]
     if isinstance(yml_appdef["doc"], str):
-        assert (yml_appdef["doc"] != ""), "Doc has to be a non-empty string!"
+        assert yml_appdef["doc"] != "", "Doc has to be a non-empty string!"
     elif isinstance(yml_appdef["doc"], list):
-        assert (any(yml_appdef["doc"])), "One of the doc elements has to be a non-empty string!"
+        assert any(
+            yml_appdef["doc"]
+        ), "One of the doc elements has to be a non-empty string!"
 
     line_number = "__line__doc"
     line_loc_no = yml_appdef[line_number]
