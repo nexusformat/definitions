@@ -2,8 +2,8 @@
 """
 Main file of nyaml2nxdl tool.
 
-To write a definition for a instrument, experiment and/or process in nxdl.xml file from a YAML
-file which details a hierarchy of data/metadata elements. It also allows both wa
+To write a definition for an instrument, experiment and/or process in nxdl.xml file from a YAML
+file which details a hierarchy of data/metadata elements. It also allows back and forth
 conversion beteen YAML and nxdl.xml files that follows rules of NeXus ontology or data format.
 """
 # -*- coding: utf-8 -*-
