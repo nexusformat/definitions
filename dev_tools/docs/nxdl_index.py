@@ -170,7 +170,7 @@ Some contributions are grouped together:
 
   :ref:`Transport Measurements <Transport-Structure>`
 
-  :ref:`Geomerty and Microstructures  <CgmsFeatures-Structure>`
+  :ref:`Geometry and Microstructures  <CgmsFeatures-Structure>`
 
 
 and others are simply listed here:
