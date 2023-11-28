@@ -8,14 +8,13 @@
 
 import sys, os, datetime
 
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
+# add the abs path to the custom extension for collecting the contributor variables from the rst files
+sys.path.insert(0, os.path.abspath('../../../dev_tools/ext'))
 
 # -- Project information -----------------------------------------------------
 
@@ -36,20 +35,23 @@ if nxdl_version is not None:
 # -- General configuration ---------------------------------------------------
 
 # https://github.com/nexusformat/definitions/issues/659#issuecomment-577438319
-needs_sphinx = '2.3'
+needs_sphinx = '2.5'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx_toolbox.collapse',
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx_comments',
     'sphinx.ext.todo',
-    'sphinx_tabs.tabs'
+    'sphinx_tabs.tabs',
+    'contrib_ext'
 ]
+
 
 # Show `.. todo` directives in the output
 # todo_include_todos = True
@@ -79,7 +81,7 @@ html_static_path = ['_static']
 
 # Add extra files
 html_extra_path = ['CNAME']
-html_logo = 'img/FAIRmat.png'
+html_logo = 'img/FAIRmat_new.png'
 
 if html_theme== 'sphinx_rtd_theme':
     html_theme_options = {
@@ -97,7 +99,9 @@ elif html_theme== 'alabaster': # Alabaster allows a very high degree of control 
     '**': [
         'about.html',
         'navigation.html',
+        'localtoc.html',
         'relations.html',
+        'sourcelink.html',
         'searchbox.html',
         'google_search.html'
         ],
@@ -110,8 +114,9 @@ elif html_theme== 'alabaster': # Alabaster allows a very high degree of control 
         'github_repo': 'nexus_definitions/tree/fairmat',
         'github_user': 'FAIRmat-Experimental',
         'github_count': 'false', # We don't get the cute counter baloon if we want to point to the branch
-        'sidebar_width': '235px',
-        'page_width': '1000px',
+        'sidebar_width': '300px',
+        'body_max_width': 'auto',
+        'page_width': 'auto',
         'font_size': '12pt',
         'font_family': 'Arial',
         'description': 'Proposal of NeXus expansion for FAIRmat data.',
@@ -136,15 +141,24 @@ else:
         ],
     }
 
+# The name of an image file (within the static path) to use as favicon of the
+# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# pixels large.
+html_favicon = "../../../common/favicon.ico"
+
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'NeXusManualdoc'
 
 comments_config = {
     "hypothesis": True
- }
+}
 
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {
-    'maxlistdepth':7, # some application definitions are deeply nested
-    'preamble': '\\usepackage{amsbsy}\n'
+    'maxlistdepth': 25, # some application definitions are deeply nested
+    'preamble': r'''
+    \usepackage{amsbsy}
+    \listfiles
+    \DeclareUnicodeCharacter{1F517}{X}
+    \DeclareUnicodeCharacter{2906}{<=}'''
 }

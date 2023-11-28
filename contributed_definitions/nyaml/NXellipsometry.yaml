@@ -1,31 +1,23 @@
-# 06/2022
-# A draft version of a NeXus application definition for ellipsometry.
-
-# The document has the following main elements:
-# - Instrument used and is characteristics
-# - Measured data, the discription of the sample and what was measured about it
-# - Derived parameters: extra parameters derived in the measurement software
-
 category: application
 doc: |
   Ellipsometry, complex systems, up to variable angle spectroscopy.
-
+  
   Information on ellipsometry is provided, e.g. in:
-
+  
   * H. Fujiwara, Spectroscopic ellipsometry: principles and applications,
     John Wiley & Sons, 2007.
   * R. M. A. Azzam and N. M. Bashara, Ellipsometry and Polarized Light,
     North-Holland Publishing Company, 1977.
   * H. G. Tompkins and E. A. Irene, Handbook of Ellipsometry,
     William Andrew, 2005.
-
+  
   Open access sources:
-
+  
   * https://www.angstromadvanced.com/resource.asp
   * https://pypolar.readthedocs.io/en/latest/
-
+  
   Review articles:
-
+  
   * T. E. Jenkins, "Multiple-angle-of-incidence ellipsometry",
     J. Phys. D: Appl. Phys. 32, R45 (1999),
     https://doi.org/10.1088/0022-3727/32/9/201
@@ -43,692 +35,562 @@ doc: |
     Adv. Opt. Techn., (2022),
     https://doi.org/10.1515/aot-2022-0016
 
+# N_p1:
+# "Number of sample parameters scanned, if you varied any of the parameters
+# such as temperature, pressure, or pH, the maximal length of the arrays
+# specified by NXsample/environment_conditions/SENSOR/value if it exists."
+# N_time: "Number of time points measured, the length of NXsample/time_points"
 symbols:
-  doc: "Variables used throughout the document, e.g. dimensions and important parameters"
-  N_wavelength: "Size of the energy or wavelength vector used, the length of
-    NXinstrument/spectrometer/wavelength array"
-  N_variables: "How many variables are saved in a measurement. e.g. 2 for Psi
-    and Delta, 16 for Mueller matrix elements, 15 for normalized
-    Mueller matrix, 3 for NCS, the length of NXsample/column_names"
-  N_angles: "Number of incident angles used, the length of
-    NXinstrument/angle_of_incidence array"
+  doc: |
+    Variables used throughout the document, e.g. dimensions or parameters.
+  N_spectrum: |
+    Length of the spectrum array (e.g. wavelength or energy) of the measured
+    data.
+  N_sensors: |
+    Number of sensors used to measure parameters that influence the sample,
+    such as temperature or pressure.
+  N_measurements: |
+    Number of measurements (1st dimension of measured_data array). This is
+    equal to the number of parameters scanned. For example, if the experiment
+    was performed at three different temperatures and two different pressures
+    N_measurements = 2*3 = 6.
+  N_detection_angles: |
+    Number of detection angles of the beam reflected or scattered off the
+    sample.
+  N_incident_angles: |
+    Number of angles of incidence of the incident beam.
+  N_observables: |
+    Number of observables that are saved in a measurement. e.g. one for
+    intensity, reflectivity or transmittance, two for Psi and Delta etc. This
+    is equal to the second dimension of the data array 'measured_data' and the
+    number of column names.
+  N_time: |
+    Number of time points measured, the length of NXsample/time_points
 
-  N_p1:
-    "Number of sample parameters scanned, if you varied any of the parameters
-    such as temperature, pressure, or pH, the maximal length of the arrays
-    specified by NXsample/environment_conditions/SENSOR/value if it exists."
-  N_time: "Number of time points measured, the length of NXsample/time_points"
+# 06/2022
+# A draft version of a NeXus application definition for ellipsometry.
 
-NXellipsometry:
+# The document has the following main elements:
+# - Instrument used and is characteristics
+# - Sample: Properties of the sample
+# - Data: measured data, data errors
+# - Derived parameters: e.g. extra parameters derived in the measurement software
+type: group
+NXellipsometry(NXopt):
+  
+  # symbols:
+  # doc: "Variables used throughout the document, e.g. dimensions and important parameters"
+  # N_wavelength: "Size of the energy or wavelength vector used, the length of
+  # NXinstrument/spectrometer/wavelength array"
+  # N_variables: "How many variables are saved in a measurement. e.g. 2 for Psi
+  # and Delta, 16 for Mueller matrix elements, 15 for normalized
+  # Mueller matrix, 3 for NCS, the length of NXsample/column_names"
+  # N_angles: "Number of incident angles used, the length of
+  # NXinstrument/angle_of_incidence array"
   (NXentry):
     doc: |
       This is the application definition describing ellipsometry experiments.
-
+      
       Such experiments may be as simple as identifying how a reflected
       beam of light with a single wavelength changes its polarization state,
       to a variable angle spectroscopic ellipsometry experiment.
-
+      
       The application definition defines:
-
+      
       * elements of the experimental instrument
       * calibration information if available
       * parameters used to tune the state of the sample
       * sample description
-
     definition:
-      doc: "An application definition for ellipsometry."
-      \@version:
-        doc: "Version number to identify which definition of this application
-          definition was used for this entry/data."
-      \@url:
-        doc: "URL where to find further material (documentation, examples)
-          relevant to the application definition"
-      enumeration: [NXellipsometry]
-
-    experiment_identifier:
       doc: |
-        Unique identifier of the experiment, such as a (globally persistent) unique
-        identifier.
-        i) The identifier is usually defined by the facility or principle investigator.
-        ii) The identifier enables to link experiments to e.g. proposals.
-
-    experiment_description:
-      exists: recommended
-      doc: "A free-text description of the experiment. What is the aim of the
-        experiment? The general procedure."
-
-    start_time(NX_DATE_TIME):
-      doc: "Start time of the experiment. UTC offset should be specified."
-
-    acquisition_program(NXprocess):
-      exists: optional
-      program:
-        doc: "Commercial or otherwise defined given name to the program that was
-          used to generate the result file(s) with measured data and metadata.
-          This program converts the measured signals to ellipsometry data. If
-          home written, one can provide the actual steps in the NOTE subfield
-          here."
-      version:
-        doc: "Either version with build number, commit hash, or description of
-          a (online) repository where the source code of the program and build
-          instructions can be found so that the program can be configured in
-          such a way that result files can be created ideally in a
-          deterministic manner."
+        An application definition for ellipsometry.
+      \@version:
+        doc: |
+          Version number to identify which definition of this application
+          definition was used for this entry/data.
       \@url:
-        doc: "Website of the software."
-
-    (NXuser):
-      exists: [min, 1]
-      doc: "Contact information of at least the user of the instrument or the
-        investigator who performed this experiment.
-        Adding multiple users if relevant is recommended."
-      name:
-        doc: "Name of the user."
-      affiliation:
-        doc: "Name of the affiliation of the user at the point in time when the
-          experiment was performed."
-      address:
-        doc: "Full address (street, street number, ZIP, city, country) of the
-          user's affiliation."
-      email:
-        doc: "Email address of the user."
-      orcid:
-        exists: recommended
-        doc: "Author ID defined by https://orcid.org/."
-      telephone_number:
-        exists: recommended
-        doc: "Official telephone number of the user."
-
+        doc: |
+          URL where to find further material (documentation, examples) relevant
+          to the application definition.
+      enumeration: [NXellipsometry]
+    experiment_description:
+      doc: |
+        An optional free-text description of the experiment.
+        
+        However, details of the experiment should be defined in the specific
+        fields of this application definition rather than in this experiment
+        description.
+    experiment_type:
+      doc: |
+        Specify the type of ellipsometry.
+      enumeration: [in situ spectroscopic ellipsometry, THz spectroscopic ellipsometry, infrared spectroscopic ellipsometry, ultraviolet spectroscopic ellipsometry, uv-vis spectroscopic ellipsometry, NIR-Vis-UV spectroscopic ellipsometry, imaging ellipsometry]
     (NXinstrument):
-      doc: "General properties of the ellipsometry equipment"
-      model:
-        doc: The name of the instrument
-        \@version:
-          doc: "The used version of the hardware if available. If not a
-            commercial instrument use date of completion of the hardware."
+      doc: |
+        Properties of the ellipsometry equipment.
       company:
         exists: optional
-        doc: "Name of the company which build the instrument"
-
+        doc: |
+          Name of the company which build the instrument.
       construction_year(NX_DATE_TIME):
         exists: optional
-        doc: "ISO8601 date when the instrument was constructed.
-          UTC offset should be specified."
-
-      firmware:
-        doc: "Commercial or otherwise defined name of the software that was
-          used for the measurement"
-        \@version:
-          doc: "Version and build number or commit hash of the software source code"
-        \@url:
-          doc: "Website of the software."
-
-      light_source(NXsource):
-        doc: "Specify the used light source. Multiple selection possible."
-
-        #type: -- be added into the base class
-        #  doc: "NXsource lists already possible sources, and here we list some
-        #    further sources to complement the original list. Please select one or
-        #    more, according to the setup"
-        #  enumeration: [arc lamp, halogen lamp, LED, other]
-
-        #target_material:
-        #  doc: "unlike in the original, the material used to generate the light, that is
-        #    argon, helium, neon, gases, or mercury/cadmium vapor, etc."
-
-      focussing_probes(NX_BOOLEAN):
-        doc: "Were focussing probes (lenses) used?"
-
-      data_correction(NX_BOOLEAN):
-        exists: optional
-        doc: "Were the recorded data corrected by the window effects of the lenses?"
-
-      angular_spread(NX_NUMBER):
-        exists: optional
-        doc: "Specify the angular spread caused by the focussing probes"
-        unit: NX_ANGLE
-
-      ellipsometry_type:
-        doc: "What type of ellipsometry was used? See Fujiwara Table 4.2"
-        enumeration:
-          [
-            rotating analyzer,
-            rotating analyzer with analyzer compensator,
-            rotating analyzer with polarizer compensator,
-            rotating polarizer,
-            rotating compensator on polarizer side,
-            rotating compensator on analyzer side,
-            modulator on polarizer side,
-            modulator on analyzer side,
-            dual compensator,
-            phase modulation,
-            imaging ellipsometry,
-            null ellipsometry,
-          ]
-
-      calibration_status(NX_CHAR):
-        doc: "Was a calibration performed? If yes, when was it done? If the
-          calibration time is provided, it should be specified in
-          calibration/calibration_time."
-        enumeration:
-          [
-            calibration time provided,
-            no calibration,
-            within 1 hour,
-            within 1 day,
-            within 1 week,
-          ]
-
-      calibration(NXsubentry):
-        exists: recommended
-        doc: "Ellipsometers require regular calibration to adjust the hardware
-          parameters for proper zero values and background light compensation."
-        calibration_time(NX_DATE_TIME):
-          exists: optional
-          doc: "If calibtration status is 'calibration time provided', specify
-            the ISO8601 date when calibration was last performed before this
-            measurement. UTC offset should be specified."
-
-        calibration_data(NXsubentry):
-          doc: "Arrays which provide the measured calibration data.
-            Multiple sets are possible, e.g. Psi and delta measured on a
-            e.g. silicon calibration wafer, and the straight-through data.
-            We recommend to provide data that is measured under the same
-            settings as the measurement was performed, that is if Psi and
-            Delta are measured for your data, also provide Psi and Delta
-            here and use the same wavelenghts as for the measured data."
-
-          calibration_data_type:
-            doc: "What data were recorded for the calibration?
-              The number of variables (N_variables) have to be set to the
-              number of provided data columns accordingly,
-              e.g. psi/delta -> N_variables = 2,
-              Jones vector -> N_variables = 4,
-              Mueller martix -> N_variables = 16, etc."
-            enumeration:
-              [
-                psi/delta,
-                tan(psi)/cos(delta),
-                Jones matrix,
-                Mueller matrix,
-                not provided,
-              ]
-          calibration_angle_of_incidence(NX_NUMBER):
-            doc: "Angle(s) of incidence used during the calibration measurement
-              (excluding straight through mode)"
-            unit: NX_ANGLE
-            dimensions:
-              rank: 1
-              dim: [[1, N_calibration_angles]]
-
-          calibration_wavelength(NX_NUMBER):
-            doc: |
-              The wavelength or equivalent values (which are inter-convertible).
-              The importer should convert all to one unit, and make the others
-              accessible. Historically, energy is used in eV, but for visible
-              spectroscopy wavelength is more common, for IR wave numbers in
-              1/cm units.
-
-              Possibly use the same type of data as for the measurement.
-            dimensions:
-              rank: 1
-              dim: [[1, N_calibration_wavelength]]
-
-          calibration_data(NX_NUMBER):
-            doc: "Calibration is performed on a reference surface (usually a
-              silicon wafer with a well defined oxide layer) at a number of
-              angles of incidence and in a straight through mode
-              (transmission in air)."
-            unit: NX_UNITLESS
-            dimensions:
-              rank: 3
-              dim:
-                [
-                  [1, N_calibration_angles+1],
-                  [2, N_variables],
-                  [3, N_calibration_wavelength],
-                ]
-
-        calibration_sample(NX_CHAR):
-          doc: "Free-text to describe which sample was used for calibration,
-            e.g. silicon wafer with 25 nm thermal oxide layer."
-
-      angle_of_incidence(NX_NUMBER):
-        doc: "Incident angle of the beam vs. the normal of the bottom
-          reflective (substrate) surface in the sample"
-        unit: NX_ANGLE
-        dimensions:
-          rank: 1
-          dim: [[1, N_angles]]
-
-      stage(NXsubentry):
-        doc: "Sample stage, holding the sample at a specific position in X,Y,Z
-          (Cartesian) coordinate system and at an orientation defined
-          by three Euler angles (alpha, beta, gamma).
-          The stage may be motorized or manual, special for liquids or gas
-          environment."
-        stage_type(NX_CHAR):
-          doc: "Specify what type of stage was used."
-          enumeration:
-            [manual stage, scanning stage, liquid stage, gas cell, cryostat]
-
-        description:
-          doc: "A free-text field to provide information about the stage."
-          exists: recommended
-        (NXtransformations):
-          exists: recommended
-          doc: "The stage coordinate system vs. the incident beam. The Z-axis
-            of the stage is considered to point along the normal of the
-            substrate (bottom reflecting surface) from the stage towards
-            the general direction of the light source. The beam comes with
-            the angle of incidence towards this Z-axis, but in opposite
-            direction, thus they are connected with a rotation of
-            180 - angle of incidence (in degrees).
-
-            This transformation brings us from the NEXUS coordinates to the
-            stage coordinates.
-
-            Then provide the set of translations (if there are any). These
-            all have a vector defining their relative direction in the
-            current coordinate system. (This current coordinate system
-            changes with every transformation if you set the parameter
-            'depends' to the name of the previous step.)
-
-            Last, provide the rotations of the sample"
-
-          alternative:
-            exists: optional
-            doc: "If there is no motorized stage, we should at least qualify
-              where the beam hits the sample and in what direction the
-              sample stands in a free-text description, e.g. 'center of
-              sample, long edge parallel to plane of incidence'."
-
-      window(NXaperture):
-        exists: optional
-        doc: "For environmental measurements, the environment (liquid, vapor,
-          vacuum etc.) is enclosed in a cell or cryostat, which has windows
-          both in the direction of the source and the detector (looking
-          from the sample). These windows also add a phase shift to the
-          light altering the measured signal. This shift has to be
-          corrected based on measuring a known sample in the environmental
-          cell."
-
-        material(NX_CHAR):
-          doc: The material of the window
-          enumeration:
-            [
-              quartz,
-              diamond,
-              calcium fluoride,
-              zinc selenide,
-              thallium bromoiodide,
-              alkali halide compound,
-              Mylar,
-              other,
-            ]
-
-        other_material(NX_CHAR):
-          exists: optional
-          doc: "If you specified 'other' as window material, decsribe here
-            what it is."
-
-        thickness(NX_NUMBER):
-          doc: Thickness of the window
-          unit: NX_LENGTH
-
-        orientation_angle(NX_NUMBER):
-          doc: "Angle of the window normal (outer) vs. the substrate normal
-            (similar to the angle of incidence)."
-          unit: NX_ANGLE
-
-        reference_data(NXsubentry):
-          doc: "Recorded data that can be used to calculate the window effect.
-            Typically this is the substrate (e.g. silicon with thermal
-            oxide layer) in air without window and in a known medium with
-            the window."
-
-          reference_sample:
-            doc: "What sample was used to estimate the window effect?"
-
-          reference_wavelength(NX_NUMBER):
-            doc: "Wavelength of the reference data. Use the same wavelengths
-              at which all other measurements are recorded"
-            unit: NX_LENGTH
-            dimensions:
-              rank: 1
-              dim: [[1, N_wavelength]]
-
-          data(NX_NUMBER):
-            exists: recommended
-            doc: "Recorded data of a reference surface with and without window/medium."
-            unit: NX_UNITLESS
-            dimensions:
-              rank: 4
-              dim: [[1, 2], [2, N_angles], [3, N_variables], [4, N_wavelength]]
-
-      (NXdetector):
-        doc: "Which type of detector was used, and what is known about it?
-          A detector can be a photomultiplier (PMT), a CCD in a camera, or
-          an array in a spectrometer. If so, the whole detector unit goes
-          in here.
-          Integration time is the count time field, or the real time
-          field. See their definition."
-
-        detector_type:
-          doc: "What kind of detector module is used, e.g. CCD-spectrometer,
-            CCD camera, PMT, photodiode, etc."
-          enumeration:
-            [
-              PMT,
-              photodiode,
-              avalanche diode,
-              CCD camera,
-              CCD spectrometer,
-              other,
-            ]
-
-        other_detector:
-          exists: optional
-          doc: "If you specified 'other' as detector type, please write down
-            what it is."
-
-        revolution(NX_NUMBER):
-          exists: optional
-          doc: "Define how many rotations of the rotating element were taken
-            into account per spectrum."
-          unit: NX_ANY
-
-        rotating_element:
-          doc: "Define which element rotates, e.g. polarizer or analyzer."
-          enumeration:
-            [
-              polarizer (source side),
-              analyzer (detector side),
-              compensator (source side),
-              compensator (detector side),
-            ]
-
-        fixed_revolution(NX_NUMBER):
-          exists: optional
-          doc: "Rotation rate, if the revolution does not change during
-            the measurement."
-          unit: NX_FREQUENCY
-
-        variable_revolution(NX_NUMBER):
-          exists: optional
-          doc: "Specify maximum and minimum values for the revolution."
-          dimensions:
-            rank: 1
-            dim: [[1, 2]]
-
-        intensity_threshold(NX_NUMBER):
-          exists: optional
-          doc: "Minimum signal for which dynamic averaging is performed."
-          unit: NX_UNITLESS
-
-        min_intensity(NX_NUMBER):
-          exists: optional
-          doc: "Value for the minimum intensity chosen.
-            Data points below this value might be skipped by the instrument"
-          unit: NX_UNITLESS
-
-      spectrometer(NXmonochromator):
-        doc: "The spectroscope element of the ellipsometer before the detector,
-          but often integrated to form one closed unit. Information on the
-          dispersive element can be specified in the subfield GRATING. Note
-          that different gratings might be used for different wavelength
-          ranges. The dispersion of the grating for each wavelength range
-          can be stored in grating_dispersion."
-
-        wavelength(NX_NUMBER):
-          doc: "Wavelength value(s) used for the measurement.
-            An array of 1 or more elements. Length defines N_wavelength"
-          unit: NX_LENGTH
-          dimensions:
-            rank: 1
-            dim: [[1, N_wavelength]]
-
-        (NXgrating):
-          exists: optional
-          doc: "Diffraction grating, as could be used in a monochromator.
-            If two or more gratings were used, define the angular
-            dispersion and the wavelength range (min/max wavelength)
-            for each grating and make sure that the wavelength ranges
-            do not overlap. The dispersion should be defined for the
-            entire wavelength range of the experiment."
-
-          angular_dispersion(NX_NUMBER):
-            exists: optional
-            doc: "Dispersion of the grating in nm/mm used."
-
-          grating_wavelength_min(NX_NUMBER):
-            exists: optional
-            doc: "Minimum wavelength of the grating."
-            unit: NX_LENGTH
-
-          grating_wavelength_max(NX_NUMBER):
-            exists: optional
-            doc: "Maximum wavelength of the grating."
-            unit: NX_LENGTH
-
-        spectral_resolution(NX_NUMBER):
-          exists: optional
-          doc: "Spectral resolution of the instrument."
-          unit: NX_WAVENUMBER
-
-        (NXslit):
-          exists: optional
-          doc: "Define the width of the monochromator slit in the subfield x_gap."
-
-          fixed_slit(NX_BOOLEAN):
-            exists: optional
-            doc: "Was the slit width fixed?"
-
-          max_gap(NX_NUMBER):
-            exists: optional
-            doc: "If slit width was not fixed, define the maximum slit width."
-            unit: NX_LENGTH
-
-    (NXsample):
-      doc: "Properties of the sample, its history, the sample environment and
-        experimental conditions (e.g. surrounding medium, temperature,
-        pressure etc.), along with the data (data type, wavelength array,
-        measured data)."
-      atom_types:
         doc: |
-          List of comma-separated elements from the periodic table
-          that are contained in the sample. 
-          If the sample substance has multiple components, all 
-          elements from each component must be included in `atom_types`. 
-      sample_name:
-        doc: "Descriptive name of the sample"
-
-      sample_history:
-        doc: "Ideally, a reference to the location or a unique (globally
-          persistent) identifier (e.g.) of e.g. another file which gives
-          as many as possible details of the material, its microstructure,
-          and its thermo-chemo-mechanical processing/preparation history.
-          In the case that such a detailed history of the sample is not
-          available, use this field as a free-text description to specify
-          details of the sample and its preparation."
-
-      preparation_date(NX_DATE_TIME):
-        exists: recommended
-        doc: "ISO8601 date with time zone (UTC offset) specified."
-
-      layer_structure:
-        doc: "Qualitative description of the layer structure for the sample.
-          For example: Si/native oxide/thermal oxide/polymer/peptide"
-
-      data_identifier(NX_NUMBER):
-        doc: "An identifier to correlate data to the experimental conditions,
-          if several were used in this measurement;
-          typically an index of 0 - N"
-
+          ISO8601 date when the instrument was constructed.
+          UTC offset should be specified.
+      software(NXprocess):
+        program:
+          doc: |
+            Commercial or otherwise defined given name of the program that was
+            used to generate the result file(s) with measured data and metadata.
+            This program converts the measured signals to ellipsometry data. If
+            home written, one can provide the actual steps in the NOTE subfield
+            here.
+      ellipsometer_type:
+        doc: |
+          What type of ellipsometry was used? See Fujiwara Table 4.2.
+        enumeration: [rotating analyzer, rotating analyzer with analyzer compensator, rotating analyzer with polarizer compensator, rotating polarizer, rotating compensator on polarizer side, rotating compensator on analyzer side, modulator on polarizer side, modulator on analyzer side, dual compensator, phase modulation, imaging ellipsometry, null ellipsometry]
+      rotating_element_type:
+        doc: |
+          Define which element rotates, e.g. polarizer or analyzer.
+        enumeration: [polarizer (source side), analyzer (detector side), compensator (source side), compensator (detector side)]
+      (NXbeam_path):
+        light_source(NXsource):
+          doc: |
+            Specify the used light source. Multiple selection possible.
+          source_type:
+            enumeration: [arc lamp, halogen lamp, LED, other]
+        focussing_probes(NXlens_opt):
+          exists: optional
+          doc: |
+            If focussing probes (lenses) were used, please state if the data
+            were corrected for the window effects.
+          data_correction(NX_BOOLEAN):
+            doc: |
+              Were the recorded data corrected by the window effects of the
+              focussing probes (lenses)?
+          angular_spread(NX_NUMBER):
+            exists: recommended
+            unit: NX_ANGLE
+            doc: |
+              Specify the angular spread caused by the focussing probes.
+        (NXdetector):
+          doc: |
+            Properties of the detector used. Integration time is the count time
+            field, or the real time field. See their definition.
+        rotating_element(NXwaveplate):
+          exists: optional
+          doc: |
+            Properties of the rotating element defined in
+            'instrument/rotating_element_type'.
+          revolutions(NX_NUMBER):
+            exists: optional
+            unit: NX_COUNT
+            doc: |
+              Define how many revolutions of the rotating element were averaged
+              for each measurement. If the number of revolutions was fixed to a
+              certain value use the field 'fixed_revolutions' instead.
+          fixed_revolutions(NX_NUMBER):
+            exists: optional
+            unit: NX_COUNT
+            doc: |
+              Define how many revolutions of the rotating element were taken
+              into account for each measurement (if number of revolutions was
+              fixed to a certain value, i.e. not averaged).
+          max_revolutions(NX_NUMBER):
+            exists: optional
+            unit: NX_COUNT
+            doc: |
+              Specify the maximum value of revolutions of the rotating element
+              for each measurement.
+        spectrometer(NXmonochromator):
+          exists: optional
+          doc: |
+            The spectroscope element of the ellipsometer before the detector,
+            but often integrated to form one closed unit. Information on the
+            dispersive element can be specified in the subfield GRATING. Note
+            that different gratings might be used for different wavelength
+            ranges. The dispersion of the grating for each wavelength range can
+            be stored in grating_dispersion.
+    (NXsample):
+      backside_roughness(NX_BOOLEAN):
+        doc: |
+          Was the backside of the sample roughened? Relevant for infrared
+          ellipsometry.
+    data_collection(NXprocess):
       data_type:
-        doc: "Select which type of data was recorded, for example Psi and Delta
+        doc: |
+          Select which type of data was recorded, for example Psi and Delta
           (see: https://en.wikipedia.org/wiki/Ellipsometry#Data_acquisition).
           It is possible to have multiple selections. Data types may also be
           converted to each other, e.g. a Mueller matrix contains N,C,S data
-          as well. This selection defines how many columns (N_variables) are
-          stored in the data array."
-        enumeration:
-          [
-            psi/delta,
-            tan(psi)/cos(delta),
-            Mueller matrix,
-            Jones matrix,
-            N/C/S,
-            raw data,
-          ]
+          as well. This selection defines how many columns (N_observables) are
+          stored in the data array.
+        enumeration: [Psi/Delta, tan(Psi)/cos(Delta), Mueller matrix, Jones matrix, N/C/S, raw data]
+  
+  # column_names:
+  # doc: |
+  # Please list in this array the column names used in your actual data.
+  # That is ['Psi', 'Delta'] or ['MM1', 'MM2', 'MM3', ..., 'MM16] for
+  # a full Mueller matrix, etc.
+  # dimensions:
+  # rank: 1
+  # dim: [[1, N_observables]]
 
-      column_names:
-        doc:
-          "Please list in this array the column names used in your actual data.
-          That is ['psi', 'delta'] or ['MM1', 'MM2', 'MM3', ..., 'MM16] for
-          a full Mueller matrix, etc."
-        dimensions:
-          rank: 1
-          dim: [[1, N_variables]]
-
-      measured_data(NX_NUMBER):
-        doc: "Resulting data from the measurement, described by data type.
-          Minimum two columns containing Psi and Delta, or for the normalized
-          Mueller matrix it may be 16 (or 15 if the element (1,1) is all 1)."
-        dimensions:
-          rank: 5
-          dim:
-            [
-              [1, N_time],
-              [2, N_p1],
-              [3, N_angles],
-              [4, N_variables],
-              [5, N_wavelength],
-            ]
-
-      data_error(NX_NUMBER):
-        doc:
-          "Specified uncertainties (errors) of the data described by data type.
-          The structure is the same as for the measured data."
-        exists: recommended
-        dimensions:
-          rank: 5
-          dim:
-            [
-              [1, N_time],
-              [2, N_p1],
-              [3, N_angles],
-              [4, N_variables],
-              [5, N_wavelength],
-            ]
-
-      time_points(NX_NUMBER):
-        exists: optional
-        doc: "An array of relative time points if a time series was recorded."
-        unit: NX_TIME
-        dimensions:
-          rank: 1
-          dim: [[1, N_time]]
-
-      environment_conditions(NXenvironment):
-        doc: "Specify external parameters that have influenced the sample."
-
-        medium:
-          doc: "Describe what was the medium above or around the sample. The
-            common model is built up from the substrate to the medium on the
-            other side. Both boundaries are assumed infinite in the model.
-            Here, define the name of the medium (e.g. water, air, UHV, etc.)."
-
-        medium_refractive_indices(NX_NUMBER):
-          exists: optional
-          doc: "Array of pairs of complex refractive indices of the medium for
-            every measured wavelength.
-            Only necessary if the measurement was performed not in air, or
-            something very well known, e.g. high purity water.
-            Specify the complex refractive index: n + ik"
-          unit: NX_UNITLESS
-          dimensions:
-            rank: 1
-            dim: [[1, N_wavelength]]
-
-        number_of_runs(NX_UINT):
-          exists: optional
-          doc: "How many measurements were done varying the parameters? This
-            forms an extra dimension beyond incident angle, time points and
-            energy/wavelength (this is the length of the 4th dimension of
-            the data). Defaults to 1."
-          unit: NX_DIMENSIONLESS
-
-        varied_parameters:
-          exists: optional
-          doc: "Indicates which parameter was changed. Its definition must exist
-            below. The specified variable has to be number_of_runs long,
-            providing the parameters for each data set. If you vary more than
-            one parameter simultaneously use one signal instance for each.
-            Record every parameter value in a linear manner, so N_p1 is the
-            number of measurements taken.
-            For example, if you measure at two temperatures and three pressures
-            the temperature signal value looks like [T1, T1, T1, T2, T2, T2]
-            and the pressure signal value looks like [p1, p2, p3, p1, p2, p3],
-            and N_p1 = 6."
-          enumeration:
-            [
-              optical excitation,
-              voltage,
-              temperature,
-              pH,
-              stress,
-              stage positions,
-            ]
-
-        optical_excitation(NXsource):
-          exists: optional
-          doc:
-            "Was the sample modified using an optical source? Describe in this
-            group the parameters of the optical excitation used."
-
-          wavelength(NX_NUMBER):
-            doc: "Wavelength value(s) or the range used for excitation.
-              In cases of continuous laser radiation, a value or a set of
-              values may do but for other illumination types, such as pulsed
-              lasers, or lamps, a range may describe the source better."
-            unit: NX_LENGTH
-
-          broadening(NX_NUMBER):
-            exists: optional
-            doc: "Specify the FWHM of the excitation"
-            unit: NX_LENGTH
-
-          duration(NX_NUMBER):
-            exists: optional
-            doc: "How long was the sample excited."
-            unit: NX_TIME
-
-          pulse_energy(NX_NUMBER):
-            exists: optional
-            doc: "The integrated energy of light pulse."
-            unit: NX_ENERGY
-
-        (NXsensor):
-          exists: optional
-          doc: "A sensor used to monitor an external condition. The value
-            field contains the measured values. If it is constant within
-            an error for every run then use only an array of length one."
-
-    derived_parameters(NXprocess):
-      exists: optional
-      doc: "What parameters are derived from the above data."
-      depolarization(NX_NUMBER):
-        exists: optional
-        doc: "Light loss due to depolarization as a value in [0-1]."
-        unit: NX_UNITLESS
-
-    plot(NXdata):
-      exists: optional
-      doc: "A default view of the data, in this case Psi vs. wavelength and
-        the angles of incidence. If Psi does not exist, use other Mueller
-        matrix elements, such as N, C and S."
-      \@axes:
-        doc: "We recommend to use wavelength as a default attribute, but it
-          can be replaced in the case of not full spectral ellipsometry
-          to any suitable parameter along the X-axis."
+# ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
+# e5c086ad7e50f420614c5465adc29a57a2b25cc1be09659435b3f1592c0f941a
+# <?xml version="1.0" encoding="UTF-8"?>
+# <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+# <!--
+# # NeXus - Neutron and X-ray Common Data Format
+# # 
+# # Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
+# # 
+# # This library is free software; you can redistribute it and/or
+# # modify it under the terms of the GNU Lesser General Public
+# # License as published by the Free Software Foundation; either
+# # version 3 of the License, or (at your option) any later version.
+# #
+# # This library is distributed in the hope that it will be useful,
+# # but WITHOUT ANY WARRANTY; without even the implied warranty of
+# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# # Lesser General Public License for more details.
+# #
+# # You should have received a copy of the GNU Lesser General Public
+# # License along with this library; if not, write to the Free Software
+# # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# #
+# # For further information, see http://www.nexusformat.org
+# -->
+# <!--06/2022
+# A draft version of a NeXus application definition for ellipsometry.-->
+# <!--The document has the following main elements:
+# - Instrument used and is characteristics
+# - Sample: Properties of the sample
+# - Data: measured data, data errors
+# - Derived parameters: e.g. extra parameters derived in the measurement software-->
+# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXellipsometry" extends="NXopt" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+#     <!--symbols:
+#   doc: "Variables used throughout the document, e.g. dimensions and important parameters"
+#   N_wavelength: "Size of the energy or wavelength vector used, the length of
+#     NXinstrument/spectrometer/wavelength array"
+#   N_variables: "How many variables are saved in a measurement. e.g. 2 for Psi
+#     and Delta, 16 for Mueller matrix elements, 15 for normalized
+#     Mueller matrix, 3 for NCS, the length of NXsample/column_names"
+#   N_angles: "Number of incident angles used, the length of
+#     NXinstrument/angle_of_incidence array"-->
+#     <!--  N_p1:
+#     "Number of sample parameters scanned, if you varied any of the parameters
+#     such as temperature, pressure, or pH, the maximal length of the arrays
+#     specified by NXsample/environment_conditions/SENSOR/value if it exists."
+#   N_time: "Number of time points measured, the length of NXsample/time_points"-->
+#     <symbols>
+#         <doc>
+#              Variables used throughout the document, e.g. dimensions or parameters.
+#         </doc>
+#         <symbol name="N_spectrum">
+#             <doc>
+#                  Length of the spectrum array (e.g. wavelength or energy) of the measured
+#                  data.
+#             </doc>
+#         </symbol>
+#         <symbol name="N_sensors">
+#             <doc>
+#                  Number of sensors used to measure parameters that influence the sample,
+#                  such as temperature or pressure.
+#             </doc>
+#         </symbol>
+#         <symbol name="N_measurements">
+#             <doc>
+#                  Number of measurements (1st dimension of measured_data array). This is
+#                  equal to the number of parameters scanned. For example, if the experiment
+#                  was performed at three different temperatures and two different pressures
+#                  N_measurements = 2*3 = 6.
+#             </doc>
+#         </symbol>
+#         <symbol name="N_detection_angles">
+#             <doc>
+#                  Number of detection angles of the beam reflected or scattered off the
+#                  sample.
+#             </doc>
+#         </symbol>
+#         <symbol name="N_incident_angles">
+#             <doc>
+#                  Number of angles of incidence of the incident beam.
+#             </doc>
+#         </symbol>
+#         <symbol name="N_observables">
+#             <doc>
+#                  Number of observables that are saved in a measurement. e.g. one for
+#                  intensity, reflectivity or transmittance, two for Psi and Delta etc. This
+#                  is equal to the second dimension of the data array 'measured_data' and the
+#                  number of column names.
+#             </doc>
+#         </symbol>
+#         <symbol name="N_time">
+#             <doc>
+#                  Number of time points measured, the length of NXsample/time_points
+#             </doc>
+#         </symbol>
+#     </symbols>
+#     <doc>
+#          Ellipsometry, complex systems, up to variable angle spectroscopy.
+#          
+#          Information on ellipsometry is provided, e.g. in:
+#          
+#          * H. Fujiwara, Spectroscopic ellipsometry: principles and applications,
+#            John Wiley &amp; Sons, 2007.
+#          * R. M. A. Azzam and N. M. Bashara, Ellipsometry and Polarized Light,
+#            North-Holland Publishing Company, 1977.
+#          * H. G. Tompkins and E. A. Irene, Handbook of Ellipsometry,
+#            William Andrew, 2005.
+#          
+#          Open access sources:
+#          
+#          * https://www.angstromadvanced.com/resource.asp
+#          * https://pypolar.readthedocs.io/en/latest/
+#          
+#          Review articles:
+#          
+#          * T. E. Jenkins, &quot;Multiple-angle-of-incidence ellipsometry&quot;,
+#            J. Phys. D: Appl. Phys. 32, R45 (1999),
+#            https://doi.org/10.1088/0022-3727/32/9/201
+#          * D. E. Aspnes, &quot;Spectroscopic ellipsometry - Past, present, and future&quot;,
+#            Thin Solid Films 571, 334-344 (2014),
+#            https://doi.org/10.1016/j.tsf.2014.03.056
+#          * R. M. A. Azzam, &quot;Mueller-matrix ellipsometry: a review&quot;,
+#            Proc. SPIE 3121, Polarization: Measurement, Analysis, and Remote Sensing,
+#            (3 October 1997),
+#            https://doi.org/10.1117/12.283870
+#          * E. A. Irene, &quot;Applications of spectroscopic ellipsometry to microelectronics&quot;,
+#            Thin Solid Films 233, 96-111 (1993),
+#            https://doi.org/10.1016/0040-6090(93)90069-2
+#          * S. Zollner et al., &quot;Spectroscopic ellipsometry from 10 to 700 K&quot;,
+#            Adv. Opt. Techn., (2022),
+#            https://doi.org/10.1515/aot-2022-0016
+#     </doc>
+#     <group type="NXentry">
+#         <doc>
+#              This is the application definition describing ellipsometry experiments.
+#              
+#              Such experiments may be as simple as identifying how a reflected
+#              beam of light with a single wavelength changes its polarization state,
+#              to a variable angle spectroscopic ellipsometry experiment.
+#              
+#              The application definition defines:
+#              
+#              * elements of the experimental instrument
+#              * calibration information if available
+#              * parameters used to tune the state of the sample
+#              * sample description
+#         </doc>
+#         <field name="definition">
+#             <doc>
+#                  An application definition for ellipsometry.
+#             </doc>
+#             <attribute name="version">
+#                 <doc>
+#                      Version number to identify which definition of this application
+#                      definition was used for this entry/data.
+#                 </doc>
+#             </attribute>
+#             <attribute name="url">
+#                 <doc>
+#                      URL where to find further material (documentation, examples) relevant
+#                      to the application definition.
+#                 </doc>
+#             </attribute>
+#             <enumeration>
+#                 <item value="NXellipsometry"/>
+#             </enumeration>
+#         </field>
+#         <field name="experiment_description">
+#             <doc>
+#                  An optional free-text description of the experiment.
+#                  
+#                  However, details of the experiment should be defined in the specific
+#                  fields of this application definition rather than in this experiment
+#                  description.
+#             </doc>
+#         </field>
+#         <field name="experiment_type">
+#             <doc>
+#                  Specify the type of ellipsometry.
+#             </doc>
+#             <enumeration>
+#                 <item value="in situ spectroscopic ellipsometry"/>
+#                 <item value="THz spectroscopic ellipsometry"/>
+#                 <item value="infrared spectroscopic ellipsometry"/>
+#                 <item value="ultraviolet spectroscopic ellipsometry"/>
+#                 <item value="uv-vis spectroscopic ellipsometry"/>
+#                 <item value="NIR-Vis-UV spectroscopic ellipsometry"/>
+#                 <item value="imaging ellipsometry"/>
+#             </enumeration>
+#         </field>
+#         <group type="NXinstrument">
+#             <doc>
+#                  Properties of the ellipsometry equipment.
+#             </doc>
+#             <field name="company" optional="true">
+#                 <doc>
+#                      Name of the company which build the instrument.
+#                 </doc>
+#             </field>
+#             <field name="construction_year" type="NX_DATE_TIME" optional="true">
+#                 <doc>
+#                      ISO8601 date when the instrument was constructed.
+#                      UTC offset should be specified.
+#                 </doc>
+#             </field>
+#             <group name="software" type="NXprocess">
+#                 <field name="program">
+#                     <doc>
+#                          Commercial or otherwise defined given name of the program that was
+#                          used to generate the result file(s) with measured data and metadata.
+#                          This program converts the measured signals to ellipsometry data. If
+#                          home written, one can provide the actual steps in the NOTE subfield
+#                          here.
+#                     </doc>
+#                 </field>
+#             </group>
+#             <field name="ellipsometer_type">
+#                 <doc>
+#                      What type of ellipsometry was used? See Fujiwara Table 4.2.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="rotating analyzer"/>
+#                     <item value="rotating analyzer with analyzer compensator"/>
+#                     <item value="rotating analyzer with polarizer compensator"/>
+#                     <item value="rotating polarizer"/>
+#                     <item value="rotating compensator on polarizer side"/>
+#                     <item value="rotating compensator on analyzer side"/>
+#                     <item value="modulator on polarizer side"/>
+#                     <item value="modulator on analyzer side"/>
+#                     <item value="dual compensator"/>
+#                     <item value="phase modulation"/>
+#                     <item value="imaging ellipsometry"/>
+#                     <item value="null ellipsometry"/>
+#                 </enumeration>
+#             </field>
+#             <field name="rotating_element_type">
+#                 <doc>
+#                      Define which element rotates, e.g. polarizer or analyzer.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="polarizer (source side)"/>
+#                     <item value="analyzer (detector side)"/>
+#                     <item value="compensator (source side)"/>
+#                     <item value="compensator (detector side)"/>
+#                 </enumeration>
+#             </field>
+#             <group type="NXbeam_path">
+#                 <group name="light_source" type="NXsource">
+#                     <doc>
+#                          Specify the used light source. Multiple selection possible.
+#                     </doc>
+#                     <field name="source_type">
+#                         <enumeration>
+#                             <item value="arc lamp"/>
+#                             <item value="halogen lamp"/>
+#                             <item value="LED"/>
+#                             <item value="other"/>
+#                         </enumeration>
+#                     </field>
+#                 </group>
+#                 <group name="focussing_probes" type="NXlens_opt" optional="true">
+#                     <doc>
+#                          If focussing probes (lenses) were used, please state if the data
+#                          were corrected for the window effects.
+#                     </doc>
+#                     <field name="data_correction" type="NX_BOOLEAN">
+#                         <doc>
+#                              Were the recorded data corrected by the window effects of the
+#                              focussing probes (lenses)?
+#                         </doc>
+#                     </field>
+#                     <field name="angular_spread" type="NX_NUMBER" recommended="true" units="NX_ANGLE">
+#                         <doc>
+#                              Specify the angular spread caused by the focussing probes.
+#                         </doc>
+#                     </field>
+#                 </group>
+#                 <group type="NXdetector">
+#                     <doc>
+#                          Properties of the detector used. Integration time is the count time
+#                          field, or the real time field. See their definition.
+#                     </doc>
+#                 </group>
+#                 <group name="rotating_element" type="NXwaveplate" optional="true">
+#                     <doc>
+#                          Properties of the rotating element defined in
+#                          'instrument/rotating_element_type'.
+#                     </doc>
+#                     <field name="revolutions" type="NX_NUMBER" optional="true" units="NX_COUNT">
+#                         <doc>
+#                              Define how many revolutions of the rotating element were averaged
+#                              for each measurement. If the number of revolutions was fixed to a
+#                              certain value use the field 'fixed_revolutions' instead.
+#                         </doc>
+#                     </field>
+#                     <field name="fixed_revolutions" type="NX_NUMBER" optional="true" units="NX_COUNT">
+#                         <doc>
+#                              Define how many revolutions of the rotating element were taken
+#                              into account for each measurement (if number of revolutions was
+#                              fixed to a certain value, i.e. not averaged).
+#                         </doc>
+#                     </field>
+#                     <field name="max_revolutions" type="NX_NUMBER" optional="true" units="NX_COUNT">
+#                         <doc>
+#                              Specify the maximum value of revolutions of the rotating element
+#                              for each measurement.
+#                         </doc>
+#                     </field>
+#                 </group>
+#                 <group name="spectrometer" type="NXmonochromator" optional="true">
+#                     <doc>
+#                          The spectroscope element of the ellipsometer before the detector,
+#                          but often integrated to form one closed unit. Information on the
+#                          dispersive element can be specified in the subfield GRATING. Note
+#                          that different gratings might be used for different wavelength
+#                          ranges. The dispersion of the grating for each wavelength range can
+#                          be stored in grating_dispersion.
+#                     </doc>
+#                 </group>
+#             </group>
+#         </group>
+#         <group type="NXsample">
+#             <field name="backside_roughness" type="NX_BOOLEAN">
+#                 <doc>
+#                      Was the backside of the sample roughened? Relevant for infrared
+#                      ellipsometry.
+#                 </doc>
+#             </field>
+#         </group>
+#         <group name="data_collection" type="NXprocess">
+#             <field name="data_type">
+#                 <doc>
+#                      Select which type of data was recorded, for example Psi and Delta
+#                      (see: https://en.wikipedia.org/wiki/Ellipsometry#Data_acquisition).
+#                      It is possible to have multiple selections. Data types may also be
+#                      converted to each other, e.g. a Mueller matrix contains N,C,S data
+#                      as well. This selection defines how many columns (N_observables) are
+#                      stored in the data array.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="Psi/Delta"/>
+#                     <item value="tan(Psi)/cos(Delta)"/>
+#                     <item value="Mueller matrix"/>
+#                     <item value="Jones matrix"/>
+#                     <item value="N/C/S"/>
+#                     <item value="raw data"/>
+#                 </enumeration>
+#             </field>
+#         </group>
+#     </group>
+#     <!--column_names:
+#   doc: |
+#     Please list in this array the column names used in your actual data.
+#     That is ['Psi', 'Delta'] or ['MM1', 'MM2', 'MM3', ..., 'MM16] for
+#     a full Mueller matrix, etc.
+#   dimensions:
+#     rank: 1
+#     dim: [[1, N_observables]]-->
+# </definition>

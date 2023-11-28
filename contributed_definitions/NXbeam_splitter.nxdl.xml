@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--A draft of a new base class to describe a beam splitting device.-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXbeam_splitter" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="N_spectrum">
+            <doc>
+                 Length of the spectrum vector (e.g. wavelength or energy) for which the
+                 refractive index of the beam splitter material and/or coating is defined.
+            </doc>
+        </symbol>
+        <symbol name="N_spectrum_RT">
+            <doc>
+                 Length of the spectrum vector (e.g. wavelength or energy) for which the
+                 reflectance or transmission of the beam splitter is given.
+            </doc>
+        </symbol>
+        <symbol name="N_shapepar">
+            <doc>
+                 Number of parameters needed do descripe the shape of the beam splitter.
+            </doc>
+        </symbol>
+        <symbol name="N_objects">
+            <doc>
+                 Number of objects the beam splitter is made up of.
+            </doc>
+        </symbol>
+        <symbol name="N_outputs">
+            <doc>
+                 Number of outputs, i.e. number of paths the beam takes after being split by
+                 the beam splitter.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         A beam splitter, i.e. a device splitting the light into two or more beams.
+         
+         Information about types and properties of beam splitters is provided e.g.
+         [here](https://www.rp-photonics.com/beam_splitters.html).
+         
+         Use two or more NXbeam_paths to describe the beam paths after the beam
+         splitter. In the dependency chain of the new beam paths, the first elements
+         each point to this beam splitter, as this is the previous element.
+    </doc>
+    <field name="type">
+        <doc>
+             Specify the beam splitter type (e.g. dielectric mirror, pellicle,
+             dichroic mirror etc.). Shape (e.g. prism, plate, cube) and dimension
+             should be described in 'geometry'. Define if the beam splitter is
+             polarizing or not in the field 'polarizing(NX_BOOLEAN)'.
+        </doc>
+        <enumeration>
+            <item value="dichroic mirror"/>
+            <item value="dielectric mirror"/>
+            <item value="metal-coated mirror"/>
+            <item value="Nicol prism"/>
+            <item value="Glan-Thompson prism"/>
+            <item value="pellicle mirror"/>
+            <item value="Polka dot beam splitter"/>
+            <item value="fiber optic splitter"/>
+            <item value="other"/>
+        </enumeration>
+    </field>
+    <!--??? Are there any other common types of beam splitters ???-->
+    <field name="other_type">
+        <doc>
+             If you selected 'other' in 'type' use this field to specify which type of
+             beam splitter was used.
+        </doc>
+    </field>
+    <field name="polarizing" type="NX_BOOLEAN">
+        <doc>
+             Is the beam splitter polarizing?
+        </doc>
+    </field>
+    <field name="multiple_outputs" type="NX_BOOLEAN">
+        <!--??? Redundant because number of outputs is defined by N_outputs ???-->
+        <doc>
+             Does the beam splitter have multiple outputs (diffractive optical
+             element), i.e. more than two outputs?
+        </doc>
+    </field>
+    <group type="NXshape" recommended="true">
+        <doc>
+             Describe the geometry (shape, dimension etc.) of the beam splitter.
+             Specify the dimensions in 'SHAPE/size'. A sketch of the device should be
+             provided in the 'sketch(NXdata)' field to clarify (i) the shape and
+             dimensions of the device, and (ii) the input and outputs (i.e. the
+             direction of the incoming and outcoming (split) beams).
+        </doc>
+        <!--Specify the length and height if the surface facing the incident
+beam is a square or rectangle. Otherwise, if the device has a round
+geometry (disc), sepcify the diameter instead.
+The thickness or depth of the device should be defined in 'depth',
+while the thickness of the substrate and coating should be specified
+in 'substrate/substrate_thickness' and 'coating/coating_thickness'.-->
+        <field name="shape">
+            <doc>
+                 Describe the shape (plate, cube, wedged, prism etc.).
+            </doc>
+            <enumeration>
+                <item value="cube"/>
+                <item value="cylinder"/>
+                <item value="plate"/>
+                <item value="prism"/>
+                <item value="wedged"/>
+                <item value="other"/>
+            </enumeration>
+        </field>
+        <field name="other_shape">
+            <doc>
+                 If you chose 'other' in 'shape' describe what it is.
+            </doc>
+        </field>
+        <group name="sketch" type="NXdata">
+            <doc>
+                 Sketch of the beam splitter showing its geometry. The paths of the
+                 incoming and split beam should be illustrated and labelled (0 for the
+                 incoming beam, and 1, 2,..., N_outputs for the outputs (i.e. the split
+                 beam paths)).
+            </doc>
+        </group>
+        <field name="size">
+            <doc>
+                 Physical extent of the beam splitter device. The beam splitter might be
+                 made up of one or more objects (NX_objects). The meaning and location
+                 of the axes used will vary according to the value of the 'shape'
+                 variable. 'N_shapepar' defines how many parameters:
+                 
+                 * For 'cube' the parameters are (width, length).
+                 * For 'cylinder' the parameters are (diameter, length).
+                 * For 'plate' the parameters are (width, height, length).
+                 * For 'prism' the parameters are (width, height, length).
+                 * For 'wedged' the parameters are (width, height, shortest length).
+                   The wedge angle should be provided in 'SHAPE/wedge_angle'.
+                 * For 'other' the parameters may be (A, B, C, ...) with the labels
+                   defined in the sketch plotted in 'SHAPE/sketch'.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="N_objects"/>
+                <dim index="2" value="N_shapepar"/>
+            </dimensions>
+        </field>
+        <field name="wedge_angle" type="NX_FLOAT" units="NX_ANGLE">
+            <doc>
+                 Wedge angle if 'shape' is 'wedged'.
+            </doc>
+        </field>
+    </group>
+    <!--width, height, diameter, depth: Should we use 'size' in NXshape instead?
+width(NX_FLOAT):
+  doc: |
+    Width of the device's surface facing the incident beam if the surface
+    is square or rectangular (e.g. is shape is a cube).
+  unit: NX_LENGTH
+height(NX_FLOAT):
+  doc: |
+    Height of the device's surface facing the incident beam if the surface
+    is square or rectangular (e.g. is shape is a cube).
+  unit: NX_LENGTH
+diameter(NX_FLOAT):
+  doc: |
+    Diameter of the device's surface facing the incident beam if the
+    surface has circular geometry (e.g. is shape is a cylinder).
+  unit: NX_LENGTH
+length(NX_FLOAT):
+  doc: |
+    Specify the length of the beam splitter. If the device has a wedged
+    shape provide the minimum and maximum length of the device.
+    Otherwise, if the beam splitter has a homogeneous thickness, the two
+    values are equal.
+  dimensions:
+    rank: 1
+    dim: [[1,2]]-->
+    <field name="splitting_ratio" type="NX_NUMBER" units="NX_UNITLESS">
+        <doc>
+             Beam splitting ratio(s) for the various outputs (i.e. the
+             paths of the beam after being split by the beam splitter).
+             The order of the ratios must be consistent with the labels
+             1, 2, ... N_outputs defined by the sketch in 'SHAPE/sketch', starting with 1.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_outputs"/>
+        </dimensions>
+    </field>
+    <field name="clear_aperture" type="NX_FLOAT" units="NX_UNITLESS">
+        <doc>
+             Clear aperture of the device (e.g. 90% of diameter for a disc, or 90% of
+             length and height for square geometry).
+        </doc>
+    </field>
+    <!--??? Would it be better to provide the clear aperture as length ???-->
+    <group name="substrate" type="NXsample">
+        <doc>
+             Substrate of the beam splitter. Describe the material of the substrate in
+             substrate/substrate_material and provide its index of refraction in
+             substrate/index_of_refraction_substrate, if known.
+        </doc>
+        <field name="substrate_material">
+            <doc>
+                 Specify the material of the beam splitter. If the device has a coating
+                 it should be described in coating/coating_material. Is the material
+                 birefringent?
+            </doc>
+        </field>
+        <field name="substrate_thickness" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                 Thickness of the beam splitter substrate. Define the minimum and
+                 maximum thickness (for a wedged geomtry). For a homogeneous thickness
+                 (e.g. as in plate beam splitters) the minimum and maximum values are
+                 equal.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="2"/>
+            </dimensions>
+        </field>
+        <field name="index_of_refration_substrate" type="NX_FLOAT" units="NX_UNITLESS">
+            <doc>
+                 Complex index of refraction of the beam splitter substrate. Specify at
+                 given spectral values (e.g. wavelength, energy, wavenumber etc.).
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="2"/>
+                <dim index="2" value="N_spectrum"/>
+            </dimensions>
+        </field>
+    </group>
+    <group name="coating" type="NXsample">
+        <doc>
+             Is the beam splitter coated? If yes, specify the type and material of the
+             coating and the spectral range for which it is designed. If known, you
+             may also provide its index of refraction. For a beam splitter cube
+             consisting of two prisms which are glued together, you may want to
+             specify the the glue and the coatings of each prism.
+        </doc>
+        <field name="coating_type">
+            <doc>
+                 Specify the coating type (e.g. dielectric, anti-reflection (AR),
+                 multilayer coating etc.).
+            </doc>
+        </field>
+        <field name="coating_material">
+            <doc>
+                 Specify the coating material.
+            </doc>
+        </field>
+        <field name="coating_thickness" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                 Thickness of the coating.
+            </doc>
+        </field>
+        <field name="wavelength_range_coating" type="NX_FLOAT" recommended="true" units="NX_WAVELENGTH">
+            <doc>
+                 Wavelength range for which the coating is designed. Enter the minimum
+                 and maximum values of the wavelength range.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="2"/>
+            </dimensions>
+        </field>
+        <field name="index_of_refraction_coating" type="NX_FLOAT" units="NX_UNITLESS">
+            <doc>
+                 Complex index of refraction of the coating. Specify at given spectral
+                 values (e.g. wavelength, energy, wavenumber etc.).
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="2"/>
+                <dim index="2" value="N_spectrum"/>
+            </dimensions>
+        </field>
+    </group>
+    <field name="wavelength_range" type="NX_FLOAT" recommended="true" units="NX_WAVELENGTH">
+        <doc>
+             Wavelength range for which the beam splitter is designed. Enter the
+             minimum and maximum values of the wavelength range. Alternatively, or
+             additionally, you may define the wavelength range for the coating in
+             coating/wavelength_range_coating.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="2"/>
+        </dimensions>
+    </field>
+    <field name="optical_loss" type="NX_NUMBER" units="NX_UNITLESS">
+        <doc>
+             Optical loss of the beam splitter for the various outputs (i.e. the paths
+             of the beam after being split by the beam splitter).
+             The order of the ratios must be consistent with the labels
+             1, 2, ... N_outputs defined by the sketch in 'SHAPE/sketch', starting
+             with 1.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_outputs"/>
+        </dimensions>
+    </field>
+    <field name="incident_angle" type="NX_NUMBER" units="NX_ANGLE">
+        <doc>
+             Optimized angle of incidence for the desired splitting ratio.
+        </doc>
+    </field>
+    <field name="deflection_angle" type="NX_NUMBER" units="NX_ANGLE">
+        <!--is this really needed?-->
+        <doc>
+             Angle of deflection corresponding to the optimized angle of incidence
+             defined in incident_angle.
+        </doc>
+    </field>
+    <field name="AOI_range" type="NX_NUMBER" units="NX_ANGLE">
+        <doc>
+             Range of the angles of incidence (AOI) for which the beam splitter can be
+             operated. Specify the minimum and maximum angles of the range.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="2"/>
+        </dimensions>
+    </field>
+    <!--Aren't some beamsplitters defined for specific angles? Should we instead
+use dim: [[1,N_angles]], N_angles being the number of angles for which the
+beam splitter can be operated?
+If this is the case for some devices, we might also have to define a field
+for the corresponding defelction angles...-->
+    <field name="reflectance" type="NX_FLOAT" units="NX_UNITLESS">
+        <doc>
+             Reflectance of the beam splitter at given spectral values.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_spectrum_RT"/>
+        </dimensions>
+    </field>
+    <field name="transmission" type="NX_FLOAT" units="NX_UNITLESS">
+        <doc>
+             Transmission at given spectral values for the various outputs (i.e. the
+             paths of the beam after being split by the beam splitter).
+             The order of the ratios must be consistent with the labels
+             1, 2, ... N_outputs defined by the sketch in 'SHAPE/sketch', starting
+             with 1.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="N_outputs"/>
+            <dim index="2" value="N_spectrum_RT"/>
+        </dimensions>
+    </field>
+</definition>

@@ -1,0 +1,151 @@
+.. _Em-Structure:
+
+===================
+Electron microscopy
+===================
+
+.. index::
+   IntroductionEm
+   EmAppDef
+   EmBC
+   EmPartnerClasses
+
+.. _IntroductionEm:
+
+Introduction
+############
+
+A set of data schemas is proposed to describe components of an electron microscope and its eventually available focused-ion beam functionalities.
+The data schemas were designed from the perspective of how electron microscopes are used by colleagues in the materials-science-branch of electron microscopy.
+We realize that the biology-/bio-materials/omics-branch of electron microscopy is eventually in an already more mature state of discussion with respect
+to data management practices. In what follows, the focus is on the usage of electron microscopy in condensed-matter physics, chemical physics of solids,
+and materials engineering applications. As many of the components of electron microscopes used in the bio-materials communities are the same or at least many
+components are very similar, it is likely that the here presented schema definitions can also inspire discussion and exchange with the bio-materials community.
+International and national projects and consortia including the German National Research Data Infrastructure are addressed NFDI-MatWerk, NFDI-BioImage, MaRDI,
+NFDI-Microbiota, NFDI4Health, and e.g. NFDI-Neuro.
+
+Electron microscopes are functionally very customizable tools: Examples include multi-signal/-modal analyses which are frequently realized as on-the-fly computational analyses,
+regularly switching between GUI-based instrument control, computational steps, and more and more using high-throughput stream-based processing. Also artificial intelligence
+methods are increasingly used and become closer interconnected with classical modes of controlling the instrument and perform data processing. A challenge in electron microscopy
+is that these steps are often executed within commercial integrated control and analysis software. This makes it difficult to keep track of workflows in a technology-partner-agnostic,
+i.e. interdisciplinary manner.
+
+.. _EmAppDef:
+
+Application Definitions
+#######################
+
+We acknowledge that it can be difficult to agree on a single application definition which is generally enough applicable but not too complex to remain useful for application across a
+variety of instruments, technology partners, and instrument use cases. In what follows, the proposal conceptualizes first the basic components of an electron microscope. Secondly, 
+the proposal documents the steps of usual workflows how an electron microscope is used when collecting data with detectors via probing radiation-specimen-matter interaction mechanisms.
+
+In summary, scientists place a specimen/sample into the microscope, calibrate the instrument, take measurements, may perform experiments, prepare their specimens with a focused ion beam,
+calibrate again, and take other measurements, before their session on the instrument ends. In between virtually all of these steps data are collected and stream in from different detectors
+probing different physical mechanisms of the interaction between electrons or other types of radiation with the specimen.
+
+A microscope session ends with the scientist removing the specimen from the instrument or parking it so that the next user can start a session.
+Occasionally, service technicians perform calibrations and maintenance which also can be described as a session on the microscope.
+
+    :ref:`NXem`:
+        An application definition which explores the possibilities of electron microscopes.
+
+.. _EmBC:
+
+Base Classes
+############
+
+The following base classes are proposed to support modularizing the storage of pieces of information related to electron microscopy research:
+
+    :ref:`NXaberration_model`, :ref:`NXaberration_model_ceos`, :ref:`NXaberration_model_nion`, :ref:`NXaberration`:
+        Base classes to describe procedures and values for the calibration of aberrations based on
+        conventions of different companies active in the field of aberration correction.
+
+    :ref:`NXaperture_em`:
+        A base class to describe an aperture.
+
+    :ref:`NXchamber`:
+        A base class to describe the chamber as a part of the microscope or storage unit
+        for transferring specimens in between or within an instrument.
+
+    :ref:`NXcoordinate_system_set`:
+        A base class to describe different coordinate systems used and/or to be harmonized
+        or transformed into one another.
+
+    :ref:`NXcorrector_cs`:
+        A base class to describe details about corrective lens or compound lens devices
+        which reduce the aberration of an electron beam.
+
+    :ref:`NXebeam_column`:
+        A base class serving the possibility to group the components relevant for generating
+        and shaping the electron beam.
+    
+    :ref:`NXevent_data_em`:
+        A base class representing a container to hold time-stamped and microscope-state-
+        annotated data during a session at an electron microscope.
+
+    :ref:`NXevent_data_em_set`:
+        A base class to group all :ref:`NXevent_data_em` instances.
+
+    :ref:`NXibeam_column`:
+        A base class serving the possibility to group the components relevant for generating
+        and shaping an ion beam of an instrument to offer focused-ion beam (milling) capabilities.
+
+    :ref:`NXimage_set`:
+        Base classes for storing acquisition details for individual images or stacks of images. Specialized versions can be defined. Each such uses controlled vocabulary terms for group name prefixes like **adf** annular dark field, **bf** bright field, **bse** backscattered electron, **chamber** camera to monitor the stage and chamber, **df** darkfield, **diffrac** diffraction, **ecci** electron channeling contrast imaging, **kikuchi** electron backscatter diffraction, **ronchigram** - convergent beam diffraction pattern, or **se** secondary electron.
+
+    :ref:`NXinteraction_vol_em`:
+        A base class to describe details about e.g. the assumed or simulated volume of interaction of the electrons with the specimen.
+
+    :ref:`NXion`:
+        A base class to describe molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion is 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with which all possible isotopes can be described.
+
+    :ref:`NXlens_em`:
+        A base class to detail an electro-magnetic lens. In practice, an electron microscope has many such lenses. It is possible to specify as many lenses as necessary to represent eventually each single lens of the microscope and thus describe how the lenses are affecting the electron beam. This can offer opportunities for developers of software tools which strive to model the instrument e.g. to create digital twins of the instrument. We understand there is still a way to go with this to arrive there though. Consequently, we suggest to focus first on which details should be collected for a lens as a component so that developers of application definitions can take immediate advantage of this work.
+
+    :ref:`NXfabrication`:
+        A base class to bundle manufacturer/technology-partner-specific details about a component or device of an instrument.
+
+    :ref:`NXoptical_system_em`:
+        A base class to store for now qualitative and quantitative values of frequent interest
+        which are affected by the interplay of the components and state of an electron microscope.
+        Examples are the semiconvergence angle or the depth of field and depth of focus, the magnification, or the camera length.
+
+    :ref:`NXpeak`:
+        A base class to describe peaks mathematically.
+
+    :ref:`NXpump`:
+        A base class to describe details about pump(s) as components of an electron microscope.
+
+    :ref:`NXscanbox_em`:
+        A base class to represent the component of an electron microscope which realizes a controlled deflection
+        (and eventually shift, blanking, and/or descanning) of the electron beam to illuminate the specimen in a controlled manner
+        This base class can be used to document the scan pattern. The base class focuses mostly on the concept idea that there
+        is a component in a microscope which controls eventually multiple other components such as beam deflectors to achieve deflection.
+
+    :ref:`NXspectrum_set`:
+        A base class and specializations comparable to :ref:`NXimage_set` but for storing spectra. Specialized base classes should use including controlled vocabulary items as prefixes such as **eels** electron energy loss spectroscopy, **xray** X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS), **auger** Auger spectroscopy, or **cathodolum** for cathodoluminescence spectra.
+
+    :ref:`NXstage_lab`:
+        A base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities
+        which modern stages of electron microscopes typically offer.
+
+
+.. _EmPartnerClasses:
+
+Partner application definitions
+###############################
+
+A partner application definition is considered an application definition which stores data and metadata which are relevant for a given experiment but have usually only few connections to the detailed description of the workflow and experiment which motivates to granularize out these pieces of information into an own application definition. In fact, one limitation of application definitions in NeXus is currently that they define a set of constraints on their graph of controlled concepts and terms. If we take for example diffraction experiments with an electron microscope, it is usually the case that (diffraction) patterns are collected in the session at the microscope. However, all scientifically relevant conclusions are typically drawn later, i.e. through post-processing the collected diffraction (raw) data. These numerical and algorithmic steps define computational workflows were data from an instance of an application definition such as NXem are used as input but many additional concepts and constraints are applied without these demanding necessarily for changing constraints on fields or groups of NXem. If we were to modify NXem for these cases, NXem would combinatorially diverge as every different combination of required constraints demands having an own but almost similar application definition. For this reason, the concept of partner application definition are currently used which have fields/links whereby specifically
+relevant sources of information are connected to e.g. NXem. More consolidation through the use of NXsubentry classes should be considered in the future. An alternative solution is to define both NXem and its partner application definitions
+are deep base classes for which each field and group is optional. Specific instances of these blue print base classes could then elegantly combine the reuse of vocabulary and hierarchical organization information with specific constraints which are relevant only for specific usage of such data by specific tools used by an eventually smaller circle of users.
+
+    :ref:`NXem_ebsd`:
+        Application definition for collecting and indexing Kikuchi pattern into orientation maps for the two-dimensional, three- (serial sectioning) and four-dimensional (spatial and time-dependent) case.
+
+The definition of several new base classes is motivated by by NXem_ebsd:
+
+    :ref:`NXem_ebsd_conventions`:
+        A base class to store all reference frames and rotation conventions which are necessary to interpret the alignment and conventions used when working with orientation data.
+
+    :ref:`NXem_ebsd_crystal_structure_model`:
+        A base class to store crystalline phase/structure used for a simulation of diffraction pattern and comparison of these pattern against patterns to support indexin.

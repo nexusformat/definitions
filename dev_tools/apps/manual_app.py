@@ -8,7 +8,6 @@ from ..nxdl import iter_definitions
 from ..nxdl import validate_definition
 from ..utils.copy import copy_files
 from ..utils.copy import copydir
-from ..utils.copy import download_files
 from ..utils.diff import diff_ascii
 from .nxclass_app import diff_nxclass_docs
 from .nxclass_app import save_nxclass_docs
@@ -113,26 +112,9 @@ def manual_exec(args):
         print("generate anchor list files in", output_path)
         anchor_registry.write()
         copy_files(EXTRA_FILES)
-        download_files(EXTRA_URLS)
 
 
 # Path relative to source directory,
 # Path relative to build directory,
 # Overwrite (boolean)
 EXTRA_FILES = [["NXDL_VERSION", "NXDL_VERSION", True], ["LGPL.txt", "LGPL.txt", True]]
-
-# URL,
-# Path relative to build directory,
-# Overwrite (boolean)
-EXTRA_URLS = [
-    [
-        "https://github.com/nexusformat/code/raw/master/doc/api/NeXusIntern.pdf",
-        "manual/source/_static/NeXusIntern.pdf",
-        False,
-    ],
-    [
-        "https://github.com/nexusformat/code/raw/master/applications/NXtranslate/docs/NXtranslate.pdf",
-        "manual/source/_static/NXtranslate.pdf",
-        False,
-    ],
-]

@@ -6,8 +6,18 @@
 PYTHON = python3
 SPHINX = sphinx-build
 BUILD_DIR = "build"
+BASE_CLASS_DIR := base_classes
+CONTRIB_DIR := contributed_definitions
+APPDEF_DIR := applications
+NXDL_DIRS := $(BASE_CLASS_DIR) $(CONTRIB_DIR) $(APPDEF_DIR)
+NYAML_SUBDIR := nyaml
+NYAML_APPENDIX := _parsed
 
-.PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local
+NXDL_BC := $(wildcard $(BASE_CLASS_DIR)/*.nxdl.xml)
+NXDL_CONTRIB := $(wildcard $(CONTRIB_DIR)/*.nxdl.xml)
+NXDL_APPDEF := $(wildcard $(APPDEF_DIR)/*.nxdl.xml)
+
+.PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local nyaml nxdl
 
 help ::
 	@echo ""
@@ -50,16 +60,21 @@ test ::
 clean ::
 	$(RM) -rf $(BUILD_DIR)
 
+clean-nyaml ::
+	$(RM) -rf $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)
+	$(RM) -rf $(APPDEF_DIR)/$(NYAML_SUBDIR)
+	$(RM) -rf $(CONTRIB_DIR)/$(NYAML_SUBDIR)
+
 prepare ::
 	$(PYTHON) -m dev_tools manual --prepare --build-root $(BUILD_DIR)
 	$(PYTHON) -m dev_tools impatient --prepare --build-root $(BUILD_DIR)
 
 pdf ::
 	$(SPHINX) -M latexpdf $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build
-	cp $(BUILD_DIR)/manual/build/latex/nexus.pdf $(BUILD_DIR)/manual/source/_static/NeXusManual.pdf
+	cp $(BUILD_DIR)/manual/build/latex/nexus-fairmat.pdf $(BUILD_DIR)/manual/source/_static/NeXusManual.pdf
 
 html ::
-	$(SPHINX) -b html $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
+	$(SPHINX) -b html -W $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
 
 impatient-guide ::
 	$(SPHINX) -b html -W $(BUILD_DIR)/impatient-guide/ $(BUILD_DIR)/impatient-guide/build/html
@@ -81,13 +96,30 @@ all ::
 	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/html/index.html`"
 	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/latex/NXImpatient.pdf`"
 	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/manual/build/html/index.html`"
-	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus.pdf`"
+	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus-fairmat.pdf`"
 
-nexus-fairmat-proposal ::
-	$(MAKE) test
-	$(MAKE) clean
-	$(MAKE) prepare
-	$(SPHINX) -b html $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
+$(BASE_CLASS_DIR)/%.nxdl.xml : $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)/%.yaml
+	$(PYTHON) -m dev_tools.nyaml2nxdl.nyaml2nxdl --input-file $<
+	mv $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
+
+$(CONTRIB_DIR)/%.nxdl.xml : $(CONTRIB_DIR)/$(NYAML_SUBDIR)/%.yaml
+	$(PYTHON) -m dev_tools.nyaml2nxdl.nyaml2nxdl --input-file $<
+	mv $(CONTRIB_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
+
+$(APPDEF_DIR)/%.nxdl.xml : $(APPDEF_DIR)/$(NYAML_SUBDIR)/%.yaml
+	$(PYTHON) -m dev_tools.nyaml2nxdl.nyaml2nxdl --input-file $<
+	mv $(APPDEF_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
+
+NXDLS := $(NXDL_APPDEF) + $(NXDL_CONTRIB) + $(NXDL_BC)
+nyaml :
+	for file in $(NXDLS); do\
+		mkdir -p "$${file%/*}/nyaml";\
+		$(PYTHON) -m dev_tools.nyaml2nxdl.nyaml2nxdl --input-file $${file};\
+		FNAME=$${file##*/};\
+		mv -- "$${file%.nxdl.xml}_parsed.yaml" "$${file%/*}/nyaml/$${FNAME%.nxdl.xml}.yaml";\
+	done
+
+nxdl: $(NXDL_APPDEF) $(NXDL_CONTRIB) $(NXDL_BC)
 
 # NeXus - Neutron and X-ray Common Data Format
 #

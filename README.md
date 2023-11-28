@@ -7,6 +7,10 @@
 
 ## NeXus definition developers
 
+Note if this package was not properly installed using pip, it has to be first done by  
+
+    pip install -e  .
+
 After making a change to the NeXus class definitions there are two important checks
 to be made before commiting the change:
 
@@ -24,6 +28,25 @@ Then verify syntax and build the HTML manual with this command
 Open the HTML manual in a web brower for visual verification
 
     firefox build/manual/build/html/index.html
+
+Convenient editing of definitions is available in nyaml format. For this, definitions need to be converted first from xml to yaml format by the command
+
+    make nyaml
+
+After editing the definitions in nyaml format in the nyaml subdirectories, the following command can be used to update the definitions in nxdl.xml format:
+
+    make nxdl
+
+> [!WARNING]  
+> Please be aware that your nyaml files might be out of sync with the nxdl files when you update your repo. So it's best practice to stash your changes to the nyaml files and regenerate the files with `make nyaml` before adding any changes.
+
+### HTML pages with contributor information
+
+To build the html pages that contains contributor information on the sidebar set a github access token to an environment variable called GH_TOKEN.
+
+Note: If set this will increase the build time of the documentation by approximately a factor of 4.
+
+    setenv GH_TOKEN <access token>
 
 ## Repository content
 

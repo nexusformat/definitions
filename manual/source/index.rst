@@ -8,6 +8,7 @@ https://www.nexusformat.org/
 
 .. toctree::
     :maxdepth: 2
+    :numbered: 5
 
     fairmat-cover
     nexus-index
@@ -16,10 +17,14 @@ https://www.nexusformat.org/
     ellipsometry-structure
     apm-structure
     transport-structure
-    stm-structure
+    sts-structure
     cgms-structure
-    laboratory-structure
     north-structure
+    laboratory-structure
+    icme-structure
+    napi
+    history
+
 
 
 
@@ -30,6 +35,12 @@ https://www.nexusformat.org/
 | This commit time code <<AUTO_INJECT_COMMIT_TC>>.
 | This commit identifier <<AUTO_INJECT_COMMIT_ID>>.
 | This manual built |today|.
+
+.. rubric:: Acknowledgements
+
+| The FAIRmat project is funded by the Deutsche Forschungsgemeinschaft
+| (`DFG <https://www.dfg.de/en/index.jsp>`_, German Research Foundation) - project 460197019.
+| FAIRmat is a consortium within the `German NFDI <https://www.nfdi.de/?lang=en>`_.
 
 
 .. seealso:: 
