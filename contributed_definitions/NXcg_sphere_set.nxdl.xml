@@ -21,32 +21,34 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXgraph_node_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
-    <!--a graph in which space d-dimensional, categorical, at all a metric one?-->
+<!--redundant as there is NXcsg, and NXquadric but easier to understand-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_sphere_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
         <symbol name="d">
             <doc>
-                 The dimensionality of the graph. Eventually use one for categorical.
+                 The dimensionality, which has to be at least 2.
             </doc>
         </symbol>
         <symbol name="c">
             <doc>
-                 The cardinality of the set, i.e. the number of nodes/vertices of the graph.
+                 The cardinality of the set, i.e. the number of circles or spheres.
             </doc>
         </symbol>
     </symbols>
     <doc>
-         A set of nodes/vertices in space representing members of a graph.
+         Computational geometry description of a set of spheres in Euclidean space.
+         
+         Each sphere can have a different radius.
     </doc>
     <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS"/>
     <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
     <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Integer which specifies the first index to be used for distinguishing
-             nodes. Identifiers are defined either implicitly
+             identifiers for spheres. Identifiers are defined either implicitly
              or explicitly. For implicit indexing the identifiers are defined on the
              interval [identifier_offset, identifier_offset+c-1].
              For explicit indexing the identifier array has to be defined.
@@ -58,32 +60,62 @@
     </field>
     <field name="identifier" type="NX_INT" units="NX_UNITLESS">
         <doc>
-             Integer used to distinguish nodes for explicit indexing.
+             Integer used to distinguish spheres for explicit indexing.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
         </dimensions>
     </field>
-    <field name="is_a">
+    <field name="center" type="NX_NUMBER" units="NX_LENGTH">
         <doc>
-             A human-readable qualifier which type or e.g. class instance the
-             node is an instance of. As e.g. a NeXus application definition is a
-             graph, more specifically a hierarchical directed labelled property graph,
-             instances which are groups like NXgraph_node_set could have an is_a
-             qualifier reading NXgraph_node_set.
+             Geometric center of the spheres. This can be the center of mass.
+             Dimensionality and cardinality of the point and sphere set have to match.
+             The identifier_offset and identifier field of NXcg_point_set do not need
+             to be used as they should be same as the identifier_offset and the
+             identifier for the spheres.
         </doc>
-        <dimensions rank="1">
+        <dimensions rank="2">
             <dim index="1" value="c"/>
+            <dim index="2" value="d"/>
         </dimensions>
     </field>
-    <field name="label">
+    <field name="radius" type="NX_NUMBER" units="NX_LENGTH">
         <doc>
-             A human-readable label/caption/tag of the graph.
+             In the case that all spheres have the same radius.
+        </doc>
+    </field>
+    <field name="radii" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             In the case that spheres have different radius use this
+             instead of the radius field.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
         </dimensions>
     </field>
-    <!--how to handle arrays which are compressed? This can be useful for instance
-if there are substantially fewer disjoint labels than c-->
+    <group type="NXtransformations">
+        <doc>
+             Reference to or definition of a coordinate system with
+             which the positions and directions are interpretable.
+        </doc>
+    </group>
+    <!--properties of spheres-->
+    <field name="is_closed" type="NX_BOOLEAN">
+        <doc>
+             Are the spheres closed or hollow?
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="volume" type="NX_NUMBER" units="NX_ANY">
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="surface_area" type="NX_NUMBER" units="NX_ANY">
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
 </definition>
