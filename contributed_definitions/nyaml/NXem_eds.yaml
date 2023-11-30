@@ -1,0 +1,80 @@
+category: base
+doc: |
+  Base class method-specific for energy-dispersive X-ray spectroscopy (EDS/EDX).
+  
+  `IUPAC instead of Siegbahn notation <https://doi.org/10.1002/xrs.1300200308>`_ should be used.
+
+# NEW ISSUE: use computational geometry to offer arbitrary scan pattern
+# NEW ISSUE: make the binning flexible per scan point
+symbols:
+  # n_p: Number of scan points
+  n_y: |
+    Number of pixel along the y direction, the slow direction
+  n_x: |
+    Number of pixel along the x direction, the fast direction
+  n_photon_energy: |
+    Number of X-ray photon energy (bins), the fastest direction.
+  n_elements: |
+    Number of identified elements
+  n_peaks: |
+    Number of peaks detected
+type: group
+NXem_eds(NXem_method):
+  # NXprocess is composed from NXem_method base class
+  # SPECTRUM_SET(NXspectrum_set) is composed from NXem_method base class
+  # for post-processing of/with the above-defined data entries
+  # including feedback from Christoph Pauly (from MX Uni Saarland, NFDI-MatWerk),
+  # Sabine Bergmann and Sebastian Brückner (both from FAIRmat, IKZ),
+  # and Adrien Teutrie, Cecile Hebert (EPFL)
+  indexing(NXprocess):
+    doc: |
+      Details about computational steps how peaks were indexed as elements.
+    (NXprogram):
+      doc: |
+        The program with which the indexing was performed.
+    PEAK(NXpeak):
+      doc: |
+        Name and location of each X-ray line which was indexed as a known ion.
+        For each ion, an NXion instance should be created which specifies
+        the origin of the signal. For each ion also the relevant IUPAC notation
+        X-ray lines should be specified.
+      (NXion):
+        energy_range(NX_NUMBER):
+          doc: |
+            Associated lower :math:`[e_{min}, e_{max}]` bounds of the
+            energy which is assumed associated with this peak.
+          unit: NX_ENERGY
+          dim: (2,)
+        energy(NX_NUMBER):
+          doc: |
+            Theoretical energy of the line according to IUPAC.
+          unit: NX_ENERGY
+        iupac_line_names(NX_CHAR):
+          doc: |
+            IUPAC notation identifier of the line which the peak represents.
+            
+            This can be a list of IUPAC notations for (the seldom) case that
+            multiple lines are grouped with the same peak.
+          dim: (i,)
+    element_names(NX_CHAR):
+      doc: |
+        List of the names of identified elements.
+      dim: (n_elements,)
+    IMAGE_R_SET(NXimage_r_set):
+      doc: |
+        Individual element-specific EDS/EDX/EDXS/SXES mapping
+        
+        A composition map is an image whose intensities for each pixel are the
+        accumulated X-ray quanta *under the curve(s)* of a set of peaks.
+        
+        These element-specific EDS maps are NXimage_r_set instances
+        and need to be named with the name of the element from the 
+        element_names field.
+      (NXprocess):
+        peaks(NX_CHAR):
+          doc: |
+            A list of NXpeak instance names whose X-ray quanta
+            where accumulated for each pixel which yields an element-specific
+            EDS map.
+          dim: (n_peaks,)
+      # everything else is composed from NXimage_r_set
