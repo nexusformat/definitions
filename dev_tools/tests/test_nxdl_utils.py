@@ -70,47 +70,33 @@ def test_get_node_at_nxdl_path():
     )
     elem = ET.parse(nxdl_file_path).getroot()
     node = nexus.get_node_at_nxdl_path(
-        "/ENTRY/measurement/EVENT_DATA_EM/USER/affiliation", elem=elem
+        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/end_time", elem=elem
     )
-    assert node.attrib["name"] == "affiliation"
+    assert node.attrib["name"] == "end_time"
 
     node = nexus.get_node_at_nxdl_path("/ENTRY/measurement", elem=elem)
-    assert node.attrib["type"] == "NXevent_data_em_set"
+    assert node.attrib["type"] == "NXem_msr"
 
     node = nexus.get_node_at_nxdl_path(
-        "/ENTRY/measurement/EVENT_DATA_EM/SPECTRUM_SET/summary", elem=elem
+        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_C_SET/hyperstack",
+        elem=elem,
     )
     assert node.attrib["type"] == "NXdata"
 
     node = nexus.get_node_at_nxdl_path(
-        "/ENTRY/measurement/EVENT_DATA_EM/SPECTRUM_SET/summary/DATA", elem=elem
-    )
-    assert node.attrib["type"] == "NX_NUMBER"
-
-    node = nexus.get_node_at_nxdl_path(
-        "/ENTRY/measurement/EVENT_DATA_EM/SPECTRUM_SET/summary/AXISNAME_indices",
+        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_C_SET/hyperstack/AXISNAME_indices",
         elem=elem,
     )
     assert node.attrib["name"] == "AXISNAME_indices"
 
-    node = nexus.get_node_at_nxdl_path("/ENTRY/COORDINATE_SYSTEM_SET", elem=elem)
-    assert node.attrib["type"] == "NXcoordinate_system_set"
-
     node = nexus.get_node_at_nxdl_path(
-        "/ENTRY/COORDINATE_SYSTEM_SET/TRANSFORMATIONS", elem=elem
-    )
-    assert node.attrib["type"] == "NXtransformations"
-
-    node = nexus.get_node_at_nxdl_path(
-        "/ENTRY/COORDINATE_SYSTEM_SET/TRANSFORMATIONS/AXISNAME", elem=elem
+        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_C_SET/stack/axis_j",
+        elem=elem,
     )
     assert node.attrib["type"] == "NX_NUMBER"
 
-    node = nexus.get_node_at_nxdl_path(
-        "/ENTRY/COORDINATE_SYSTEM_SET/TRANSFORMATIONS/AXISNAME/transformation_type",
-        elem=elem,
-    )
-    assert node.attrib["name"] == "transformation_type"
+    node = nexus.get_node_at_nxdl_path("/ENTRY/COORDINATE_SYSTEM_SET", elem=elem)
+    assert node.attrib["type"] == "NXcoordinate_system_set"
 
     nxdl_file_path = os.path.join(
         local_dir, "../../contributed_definitions/NXiv_temp.nxdl.xml"

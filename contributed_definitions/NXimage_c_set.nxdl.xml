@@ -1,0 +1,247 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2023 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXimage_c_set" extends="NXimage_set" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="n_images">
+            <doc>
+                 Number of images in the (hyper)stack.
+            </doc>
+        </symbol>
+        <symbol name="n_k">
+            <doc>
+                 Number of pixel per image in the slowest direction.
+            </doc>
+        </symbol>
+        <symbol name="n_j">
+            <doc>
+                 Number of pixel per image in the slow direction.
+            </doc>
+        </symbol>
+        <symbol name="n_i">
+            <doc>
+                 Number of pixel per image in the fast direction.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Specialized base class container for reporting a set of images in reciprocal space.
+         
+         In practice, complex numbers are encoded via some formatted pair of real values.
+         Typically, fast Algorithms for computing Fourier Transformations (FFT) are
+         used to encode images in reciprocal (frequency) space. FFT libraries are used
+         for implementing the key functionalities of these mathematical operations.
+         
+         Different libraries use different representations and encoding of the
+         image computed. Details can be found in the respective sections of the
+         typical FFT libraries:
+         
+         * `FFTW by M. Frigo and S. G. Johnson &lt;https://www.fftw.org/fftw3_doc/Tutorial.html#Tutorial&gt;`_
+         * `Intel MKL by the Intel Co. &lt;https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2023-0/fourier-transform-functions.html&gt;`_
+         * `cuFFT by the NVidia Co. &lt;https://docs.nvidia.com/cuda/cufft/index.html&gt;`_
+         
+         Users are strongly advised to inspect carefully which specific conventions
+         their library uses to be able to store and modify the implementation of their
+         code so that the serialized representations as it is detailed
+         here for NeXus matches with their intention.
+         
+         One- and two-dimensional FFTs should use the stack(NXdata) instances.
+         Three-dimensional FFTs should use the hyperstack(NXdata) instances.
+    </doc>
+    <!--details about the FFT library used could for instance be stored in the
+NXprocess group which the NXimage_c_set base class can borrow from its
+NXimage_set parent base class
+process information are composable from the NXimage_set base class-->
+    <group name="stack" type="NXdata">
+        <doc>
+             Image stack.
+        </doc>
+        <field name="real" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Image intensity of the real part.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_images"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="imag" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Image intensity of the imaginary part.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_images"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="magnitude" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Magnitude of the image intensity.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_images"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="axis_image_identifier" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Image identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_images"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Image identifier.
+                </doc>
+            </attribute>
+        </field>
+        <!--axis_k(NX_NUMBER):
+ doc: |
+   Pixel coordinate center along k direction.
+  unit: NX_ANY  # NX_RECIPROCAL_LENGTH
+  dim: (n_k,)
+  \@long_name(NX_CHAR):
+    doc: |
+      Coordinate along j direction.-->
+        <field name="axis_j" type="NX_NUMBER" units="NX_ANY">
+            <doc>
+                 Pixel coordinate center along j direction.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_j"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Coordinate along j direction.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_i" type="NX_NUMBER" units="NX_ANY">
+            <doc>
+                 Pixel coordinate center along i direction.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Coordinate along i direction.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="hyperstack" type="NXdata">
+        <doc>
+             Image hyperstack.
+        </doc>
+        <field name="real" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Image intensity of the real part.
+            </doc>
+            <dimensions rank="4">
+                <dim index="1" value="n_images"/>
+                <dim index="2" value="n_k"/>
+                <dim index="3" value="n_j"/>
+                <dim index="4" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="imag" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Image intensity of the imaginary part.
+            </doc>
+            <dimensions rank="4">
+                <dim index="1" value="n_images"/>
+                <dim index="2" value="n_k"/>
+                <dim index="3" value="n_j"/>
+                <dim index="4" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="magnitude" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Magnitude of the image intensity.
+            </doc>
+            <dimensions rank="4">
+                <dim index="1" value="n_images"/>
+                <dim index="2" value="n_k"/>
+                <dim index="3" value="n_j"/>
+                <dim index="4" value="n_i"/>
+            </dimensions>
+        </field>
+        <field name="axis_image_identifier" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Image identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_images"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Image identifier.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_k" type="NX_NUMBER" units="NX_ANY">
+            <doc>
+                 Pixel coordinate center along k direction.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_k"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Coordinate along j direction.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_j" type="NX_NUMBER" units="NX_ANY">
+            <doc>
+                 Pixel coordinate center along j direction.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_j"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Coordinate along j direction.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_i" type="NX_NUMBER" units="NX_ANY">
+            <doc>
+                 Pixel coordinate center along i direction.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Coordinate along i direction.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+</definition>
