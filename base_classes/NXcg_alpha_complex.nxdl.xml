@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2014-2023 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,38 +21,11 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_alpha_complex" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
-    <!--weighted alpha shapes
-The so-called spectrum or sets of (weighted) alpha shapes includes the
-convex hull of a point set.-->
-    <symbols>
-        <doc>
-             The symbols used in the schema to specify e.g. dimensions of arrays.
-        </doc>
-        <symbol name="d">
-            <doc>
-                 The dimensionality of the alpha shape, for now 2 or 3.
-            </doc>
-        </symbol>
-        <!--generalize to d > 3-->
-        <symbol name="n_e">
-            <doc>
-                 The number of edges.
-            </doc>
-        </symbol>
-        <symbol name="n_f">
-            <doc>
-                 The number of faces.
-            </doc>
-        </symbol>
-        <symbol name="n_c">
-            <doc>
-                 The number of cells.
-            </doc>
-        </symbol>
-    </symbols>
+<!--
+The so-called spectrum or sets of (weighted) alpha shapes includes the convex hull of a point set.-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_alpha_complex" extends="NXcg_primitive_set" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
-         Computational geometry description of alpha shapes or wrappings to primitives.
+         Computational geometry of alpha shapes or alpha wrappings about primitives.
          
          For details see:
          
@@ -60,22 +33,17 @@ convex hull of a point set.-->
          * https://dx.doi.org/10.1145/174462.156635 for 3D,
          * https://dl.acm.org/doi/10.5555/871114 for weighted, and
          * https://doc.cgal.org/latest/Alpha_shapes_3 for 3D implementation
-         * https://doc.cgal.org/latest/Manual/packages.html#PkgAlphaWrap3 for 3D wrap
+         * https://doc.cgal.org/latest/Manual/packages.html#PkgAlphaWrap3 for 3D wrappings
          
          in CGAL, the Computational Geometry Algorithms Library.
          As a starting point, we follow the conventions of the CGAL library.
     </doc>
-    <field name="dimensionality" type="NX_UINT" units="NX_UNITLESS">
-        <enumeration>
-            <item value="2"/>
-            <item value="3"/>
-        </enumeration>
-    </field>
     <field name="type">
         <doc>
-             Specify which general type of alpha shape is computed.
-             Using for now the CGAL terminology. Basic means (unweighted) alpha shapes.
-             Alpha_wrapping means meshes created using alpha wrapping procedures.
+             Type of alpha complex following the terminology used by CGAL for now.
+             
+             Basic means (unweighted) alpha shapes. Alpha_wrapping means meshes
+             created using the alpha_wrapping algorithm.
         </doc>
         <enumeration>
             <item value="convex_hull"/>
@@ -83,69 +51,72 @@ convex hull of a point set.-->
             <item value="alpha_wrapping"/>
         </enumeration>
     </field>
-    <field name="mode">
+    <field name="regularize_alpha_complex" type="NX_BOOLEAN">
         <doc>
-             Specifically when computed with the CGAL, the mode specifies if singular 
-             faces are removed (regularized) of the alpha complex.
+             Are singular faces removed, i.e. has the alpha complex
+             been regularized or not.
         </doc>
-        <!--CHECK THIS AGAIN CAREFULLY-->
-        <enumeration>
-            <item value="general"/>
-            <item value="regularized"/>
-        </enumeration>
     </field>
+    <!--R+0 means positive real number including zero which is a super set of NX_FLOAT and a sub-set of NX_NUMBER-->
     <field name="alpha" type="NX_NUMBER" units="NX_LENGTH">
         <doc>
-             The alpha, (radius of the alpha-sphere) parameter to be used for alpha
-             shapes and alpha wrappings.
+             The alpha parameter, i.e. the radius of the alpha-sphere that
+             is used when computing the alpha complex.
         </doc>
     </field>
+    <!--the dim: argument can be omitted to indicate that a scalar is expected
+means a length quantity, i.e. m, km, or nm is possible i.e. has to be length but no further constraints
+stating meter is a stronger constraint while m is the strongest constraint, meaning literally the value is m.-->
     <field name="offset" type="NX_NUMBER" units="NX_LENGTH">
         <doc>
-             The offset distance parameter to be used in addition to alpha
-             in the case of alpha_wrapping.
+             The offset distance parameter used when computing alpha_wrappings.
         </doc>
     </field>
     <!--check again carefully the CGAL documentation talks about, for 3D, the square of the radius!-->
-    <group name="point_set" type="NXcg_point_set">
+    <group name="point_setID" type="NXcg_point_set">
+        <!--
+basically just constraints that if you use one or more instances of NXcg_point_set
+inside an instance of NXcg_alpha_complex, name that group with the prefix "point_set"
+-->
         <doc>
-             Point cloud for which the alpha shape or wrapping should be computed.
+             Point cloud for which the alpha shape or wrapping has been computed.
         </doc>
     </group>
     <!--this could also just be implemented as a link but how would this be possible
 unfold the NXcg_point_set and add a
 weight(NX_NUMBER):
-  doc: Weights for each point
+doc: Weights for each point
 In general, an alpha complex is a disconnected and non-pure complex,
 meaning in particular that the alpha complex may have singular faces.
 so the number of cells, faces and edges depends on how a specific alpha complex,
 i.e. an alpha-shape of S for alpha, is filtrated with respect to k < d-dimensional
 simplices. Here we assume that number_of_cells, number_of_faces, number_of_edges
-are reported assuming one filtrates these simplices according to mode.
+are reported assuming one filtrates these simplices according to type.
 also using the assumption the base class reports the unique vertices
 of the specifically filtrated alpha complex.-->
-    <group name="triangle_set" type="NXcg_triangle_set">
+    <group name="triangle_setID" type="NXcg_triangle_set">
         <doc>
-             Triangle soup for which the alpha wrapping should be computed.
+             Triangle soup for which the alpha wrapping has been computed.
         </doc>
     </group>
-    <group name="triangulation" type="NXcg_triangle_set">
+    <group name="triangle_meshID" type="NXcg_triangle_set">
         <doc>
-             A meshed representation of the resulting shape.
+             Triangle mesh representing the alpha complex.
         </doc>
     </group>
-    <!--should be a mesh
-add for each triangle if desirable a notation of whether the simplex is
+    <!--add for each triangle if desirable a notation of whether the simplex is
 exterior, regular, singular, or interior with respect to the alpha complex
-but a triangulation is more than a triangle (soup)/set because there is
-connectivity information
-customize the NXcg_triangle_set base class members such that connectivity
-information is contained
+a triangulation is more than a triangle (soup)/set because there it has connectivity
+customize the NXcg_triangle_set base class members such that connectivity can be contained naturally
 we need to find also a better name for this, what people intutive understand
 as the interior, may not even exist for a given alpha value
 more specifically it is the set of filtrated cells acknowledging mode
 e.g. the interior cells of the regularized alpha complex-->
-    <group name="interior_cells" type="NXcg_tetrahedron_set"/>
+    <group name="interior_cellsID" type="NXcg_tetrahedron_set">
+        <doc>
+             Set of tetrahedra representing the volume inside the alpha complex.
+        </doc>
+    </group>
     <!--document the alpha status
 https://doc.cgal.org/latest/Alpha_shapes_3/classCGAL_1_1Alpha__status.html-->
 </definition>

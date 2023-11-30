@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-#
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
-#
+# 
+# Copyright (C) 2014-2023 NeXus International Advisory Committee (NIAC)
+# 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_triangle_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_triangle_set" extends="NXcg_primitive_set" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -43,61 +43,39 @@
         </symbol>
     </symbols>
     <doc>
-         Computational geometry description of a set of triangles in Euclidean space.
+         Computational geometry description of a set of triangles.
     </doc>
-    <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS"/>
-    <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
-    <field name="number_of_unique_vertices" type="NX_POSINT" units="NX_UNITLESS"/>
-    <group type="NXtransformations">
+    <field name="number_of_unique_vertices" type="NX_INT" units="NX_UNITLESS">
         <doc>
-             Reference to or definition of a coordinate system with
-             which the qualifiers and primitive data are interpretable.
+             Number of unique vertices in the triangle set.
         </doc>
-    </group>
-    <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
-        <doc>
-             Integer which specifies the first index to be used for distinguishing
-             triangles. Identifiers are defined either implicitly
-             or explicitly. For implicit indexing the identifiers are defined on the
-             interval [identifier_offset, identifier_offset+c-1].
-             For explicit indexing the identifier array has to be defined.
-             
-             The identifier_offset field can for example be used to communicate if the
-             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
-             or from 0 (referred to as C-, Python-style index notation) respectively.
-        </doc>
-    </field>
-    <field name="identifier" type="NX_INT" units="NX_UNITLESS">
-        <doc>
-             Integer used to distinguish triangles for explicit indexing.
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="c"/>
-        </dimensions>
     </field>
     <group name="triangles" type="NXcg_face_list_data_structure">
-        <!--exists: [min, 0, max, 1]-->
         <doc>
-             A simple approach to describe the entire set of triangles when the
-             main intention is to store the shape of the triangles for visualization.
+             Combined storage of all primitives of all triangles.
+             
+             This description resembles the typical representation of primitives
+             in file formats such as OFF, PLY, VTK, or STL.
         </doc>
     </group>
-    <!--detailed additional information eventually mesh-related data-->
-    <group name="vertex_normal" type="NXcg_unit_normal_set"/>
-    <group name="edge_normal" type="NXcg_unit_normal_set"/>
-    <group name="face_normal" type="NXcg_unit_normal_set"/>
-    <!--triangles_half_edge(NXcg_half_edge_data_structure):
+    <group name="triangleID" type="NXcg_face_list_data_structure">
+        <doc>
+             Individual storage of each triangle.
+             Users are advised that using such individual storage of primitives
+             may be less storage efficient than creating a combined storage.
+        </doc>
+    </group>
+    <!--##MK::considered too trivial:
+triangle_half_edgeID(NXcg_half_edge_data_structure):
+  doc: |
+    Individual storage of each triangle as a graph.
 properties of triangles-->
-    <field name="area" type="NX_NUMBER" units="NX_AREA">
-        <dimensions rank="1">
-            <dim index="1" value="c"/>
-        </dimensions>
-    </field>
     <field name="edge_length" type="NX_NUMBER" units="NX_LENGTH">
         <doc>
-             Array of edge length values. For each triangle the edge length is
-             reported for the edges traversed according to the sequence
-             in which vertices are indexed in triangles.
+             Length of the edges of each triangle.
+             
+             For each triangle values are reported via traversing
+             the vertices in the sequence as these are defined.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="c"/>
@@ -106,27 +84,14 @@ properties of triangles-->
     </field>
     <field name="interior_angle" type="NX_NUMBER" units="NX_ANGLE">
         <doc>
-             Array of interior angle values. For each triangle the angle is
-             reported for the angle opposite to the edges which are traversed
-             according to the sequence in which vertices are indexed in triangles.
+             Interior angles of each triangle.
+             
+             For each triangle values are reported for the angle opposite
+             to the respective edges in the sequence how vertices are defined.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="c"/>
             <dim index="2" value="3"/>
         </dimensions>
     </field>
-    <field name="center" type="NX_NUMBER" units="NX_LENGTH">
-        <doc>
-             The center of mass of each polygon.
-        </doc>
-        <dimensions rank="2">
-            <dim index="1" value="c"/>
-            <dim index="2" value="d"/>
-        </dimensions>
-    </field>
-    <group name="bounding_box" type="NXcg_hexahedron_set">
-        <doc>
-             Axis-aligned or (approximate) (optimal) bounding boxes to each polygon.
-        </doc>
-    </group>
 </definition>
