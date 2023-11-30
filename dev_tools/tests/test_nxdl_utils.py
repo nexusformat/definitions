@@ -20,7 +20,8 @@
 #
 
 import os
-import xml.etree.ElementTree as ET
+
+import lxml.etree as ET
 
 from ..utils import nxdl_utils as nexus
 
