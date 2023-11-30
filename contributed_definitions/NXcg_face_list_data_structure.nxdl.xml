@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--duplicate of an NXoff_geometry ?-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_face_list_data_structure" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="d">
+            <doc>
+                 The dimensionality, which has to be at least 2.
+            </doc>
+        </symbol>
+        <symbol name="n_v">
+            <doc>
+                 The number of vertices.
+            </doc>
+        </symbol>
+        <symbol name="n_e">
+            <doc>
+                 The number of edges.
+            </doc>
+        </symbol>
+        <symbol name="n_f">
+            <doc>
+                 The number of faces.
+            </doc>
+        </symbol>
+        <symbol name="n_total">
+            <doc>
+                 The total number of vertices of all faces. Faces are polygons.
+            </doc>
+        </symbol>
+        <symbol name="n_weinberg">
+            <doc>
+                 The total number of Weinberg vector values of all faces.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Computational geometry description of geometric primitives via a face and edge list.
+         
+         Primitives must not be degenerated or self-intersect.
+         Such descriptions of primitives are frequently used for triangles and polyhedra
+         to store them on disk for visualization purposes. Although storage efficient,
+         such a description is not well suited for topological and neighborhood queries
+         of especially meshes that are built from primitives.
+         
+         In this case, scientists may need a different view on the primitives which
+         is better represented for instance with a half_edge_data_structure instance.
+         The reason to split thus the geometric description of primitives, sets, and
+         specifically meshes of primitives is to keep the structure simple enough for
+         users without these computational geometry demands but also enable those more
+         computational geometry savy users the storing of the additionally relevant
+         data structure.
+         
+         This is beneficial and superior over NXoff_geometry because for instance a
+         half_edge_data_structure instance can be immediately use to reinstantiate
+         the set without having to recompute the half_edge_structure from the vertex
+         and face-list based representation and thus offer a more efficient route
+         to serve applications where topological and graph-based operations are key.
+    </doc>
+    <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
+        <doc>
+             Dimensionality.
+        </doc>
+    </field>
+    <!--resulting in a design similar to that of NXoff_geometry and the XDMF mixed primitive topology-->
+    <field name="number_of_vertices" type="NX_POSINT" units="NX_UNITLESS">
+        <doc>
+             Array which specifies of how many vertices each face is built.
+             Each entry represent the total number of vertices for face, irrespectively
+             whether vertices are shared among faces/are unique or not.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_f"/>
+        </dimensions>
+    </field>
+    <field name="number_of_edges" type="NX_POSINT" units="NX_UNITLESS">
+        <doc>
+             Number of edges.
+        </doc>
+    </field>
+    <field name="number_of_faces" type="NX_POSINT" units="NX_UNITLESS">
+        <doc>
+             Number of faces.
+        </doc>
+    </field>
+    <field name="vertex_identifier_offset" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer which specifies the first index to be used for distinguishing
+             identifiers for vertices. Identifiers are defined either implicitly
+             or explicitly. For implicit indexing the identifiers are defined on the
+             interval [identifier_offset, identifier_offset+c-1].
+             For explicit indexing the identifier array has to be defined.
+             
+             The identifier_offset field can for example be used to communicate if 
+             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
+             or from 0 (referred to as C-, Python-style index notation) respectively.
+        </doc>
+    </field>
+    <field name="edge_identifier_offset" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer which specifies the first index to be used for distinguishing
+             identifiers for edges. Identifiers are defined either implicitly
+             or explicitly. For implicit indexing the identifiers are defined on the
+             interval [identifier_offset, identifier_offset+c-1].
+             For explicit indexing the identifier array has to be defined.
+             
+             The identifier_offset field can for example be used to communicate if 
+             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
+             or from 0 (referred to as C-, Python-style index notation) respectively.
+        </doc>
+    </field>
+    <field name="face_identifier_offset" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer which specifies the first index to be used for distinguishing
+             identifiers for faces. Identifiers are defined either implicitly
+             or explicitly. For implicit indexing the identifiers are defined on the
+             interval [identifier_offset, identifier_offset+c-1].
+             For explicit indexing the identifier array has to be defined.
+             
+             The identifier_offset field can for example be used to communicate if 
+             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
+             or from 0 (referred to as C-, Python-style index notation) respectively.
+        </doc>
+    </field>
+    <field name="vertex_identifier" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer used to distinguish vertices explicitly.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_v"/>
+        </dimensions>
+    </field>
+    <field name="edge_identifier" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer used to distinguish edges explicitly.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_e"/>
+        </dimensions>
+    </field>
+    <field name="face_identifier" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer used to distinguish faces explicitly.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_f"/>
+        </dimensions>
+    </field>
+    <field name="vertices" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Positions of the vertices.
+             
+             Users are encouraged to reduce the vertices to unique set of positions
+             and vertices as this supports a more efficient storage of the geometry data.
+             It is also possible though to store the vertex positions naively in which
+             case vertices_are_unique is likely False.
+             Naively here means that one for example stores each vertex of a triangle
+             mesh even though many vertices are shared between triangles and thus
+             the positions of these vertices do not have to be duplicated.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n_v"/>
+            <dim index="2" value="d"/>
+        </dimensions>
+    </field>
+    <field name="edges" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             The edges are stored as a pairs of vertex identifier values.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n_e"/>
+            <dim index="2" value="2"/>
+        </dimensions>
+    </field>
+    <field name="faces" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Array of identifiers from vertices which describe each face.
+             
+             The first entry is the identifier of the start vertex of the first face,
+             followed by the second vertex of the first face, until the last vertex
+             of the first face. Thereafter, the start vertex of the second face, the
+             second vertex of the second face, and so on and so forth.
+             
+             Therefore, summating over the number_of_vertices, allows to extract
+             the vertex identifiers for the i-th face on the following index interval
+             of the faces array: [$\sum_i = 0}^{i = n-1}$, $\sum_{i=0}^{i = n}$].
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_total"/>
+        </dimensions>
+    </field>
+    <!--properties-->
+    <field name="vertices_are_unique" type="NX_BOOLEAN">
+        <doc>
+             If true indicates that the vertices are all placed at different positions
+             and have different identifiers, i.e. no points overlap or are counted twice.
+        </doc>
+    </field>
+    <field name="edges_are_unique" type="NX_BOOLEAN">
+        <doc>
+             If true indicates that no edge is stored twice. Users are encouraged to
+             consider and use the half_edge_data_structure instead as this will work
+             towards achieving a cleaner graph-based description if relevant and possible.
+        </doc>
+    </field>
+    <field name="faces_are_unique" type="NX_BOOLEAN"/>
+    <field name="winding_order" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Specifies for each face which winding order was used if any:
+             
+             * 0 - undefined
+             * 1 - counter-clockwise (CCW)
+             * 2 - clock-wise (CW)
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_f"/>
+        </dimensions>
+    </field>
+</definition>
