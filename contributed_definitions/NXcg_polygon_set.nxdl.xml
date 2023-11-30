@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_polygon_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <!--Users can take advantage of NXcg_polygon_set to describe such complexes
+when using the defines_plc and related topological and boundary constraint
+descriptors.-->
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="d">
+            <doc>
+                 The dimensionality, which has to be either 2 or 3.
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 The cardinality of the set, i.e. the number of polygons.
+            </doc>
+        </symbol>
+        <!--n_unique: Number of unique points supporting the polygons.-->
+        <symbol name="n_total">
+            <doc>
+                 The total number of vertices when visiting every polygon.
+            </doc>
+        </symbol>
+    </symbols>
+    <!--somewhat redundant as there is NXoff_geometry but easier to understand-->
+    <doc>
+         Computational geometry description of a set of polygons in Euclidean space.
+         
+         Polygons are related are specialized polylines:
+         
+         * A polygon is a geometric primitive that is bounded by a closed polyline
+         * All vertices of this polyline lay in the d-1 dimensional plane.
+           whereas vertices of a polyline do not necessarily lay on a plane.
+         * A polygon has at least three vertices.
+         
+         Each polygon is built from a sequence of vertices (points with identifiers).
+         The members of a set of polygons may have a different number of vertices.
+         Sometimes a collection/set of polygons is referred to as a soup of polygons.
+         
+         As three-dimensional objects, a set of polygons can be used to define the
+         hull of what is effectively a polyhedron; however users are advised to use
+         the specific NXcg_polyhedron_set base class if they wish to describe closed
+         polyhedra. Even more general complexes can be thought, for instance
+         piecewise-linear complexes, as these can have holes though, polyhedra without
+         holes are one subclass of such complexes, users should rather design an own
+         base class e.g. NXcg_polytope_set to describe such even more
+         complex primitives.
+    </doc>
+    <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
+        <enumeration>
+            <item value="2"/>
+            <item value="3"/>
+        </enumeration>
+    </field>
+    <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
+    <field name="number_of_total_vertices" type="NX_POSINT" units="NX_UNITLESS"/>
+    <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer which specifies the first index to be used for distinguishing
+             polygons. Identifiers are defined either implicitly
+             or explicitly. For implicit indexing the identifiers are defined on the
+             interval [identifier_offset, identifier_offset+c-1].
+             For explicit indexing the identifier array has to be defined.
+             
+             The identifier_offset field can for example be used to communicate if the
+             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
+             or from 0 (referred to as C-, Python-style index notation) respectively.
+        </doc>
+    </field>
+    <field name="identifier" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer used to distinguish polygons for explicit indexing.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <group name="polygons" type="NXcg_face_list_data_structure">
+        <!--exists: [min, 0, max, 1]-->
+        <doc>
+             A simple approach to describe the entire set of polygons when the
+             main intention is to store the shape of the polygons for visualization.
+        </doc>
+    </group>
+    <!--detailed additional information eventually mesh-related data-->
+    <group name="vertex_normal" type="NXcg_unit_normal_set"/>
+    <group name="edge_normal" type="NXcg_unit_normal_set"/>
+    <group name="face_normal" type="NXcg_unit_normal_set"/>
+    <!--triangles_half_edge(NXcg_half_edge_data_structure):
+properties of the polygon primitives-->
+    <field name="area" type="NX_NUMBER" units="NX_AREA">
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="edge_length" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             The accumulated length of the polygon edge.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="interior_angle" type="NX_NUMBER" units="NX_ANGLE">
+        <doc>
+             Array of interior angles. There are many values per polygon as number_of_vertices.
+             The angle is the angle at the specific vertex, i.e. between the adjoining
+             edges of the vertex according to the sequence in the polygons array.
+             Usually, the winding_order field is required to interpret the value.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_total"/>
+        </dimensions>
+    </field>
+    <field name="shape" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Curvature type:
+             
+             * 0 - unspecified,
+             * 1 - convex,
+             * 2 - concave
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="center" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             The center of mass of each polygon.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="c"/>
+            <dim index="2" value="d"/>
+        </dimensions>
+    </field>
+    <group name="bounding_box" type="NXcg_hexahedron_set">
+        <doc>
+             Axis-aligned or (approximate) (optimal) bounding boxes to each polygon.
+        </doc>
+    </group>
+    <!--##MK::ROI about the set ?
+a set of polygons can be interpreted as a descriptor for an object
+an, in TetGen terminology, piecewise-linear complex
+  defines_plc(NX_BOOLEAN):
+   doc: True, if the set describes a piecewise-linear complex.
+##MK::each polygon could be given a role with respect to what the polygon
+##MK::represents of the complex, this would allow to define a complex with
+##MK::holes
+  vertices(NXcg_point_set):
+    doc: |
+      The set of vertices supporting the polygons.
+
+      The dimensionality of the point set and this polygon set are the same.
+      The number of vertices is arbitrary because polygons may different in
+      their number of edges.
+
+      Like it is the case for NXcg_triangle_set instances, individual
+      polygons may make edge contact in which case a lower number of vertices
+      suffices than naively expected from a summation of the edges.
+
+      Users are encouraged to reduce the vertex set to a set of unique vertices
+      as this can often turn out to allow for a more efficient storage
+      of the geometry data. It is also possible though to store
+      the vertices naively in which case vertices_are_unique is likely False.
+    vertices_are_unique(NX_BOOLEAN):
+      doc: |
+        If true indicates that the vertices are all placed at different positions
+        and have different identifiers, i.e. no points overlap or are counted twice.
+  number_of_vertices(NX_POSINT):
+    doc: |
+      Array which specifies of how many vertices each polygon is built.
+      The number of vertices represent the total number of vertices for
+      each polygon, irrespectively whether vertices are shared or not.
+      See the docstring for polygons for further details about how
+      a set with different polyline members should be stored.
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 1
+      dimensions: [[1, c]]
+    # ##MK::there is nothing like value constraints... or minimum bitdepth
+  polygons(NX_INT):
+    doc: |
+      Array of identifiers from vertices which describe each polygon.
+
+      The first entry is the identifier of the start vertex of the first polyline,
+      followed by the second vertex of the first polyline, until the last vertex
+      of the polyline. Thereafter, the start vertex of the second polyline, and
+      so on and so forth. Using the (cumulated) counts in number_of_vertices,
+      the vertices of the n-th polyline can be accessed on the following
+      array index interval:
+      [$\sum_i = 0}^{i = n-1}$, $\sum_{i=0}^{i = n}$].
+
+      Users are advised to store the vertex identifiers, if possible and
+      ideally then for all of them, according to and using winding order.
+      If the winding_order field is given, it has to report the specific winding
+      order used.
+    unit: NX_UNITLESS
+    dimensions:
+      rank: 1
+      dim: [[1, n_total]]-->
+</definition>
