@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_triangle_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="d">
+            <doc>
+                 The dimensionality, which has to be at least 2.
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 The cardinality of the set, i.e. the number of triangles.
+            </doc>
+        </symbol>
+        <symbol name="n_unique">
+            <doc>
+                 The number of unique vertices supporting the triangles.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Computational geometry description of a set of triangles in Euclidean space.
+    </doc>
+    <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS"/>
+    <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
+    <field name="number_of_unique_vertices" type="NX_POSINT" units="NX_UNITLESS"/>
+    <group type="NXtransformations">
+        <doc>
+             Reference to or definition of a coordinate system with
+             which the qualifiers and primitive data are interpretable.
+        </doc>
+    </group>
+    <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer which specifies the first index to be used for distinguishing
+             triangles. Identifiers are defined either implicitly
+             or explicitly. For implicit indexing the identifiers are defined on the
+             interval [identifier_offset, identifier_offset+c-1].
+             For explicit indexing the identifier array has to be defined.
+             
+             The identifier_offset field can for example be used to communicate if the
+             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
+             or from 0 (referred to as C-, Python-style index notation) respectively.
+        </doc>
+    </field>
+    <field name="identifier" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer used to distinguish triangles for explicit indexing.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <group name="triangles" type="NXcg_face_list_data_structure">
+        <!--exists: [min, 0, max, 1]-->
+        <doc>
+             A simple approach to describe the entire set of triangles when the
+             main intention is to store the shape of the triangles for visualization.
+        </doc>
+    </group>
+    <!--detailed additional information eventually mesh-related data-->
+    <group name="vertex_normal" type="NXcg_unit_normal_set"/>
+    <group name="edge_normal" type="NXcg_unit_normal_set"/>
+    <group name="face_normal" type="NXcg_unit_normal_set"/>
+    <!--triangles_half_edge(NXcg_half_edge_data_structure):
+properties of triangles-->
+    <field name="area" type="NX_NUMBER" units="NX_AREA">
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="edge_length" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Array of edge length values. For each triangle the edge length is
+             reported for the edges traversed according to the sequence
+             in which vertices are indexed in triangles.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="c"/>
+            <dim index="2" value="3"/>
+        </dimensions>
+    </field>
+    <field name="interior_angle" type="NX_NUMBER" units="NX_ANGLE">
+        <doc>
+             Array of interior angle values. For each triangle the angle is
+             reported for the angle opposite to the edges which are traversed
+             according to the sequence in which vertices are indexed in triangles.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="c"/>
+            <dim index="2" value="3"/>
+        </dimensions>
+    </field>
+    <field name="center" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             The center of mass of each polygon.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="c"/>
+            <dim index="2" value="d"/>
+        </dimensions>
+    </field>
+    <group name="bounding_box" type="NXcg_hexahedron_set">
+        <doc>
+             Axis-aligned or (approximate) (optimal) bounding boxes to each polygon.
+        </doc>
+    </group>
+</definition>
