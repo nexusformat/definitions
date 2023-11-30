@@ -3,21 +3,20 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="en" data-content_root="../../">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
 
     <title>3.3.1.12. NXdata &#8212; nexus v2022.07 documentation</title>
-    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css" />
-    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=649a27d8" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinxdoc.css?v=d59dc883" />
+    <link rel="stylesheet" type="text/css" href="../../_static/tabs.css?v=a5c4661c" />
     <link rel="stylesheet" href="../../_static/blockquote.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/rubric.css" type="text/css" />
-    <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
-    <script src="../../_static/doctools.js"></script>
-    <script src="../../_static/sphinx_highlight.js"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../_static/documentation_options.js?v=329478a8"></script>
+    <script src="../../_static/doctools.js?v=888ff710"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <link rel="icon" href="../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -51,112 +50,162 @@
           <div class="body" role="main">
             
   <section id="nxdata">
-<span id="index-0"></span><span id="id1"></span><h1><span class="section-number">3.3.1.12. </span>NXdata<a class="headerlink" href="#nxdata" title="Permalink to this heading">¶</a></h1>
+<span id="index-0"></span><span id="id1"></span><h1><span class="section-number">3.3.1.12. </span>NXdata<a class="headerlink" href="#nxdata" title="Link to this heading">¶</a></h1>
 <p><strong>Status</strong>:</p>
 <blockquote>
 <div><p>base class, extends <a class="reference internal" href="NXobject.html#nxobject"><span class="std std-ref">NXobject</span></a></p>
 </div></blockquote>
 <p><strong>Description</strong>:</p>
 <blockquote>
-<div><p><a class="reference internal" href="#nxdata"><span class="std std-ref">NXdata</span></a> describes the plottable data and related dimension scales.</p>
-<p id="index-1">It is strongly recommended that there is at least one <a class="reference internal" href="#nxdata"><span class="std std-ref">NXdata</span></a>
-group in each <a class="reference internal" href="NXentry.html#nxentry"><span class="std std-ref">NXentry</span></a> group.
-Note that the fields named <code class="docutils literal notranslate"><span class="pre">AXISNAME</span></code> and <code class="docutils literal notranslate"><span class="pre">DATA</span></code>
-can be defined with different names.
-(Upper case is used to indicate that the actual name is left to the user.)
-The <code class="docutils literal notranslate"><span class="pre">signal</span></code> and <code class="docutils literal notranslate"><span class="pre">axes</span></code> attributes of the
-<code class="docutils literal notranslate"><span class="pre">data</span></code> group define which items
-are plottable data and which are <em>dimension scales</em>, respectively.</p>
-<p><a class="reference internal" href="#nxdata"><span class="std std-ref">NXdata</span></a> is used to implement one of the basic motivations in NeXus,
-to provide a default plot for the data of this <a class="reference internal" href="NXentry.html#nxentry"><span class="std std-ref">NXentry</span></a>.  The actual data
-might be stored in another group and (hard) linked to the <a class="reference internal" href="#nxdata"><span class="std std-ref">NXdata</span></a> group.</p>
-<ul>
-<li><p>Each <a class="reference internal" href="#nxdata"><span class="std std-ref">NXdata</span></a> group will define one field as the default
-plottable data.  The value of the <code class="docutils literal notranslate"><span class="pre">signal</span></code> attribute names this field.
-Additional fields may be used to describe the dimension scales and
-uncertainities.
-The <code class="docutils literal notranslate"><span class="pre">auxiliary_signals</span></code> attribute is a list of the other fields
-to be plotted with the <code class="docutils literal notranslate"><span class="pre">signal</span></code> data.</p></li>
-<li><p>The plottable data may be of arbitrary rank up to a maximum
-of <code class="docutils literal notranslate"><span class="pre">NX_MAXRANK=32</span></code> (for compatibility with backend file formats).</p></li>
-<li><p>The plottable data will be named as the value of
-the group <code class="docutils literal notranslate"><span class="pre">signal</span></code> attribute, such as:</p>
+<div><p>The <a class="reference internal" href="#nxdata"><span class="std std-ref">NXdata</span></a> class is designed to encapsulate all the information required for a set of data to be plotted.
+NXdata groups contain plottable data (sometimes referred to as <em>signals</em> or <em>dependent variables</em>) and their
+associated axis coordinates (sometimes referred to as <em>axes</em> or <em>independent variables</em>).</p>
+<p>The actual names of the <a class="reference internal" href="#nxdata-data-field"><span class="std std-ref">DATA</span></a> and <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> fields
+can be chosen <a class="reference internal" href="../../datarules.html#validitemname"><span class="std std-ref">freely</span></a>, as indicated by the upper case (this is a common convention in all NeXus classes).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">NXdata</span></code> provides data and coordinates to be plotted but
+does not describe how the data is to be plotted or even the dimensionality of the plot.
+<a class="reference external" href="https://www.nexusformat.org/NIAC2018Minutes.html#nxdata-plottype--attribute">https://www.nexusformat.org/NIAC2018Minutes.html#nxdata-plottype–attribute</a></p>
+</div>
+<p><strong>Signals:</strong></p>
+<p id="index-1">The <a class="reference internal" href="#nxdata-data-field"><span class="std std-ref">DATA</span></a> fields contain the signal values to be plotted. The name of the field
+to be used as the <em>default plot signal</em> is provided by the <a class="reference internal" href="#nxdata-signal-attribute"><span class="std std-ref">signal</span></a> attribute.
+The names of the fields to be used as <em>secondary plot signals</em> are provided by the
+<a class="reference internal" href="#nxdata-auxiliary-signals-attribute"><span class="std std-ref">auxiliary_signals</span></a> attribute.</p>
+<p>An example with three signals, one of which being the default</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">:</span><span class="n">NXdata</span>
-  <span class="nd">@signal</span> <span class="o">=</span> <span class="s2">&quot;counts&quot;</span>
-  <span class="nd">@axes</span> <span class="o">=</span> <span class="s2">&quot;mr&quot;</span>
-  <span class="nd">@mr_indices</span> <span class="o">=</span> <span class="mi">0</span>
-  <span class="n">counts</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span>  <span class="o">--&gt;</span> <span class="n">the</span> <span class="n">default</span> <span class="n">dependent</span> <span class="n">data</span>
-  <span class="n">mr</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">100</span><span class="p">]</span>  <span class="o">--&gt;</span> <span class="n">the</span> <span class="n">default</span> <span class="n">independent</span> <span class="n">data</span>
+  <span class="nd">@signal</span> <span class="o">=</span> <span class="s2">&quot;data1&quot;</span>
+  <span class="nd">@auxiliary_signals</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;data2&quot;</span><span class="p">,</span> <span class="s2">&quot;data3&quot;</span><span class="p">]</span>
+  <span class="n">data1</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>  <span class="o">--&gt;</span> <span class="n">the</span> <span class="n">default</span> <span class="n">signal</span>
+  <span class="n">data2</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+  <span class="n">data3</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
 </pre></div>
 </div>
-<p>The field named in the <code class="docutils literal notranslate"><span class="pre">signal</span></code> attribute <strong>must</strong> exist, either
-directly as a NeXus field or defined through a link.</p>
-</li>
-<li><p>The group <code class="docutils literal notranslate"><span class="pre">axes</span></code> attribute will name the
-<em>dimension scale</em> associated with the plottable data.</p></li>
-</ul>
-<p>If available, the standard deviations of the data are to be
-stored in a data set of the same rank and dimensions, with the name <code class="docutils literal notranslate"><span class="pre">errors</span></code>.</p>
-<ul class="simple">
-<li><p>For each data dimension, there should be a one-dimensional array
-of the same length.</p></li>
-<li><p>These one-dimensional arrays are the <em>dimension scales</em> of the
-data,  <em>i.e</em>. the values of the independent variables at which the data
-is measured, such as scattering angle or energy transfer.</p></li>
-</ul>
-<span class="target" id="index-2"></span><p id="index-3">The preferred method to associate each data dimension with
-its respective dimension scale is to specify the field name
-of each dimension scale in the group <code class="docutils literal notranslate"><span class="pre">axes</span></code> attribute as a string list.
-Here is an example for a 2-D data set <em>data</em> plotted
-against <em>time</em>, and <em>pressure</em>.  (An additional <em>temperature</em> data set
-is provided and could be selected as an alternate for the <em>pressure</em> axis.):</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_2d</span><span class="p">:</span><span class="n">NXdata</span>
-  <span class="nd">@signal</span><span class="o">=</span><span class="s2">&quot;data&quot;</span>
-  <span class="nd">@axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;pressure&quot;</span><span class="p">]</span>
-  <span class="nd">@pressure_indices</span><span class="o">=</span><span class="mi">1</span>
-  <span class="nd">@temperature_indices</span><span class="o">=</span><span class="mi">1</span>
-  <span class="nd">@time_indices</span><span class="o">=</span><span class="mi">0</span>
-  <span class="n">data</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">1000</span><span class="p">,</span><span class="mi">20</span><span class="p">]</span>
-  <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span>
-  <span class="n">temperature</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span>
-  <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">1000</span><span class="p">]</span>
+<p><strong>Axes:</strong></p>
+<p id="index-3"><span id="index-2"></span>The <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> fields contain the axis coordinates associated with the data values.
+The names of all <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> fields are listed in the
+<a class="reference internal" href="#nxdata-axes-attribute"><span class="std std-ref">axes</span></a> attribute.</p>
+<p><cite>Rank</cite></p>
+<p><a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> fields are typically one-dimensional arrays, which annotate one of the dimensions.</p>
+<p>An example of this would be</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">:</span><span class="n">NXdata</span>
+  <span class="nd">@signal</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
+  <span class="nd">@axes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">]</span>  <span class="o">--&gt;</span> <span class="n">the</span> <span class="n">order</span> <span class="n">matters</span>
+  <span class="n">data</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">]</span>
+  <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>        <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">the</span> <span class="n">first</span> <span class="n">dimension</span>
+  <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span>        <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">the</span> <span class="n">second</span> <span class="n">dimension</span>
 </pre></div>
 </div>
-<p class="rubric">Old methods to identify the plottable data</p>
-<p>There are two older methods of associating
-each data dimension to its respective dimension scale.
-Both are now out of date and
-should not be used when writing new data files.
-However, client software should expect to see data files
-written with any of these methods.</p>
-<blockquote>
-<div><ul class="simple">
-<li><p>One method uses the <code class="docutils literal notranslate"><span class="pre">axes</span></code>
-attribute to specify the names of each <em>dimension scale</em>.</p></li>
-<li><p>The oldest method uses the <code class="docutils literal notranslate"><span class="pre">axis</span></code> attribute on each
-<em>dimension scale</em> to identify
-with an integer the axis whose value is the number of the dimension.</p></li>
-</ul>
-</div></blockquote>
-<p>Each axis of the plot may be labeled with information from the
-dimension scale for that axis.  The optional <code class="docutils literal notranslate"><span class="pre">&#64;long_name</span></code> attribute
-is provided as the axis label default.  If <code class="docutils literal notranslate"><span class="pre">&#64;long_name</span></code> is not
-defined, then use the name of the dimension scale.  A <code class="docutils literal notranslate"><span class="pre">&#64;units</span></code> attribute,
-if available, may be added to the axis label for further description.
-See the section <a class="reference internal" href="../../datarules.html#design-units"><span class="std std-ref">NeXus Data Units</span></a> for more information.</p>
-<p>The optional <code class="docutils literal notranslate"><span class="pre">title</span></code> field, if available, provides a suggested
-title for the plot.  If no <code class="docutils literal notranslate"><span class="pre">title</span></code> field is found in the <a class="reference internal" href="#nxdata"><span class="std std-ref">NXdata</span></a>
-group, look for a <code class="docutils literal notranslate"><span class="pre">title</span></code> field in the parent <a class="reference internal" href="NXentry.html#nxentry"><span class="std std-ref">NXentry</span></a> group,
-with a fallback to displaying the path to the <a class="reference internal" href="#nxdata"><span class="std std-ref">NXdata</span></a> group.</p>
-<p>NeXus is about how to find and annotate the data to be plotted
-but not to describe how the data is to be plotted.
-(<a class="reference external" href="https://www.nexusformat.org/NIAC2018Minutes.html#nxdata-plottype--attribute">https://www.nexusformat.org/NIAC2018Minutes.html#nxdata-plottype–attribute</a>)</p>
+<p>In this example each data point <code class="docutils literal notranslate"><span class="pre">data[i,j]</span></code> has axis coordinates <code class="docutils literal notranslate"><span class="pre">[x[i],</span> <span class="pre">y[j]]</span></code>.</p>
+<p>However, the fields can also have a rank greater than 1, in which case the rank of each
+<a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> must be equal to the number of data dimensions it spans.</p>
+<p>An example of this would be</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">:</span><span class="n">NXdata</span>
+  <span class="nd">@signal</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
+  <span class="nd">@axes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">]</span>  <span class="o">--&gt;</span> <span class="n">the</span> <span class="n">order</span> <span class="n">does</span> <span class="n">NOT</span> <span class="n">matter</span>
+  <span class="nd">@x_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+  <span class="nd">@y_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+  <span class="n">data</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">]</span>
+  <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">]</span>     <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">both</span> <span class="n">dimensions</span>
+  <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">]</span>     <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">both</span> <span class="n">dimensions</span>
+</pre></div>
+</div>
+<p>In this example each data point <code class="docutils literal notranslate"><span class="pre">data[i,j]</span></code> has axis coordinates <code class="docutils literal notranslate"><span class="pre">[x[i,j],</span> <span class="pre">y[i,j]]</span></code>.</p>
+<p><cite>Dimensions</cite></p>
+<p>The data dimensions annotated by an <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> field are defined by the
+<a class="reference internal" href="#nxdata-axisname-indices-attribute"><span class="std std-ref">AXISNAME_indices</span></a> attribute. When this attribute is missing,
+the position(s) of the <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> string in the
+<a class="reference internal" href="#nxdata-axes-attribute"><span class="std std-ref">axes</span></a> attribute are used.</p>
+<p>When all <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> fields are one-dimensional, and none of the data dimensions
+have more than one axis, the <a class="reference internal" href="#nxdata-axisname-indices-attribute"><span class="std std-ref">AXISNAME_indices</span></a> attributes
+are often omitted. If one of the data dimensions has no <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> field,
+the string “.” can be used in the corresponding index of the axes list.</p>
+<p>An example of this would be</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">:</span><span class="n">NXdata</span>
+  <span class="nd">@signal</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
+  <span class="nd">@axes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">]</span>  <span class="o">--&gt;</span> <span class="n">the</span> <span class="n">order</span> <span class="n">matters</span>
+  <span class="n">data</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+  <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>             <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">the</span> <span class="n">first</span> <span class="n">dimension</span>
+  <span class="n">z</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span>             <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">the</span> <span class="n">third</span> <span class="n">dimension</span>
+</pre></div>
+</div>
+<p>When using <a class="reference internal" href="#nxdata-axisname-indices-attribute"><span class="std std-ref">AXISNAME_indices</span></a> this becomes</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">:</span><span class="n">NXdata</span>
+  <span class="nd">@signal</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
+  <span class="nd">@axes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">]</span>       <span class="o">--&gt;</span> <span class="n">the</span> <span class="n">order</span> <span class="n">does</span> <span class="n">NOT</span> <span class="n">matter</span>
+  <span class="n">data</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+  <span class="nd">@x_indices</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="nd">@z_indices</span> <span class="o">=</span> <span class="mi">2</span>
+  <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>             <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">the</span> <span class="n">first</span> <span class="n">dimension</span>
+  <span class="n">z</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span>             <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">the</span> <span class="n">third</span> <span class="n">dimension</span>
+</pre></div>
+</div>
+<p>When providing <a class="reference internal" href="#nxdata-axisname-indices-attribute"><span class="std std-ref">AXISNAME_indices</span></a> attributes it is recommended
+to do it for all axes.</p>
+<p><cite>Non-trivial axes</cite></p>
+<p>What follows are two examples where <a class="reference internal" href="#nxdata-axisname-indices-attribute"><span class="std std-ref">AXISNAME_indices</span></a> attributes
+cannot be omitted.</p>
+<p>The first is an example where data dimensions have alternative axis coordinates. The NXdata group represents
+a stack of images collected at different energies. The <code class="docutils literal notranslate"><span class="pre">wavelength</span></code> is an alternative axis of <code class="docutils literal notranslate"><span class="pre">energy</span></code>
+for the last dimension (or vice versa).</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">:</span><span class="n">NXdata</span>
+  <span class="nd">@signal</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
+  <span class="nd">@axes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;energy&quot;</span><span class="p">,</span> <span class="s2">&quot;wavelength&quot;</span><span class="p">]</span>  <span class="o">--&gt;</span> <span class="n">the</span> <span class="n">order</span> <span class="n">does</span> <span class="n">NOT</span> <span class="n">matter</span>
+  <span class="nd">@x_indices</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="nd">@y_indices</span> <span class="o">=</span> <span class="mi">1</span>
+  <span class="nd">@energy_indices</span> <span class="o">=</span> <span class="mi">2</span>
+  <span class="nd">@wavelength_indices</span> <span class="o">=</span> <span class="mi">2</span>
+  <span class="n">data</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+  <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>              <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">the</span> <span class="n">first</span> <span class="n">dimension</span>
+  <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span>              <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">the</span> <span class="n">second</span> <span class="n">dimension</span>
+  <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span>         <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">the</span> <span class="n">third</span> <span class="n">dimension</span>
+  <span class="n">wavelength</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span>     <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">the</span> <span class="n">third</span> <span class="n">dimension</span>
+</pre></div>
+</div>
+<p>The second is an example with coordinates that span more than one dimension. The NXdata group represents data
+from 2D mesh scans performed at multiple energies. Each data point <code class="docutils literal notranslate"><span class="pre">data[i,j,k]</span></code> has axis coordinates
+<code class="docutils literal notranslate"><span class="pre">[x[i,j,k],</span> <span class="pre">y[i,j,k],</span> <span class="pre">energy[k]]</span></code>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">:</span><span class="n">NXdata</span>
+  <span class="nd">@signal</span> <span class="o">=</span> <span class="s2">&quot;data&quot;</span>
+  <span class="nd">@axes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="s2">&quot;energy&quot;</span><span class="p">]</span>  <span class="o">--&gt;</span> <span class="n">the</span> <span class="n">order</span> <span class="n">does</span> <span class="n">NOT</span> <span class="n">matter</span>
+  <span class="nd">@x_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+  <span class="nd">@y_indices</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+  <span class="nd">@energy_indices</span> <span class="o">=</span> <span class="mi">2</span>
+  <span class="n">data</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+  <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>            <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="nb">all</span> <span class="n">dimensions</span>
+  <span class="n">y</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>            <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="nb">all</span> <span class="n">dimensions</span>
+  <span class="n">energy</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span>             <span class="o">--&gt;</span> <span class="n">coordinates</span> <span class="n">along</span> <span class="n">the</span> <span class="n">third</span> <span class="n">dimension</span>
+</pre></div>
+</div>
+<p><strong>Uncertainties:</strong></p>
+<p>Standard deviations on data values as well as coordinates can be provided by
+<a class="reference internal" href="#nxdata-fieldname-errors-field"><span class="std std-ref">FIELDNAME_errors</span></a> fields where <code class="docutils literal notranslate"><span class="pre">FIELDNAME</span></code> is the name of a
+<a class="reference internal" href="#nxdata-data-field"><span class="std std-ref">DATA</span></a> field or an <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> field.</p>
+<p>An example of uncertainties on the signal, auxiliary signals and axis coordinates</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span><span class="p">:</span><span class="n">NXdata</span>
+  <span class="nd">@signal</span> <span class="o">=</span> <span class="s2">&quot;data1&quot;</span>
+  <span class="nd">@auxiliary_signals</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;data2&quot;</span><span class="p">,</span> <span class="s2">&quot;data3&quot;</span><span class="p">]</span>
+  <span class="nd">@axes</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">]</span>
+  <span class="nd">@x_indices</span> <span class="o">=</span> <span class="mi">0</span>
+  <span class="nd">@z_indices</span> <span class="o">=</span> <span class="mi">2</span>
+  <span class="n">data1</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+  <span class="n">data2</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+  <span class="n">data3</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+  <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+  <span class="n">z</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span>
+  <span class="n">data1_errors</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+  <span class="n">data2_errors</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+  <span class="n">data3_errors</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">30</span><span class="p">]</span>
+  <span class="n">x_errors</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span>
+  <span class="n">z_errors</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span>
+</pre></div>
+</div>
 </div></blockquote>
 <p><strong>Symbols</strong>:</p>
 <blockquote>
 <div><p>These symbols will be used below to coordinate fields with the same shape.</p>
-<p><strong>dataRank</strong>: rank of the <code class="docutils literal notranslate"><span class="pre">DATA</span></code> field</p>
-<p><strong>n</strong>: length of the <code class="docutils literal notranslate"><span class="pre">AXISNAME</span></code> field</p>
+<p><strong>dataRank</strong>: rank of the <code class="docutils literal notranslate"><span class="pre">DATA</span></code> field(s)</p>
 <p><strong>nx</strong>: length of the <code class="docutils literal notranslate"><span class="pre">x</span></code> field</p>
 <p><strong>ny</strong>: length of the <code class="docutils literal notranslate"><span class="pre">y</span></code> field</p>
 <p><strong>nz</strong>: length of the <code class="docutils literal notranslate"><span class="pre">z</span></code> field</p>
@@ -167,122 +216,111 @@ but not to describe how the data is to be plotted.
 </dl>
 <p><strong>Structure</strong>:</p>
 <blockquote>
-<div><span class="target" id="nxdata-auxiliary-signals-attribute"></span><p id="index-4"><strong>&#64;auxiliary_signals</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
+<div><p id="index-4"><span id="nxdata-signal-attribute"></span><strong>&#64;signal</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
 <blockquote>
-<div><p id="index-5">Array of strings holding the <a class="reference internal" href="../../datarules.html#validitemname"><span class="std std-ref">names</span></a> of additional
-signals to be plotted with the default <a class="reference internal" href="#nxdata-signal-attribute"><span class="std std-ref">signal</span></a>.
-These fields or links <em>must</em> exist and be direct children of this NXdata group.</p>
-<p>Each auxiliary signal needs to be of the same shape as the default signal.</p>
-</div></blockquote>
-<span class="target" id="nxdata-signal-attribute"></span><p id="index-6"><strong>&#64;signal</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
-<blockquote>
-<div><span class="target" id="index-7"></span><span class="target" id="index-8"></span><p id="index-9">Declares which NeXus field is the default.
-The value is the <a class="reference internal" href="../../datarules.html#validitemname"><span class="std std-ref">name</span></a> of the data field to be plotted.
-This field or link <em>must</em> exist and be a direct child of this NXdata group.</p>
+<div><p id="index-7"><span id="index-6"></span><span id="index-5"></span>The value is the <a class="reference internal" href="../../datarules.html#validitemname"><span class="std std-ref">name</span></a> of the signal that contains
+the default plottable data. This field or link <em>must</em> exist and be a direct child
+of this NXdata group.</p>
 <p>It is recommended (as of NIAC2014) to use this attribute
 rather than adding a signal attribute to the field.
 See <a class="reference external" href="https://www.nexusformat.org/2014_How_to_find_default_data.html">https://www.nexusformat.org/2014_How_to_find_default_data.html</a>
 for a summary of the discussion.</p>
 </div></blockquote>
-<span class="target" id="nxdata-axes-attribute"></span><p id="index-10"><strong>&#64;axes</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
+<p id="index-8"><span id="nxdata-auxiliary-signals-attribute"></span><strong>&#64;auxiliary_signals</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
 <blockquote>
-<div><p id="index-11">Array of strings holding the <a class="reference internal" href="../../datarules.html#validitemname"><span class="std std-ref">names</span></a> of
-the independent data fields used in the default plot for all of
-the dimensions of the <a class="reference internal" href="#nxdata-signal-attribute"><span class="std std-ref">signal</span></a>
-as well as any <a class="reference internal" href="#nxdata-auxiliary-signals-attribute"><span class="std std-ref">auxiliary signals</span></a>.</p>
-<p>One name is provided for every dimension in the <em>signal</em> or <em>auxiliary signal</em> fields.</p>
-<p>The <em>axes</em> values are the names of fields or links that <em>must</em> exist and be direct
-children of this NXdata group.</p>
-<p>An axis slice is specified using a field named <code class="docutils literal notranslate"><span class="pre">AXISNAME_indices</span></code>
-as described below (where the text shown here as <code class="docutils literal notranslate"><span class="pre">AXISNAME</span></code> is to be
-replaced by the actual field name).</p>
-<p>When no default axis is available for a particular dimension
-of the plottable data, use a “.” in that position.
-Such as:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>Since there are three items in the list, the <em>signal</em> field
-must be a three-dimensional array (rank=3). The first dimension
-is described by the values of a one-dimensional array named <code class="docutils literal notranslate"><span class="pre">time</span></code>
-while the other two dimensions have no fields to be used as dimension scales.</p>
-<p>See examples provided on the NeXus wiki:
-<a class="reference external" href="https://www.nexusformat.org/2014_axes_and_uncertainties.html">https://www.nexusformat.org/2014_axes_and_uncertainties.html</a></p>
-<p>If there are no axes at all (such as with a stack of images),
-the axes attribute can be omitted.</p>
+<div><p id="index-9">Array of strings holding the <a class="reference internal" href="../../datarules.html#validitemname"><span class="std std-ref">names</span></a> of additional
+signals to be plotted with the <a class="reference internal" href="#nxdata-signal-attribute"><span class="std std-ref">default signal</span></a>.
+These fields or links <em>must</em> exist and be direct children of this NXdata group.</p>
+<p>Each auxiliary signal needs to be of the same shape as the default signal.</p>
 </div></blockquote>
-<span class="target" id="nxdata-axisname-indices-attribute"></span><p id="index-12"><strong>&#64;AXISNAME_indices</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-int"><span class="std std-ref">NX_INT</span></a></p>
+<p id="index-10"><span id="nxdata-axisname-indices-attribute"></span><strong>&#64;AXISNAME_indices</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-int"><span class="std std-ref">NX_INT</span></a></p>
 <blockquote>
-<div><p>Each <code class="docutils literal notranslate"><span class="pre">AXISNAME_indices</span></code> attribute indicates the dependency
-relationship of the <code class="docutils literal notranslate"><span class="pre">AXISNAME</span></code> field (where <code class="docutils literal notranslate"><span class="pre">AXISNAME</span></code>
-is the name of a field that exists in this <code class="docutils literal notranslate"><span class="pre">NXdata</span></code> group)
-with one or more dimensions of the plottable data.</p>
-<p>Integer array that defines the indices of the <em>signal</em> field
-(that field will be a multidimensional array)
-which need to be used in the <em>AXISNAME</em> field in
-order to reference the corresponding axis value.</p>
-<p>The first index of an array is <code class="docutils literal notranslate"><span class="pre">0</span></code> (zero).</p>
-<p>Here, <em>AXISNAME</em> is to be replaced by the name of each
-field described in the <code class="docutils literal notranslate"><span class="pre">axes</span></code> attribute.
-An example with 2-D data, <span class="math notranslate nohighlight">\(d(t,P)\)</span>, will illustrate:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data_2d</span><span class="p">:</span><span class="n">NXdata</span>
-  <span class="nd">@signal</span><span class="o">=</span><span class="s2">&quot;data&quot;</span>
-  <span class="nd">@axes</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;time&quot;</span><span class="p">,</span> <span class="s2">&quot;pressure&quot;</span><span class="p">]</span>
-  <span class="nd">@time_indices</span><span class="o">=</span><span class="mi">0</span>
-  <span class="nd">@pressure_indices</span><span class="o">=</span><span class="mi">1</span>
-  <span class="n">data</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">1000</span><span class="p">,</span><span class="mi">20</span><span class="p">]</span>
-  <span class="n">time</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">1000</span><span class="p">]</span>
-  <span class="n">pressure</span><span class="p">:</span> <span class="nb">float</span><span class="p">[</span><span class="mi">20</span><span class="p">]</span>
-</pre></div>
-</div>
-<p>This attribute is to be provided in all situations.
-However, if the indices attributes are missing
-(such as for data files written before this specification),
-file readers are encouraged to make their best efforts
-to plot the data.
-Thus the implementation of the
-<code class="docutils literal notranslate"><span class="pre">AXISNAME_indices</span></code> attribute is based on the model of
-“strict writer, liberal reader”.</p>
+<div><p>The <code class="docutils literal notranslate"><span class="pre">AXISNAME_indices</span></code> attribute is a single integer or an array of integers that defines which <a class="reference internal" href="#nxdata-data-field"><span class="std std-ref">data</span></a>
+dimension(s) are spanned by the corresponding axis. The first dimension index is <code class="docutils literal notranslate"><span class="pre">0</span></code> (zero).</p>
+<p>When the <code class="docutils literal notranslate"><span class="pre">AXISNAME_indices</span></code> attribute is missing for an <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> field, its value becomes the index
+(or indices) of the <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> name in the <a class="reference internal" href="#nxdata-axes-attribute"><span class="std std-ref">axes</span></a> attribute.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Attributes potentially containing multiple values
-(axes and _indices) are to be written as string or integer arrays,
-to avoid string parsing in reading applications.</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">AXISNAME_indices</span></code> contains multiple integers, it must be saved as an actual array
+of integers and not a comma separated string.</p>
 </div>
 </div></blockquote>
-<span class="target" id="nxdata-axisname-field"></span><p id="index-13"><strong>AXISNAME</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-number"><span class="std std-ref">NX_NUMBER</span></a> (Rank: 1, Dimensions: [n])</p>
+<p id="index-11"><span id="nxdata-axes-attribute"></span><strong>&#64;axes</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
 <blockquote>
-<div><p>Dimension scale defining an axis of the data.
-Client is responsible for defining the dimensions of the data.
-The name of this field may be changed to fit the circumstances.
-Standard NeXus client tools will use the attributes to determine
-how to use this field.</p>
-<span class="target" id="nxdata-axisname-long-name-attribute"></span><p id="index-14"><strong>&#64;long_name</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
+<div><p id="index-12">The <code class="docutils literal notranslate"><span class="pre">axes</span></code> attribute is a list of strings which are the names of the <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME</span></a> fields
+that contain the values of the coordinates along the <a class="reference internal" href="#nxdata-data-field"><span class="std std-ref">data</span></a> dimensions.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When <code class="docutils literal notranslate"><span class="pre">axes</span></code> contains multiple strings, it must be saved as an actual array
+of strings and not a single comma separated string.</p>
+</div>
+</div></blockquote>
+<p id="index-13"><span id="nxdata-axisname-field"></span><strong>AXISNAME</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-number"><span class="std std-ref">NX_NUMBER</span></a></p>
+<blockquote>
+<div><p>Coordinate values along one or more <a class="reference internal" href="#nxdata-data-field"><span class="std std-ref">data</span></a> dimensions. The rank must be equal
+to the number of dimensions it spans.</p>
+<p>As the upper case <code class="docutils literal notranslate"><span class="pre">AXISNAME</span></code> indicates, the names of the <code class="docutils literal notranslate"><span class="pre">AXISNAME</span></code> fields can be chosen <a class="reference internal" href="../../datarules.html#validitemname"><span class="std std-ref">freely</span></a>.
+The <a class="reference internal" href="#nxdata-axes-attribute"><span class="std std-ref">axes</span></a> attribute can be used to find all datasets in the
+<code class="docutils literal notranslate"><span class="pre">NXdata</span></code> that contain coordinate values.</p>
+<p id="index-14"><span id="nxdata-axisname-long-name-attribute"></span><strong>&#64;long_name</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
 <blockquote>
 <div><p>Axis label</p>
 </div></blockquote>
-<span class="target" id="nxdata-axisname-distribution-attribute"></span><p id="index-15"><strong>&#64;distribution</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-boolean"><span class="std std-ref">NX_BOOLEAN</span></a></p>
+<p id="index-15"><span id="nxdata-axisname-units-attribute"></span><strong>&#64;units</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
+<blockquote>
+<div><p>Unit in which the coordinate values are expressed.
+See the section <a class="reference internal" href="../../datarules.html#design-units"><span class="std std-ref">NeXus Data Units</span></a> for more information.</p>
+</div></blockquote>
+<p id="index-16"><span id="nxdata-axisname-distribution-attribute"></span><strong>&#64;distribution</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-boolean"><span class="std std-ref">NX_BOOLEAN</span></a></p>
 <blockquote>
 <div><p><code class="docutils literal notranslate"><span class="pre">0|false</span></code>: single value,
 <code class="docutils literal notranslate"><span class="pre">1|true</span></code>: multiple values</p>
 </div></blockquote>
-<span class="target" id="nxdata-axisname-first-good-attribute"></span><p id="index-16"><strong>&#64;first_good</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-int"><span class="std std-ref">NX_INT</span></a></p>
+<p id="index-17"><span id="nxdata-axisname-first-good-attribute"></span><strong>&#64;first_good</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-int"><span class="std std-ref">NX_INT</span></a></p>
 <blockquote>
 <div><p>Index of first good value</p>
 </div></blockquote>
-<span class="target" id="nxdata-axisname-last-good-attribute"></span><p id="index-17"><strong>&#64;last_good</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-int"><span class="std std-ref">NX_INT</span></a></p>
+<p id="index-18"><span id="nxdata-axisname-last-good-attribute"></span><strong>&#64;last_good</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-int"><span class="std std-ref">NX_INT</span></a></p>
 <blockquote>
 <div><p>Index of last good value</p>
 </div></blockquote>
-<span class="target" id="nxdata-axisname-axis-attribute"></span><p id="index-18"><strong>&#64;axis</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-posint"><span class="std std-ref">NX_POSINT</span></a></p>
+<p id="index-19"><span id="nxdata-axisname-axis-attribute"></span><strong>&#64;axis</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-posint"><span class="std std-ref">NX_POSINT</span></a></p>
 <blockquote>
 <div><p>Index (positive integer) identifying this specific set of numbers.</p>
 <p>N.B. The <code class="docutils literal notranslate"><span class="pre">axis</span></code> attribute is the old way of designating a link.
-Do not use the <code class="docutils literal notranslate"><span class="pre">axes</span></code> attribute with the <code class="docutils literal notranslate"><span class="pre">axis</span></code> attribute.
-The <code class="docutils literal notranslate"><span class="pre">axes</span></code> <em>group</em> attribute is now preferred.</p>
+Do not use the <a class="reference internal" href="#nxdata-axes-attribute"><span class="std std-ref">axes</span></a> attribute with the <code class="docutils literal notranslate"><span class="pre">axis</span></code> attribute.
+The <a class="reference internal" href="#nxdata-axes-attribute"><span class="std std-ref">axes</span></a> attribute is now preferred.</p>
 </div></blockquote>
 </div></blockquote>
-<span class="target" id="nxdata-fieldname-errors-field"></span><p id="index-19"><strong>FIELDNAME_errors</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-number"><span class="std std-ref">NX_NUMBER</span></a></p>
+<p id="index-20"><span id="nxdata-data-field"></span><strong>DATA</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-number"><span class="std std-ref">NX_NUMBER</span></a> (Rank: dataRank)</p>
+<blockquote>
+<div><p id="index-21">Data values to be used as the NeXus <em>plottable data</em>. As the upper case <code class="docutils literal notranslate"><span class="pre">DATA</span></code>
+indicates, the names of the <code class="docutils literal notranslate"><span class="pre">DATA</span></code> fields can be chosen <a class="reference internal" href="../../datarules.html#validitemname"><span class="std std-ref">freely</span></a>. The <a class="reference internal" href="#nxdata-signal-attribute"><span class="std std-ref">signal attribute</span></a>
+and <a class="reference internal" href="#nxdata-auxiliary-signals-attribute"><span class="std std-ref">auxiliary_signals attribute</span></a> can be used to find all datasets in the <code class="docutils literal notranslate"><span class="pre">NXdata</span></code>
+that contain data values.</p>
+<p>The maximum rank is <code class="docutils literal notranslate"><span class="pre">32</span></code> for compatibility with backend file formats.</p>
+<p id="index-22"><span id="nxdata-data-signal-attribute"></span><strong>&#64;signal</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-posint"><span class="std std-ref">NX_POSINT</span></a></p>
+<blockquote>
+<div><p id="index-23">Plottable (independent) axis, indicate index number.
+Only one field in a <a class="reference internal" href="#nxdata"><span class="std std-ref">NXdata</span></a> group may have the
+<code class="docutils literal notranslate"><span class="pre">signal=1</span></code> attribute.
+Do not use the <code class="docutils literal notranslate"><span class="pre">signal</span></code> attribute with the <code class="docutils literal notranslate"><span class="pre">axis</span></code> attribute.</p>
+</div></blockquote>
+<p id="index-24"><span id="nxdata-data-axes-attribute"></span><strong>&#64;axes</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
+<blockquote>
+<div><p>Defines the names of the coordinates
+(independent axes) for this data set
+as a colon-delimited array.
+NOTE: The <a class="reference internal" href="#nxdata-axes-attribute"><span class="std std-ref">axes</span></a> attribute is the preferred
+method of designating a link.
+Do not use the <a class="reference internal" href="#nxdata-axes-attribute"><span class="std std-ref">axes</span></a> attribute with the <code class="docutils literal notranslate"><span class="pre">axis</span></code> attribute.</p>
+</div></blockquote>
+<p id="index-25"><span id="nxdata-data-long-name-attribute"></span><strong>&#64;long_name</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
+<blockquote>
+<div><p>data label</p>
+</div></blockquote>
+</div></blockquote>
+<p id="index-26"><span id="nxdata-fieldname-errors-field"></span><strong>FIELDNAME_errors</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-number"><span class="std std-ref">NX_NUMBER</span></a></p>
 <blockquote>
 <div><p>“Errors” (meaning <em>uncertainties</em> or <em>standard deviations</em>)
 associated with any field named <code class="docutils literal notranslate"><span class="pre">FIELDNAME</span></code> in this <code class="docutils literal notranslate"><span class="pre">NXdata</span></code>
@@ -290,44 +328,15 @@ group (e.g. an axis, signal or auxiliary signal).</p>
 <p>The dimensions of the <code class="docutils literal notranslate"><span class="pre">FIELDNAME_errors</span></code> field must match
 the dimensions of the <code class="docutils literal notranslate"><span class="pre">FIELDNAME</span></code> field.</p>
 </div></blockquote>
-<span class="target" id="nxdata-data-field"></span><p id="index-20"><strong>DATA</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-number"><span class="std std-ref">NX_NUMBER</span></a> (Rank: dataRank)</p>
+<p id="index-27"><span id="nxdata-errors-field"></span><strong>errors</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-number"><span class="std std-ref">NX_NUMBER</span></a> (Rank: dataRank)</p>
 <blockquote>
-<div><p id="index-21">This field contains the data values to be used as the
-NeXus <em>plottable data</em>.
-Client is responsible for defining the dimensions of the data.
-The name of this field may be changed to fit the circumstances.
-Standard NeXus client tools will use the attributes to determine
-how to use this field.</p>
-<span class="target" id="nxdata-data-signal-attribute"></span><p id="index-22"><strong>&#64;signal</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-posint"><span class="std std-ref">NX_POSINT</span></a></p>
-<blockquote>
-<div><p id="index-23">Plottable (independent) axis, indicate index number.
-Only one field in a <a class="reference internal" href="#nxdata"><span class="std std-ref">NXdata</span></a> group may have the
-<code class="docutils literal notranslate"><span class="pre">signal=1</span></code> attribute.
-Do not use the <code class="docutils literal notranslate"><span class="pre">signal</span></code> attribute with the <code class="docutils literal notranslate"><span class="pre">axis</span></code> attribute.</p>
-</div></blockquote>
-<span class="target" id="nxdata-data-axes-attribute"></span><p id="index-24"><strong>&#64;axes</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
-<blockquote>
-<div><p>Defines the names of the dimension scales
-(independent axes) for this data set
-as a colon-delimited array.
-NOTE: The <code class="docutils literal notranslate"><span class="pre">axes</span></code> attribute is the preferred
-method of designating a link.
-Do not use the <code class="docutils literal notranslate"><span class="pre">axes</span></code> attribute with the <code class="docutils literal notranslate"><span class="pre">axis</span></code> attribute.</p>
-</div></blockquote>
-<span class="target" id="nxdata-data-long-name-attribute"></span><p id="index-25"><strong>&#64;long_name</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
-<blockquote>
-<div><p>data label</p>
-</div></blockquote>
-</div></blockquote>
-<span class="target" id="nxdata-errors-field"></span><p id="index-26"><strong>errors</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-number"><span class="std std-ref">NX_NUMBER</span></a> (Rank: dataRank)</p>
-<blockquote>
-<div><p id="index-27"><strong>DEPRECATED</strong>: Use <code class="docutils literal notranslate"><span class="pre">DATA_errors</span></code> instead (NIAC2018)</p>
+<div><p id="index-28"><strong>DEPRECATED</strong>: Use <code class="docutils literal notranslate"><span class="pre">DATA_errors</span></code> instead (NIAC2018)</p>
 <p>Standard deviations of data values -
 the data array is identified by the group attribute <code class="docutils literal notranslate"><span class="pre">signal</span></code>.
 The <code class="docutils literal notranslate"><span class="pre">errors</span></code> array must have the same dimensions as <code class="docutils literal notranslate"><span class="pre">DATA</span></code>.
 Client is responsible for defining the dimensions of the data.</p>
 </div></blockquote>
-<span class="target" id="nxdata-scaling-factor-field"></span><p id="index-28"><strong>scaling_factor</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-float"><span class="std std-ref">NX_FLOAT</span></a></p>
+<p id="index-29"><span id="nxdata-scaling-factor-field"></span><strong>scaling_factor</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-float"><span class="std std-ref">NX_FLOAT</span></a></p>
 <blockquote>
 <div><p>The elements in data are usually float values really. For
 efficiency reasons these are usually stored as integers
@@ -335,32 +344,38 @@ after scaling with a scale factor. This value is the scale
 factor. It is required to get the actual physical value,
 when necessary.</p>
 </div></blockquote>
-<span class="target" id="nxdata-offset-field"></span><p id="index-29"><strong>offset</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-float"><span class="std std-ref">NX_FLOAT</span></a></p>
+<p id="index-30"><span id="nxdata-offset-field"></span><strong>offset</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-float"><span class="std std-ref">NX_FLOAT</span></a></p>
 <blockquote>
 <div><p>An optional offset to apply to the values in data.</p>
 </div></blockquote>
-<span class="target" id="nxdata-title-field"></span><p id="index-30"><strong>title</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
+<p id="index-31"><span id="nxdata-title-field"></span><strong>title</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-char"><span class="std std-ref">NX_CHAR</span></a></p>
 <blockquote>
 <div><p>Title for the plot.</p>
 </div></blockquote>
-<span class="target" id="nxdata-x-field"></span><p id="index-31"><strong>x</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-float"><span class="std std-ref">NX_FLOAT</span></a> (Rank: 1, Dimensions: [nx]) {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span class="std std-ref">NX_ANY</span></a>}</p>
+<p id="index-32"><span id="nxdata-x-field"></span><strong>x</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-float"><span class="std std-ref">NX_FLOAT</span></a> (Rank: 1, Dimensions: [nx]) {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span class="std std-ref">NX_ANY</span></a>}</p>
 <blockquote>
 <div><p>This is an array holding the values to use for the x-axis of
-data.  The units must be appropriate for the measurement.</p>
+data. The units must be appropriate for the measurement.</p>
+<p>This is a special case of a <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME field</span></a>
+kept for backward compatiblity.</p>
 </div></blockquote>
-<span class="target" id="nxdata-y-field"></span><p id="index-32"><strong>y</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-float"><span class="std std-ref">NX_FLOAT</span></a> (Rank: 1, Dimensions: [ny]) {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span class="std std-ref">NX_ANY</span></a>}</p>
+<p id="index-33"><span id="nxdata-y-field"></span><strong>y</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-float"><span class="std std-ref">NX_FLOAT</span></a> (Rank: 1, Dimensions: [ny]) {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span class="std std-ref">NX_ANY</span></a>}</p>
 <blockquote>
 <div><p>This is an array holding the values to use for the y-axis of
-data.  The units must be appropriate for the measurement.</p>
+data. The units must be appropriate for the measurement.</p>
+<p>This is a special case of a <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME field</span></a>
+kept for backward compatiblity.</p>
 </div></blockquote>
-<span class="target" id="nxdata-z-field"></span><p id="index-33"><strong>z</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-float"><span class="std std-ref">NX_FLOAT</span></a> (Rank: 1, Dimensions: [nz]) {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span class="std std-ref">NX_ANY</span></a>}</p>
+<p id="index-34"><span id="nxdata-z-field"></span><strong>z</strong>: (optional) <a class="reference internal" href="../../nxdl-types.html#nx-float"><span class="std std-ref">NX_FLOAT</span></a> (Rank: 1, Dimensions: [nz]) {units=<a class="reference internal" href="../../nxdl-types.html#nx-any"><span class="std std-ref">NX_ANY</span></a>}</p>
 <blockquote>
 <div><p>This is an array holding the values to use for the z-axis of
-data.  The units must be appropriate for the measurement.</p>
+data. The units must be appropriate for the measurement.</p>
+<p>This is a special case of a <a class="reference internal" href="#nxdata-axisname-field"><span class="std std-ref">AXISNAME field</span></a>
+kept for backward compatiblity.</p>
 </div></blockquote>
 </div></blockquote>
 <section id="hypertext-anchors">
-<h2>Hypertext Anchors<a class="headerlink" href="#hypertext-anchors" title="Permalink to this heading">¶</a></h2>
+<h2>Hypertext Anchors<a class="headerlink" href="#hypertext-anchors" title="Link to this heading">¶</a></h2>
 <p>List of hypertext anchors for all groups, fields,
 attributes, and links defined in this class.</p>
 <ul class="simple">
@@ -370,6 +385,7 @@ attributes, and links defined in this class.</p>
 <li><p><a class="reference internal" href="#nxdata-axisname-first-good-attribute"><span class="std std-ref">/NXdata/AXISNAME&#64;first_good-attribute</span></a></p></li>
 <li><p><a class="reference internal" href="#nxdata-axisname-last-good-attribute"><span class="std std-ref">/NXdata/AXISNAME&#64;last_good-attribute</span></a></p></li>
 <li><p><a class="reference internal" href="#nxdata-axisname-long-name-attribute"><span class="std std-ref">/NXdata/AXISNAME&#64;long_name-attribute</span></a></p></li>
+<li><p><a class="reference internal" href="#nxdata-axisname-units-attribute"><span class="std std-ref">/NXdata/AXISNAME&#64;units-attribute</span></a></p></li>
 <li><p><a class="reference internal" href="#nxdata-data-field"><span class="std std-ref">/NXdata/DATA-field</span></a></p></li>
 <li><p><a class="reference internal" href="#nxdata-data-axes-attribute"><span class="std std-ref">/NXdata/DATA&#64;axes-attribute</span></a></p></li>
 <li><p><a class="reference internal" href="#nxdata-data-long-name-attribute"><span class="std std-ref">/NXdata/DATA&#64;long_name-attribute</span></a></p></li>
@@ -448,7 +464,7 @@ attributes, and links defined in this class.</p>
       
       <a href="https://github.com/woutdenolf"
       	class=""
-      	title="Woutdenolf 2022-10-10"
+      	title="Woutdenolf 2023-10-06"
 		    data-hovercard-type="user" data-hovercard-url="/users/woutdenolf/hovercard" data-octo-click="hovercard-link-click" data-octo-dimensions="link_type:self">
        <img class="avatar circle" src="https://avatars.githubusercontent.com/u/7264703?v=4" data-view-component="true" alt="GitHub Avatar">
       </a>
@@ -540,8 +556,8 @@ attributes, and links defined in this class.</p>
       </ul>
     </div>
     <div class="footer" role="contentinfo">
-        &#169; <a href="../../copyright.html">Copyright</a> 1996-2023, NIAC, https://www.nexusformat.org.
-      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.0.1.
+    &#169; <a href="../../copyright.html">Copyright</a> 1996-2023, NIAC, https://www.nexusformat.org.
+      Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 7.2.6.
     </div>
   </body>
 </html>
