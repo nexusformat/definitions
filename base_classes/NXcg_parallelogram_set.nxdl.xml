@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2014-2023 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_parallelogram_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_parallelogram_set" extends="NXcg_primitive_set" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -33,151 +33,74 @@
         </symbol>
     </symbols>
     <doc>
-         Computational geometry description of a set of parallelograms in Euclidean space.
+         Computational geometry description of a set of parallelograms.
          
-         The parallelograms do not have to be connected, can have different size,
-         can intersect, and be rotated.
-         This class can also be used to describe rectangles or squares, axis-aligned or not.
-         The class represents different access and description levels to offer both
-         applied scientists and computational geometry experts to use the same
-         base class but rather their specific view on the data:
+         This class can also be used to describe rectangles or squares, irrespective
+         whether these are axis-aligned or not. The class represents different
+         access and description levels to embrace applied scientists and computational
+         geometry experts with their different views:
          
-         * Most simple many experimentalists wish to communicate dimensions/the size
-           of e.g. a region of interest in the 2D plane. In this case the alignment
-           with axes is not relevant as eventually relevant is only the area of the ROI.
+         * The simplest case is the communication of dimensions aka the size of a
+           region of interest in the 2D plane. In this case, communicating the
+           alignment with axes is maybe not as relevant as it is to report the area
+           of the ROI.
          * In other cases the extent of the parallelogram is relevant though.
-         * Finally in CAD models we would like to specify the polygon
-           which is parallelogram represents.
+         * Finally, in CAD models it should be possible to specify the polygons
+           which the parallelograms represent with exact numerical details.
          
-         Parallelograms are important geometrical primitives. Not so much because of their
-         uses in nowadays, thanks to improvements in computing power, not so frequently
-         any longer performed 2D simulation. Many scanning experiments probe though
-         parallelogram-shaped ROIs on the surface of samples.
+         Parallelograms are important geometrical primitives as their usage for
+         describing many scanning experiments shows where typically parallelogram-shaped
+         ROIs are scanned across the surface of a sample.
          
-         Parallelograms have to be non-degenerated, closed, and built of polygons
-         which are not self-intersecting.
-         
-         The term parallelogram will be used throughout this base class but includes
-         the especially in engineering and more commonly used special cases,
-         rectangle, square, 2D box, axis-aligned bounding box (AABB), or
-         optimal bounding box (OBB) but here the analogous 2D cases.
+         The term parallelogram will be used throughout this base class thus including
+         the important special cases rectangle, square, 2D box, axis-aligned bounding box
+         (AABB), or optimal bounding box (OBB) as analogous 2D variants to their 3D
+         counterparts. See :ref:`NXcg_hexahedron_set` for the generalization in 3D.
          
          An axis-aligned bounding box is a common data object in computational science
-         and codes to represent a rectangle whose edges are aligned with the axes 
-         of a coordinate system. As a part of binary trees these are important data
-         objects for time- as well as space-efficient queries
+         and simulation codes to represent a rectangle whose edges are aligned with the
+         axes of a coordinate system. As a part of binary trees AABBs are important data
+         objects for executing time- as well as space-efficient queries
          of geometric primitives in techniques like kd-trees.
          
-         An optimal bounding box is a common data object which provides the best
-         tight fitting box about an arbitrary object. In general such boxes are
-         rotated. Other than in 3D dimensions the rotation calipher method offers
-         a rigorous approach to compute optimal bounding boxes in 2D.
+         An optimal bounding box is a common data object which provides the best, i.e.
+         most tightly fitting box about an arbitrary object. In general such boxes are
+         rotated. Other than in 3D dimensions, the rotation calipher method offers
+         a rigorous approach to compute an optimal bounding box to a point set in 2D.
     </doc>
-    <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
-        <enumeration>
-            <item value="2"/>
-        </enumeration>
-    </field>
-    <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
     <!--qualifiers and properties of parallelograms-->
-    <field name="shape" type="NX_NUMBER" units="NX_LENGTH">
+    <field name="is_rectangle" type="NX_BOOLEAN">
         <doc>
-             A qualitative description of each parallelogram/rectangle/square/box.
+             To specify which parallelogram is a rectangle.
         </doc>
-        <dimensions rank="2">
-            <dim index="1" value="c"/>
-            <dim index="2" value="2"/>
-        </dimensions>
-    </field>
-    <field name="length" type="NX_NUMBER" units="NX_LENGTH">
-        <doc>
-             Qualifier how one edge is longer than all the other edge of the parallelogam.
-             Often the term length is associated with one edge being parallel to
-             an axis of the coordinate system.
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="c"/>
-        </dimensions>
-    </field>
-    <field name="width" type="NX_NUMBER" units="NX_LENGTH">
-        <doc>
-             Qualifier often used to describe the length of an edge within
-             a specific coordinate system.
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="c"/>
-        </dimensions>
-    </field>
-    <field name="center" type="NX_NUMBER" units="NX_LENGTH">
-        <doc>
-             Position of the geometric center, which often is but not necessarily
-             has to be the center_of_mass of the parallelogram.
-        </doc>
-        <dimensions rank="2">
-            <dim index="1" value="c"/>
-            <dim index="2" value="2"/>
-        </dimensions>
-    </field>
-    <field name="surface_area" type="NX_NUMBER" units="NX_AREA">
         <dimensions rank="1">
             <dim index="1" value="c"/>
         </dimensions>
     </field>
     <field name="is_axis_aligned" type="NX_BOOLEAN">
         <doc>
-             Only to be used if is_box is present. In this case, this field describes
-             whether parallelograms are rectangles/squares whose primary edges
-             are parallel to the axes of the Cartesian coordinate system.
+             Only to be used if is_rectangle is present. In this case, this field
+             describes whether parallelograms are rectangles whose primary edges
+             are parallel to the axes of the coordinate system.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
         </dimensions>
     </field>
-    <group type="NXtransformations">
-        <doc>
-             Reference to or definition of a coordinate system with
-             which the qualifiers and mesh data are interpretable.
-        </doc>
-    </group>
-    <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
-        <doc>
-             Integer which specifies the first index to be used for distinguishing
-             parallelograms. Identifiers are defined either implicitly
-             or explicitly. For implicit indexing the identifiers are defined on the
-             interval [identifier_offset, identifier_offset+c-1].
-             For explicit indexing the identifier array has to be defined.
-             
-             The identifier_offset field can for example be used to communicate if the
-             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
-             or from 0 (referred to as C-, Python-style index notation) respectively.
-        </doc>
-    </field>
-    <field name="identifier" type="NX_INT" units="NX_UNITLESS">
-        <doc>
-             Integer used to distinguish parallelograms for explicit indexing.
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="c"/>
-        </dimensions>
-    </field>
-    <!--substantially more detailed descriptors of the shape, the mesh-->
-    <group name="orientation" type="NXorientation_set"/>
-    <group name="vertex_normal" type="NXcg_unit_normal_set"/>
-    <group name="edge_normal" type="NXcg_unit_normal_set"/>
-    <group name="face_normal" type="NXcg_unit_normal_set"/>
     <!--detailed mesh-based representation-->
     <group name="parallelograms" type="NXcg_face_list_data_structure">
-        <!--exists: [min, 0, max, 1]-->
+        <!--
+exists: [min, 0, max, 1]
+-->
         <doc>
-             A simple approach to describe the entire set of parallelograms when the
-             main intention is to store the shape of the parallelograms for visualization.
+             Combined storage of all primitives of all parallelograms.
         </doc>
     </group>
-    <group name="parallelogram" type="NXcg_face_list_data_structure">
-        <!--exists: [min, 0, max, infty]  # can this be max, c?-->
+    <group name="parallelogramID" type="NXcg_face_list_data_structure">
         <doc>
-             Disentangled representations of the mesh of specific parallelograms.
+             Individual storage of each parallelogram.
         </doc>
     </group>
-    <!--##MK::a half-edge structure would be overkill as this is a simple primitive-->
+    <!--#MK::parallelogram_half_edgeID(NXcg_half_edge_data_structure)
+a half-edge structure would be overkill as this is a simple primitive-->
 </definition>

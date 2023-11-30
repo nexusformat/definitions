@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2014-2023 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,12 +21,13 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<!--it is useful to define own base classes for frequently used classes
+<!--
+it is useful to define own base classes for frequently used classes
 a polyhedron is a specific polytope in 3d, do we need
 higher-dimensional polytopes? that could be useful for simplicies though
 as they are used in numerics etc. maybe reach out here to our friends
 from MarDI, for now let's assume we do not need polytopes for d > 3-->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_hexahedron_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_hexahedron_set" extends="NXcg_primitive_set" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -40,63 +41,53 @@ from MarDI, for now let's assume we do not need polytopes for d > 3-->
     <doc>
          Computational geometry description of a set of hexahedra in Euclidean space.
          
-         The hexahedra do not have to be connected, can have different size,
-         can intersect, and be rotated.
          This class can also be used to describe cuboids or cubes, axis-aligned or not.
          The class represents different access and description levels to offer both
-         applied scientists and computational geometry experts to use the same
-         base class but rather their specific view on the data:
+         applied scientists and computational geometry experts an approach whereby
+         different specific views can be implemented using the same base class:
          
-         * Most simple many experimentalists wish to communicate dimensions/the size
-           of specimens. In this case the alignment with axes is not relevant as
-           eventually the only relevant information to convey is the volume of the 
-           specimen.
-         * In many cases, take for instance an experiment where a specimen was taken
-           from a specifically deformed piece of material, e.g. cold-rolled,
-           channel-die deformed, the orientation of the specimen edges with the
-           experiment coordinate system can be of very high relevance.
-           Examples include to know which specimen edge is parallel to the rolling,
-           the transverse, or the normal direction.
-         * Sufficient to pinpoint the sample and laboratory/experiment coordinate
-           system, the above-mentioned descriptions are not detailed enough though
-           to create a CAD model of the specimen.
+         * In the simplest case experimentalists may use this base class to describe
+           the dimensions or size of a specimen. In this case the alignment with axes
+           is not relevant as eventually only the volume of the specimen is of interest.
+         * In many cases, take for example an experiment where a specimen was cut out
+           from a specifically deformed piece of material, the orientation of the
+           specimen's edges with the experiment coordinate system is of high relevance.
+           Examples include knowledge about the specimen edge, whether it is
+           parallel to the rolling, the transverse, or the normal direction.
+         * While the above-mentioned use cases are sufficient to pinpoint the sample
+           within a known laboratory/experiment coordinate system, these descriptions
+           are not detailed enough to specify e.g. a CAD model of the specimen.
          * Therefore, groups and fields for an additional, computational-geometry-
-           based view of the hexahedra is offered which serve different computational
+           based view of hexahedra is offered to serve additional computational
            tasks: storage-oriented simple views or detailed topological/graph-based
            descriptions.
          
          Hexahedra are important geometrical primitives, which are among the most
          frequently used elements in finite element meshing/modeling.
          
-         Hexahedra have to be non-degenerated, closed, and built of polygons
-         which are not self-intersecting.
+         As a specialization of the :ref:`NXcg_primitive_set` base class hexahedra
+         are assumed non-degenerated, closed, and built of polygons that are
+         not self-intersecting.
          
          The term hexahedra will be used throughout this base class but includes
-         the especially in engineering and more commonly used special cases,
-         cuboid, cube, box, axis-aligned bounding box (AABB), optimal bounding
-         box (OBB).
+         the special cases cuboid, cube, box, axis-aligned bounding box (AABB),
+         and optimal bounding box (OBB).
          
-         An axis-aligned bounding box is a common data object in
-         computational science and codes to represent a cuboid whose edges
-         are aligned with a coordinate system. As a part of binary trees these
-         are important data objects for time as well as space efficient queries
+         An axis-aligned bounding box is a common data object in computational science
+         and simulation codes to represent a cuboid whose edges are aligned with the
+         base vectors of a coordinate system. As a part of binary trees, these data
+         objects are important for making time- as well as space-efficient queries
          of geometric primitives in techniques like kd-trees.
          
          An optimal bounding box is a common data object which provides the best
-         tight fitting box about an arbitrary object. In general such boxes are
+         tightly fitting box about an arbitrary object. In general, such boxes are
          rotated. Exact and substantially faster in practice approximate algorithms
-         exist for computing optimal or near optimal bounding boxes for point sets.
+         exist to compute optimal or near optimal bounding boxes for sets of points.
     </doc>
-    <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
-        <enumeration>
-            <item value="3"/>
-        </enumeration>
-    </field>
-    <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
     <!--qualifiers and properties of hexahedra-->
     <field name="shape" type="NX_NUMBER" units="NX_LENGTH">
         <doc>
-             A qualitative description of each hexahedron/cuboid/cube/box.
+             Qualifier for the shape of each hexahedron.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="c"/>
@@ -105,9 +96,9 @@ from MarDI, for now let's assume we do not need polytopes for d > 3-->
     </field>
     <field name="length" type="NX_NUMBER" units="NX_LENGTH">
         <doc>
-             Qualifier how one edge is longer than all other edges of the hexahedra.
-             Often the term length is associated with one edge being parallel to
-             an axis of the coordinate system.
+             Qualifier that is useful in cases when one edge is longer than all other
+             edges of the hexahedra. Often the term length is associated with the
+             assumption that one edge is parallel to an axis of the coordinate system.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
@@ -115,8 +106,11 @@ from MarDI, for now let's assume we do not need polytopes for d > 3-->
     </field>
     <field name="width" type="NX_NUMBER" units="NX_LENGTH">
         <doc>
-             Qualifier often used to describe the length of an edge within
-             a specific coordinate system.
+             Qualifier often used to describe the extent of an object in the horizontal
+             direction assuming a specific coordinate system.
+             
+             For the sake of explicitness quantities like length, width, and height
+             should not be reported without specifying also the assumed reference frame.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
@@ -124,31 +118,24 @@ from MarDI, for now let's assume we do not need polytopes for d > 3-->
     </field>
     <field name="height" type="NX_NUMBER" units="NX_LENGTH">
         <doc>
-             Qualifier often used to describe the length of an edge within
-             a specific coordinate system.
+             Qualifier often used to describe the extent of an object in the vertical
+             direction assuming a specific coordinate system.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
-        </dimensions>
-    </field>
-    <field name="center" type="NX_NUMBER" units="NX_LENGTH">
-        <doc>
-             Position of the geometric center, which often is but not necessarily
-             has to be the center_of_mass of the hexahedrally-shaped sample/sample part.
-        </doc>
-        <dimensions rank="2">
-            <dim index="1" value="c"/>
-            <dim index="2" value="3"/>
         </dimensions>
     </field>
     <field name="volume" type="NX_NUMBER" units="NX_VOLUME">
+        <doc>
+             Volume of each hexahedron.
+        </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
         </dimensions>
     </field>
-    <field name="surface_area" type="NX_NUMBER" units="NX_AREA">
+    <field name="area" type="NX_NUMBER" units="NX_AREA">
         <doc>
-             Total area (of all six faces) of each hexahedron.
+             Total (surface) area (of all six faces) of each hexahedron.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
@@ -176,64 +163,31 @@ from MarDI, for now let's assume we do not need polytopes for d > 3-->
         <doc>
              Only to be used if is_box is present. In this case, this field describes
              whether hexahedra are boxes whose primary edges are parallel to the
-             axes of the Cartesian coordinate system.
+             axes of the coordinate system.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
         </dimensions>
     </field>
-    <group type="NXtransformations">
-        <doc>
-             Reference to or definition of a coordinate system with
-             which the qualifiers and mesh data are interpretable.
-        </doc>
-    </group>
-    <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
-        <doc>
-             Integer which specifies the first index to be used for distinguishing
-             hexahedra. Identifiers are defined either implicitly
-             or explicitly. For implicit indexing the identifiers are defined on the
-             interval [identifier_offset, identifier_offset+c-1].
-             For explicit indexing the identifier array has to be defined.
-             
-             The identifier_offset field can for example be used to communicate if the
-             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
-             or from 0 (referred to as C-, Python-style index notation) respectively.
-        </doc>
-    </field>
-    <field name="identifier" type="NX_INT" units="NX_UNITLESS">
-        <doc>
-             Integer used to distinguish hexahedra for explicit indexing.
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="c"/>
-        </dimensions>
-    </field>
-    <!--substantially more detailed descriptors of the shape, the mesh-->
-    <group name="orientation" type="NXorientation_set"/>
+    <!--substantially more detailed descriptors of the shape, the mesh
+orientation(NXorientation_set):-->
     <group name="vertex_normal" type="NXcg_unit_normal_set"/>
     <group name="edge_normal" type="NXcg_unit_normal_set"/>
     <group name="face_normal" type="NXcg_unit_normal_set"/>
     <!--detailed mesh-based representation-->
     <group name="hexahedra" type="NXcg_face_list_data_structure">
-        <!--exists: [min, 0, max, 1]-->
         <doc>
-             A simple approach to describe the entire set of hexahedra when the
-             main intention is to store the shape of the hexahedra for visualization.
+             Combined storage of all primitives of all hexahedra.
         </doc>
     </group>
-    <group name="hexahedron" type="NXcg_face_list_data_structure">
-        <!--exists: [min, 0, max, infty]  # can this be max, c?-->
+    <group name="hexahedronID" type="NXcg_face_list_data_structure">
         <doc>
-             Disentangled representations of the mesh of specific hexahedra.
+             Individual storage of each hexahedron.
         </doc>
     </group>
-    <group name="hexahedron_half_edge" type="NXcg_half_edge_data_structure">
-        <!--exists: [min, 0, max, infty]-->
+    <group name="hexahedron_half_edgeID" type="NXcg_half_edge_data_structure">
         <doc>
-             Disentangled representation of the planar graph that each hexahedron
-             represents. Such a description simplifies topological processing
-             or analyses of mesh primitive operations and neighborhood queries.
+             Individual storage of each hexahedron as a graph.
         </doc>
     </group>
 </definition>
