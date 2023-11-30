@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2014-2023 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_polyline_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_polyline_set" extends="NXcg_primitive_set" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -50,58 +50,36 @@ multiple vertices possible with the same point coordinates but different names.-
         </symbol>
     </symbols>
     <doc>
-         Computational geometry description of a set of polylines in Euclidean space.
+         Computational geometry description of a set of polylines.
          
          Each polyline is built from a sequence of vertices (points with identifiers).
          Each polyline must have a start and an end point.
-         The sequence describes the positive traversal along the polyline when walking
-         from the start vertex to the end/last vertex.
+         The sequence describes the positive traversal along the polyline when
+         walking from the first to the last vertex.
     </doc>
-    <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS"/>
-    <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
-    <!--number_of_unique_vertices(NX_POSINT):
-  unit: NX_UNITLESS-->
-    <field name="number_of_total_vertices" type="NX_POSINT" units="NX_UNITLESS">
+    <attribute name="depends_on" type="NX_CHAR">
         <doc>
-             The total number of vertices, irrespective of their eventual uniqueness,
-             i.e. the total number of vertices that have to be visited when walking
-             along each polyline.
+             Reference to an instance of :ref:`NXcg_point_set` which defines
+             the location of the vertices that are referred to in the
+             NXcg_polyline_set instance.
+        </doc>
+    </attribute>
+    <field name="number_of_unique_vertices" type="NX_POSINT" units="NX_UNITLESS">
+        <doc>
+             The total number of vertices that have different positions.
         </doc>
     </field>
-    <field name="number_of_vertices" type="NX_POSINT" units="NX_UNITLESS">
+    <field name="number_of_total_vertices" type="NX_INT" units="NX_UNITLESS">
         <doc>
-             Array which specifies of how many vertices each polyline is built.
-             The number of vertices represent the total number of vertices for
-             each polyline, irrespectively whether vertices are shared or not.
+             The total number of vertices, irrespective of their eventual uniqueness.
+        </doc>
+    </field>
+    <field name="number_of_vertices" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             The total number of vertices of each polyline, irrespectively
+             whether vertices are shared by vertices or not.
              See the docstring for polylines for further details about how
              a set with different polyline members should be stored.
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="c"/>
-        </dimensions>
-    </field>
-    <group type="NXtransformations">
-        <doc>
-             Reference to or definition of a coordinate system with
-             which the qualifiers and polyline data are interpretable.
-        </doc>
-    </group>
-    <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
-        <doc>
-             Integer which specifies the first index to be used for distinguishing
-             polylines. Identifiers are defined either implicitly
-             or explicitly. For implicit indexing the identifiers are defined on the
-             interval [identifier_offset, identifier_offset+c-1].
-             For explicit indexing the identifier array has to be defined.
-             
-             The identifier_offset field can for example be used to communicate if the
-             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
-             or from 0 (referred to as C-, Python-style index notation) respectively.
-        </doc>
-    </field>
-    <field name="identifier" type="NX_INT" units="NX_UNITLESS">
-        <doc>
-             Integer used to distinguish polylines for explicit indexing.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
@@ -111,73 +89,57 @@ multiple vertices possible with the same point coordinates but different names.-
 Unique means not necessarily unique in position only but also unique in
 identifier. In fact, it is possible to distinguish two vertices as two when
 they share the same position in space but have different identifiers.-->
-    <field name="vertices" type="NX_NUMBER" units="NX_LENGTH">
+    <field name="vertices" type="NX_NUMBER" units="NX_ANY">
         <doc>
              Positions of the vertices which support the members of the polyline set.
              
-             Users are encouraged to reduce the vertices to unique set of positions
-             and vertices as this supports a more efficient storage of the geometry data.
-             It is also possible though to store the vertex positions naively in which
-             case vertices_are_unique is likely False.
-             Naively here means that one for example stores each vertex of a triangle
-             mesh even though many vertices are shared between triangles and thus
-             the positions of these vertices do not have to be duplicated.
+             Users are encouraged to reduce the vertices to unique positions and vertices
+             as this often supports with storing geometry data more efficiently.
+             It is also possible though to store the vertex positions naively
+             in which case vertices_are_unique is likely False.
+             Naively, here means that one stores each vertex of a triangle mesh
+             even though many vertices are shared between triangles and thus
+             storing multiple copies of their positions is redundant.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="n_v"/>
             <dim index="2" value="d"/>
         </dimensions>
     </field>
+    <!--alternatively we may store the actual vertices in an instance of
+NXcg_point_set and (e.g. to promote compact storage of information and primitives)
+and then use-->
     <field name="vertices_are_unique" type="NX_BOOLEAN">
         <doc>
              If true indicates that the vertices are all placed at different
              positions and have different identifiers, i.e. no points overlap
-             or are counted twice.
+             or are counted several times.
         </doc>
     </field>
     <field name="polylines" type="NX_INT" units="NX_UNITLESS">
         <doc>
-             Sequence of vertex identifiers which describe each polyline.
+             Sequence of identifier for vertices how they build each polyline.
              
              A trivial example is a set with two polylines with three vertices each.
              If the polylines meet in a junction, say the second vertex is shared
              and marking the junction between the two polylines, it is possible that
-             there are only five unique positions suggesting five unique vertices.
+             there are only five unique positions. This suggests to store five
+             unique vertices.
              
-             A non-trivial example is a set with several polylines, each of which with
-             eventually different number of vertices. The array stores the vertex
-             identifiers in the order how the polylines are visited:
+             A non-trivial example is a set with several polylines. Assume that each
+             has a different number of vertices. The array stores the identifier of
+             the vertices in the sequence how the polylines are visited:
              
-             The first entry is the identifier of the start vertex of the first polyline,
+             The first entry is the identifier of the first vertex of the first polyline,
              followed by the second vertex of the first polyline, until the last vertex
-             of the polyline. Thereafter, the start vertex of the second polyline, and
-             so on and so forth. Using the (cumulated) counts in number_of_vertices,
-             the vertices of the n-th polyline can be accessed on the following 
-             array index interval:
+             of the first polyline.
+             Thereafter, the first vertex of the second polyline, and so on and so forth.
+             Using the (cumulated) counts in number_of_vertices, the vertices of the
+             n-th polyline can be accessed on the following array index interval:
              :math:`[\sum_{i=0}^{i=N-1}, \sum_{i=0}^{i=N}]`.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="n_total"/>
         </dimensions>
     </field>
-    <!--properties of the polyline primitives-->
-    <field name="length" type="NX_NUMBER" units="NX_LENGTH">
-        <doc>
-             The length of each polyline.
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="c"/>
-        </dimensions>
-    </field>
-    <field name="is_closed" type="NX_BOOLEAN">
-        <doc>
-             If true specifies that a polyline is closed, i.e.
-             its end point is connected to the start point.
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="c"/>
-        </dimensions>
-    </field>
-    <group name="vertex_normal" type="NXcg_unit_normal_set"/>
-    <group name="edge_normal" type="NXcg_unit_normal_set"/>
 </definition>

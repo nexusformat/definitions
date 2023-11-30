@@ -1,9 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 # 
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2014-2023 NeXus International Advisory Committee (NIAC)
 # 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_half_edge_data_structure" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_half_edge_data_structure" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <!--holes in the polygon mesh can be handled-->
     <symbols>
         <doc>
@@ -54,41 +54,74 @@
          Such a data structure can be used to efficiently circulate around faces
          and iterate over vertices of a planar graph.
     </doc>
-    <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS"/>
-    <field name="number_of_vertices" type="NX_POSINT" units="NX_UNITLESS"/>
-    <field name="number_of_faces" type="NX_POSINT" units="NX_UNITLESS"/>
-    <field name="number_of_half_edges" type="NX_POSINT" units="NX_UNITLESS"/>
+    <attribute name="depends_on" type="NX_CHAR">
+        <doc>
+             Hint to help resolve in which Euclidean coordinate system
+             field values vertices are defined.
+        </doc>
+    </attribute>
+    <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
+        <doc>
+             Dimensionality of the primitives described.
+        </doc>
+    </field>
+    <!--resulting in a design similar to that of NXoff_geometry and the XDMF mixed primitive topology-->
+    <field name="number_of_vertices" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Number of vertices for each face.
+             
+             Each entry represents the total number of vertices for that face,
+             irrespectively whether vertices are shared among faces or not.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_f"/>
+        </dimensions>
+    </field>
+    <field name="number_of_edges" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Number of edges for each face.
+             
+             Each entry represents the total number of edges for that face,
+             irrespectively whether edges are shared across faces or not.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_e"/>
+        </dimensions>
+    </field>
+    <field name="number_of_faces" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Number of faces of the primitives.
+        </doc>
+    </field>
     <field name="vertex_identifier_offset" type="NX_INT" units="NX_UNITLESS">
         <doc>
-             In this half-edge data structure vertex identifiers start at 1.
-             Vertices are identified with consecutive integers up to number_of_vertices.
-             This field can be used to document which constant integer has to be
-             added to another set of vertex_identifier to assure that these other
-             identifiers also start at 1.
-        </doc>
-    </field>
-    <field name="face_identifier_offset" type="NX_INT" units="NX_UNITLESS">
-        <doc>
-             In this half-edge data structure face identifiers start at 1.
-             Faces are identified with consecutive integers up to number_of_faces.
-             This field can be used to document which constant integer has to be
-             added to another set of face_identifier to assure that these other
-             identifiers also start at 1.
+             Integer offset whereby the identifier of the first member
+             of the vertices differs from zero.
              
-             The face identifier zero is reserved for the NULL face !
+             Identifier can be defined explicitly or implicitly.
+             Inspect the definition of :ref:`NXcg_primitive_set` for further details.
         </doc>
     </field>
-    <field name="half_edge_identifier_offset" type="NX_INT" units="NX_UNITLESS">
+    <field name="edge_identifier_offset" type="NX_INT" units="NX_UNITLESS">
         <doc>
-             In this half-edge data structure half-edge identifiers start at 1.
-             Half-edges are identified with consecutive integers up to number_of_half_edges.
-             This field can be used to document which constant integer has to be
-             added to another set of half_edge_identifier to assure that these other
-             identifiers also start at 1.
+             Integer offset whereby the identifier of the first member
+             of the edges differs from zero.
+             
+             Identifier can be defined explicitly or implicitly.
+             Inspect the definition of :ref:`NXcg_primitive_set` for further details.
+        </doc>
+    </field>
+    <field name="face_identifier_offset" type="NX_INT">
+        <doc>
+             Integer offset whereby the identifier of the first member
+             of the faces differs from zero.
+             
+             Identifier can be defined explicitly or implicitly.
+             Inspect the definition of :ref:`NXcg_primitive_set` for further details.
         </doc>
     </field>
     <!--therefore, vertex_-, face_-, half_edge_-identifier are implicit-->
-    <field name="position" type="NX_NUMBER" units="NX_LENGTH">
+    <field name="position" type="NX_NUMBER" units="NX_ANY">
         <doc>
              The position of the vertices.
         </doc>
@@ -97,7 +130,7 @@
             <dim index="2" value="d"/>
         </dimensions>
     </field>
-    <field name="vertex_incident_half_edge" type="NX_UINT" units="NX_UNITLESS">
+    <field name="vertex_incident_half_edge" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Identifier of the incident half-edge.
         </doc>
@@ -105,7 +138,7 @@
             <dim index="1" value="n_v"/>
         </dimensions>
     </field>
-    <field name="face_half_edge" type="NX_UINT" units="NX_UNITLESS">
+    <field name="face_half_edge" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Identifier of the (starting)/associated half-edge of the face.
         </doc>
@@ -113,7 +146,7 @@
             <dim index="1" value="n_f"/>
         </dimensions>
     </field>
-    <field name="half_edge_vertex_origin" type="NX_UINT" units="NX_UNITLESS">
+    <field name="half_edge_vertex_origin" type="NX_INT" units="NX_UNITLESS">
         <doc>
              The identifier of the vertex from which this half-edge is outwards pointing.
         </doc>
@@ -121,7 +154,7 @@
             <dim index="1" value="n_he"/>
         </dimensions>
     </field>
-    <field name="half_edge_twin" type="NX_UINT" units="NX_UNITLESS">
+    <field name="half_edge_twin" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Identifier of the associated oppositely pointing half-edge.
         </doc>
@@ -129,7 +162,7 @@
             <dim index="1" value="n_he"/>
         </dimensions>
     </field>
-    <field name="half_edge_incident_face" type="NX_UINT" units="NX_UNITLESS">
+    <field name="half_edge_incident_face" type="NX_INT" units="NX_UNITLESS">
         <doc>
              If the half-edge is a boundary half-edge the
              incident face identifier is NULL, i.e. 0.
@@ -138,7 +171,7 @@
             <dim index="1" value="n_he"/>
         </dimensions>
     </field>
-    <field name="half_edge_next" type="NX_UINT" units="NX_UNITLESS">
+    <field name="half_edge_next" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Identifier of the next half-edge.
         </doc>
@@ -146,7 +179,7 @@
             <dim index="1" value="n_he"/>
         </dimensions>
     </field>
-    <field name="half_edge_prev" type="NX_UINT" units="NX_UNITLESS">
+    <field name="half_edge_prev" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Identifier of the previous half-edge.
         </doc>
@@ -159,9 +192,9 @@
              Users are referred to the literature for the background of L. Weinberg's
              work about topological characterization of planar graphs:
              
-             * `L. Weinberg 1966a, &lt;https://dx.doi.org/10.1109/TCT.1964.1082216&gt;`_  
-             * `L. Weinberg, 1966b, &lt;https://dx.doi.org/10.1137/0114062&gt;`_  
-             * `E. A. Lazar et al. &lt;https://doi.org/10.1103/PhysRevLett.109.095505&gt;`_  
+             * `L. Weinberg 1966a, &lt;https://dx.doi.org/10.1109/TCT.1964.1082216&gt;`_
+             * `L. Weinberg, 1966b, &lt;https://dx.doi.org/10.1137/0114062&gt;`_
+             * `E. A. Lazar et al. &lt;https://doi.org/10.1103/PhysRevLett.109.095505&gt;`_
              
              and how this work can e.g. be applied in space-filling tessellations
              of microstructural objects like crystals/grains.
