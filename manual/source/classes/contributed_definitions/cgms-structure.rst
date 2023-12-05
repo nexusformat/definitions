@@ -26,10 +26,10 @@ computational-geometry-based descriptions of the structure of materials and
 atomic configurations used when characterizing materials in experiments
 and computer simulations.
 
-As far as NeXus is concerned, the here proposed distinct sets of simple
-geometric primitives and shapes offer a complementary alternative to the
-already existent base classes in NeXus for constructive solid geometry
-such as :ref:`NXcsg`, :ref:`NXoff_geometry`, or :ref:`NXquadric` to name but a few.
+As far as NeXus is concerned, this proposed set of simple geometric primitives
+and shapes offer a complementary alternative to the current set of base classes in
+NeXus for constructive solid geometry such as :ref:`NXcsg`, :ref:`NXoff_geometry`, 
+or :ref:`NXquadric` to name but a few.
 
 Second, we would like to explore with this proposal how we can harmonize terms
 frequently used by materials scientists in the field of condensed-matter physics
@@ -52,7 +52,7 @@ Physics background
 Microstructural features or crystal defects are spatial arrangements of atoms.
 Given their specific atomic arrangement and composition, such features have
 specific constraints on the degrees of freedom how atoms can arrange. This causes
-that these defects have specific properties.
+these defects to have specific properties.
 Provided well-defined coarse-graining procedures are used and regions-of-interest
 and/or regions-of-applicability are defined, microstructural features are often
 characterized and modelled to have associated thermodynamic descriptors.
@@ -75,12 +75,12 @@ common terminology and using controlled vocabularies more frequently.
 These are the foundation for more sophisticated thoughts about practically
 useful ontologies.
 
-Defining crystal defects is a question of how to coarse-grain a given spatio-
-temporal set of atoms, each having a nuclid type and position/trajectory.
-In most cases, such a coarse-graining is an ill-posed task because different
-mathematical/geometrical methods exists how a point, a line, a surface, or a volumetric defect
-can be described and be spatio-temporally constrained through a geometrical model
-with defined geometric primitives and associated coarser-scale properties.
+Defining crystal defects is a question of how to coarse-grain a given spatiotemporal
+set of atoms, each having a nuclide type and position/trajectory. Different mathematical/geometrical
+methods exists to coarse-grain and thus determine how a point, a line, a surface, or
+a volumetric defect can be described and be spatiotemporally constrained through
+a geometrical model with defined geometric primitives and associated (materials)
+properties at a coarser-scale.
 
 The key motivation to such coarse-graining is to reduce the complexity of the
 description. On the one hand to support visualization and scientific analyses - not only
@@ -216,9 +216,8 @@ not only for stencil-based methods:
     :ref:`NXchemical_composition`:
         (Chemical) composition of a sample or a set of things.
 
-Furthermore, it can be useful to have a set of base classes with
-which software documents it state and gives a summary for users about the performance
-and elapsed time measured while processing data. These utility classes include:
+Finally, the following base classes allow data processing software to document its input
+parameters and to summarize its performance statistics:
 
     :ref:`NXprogram`:
         A named and version of a program of library/component.
@@ -261,26 +260,26 @@ Application definitions for ICME models
 
 It is important to embrace the large research community of materials engineers
 as they are frequent users of electron microscopy and atom probe microscopy.
-In this community frequently ICME microstructure models are used. ICME is an
-abbreviation for Integrated Computational Materials Engineering, which is a
-design strategy and workflow whereby physics-based modelling of microstructure
-evolution at the mesoscopic scale is used to understand the relations between
+In this community frequently ICME (Integrated Computational Materials Engineering)
+microstructure models are used. These models are derived from a design strategy
+and workflow whereby physics-based modelling of microstructure evolution, typically
+at the mesoscopic scale, is used to understand the relations between
 the microstructure and technological relevant descriptors for the properties
 of materials.
 
-The following application definitions are proposed to support the discussion
-how materials engineering-specific data models and connect to or be mapped on
+The following application definitions are proposed to support discussion on
+how materials engineering-specific data models connect to or can be mapped on
 concepts which are equally modellable with NeXus:
 
     :ref:`NXms`:
         An application definition for arbitrary spatiotemporally resolved simulations.
 
     :ref:`NXms_score_config`:
-        A specific example how :ref:`NXapm_paraprobe_config_ranger` can be
+        A specific example of how :ref:`NXapm_paraprobe_config_ranger` can be
         specialized for documenting the configuration of a computer simulation
         with the static recrystallization cellular automata model SCORE.
 
     :ref:`NXms_score_results`:
-        A specific example how :ref:`NXms` can be specialized for documenting
+        A specific example of how :ref:`NXms` can be specialized for documenting
         results of computer simulations with the static recrystallization
         cellular automata model SCORE.

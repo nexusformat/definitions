@@ -25,7 +25,7 @@ Application Definitions
 -----------------------
 
     :ref:`NXopt`:
-       A generic application definition for optial spectorscopy measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
+       A generic application definition for optical spectroscopy measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
 
     :ref:`NXellipsometry`:
        An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
@@ -34,7 +34,7 @@ Application Definitions
 Base Classes
 ------------
 
-There is a set of base classes for describing an optical experiment.
+This is the set of base classes for describing an optical experiment.
 
     :ref:`NXbeam_path`
        A beam path consisting of one or more optical elements.
