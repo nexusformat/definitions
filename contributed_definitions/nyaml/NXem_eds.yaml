@@ -1,17 +1,22 @@
 category: base
 doc: |
-  Base class method-specific for energy-dispersive X-ray spectroscopy (EDS/EDX).
+  Base class method-specific for energy-dispersive X-ray spectroscopy (EDS/EDXS).
   
   `IUPAC instead of Siegbahn notation <https://doi.org/10.1002/xrs.1300200308>`_ should be used.
-
+  
+  X-ray spectroscopy is a surface-sensitive technique. Therefore, three-dimensional elemental
+  characterzation requires typically a sequence of characterization and preparation of the
+  surface to expose a new surface layer that can be characterized in the next acquisition.
+  In effect, the resulting three-dimensional elemental information mappings are truely the
+  result of a correlation and post-processing of several measurements which is the field
+  of correlative tomographic usage of electron microscopy.
 # NEW ISSUE: use computational geometry to offer arbitrary scan pattern
 # NEW ISSUE: make the binning flexible per scan point
 symbols:
   # n_p: Number of scan points
-  n_y: |
-    Number of pixel along the y direction, the slow direction
-  n_x: |
-    Number of pixel along the x direction, the fast direction
+  # n_z: Number of pixel along the z direction, the slowest direction
+  # n_y: Number of pixel along the y direction, the slow direction
+  # n_x: Number of pixel along the x direction, the fast direction
   n_photon_energy: |
     Number of X-ray photon energy (bins), the fastest direction.
   n_elements: |
@@ -20,8 +25,8 @@ symbols:
     Number of peaks detected
 type: group
 NXem_eds(NXem_method):
-  # NXprocess is composed from NXem_method base class
-  # SPECTRUM_SET(NXspectrum_set) is composed from NXem_method base class
+  # NXprocess is composed from NXem_method base class instances where the spectra
+  # are stored as instances of (NXspectrum_set) is composed from NXem_method base class
   # for post-processing of/with the above-defined data entries
   # including feedback from Christoph Pauly (from MX Uni Saarland, NFDI-MatWerk),
   # Sabine Bergmann and Sebastian Brückner (both from FAIRmat, IKZ),
@@ -32,6 +37,25 @@ NXem_eds(NXem_method):
     (NXprogram):
       doc: |
         The program with which the indexing was performed.
+    summary(NXdata):
+      doc: |
+        Accumulated intensity over all pixels of the region-of-interest.
+      intensity(NX_NUMBER):
+        doc: |
+          Accumulated counts
+        unit: NX_UNITLESS
+        dim: (n_photon_energy,)
+        \@long_name(NX_CHAR):
+          doc: |
+            Counts
+      axis_energy(NX_NUMBER):
+        doc: |
+          Energy axis
+        unit: NX_ENERGY
+        dim: (n_photon_energy,)
+        \@long_name(NX_CHAR):
+          doc: |
+            Energy
     PEAK(NXpeak):
       doc: |
         Name and location of each X-ray line which was indexed as a known ion.
@@ -58,9 +82,14 @@ NXem_eds(NXem_method):
           dim: (i,)
     element_names(NX_CHAR):
       doc: |
-        List of the names of identified elements.
+        Comma-separated list of names of identified elements. All members of
+        the list have to be valid chemical_symbols from the periodic table.
+        
+        This field can be used when creating instances of NXpeak is not desired.
+        However, a collection of instances of NXpeak with individual NXion specified
+        enables also to distinguish isotopic information.
       dim: (n_elements,)
-    IMAGE_R_SET(NXimage_r_set):
+    (NXimage_r_set):
       doc: |
         Individual element-specific EDS/EDX/EDXS/SXES mapping
         
@@ -70,6 +99,13 @@ NXem_eds(NXem_method):
         These element-specific EDS maps are NXimage_r_set instances
         and need to be named with the name of the element from the 
         element_names field.
+        
+        We often observe that signal contributions from several peaks
+        are summarized and shown together, e.g. the combined signal
+        under the curve of carbon and oxygen.
+        
+        In this case specify the processing details using peaks and weights.
+      
       (NXprocess):
         peaks(NX_CHAR):
           doc: |
@@ -77,4 +113,10 @@ NXem_eds(NXem_method):
             where accumulated for each pixel which yields an element-specific
             EDS map.
           dim: (n_peaks,)
+        weights(NX_NUMBER):
+          doc: |
+            A list of weights by how much the intensity of each peak
+            under peaks was factorized to display the joint intensity
+            of the image.
+          unit: NX_UNITLESS
       # everything else is composed from NXimage_r_set

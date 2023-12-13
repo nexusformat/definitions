@@ -25,17 +25,10 @@
     <!--NEW ISSUE: use computational geometry to offer arbitrary scan pattern
 NEW ISSUE: make the binning flexible per scan point-->
     <symbols>
-        <!--n_p: Number of scan points-->
-        <symbol name="n_y">
-            <doc>
-                 Number of pixel along the y direction, the slow direction
-            </doc>
-        </symbol>
-        <symbol name="n_x">
-            <doc>
-                 Number of pixel along the x direction, the fast direction
-            </doc>
-        </symbol>
+        <!--n_p: Number of scan points
+n_z: Number of pixel along the z direction, the slowest direction
+n_y: Number of pixel along the y direction, the slow direction
+n_x: Number of pixel along the x direction, the fast direction-->
         <symbol name="n_photon_energy">
             <doc>
                  Number of X-ray photon energy (bins), the fastest direction.
@@ -53,12 +46,19 @@ NEW ISSUE: make the binning flexible per scan point-->
         </symbol>
     </symbols>
     <doc>
-         Base class method-specific for energy-dispersive X-ray spectroscopy (EDS/EDX).
+         Base class method-specific for energy-dispersive X-ray spectroscopy (EDS/EDXS).
          
          `IUPAC instead of Siegbahn notation &lt;https://doi.org/10.1002/xrs.1300200308&gt;`_ should be used.
+         
+         X-ray spectroscopy is a surface-sensitive technique. Therefore, three-dimensional elemental
+         characterzation requires typically a sequence of characterization and preparation of the
+         surface to expose a new surface layer that can be characterized in the next acquisition.
+         In effect, the resulting three-dimensional elemental information mappings are truely the
+         result of a correlation and post-processing of several measurements which is the field
+         of correlative tomographic usage of electron microscopy.
     </doc>
-    <!--NXprocess is composed from NXem_method base class
-SPECTRUM_SET(NXspectrum_set) is composed from NXem_method base class
+    <!--NXprocess is composed from NXem_method base class instances where the spectra
+are stored as instances of (NXspectrum_set) is composed from NXem_method base class
 for post-processing of/with the above-defined data entries
 including feedback from Christoph Pauly (from MX Uni Saarland, NFDI-MatWerk),
 Sabine Bergmann and Sebastian Brückner (both from FAIRmat, IKZ),
@@ -71,6 +71,37 @@ and Adrien Teutrie, Cecile Hebert (EPFL)-->
             <doc>
                  The program with which the indexing was performed.
             </doc>
+        </group>
+        <group name="summary" type="NXdata">
+            <doc>
+                 Accumulated intensity over all pixels of the region-of-interest.
+            </doc>
+            <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+                <doc>
+                     Accumulated counts
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_photon_energy"/>
+                </dimensions>
+                <attribute name="long_name" type="NX_CHAR">
+                    <doc>
+                         Counts
+                    </doc>
+                </attribute>
+            </field>
+            <field name="axis_energy" type="NX_NUMBER" units="NX_ENERGY">
+                <doc>
+                     Energy axis
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_photon_energy"/>
+                </dimensions>
+                <attribute name="long_name" type="NX_CHAR">
+                    <doc>
+                         Energy
+                    </doc>
+                </attribute>
+            </field>
         </group>
         <group name="PEAK" type="NXpeak">
             <doc>
@@ -109,13 +140,18 @@ and Adrien Teutrie, Cecile Hebert (EPFL)-->
         </group>
         <field name="element_names" type="NX_CHAR">
             <doc>
-                 List of the names of identified elements.
+                 Comma-separated list of names of identified elements. All members of
+                 the list have to be valid chemical_symbols from the periodic table.
+                 
+                 This field can be used when creating instances of NXpeak is not desired.
+                 However, a collection of instances of NXpeak with individual NXion specified
+                 enables also to distinguish isotopic information.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_elements"/>
             </dimensions>
         </field>
-        <group name="IMAGE_R_SET" type="NXimage_r_set">
+        <group type="NXimage_r_set">
             <doc>
                  Individual element-specific EDS/EDX/EDXS/SXES mapping
                  
@@ -125,6 +161,12 @@ and Adrien Teutrie, Cecile Hebert (EPFL)-->
                  These element-specific EDS maps are NXimage_r_set instances
                  and need to be named with the name of the element from the 
                  element_names field.
+                 
+                 We often observe that signal contributions from several peaks
+                 are summarized and shown together, e.g. the combined signal
+                 under the curve of carbon and oxygen.
+                 
+                 In this case specify the processing details using peaks and weights.
             </doc>
             <group type="NXprocess">
                 <field name="peaks" type="NX_CHAR">
@@ -136,6 +178,13 @@ and Adrien Teutrie, Cecile Hebert (EPFL)-->
                     <dimensions rank="1">
                         <dim index="1" value="n_peaks"/>
                     </dimensions>
+                </field>
+                <field name="weights" type="NX_NUMBER" units="NX_UNITLESS">
+                    <doc>
+                         A list of weights by how much the intensity of each peak
+                         under peaks was factorized to display the joint intensity
+                         of the image.
+                    </doc>
                 </field>
             </group>
         </group>
