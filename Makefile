@@ -6,8 +6,17 @@
 PYTHON = python3
 SPHINX = sphinx-build
 BUILD_DIR = "build"
+BASE_CLASS_DIR := base_classes
+CONTRIB_DIR := contributed_definitions
+APPDEF_DIR := applications
+NYAML_SUBDIR := nyaml
 
-.PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local
+YBC_NXDL = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(BASE_CLASS_DIR)/nyaml/*.yaml)))
+YCONTRIB_NXDL = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(CONTRIB_DIR)/nyaml/*.yaml)))
+YAPPDEF_NXDL = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(APPDEF_DIR)/nyaml/*.yaml)))
+
+
+.PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local nxdl nyaml
 
 help ::
 	@echo ""
@@ -50,13 +59,18 @@ test ::
 clean ::
 	$(RM) -rf $(BUILD_DIR)
 
+clean-nyaml ::
+	$(RM) -rf $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)
+	$(RM) -rf $(APPDEF_DIR)/$(NYAML_SUBDIR)
+	$(RM) -rf $(CONTRIB_DIR)/$(NYAML_SUBDIR)
+
 prepare ::
 	$(PYTHON) -m dev_tools manual --prepare --build-root $(BUILD_DIR)
 	$(PYTHON) -m dev_tools impatient --prepare --build-root $(BUILD_DIR)
 
 pdf ::
 	$(SPHINX) -M latexpdf $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build
-	cp $(BUILD_DIR)/manual/build/latex/nexus.pdf $(BUILD_DIR)/manual/source/_static/NeXusManual.pdf
+	cp $(BUILD_DIR)/manual/build/latex/nexus-fairmat.pdf $(BUILD_DIR)/manual/source/_static/NeXusManual.pdf
 
 html ::
 	$(SPHINX) -b html -W $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
@@ -81,7 +95,21 @@ all ::
 	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/html/index.html`"
 	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/impatient-guide/build/latex/NXImpatient.pdf`"
 	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/manual/build/html/index.html`"
-	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus.pdf`"
+	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus-fairmat.pdf`"
+
+$(BASE_CLASS_DIR)/%.nxdl.xml : $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)/%.yaml
+	nyaml2nxdl $< --output-file $@
+
+$(CONTRIB_DIR)/%.nxdl.xml : $(CONTRIB_DIR)/$(NYAML_SUBDIR)/%.yaml
+	nyaml2nxdl $< --output-file $@
+
+$(APPDEF_DIR)/%.nxdl.xml : $(APPDEF_DIR)/$(NYAML_SUBDIR)/%.yaml
+	nyaml2nxdl $< --output-file $@
+
+nxdl: $(YBC_NXDL) $(YCONTRIB_NXDL) $(YAPPDEF_NXDL)
+
+nyaml:
+	$(MAKE) -f nyaml.mk
 
 
 # NeXus - Neutron and X-ray Common Data Format
