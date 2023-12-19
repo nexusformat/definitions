@@ -19,15 +19,12 @@
 #
 
 """
-Collect comments in a list by CommentCollector class. Comment is a instance of Comment,
-where each comment includes comment text and line info or neighbour info where the
-comment must be assinged.
+Collect comments in a list by CommentCollector class and each comment is an instance of Comment
+class. Each `Comment` instance(sometimes refered as 'comment block') consists of text and line
+info or neighbours info where the comment must be placed.
 
 The class Comment is an abstract class for general functions or method to be implemented
 XMLComment and YAMLComment class.
-
-NOTE: Here comment block mainly stands for (comment text + line or element for what comment is
-intended.)
 """
 
 
@@ -62,13 +59,15 @@ class CommentCollector:
         self._comment_hash: Dict[Tuple, Type[Comment]] = {}
         self.comment: Type[Comment]
         if self.file and not loaded_obj:
-            if self.file.split(".")[-1] == "xml":
+            if self.file.endswith(".xml"):
                 self.comment = XMLComment
-            if self.file.split(".")[-1] == "yaml":
+            elif self.file.split(".")[-1] == "yaml":
                 self.comment = YAMLComment
                 with open(self.file, "r", encoding="utf-8") as plain_text_yaml:
                     loader = LineLoader(plain_text_yaml)
                     self.comment.__yaml_dict__ = loader.get_single_data()
+            else:
+                raise ValueError("Input file must be a 'yaml' or 'nxdl.xml' type.")
         elif self.file and loaded_obj:
             if self.file.split(".")[-1] == "yaml" and isinstance(loaded_obj, dict):
                 self.comment = YAMLComment
@@ -82,8 +81,9 @@ class CommentCollector:
             raise ValueError("Incorrect inputs for CommentCollector")
 
     def extract_all_comment_blocks(self):
-        """
-        Collect all comments. Note that here comment means (comment text + element or line info
+        """Collect all comments.
+
+        Note here that comment means (comment text + element or line info
         intended for comment.
         """
         id_ = 0
@@ -93,18 +93,16 @@ class CommentCollector:
             # Make an empty line for last comment if no empty lines in original file
             if lines[-1] != "":
                 lines.append("")
+            end_line_num = len(lines) - 1
             for line_num, line in enumerate(lines):
                 if single_comment.is_storing_single_comment():
                     # If the last comment comes without post nxdl fields, groups and attributes
                     if "++ SHA HASH ++" in line:
                         # Handle with stored nxdl.xml file that is not part of yaml
-                        line = ""
-                        single_comment.process_each_line(
-                            line + "post_comment", (line_num + 1)
-                        )
+                        single_comment.process_each_line("post_comment", (line_num + 1))
                         self._comment_chain.append(single_comment)
                         break
-                    if line_num < (len(lines) - 1):
+                    if line_num < end_line_num:
                         # Processing file from Line number 1
                         single_comment.process_each_line(line, (line_num + 1))
                     else:
@@ -118,13 +116,13 @@ class CommentCollector:
                     single_comment = self.comment(last_comment=single_comment)
                     single_comment.process_each_line(line, (line_num + 1))
 
-    def get_comment(self):
+    def get_next_comment(self):
         """
         Return comment from comment_chain that must come earlier in order.
         """
         return self._comment_chain[self._comment_tracker]
 
-    def get_coment_by_line_info(self, comment_locs: Tuple[str, Union[int, str]]):
+    def get_comment_by_line_info(self, comment_locs: Tuple[str, Union[int, str]]):
         """
         Get comment using line information.
         """
@@ -202,7 +200,7 @@ class Comment:
         """Comment object can be considered as a block element that includes
         document element (an entity for what the comment is written).
         """
-        self._elemt: Any = None
+        self._elemt: Dict[str, Any] = {}
         self._elemt_text: str = None
         self._is_elemt_found: bool = None
         self._is_elemt_stored: bool = None
@@ -228,7 +226,7 @@ class Comment:
             self._comnt_end_found and self._is_elemt_stored
         )
 
-    def get_comment_text(self) -> Union[List, str]:
+    def get_comment_text_list(self) -> Union[List, str]:
         """
         Extract comment text from entrire comment (comment text + elment or
         line for what comment is intended)
@@ -292,39 +290,39 @@ class XMLComment(Comment):
         def collect_xml_attributes(text_part):
             for part in text_part:
                 part = part.strip()
-                if part and '">' == "".join(part[-2:]):
+                if part and part.endswith('">'):
                     self._is_elemt_stored = True
                     self._is_elemt_found = False
-                    part = "".join(part[0:-2])
-                elif part and '"/>' == "".join(part[-3:]):
+                    part = part[0:-2]
+                elif part and part.endswith('"/>'):
                     self._is_elemt_stored = True
                     self._is_elemt_found = False
-                    part = "".join(part[0:-3])
-                elif part and "/>" == "".join(part[-2:]):
+                    part = part[0:-3]
+                elif part and part.endswith("/>"):
                     self._is_elemt_stored = True
                     self._is_elemt_found = False
-                    part = "".join(part[0:-2])
-                elif part and ">" == part[-1]:
+                    part = part[0:-2]
+                elif part and part.endswith(">"):
                     self._is_elemt_stored = True
                     self._is_elemt_found = False
-                    part = "".join(part[0:-1])
-                elif part and '"' == part[-1]:
-                    part = "".join(part[0:-1])
+                    part = part[0:-1]
+                elif part and part.endswith('"'):
+                    part = part[0:-1]
 
                 if '="' in part:
                     lf_prt, rt_prt = part.split('="')
+                    if ":" in lf_prt:
+                        continue
                 else:
-                    continue
-                if ":" in lf_prt:
                     continue
                 self._elemt[lf_prt] = str(rt_prt)
 
         if not self._elemt:
             self._elemt = {}
         # First check for comment part has been collected prefectly
-        if "</" == text[0:2]:
+        if text.startswith("</"):
             pass
-        elif "<" == text[0] and not "<!--" == text[0:4]:
+        elif text.startswith("<") and not text.startswith("<!--"):
             self._is_elemt_found = True
             text = text.replace("<", "", 1)
             text_part = text.split(" ")
@@ -344,7 +342,7 @@ class XMLComment(Comment):
         """
         return self._elemt
 
-    def get_comment_text(self) -> Union[List, str]:
+    def get_comment_text_list(self) -> Union[List, str]:
         """
         This method returns list of commnent text. As some xml element might have
         multiple separated comment intended for a single element.
@@ -354,10 +352,10 @@ class XMLComment(Comment):
 
 class YAMLComment(Comment):
     """
-    This class for stroing comment text as well as location of the comment e.g. line
+    This class for storing comment text as well as location of the comment e.g. line
     number of other in the file.
     NOTE:
-     1. Do not delete any element form yaml dictionary (for loaded_obj. check: Comment_collector
+     1. Do not delete any element from yaml dictionary (for loaded_obj. check: Comment_collector
      class. because this loaded file has been exploited in nyaml2nxdl forward tools.)
     """
 
@@ -375,7 +373,9 @@ class YAMLComment(Comment):
         )
 
     def process_each_line(self, text, line_num):
-        """Take care of each line of text. Through which function the text
+        """Process each line.
+
+        Take care of each line of text. Through which function the text
         must be passed should be decide here.
         """
         text = text.strip()
@@ -387,9 +387,9 @@ class YAMLComment(Comment):
 
         if self._comnt_end_found:
             line_key = ""
-            if ":" in text:
-                ind = text.index(":")
-                line_key = "__line__" + "".join(text[0:ind])
+            ind = text.find(":")
+            if ind > 0:
+                line_key = "__line__" + text[0:ind]
 
             for l_num, l_key in self.__yaml_line_info.items():
                 if line_num == int(l_num) and line_key == l_key:
@@ -401,10 +401,10 @@ class YAMLComment(Comment):
                     self.store_element(line_key, line_num)
 
     def has_post_comment(self):
-        """
-        Ensure is this a post coment or not.
-        Post comment means the comment that come at the very end without having any
-        nxdl element(class, group, filed and attribute.)
+        """Ensure if this is a post comment or not.
+
+        Post comment means the comment that comes at the very end without having any
+        nxdl element(class, group, filed and attribute.).
         """
         for key, _ in self._elemt.items():
             if "__line__post_comment" == key:
@@ -412,12 +412,13 @@ class YAMLComment(Comment):
         return False
 
     def append_comment(self, text: str) -> None:
-        """
+        """Append comment texts to the associated comment.
+
             Collects all the line of the same comment and
         append them with that single comment.
         """
         # check for escape char
-        text = self.replace_scape_char(text)
+        text = self.replace_escape_char(text)
         # Empty line after last line of comment
         if not text and self._comnt_start_found:
             self._comnt_end_found = True
@@ -425,16 +426,16 @@ class YAMLComment(Comment):
         # For empty line inside doc or yaml file.
         elif not text:
             return
-        elif "# " == "".join(text[0:2]):
+        elif text.startswith("# "):
             self._comnt_start_found = True
             self._comnt_end_found = False
             self._comnt = "" if not self._comnt else self._comnt + "\n"
-            self._comnt = self._comnt + "".join(text[2:])
-        elif "#" == text[0]:
+            self._comnt = self._comnt + text[2:]
+        elif text.startswith("#"):
             self._comnt_start_found = True
             self._comnt_end_found = False
             self._comnt = "" if not self._comnt else self._comnt + "\n"
-            self._comnt = self._comnt + "".join(text[1:])
+            self._comnt = self._comnt + text[1:]
         elif "post_comment" == text:
             self._comnt_end_found = True
             self._comnt_start_found = False
@@ -445,24 +446,21 @@ class YAMLComment(Comment):
 
     # pylint: disable=arguments-differ
     def store_element(self, line_key, line_number):
-        """
-        Store comment content and information of commen location (for what comment is
-        created.).
-        """
+        """Store comment contents and information of comment location."""
         self._elemt = {}
         self._elemt[line_key] = int(line_number)
         self._is_elemt_found = False
         self._is_elemt_stored = True
 
-    def get_comment_text(self):
+    def get_comment_text_list(self):
         """
-        Return list of comments if there are multiple comment for same yaml line.
+        Return list of comments.
         """
         return self._comnt_list
 
     def get_line_number(self, line_key):
         """
-        Retrun line number for what line the comment is created
+        Return line no for which line the comment is created.
         """
         return self._elemt[line_key]
 
@@ -473,22 +471,19 @@ class YAMLComment(Comment):
         for line_anno, line_loc in self._elemt.items():
             return line_anno, line_loc
 
-    def replace_scape_char(self, text):
+    def replace_escape_char(self, text):
         """Replace escape char according to __comment_escape_char dict"""
         for ecp_char, ecp_alt in YAMLComment.__comment_escape_char.items():
-            if ecp_char in text:
-                text = text.replace(ecp_char, ecp_alt)
+            text = text.replace(ecp_char, ecp_alt)
         return text
 
     def get_element_location(self):
-        """
-        Retrun yaml line '__line__KEY' info and and line numner
-        """
-        if len(self._elemt) > 1:
-            raise ValueError(f"Comment element should be one but got " f"{self._elemt}")
-
-        for key, val in self._elemt.items():
-            yield key, val
+        """Return yaml line '__line__<KEYY>' info and and line numner"""
+        if len(self._elemt) == 0:
+            raise ValueError(
+                f"Comment element should be one or more but got {self._elemt}"
+            )
+        return next(self._elemt.items())
 
     def collect_yaml_line_info(self, yaml_dict, line_info_dict):
         """Collect __line__key and corresponding value from
@@ -503,11 +498,13 @@ class YAMLComment(Comment):
                 self.collect_yaml_line_info(val, line_info_dict)
 
     def __contains__(self, line_key):
-        """For Checking whether __line__NAME is in _elemt dict or not."""
+        """For checking whether __line__<NAME> is in _elemt dict or not."""
         return line_key in self._elemt
 
     def __eq__(self, comment_obj):
         """Check the self has same value as right comment."""
+        if not isinstance(comment_obj, Comment):
+            raise TypeError(f"Expecting comment_obj as a instance of {Comment}")
         if len(self._comnt_list) != len(comment_obj._comnt_list):
             return False
         for left_cmnt, right_cmnt in zip(self._comnt_list, comment_obj._comnt_list):

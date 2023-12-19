@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
-"""Main file of yaml2nxdl tool.
-Users create NeXus instances by writing a YAML file
-which details a hierarchy of data/metadata elements
+"""File consists of helping functions and variables.
+
+The functions and variables are utilised in the converting tool
+to convert from nyaml to nxdl and vice versa.
 """
 # -*- coding: utf-8 -*-
 #
@@ -22,11 +23,8 @@ which details a hierarchy of data/metadata elements
 # limitations under the License.
 #
 
-
-# Yaml library does not except the keys (escapechar "\t" and yaml separator ":")
-# So the corresponding value is to skip them and
-# and also carefull about this order
 import hashlib
+from typing import Callable
 
 from yaml.composer import Composer
 from yaml.constructor import Constructor
@@ -34,35 +32,94 @@ from yaml.loader import Loader
 from yaml.nodes import ScalarNode
 from yaml.resolver import BaseResolver
 
-# NOTE: If any one change one of the bellow dict please change it for both
-ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    ", "':'": ":"}
+# Yaml library does not except the keys (escape char "\t" and yaml separator ":")
+ESCAPE_CHAR_DICT_IN_YAML = {"\t": "    "}
+ESCAPE_CHAR_DICT_IN_XML = {val: key for key, val in ESCAPE_CHAR_DICT_IN_YAML.items()}
 
-ESCAPE_CHAR_DICT_IN_XML = {"    ": "\t", "':'": ":"}
+# Set up attributes for nxdl version
+NXDL_GROUP_ATTRIBUTES = (
+    "optional",
+    "recommended",
+    "name",
+    "type",
+    "maxOccurs",
+    "minOccurs",
+    "deprecated",
+)
+NXDL_FIELD_ATTRIBUTES = (
+    "optional",
+    "recommended",
+    "name",
+    "type",
+    "axes",
+    "axis",
+    "data_offset",
+    "interpretation",
+    "long_name",
+    "maxOccurs",
+    "minOccurs",
+    "nameType",
+    "primary",
+    "signal",
+    "stride",
+    "required",
+    "deprecated",
+    "units",
+)
+
+NXDL_ATTRIBUTES_ATTRIBUTES = (
+    "name",
+    "type",
+    "recommended",
+    "optional",
+    "deprecated",
+)
+
+NXDL_LINK_ATTRIBUTES = ("name", "target", "napimount")
+
+# Set up attributes for yaml version
+YAML_GROUP_ATTRIBUTES = (*NXDL_GROUP_ATTRIBUTES, "exists")
+
+YAML_FIELD_ATTRIBUTES = (*NXDL_FIELD_ATTRIBUTES[0:-1], "unit", "exists")
+
+YAML_ATTRIBUTES_ATTRIBUTES = (
+    *NXDL_ATTRIBUTES_ATTRIBUTES,
+    "minOccurs",
+    "maxOccurs",
+    "exists",
+)
+
+YAML_LINK_ATTRIBUTES = NXDL_LINK_ATTRIBUTES
 
 
 def remove_namespace_from_tag(tag):
     """Helper function to remove the namespace from an XML tag."""
-
-    return tag.split("}")[-1]
+    if isinstance(tag, Callable) and tag.__name__ == "Comment":
+        return "!--"
+    else:
+        return tag.split("}")[-1]
 
 
 class LineLoader(Loader):  # pylint: disable=too-many-ancestors
-    """
+    """Class to load yaml file with extra non yaml items.
+
     LineLoader parses a yaml into a python dictionary extended with extra items.
     The new items have as keys __line__<yaml_keyword> and as values the yaml file line number
     """
 
     def compose_node(self, parent, index):
+        """Compose node and return node."""
         # the line number where the previous token has ended (plus empty lines)
         node = Composer.compose_node(self, parent, index)
         node.__line__ = self.line + 1
         return node
 
     def construct_mapping(self, node, deep=False):
-        node_pair_lst = node.value
+        """Construct mapping between node info and line info."""
         node_pair_lst_for_appending = []
 
-        for key_node in node_pair_lst:
+        # Visit through node-pair list
+        for key_node in node.value:
             shadow_key_node = ScalarNode(
                 tag=BaseResolver.DEFAULT_SCALAR_TAG,
                 value="__line__" + key_node[0].value,
@@ -72,7 +129,7 @@ class LineLoader(Loader):  # pylint: disable=too-many-ancestors
             )
             node_pair_lst_for_appending.append((shadow_key_node, shadow_value_node))
 
-        node.value = node_pair_lst + node_pair_lst_for_appending
+        node.value = node.value + node_pair_lst_for_appending
         return Constructor.construct_mapping(self, node, deep=deep)
 
 
@@ -88,9 +145,7 @@ def get_yaml_escape_char_reverter_dict():
 
 
 def type_check(nx_type):
-    """
-    Check for nexus type if type is NX_CHAR get '' or get as it is.
-    """
+    """Check for nexus type if type is NX_CHAR get '' or get as it is."""
 
     if nx_type in ["NX_CHAR", ""]:
         nx_type = ""
@@ -100,48 +155,46 @@ def type_check(nx_type):
 
 
 def get_node_parent_info(tree, node):
-    """
-    Return tuple of (parent, index) where:
-    parent = node of parent within tree
-    index = index of node under parent
+    """Return tuple of (parent, index).
+
+    parent = parent node is the first level node under tree node
+    index = index of grand child node of tree
     """
 
+    # map from grand child to parent which is child of tree
     parent_map = {c: p for p in tree.iter() for c in p}
     parent = parent_map[node]
     return parent, list(parent).index(node)
 
 
-def cleaning_empty_lines(line_list):
-    """
-    Cleaning up empty lines on top and bottom.
-    """
+def clean_empty_lines(line_list):
+    """Clean up empty lines by top part and bottom and part."""
     if not isinstance(line_list, list):
         line_list = line_list.split("\n") if "\n" in line_list else [""]
 
-    # Clining up top empty lines
-    while True:
-        if line_list[0].strip():
+    start_non_empty_line = -1
+    ends_non_empty_line = None
+    # Find the index of first non-empty line
+    for ind, line in enumerate(line_list):
+        if len(line.strip()) > 1:
+            start_non_empty_line = ind
             break
-        line_list = line_list[1:]
-        if len(line_list) == 0:
-            line_list.append("")
-            return line_list
 
-    # Clining bottom empty lines
-    while True:
-        if line_list[-1].strip():
+    # Find the index of the last non-empty line
+    for ind, line in enumerate(reversed(line_list)):
+        if len(line.strip()) > 1:
+            ends_non_empty_line = -ind
             break
-        line_list = line_list[0:-1]
-        if len(line_list) == 0:
-            line_list.append("")
-            return line_list
 
-    return line_list
+    if ends_non_empty_line == 0:
+        ends_non_empty_line = None
+    return line_list[start_non_empty_line:ends_non_empty_line]
 
 
 def nx_name_type_resolving(tmp):
-    """
-    extracts the eventually custom name {optional_string}
+    """Separate name and NeXus type
+
+    Extracts the eventual custom name {optional_string}
     and type {nexus_type} from a YML section string.
     YML section string syntax: optional_string(nexus_type)
     """
@@ -150,6 +203,14 @@ def nx_name_type_resolving(tmp):
         # either an nx_ (type, base, candidate) class contains only 1 '(' and ')'
         index_start = tmp.index("(")
         index_end = tmp.index(")", index_start + 1)
+        if index_start > index_end:
+            raise ValueError(
+                f"Check name and type combination {tmp} which can not be resolved."
+            )
+        if index_end - index_start == 1:
+            raise ValueError(
+                f"Check name(type) combination {tmp}, properly not defined."
+            )
         typ = tmp[index_start + 1 : index_end]
         nam = tmp.replace("(" + typ + ")", "")
         return nam, typ
@@ -185,17 +246,21 @@ def extend_yamlfile_by_nxdl_as_comment(
                 f1_obj.write(line)
 
         with open(file_to_be_appended, mode="r", encoding="utf-8") as f2_obj:
-            lines = f2_obj.readlines()
-            for line in lines:
+            for line in f2_obj:
                 f1_obj.write(f"# {line}")
 
 
 def separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, sep_xml):
-    """Separate the provided yaml file into yaml, nxdl and hash if yaml was extended with
-    nxdl at the end of yaml by
+    """Separate yaml, SHA hash and nxdl parts.
+
+    Separate the provided yaml file into yaml, nxdl and hash if yaml was extended with
+    nxdl at the end of yaml as
+
+                    <yaml part>
         '\n# ++++++++++++++++++++++++++++++++++ SHA HASH \
             ++++++++++++++++++++++++++++++++++\n'
          # <has value>'
+                    <nxdl part>
     """
     sha_hash = ""
     with open(yaml_file, "r", encoding="utf-8") as inp_file:
@@ -204,20 +269,19 @@ def separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, sep_xml):
         with open(sep_yaml, "w", encoding="utf-8") as yml_f_ob, open(
             sep_xml, "w", encoding="utf-8"
         ) as xml_f_ob:
-            last_line = ""
             write_on_yaml = True
-            for ind, line in enumerate(lines):
-                if ind == 0:
-                    last_line = line
-                # Write in file when ensured that the nest line is not with '++ SHA HASH ++'
-                elif "++ SHA HASH ++" not in line and write_on_yaml:
+
+            last_line = lines[0]
+            for line in lines[1:]:
+                # Write in file when ensured that the next line is not with '++ SHA HASH ++'
+                if "++ SHA HASH ++" not in line and write_on_yaml:
                     yml_f_ob.write(last_line)
                     last_line = line
                 elif "++ SHA HASH ++" in line:
                     write_on_yaml = False
                     last_line = ""
                 elif not write_on_yaml and not last_line:
-                    # The first line of xml file has been found. Onward write lines directly
+                    # The first line of xml file has been found so in future write lines directly
                     # into xml file.
                     if not sha_hash:
                         sha_hash = line.split("# ", 1)[-1].strip()
@@ -228,3 +292,24 @@ def separate_hash_yaml_and_nxdl(yaml_file, sep_yaml, sep_xml):
                 yml_f_ob.write(last_line)
 
     return sha_hash
+
+
+def is_dom_comment(text):
+    """Analyze a comment, whether it is a dom comment or not.
+
+    Return true if dom comment.
+    """
+
+    # some signature keywords to distingush dom comments from other comments.
+    signature_keyword_list = [
+        "NeXus",
+        "GNU Lesser General Public",
+        "Free Software Foundation",
+        "Copyright (C)",
+        "WITHOUT ANY WARRANTY",
+    ]
+    for keyword in signature_keyword_list:
+        if keyword not in text:
+            return False
+
+    return True
