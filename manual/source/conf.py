@@ -47,7 +47,10 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.todo',
     'sphinx_tabs.tabs',
-    'contrib_ext'
+    'contrib_ext',
+    'nbsphinx',
+    'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_directive'
 ]
 
 # Show `.. todo` directives in the output
@@ -59,7 +62,7 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = []
+exclude_patterns = ['**.ipynb_checkpoints']
 
 
 # -- Options for HTML output -------------------------------------------------
