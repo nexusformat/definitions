@@ -5,15 +5,15 @@
 
 PYTHON = python3
 SPHINX = sphinx-build
-BUILD_DIR = "build"
-BASE_CLASS_DIR := base_classes
-CONTRIB_DIR := contributed_definitions
-APPDEF_DIR := applications
-NYAML_SUBDIR := nyaml
+BUILD_DIR = build
+BASE_CLASS_DIR = base_classes
+CONTRIB_DIR = contributed_definitions
+APPDEF_DIR = applications
+NYAML_SUBDIR = nyaml
 
-YBC_NXDL = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(BASE_CLASS_DIR)/nyaml/*.yaml)))
-YCONTRIB_NXDL = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(CONTRIB_DIR)/nyaml/*.yaml)))
-YAPPDEF_NXDL = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(APPDEF_DIR)/nyaml/*.yaml)))
+YBC_NXDL_TARGETS = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(BASE_CLASS_DIR)/nyaml/*.yaml)))
+YCONTRIB_NXDL_TARGETS = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(CONTRIB_DIR)/nyaml/*.yaml)))
+YAPPDEF_NXDL_TARGETS = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(APPDEF_DIR)/nyaml/*.yaml)))
 
 
 .PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local nxdl nyaml
@@ -34,6 +34,8 @@ help ::
 	@echo "make impatient-guide    Build html & PDF versions of the Guide for the Impatient. Requires prepare first."
 	@echo "make all                Builds complete web site for the manual (in build directory)."
 	@echo "make local              (Developer use) Test, prepare and build the HTML manual."
+	@echo "make nxdl               Build NXDL files from NYAML files in nyaml subdirectories."
+	@echo "make nyaml              Build NYAML files to nyaml subdirectories from NXDL files."
 	@echo ""
 	@echo "Note:  All builds of the manual will occur in the 'build/' directory."
 	@echo "   For a complete build, run 'make all' in the root directory."
@@ -58,8 +60,6 @@ test ::
 
 clean ::
 	$(RM) -rf $(BUILD_DIR)
-
-clean-nyaml ::
 	$(RM) -rf $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)
 	$(RM) -rf $(APPDEF_DIR)/$(NYAML_SUBDIR)
 	$(RM) -rf $(CONTRIB_DIR)/$(NYAML_SUBDIR)
@@ -106,7 +106,7 @@ $(CONTRIB_DIR)/%.nxdl.xml : $(CONTRIB_DIR)/$(NYAML_SUBDIR)/%.yaml
 $(APPDEF_DIR)/%.nxdl.xml : $(APPDEF_DIR)/$(NYAML_SUBDIR)/%.yaml
 	nyaml2nxdl $< --output-file $@
 
-nxdl: $(YBC_NXDL) $(YCONTRIB_NXDL) $(YAPPDEF_NXDL)
+nxdl: $(YBC_NXDL_TARGETS) $(YCONTRIB_NXDL_TARGETS) $(YAPPDEF_NXDL_TARGETS)
 
 nyaml:
 	$(MAKE) -f nyaml.mk
