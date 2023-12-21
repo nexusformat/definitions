@@ -41,6 +41,7 @@ needs_sphinx = '2.3'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx_toolbox.collapse',
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
@@ -99,5 +100,8 @@ htmlhelp_basename = 'NeXusManualdoc'
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {
     'maxlistdepth':7, # some application definitions are deeply nested
-    'preamble': '\\usepackage{amsbsy}\n'
+    'preamble': r'''
+    \usepackage{amsbsy}
+    \DeclareUnicodeCharacter{1F517}{X}
+    \DeclareUnicodeCharacter{2906}{<=}'''
 }
