@@ -24,8 +24,8 @@ and relations between terms, for computational-geometry-based descriptions of th
 materials and atomic configurations used when characterizing materials in experiments
 and computer simulations.
 
-As far as NeXus is concerned, the here proposed distinct sets of geometric primitives offer
-a complementary alternative to the already existent base classes in NeXus for
+As far as NeXus is concerned, this proposed set of geometric primitives offer
+a complementary alternative to the current set of base classes in NeXus for
 constructive solid geometry (CSG) such as :ref:`NXcsg`, :ref:`NXoff_geometry`, or :ref:`NXquadric`.
 
 Second, to explore how terms which are frequently used by materials scientists in the field of
@@ -43,7 +43,7 @@ Physics background
 ##################
 Microstructural features or crystal defects are spatial arrangements of atoms.
 Given their specific atomic arrangement and composition, such features have
-specific constraints on the degrees of freedom. This equips these defects with specific
+specific constraints on the degrees of freedom. This causes these defects to have specific
 properties (thermodynamic observables/descriptors). Provided well-defined coarse-graining procedures
 are used and regions-of-interest and/or regions-of-applicability are defined, microstructural
 features are often characterized and modelled to have associated thermodynamic descriptors.
@@ -60,10 +60,9 @@ Maybe this is a historical burden given the large set of technical terms in plac
 motivated pragmatic solutions that have resulted in many research groups having developed
 similar formats using similar descriptions.
 
-Defining crystal defects is a question of how to coarse-grain a given spatio-temporal set of atoms,
-each having a nuclid type and position/trajectory. In most cases, such a coarse-graining is an ill-posed
-task because different mathematical/geometrical methods exists how a point, a line, a surface, or a volumetric
-defect can be described and be spatio-temporally constrained through a geometrical model
+Defining crystal defects is a question of how to coarse-grain a given spatiotemporal set of atoms,
+each having a nuclide type and position/trajectory. Different mathematical/geometrical methods exists
+to determine how a point, a line, a surface, or a volumetric defect can be described and be spatiotemporally constrained through a geometrical model
 with defined primitives and associated observables.
 
 The key motivation to such coarse-graining is to reduce the complexity of the description.
@@ -179,7 +178,7 @@ not only for stencil-based methods:
     :ref:`NXclustering`:
         A base class to describe clustering of objects (such as atoms or features).
 
-    :ref:`NXorientation_set`:
+    :ref:`NXrotation_set`:
         A base class to describe the relative orientation or rotation members
         of a set of features/objects.
 
@@ -202,9 +201,8 @@ not only for stencil-based methods:
     :ref:`NXchemical_composition`:
         A base class to document (chemical) composition of a sample or a set of things.
 
-Furthermore, it can be useful to have a set of base classes whereby software tools can
-documents their state and return summaries for users about the performance
-and elapsed time measured while processing data. These utility base classes are:
+Finally, the following base classes allow data processing software to document its
+input parameters and to summarize its performance statistics:
 
     :ref:`NXprogram`:
         A base class for a specifically named and versioned program or library/component.

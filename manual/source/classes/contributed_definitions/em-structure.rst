@@ -8,7 +8,7 @@ Electron microscopy
    IntroductionEm
    EmAppDef
    EmBC
-   EmPartnerClasses
+   EmAnalysisClasses
 
 .. _IntroductionEm:
 
@@ -21,30 +21,20 @@ We realize that the biology-/bio-materials/omics-branch of electron microscopy i
 to data management practices. In what follows, the focus is on the usage of electron microscopy in condensed-matter physics, chemical physics of solids,
 and materials engineering applications. As many of the components of electron microscopes used in the bio-materials communities are the same or at least many
 components are very similar, it is likely that the here presented schema definitions can also inspire discussion and exchange with the bio-materials community.
-International and national projects and consortia including the German National Research Data Infrastructure are addressed NFDI-MatWerk, NFDI-BioImage, MaRDI,
-NFDI-Microbiota, NFDI4Health, and e.g. NFDI-Neuro.
+Partner consortia in the German National Research Data Infrastructure are here e.g. NFDI-BioImage, NFDI-Microbiota, NFDI4Health, and e.g. NFDI-Neuro.
 
-Electron microscopes are functionally very customizable tools: Examples include multi-signal/-modal analyses which are frequently realized as on-the-fly computational analyses,
-regularly switching between GUI-based instrument control, computational steps, and more and more using high-throughput stream-based processing. Also artificial intelligence
-methods are increasingly used and become closer interconnected with classical modes of controlling the instrument and perform data processing. A challenge in electron microscopy
-is that these steps are often executed within commercial integrated control and analysis software. This makes it difficult to keep track of workflows in a technology-partner-agnostic,
-i.e. interdisciplinary manner.
+Electron microscopes are functionally very customizable tools: Examples include multi-signal/-modal analyses which are frequently realized as on-the-fly computational analyses, regularly switching between GUI-based instrument control, computational steps, and more and more using high-throughput stream-based processing. Also artificial intelligence methods are increasingly used and are becoming more closely interconnected with classical modes of controlling the instrument and perform data processing. A challenge in electron microscopy is that these steps are often executed within commercial integrated control and analysis software. This makes it difficult to keep track of workflows in a technology-partner-agnostic, i.e. interdisciplinary manner.
 
 .. _EmAppDef:
 
 Application Definitions
 #######################
 
-We acknowledge that it can be difficult to agree on a single application definition which is generally enough applicable but not too complex to remain useful for application across a
-variety of instruments, technology partners, and instrument use cases. In what follows, the proposal conceptualizes first the basic components of an electron microscope. Secondly, 
-the proposal documents the steps of usual workflows how an electron microscope is used when collecting data with detectors via probing radiation-specimen-matter interaction mechanisms.
+We acknowledge that it can be difficult to agree on a single application definition which is generally enough applicable yet not unnecessarily complex and useful for applications across a variety of instruments, technology partners, and instrument use cases. In what follows, the proposal conceptualizes first the basic components of an electron microscope and the usual workflow of how an electron microscope is used for collecting data with detectors via probing radiation-specimen-matter interaction mechanisms.
 
-In summary, scientists place a specimen/sample into the microscope, calibrate the instrument, take measurements, may perform experiments, prepare their specimens with a focused ion beam,
-calibrate again, and take other measurements, before their session on the instrument ends. In between virtually all of these steps data are collected and stream in from different detectors
-probing different physical mechanisms of the interaction between electrons or other types of radiation with the specimen.
+In summary, scientists place a specimen/sample into the microscope, calibrate the instrument, take measurements, and may perform experiments, prepare their specimens with a focused ion beam, calibrate again, and take other measurements, before their session on the instrument ends. In between virtually all of these steps data are collected and stream in from different detectors probing different physical mechanisms of the interaction between electrons or other types of radiation with the specimen.
 
-A microscope session ends with the scientist removing the specimen from the instrument or parking it so that the next user can start a session.
-Occasionally, service technicians perform calibrations and maintenance which also can be described as a session on the microscope.
+A microscope session ends with the scientist removing the specimen from the instrument or parking it so that the next user can start a session. Occasionally, service technicians perform calibrations and maintenance which also can be described as a session on the microscope. We have provided base classes to describe these steps and events and an application definition for electron microscopy:
 
     :ref:`NXem`:
         An application definition which explores the possibilities of electron microscopes.
@@ -130,22 +120,21 @@ The following base classes are proposed to support modularizing the storage of p
         which modern stages of electron microscopes typically offer.
 
 
-.. _EmPartnerClasses:
+.. _EmAnalysisClasses:
 
-Partner application definitions
-###############################
+We provide specific base classes which granularize frequently collected or analyzed quantities in specific application fields of electron microscopy to deal
+with the situation that there are cases were logical connections between generated data artifacts mainly exist for the fact that the data artifacts were
+collected during a workflow of electron microscopy research (e.g. taking measurements and then performing method-specific analyses generating new data and conclusions). We see a value in granularizing out these pieces of information into own classes. In fact, one limitation of application definitions in NeXus is currently that they define a set of constraints on their graph of controlled concepts and terms. If we take for example diffraction experiments with an electron microscope, it is usually the case that (diffraction) patterns are collected in the session at the microscope. However, all scientifically relevant conclusions are typically drawn later, i.e. through post-processing the collected diffraction (raw) data. These numerical and algorithmic steps define computational workflows were data from an instance of an application definition such as NXem are used as input but many additional concepts and constraints are applied without these demanding necessarily for changing constraints on fields or groups of NXem. If we were to modify NXem for these cases, NXem would combinatorially diverge as every different combination of required constraints demands having an own but almost similar application definition. For this reason, the concept of partner application definition are currently used which have fields/links whereby specifically relevant sources of information are connected to e.g. NXem.
 
-A partner application definition is considered an application definition which stores data and metadata which are relevant for a given experiment but have usually only few connections to the detailed description of the workflow and experiment which motivates to granularize out these pieces of information into an own application definition. In fact, one limitation of application definitions in NeXus is currently that they define a set of constraints on their graph of controlled concepts and terms. If we take for example diffraction experiments with an electron microscope, it is usually the case that (diffraction) patterns are collected in the session at the microscope. However, all scientifically relevant conclusions are typically drawn later, i.e. through post-processing the collected diffraction (raw) data. These numerical and algorithmic steps define computational workflows were data from an instance of an application definition such as NXem are used as input but many additional concepts and constraints are applied without these demanding necessarily for changing constraints on fields or groups of NXem. If we were to modify NXem for these cases, NXem would combinatorially diverge as every different combination of required constraints demands having an own but almost similar application definition. For this reason, the concept of partner application definition are currently used which have fields/links whereby specifically
-relevant sources of information are connected to e.g. NXem. More consolidation through the use of NXsubentry classes should be considered in the future. An alternative solution is to define both NXem and its partner application definitions
-are deep base classes for which each field and group is optional. Specific instances of these blue print base classes could then elegantly combine the reuse of vocabulary and hierarchical organization information with specific constraints which are relevant only for specific usage of such data by specific tools used by an eventually smaller circle of users.
+More consolidation through the use of NXsubentry classes should be considered in the future. For now we use an approach whereby base classes are combined to reuse vocabulary and a hierarchical organization of pieces of information with specific constraints which are relevant only for specific usage of such data by specific tools used by an eventually smaller circle of users.
 
     :ref:`NXem_ebsd`:
         Application definition for collecting and indexing Kikuchi pattern into orientation maps for the two-dimensional, three- (serial sectioning) and four-dimensional (spatial and time-dependent) case.
 
 The definition of several new base classes is motivated by by NXem_ebsd:
 
-    :ref:`NXem_ebsd_conventions`:
+    :ref:`NXem_conventions`, :ref:`NXem_conventions_ebsd`:
         A base class to store all reference frames and rotation conventions which are necessary to interpret the alignment and conventions used when working with orientation data.
 
-    :ref:`NXem_ebsd_crystal_structure_model`:
+    :ref:`NXcrystal_structure`:
         A base class to store crystalline phase/structure used for a simulation of diffraction pattern and comparison of these pattern against patterns to support indexin.

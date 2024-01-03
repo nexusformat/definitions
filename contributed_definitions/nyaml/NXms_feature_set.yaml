@@ -12,24 +12,20 @@ symbols:
     Number of types in the dictionary of human-readable types of features.
   n_parent_ids: |
     Total number of parent identifier.
-
 # NXms_feature_set can be used e.g. as groups inside instances of NXms_snapshot
 # for an MD simulation each timestep is such snapshot all snapshot for a set
 # which is the parent group that has all these NXms_snapshot instances as childs
 # time_stamp: # simulated, physical
-
 # Thea, Joseph, Lauri, Dinga (TJLD) just for comparison for each group and field to what this would map in their model for the MDTutorial 2
 type: group
 NXms_feature_set(NXobject):
-  
   # TJLD: this class represents a generalization of AtomGroups
   # TJLD: one such for atoms(NXms_feature_set)
   # TJLD: one such for atom_groups(NXms_feature_set)
   # TJLD: but not one for every molecule, i.e. all molecules and how their atoms with ids are related to atoms ids is concatenated
   # TJLD: clearly there are two possibilities: either concatenate or make one NXms_feature_set for each molecule or component in the topology hierarchy
   # TJLD: however the here proposed design generalizes the arbitrary (microstructural) features and computational geometry based coarse-grained representations
-  \@depends_on:
-    
+  \@depends_on(NX_CHAR):
     # TJLD: not required it is currently assumed that features are always build from atoms and this relation is shown using their ids, integers on [0, n_atoms-1]
     doc: |
       Name (or link?) to another NXms_feature_set which defines features what are
@@ -37,7 +33,6 @@ NXms_feature_set(NXobject):
       If depends_on is set to "." or this attribute is not defined in an instance
       of this application definition, assume that this feature_set instance
       represents the root feature_set of the feature tree/graph.
-  
   # the design of this base class makes it possible to have Joseph's suggestion
   # but it has the additional benefit that as it defines the set one also
   # bundle the description for all features at this hierarchy level into combined
@@ -50,20 +45,17 @@ NXms_feature_set(NXobject):
   # but with the additional benefit of a much richer geometrical description and the details about the uncertainty of these descriptions
   # I can also imagine that materials engineers e.g. can reuse NXms_feature_set in an application definition by just then naming
   # their group e.g. grains(NXms_feature_set) and use in the application definition either only the (material point), interface network, or volumetric description
-  dimensionality(NX_UINT):
-    
+  dimensionality(NX_POSINT):
     # TJLD: not needed because they assume everything is 3d
     doc: |
       What is the best matching description how dimensional the feature is.
-    enumeration: [0, 1, 2, 3]
+    enumeration: [1, 2, 3]
   cardinality(NX_UINT):
-    unit: NX_UNITLESS
-    
     # TJLD: equivalent to the number of AtomGroups class instance childs
     doc: |
       How many features/members are in this set?
-  type_dict_keyword:
-    
+    unit: NX_UNITLESS
+  type_dict_keyword(NX_CHAR):
     # TJLD: equivalent to the controlled vocabulary term monomer or molecule, i.e. label
     # TJLD: but with the difference that in this NeXus design here different features can take different roles
     # TJLD: and do not conceptually have to be atoms, alternatively one could also create an NXms_interface_set which
@@ -76,48 +68,37 @@ NXms_feature_set(NXobject):
       kink, jog, stacking_fault, homo_phase_boundary, hetero_phase_boundary,
       surface, thermal_groove_root, precipitate, dispersoid, pore, crack
       is recommended.
-    dimensions:
-      rank: 1
-      dim: [[1, n_type_dict]]
-  type_dict_value(NX_UINT):
-    unit: NX_UNITLESS
-    
+    dim: (n_type_dict,)
+  type_dict_value(NX_INT):
     # TJLD: equivalent to the AtomGroups index
     doc: |
       The integer identifier used to resolve of which type each feature is,
       i.e. the values of the dictionary of human-readable types of features.
-    dimensions:
-      rank: 1
-      dim: [[1, n_type_dict]]
-  number_of_parent_identifier(NX_UINT):
     unit: NX_UNITLESS
+    dim: (n_type_dict,)
+  number_of_parent_identifier(NX_INT):
     doc: |
       For each feature in the set specify the associated number of identifier
       to parent features as are resolvable via depends_on.
       This array enables to compute the array interval from which details for
       specific features can be extracted as if they would be stored in an own
       group.
-    dimensions:
-      rank: 1
-      dim: [[1, c]]
-  parent_identifier(NX_UINT):
     unit: NX_UNITLESS
+    dim: (c,)
+  parent_identifier(NX_INT):
     doc: |
       Concatenated array of parent identifier for each feature (in the sequence)
       according to identifier and how the identifier of features in the here
       described feature set are defined (implicitly from 0, to c-1 or via explicit
       identifier.
-    dimensions:
-      rank: 1
-      dim: [[1, n_parent_ids]]
-  
+    unit: NX_UNITLESS
+    dim: (n_parent_ids,)
   # description of the geometry of the features
   # MK::how can be define that inside lines(NXprocess) we assure that there is either no geometry or only one geometry but then this geometry can be either an NXcg_polyline_set or NXcg_spline_set?
   # the key problem is that at least for an implementation in HDF5 we are not allowed to have two groups named geometry even if their attributes are different because
   # HDF5 implements no conceptual understanding of the relations between elements in the underlying graph which holds the data, these elements are either attributes, fields, groups, all of which
   # end up as links
   identifier_offset(NX_INT):
-    unit: NX_UNITLESS
     doc: |
       Integer which specifies the first index to be used for distinguishing
       features. Identifiers are defined either implicitly
@@ -128,15 +109,13 @@ NXms_feature_set(NXobject):
       The identifier_offset field can for example be used to communicate if the
       identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
       or from 0 (referred to as C-, Python-style index notation) respectively.
-  identifier(NX_INT):
     unit: NX_UNITLESS
+  identifier(NX_INT):
     doc: |
       Integer used to distinguish features for explicit indexing.
-    dimensions:
-      rank: 1
-      dim: [[1, c]]
+    unit: NX_UNITLESS
+    dim: (c,)
   points(NXprocess):
-    
     # TJLD: this design here is different, TJLD give atom positions only (at least as of now) for the root of an object
     # TJLD: while all higher-order features that are connected through their assumed topology just refer to the atoms in the root
     # TJLD: via their IDs, TJLD design is ideal for systems build from atoms but would create unnecessary copies for higher-dimensional-type features
@@ -153,13 +132,11 @@ NXms_feature_set(NXobject):
         Assumptions, parameters, and details how positional uncertainty
         of the geometry is quantified.
   lines(NXprocess):
-    
     # TJLD: not conceptualized, see comments for points and what the benefit of using NeXus would be
     doc: |
       Assumptions and parameters to arrive at geometric primitives
       to locate one-dimensional/line-like features which are
       discretized by polylines.
-    
     # MK::geometry(NXcg_spline_set)
     geometry(NXcg_polyline_set):
     uncertainty(NXprocess):
@@ -171,7 +148,6 @@ NXms_feature_set(NXobject):
       Assumptions and parameters to arrive at geometric primitives
       to locate two-dimensional/interface features which are
       discretized by triangulated surface meshes.
-    
     # MK::geometry(NXcg_nurbs_set):
     geometry(NXcg_triangle_set):
     uncertainty(NXprocess):
@@ -183,14 +159,12 @@ NXms_feature_set(NXobject):
       Assumptions and parameters to arrive at geometric primitives
       to locate three-dimensional/volumetric features which are
       discretized by triangulated surface meshes of polyhedra.
-    
     # MK::geometry(NXcg_nurbs_set):
     geometry(NXcg_polyhedron_set):
     uncertainty(NXprocess):
       doc: |
         Assumptions, parameters, and details how positional uncertainty
         of the geometry is quantified.
-  
   # Sandor and Markus agree that how trajectories are extracted should be stored in instances of NXprocess at respective places
   # Sandor suggested it can be useful to also describe how one could transform system-specific atom positions from the system-focused coordinate system to a molecule- or atom-focused local coordinate system
   
