@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXmpes" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <!--Pincelli, Rettig, Arora at fhi-berlin.mpg.de, Dobener at hu-berlin.de, 06/2022
+Draft version of a NeXus application definition for photoemission,
+It is designed to be extended by other application definitions
+with higher granularity in the data description.-->
+    <doc>
+         This is the most general application definition for multidimensional
+         photoelectron spectroscopy.
+    </doc>
+    <group type="NXentry">
+        <field name="title"/>
+        <field name="start_time" type="NX_DATE_TIME">
+            <doc>
+                 Datetime of the start of the measurement.
+            </doc>
+        </field>
+        <field name="definition">
+            <attribute name="version"/>
+            <enumeration>
+                <item value="NXmpes"/>
+            </enumeration>
+        </field>
+        <group type="NXuser">
+            <doc>
+                 Contact information of at least the user of the instrument or the investigator
+                 who performed this experiment. Adding multiple users if relevant is recommended.
+            </doc>
+            <field name="name">
+                <doc>
+                     Name of the user.
+                </doc>
+            </field>
+            <field name="affiliation" recommended="true">
+                <doc>
+                     Name of the affiliation of the user at the point in time when the experiment was
+                     performed.
+                </doc>
+            </field>
+            <field name="address" recommended="true">
+                <doc>
+                     Full address (street, street number, ZIP, city, country) of the user's
+                     affiliation.
+                </doc>
+            </field>
+            <field name="email">
+                <doc>
+                     Email address of the user.
+                </doc>
+            </field>
+            <field name="orcid" recommended="true">
+                <doc>
+                     Author ID defined by https://orcid.org/.
+                </doc>
+            </field>
+        </group>
+        <group type="NXinstrument">
+            <field name="energy_resolution" type="NX_FLOAT" units="NX_ENERGY"/>
+            <group type="NXsource">
+                <doc>
+                     The source used to generate the primary photons. Properties refer strictly to
+                     parameters of the source, not of the output beam. For example, the energy of the
+                     source is not the optical power of the beam, but the energy of the electron beam
+                     in a synchrotron and so on.
+                </doc>
+                <field name="type">
+                    <enumeration>
+                        <item value="Synchrotron X-ray Source"/>
+                        <item value="Rotating Anode X-ray"/>
+                        <item value="Fixed Tube X-ray"/>
+                        <item value="UV Laser"/>
+                        <item value="Free-Electron Laser"/>
+                        <item value="Optical Laser"/>
+                        <item value="UV Plasma Source"/>
+                        <item value="Metal Jet X-ray"/>
+                        <item value="HHG laser"/>
+                    </enumeration>
+                </field>
+                <field name="name"/>
+                <field name="probe">
+                    <doc>
+                         Type of probe. In photoemission it's always photons, so the full NIAC list is
+                         restricted.
+                    </doc>
+                    <enumeration>
+                        <item value="x-ray"/>
+                        <item value="ultraviolet"/>
+                        <item value="visible light"/>
+                    </enumeration>
+                </field>
+            </group>
+            <group type="NXbeam">
+                <field name="distance" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                         Distance of the point of evaluation of the beam from the sample surface.
+                    </doc>
+                </field>
+                <field name="incident_energy" type="NX_FLOAT" units="NX_ENERGY"/>
+                <field name="incident_energy_spread" type="NX_NUMBER" recommended="true" units="NX_ENERGY"/>
+                <field name="incident_polarization" type="NX_NUMBER" recommended="true" units="NX_ANY"/>
+            </group>
+            <group type="NXelectronanalyser">
+                <field name="description"/>
+                <field name="energy_resolution" type="NX_FLOAT" recommended="true" units="NX_ENERGY">
+                    <doc>
+                         Energy resolution of the analyser with the current setting. May be linked from a
+                         NXcalibration.
+                    </doc>
+                </field>
+                <field name="fast_axes" type="NX_CHAR" recommended="true"/>
+                <field name="slow_axes" recommended="true"/>
+                <group type="NXcollectioncolumn">
+                    <field name="scheme">
+                        <doc>
+                             Scheme of the electron collection column.
+                        </doc>
+                        <enumeration>
+                            <item value="Standard"/>
+                            <item value="Angular dispersive"/>
+                            <item value="Selective area"/>
+                            <item value="Deflector"/>
+                            <item value="PEEM"/>
+                            <item value="Momentum Microscope"/>
+                        </enumeration>
+                    </field>
+                    <field name="mode" recommended="true"/>
+                    <field name="projection" recommended="true"/>
+                    <group name="field_aperture" type="NXaperture" optional="true">
+                        <doc>
+                             The size and position of the field aperture inserted in the column. To add
+                             additional or other apertures use the APERTURE group of NXcollectioncolumn.
+                        </doc>
+                    </group>
+                    <group name="contrast_aperture" type="NXaperture" optional="true">
+                        <doc>
+                             The size and position of the contrast aperture inserted in the column. To add
+                             additional or other apertures use the APERTURE group of NXcollectioncolumn.
+                        </doc>
+                    </group>
+                </group>
+                <group type="NXenergydispersion">
+                    <field name="scheme">
+                        <enumeration>
+                            <item value="tof"/>
+                            <item value="hemispherical"/>
+                            <item value="double hemispherical"/>
+                            <item value="cylindrical mirror"/>
+                            <item value="display mirror"/>
+                            <item value="retarding grid"/>
+                        </enumeration>
+                    </field>
+                    <field name="pass_energy" type="NX_FLOAT" units="NX_ENERGY"/>
+                    <field name="energy_scan_mode"/>
+                    <group name="entrance_slit" type="NXaperture" optional="true">
+                        <doc>
+                             Size, position and shape of the entrance slit in dispersive analyzers. To add
+                             additional or other slits use the APERTURE group of NXenergydispersion.
+                        </doc>
+                    </group>
+                    <group name="exit_slit" type="NXaperture" optional="true">
+                        <doc>
+                             Size, position and shape of the exit slit in dispersive analyzers. To add
+                             additional or other slits use the APERTURE group of NXenergydispersion.
+                        </doc>
+                    </group>
+                </group>
+                <group type="NXdetector">
+                    <field name="amplifier_type" recommended="true">
+                        <doc>
+                             Type of electron amplifier in the first amplification step.
+                        </doc>
+                        <enumeration>
+                            <item value="MCP"/>
+                            <item value="channeltron"/>
+                        </enumeration>
+                    </field>
+                    <!--ToDo: Representation of count rate calibration-->
+                    <field name="detector_type" recommended="true">
+                        <doc>
+                             Description of the detector type.
+                        </doc>
+                        <enumeration>
+                            <item value="DLD"/>
+                            <item value="Phosphor+CCD"/>
+                            <item value="Phosphor+CMOS"/>
+                            <item value="ECMOS"/>
+                            <item value="Anode"/>
+                            <item value="Multi-anode"/>
+                        </enumeration>
+                    </field>
+                    <group type="NXdata" recommended="true">
+                        <attribute name="signal">
+                            <enumeration>
+                                <item value="raw"/>
+                            </enumeration>
+                        </attribute>
+                        <field name="raw" type="NX_NUMBER">
+                            <doc>
+                                 Raw data before calibration.
+                            </doc>
+                        </field>
+                    </group>
+                </group>
+            </group>
+            <group type="NXmanipulator" optional="true">
+                <doc>
+                     Manipulator for positioning of the sample.
+                </doc>
+                <field name="sample_temperature" type="NX_FLOAT" recommended="true" units="NX_TEMPERATURE"/>
+                <field name="drain_current" type="NX_FLOAT" recommended="true" units="NX_CURRENT"/>
+                <field name="sample_bias" type="NX_FLOAT" recommended="true" units="NX_CURRENT"/>
+            </group>
+        </group>
+        <group type="NXprocess">
+            <doc>
+                 Document an event of data processing, reconstruction, or analysis for this data.
+                 Describe the appropriate axis calibrations for your experiment using one or more
+                 of the following NXcalibrations
+            </doc>
+            <group name="energy_calibration" type="NXcalibration" optional="true">
+                <field name="applied" type="NX_BOOLEAN">
+                    <doc>
+                         Has an energy calibration been applied?
+                    </doc>
+                </field>
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
+                    <doc>
+                         This is the calibrated energy axis to be used for data plotting.
+                    </doc>
+                </field>
+            </group>
+            <group name="angular_calibration" type="NXcalibration" optional="true">
+                <field name="applied" type="NX_BOOLEAN">
+                    <doc>
+                         Has an angular calibration been applied?
+                    </doc>
+                </field>
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
+                    <doc>
+                         This is the calibrated angular axis to be used for data plotting.
+                    </doc>
+                </field>
+            </group>
+            <group name="spatial_calibration" type="NXcalibration" optional="true">
+                <field name="applied" type="NX_BOOLEAN">
+                    <doc>
+                         Has an spatial calibration been applied?
+                    </doc>
+                </field>
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
+                    <doc>
+                         This is the calibrated spatial axis to be used for data plotting.
+                    </doc>
+                </field>
+            </group>
+            <group name="momentum_calibration" type="NXcalibration" optional="true">
+                <field name="applied" type="NX_BOOLEAN">
+                    <doc>
+                         Has an momentum calibration been applied?
+                    </doc>
+                </field>
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
+                    <doc>
+                         This is the momentum axis to be used for data plotting.
+                    </doc>
+                </field>
+            </group>
+        </group>
+        <group type="NXsample">
+            <field name="name"/>
+            <field name="chemical_formula" recommended="true">
+                <doc>
+                     The chemical formula of the sample. For mixtures use the NXsample_component
+                     group in NXsample instead.
+                </doc>
+            </field>
+            <group name="sample_history" type="NXnote" recommended="true">
+                <doc>
+                     A descriptor to keep track of the treatment of the sample before entering the
+                     photoemission experiment. Ideally, a full report of the previous operations, in
+                     any format (NXnote allows to add pictures, audio, movies). Alternatively, a
+                     reference to the location or a unique identifier or other metadata file. In the
+                     case these are not available, free-text description.
+                </doc>
+            </group>
+            <field name="atom_types" recommended="true">
+                <doc>
+                     List of comma-separated elements from the periodic table
+                     that are contained in the sample. 
+                     If the sample substance has multiple components, all 
+                     elements from each component must be included in `atom_types`.
+                </doc>
+            </field>
+            <field name="preparation_date" type="NX_DATE_TIME" recommended="true">
+                <doc>
+                     Date of preparation of the sample for the XPS experiment (i.e. cleaving, last
+                     annealing).
+                </doc>
+            </field>
+            <group name="preparation_description" type="NXnote">
+                <doc>
+                     Description of the surface preparation technique for the XPS experiment, i.e.
+                     UHV cleaving, in-situ growth, sputtering/annealing etc. Ideally, a full report
+                     of the previous operations, in any format(NXnote allows to add pictures, audio,
+                     movies). Alternatively, a reference to the location or a unique identifier or
+                     other metadata file. In the case these are not available, free-text description.
+                </doc>
+            </group>
+            <!--Problem: if the temperature is logged, the data is an array of temperature/timestamp pairs.
+the timestamp NX_DATE_TIME structure of the timestamp can not be easily handled by just a field.
+there is a base class for this, NXlog. The NIAC decided to use the same name (temperature) instead of the previous temperature_log.
+how do I explain here in an appdef that temperature can be either NXnumber (single value or scanned array) or a NXlog?
+It seems quite contorted to ask to create a separate timestamp array when we have a base class that handles it more elegantly.-->
+            <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
+                <doc>
+                     In the case of a fixed temperature measurement this is the scalar temperature of
+                     the sample. In the case of an experiment in which the temperature is changed and
+                     recoded, this is an array of length m of temperatures. This should be a link to
+                     /entry/instrument/manipulator/sample_temperature.
+                </doc>
+            </field>
+            <field name="situation">
+                <enumeration>
+                    <item value="vacuum"/>
+                    <item value="inert atmosphere"/>
+                    <item value="oxidising atmosphere"/>
+                    <item value="reducing atmosphere"/>
+                </enumeration>
+            </field>
+            <!--Similar situation here, ca be a single number or a log.-->
+            <field name="gas_pressure" type="NX_FLOAT" units="NX_PRESSURE"/>
+        </group>
+        <group type="NXdata">
+            <attribute name="signal">
+                <enumeration>
+                    <item value="data"/>
+                </enumeration>
+            </attribute>
+            <field name="data" type="NX_NUMBER" units="NX_ANY">
+                <doc>
+                     Represents a measure of one- or more-dimensional photoemission counts, where the
+                     varied axis may be for example energy, momentum, spatial coordinate, pump-probe
+                     delay, spin index, temperature, etc. The axes traces should be linked to the
+                     actual encoder position in NXinstrument or calibrated axes in NXprocess.
+                </doc>
+            </field>
+        </group>
+    </group>
+</definition>
