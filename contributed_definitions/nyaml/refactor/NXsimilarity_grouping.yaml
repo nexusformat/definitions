@@ -1,0 +1,123 @@
+category: base
+doc: |
+  Base class to store results obtained from applying a similarity grouping (clustering) algorithm.
+  
+  Similarity grouping algorithms are segmentation or machine learning algorithms for
+  partitioning the members of a set of objects (e.g. geometric primitives) into (sub-)groups
+  aka features of some but different kind/type.  A plethora of algorithms exists.
+  
+  This base class considers metadata and results of having a similarity grouping
+  algorithm applied to a set in which objects are either categorized as noise
+  or belonging to a cluster, i.e. members of a cluster.
+  The algorithm assigns each similarity group (feature/cluster) at least one identifier
+  (numerical or categorical labels) to distinguish different groups.
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+  c: |
+    Cardinality of the set.
+  n_lbl_num: |
+    Number of numerical labels per object.
+  n_lbl_cat: |
+    Number of categorical labels per object.
+  n_features: |
+    Total number of similarity groups aka features/clusters.
+type: group
+NXsimilarity_grouping(NXobject):
+  cardinality(NX_UINT):
+    doc: |
+      Number of members in the set which gets partitioned into features.
+    unit: NX_UNITLESS
+  number_of_numeric_labels(NX_UINT):
+    doc: |
+      How many numerical labels does each feature have.
+    unit: NX_UNITLESS
+    # dim: (i,)
+  number_of_categorical_labels(NX_UINT):
+    doc: |
+      How many categorical labels does each feature have.
+    unit: NX_UNITLESS
+    # dim: (i,)
+  # features:
+  # doc: |
+  # Reference to a set of features investigated in a cluster analysis.
+  # Features need to have disjoint numeric identifier.
+  identifier_offset(NX_INT):
+    doc: |
+      Which numerical identifier is the first to be used to label a feature.
+      
+      The value should be chosen in such a way that special values can be resolved:
+      * identifier_offset-1 indicates that an object belongs to no cluster.
+      * identifier_offset-2 indicates that an object belongs to the noise category.
+      Setting for instance identifier_offset to 1 recovers the commonly used
+      case that objects of the noise category get values to -1 and unassigned points to 0.
+      Numerical identifier have to be strictly increasing.
+    unit: NX_UNITLESS
+    dim: (n_lbl_num,)
+  numerical_label(NX_INT):
+    doc: |
+      Matrix of numerical label for each member in the set.
+      For classical clustering algorithms this can for instance
+      encode the cluster_identifier.
+    unit: NX_UNITLESS
+    dim: (c, n_lbl_num)
+  categorical_label(NX_CHAR):
+    doc: |
+      Matrix of categorical attribute data for each member in the set.
+    dim: (c, n_lbl_cat)
+  statistics(NXprocess):
+    doc: |
+      In addition to the detailed storage which objects were grouped to which
+      feature/group summary statistics are stored under this group.
+    # at the level of the object set
+    
+    # at the level of the feature set
+    unassigned(NX_UINT):
+      doc: |
+        Total number of features categorized as unassigned.
+      unit: NX_UNITLESS
+    noise(NX_UINT):
+      doc: |
+        Total number of features categorized as noise.
+      unit: NX_UNITLESS
+    total(NX_UINT):
+      doc: |
+        Total number of features.
+      unit: NX_UNITLESS
+#    number_of_unassigned_members(NX_UINT):
+#      doc: |
+#        Total number of members in the set which are categorized as unassigned.
+#      unit: NX_UNITLESS
+#      dim: (n_lbl_num,)
+#    number_of_noise_members(NX_UINT):
+#      doc: |
+#        Total number of members in the set which are categorized as noise.
+#      unit: NX_UNITLESS
+#      dim: (n_lbl_num,)
+    # at the level of the feature set
+    number_of_features(NX_UINT):
+      doc: |
+        Total number of clusters (excluding noise and unassigned).
+      unit: NX_UNITLESS
+    feature_identifier(NX_UINT):
+      doc: |
+        Array of numerical identifier of each feature (cluster).
+      unit: NX_UNITLESS
+      dim: (n_features, n_lbl_num)
+    feature_member_count(NX_UINT):
+      doc: |
+        Array of number of objects for each feature.
+      unit: NX_UNITLESS
+      dim: (n_features, n_lbl_num)
+#    feature_size(NX_NUMBER):
+#      doc: |
+#            unit: NX_UNITLESS
+#    doc: |
+#      Number of objects associated to each cluster. The labels are implicit,
+#      meaning the zeroth/first entry in the array belongs to the first cluster,
+#      the second entry to the second cluster and so on and so forth.
+#      The first cluster has the value of identifier_offset as its identifier.
+#      The second cluster has identifier_offset + 1, and so on and so forth.
+#    dimensions:
+#      rank: 1
+#      dim: [[1, n_cluster]]
