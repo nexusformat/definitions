@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcoordinate_system_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         Container to hold different coordinate systems conventions.
+         
+         It is the purpose of this base class to define these conventions and
+         offer a place to store mappings between different coordinate systems
+         which are relevant for the interpretation of the data described
+         by the application definition and base class instances.
+         
+         For each Cartesian coordinate system users should use a set of
+         NXtransformations:
+         
+         * These should define the three base vectors.  
+         * The location of the origin.  
+         * The affine transformations which bring each axis of this coordinate system  
+           into registration with the McStas coordinate system.  
+         * Equally, affine transformations should be given for the inverse mapping.  
+         
+         As an example one may take an experiment or computer simulation where
+         there is a laboratory (lab) coordinate system, a sample/specimen coordinate
+         system, a crystal coordinate system, and additional coordinate systems,
+         which are eventually attached to components of the instrument.
+         
+         If no additional transformation is specified in this group or if an
+         instance of an NXcoordinate_system_set is absent it should be assumed
+         the so-called McStas coordinate system is used.
+         
+         Many application definitions in NeXus refer to this `McStas &lt;https://mailman2.mcstas.org/pipermail/mcstas-users/2021q2/001431.html&gt;`_ coordinate system.
+         This is a Cartesian coordinate system whose z axis points along the neutron 
+         propagation axis. The systems y axis is vertical up, while the x axis points
+         left when looking along the z-axis. Thus, McStas is a right-handed coordinate system.
+         
+         Within each NXtransformations a depends_on section is required. The depends_on
+         field specifies if the coordinate system is the root/reference
+         (which is indicated by writing &quot;.&quot; in the depends_on section.)
+    </doc>
+    <!--implementing a proposal for "a common base table" along thoughts like:
+https://manual.nexusformat.org/classes/base_classes/NXtransformations.html#nxtransformations
+similar to a place where all transformations are stored
+https://www.zenodo.org/record/3526738/files/lyso009a_0087.JF07T32V01_master.h5?download=1-->
+    <group type="NXtransformations">
+        <doc>
+             A group of transformations which specify:
+             
+             * Three base vectors of the coordinate system.  
+             * Origin of the coordinate system.  
+             * A depends_on keyword. Its value can be &quot;.&quot; or the name of an  
+               NXtransformations instance which needs to exist in the  
+               NXcoordinate_system_set instance.  
+             * If the coordinate system is the reference one it has to be named  
+               reference.  
+             
+             In case of having more than one NXtransformations there has to be for  
+             each additional coordinate system, i.e. the one not the reference:
+             
+             * A set of translations and rotations which map each base vector to the reference.  
+             * A set of translations and rotations which map each reference base vector  
+               to the coordinate system.  
+             
+             The NXtransformations for these mappings need to be formatted
+             according to the descriptions in NXtransformations.
+        </doc>
+    </group>
+    <!--NEW ISSUE: add an illustrated example-->
+    <!--thoughts on how to use this
+these user-defined frames could be the sample surface, the detector,
+individual frames attached to specific instruments, for instance in an
+atom probe experiment we usually have a lab, specimen surface/apex, laser (pinhole), detector, reconstruction frames
+in electron/focused ion beam, lab, e-beam, i-beam, sample surface, individual frames for each detector-->
+    <!--THE REMAINING TEXT IS NOT PART OF THE BASE CLASS
+An example follows how each field under transformations can look like
+I would like to encourage a description where each coordinate system is defined
+and for each coordinate system a transformation written down which maps each
+user-defined Frame_i onto Frame_McStas (and maybe for convenience purposes also vice versa
+Frame_McStas = T_i * Frame_i
+if there would be a small python tool that takes a collection of frames
+and does the mapping automatically and writing the respective NeXus entries
+this would be very useful.-->
+    <!-- # \@transformation_type should not be used
+ # define frame of reference that is understood as the laboratory coordinate system
+ x_axis(NX_NUMBER):
+   unit: NX_TRANSFORMATION
+   \@depends_on: # "." meaning the root coordinate system, i.e. the McStas
+   \@vector(NX_NUMBER): # [1, 0, 0]
+   # \@offset(NX_NUMBER):
+ y_axis(NX_NUMBER):
+   unit: NX_TRANSFORMATION
+   \@depends_on: # "."
+   \@vector(NX_NUMBER): # [0, 1, 0]
+   # \@offset(NX_NUMBER):
+ z_axis(NX_NUMBER):
+   unit: NX_TRANSFORMATION
+   \@depends_on: # "."
+   \@vector(NX_NUMBER): # [0, 0, 1]
+   \@offset(NX_NUMBER): # is [0, 0, 0] if the origin of the McStas coordinate system and of the laboratory_frame overlap
+   # \@offset_units: # should be an NX_LENGTH
+ # and how it translates into the McStas convention
+ lab_mcstas(NX_NUMBER):
+   doc: Rotation matrix which maps the x_axis of the laboratory_frame to the x_axis of the McStas system.
+   # BUT as far as I know you cannot define a 3D rotation matrix, you should rather make a chain of transformations
+   # each about a single axis and thus building a depends_on chain
+   # for example a 4x4 translation with a more-than-one-value-non-zero/non-identity rotation matrix
+   # could be you first rotate about Z by R_Z'/R_1 depends_on is x_axis := X, yielding X', Y', Z'
+   # second you rotate about the X' by R_X/R_2 depends_on is X', yielding X'', Y'', Z''
+   # third you rotate about the Z'' by R_Z''/R_3 depends_on is then Z'', yielding X''', Y''', Z''' matching McStas,
+   # this is the Bunge-Euler way of doing it, but would it also be possible to just define
+   # the lab_mcstas(NX_NUMBER) value as an 3x3 array and give the offsets and translations as it is discussed in the manual ?
+   unit: NX_ANGLE
+   \@depends_on: # x_axis
+ # 3x3 rotation matrices are decoupled into three successive planar rotations
+ see https://manual.nexusformat.org/classes/base_classes/NXtransformations.html
+ mcstas_to_lab(NX_NUMBER):
+ # same story but the inverse affine transformation-->
+</definition>
