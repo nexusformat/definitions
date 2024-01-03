@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXion" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_ivecmax">
+            <doc>
+                 Maximum number of atoms/isotopes allowed per (molecular) ion (fragment).
+            </doc>
+        </symbol>
+        <symbol name="n_ranges">
+            <doc>
+                 Number of mass-to-charge-state-ratio range intervals for ion type.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Set of atoms of a molecular ion or fragment in e.g. ToF mass spectrometry.
+    </doc>
+    <field name="identifier">
+        <doc>
+             A unique identifier whereby such an ion can be referred to
+             via the service offered as described in identifier_type.
+        </doc>
+    </field>
+    <field name="identifier_type">
+        <doc>
+             How can the identifier be resolved?
+        </doc>
+        <enumeration>
+            <item value="inchi"/>
+        </enumeration>
+    </field>
+    <field name="ion_type" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Ion type (ion species) identifier. The identifier zero
+             is reserved for the special unknown ion type.
+        </doc>
+    </field>
+    <field name="isotope_vector" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             A vector of isotope hash values.
+             These values have to be stored in an array, sorted in decreasing order.
+             The array is filled with zero hash values indicating unused places.
+             The individual hash values are built with the following hash function:
+             
+             The hash value :math:`H` is :math:`H = Z + N*256` with :math:`Z`
+             the number of protons and :math:`N` the number of neutrons
+             of each isotope respectively.
+             
+             Z and N have to be 8-bit unsigned integers.
+             For the rationale behind this `M. Kühbach et al. (2021) &lt;https://doi.org/10.1017/S1431927621012241&gt;`_
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="1"/>
+            <dim index="2" value="n_ivecmax"/>
+        </dimensions>
+    </field>
+    <field name="nuclid_list" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             A supplementary row vector which decodes the isotope_vector into
+             a human-readable matrix of nuclids with the following formatting:
+             
+             The first row specifies the isotope mass number, i.e. using the hashvalues
+             from the isotope_vector this is :math:`Z + N`. As an example for a
+             carbon-14 isotope the number is 14.
+             The second row specifies the number of protons :math:`Z`, e.g. 6 for the
+             carbon-14 example. This row matrix is thus a mapping the notation of
+             using superscribed isotope mass and subscripted number of protons to
+             identify isotopes.
+             Unused places filling up to n_ivecmax need to be filled with zero.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="2"/>
+            <dim index="2" value="n_ivecmax"/>
+        </dimensions>
+    </field>
+    <field name="color">
+        <doc>
+             Color code used for visualizing such ions.
+        </doc>
+    </field>
+    <field name="volume" type="NX_FLOAT" units="NX_VOLUME">
+        <doc>
+             Assumed volume of the ion.
+             
+             In atom probe microscopy this field can be used to store the reconstructed
+             volume per ion (average) which is typically stored in range files and will
+             be used when building a tomographic reconstruction of an atom probe
+             dataset.
+        </doc>
+    </field>
+    <field name="charge" type="NX_FLOAT" units="NX_CHARGE">
+        <doc>
+             Charge of the ion.
+        </doc>
+    </field>
+    <field name="charge_state" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Signed charge state of the ion in multiples of electron charge.
+             
+             Only positive values will be measured in atom probe microscopy as the
+             ions are accelerated by a negatively signed bias electric field.
+             In the case that the charge state is not explicitly recoverable,
+             the value should be set to zero.
+             
+             In atom probe microscopy this is for example the case when using
+             classical range file formats like RNG, RRNG for atom probe data.
+             These file formats do not document the charge state explicitly.
+             They report the number of atoms of each element per molecular ion
+             surplus the mass-to-charge-state-ratio interval.
+             With this it is possible to recover the charge state only for
+             specific molecular ions as the accumulated mass of the molecular ion
+             is defined by the isotopes, which without knowing the charge leads
+             to an underconstrained problem.
+             Details on ranging can be found in the literature: `M. K. Miller &lt;https://doi.org/10.1002/sia.1719&gt;`_
+        </doc>
+    </field>
+    <field name="name">
+        <doc>
+             Human-readable ion type name (e.g. Al +++)
+             The string should consists of ASCII UTF-8 characters, 
+             ideally using LaTeX notation to specify the isotopes, ions, and charge
+             state. Examples are 12C + or Al +++.
+             Although this name may be human-readable and intuitive, parsing such
+             names becomes impractical for more complicated cases. Therefore, for the
+             field of atom probe microscopy the isotope_vector should be the
+             preferred machine-readable format to use.
+        </doc>
+    </field>
+    <field name="mass_to_charge_range" type="NX_FLOAT" units="NX_ANY">
+        <doc>
+             Associated lower (mqmin) and upper (mqmax) bounds of 
+             mass-to-charge-state ratio interval(s) [mqmin, mqmax]
+             (boundaries included) for which the respective ion is one to be labelled
+             with ion_identifier. The field is primarily of interest to document the
+             result of indexing a ToF/mass spectrum.
+        </doc>
+        <!--\@units: Da-->
+        <dimensions rank="2">
+            <dim index="1" value="n_ranges"/>
+            <dim index="2" value="2"/>
+        </dimensions>
+    </field>
+</definition>
