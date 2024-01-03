@@ -308,7 +308,7 @@ class NXClassDocGenerator:
         docstring = ""
         expanded_blocks = []
         for block in blocks:
-            expanded_blocks += block.split('\n')
+            expanded_blocks += block.split("\n")
 
         for block in expanded_blocks:
             if not block:
@@ -320,10 +320,8 @@ class NXClassDocGenerator:
             else:
                 docstring += " " + re.sub(r"\n", " ", block.strip())
 
-        for (name, target) in links:
-            docstring = docstring.replace(
-                f"`{name}`_", f"`{name} <{target}>`_"
-            )
+        for name, target in links:
+            docstring = docstring.replace(f"`{name}`_", f"`{name} <{target}>`_")
 
         return docstring
 
