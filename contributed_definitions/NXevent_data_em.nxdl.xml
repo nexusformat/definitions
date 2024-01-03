@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXevent_data_em" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         Metadata and settings of an electron microscope for scans and images.
+         
+         The need for such a structuring of data is evident from the fact that
+         electron microscopes are dynamic. Oftentimes it suffices to calibrate the
+         instrument at the start of the session. Subsequently, data (images, spectra, etc.)
+         can be collected. Users may wish to take only a single scan or image and
+         complete their microscope session; however
+         
+         frequently users are working much longer at the microscope, recalibrate and take
+         multiple data items (scans, images, spectra). Each item comes with own detector
+         and eventually on-the-fly processing settings and calibrations.
+         
+         For the single data item use case one may argue that the need for an additional
+         grouping is redundant. Instead, the metadata could equally be stored inside
+         the respective groups of the top-level mandatory NXinstrument group.
+         On the flip side, even for a session with a single image, it would also not
+         harm to nest the data.
+         
+         In fact, oftentimes scientists feel that there is a need to store details
+         about eventual drift of the specimen in its holder (if such data is available)
+         or record changes to the lens excitations or apertures used and/or changed.
+         Although current microscopes are usually equipped with stabilization
+         systems for many of the individual components, it can still be useful
+         to store time-dependent data in detail.
+         
+         Another reason if not a need for having more finely granularizable options for
+         storing time-dependent data, is that over the course of a session one may
+         reconfigure the microscope. What is a reconfiguration? This could be the
+         change of an aperture mode because a scientist may first collect an image
+         with some aperture and then pick a different value and continue.
+         As the aperture affects the electron beam, it will affect the system.
+         
+         Let aside for a moment the technology and business models, an EM could be
+         monitored (and will likely become so more in the future) for streaming out
+         spatio-temporal details about its components, locations of (hardware components) and objects within the region-of-interest. Eventually external stimuli are applied
+         and the specimen repositioned.
+         
+         Some snapshot or integrated data from this stream are relevant for understanding
+         signal genesis and electron/ion-beam-sample interaction (paths). In such a generic
+         case it might be necessary to sync these streaming data with those intervals
+         in time when specific measurements are taken (spectra collected,
+         images taken, diffraction images indexed on-the-fly).
+         
+         Therefore, both the instrument and specimen should always be considered as dynamic.
+         Scientists often report or feel (difficult to quantify) observations that
+         microscopes *perform differently* across sessions, without sometimes being
+         able to identify clear root causes. Users of the instrument may consider
+         such conditions impractical, or *too poor* and thus either abort their session
+         or try to bring the microscope first into a state where conditions are considered
+         more stable, better, or of some whatever high enough quality to reuse
+         data collection.
+         
+         In all these cases it is practical to have a mechanism how time-dependent data
+         of the instrument state can be stored and documented in a interoperable way.
+         Where should these data be stored? With NeXus these data should not only be
+         stored in the respective instrument component groups of the top-level NXinstrument.
+         The reason is that this group should be reserved for as stable as possible
+         quantities which do not change over the session. Thereby we can avoid to store
+         repetitively that there is a certain gun or detector available but just store
+         the changes. This is exactly what the em_lab group is for inside NXevent_data_em.
+         
+         Ideally, NXevent_data_em are equipped with a start_time and end_time
+         to represent a time interval (remind the idea of the instrument state stream)
+         during which the scientist considered (or practically has to consider)
+         the microscope (especially ebeam and specimen) as stable enough.
+         
+         Arguably it is oftentimes tricky to specify a clear time interval when the
+         microscope is stable enough. Take for instance the acquisition of an image
+         or spectra stack. It is not fully possible (technically) to avoid that even
+         within a single image instabilities of the beam are faced and drift occurs.
+         Maybe in many cases this these instabilities are irrelevant but does this
+         warrant to create a data schema where either the microscope state can only
+         be stored very coarsely or one is forced to store it very finely?
+         
+         This is a question of how one wishes to granularize pieces of information.
+         A possible solution is to consider each probed position, i.e. point in time
+         when the beam was not blanked and thus when the beam illuminates a portion of
+         the material, i.e. the interaction volume, whose signal contributions are then
+         counted by the one or multiple detector(s) as per pixel- or per voxel signal
+         in the region-of-interest.
+         NXevent_data_em in combination with the NXem application definition
+         allows researchers to document this. Noteworty to mention is that we understand
+         that in many cases realizing such a fine temporal and logical granularization
+         and data collection is hard to achieve in practice.
+         
+         A frequently made choice, mainly for convenience, is that drift and scan distortions
+         are considered a feature or inaccuracy of the image and/or spectrum and thus
+         one de facto accepts that the microscope was not as stable as expected during
+         the acquisition of the image. We learn that the idea of a time interval
+         during the microscope session may be interpreted differently by different
+         users. Here we consider the choice to focus on images and spectra, and eventually
+         single position measurements as the smallest granularization level.
+         Which eventually may require to add optional NXprocess instances for respectively
+         collected data to describe the relevant distortions. Nevertheless, the distortions
+         are typically corrected for by numerical protocols. This fact warrants to
+         consider the distortion correction a computational workflow which can be
+         modelled as a chain of NXprocess instances each with own parameters.  an own 
+         A more detailed overview of such computational steps to cope with scan distortions
+         is available in the literature:
+         
+         * `C. Ophus et al. &lt;https://dx.doi.org/10.1016/j.ultramic.2015.12.002&gt;`_  
+         * `B. Berkels et al. &lt;https://doi.org/10.1016/j.ultramic.2018.12.016&gt;`_  
+         * `L. Jones et al. &lt;https://link.springer.com/article/10.1186/s40679-015-0008-4&gt;`_  
+         
+         For specific simulation purposes, mainly in an effort to digitally repeat
+         or simulate the experiment, it is tempting to consider dynamics of the
+         instrument, implemented as time-dependent functional descriptions of
+         e.g. lens excitations, beam shape functions, trajectories of groups of
+         electrons, or detector noise models.
+         
+         For now the preferred strategy to handle these cases is through
+         customizations of the specific fields within NXevent_data_em instances.
+         
+         Another alternative could be to sample finer, eventually dissimilarly along
+         the time axi; however this may cause situations where an NXevent_data_em
+         instance does not contain specific measurements (i.e. images, spectra of
+         scientific relevance).
+         
+         In this case one should better go for a customized application definition
+         with a functional property description inside members (fields or groups)
+         in NXevent_data_em instances; or resort to a specific offspring application
+         definition of NXem which documents metadata for tracking explicitly electrons
+         (with ray-tracing based descriptors/computational geometry descriptors)
+         or tracking of wave bundles.
+         
+         This perspective on much more subtle time-dependent considerations of electron
+         microscopy can be advantageous also for storing details of time-dependent
+         additional components that are coupled to and/or synced with a microscope.
+         
+         Examples include cutting-edge experiments where the electron beam gets
+         coupled/excited by e.g. lasers. In this case, the laser unit should be
+         registered under the top-level NXinstrument section. Its spatio-temporal
+         details could be stored inside respective additional groups of the NXinstrument
+         though inside instances of here detailed NXevent_data_em.
+    </doc>
+    <field name="start_time" type="NX_DATE_TIME">
+        <doc>
+             ISO 8601 time code with local time zone offset to UTC information included
+             when the snapshot time interval started. If the user wishes to specify an
+             interval of time that the snapshot should represent during which the instrument
+             was stable and configured using specific settings and calibrations,
+             the start_time is the start (left bound of the time interval) while
+             the end_time specifies the end (right bound) of the time interval.
+        </doc>
+    </field>
+    <field name="end_time" type="NX_DATE_TIME">
+        <doc>
+             ISO 8601 time code with local time zone offset to UTC information included
+             when the snapshot time interval ended.
+        </doc>
+    </field>
+    <field name="event_identifier">
+        <doc>
+             Reference to a specific state and setting of the microscope.
+        </doc>
+    </field>
+    <field name="event_type">
+        <doc>
+             Which specific event/measurement type. Examples are:
+             
+             * In-lens/backscattered electron, usually has quadrants  
+             * Secondary_electron, image, topography, fractography, overview images  
+             * Backscattered_electron, image, Z or channeling contrast (ECCI)  
+             * Bright_field, image, TEM  
+             * Dark_field, image, crystal defects  
+             * Annular dark field, image (medium- or high-angle), TEM  
+             * Diffraction, image, TEM, or a comparable technique in the SEM  
+             * Kikuchi, image, SEM EBSD and TEM diffraction  
+             * X-ray spectra (point, line, surface, volume), composition EDS/EDX(S)  
+             * Electron energy loss spectra for points, lines, surfaces, TEM  
+             * Auger, spectrum, (low Z contrast element composition)  
+             * Cathodoluminescence (optical spectra)  
+             * Ronchigram, image, alignment utility specifically in TEM  
+             * Chamber, e.g. TV camera inside the chamber, education purposes.  
+             
+             This field may also be used for storing additional information about the event.
+        </doc>
+    </field>
+    <group type="NXimage_set"/>
+    <group type="NXspectrum_set"/>
+    <group type="NXinstrument"/>
+    <group type="NXuser"/>
+    <group type="NXinteraction_vol_em"/>
+    <!--a collection of images take and group under this event
+NEW ISSUE: should this only be one instance for a given event?
+(NXimage_set_em_se):
+(NXimage_set_em_bse):
+(NXimage_set_em_ecci):
+(NXimage_set_em_bf):
+(NXimage_set_em_df):
+(NXimage_set_em_adf):
+(NXimage_set_em_kikuchi):
+(NXimage_set_em_diffrac):
+(NXspectrum_set_em_xray):
+(NXspectrum_set_em_eels):
+(NXspectrum_set_em_auger):
+(NXspectrum_set_em_cathodolum):
+(NXimage_set_em_ronchigram):
+(NXimage_set_em_chamber):
+a collection of specific details about state of the microscope-->
+</definition>
