@@ -310,12 +310,36 @@ class NXClassDocGenerator:
             out_blocks.append("\n".join(out_lines))
         return out_blocks
 
+    def _handle_multiline_docstring(self, blocks):
+        links = []
+        docstring = ""
+        expanded_blocks = []
+        for block in blocks:
+            expanded_blocks += block.split('\n')
+
+        for block in expanded_blocks:
+            if not block:
+                continue
+
+            link_match = re.search(r"\.\. _([^:]+):(.*)", block)
+            if link_match is not None:
+                links.append((link_match.group(1), link_match.group(2).strip()))
+            else:
+                docstring += " " + re.sub(r"\n", " ", block.strip())
+
+        for (name, target) in links:
+            docstring = docstring.replace(
+                f"`{name}`_", f"`{name} <{target}>`_"
+            )
+
+        return docstring
+
     def _get_doc_line(self, ns, node):
         blocks = self._get_doc_blocks(ns, node)
         if len(blocks) == 0:
             return ""
         if len(blocks) > 1:
-            raise Exception(f"Unexpected multi-paragraph doc [{'|'.join(blocks)}]")
+            return self._handle_multiline_docstring(blocks)
         return re.sub(r"\n", " ", blocks[0])
 
     def _get_minOccurs(self, node):
