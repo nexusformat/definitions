@@ -101,6 +101,7 @@
                  MPES spectrometer
                  
                      This concept is related to term `12.58`_ of the ISO 18115-1:2023 standard.
+                 
                  .. _12.58: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.58
             </doc>
             <group name="energy_resolution" type="NXresolution" recommended="true">
@@ -108,9 +109,11 @@
                      Overall energy resolution of the MPES instrument
                      
                          This concept is related to term `10.7 ff.`_ of the ISO 18115-1:2023 standard.
+                     
                      .. _10.7 ff.: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.7
                      
                          This concept is related to term `10.24`_ of the ISO 18115-1:2023 standard.
+                     
                      .. _10.24: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24
                 </doc>
                 <field name="physical_quantity"/>
@@ -502,10 +505,6 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                     <group name="output_log" type="NXlog">
                         <field name="value" units="NX_CURRENT"/>
                     </group>
-                <group name="device_information" type="NXfabrication" recommended="true">
-                    <field name="vendor" recommended="true"/>
-                    <field name="model" recommended="true"/>
-                    <field name="identifier" recommended="true"/>
                 </group>
             </group>
         </group>
@@ -651,15 +650,6 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                      group in NXsample instead.
                 </doc>
             </field>
-            <group name="sample_history" type="NXnote" recommended="true">
-                <doc>
-                     A descriptor to keep track of the treatment of the sample before entering the
-                     photoemission experiment. Ideally, a full report of the previous operations, in
-                     any format (NXnote allows to add pictures, audio, movies). Alternatively, a
-                     reference to the location or a unique identifier or other metadata file. In the
-                     case these are not available, free-text description.
-                </doc>
-            </group>
             <field name="atom_types" recommended="true">
                 <doc>
                      List of comma-separated elements from the periodic table
@@ -669,29 +659,6 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                 </doc>
             </field>
             <field name="physical_form" recommended="true"/>
-            <field name="preparation_date" type="NX_DATE_TIME" recommended="true">
-                <doc>
-                     Date of preparation of the sample for the XPS experiment (i.e. cleaving, last
-                     annealing).
-                </doc>
-            </field>
-            <group name="preparation_description" type="NXnote" optional="true">
-                <doc>
-                     Description of the surface preparation technique for the XPS experiment, i.e.
-                     UHV cleaving, in-situ growth, sputtering/annealing etc. Ideally, a full report
-                     of the previous operations, in any format(NXnote allows to add pictures, audio,
-                     movies). Alternatively, a reference to the location or a unique identifier or
-                     other metadata file. In the case these are not available, free-text description.
-                </doc>
-            </group>
-            <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE" recommended="true">
-                <doc>
-                     In the case of a fixed temperature measurement this is the scalar temperature of
-                     the sample. In the case of an experiment in which the temperature is changed and
-                     recoded, this is an array of length m of temperatures. This should be a link to
-                     /entry/instrument/manipulator/sample_temperature.
-                </doc>
-            </field>
             <field name="situation" recommended="true">
                 <enumeration>
                     <item value="vacuum"/>
@@ -700,12 +667,96 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                     <item value="reducing atmosphere"/>
                 </enumeration>
             </field>
-            <field name="gas_pressure" type="NX_FLOAT" units="NX_PRESSURE" recommended="true"/>
-            <field name="bias" type="NX_FLOAT" units="NX_VOLTAGE" optional="true">
+            <group type="NXsample_history" recommended="true">
+                <doc>
+                     A set of activities that occurred to the sample prior to/during photoemission experiment.
+                     
+                     Ideally, a full report of the previous operations (or links to a chain of operations).
+                     Alternatively, notes allow for additional descriptors in any format
+                     (NXnote allows to add pictures, audio, movies). Alternatively, a
+                     reference to the location or a unique identifier or other metadata file. In the
+                     case these are not available, free-text description.
+                </doc>
+                <group name="sample_preparation" type="NXphysical_process" recommended="true">
+                    <doc>
+                         Details about the sample preparation for the MPES experiment (e.g. UHV cleaving,
+                         in-situ growth, sputtering/annealing, etc.).
+                    </doc>
+                    <field name="start_time" type="NX_DATE_TIME"/>
+                    <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+                    <field name="method" recommended="true">
+                        <doc>
+                             Details about the method of sample preparation before the MPES experiment.
+                        </doc>
+                    </field>
+                    <field name="notes" optional="true"/>
+                </group>
+            </group>
+            <group name="temperature" type="NXenvironment" recommended="true">
+                <doc>
+                     Sample temperature (either controlled or just measured).
+                </doc>
+                <group name="temperature_sensor" type="NXsensor">
+                    <doc>
+                         Temperature sensor measuring the sample temperature.
+                         This should be a link to /entry/instrument/manipulator/temperature_sensor.
+                    </doc>
+                </group>
+                <group name="sample_heater" type="NXactuator" optional="true">
+                    <doc>
+                         Device to heat the sample.
+                         This should be a link to /entry/instrument/manipulator/sample_heater.
+                    </doc>
+                </group>
+            </group>
+            <group name="gas_pressure" type="NXenvironment" recommended="true">
+                <doc>
+                     Gas pressure surrounding the sample.
+                </doc>
+                <group name="pressure_gauge" type="NXsensor">
+                    <doc>
+                         Gauge measuring the gas pressure.
+                         
+                         This should be a link to /entry/instrument/pressure_gauge.
+                    </doc>
+                </group>
+            </group>
+            <group name="bias" type="NXenvironment" recommended="true">
                 <doc>
                      Voltage applied to sample and sample holder.
                 </doc>
-            </field>
+                <group name="voltmeter" type="NXsensor">
+                    <doc>
+                         Sensor setting/measuring the applied voltage.
+                         
+                         This should be a link to /entry/instrument/manipulator/sample_bias_voltmeter.
+                    </doc>
+                </group>
+            </group>
+            <group name="drain_current" type="NXenvironment" recommended="true">
+                <doc>
+                     Drain current of the sample and sample holder.
+                </doc>
+                <group name="amperemeter" type="NXsensor">
+                    <doc>
+                         Amperemeter measuring the drain current of the sample and sample holder.
+                         
+                         This should be a link to /entry/instrument/manipulator/drain_current_amperemeter.
+                    </doc>
+                </group>
+            </group>
+            <group name="flood_gun_current" type="NXenvironment" optional="true">
+                <doc>
+                     Current of low-energy electrons to the sample for charge neutralization
+                </doc>
+                <group name="flood_gun" type="NXactuator">
+                    <doc>
+                         Flood gun creating a current of low-energy electrons.
+                         
+                         This should be a link to /entry/instrument/flood_gun.
+                    </doc>
+                </group>
+            </group>
         </group>
         <group type="NXdata">
             <attribute name="signal">
@@ -739,8 +790,8 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                             <doc>
                                  Calibrated kinetic energy axis.
                                  
-                                 This concept is related to term `3.35`_ of the ISO 18115-1:2023 standard.
-
+                                     This concept is related to term `3.35`_ of the ISO 18115-1:2023 standard.
+                                 
                                  .. _3.35: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.35
                             </doc>
                         </item>
@@ -748,8 +799,8 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                             <doc>
                                  Calibrated binding energy axis.
                                  
-                                 This concept is related to term `12.16`_ of the ISO 18115-1:2023 standard.
-
+                                     This concept is related to term `12.16`_ of the ISO 18115-1:2023 standard.
+                                 
                                  .. _12.16: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
                             </doc>
                         </item>
