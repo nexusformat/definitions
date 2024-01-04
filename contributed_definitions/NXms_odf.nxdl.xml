@@ -1,0 +1,171 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXms_odf" extends="NXprocess" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="n_varphi_one">
+            <doc>
+                 Number of pixel per varphi section plot along the varphi_one fastest direction.
+            </doc>
+        </symbol>
+        <symbol name="n_capital_phi">
+            <doc>
+                 Number of pixel per varphi section plot along the capital_phi slow direction.
+            </doc>
+        </symbol>
+        <symbol name="n_varphi_two">
+            <doc>
+                 Number of pixel per varphi section plot along the varphi_two slowest direction.
+            </doc>
+        </symbol>
+        <symbol name="k">
+            <doc>
+                 Number of local maxima evaluated in the component analysis.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Base class to store an orientation distribution function (ODF) computation.
+    </doc>
+    <group name="configuration" type="NXobject">
+        <doc>
+             Details about the algorithm used for computing the ODF.
+        </doc>
+        <field name="crystal_symmetry_point_group" type="NX_CHAR">
+            <doc>
+                 Point group of the crystal structure (International Table of Crystallography)
+                 of the phase for which the here documented phase-dependent ODF was computed.
+            </doc>
+        </field>
+        <field name="specimen_symmetry_point_group" type="NX_CHAR">
+            <doc>
+                 Point group assumed for processing-induced *sample symmetries*.
+                 (according to International Table of Crystallography).
+            </doc>
+        </field>
+        <field name="kernel_halfwidth" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                 Halfwidth of the kernel.
+            </doc>
+        </field>
+        <field name="kernel_name" type="NX_CHAR">
+            <doc>
+                 Name of the kernel.
+            </doc>
+        </field>
+        <field name="resolution" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                 Resolution of the kernel.
+            </doc>
+        </field>
+    </group>
+    <group name="kth_extrema" type="NXobject">
+        <field name="kth" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 Number of local maxima evaluated for the ODF.
+            </doc>
+        </field>
+        <!--value of kth should be k-->
+        <field name="location" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                 Euler angle representation of the kth-most maxima of the ODF
+                 in decreasing order of the intensity maximum.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="k"/>
+                <dim index="2" value="3"/>
+            </dimensions>
+        </field>
+        <field name="theta" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                 Disorientation threshold within which intensity of the ODF
+                 is integrated for the component analysis.
+            </doc>
+        </field>
+        <field name="volume_fraction" type="NX_NUMBER" units="NX_ANY">
+            <doc>
+                 Integrated ODF intensity within a theta-ball of SO3 about
+                 each location as specified for each location in the order
+                 and reported in the order of these locations.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="k"/>
+            </dimensions>
+        </field>
+    </group>
+    <group name="phi_two_plot" type="NXdata">
+        <doc>
+             Visualization of the ODF intensity as orthogonal sections through Euler space.
+             
+             This is one example of typical default plots used in the texture
+             community in Materials Engineering.
+             
+             Mind that the Euler space is a distorted space. Therefore, equivalent
+             orientations show intensity contributions in eventually multiple
+             locations.
+        </doc>
+        <!--\@signal: intensity
+\@axes: [varphi_two, capital_phi, varphi_one]
+\@varphi_one_indices: 0
+\@capital_phi: 1
+\@varphi_two_indices: 2-->
+        <field name="intensity" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+            <doc>
+                 ODF intensity at probed locations relative to
+                 null model of a completely random texture.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_varphi_two"/>
+                <dim index="2" value="n_capital_phi"/>
+                <dim index="3" value="n_varphi_one"/>
+            </dimensions>
+        </field>
+        <field name="varphi_one" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                 Pixel center angular position along the :math:`\varphi_1` direction.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_varphi_one"/>
+            </dimensions>
+        </field>
+        <!--\@long_name(NX_CHAR):-->
+        <field name="varphi_two" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                 Pixel center angular position along the :math:`\varphi_2` direction.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_varphi_two"/>
+            </dimensions>
+        </field>
+        <!--\@long_name(NX_CHAR):-->
+        <field name="capital_phi" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                 Pixel center angular position along the :math:`\Phi` direction.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_capital_phi"/>
+            </dimensions>
+        </field>
+    </group>
+    <!--\@long_name(NX_CHAR):-->
+</definition>

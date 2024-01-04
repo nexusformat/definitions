@@ -1,0 +1,245 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXem_correlation" extends="NXem_method" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         Base class to combine different method-specific data in electron microscopy.
+         
+         This base class represent a template for documenting correlations
+         (spatial, temporal) between different method-specific results.
+    </doc>
+    <group type="NXprocess">
+        <doc>
+             Details about processing steps.
+        </doc>
+        <field name="sequence_index" type="NX_INT"/>
+    </group>
+    <group name="indexing" type="NXprocess">
+        <doc>
+             Details about correlated or logically connected EBSD datasets.
+             
+             One important class of such correlated experiments are the so-called
+             (quasi) in-situ experiments. In this case the same or nearly the same ROI
+             gets analyzed via a repetitive sequence of thermomechanical treatment,
+             sample preparation, measurement, on-the-fly-indexing. Phenomena
+             investigated are recrystallization, strain accumulation, material damage.
+             Post-processing is required to correlate and reidentify eventual
+             microstructural features or local ROIs across several orientation maps.
+             
+             Another important class of correlated experiments are the so-called
+             serial-sectioning experiments. Here the same sample is measured
+             repetitively after polishing each time, to create a stack of
+             orientation data which can be reconstructed to a
+             three-dimensional volume ROI.
+             
+             Data can be correlated in time, position (spatial), or both (spatiotemporal).
+             
+             Spatial correlations between repetitively characterized regions-of-interests
+             are typically correlated using image registration and alignment algorithms.
+             For this typically so-called landmarks are used. These can be grains with
+             a very large size or specific shape, i.e. grains which are qualitatively
+             different enough to be used as a guide how images are shifted relative to
+             one another. Other commonly used landmarks are fiducial marks which are
+             milled into the specimen surface using focus-ion beam milling and/or various
+             types of indentation methods.
+             
+             As far as the same physical region-of-interest is just measured several times,
+             the additional issue of the depth increment is not a concern. However, correct
+             assumptions for the depth increment, amount of material removed along the milling
+             direction is relevant for accurate and precise three-dimensional (serial-sectioning)
+             correlations. For these studies it can be tricky though to assume or estimate
+             useful depth increments. Different strategies have been proposed like
+             calibrations, wedged-shaped landmarks and computer simulation assisted
+             assumption making.
+             
+             Despite the use of landmarks, there are many practical issues which make the
+             processing of correlations imprecise and inaccurate. Among these are drift
+             and shift of the specimen, instabilities of the holder, the beam, irrespective
+             of the source of the drift, charging effects, here specifically causing local
+             image distortions and rotations which may require special processing algorithms
+             to reduce such imprecisions.
+             
+             Time correlations face all of the above-mentioned issues surplus the challenge
+             that specific experimental protocols have to be used to ensure the material state
+             is observed at specific physical time. The example of quasi in-situ characterization
+             of crystal growth phenomena, a common topic in engineering or modern catalysis research
+             makes it necessary to consider that e.g. the target value for the desired annealing
+             temperature is not just gauged based on macroscopic arguments but considers
+             that transient effects take place. Heating or quenching a sample might thus might
+             not have been executed under conditions in the interaction volume as they are
+             documented and/or assumed.
+             
+             These issue cause that correlations have an error margin as to how accurately
+             respective datasets were not only just synced based on the geometry of the
+             region-of-interests and the time markers but also to asssure which physical
+             conditions the specimen experienced over the course of the measurements.
+             
+             The fourth example of the em_om reference implementation explores the use of the
+             correlation group with a serial-sectioning datasets that was collected by the
+             classical Inconel 100 dataset collected by M. D. Uchic and colleagues
+             (M. Groeber M, Haley BK, Uchic MD, Dimiduk DM, Ghosh S 3d reconstruction and
+             characterization of polycrystalline microstructures using a fib-sem system data set.
+             Mater Charac 2006, 57 259–273. 10.1016/j.matchar.2006.01.019M).
+             
+             This dataset was specifically relevant in driving forward the implementation
+             of the DREAM.3D software. DREAM.3D is an open-source software project for
+             post-processing and reconstructing, i.e. correlating sets of orientation
+             microscopy data foremost spatially. One focus of the software is the
+             (post-)processing of EBSD datasets. Another cutting edge tool with similar
+             scope but a commercial solution by Bruker is QUBE which was developed by
+             P. Konijnenberg and coworkers.
+             
+             Conceptually, software like DREAM.3D supports users with creating linear
+             workflows of post-processing tasks. Workflows can be instructed via the
+             graphical user interface or via so-called pipeline processing via command line
+             calls. DREAM.3D is especially useful because its internal system documents all
+             input, output, and parameter of the processing steps. This makes DREAM.3D a
+             good candidate to interface with tools like em_om parser. Specifically, DREAM.3D
+             documents numerical results via a customized HDF5 file format called DREAM3D.
+             Workflow steps and settings are stored as nested dictionaries in JSON syntax
+             inside a supplementary JSON file or alongside the data in the DREAM3D file.
+             DREAM.3D has a few hundred algorithms implemented. These are called filters
+             in DREAM.3D terminology.
+             
+             Users configure a workflow which instructs DREAM.3D to send the data through
+             a chain of predefined and configured filters. Given that for each analysis
+             the filter is documented via its version tags surplus its parameter and setting
+             via a controlled vocabulary, interpreting the content of a DREAM3D HDF5 file
+             is possible in an automated manner using a parser. This makes DREAM.3D analyses
+             repeatable and self-descriptive. A key limitation though is that most frequently
+             the initial set of input data come from commercial files like ANG.
+             This missing link between the provenance of these input files, their associated
+             creation as electron microscope session, is also what NXem_ebsd solves.
+             
+             Nevertheless, as this can be solved with e.g. NXem_ebsd we are convinced that
+             the DREAM.3D and the em_om parser can work productively together to realize
+             RDMS-agnostic parsing of serial-section analyses.
+             
+             The internal documentation of the DREAM.3D workflow also simplifies the
+             provenance tracking represented by an instance of NXem_ebsd as not every
+             intermediate results has to be stored. Therefore, the fourth example
+             focuses on the key result obtained from DREAM.3D - the reconstructed
+             and aligned three-dimensional orientation map.
+             
+             Usually, this result is the starting point for further post-processing
+             and characterization of structural features. As here orientation microscopy
+             is insofar scale invariant using DREAM.3D, NXem_ebsd, and em_om should
+             be useful for different characterization methods, such as EBSD, Transmission
+             Kikuchi Diffraction (TKD), Automated Crystal Orientation Mapping (ACOM),
+             Nanobeam Electron Diffraction (using commercial systems like NanoMegas ASTAR)
+             or open-source implementations of these techniques (such as via pyxem/orix).
+             
+             The result of orientation microscopy methods are maps of local orientation
+             and thermodynamic phase (crystal structure) pieces of information. Virtually
+             all post-processing of such results for structural features includes again
+             a workflow of steps which are covered though by the NXms partner application
+             definition. The respective source of the data in an instance of NXms can
+             again be a link or reference to an instance of NXem_ebsd to complete the
+             chain of provenance.
+        </doc>
+        <group type="NXcrystal_structure"/>
+        <group name="roi" type="NXdata">
+            <field name="descriptor">
+                <doc>
+                     Descriptor representing the image contrast.
+                </doc>
+            </field>
+            <!--\@signal:  # data
+\@axes:  # [axis_y, axis_x]
+\@axis_x_indices: 0
+\@axis_y_indices: 1
+\@signal:
+\@axes:
+\@AXISNAME_indices:
+\@long_name:-->
+            <field name="title">
+                <doc>
+                     Title of the default plot.
+                </doc>
+            </field>
+            <field name="data" type="NX_NUMBER" units="NX_UNITLESS">
+                <doc>
+                     Descriptor values displaying the ROI.
+                </doc>
+                <dimensions rank="3">
+                    <dim index="1" value="n_z"/>
+                    <dim index="2" value="n_y"/>
+                    <dim index="3" value="n_x"/>
+                </dimensions>
+                <!--n_0 slowest 3, n_1 slow 2, n_2 fast 1, rgb triplet is fastest 0
+in axes fast to fastest
+while for _indices fastest to fast-->
+                <attribute name="long_name">
+                    <doc>
+                         Descriptor values.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="axis_z" type="NX_NUMBER" units="NX_LENGTH">
+                <doc>
+                     Calibrated coordinate along the z-axis.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_z"/>
+                </dimensions>
+                <attribute name="long_name">
+                    <doc>
+                         Label for the z axis
+                    </doc>
+                </attribute>
+            </field>
+            <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+                <doc>
+                     Calibrated coordinate along the y-axis.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_y"/>
+                </dimensions>
+                <attribute name="long_name">
+                    <doc>
+                         Label for the y axis
+                    </doc>
+                </attribute>
+            </field>
+            <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+                <doc>
+                     Calibrated coordinate along the x-axis.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_x"/>
+                </dimensions>
+                <attribute name="long_name">
+                    <doc>
+                         Label for the x axis
+                    </doc>
+                </attribute>
+            </field>
+        </group>
+    </group>
+    <!--NEW ISSUE: implement support for filters eventually many of them
+NEW ISSUE: for now only show that data from DREAM3D can be loaded.
+NEW ISSUE: how to handle landmarks
+NEW ISSUE: again an entire set of workflows such as rigid or non-rigid
+image registration etc.
+sequence_index(N0):-->
+</definition>

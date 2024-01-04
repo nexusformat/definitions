@@ -1,0 +1,383 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXms_ipf" extends="NXprocess" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <!--how to make this optional-->
+        <symbol name="n_z">
+            <doc>
+                 Number of pixel along the z slowest direction.
+            </doc>
+        </symbol>
+        <symbol name="n_y">
+            <doc>
+                 Number of pixel along the y slow direction.
+            </doc>
+        </symbol>
+        <symbol name="n_x">
+            <doc>
+                 Number of pixel along the x fast direction.
+            </doc>
+        </symbol>
+        <symbol name="n_rgb">
+            <doc>
+                 Number of RGB values along the fastest direction, always three.
+            </doc>
+        </symbol>
+        <symbol name="d">
+            <doc>
+                 Dimensionality of the mapping (either 2 or 3).
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Base class to store an inverse pole figure (IPF) mapping (IPF map).
+    </doc>
+    <attribute name="depends_on" type="NX_CHAR">
+        <doc>
+             Reference to the coordinate system whereby the projection_direction is defined.
+             
+             If the field depends_on is not provided but a parent of the instance
+             of this base class or its specialization defines an :ref:`NXcoordinate_system_set`
+             and exactly one :ref:`NXcoordinate_system`, the reference points to this system.
+             
+             If nothing is provided and none of the above-mentioned references pointing
+             in a parent, McStas is assumed.
+        </doc>
+    </attribute>
+    <field name="projection_direction" type="NX_NUMBER" units="NX_UNITLESS">
+        <doc>
+             The direction along which orientations are projected.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="3"/>
+        </dimensions>
+    </field>
+    <group name="input_grid" type="NXcg_grid">
+        <doc>
+             Details about the original grid.
+             
+             Here original grid means the one onto which the IPF map was computed
+             when exported from the tech partner's file format representation.
+        </doc>
+    </group>
+    <group name="output_grid" type="NXcg_grid">
+        <doc>
+             Details about the grid onto which the IPF is recomputed.
+             
+             Rescaling the visualization of the IPF map may be needed to enable
+             visualization in specific software tools like H5Web.
+             The value specifies the fractional change of the spacing between
+             the original mapping and the scaled one.
+        </doc>
+    </group>
+    <field name="interpolation" type="NX_CHAR">
+        <doc>
+             How where orientation values at the location of the output grid
+             positions computed.
+             
+             Nearest neighbour means the orientation of the closed (Euclidean distance)
+             grid point of the input_grid was taken.
+        </doc>
+        <enumeration>
+            <item value="nearest_neighbour"/>
+        </enumeration>
+    </field>
+    <group name="map" type="NXdata">
+        <doc>
+             Inverse pole figure mapping.
+             
+             Default inverse pole figure (IPF) plot of the data specific for each
+             phase. No ipf_mapID instances for non-indexed scan points as these are
+             by definition assigned the null phase with phase_identifier 0.
+             Inspect the definition of :ref:`NXcrystal_structure` and its field
+             phase_identifier for further details.
+             
+             Details about possible regridding and associated interpolation
+             during the computation of the IPF map visualization can be stored
+             using the input_grid, output_grid, and interpolation fields.
+             
+             The main purpose of this map is to offer a normalized default representation
+             of the IPF map for consumption by a research data management system (RDMS).
+             This is aligned with the first aim of :ref:`NXms_ipf`, to bring colleagues and
+             users of IPF maps together to discuss which pieces of information
+             need to be stored together. We are convinced a step-by-step design and
+             community-driven discussion about which pieces of information should
+             and/or need to be included is a practical strategy to work towards an
+             interoperable description and data model for exchanging IPF maps as specific
+             community-accepted tools to convey orientation maps.
+             
+             With this design the individual RDMS solutions and tools can still continue
+             to support specific custom data analyses workflow and routes but at least
+             there is one common understanding which enables also those users who are
+             not necessarily experts in all the details of the underlying techniques
+             can understand and thus eventually judge if the dataset is worth to be
+             reused or repurposed.
+        </doc>
+        <!--\@signal: data
+\@axes: [axis_y, axis_x]
+\@axis_x_indices: 0
+\@axis_y_indices: 1-->
+        <field name="data" type="NX_NUMBER" units="NX_UNITLESS">
+            <!--
+assume a mapping with step size 0.5 micron
+we need to distinguish
+pixel position, i.e. 0, 1, 2, 3, unit px
+  answers in which pixel on the map but map is disconnected from sample surface context
+calibrated pixel position 0., 0.5, 1.0, 1.5, unit micron
+  answers in addition physical dimensions (relevant to get crystal extent etc.) but still disconnected from sample surface context
+calibrated pixel position including the offset of the original coordinate system
+  answers everything would enable one to point if still in the microscope where on the sample surface each pixel is located
+tech partners oftentimes do not report to more than calibrated pixel position
+-->
+            <doc>
+                 Inverse pole figure color code for each map coordinate.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_y"/>
+                <dim index="2" value="n_x"/>
+                <dim index="3" value="3"/>
+            </dimensions>
+        </field>
+        <field name="axis_z" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Pixel center coordinate calibrated for step size along the z axis of the map.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_z"/>
+            </dimensions>
+        </field>
+        <!--\@long_name(NX_CHAR):-->
+        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Pixel center coordinate calibrated for step size along the y axis of the map.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_y"/>
+            </dimensions>
+        </field>
+        <!--\@long_name(NX_CHAR):-->
+        <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Pixel center coordinate calibrated for step size along the x axis of the map.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_x"/>
+            </dimensions>
+        </field>
+    </group>
+    <!--\@long_name(NX_CHAR):
+title:-->
+    <group name="legend" type="NXdata">
+        <doc>
+             The color code which maps colors into orientation into the fundamental zone.
+             
+             For each stereographic standard triangle (SST), i.e. a rendering of the
+             fundamental zone of the crystal-symmetry-reduced orientation space
+             SO3, it is possible to define a color model which assigns each point in
+             the fundamental zone a color.
+             
+             Different mapping models are used. These implement (slightly) different
+             scaling relations. Differences exist across representations of tech partners.
+             
+             Differences are which base colors of the RGB color model are placed in
+             which extremal position of the SST and where the white point is located.
+             
+             For further details see:
+             
+             * [G. Nolze et al.](https://doi.org/10.1107/S1600576716012942)
+             * Srikanth Patala and coworkers"'" work and of others.
+             
+             Details are implementation-specific and not standardized yet.
+             
+             Given that the SST has a complicated geometry, it cannot yet be
+             visualized using tools like H5Web, which is why for now the matrix
+             of a rasterized image which is rendered by the backend tool gets
+             copied into an RGB matrix to offer a default plot.
+        </doc>
+        <!--\@signal: data
+\@axes: [axis_y, axis_x]
+\@axis_x_indices: 0
+\@axis_y_indices: 1-->
+        <field name="data" type="NX_NUMBER" units="NX_UNITLESS">
+            <!--
+hehe, but can be larger than one but could also be an NX_DIMENSIONLESS !
+-->
+            <doc>
+                 Inverse pole figure color code for each map coordinate.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_y"/>
+                <dim index="2" value="n_x"/>
+                <dim index="3" value="3"/>
+            </dimensions>
+        </field>
+        <field name="axis_y" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Pixel along the y-axis.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_y"/>
+            </dimensions>
+        </field>
+        <!--\@long_name(NX_CHAR):-->
+        <field name="axis_x" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Pixel along the x-axis.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_x"/>
+            </dimensions>
+        </field>
+    </group>
+    <!--\@long_name(NX_CHAR):
+title:-->
+    <!--keep this for now for FAIRmat internal documentation
+It is important to mention that we cannot assume, at least for now,
+that the parser which writes to an NXem_ebsd-compliant file is also
+responsible or capable at all of computing the inverse pole figure
+color keys and maps itself. This cannot be assumed working because
+this mapping of orientation data uses involved mathematical algorithms
+and functions which not every tools used in the EBSD community is capable
+of using or is for sure not using in exactly the same way.
+
+Currently, we assume it is the responsibilty of the tool used which
+generated the data under on_the_fly_indexing to compute these
+plots and deliver these to the parser.
+
+Specific case studies have been explored by the experiment team of
+Area B of the FAIRmat project to realize and implement such mapping.
+
+The first case study uses the H5OINA format and the pyxem/orix library.
+As orix is a Python library, the coloring is performed by the em_om parser.
+
+The second case study uses MTex and its EBSD color coding model.
+As MTex is a Matlab tool, an intermediate format is written from MTex
+first which stores these pieces of information. The parser then pulls
+these data from the intermediate Matlab-agnostic representation and
+supplements the file with missing pieces of information as it is
+required by NXem_ebsd.
+
+The third case study shows how a generic set of Kikuchi pattern
+can be loaded with the em_om parser. The pattern are loaded directly
+from a ZIP file and mapped to an simulation image section for now.
+
+The fourth case study uses the DREAM.3D package which provides an own
+set of EBSD data post-processing procedures. DREAM.3D documents the
+processing steps with a pipeline file which is stored inside DREAM.3D
+output files. In this case study, the parser reads the DREAM.3D file
+and maps data relevant from the perspective of NXem_ebsd plus adds
+relevant IPF color maps as they were computed by DREAM.3D.
+Given that in this case the origin of the data is the DREAM.3D file
+again provenance is kept and more details can be followed upon when
+resolving origin.
+
+These examples offer a first set of suggestions on how to make EBSD
+data injectable into research data management system using schemes
+which themselves are agnostic to the specific RDMS and interoperable.
+Steps of collecting the raw data and post-processing these with custom
+scripts like MTex or commercial tools so far are mainly undocumented.
+The limitation is that a program which consumes results or dump files
+from these tools may not have necessarily all the sufficient information
+available to check if the injected orientation data and color models
+are matching the conventions which a user or automated system has
+injected into an electronic lab notebook from which currently the em_om
+parser collects the conventions and stores them into this NXem_ebsd instance.
+The immediate benefit of the here presented NXem_ebsd concept though
+is that the conventions and reference frame definitions are expected
+in an ELN-agnostic representation to make NXem_ebsd a generally useful
+data scheme for EBSD.
+
+Ideally, the em_om parser would load convention-compliant EBSD data
+and use subsequently a community library to transcode/convert orientation
+conventions and parameterized orientation values. Thereafter, convention-
+compliant default plot(s) could be created that would be truely interoperable.
+
+However, given the variety of post-processing tools available surplus
+the fact that these are not usually executed along standardized
+post-processing workflows which perform exactly the same algorithmic steps,
+this is currently not a practically implementable option. Indeed, first
+developers who wish to implement this would first have to create a library
+for performing such tasks, mapping generally between conventions,
+i.e. map and rotate coordinate systems at the parser level.
+
+The unfortunate situation in EBSD is that due to historical reasons
+and competitive strategies, different players in the field have
+implemented (slightly) different approaches each of which misses
+some part of a complete workflow description which is behind EBSD analyses:
+Sample preparation, measurement, indexing, post-processing, paper...
+
+The here exemplified default plot do not so far apply relevant rotations
+but takes the orientation values as they come from the origin and using
+coloring them as they come. It is thus the scientists responsibility to
+enter and check if the respective dataset is rotation-conventions-wise
+consistent and fit for a particular task.
+
+Ideally, with all conventions defined it can be possible to develop
+a converter which rotates the input data. This application definition
+does not assume this and users should be aware of this limitation.
+
+The key point is that the conventions however are captured and this is
+the most important step to the development of such a generic transcoder
+for creating interoperable EBSD datasets.
+
+Currently the conventions remain in the mind or manual lab book of the
+respective scientists or technicians instead of getting stored and
+communicated with research papers that are written based on
+specific dataset, i.e. database entries.
+
+The default gridded representation of the data should not be
+misinterpreted as the only possible way how EBSD data and OIM
+maps can be created!
+
+Indeed, the most general case is that patterns are collected for
+scan points. The scan generator of an electron microscope is instructed
+to steer the beam in such a way across the specimen surface that the
+beam illuminates certain positions for a certain amount time (usually
+equally-spaced and spending about the same amount of time at each
+position).
+
+Therefore, scan positions can be due to such regular flight plans and
+represent sampling on lines, line stacks, rectangular regions-of-
+interests, but also could instruct spiral, random, or adaptive scans
+instead of tessellations with square or hexagonal pixels.
+
+The majority of EBSD maps is though is reporting results for a regular
+grid (square, hexagon). What matters though in terms of damage induced
+by the electron beam and signal quality is the real electron dose
+history, i.e. for how long the beam exposed which location of the
+specimen. Especially when electron charging occurs (i.e. an excess
+amount of charge accumulates due to e.g. poor conducting away of this
+charge or an improper mounting, too high dose, etc. such details are
+relevant.
+
+Specifically, the default visualization is an inverse pole-figure (IPF)
+map with the usual RGB color coding. Different strategies and
+normalization schemes are in use to define such color coding.
+
+Finally, we should mention that each ipf_map represents data for
+scan points indexed as one phase. The alias/name of this phase should
+be stored in phase_name, the phase_identifier give an ID which must
+not be zero as this value is reserved for non-indexed / null model scan
+points.-->
+</definition>
