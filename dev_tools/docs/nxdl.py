@@ -17,6 +17,10 @@ from ..utils.github import get_file_contributors_via_api
 from ..utils.types import PathLike
 from .anchor_list import AnchorRegistry
 
+# controlling the length of progressively more indented sub-node
+MIN_COLLAPSE_HINT_LINE_LENGTH = 20
+MAX_COLLAPSE_HINT_LINE_LENGTH = 80
+
 
 class NXClassDocGenerator:
     """Generate documentation in reStructuredText markup
@@ -299,12 +303,34 @@ class NXClassDocGenerator:
             out_blocks.append("\n".join(out_lines))
         return out_blocks
 
+    def _handle_multiline_docstring(self, blocks):
+        links = []
+        docstring = ""
+        expanded_blocks = []
+        for block in blocks:
+            expanded_blocks += block.split("\n")
+
+        for block in expanded_blocks:
+            if not block:
+                continue
+
+            link_match = re.search(r"\.\. _([^:]+):(.*)", block)
+            if link_match is not None:
+                links.append((link_match.group(1), link_match.group(2).strip()))
+            else:
+                docstring += " " + re.sub(r"\n", " ", block.strip())
+
+        for name, target in links:
+            docstring = docstring.replace(f"`{name}`_", f"`{name} <{target}>`_")
+
+        return docstring
+
     def _get_doc_line(self, ns, node):
         blocks = self._get_doc_blocks(ns, node)
         if len(blocks) == 0:
             return ""
         if len(blocks) > 1:
-            raise Exception(f"Unexpected multi-paragraph doc [{'|'.join(blocks)}]")
+            return self._handle_multiline_docstring(blocks)
         return re.sub(r"\n", " ", blocks[0])
 
     def _get_minOccurs(self, node):
@@ -519,24 +545,30 @@ class NXClassDocGenerator:
                     self._print(f"{indent}{line}")
                 self._print()
 
-    def long_doc(self, ns, node):
+    def long_doc(self, ns, node, left_margin):
         length = 0
         line = "documentation"
         fnd = False
         blocks = self._get_doc_blocks(ns, node)
+        max_characters = max(
+            MIN_COLLAPSE_HINT_LINE_LENGTH, (MAX_COLLAPSE_HINT_LINE_LENGTH - left_margin)
+        )
         for block in blocks:
             lines = block.splitlines()
             length += len(lines)
             for single_line in lines:
                 if len(single_line) > 2 and single_line[0] != "." and not fnd:
                     fnd = True
-                    line = single_line
+                    line = single_line[:max_characters]
         return (length, line, blocks)
 
     def _print_doc_enum(self, indent, ns, node, required=False):
         collapse_indent = indent
         node_list = node.xpath("nx:enumeration", namespaces=ns)
-        (doclen, line, blocks) = self.long_doc(ns, node)
+        (doclen, line, blocks) = self.long_doc(ns, node, len(indent))
+        if len(node_list) + doclen > 1:
+            collapse_indent = f"{indent}    "
+            self._print(f"{indent}{self._INDENTATION_UNIT}.. collapse:: {line} ...\n")
         self._print_doc(
             collapse_indent + self._INDENTATION_UNIT, ns, node, required=required
         )
@@ -667,9 +699,8 @@ class NXClassDocGenerator:
         self._rst_lines.append(" ".join(args) + end)
 
     def get_first_parent_ref(self, path, tag):
-        spliter = path.find("/", 1)
-        nx_name = path[1:spliter]
-        path = path[spliter:]
+        nx_name = path[1 : path.find("/", 1)]
+        path = path[path.find("/", 1) :]
 
         try:
             parents = pynxtools_nxlib.get_inherited_nodes(path, nx_name)[2]
@@ -679,8 +710,11 @@ class NXClassDocGenerator:
             parent = parents[1]
             parent_path = parent_display_name = parent.attrib["nxdlpath"]
             parent_path_segments = parent_path[1:].split("/")
-            nxdl_attr = parent.attrib["nxdlbase"]
-            parent_def_name = nxdl_attr[nxdl_attr.rfind("/") : nxdl_attr.rfind(".nxdl")]
+            parent_def_name = parent.attrib["nxdlbase"][
+                parent.attrib["nxdlbase"]
+                .rfind("/") : parent.attrib["nxdlbase"]
+                .rfind(".nxdl")
+            ]
 
             # Case where the first parent is a base_class
             if parent_path_segments[0] == "":
