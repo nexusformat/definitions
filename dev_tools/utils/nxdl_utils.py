@@ -11,7 +11,11 @@ from pathlib import Path
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
 
-from ..nyaml2nxdl.nyaml2nxdl_helper import remove_namespace_from_tag
+
+def remove_namespace_from_tag(tag):
+    """Helper function to remove the namespace from an XML tag."""
+
+    return tag.split("}")[-1]
 
 
 class NxdlAttributeNotFoundError(Exception):
@@ -22,7 +26,7 @@ def get_nexus_definitions_path():
     """Check NEXUS_DEF_PATH variable.
     If it is empty, this function is filling it"""
     try:  # either given by sys env
-        return os.environ["NEXUS_DEF_PATH"]
+        return Path(os.environ["NEXUS_DEF_PATH"])
     except KeyError:  # or it should be available locally under the dir 'definitions'
         local_dir = Path(__file__).resolve().parent
         for _ in range(2):
@@ -45,7 +49,7 @@ def get_app_defs_names():
         if root.attrib["category"] == "application":
             files.append(nexus_file)
 
-    return [Path(file).stem for file in files] + ["NXroot"]
+    return [Path(file).name[:-9] for file in files] + ["NXroot"]
 
 
 @lru_cache(maxsize=None)
@@ -92,7 +96,7 @@ def get_hdf_info_parent(hdf_info):
 
 def get_nx_class(nxdl_elem):
     """Get the nexus class for a NXDL node"""
-    if "category" in nxdl_elem.attrib:
+    if "category" in nxdl_elem.attrib.keys():
         return ""
     return nxdl_elem.attrib.get("type", "NX_CHAR")
 
@@ -143,7 +147,7 @@ def get_nx_classes():
         except xmlER as e:
             raise ValueError(f"Getting an issue while parsing file {nexus_file}") from e
         if root.attrib["category"] == "base":
-            nx_class.append(nexus_file.stem)
+            nx_class.append(nexus_file.name[:-9])
     return sorted(nx_class)
 
 
@@ -228,7 +232,7 @@ def belongs_to_capital(params):
     (act_htmlname, chk_name, name_any, nxdl_elem, child, name) = params
     # or starts with capital and no reserved words used
     if (
-        (act_htmlname[0].isalpha() and act_htmlname[0].isupper())
+        (name_any or (act_htmlname[0].isalpha() and act_htmlname[0].isupper()))
         and name != "doc"
         and name != "enumeration"
     ):
@@ -236,6 +240,8 @@ def belongs_to_capital(params):
         if fit < 0:
             return False
         for child2 in nxdl_elem:
+            if not isinstance(child2.tag, str):
+                continue
             if (
                 get_local_name_from_xml(child) != get_local_name_from_xml(child2)
                 or get_node_name(child2) == act_htmlname
@@ -293,14 +299,20 @@ def get_own_nxdl_child(
     class_type - nxdl type or hdf classname (for groups, it is obligatory)
     hdf_name   - hdf name"""
     for child in nxdl_elem:
+        if not isinstance(child.tag, str):
+            continue
         if child.attrib.get("name") == name:
             return set_nxdlpath(child, nxdl_elem)
     for child in nxdl_elem:
+        if not isinstance(child.tag, str):
+            continue
         if child.attrib.get("name") == name:
             child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
             return child
 
     for child in nxdl_elem:
+        if not isinstance(child.tag, str):
+            continue
         result = get_own_nxdl_child_reserved_elements(child, name, nxdl_elem)
         if result is not False:
             return result
@@ -633,7 +645,7 @@ def add_base_classes(elist, nx_name=None, elem: ET.Element = None):
 
 def set_nxdlpath(child, nxdl_elem, tag_name=None):
     """Setting up child nxdlbase, nxdlpath and nxdlbase_class from nxdl_element."""
-    if nxdl_elem.get("nxdlbase"):
+    if nxdl_elem.get("nxdlbase") is not None:
         child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
         child.set("nxdlbase_class", nxdl_elem.get("nxdlbase_class"))
         # Handle element that does not has 'name' attr e.g. doc, enumeration
@@ -651,6 +663,8 @@ def get_direct_child(nxdl_elem, html_name):
     """returns the child of nxdl_elem which has a name
     corresponding to the html documentation name html_name"""
     for child in nxdl_elem:
+        if not isinstance(child.tag, str):
+            continue
         if get_local_name_from_xml(child) in (
             "group",
             "field",
@@ -666,6 +680,8 @@ def get_field_child(nxdl_elem, html_name):
     corresponding to the html documentation name html_name"""
     data_child = None
     for child in nxdl_elem:
+        if not isinstance(child.tag, str):
+            continue
         if get_local_name_from_xml(child) != "field":
             continue
         if get_node_name(child) == html_name:
@@ -718,6 +734,8 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
         if fnd_child is not None:
             return (fnd_child, fit)
     for child in nxdl_elem:
+        if not isinstance(child.tag, str):
+            continue
         fit = -2
         if get_local_name_from_xml(child) == nexus_type and (
             nexus_type != "group" or get_nx_class(child) == hdf_class_name
@@ -753,7 +771,9 @@ def walk_elist(elist, html_name):
                     if fitting_child is not None:
                         child = fitting_child
                     break
+        elist[ind] = child
         if child is None:
+            del elist[ind]
             continue
         # override: remove low priority inheritance classes if class_type is overriden
         if len(elist) > ind + 1 and get_nx_class(elist[ind]) != get_nx_class(
@@ -761,7 +781,7 @@ def walk_elist(elist, html_name):
         ):
             del elist[ind + 1 :]
         # add new base class(es) if new element brings such (and not a primitive type)
-        if len(elist) == ind + 1 and get_nx_class(elist[ind]).startswith("NX_"):
+        if len(elist) == ind + 1 and not get_nx_class(elist[ind]).startswith("NX_"):
             add_base_classes(elist)
     return elist, html_name
 
