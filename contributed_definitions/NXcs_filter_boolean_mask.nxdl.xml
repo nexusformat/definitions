@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcs_filter_boolean_mask" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcs_filter_boolean_mask" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -45,37 +45,47 @@
     <doc>
          Computer science base class for packing and unpacking booleans.
          
-         One use case is processing of object sets (like point cloud data).
-         When one applies e.g. a spatial filter to a set of points to define which 
-         points are analyzed and which not, it is useful to document which points were
-         taken. One can store this information in a compact manner with an array of 
-         boolean values. If the value is True the point is taken, else it is not.
+         This base class bookkeeps metadata to inform software about necessary modulo
+         operations to decode e.g. set membership of objects in sets which are encoded
+         as a packed array of boolean values.
          
-         If the points are identified by an array of integer identifiers and an 
-         arbitrary spatial filtering, the boolean array will be filled with True and False
-         values in an arbitrary manner. Especially when the number of points is large,
-         for instance several thousands and more, some situations can be more efficiently
-         stored if one would not store the boolean array but just list the identifiers
-         of the points taken. For instance if within a set of 1000 points only one point is
-         taken, it would take (naively) 4000 bits to store the array but only 32 bits
-         to store e.g. the ID of that taken point. Of course the 4000 bit field is so 
-         sparse that it could be compressed resulting also in a substantial reduction 
-         of the storage demands. Therefore boolean masks are useful compact descriptions
-         to store information about set memberships in a compact manner. 
-         In general it is true, though, that which representation is best, i.e. 
-         most compact (especially when compressed) depends strongly on occupation of
-         the array.
+         One use case is processing of object sets (point cloud data). When one applies
+         e.g. a spatial filter to a set of points to define which points are analyzed
+         and which not, one can store this information in a compact manner using an array
+         of boolean values. If the value is True the point is taken, otherwise the point
+         is not taken.
          
-         This base class just bookkeeps metadata to inform software about necessary 
-         modulo operations to decode the set membership of each object. This is useful
-         because the number of objects not necessarily is an integer multiple of the bit depth.
+         The resulting boolean array will be filled with True and False in a manner
+         that is often arbitrary and in general case-dependent.
+         
+         Especially when the number of points is large, for instance several thousands
+         or more, some situations can be more efficiently stored if one would not store
+         the boolean array but just list the identifiers of the points taken.
+         
+         For example, if within a set of 1000 points only one point is taken, it would
+         take (naively) 4000 bits to store the array but only 32 bits to store e.g. the
+         ID of the single point that is taken. Of course the 4000 bit field is so
+         sparse that it could be compressed resulting also in a substantial reduction
+         of the storage demands. Therefore, boolean masks are useful in that
+         they store compact representation of set memberships.
+         
+         The number of encoded pieces of information is not necessarily
+         an integer multiple of the bit depth.
     </doc>
-    <field name="number_of_objects" type="NX_UINT" units="NX_UNITLESS">
+    <attribute name="depends_on" type="NX_CHAR">
+        <doc>
+             Possibility to refer to which set this mask applies.
+             
+             If depends_on is not provided, it is assumed that the mask
+             applies to its direct parent.
+        </doc>
+    </attribute>
+    <field name="number_of_objects" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Number of objects represented by the mask.
         </doc>
     </field>
-    <field name="bitdepth" type="NX_UINT" units="NX_UNITLESS">
+    <field name="bitdepth" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Number of bits assumed matching on a default datatype.
              (e.g. 8 bits for a C-style uint8).
@@ -83,19 +93,19 @@
     </field>
     <field name="mask" type="NX_UINT" units="NX_UNITLESS">
         <doc>
-             The unsigned integer array representing the content of the mask.
-             If padding is used the padded bits have to be set to 0.
+             The content of the mask. If padding is used, padding bits have to be set to 0.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="n_total"/>
         </dimensions>
     </field>
-    <field name="identifier" type="NX_UINT">
+    <field name="identifier" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Link to/or array of identifiers for the objects. The decoded mask is
              interpreted consecutively, i.e. the first bit in the mask matches
              to the first identifier, the second bit in the mask to the second
-             identifier and so on and so forth.
+             identifier and so on and so forth. Resolving of identifier follows
+             the conventions made for depends_on, so consult the also its description.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="n_object"/>

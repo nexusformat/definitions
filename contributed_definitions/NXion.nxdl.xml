@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXion" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXion" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -40,13 +40,13 @@
     <doc>
          Set of atoms of a molecular ion or fragment in e.g. ToF mass spectrometry.
     </doc>
-    <field name="identifier">
+    <field name="identifier" type="NX_CHAR">
         <doc>
              A unique identifier whereby such an ion can be referred to
              via the service offered as described in identifier_type.
         </doc>
     </field>
-    <field name="identifier_type">
+    <field name="identifier_type" type="NX_CHAR">
         <doc>
              How can the identifier be resolved?
         </doc>
@@ -56,16 +56,17 @@
     </field>
     <field name="ion_type" type="NX_UINT" units="NX_UNITLESS">
         <doc>
-             Ion type (ion species) identifier. The identifier zero
-             is reserved for the special unknown ion type.
+             Ion type (ion species) identifier.
+             
+             The identifier zero is reserved for the special unknown ion type.
         </doc>
     </field>
     <field name="isotope_vector" type="NX_UINT" units="NX_UNITLESS">
         <doc>
-             A vector of isotope hash values.
-             These values have to be stored in an array, sorted in decreasing order.
-             The array is filled with zero hash values indicating unused places.
-             The individual hash values are built with the following hash function:
+             A vector of isotope hash values. These values have to be stored in an array,
+             sorted in decreasing order. The array is filled with zero hash values
+             indicating unused places. The individual hash values are built with the
+             following hash function:
              
              The hash value :math:`H` is :math:`H = Z + N*256` with :math:`Z`
              the number of protons and :math:`N` the number of neutrons
@@ -88,9 +89,9 @@
              from the isotope_vector this is :math:`Z + N`. As an example for a
              carbon-14 isotope the number is 14.
              The second row specifies the number of protons :math:`Z`, e.g. 6 for the
-             carbon-14 example. This row matrix is thus a mapping the notation of
-             using superscribed isotope mass and subscripted number of protons to
-             identify isotopes.
+             carbon-14 example. This row matrix is thus mapping the notation of
+             using superscribed isotope mass and subscripted number of protons
+             to identify isotopes.
              Unused places filling up to n_ivecmax need to be filled with zero.
         </doc>
         <dimensions rank="2">
@@ -98,12 +99,12 @@
             <dim index="2" value="n_ivecmax"/>
         </dimensions>
     </field>
-    <field name="color">
+    <field name="color" type="NX_CHAR">
         <doc>
              Color code used for visualizing such ions.
         </doc>
     </field>
-    <field name="volume" type="NX_FLOAT" units="NX_VOLUME">
+    <field name="volume" type="NX_NUMBER" units="NX_VOLUME">
         <doc>
              Assumed volume of the ion.
              
@@ -113,7 +114,7 @@
              dataset.
         </doc>
     </field>
-    <field name="charge" type="NX_FLOAT" units="NX_CHARGE">
+    <field name="charge" type="NX_NUMBER" units="NX_CHARGE">
         <doc>
              Charge of the ion.
         </doc>
@@ -132,34 +133,32 @@
              These file formats do not document the charge state explicitly.
              They report the number of atoms of each element per molecular ion
              surplus the mass-to-charge-state-ratio interval.
-             With this it is possible to recover the charge state only for
-             specific molecular ions as the accumulated mass of the molecular ion
-             is defined by the isotopes, which without knowing the charge leads
+             With this information it is possible to recover the charge state only
+             for specific molecular ions as the accumulated mass of the molecular ion
+             is defined by the isotopes, which without knowing the charge, leads
              to an underconstrained problem.
              Details on ranging can be found in the literature: `M. K. Miller &lt;https://doi.org/10.1002/sia.1719&gt;`_
         </doc>
     </field>
-    <field name="name">
+    <field name="name" type="NX_CHAR">
         <doc>
              Human-readable ion type name (e.g. Al +++)
-             The string should consists of ASCII UTF-8 characters, 
-             ideally using LaTeX notation to specify the isotopes, ions, and charge
-             state. Examples are 12C + or Al +++.
-             Although this name may be human-readable and intuitive, parsing such
-             names becomes impractical for more complicated cases. Therefore, for the
-             field of atom probe microscopy the isotope_vector should be the
-             preferred machine-readable format to use.
+             The string should consists of UTF-8 characters, ideally using LaTeX
+             notation to specify the isotopes, ions, and charge state.
+             Examples are 12C + or Al +++.
+             
+             To ease automated parsing isotope_vector should be the
+             preferred machine-readable information used.
         </doc>
     </field>
-    <field name="mass_to_charge_range" type="NX_FLOAT" units="NX_ANY">
+    <field name="mass_to_charge_range" type="NX_NUMBER" units="NX_ANY">
         <doc>
-             Associated lower (mqmin) and upper (mqmax) bounds of 
+             Associated lower (mqmin) and upper (mqmax) bounds of the
              mass-to-charge-state ratio interval(s) [mqmin, mqmax]
-             (boundaries included) for which the respective ion is one to be labelled
-             with ion_identifier. The field is primarily of interest to document the
-             result of indexing a ToF/mass spectrum.
+             (boundaries inclusive). This field is primarily of interest
+             for documenting :ref:`NXprocess` steps of indexing a ToF/mass-to-charge
+             state histogram.
         </doc>
-        <!--\@units: Da-->
         <dimensions rank="2">
             <dim index="1" value="n_ranges"/>
             <dim index="2" value="2"/>
