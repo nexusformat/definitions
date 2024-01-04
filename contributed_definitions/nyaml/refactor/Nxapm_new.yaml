@@ -1,0 +1,388 @@
+category: application
+doc: |
+  Application definition for atom probe and field ion microscopy experiments.
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+type: group
+NXapm(NXapm_base):
+  (NXentry):
+    exists: [min, 1, max, unbounded]
+    \@version(NX_CHAR):
+      doc: |
+        An at least as strong as SHA256 hashvalue of the file
+        that specifies the application definition.
+    definition(NX_CHAR):
+      enumeration: [NXapm]
+    profiling(NXcs_profiling):
+      doc: |
+        The configuration of the I/O writer software (e.g. `pynxtools <https://github.com/FAIRmat-NFDI/pynxtools>`_)
+        which was used to generate this NeXus file instance.
+      command_line_call(NX_CHAR):
+      (NXprogram):  # understood by default as PROGRAM(NXprogram), i.e. program1, program2, ...
+        doc: |
+          A collection of all programs and libraries which are considered relevant
+          to understand with which software tools this NeXus file instance was
+          generated. Ideally, to enable a binary recreation from the input data.
+          
+          Examples include the name and version of the libraries used to write the
+          instance. Ideally, the software which writes these NXprogram instances
+          also includes the version of the set of NeXus classes i.e. the specific
+          set of base classes, application definitions, and  contributed definitions
+          with which the here described concepts can be resolved.
+          
+          For the `pynxtools library <https://github.com/FAIRmat-NFDI/pynxtools>`_
+          which is used by the `NOMAD <https://nomad-lab.eu/nomad-lab>`_
+          research data management system, it makes sense to store e.g. the GitHub
+          repository commit and respective submodule references used.
+        exists: [min, 0, max, infty]
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+          # \@url:
+    experiment_identifier(NXidentifier):
+      exists: recommended
+      service(NX_CHAR):
+      identifier(NX_CHAR):
+      is_persistent(NX_BOOLEAN):
+    run_number(NX_CHAR):  # alias experiment_alias
+    #  experiment_description(NX_CHAR): 
+    # if NXapm inherits from NXapm_base having this optional field does not need to be
+    # mentioned because optional nodes can always be added to a NeXus file instance without
+    # making it thereby non-compliant to the application definition
+    # the only difference is that if the consuming application wishes to demand to find that field
+    # it has to be specified in the appdef for the appdef to be a useful document of the contract
+    # which pieces of information a software expects to find and which not
+    # if you think about you being the consuming human (agent) also you would like to know
+    # if there is a run_number for the atom probe measurement from your colleague i.e. you
+    # effectively ask your colleague for that information while working off your imagined list of requirements
+    # the appdef definition here is nothing else then document this for a software
+    start_time(NX_DATE_TIME):
+    end_time(NX_DATE_TIME):
+      exists: recommended
+    (NXcite):
+      exists: [min, 0, max, infty]
+    (NXserialized):
+      exists: [min, 0, max, infty]
+    operation_mode(NX_CHAR):
+    (NXuser):
+      exists: recommended
+      name(NX_CHAR):
+      identifier(NXidentifier):
+        exists: recommended
+        service(NX_CHAR):
+        identifier(NX_CHAR):
+        is_persistent(NX_BOOLEAN):
+    sample(NXsample):
+      exists: optional
+      # move this doc string to NXapm_base
+      doc: |
+        Description of the sample from which the specimen was prepared or
+        site-specifically cut out using e.g. a focused-ion beam instrument.
+        
+        The sample group is currently a place for storing suggestions from
+        atom probers about other knowledge they have gained about the sample
+        from which they cut the specimen which is field-evaporated during the
+        experiment. Typically this is possible because the atom probe specimen
+        is usually not heat treated as is but one assumes that one has the sample
+        prepared as needed (i.e. with a specific grain diameter) and can thus
+        just cut out the specimen from that material.
+        
+        There are cases though where the specimen is processed further, i.e. the
+        specimen is machined further or exposed to external stimuli during the
+        experiment. In this case, these details should not be stored in the
+        sample group but atom probers should make suggestions how this application
+        definition can be improved to find a better place and compromise
+        how to improve this application definition.
+        
+        In the future also details like how the grain_diameter was characterized,
+        how the sample was prepared, how the material was heat-treated etc.,
+        should be stored as using specific application definitions/schemas
+        which are then arranged and documented with a description of the workflow
+        so that actionable graphs become instantiatable.
+        
+        For computer simulations of atom probe one usually works with
+        specific input configurations which are defined via specific positions
+        of specific nuclids. In this case identifier can be used to add a reference
+        to a sample whereby the input configuration was inspired or motivated.
+      # end of the move
+      method(NX_CHAR):
+      identifier(NXidentifier):
+        exists: optional
+        service(NX_CHAR):
+        identifier(NX_CHAR):
+        is_persistent(NX_BOOLEAN):
+    specimen(NXsample):
+      exists: optional
+      identifier(NXidentifier):
+        exists: recommended
+        service(NX_CHAR):
+        identifier(NX_CHAR):
+        is_persistent(NX_BOOLEAN):
+      parent_identifier(NXidentifier):
+        exists: recommended
+        service(NX_CHAR):
+        identifier(NX_CHAR):
+        is_persistent(NX_BOOLEAN):
+      preparation_date(NX_DATE_TIME):
+      name(NX_CHAR):
+        exists: recommended
+      atom_types(NX_CHAR):
+    # describing the geometry of the sample
+    (NXcoordinate_system_set):
+      exists: [min, 1, max, 1]
+      (NXcoordinate_system):
+        exists: [min, 1, max, infty]
+        origin(NX_CHAR):
+        alias(NX_CHAR):
+        type(NX_CHAR):
+        handedness(NX_CHAR):
+        x_direction(NX_CHAR):
+        y_direction(NX_CHAR):
+        z_direction(NX_CHAR):
+
+    measurement(NXapm_msr):
+      exists: optional
+    simulation(NXapm_sim):
+      exists: optional
+    atom_probe(NXroi):
+      exists: [min, 0, max, infty]
+      doc: |
+        A region-of-interest analyzed either during or after the session.
+        For which specific processed data of the measured or simulated
+        data are available.
+      # add a default plot V = f(time/evaporation_id), essentially for each quantity
+      # NEW ISSUE: check also here the PYCCAPT pipeline from P. Felfer's group
+      # all other details are instances of NXprocess as steps along the pipeline
+
+      # NEW ISSUE: hit_quality table 
+      # NEW ISSUE: pyccapt
+      # NEW ISSUE: add section for propagation_delay(NXprocess) ?
+      # NEW ISSUE: make recon an own subentry NXapm_reconstruction
+      # NEW ISSUE: different algorithms used one could create a class for each reconstruction method
+      # NEW ISSUE: make this rather an own subentry NXapm_ranging
+
+      hit_finding(NXprocess):
+        exists: optional
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, unbounded]
+          program(NX_CHAR):
+            \@version(NX_CHAR):
+        # config of the hit_finding algorithm
+        (NXserialized):
+          exists: recommended
+          type(NX_CHAR):
+          path(NX_CHAR):
+          checksum(NX_CHAR):
+          algorithm(NX_CHAR):
+        number_of_dld_wires(NX_UINT):
+        arrival_time_pairs(NX_NUMBER):
+        # results of the hit_finding algorithm
+        hit_positions(NX_NUMBER):
+          dim: (i, 2)
+        hit_quality(NX_UINT):
+          exists: optional
+          dim: (i,)
+        pulses_since_last_ion(NX_UINT):
+          exists: optional
+          dim: (i,)
+        pulse_identifier_offset(NX_INT):
+          exists: optional
+        pulse_identifier(NX_INT):
+          exists: optional
+          dim: (i,)
+        hit_multiplicity(NX_UINT):
+          dim: (i,)
+        # i number of hits after hits finding but prior calibrations
+
+      hit_spatial_filtering(NXprocess):
+        exists: optional
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program(NX_CHAR):
+            \@version(NX_CHAR):
+        (NXserialized):
+          exists: optional
+          type(NX_CHAR):
+          path(NX_CHAR):
+          checksum(NX_CHAR):
+          algorithm(NX_CHAR):
+        hit_filter(NXcs_filter_boolean_mask):  # use NXcs_filterneeds conditionally an instance of concept ../../hit_finding
+          number_of_objects(NX_UINT):
+          bitdepth(NX_UINT):
+          mask(NX_UINT):
+          identifier(NX_INT):
+
+      voltage_and_bowl_correction(NXprocess):
+        exists: optional
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program(NX_CHAR):
+            \@version(NX_CHAR):
+        (NXserialized):
+          exists: optional
+          type(NX_CHAR):
+          path(NX_CHAR):
+          checksum(NX_CHAR):
+          algorithm(NX_CHAR):
+        # config/input to the algorithm
+        # NEW ISSUE: realistic is that currently scientists can pull always a calibrated time-of-flight
+        # but not necessarily unprocessed timing data from the detector (unless individuals built the instrument).
+        # Relevant for ranging are the calibrated data, thats why only these
+        # (as an intermediate/compromise solution) are required in this version of the application definition
+        raw_tof(NX_FLOAT):
+          dim: (n_ions,)
+        # result
+        calibrated_tof(NX_FLOAT):
+          dim: (n_ions,)
+
+      mass_to_charge_conversion(NXprocess):
+        exists: recommended
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program(NX_CHAR):
+            \@version(NX_CHAR):
+        (NXserialized):
+          type(NX_CHAR):
+          path(NX_CHAR):
+          checksum(NX_CHAR):
+          algorithm(NX_CHAR):
+        mass_to_charge(NX_FLOAT):
+          dim: (n_ions,)
+
+      reconstruction(NXprocess):
+        exists: recommended
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program(NX_CHAR):
+            \@version(NX_CHAR):
+        # config/input
+        protocol_name(NX_CHAR):
+          doc: |
+            Qualitative statement about which reconstruction protocol was used.
+          enumeration: [bas, geiser, gault, cameca, other]
+        crystallographic_calibration(NX_CHAR):
+        reconstructed_positions(NX_FLOAT):
+          dim: (n_ions, 3)
+        naive_discretization(NXprocess):
+          sequence_index(NX_POSINT):
+            exists: recommended
+          (NXprogram):
+            exists: [min, 1, max, infty]
+            program(NX_CHAR):
+              \@version(NX_CHAR):
+          # config/input
+          # results
+          (NXdata):
+            \@signal(NX_CHAR):
+            \@axes(NX_CHAR):
+            \@AXISNAME_indices(NX_CHAR):
+              dim: (i,)
+            # \@long_name:
+            title(NX_CHAR):
+            intensity(NX_NUMBER):
+              dim: (n_z, n_y, n_x)
+            axis_z(NX_FLOAT):
+              dim: (n_z,)
+              \@long_name(NX_CHAR):
+            axis_y(NX_FLOAT):
+              dim: (n_y,)
+              \@long_name(NX_CHAR):
+            axis_x(NX_FLOAT):
+              dim: (n_x,)
+              \@long_name(NX_CHAR):
+
+      ranging(NXprocess):
+        exists: recommended
+        sequence_index(NX_POSINT):
+          exists: recommended
+        (NXprogram):
+          exists: [min, 1, max, infty]
+          program:
+            \@version:
+        number_of_ion_types(NX_UINT):
+        maximum_number_of_atoms_per_molecular_ion(NX_UINT):
+
+        mass_to_charge_distribution(NXprocess):
+          exists: recommended
+          doc: |
+            Specifies the computation of the mass-to-charge histogram.
+            Usually mass-to-charge values are studied as an ensemble quantity,
+            specifically these values are binned.
+            This (NXprocess) stores the settings of this binning.
+          sequence_index(NX_POSINT):
+            exists: recommended
+          (NXprogram):
+            exists: [min, 1, max, infty]
+            program(NX_CHAR):
+              \@version(NX_CHAR):
+          min_incr_max(NX_FLOAT):
+            dim: (3,)  # u
+          mass_spectrum(NXdata):
+            \@signal(NX_CHAR):
+            \@axes(NX_CHAR):
+            \@AXISNAME_indices(NX_CHAR):
+            # \@long_name(NX_CHAR):
+            title(NX_CHAR):
+            intensity(NX_NUMBER):
+              dim: (n_bins,)
+              \@long_name(NX_CHAR):
+            axis_mass_to_charge(NX_FLOAT):
+              dim: (n_bins,)
+              \@long_name(NX_CHAR):
+
+        background_quantification(NXprocess):
+          exists: recommended
+          sequence_index(NX_POSINT):
+            exists: recommended
+          (NXprogram):
+            exists: [min, 1, max, infty]
+            program(NX_CHAR):
+              \@version(NX_CHAR):
+          # config/input
+          # results
+          # NEW ISSUE: add parameters of the background model in an e.g. work of A. London et al.
+
+        peak_search(NXprocess):
+          exists: recommended
+          sequence_index(NX_POSINT):
+            exists: recommended
+          (NXprogram):
+            exists: [min, 1, max, infty]
+            program(NX_CHAR):
+              \@version(NX_CHAR):
+          (NXpeak):
+            exists: [min, 0, max, infty]
+            label(NX_CHAR):
+              exists: recommended
+            peak_model(NX_CHAR):
+            position(NX_NUMBER):
+        
+        # peak deconvolution(NXprocess):
+
+        peak_identification(NXprocess):  # aka specify ranging definitions i.e. mqmin, mqmax intervals (ranges) and (molecular) ion candidates
+          exists: recommended
+          sequence_index(NX_POSINT):
+            exists: recommended
+          (NXprogram):
+            exists: [min, 1, max, infty]
+            program(NX_CHAR):
+              \@version(NX_CHAR):
+          (NXion):
+            exists: [min, 0, max, 256]
+            isotope_vector(NX_UINT):
+            charge_state(NX_INT):
+            mass_to_charge_range(NX_FLOAT):
+            nuclid_list(NX_UINT):
+              exists: recommended
+            name(NX_CHAR):
+              exists: recommended
