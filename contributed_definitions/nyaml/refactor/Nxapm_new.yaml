@@ -555,10 +555,6 @@ NXapm(NXobject):
           checksum(NX_CHAR):
           algorithm(NX_CHAR):
         number_of_dld_wires(NX_UINT):
-          doc: |
-            The number of wires in the detected.
-          unit: NX_UNITLESS
-          enumeration: [1, 2, 3]
         arrival_time_pairs(NX_NUMBER):
         # results of the hit_finding algorithm
         hit_positions(NX_NUMBER):
@@ -572,12 +568,12 @@ NXapm(NXobject):
         # the following two quantities are relicts from ePOS files used to give some
         # insight into the results of the hit_finding algorithm of IVAS/APSuite but typically
         # used only in the context to learn about the multiplicity of an ion.
-        pulses_since_last_ion(NX_UINT):
-          exists: optional
-          dim: (i,)
-        pulse_identifier(NX_INT):  # this is the pulse on which they came
-          exists: optional
-          dim: (i,)
+        # pulses_since_last_ion(NX_UINT):
+        #   exists: optional
+        #   dim: (i,)
+        # pulse_identifier(NX_INT):  # this is the pulse on which they came
+        #   exists: optional
+        #   dim: (i,)
         # i number of hits after hits finding but prior calibrations
 
       hit_spatial_filtering(NXprocess):
@@ -618,12 +614,14 @@ NXapm(NXobject):
             and spatial filtering was applied.
           unit: NX_UNITLESS
           dim: (n,)
-        # hit_filter(NXcs_filter_boolean_mask):  # use NXcs_filterneeds conditionally an instance of concept ../../hit_finding
-        #   number_of_objects(NX_UINT):
-        #   bitdepth(NX_UINT):
-        #   mask(NX_UINT):
-        #   identifier(NX_INT):
+        hit_filter(NXcs_filter_boolean_mask):
+          # use NXcs_filterneeds conditionally an instance of concept ../../hit_finding
+          number_of_objects(NX_UINT):
+          bitdepth(NX_UINT):
+          mask(NX_UINT):
+          identifier(NX_INT):
 
+      # at this point the original set of events p has been filtered down to n
       voltage_and_bowl(NXapm_volt_and_bowl):
         exists: optional
         sequence_index(NX_POSINT):
@@ -649,7 +647,7 @@ NXapm(NXobject):
         calibrated_tof(NX_FLOAT):
           dim: (n,)
 
-      mass_to_charge_conversion(NXapm_mass_to_charge):
+      mass_to_charge_conversion(NXprocess):
         exists: recommended
         sequence_index(NX_POSINT):
           exists: recommended
@@ -663,8 +661,10 @@ NXapm(NXobject):
           path(NX_CHAR):
           checksum(NX_CHAR):
           algorithm(NX_CHAR):
+        # config/input
+        # results
         mass_to_charge(NX_FLOAT):
-          dim: (n_ions,)
+          dim: (n,)
 
       reconstruction(NXapm_reconstruction):
         exists: recommended
@@ -674,17 +674,18 @@ NXapm(NXobject):
           exists: [min, 1, max, infty]
           program(NX_CHAR):
             \@version(NX_CHAR):
+        (NXserialized):
+          exists: recommended
+          type(NX_CHAR):
+          path(NX_CHAR):
+          checksum(NX_CHAR):
+          algorithm(NX_CHAR):
         # config/input
         protocol_name(NX_CHAR):
-          doc: |
-            Qualitative statement about which reconstruction protocol was used.
-          enumeration: [bas, geiser, gault, cameca, other]
         crystallographic_calibration(NX_CHAR):
         reconstructed_positions(NX_FLOAT):
-          dim: (n_ions, 3)
+          dim: (n, 3)
         naive_discretization(NXprocess):
-          sequence_index(NX_POSINT):
-            exists: recommended
           (NXprogram):
             exists: [min, 1, max, infty]
             program(NX_CHAR):
@@ -695,7 +696,7 @@ NXapm(NXobject):
             \@signal(NX_CHAR):
             \@axes(NX_CHAR):
             \@AXISNAME_indices(NX_CHAR):
-              dim: (i,)
+            #  dim: (3,)
             # \@long_name:
             title(NX_CHAR):
             intensity(NX_NUMBER):

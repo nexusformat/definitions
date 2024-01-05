@@ -2,20 +2,20 @@ category: base
 doc: |
   Base class to document an algorithm for recovering charge state and nuclid composition of a (molecular) ion.
   
-  Currently used ranging definitions in the field of atom probe tomography face too problems:
-  These definitions specify what are tags apply for all (molecular) ions with a mass-to-charge-state-ratio
-  value within a specifed interval. Facing limited mass-resolving-power there are mass-to-charge-state-ratio
-  values for which not only multiple (molecular) ions are indistinguishable but also the current documentation
-  practice of classical ranging definitions is incomplete. 
+  Currently ranging definitions in the research field of atom probe face have limitations:
   
-  Usually ranging definitions report exclusively the mass-to-charge-state-ratio intervals
-  surplus for each interval the composition of elements that build the (molecular) ion.
-  However, nuclid and charge state information is not necessarily reported.
+  1. A ranging definition maps all signal within a mass-to-charge-state-ratio value interval
+     on one iontype. Facing limited mass-resolving-power there are mass-to-charge-state-ratio
+     values, though, for which not only multiple (molecular) ions are indistinguishable but
+     also for which the current practice of documenting classical ranging definitions is incomplete.
+  2. Usually ranging definitions report exclusively the mass-to-charge-state-ratio intervals
+     surplus for each interval the composition of elements that build the (molecular) ion.
+     However, nuclid and charge state information is not necessarily reported.
+  3. Therefore, classical ranging definitions demand a post-processing with an algorithm
+     which can identify the nuclids from which the (molecular) ion is constructed and identify
+     the charge state. Combinatorial algorithms are used for this purpose.
   
-  Therefore, classical ranging definitions demand a post-processing with an algorithm
-  which can identify the possible nuclid composition and thus the possible charge state
-  if the (molecular) ion is indeed a candidate. Combinatorial algorithms are used for this
-  purpose. This base class documents the parameter and results of such an algorithm.
+  This base class documents the parameter and results of such an algorithm.
 symbols:
   doc: |
     The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -30,59 +30,70 @@ NXapm_charge_state_analysis(NXprocess):
     to clarify (if possible) the charge_state of an ion and its (not necessarily)
     unique combination of nuclids contained including their multiplicity.
   # input/config
-  # element_vector(NX_UINT):
+  element_vector(NX_UINT):
+    doc: |
+      Input constraint, list of proton numbers for each element of the ranging
+      definition. The list contains each element as many times as its multiplicity.
+      As an example a ranging definition H:2 O:1 demands element vector
+      to be 1, 1, 8. An empty list does not release the constraint.
+      Instead, for this a list for all elements of the periodic table should be
+      used. Keep in mind though with such a low constraint the parameter space
+      is huge and thus the combinatorial analysis can become time consuming.
+    unit: NX_UNITLESS
+    dim: (i,)
   mass_to_charge_range(NX_FLOAT):
     doc: |
-      Input constraint, interval within which (molecular) ions need to have their
-      mass-to-charge-state-ratio such that the ion qualifies as a candidate.
+      Input constraint, interval within which (molecular) ions need to have the
+      mass-to-charge-state-ratio such that the a ion qualifies as a candidate.
     unit: NX_ANY  # u
     dim: (1, 2)
   min_half_life(NX_FLOAT):
     doc: |
-      Input constraint, minimum half life for how long each nuclid of each (molecular) ion
-      needs to be stable such that the ion qualifies as a candidate.
+      Input constraint, minimum half life for how long each nuclid of each (molecular)
+      ion needs to be stable such that the ion qualifies as a candidate.
     unit: NX_TIME
   min_abundance(NX_FLOAT):
     doc: |
-      Input constraint, minimum natural abundance of each nuclid of each (molecular) ion
-      such that the ion qualifies as a candidate.
+      Input constraint, minimum natural abundance of each nuclid of each (molecular)
+      ion such that the ion qualifies as a candidate.
     unit: NX_DIMENSIONLESS
-    dim: (n_combinatorics,)
   sacrifice_isotopic_uniqueness(NX_BOOLEAN):
     doc: |
       If the value is zero/false it means that non-unique solutions are accepted.
-      These are solutions where multiple candidates may differ in their isotopes but
-      have the same charge.
+      These are solutions where multiple candidates may be build from different
+      nuclids but the charge_state of all of them is the same.
+  # min_abundance_product(NX_FLOAT):
+  #   doc: |
+  #     For each candidate TO BE DEFINED.
+  #   unit: NX_DIMENSIONLESS
+  #   dim: (n_cand,)
   # output/results
-  # the n_combinatorics can be 1 in which case all quantities below are scalar
+  # the n_cand can be 1 in which case all quantities below are scalar
   charge_state_vector(NX_INT):
     doc: |
       Charge state, i.e. integer multiple of the elementary charge.
     unit: NX_UNITLESS
-    dim: (n_combinatorics,)
+    dim: (n_cand,)
   isotope_matrix(NX_UINT):
     doc: |
-      Specific nuclids building each candidate.
+      List of nuclids building each candidate.
+      Each list is sorted in descending order.
+      Unused values up to n_ivec_max are zero-padded.
     unit: NX_UNITLESS
-    dim: (n_combinatorics, n_ivec_max)
+    dim: (n_cand, n_ivec_max)
   mass_vector(NX_FLOAT):
     doc: |
-      Accumulated mass of the isotopes in each candidate.
+      Accumulated mass of the nuclids in each candidate.
       Not corrected for quantum effects.
     unit: NX_MASS
-    dim: (n_combinatorics,)
+    dim: (n_cand,)
   natural_abundance_product_vector(NX_FLOAT):
     doc: |
-      For each candidate the product of the natural abundances over the nuclids.
+      The product of the natural abundances of the nuclids for each candidate.
     unit: NX_DIMENSIONLESS
-    dim: (n_combinatorics,)
-  min_abundance_product(NX_FLOAT):
-    doc: |
-      For each candidate TO BE DEFINED.
-    unit: NX_DIMENSIONLESS
-    dim: (n_combinatorics,)
+    dim: (n_cand,)
   min_half_life_vector(NX_FLOAT):
     doc: |
-      For each candidate the half life of the nuclid with the smallest half_life.
+      For each candidate the half life of the nuclid with the shortst half life.
     unit: NX_TIME
-    dim: (n_combinatorics,)
+    dim: (n_cand,)

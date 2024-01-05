@@ -1,5 +1,58 @@
 category: base
 doc: |
-  Base class for collecting the configuration and results from a hit finding algorithm.
+  Base class for collecting the configuration and results
+  from a (static) reconstruction algorithm.
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+  n: |
+    Number of ions spatially filtered from results of the hit_finding algorithm
+    from which an instance of a reconstructed volume has been generated.
+    These ions get new identifier assigned in the process, this is the so-called
+    evaporation_identifier that is not to be confused with the pulse_identifier!
 type: group
-NXapm_hit_finding(NXprocess):  # when evolving these ideas further inherit from NXapm_method instead
+NXapm_reconstruction(NXprocess):  # when evolving these ideas further inherit from NXapm_method instead
+  doc: |
+    Data post-processing step to create a tomographic reconstruction
+    of the specimen based on selected calibrated ion hit positions,
+    the evaporation sequence, and voltage curve data.
+    Very often scientists use own software scripts according to
+    published procedures, so-called reconstruction protocols,
+    i.e. numerical recipes how to compute x, y, z atomic positions
+    from the above-mentioned input data.
+  (NXprogram):
+  (NXserialized):
+  # config/input
+  protocol_name(NX_CHAR):
+    doc: |
+      Qualitative statement about which reconstruction protocol was used.
+    enumeration: [bas, geiser, gault, cameca, other]
+  crystallographic_calibration(NX_CHAR):
+    doc: |
+      Different strategies for crystallographic calibration of the
+      reconstruction are possible. Therefore, we collect first such
+      feedback before parameterizing this further.
+      
+      If the not crystallographic calibration was performed the field
+      should be filled with the n/a, meaning not applied.
+  # results
+  reconstructed_positions(NX_FLOAT):
+    doc: |
+      Three-dimensional reconstructed positions of the ions.
+      Interleaved array of x, y, z positions in the specimen space.
+    unit: NX_LENGTH
+    dim: (n, 3)
+    \@depends_on(NX_CHAR):
+      doc: |
+        The instance of :ref:`NXcoordinate_system`
+        in which the positions are defined.
+    naive_discretization(NXprocess):
+      (NXprogram):
+      # config/input
+      # results
+      (NXdata):
+        doc: |
+          To get a first overview of the reconstructed dataset,
+          the format conversion computes a simple 3d histogram
+          of the ion density using one nanometer cubic bins without
+          applying smoothening algorithms on this histogram.
