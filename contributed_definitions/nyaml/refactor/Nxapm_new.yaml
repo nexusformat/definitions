@@ -4,15 +4,29 @@ doc: |
 symbols:
   doc: |
     The symbols used in the schema to specify e.g. dimensions of arrays.
+  p: |
+    Number of pulses collected in between start_time and end_time
+    resolved by an instance of :ref:`NXevent_data_apm`.
+    
+    If this is not defined, p is the number of ions included in the reconstructed
+    volume if the application definition is used to store results of already
+    reconstructed datasets.
+  n: |
+    Number of ions spatially filtered from results of the hit_finding algorithm
+    from which an instance of a reconstructed volume has been generated.
+    These ions get new identifier assigned in the process, this is the so-called
+    evaporation_identifier that is not to be confused with the pulse_identifier!
 type: group
-NXapm(NXapm_base):
+NXapm(NXobject):
   (NXentry):
     exists: [min, 1, max, unbounded]
     \@version(NX_CHAR):
       doc: |
-        An at least as strong as SHA256 hashvalue of the file
-        that specifies the application definition.
+        An at least as strong as SHA256 hashvalue of the
+        file which specifies the application definition.
     definition(NX_CHAR):
+      doc: |
+        NeXus NXDL schema to which this file conforms.
       enumeration: [NXapm]
     profiling(NXcs_profiling):
       doc: |
@@ -20,6 +34,7 @@ NXapm(NXapm_base):
         which was used to generate this NeXus file instance.
       command_line_call(NX_CHAR):
       (NXprogram):  # understood by default as PROGRAM(NXprogram), i.e. program1, program2, ...
+        exists: [min, 0, max, infty]
         doc: |
           A collection of all programs and libraries which are considered relevant
           to understand with which software tools this NeXus file instance was
@@ -35,7 +50,6 @@ NXapm(NXapm_base):
           which is used by the `NOMAD <https://nomad-lab.eu/nomad-lab>`_
           research data management system, it makes sense to store e.g. the GitHub
           repository commit and respective submodule references used.
-        exists: [min, 0, max, infty]
         program(NX_CHAR):
           \@version(NX_CHAR):
           # \@url:
@@ -44,8 +58,29 @@ NXapm(NXapm_base):
       service(NX_CHAR):
       identifier(NX_CHAR):
       is_persistent(NX_BOOLEAN):
-    run_number(NX_CHAR):  # alias experiment_alias
-    #  experiment_description(NX_CHAR): 
+    run_number(NX_CHAR):
+      exists: recommended
+      doc: |
+        Neither the specimen_name nor the experiment_identifier but the identifier
+        through which the experiment is referred to in the control software.
+        For LEAP instruments, it is recommended to use the run_number from IVAS/APSuite.
+        For other instruments, such as the one from Stuttgart or Oxcart from Erlangen,
+        or the instruments at GPM in Rouen, use the identifier which is closest in meaning
+        to the LEAP run number.
+        The field does not have to be required if the information is recoverable
+        in the dataset which for LEAP instruments is the case when RHIT or HITS
+        files are also stored alongside a data artifact. With NXapm the RHIT or HITS
+        can be stored as via the NXserialized group in the hit_finding algorithm section.
+        
+        As a destructive microscopy technique, a run can be performed only once.
+        It is possible, however, to interrupt a run and restart data acquisition
+        while still using the same specimen. In this case, each evaporation run
+        needs to be distinguished with different run numbers.
+        We follow this habit of most atom probe groups.
+        Therefore, interrupted runs should be stored as individual NXentry instances!
+    # alias experiment_alias
+    # experiment_description(NX_CHAR): 
+    # optional quantities do not need to be mentioned in an appdef because they can always be added
     # if NXapm inherits from NXapm_base having this optional field does not need to be
     # mentioned because optional nodes can always be added to a NeXus file instance without
     # making it thereby non-compliant to the application definition
@@ -57,13 +92,52 @@ NXapm(NXapm_base):
     # effectively ask your colleague for that information while working off your imagined list of requirements
     # the appdef definition here is nothing else then document this for a software
     start_time(NX_DATE_TIME):
+      doc: |
+        ISO 8601 time code with local time zone offset to UTC information
+        included when the microscope session started.
+        If the application demands that time codes in this section of the
+        application definition should only be used for specifying when the
+        experiment was performed - and the exact duration is not relevant
+        - this start_time field should be used.
+        
+        Often though it is useful to specify a time interval with specifying
+        both start_time and end_time to allow for more detailed bookkeeping
+        and interpretation of the experiment. The user should be aware that
+        even with having both dates specified, it may not be possible
+        to infer how long the experiment took or for how long data
+        were collected.
+        
+        More detailed timing data over the course of the experiment have to be
+        collected to compute this event chain during the experiment.
     end_time(NX_DATE_TIME):
       exists: recommended
+      doc: |
+        ISO 8601 time code with local time zone offset to UTC included
+        when the microscope session ended.
     (NXcite):
       exists: [min, 0, max, infty]
+      doi(NX_CHAR):
     (NXserialized):
       exists: [min, 0, max, infty]
+      type(NX_CHAR):
+      path(NX_CHAR):
+      checksum(NX_CHAR):
+      algorithm(NX_CHAR):
     operation_mode(NX_CHAR):
+      doc: |
+        What type of atom probe microscopy experiment is performed? This field is
+        meant to inform research data management systems to allow filtering:
+        
+        * apt are experiments where the analysis_chamber has no imaging gas.
+          experiment with LEAP instruments are typically performed such.
+        * fim are experiments where the analysis_chamber has an imaging gas,
+          which should be specified with the atmosphere in the analysis_chamber group.
+        * apt_fim should be used for combinations of the two imaging modes.
+           few experiments of this  type have been performed as this can be detrimental
+           to LEAP systems (see `S. Katnagallu et al. <https://doi.org/10.1017/S1431927621012381>`_).
+        * other should be used in combination with the user specifying details in the
+          experiment_documentation field.
+      enumeration: [apt, fim, apt_fim, other]
     (NXuser):
       exists: recommended
       name(NX_CHAR):
@@ -74,45 +148,146 @@ NXapm(NXapm_base):
         is_persistent(NX_BOOLEAN):
     sample(NXsample):
       exists: optional
-      # move this doc string to NXapm_base
       doc: |
         Description of the sample from which the specimen was prepared or
         site-specifically cut out using e.g. a focused-ion beam instrument.
         
         The sample group is currently a place for storing suggestions from
-        atom probers about other knowledge they have gained about the sample
-        from which they cut the specimen which is field-evaporated during the
-        experiment. Typically this is possible because the atom probe specimen
-        is usually not heat treated as is but one assumes that one has the sample
-        prepared as needed (i.e. with a specific grain diameter) and can thus
-        just cut out the specimen from that material.
-        
-        There are cases though where the specimen is processed further, i.e. the
-        specimen is machined further or exposed to external stimuli during the
-        experiment. In this case, these details should not be stored in the
-        sample group but atom probers should make suggestions how this application
-        definition can be improved to find a better place and compromise
-        how to improve this application definition.
+        atom probers about other knowledge they have gained about the sample.
+        There are cases where the specimen is machined further or exposed to
+        external stimuli during the experiment. In this case, these details should
+        not be stored under sample here but atom probers should make suggestions
+        how this application definition can be improved.
         
         In the future also details like how the grain_diameter was characterized,
         how the sample was prepared, how the material was heat-treated etc.,
         should be stored as using specific application definitions/schemas
         which are then arranged and documented with a description of the workflow
         so that actionable graphs become instantiatable.
-        
-        For computer simulations of atom probe one usually works with
-        specific input configurations which are defined via specific positions
-        of specific nuclids. In this case identifier can be used to add a reference
-        to a sample whereby the input configuration was inspired or motivated.
-      # end of the move
       method(NX_CHAR):
+        exists: recommended
+        doc: |
+          A qualifier whether the sample is a real one or a
+          virtual one (in a computer simulation)
+        enumeration: [experiment, simulation]
       identifier(NXidentifier):
         exists: optional
         service(NX_CHAR):
         identifier(NX_CHAR):
         is_persistent(NX_BOOLEAN):
+      grain_diameter(NX_FLOAT):
+        exists: optional
+        doc: |
+          Qualitative information about the grain size, here specifically
+          described as the equivalent spherical diameter of an assumed
+          average grain size for the crystal ensemble.
+          Users of this information should be aware that although the grain
+          diameter or radius is often referred to as grain size and used in
+          e.g. Hall-Petch-type material yield strength models this is if at all
+          an ensemble average whose reporting may be very informative or not
+          if the specimen contains a few grains only.
+          
+          In atom probe the latter is often the case because grains are measured
+          partially as their diameter can be in the order of magnitude of the
+          physical diameter of the specimen. Reporting a grain size is useful though
+          as it allows judging if specific features are expected to be found in the
+          detector hit map.
+        unit: NX_LENGTH
+      grain_diameter_error(NX_FLOAT):
+        exists: optional
+        doc: |
+          Magnitude of the standard deviation of the grain_diameter.
+        unit: NX_LENGTH
+      heat_treatment_temperature(NX_FLOAT):
+        exists: optional
+        doc: |
+          The temperature of the last heat treatment step before quenching.
+          Knowledge about this value can give an idea how the sample
+          was heat treated, however if available a documentation of the
+          annealing treatment should be delivered by adding additional files
+          which are uploaded alongside an NXapm instance.
+          In the future there should better be an own schema used for the
+          heat treatment.
+        unit: NX_TEMPERATURE
+      heat_treatment_temperature_error(NX_FLOAT):
+        exists: optional
+        doc: |
+          Magnitude of the standard deviation of the heat_treatment_temperature.
+        unit: NX_TEMPERATURE 
+      heat_treatment_quenching_rate(NX_FLOAT):
+        exists: optional
+        doc: |
+          Rate of the last quenching step. Knowledge about this value can give
+          an idea how the specimen was heat treated.
+          However there are many situations where one can imagine that the
+          scalar value for just the quenching rate, i.e. the first derivative
+          of the measured time-temperature profile is itself time-dependant.
+          
+          An example is when the specimen was left in the furnace after the
+          furnace was switched off. In this case the specimen cools down with
+          a specific rate of how this furnace cools down in the lab.
+          Processes which in practice are often not documented.
+          
+          This can be problematic though because when the furnace door was left open
+          or the ambient temperature in the lab changed, i.e. for a series of
+          experiments where one is conducted on a hot summer day and the next
+          during winter this can have an effect on the evolution of the microstructure.
+          There are many cases where this has been reported to be an QA issue in industry,
+          e.g. think about aging aluminium samples left on the factory
+          parking lot on a hot summer day.
+        unit: NX_ANY  # K/s
+      heat_treatment_quenching_rate_error(NX_FLOAT):
+        exists: optional
+        doc: |
+          Magnitude of the standard deviation of the heat_treatment_quenching_rate.
+        unit: NX_ANY
+      description(NX_CHAR):
+        exists: optional
+      (NXchemical_composition):
+        exists: recommended
+        doc: |
+          The chemical composition of the sample. Typically it is assumed that
+          this more macroscopic composition is representative for the material
+          so that the composition of the typically substantially less voluminous
+          specimen probes from the more voluminous sample.
+        normalization(NX_CHAR):
+          doc: |
+            Reporting compositions as atom and weight percent yields both
+            dimensionless quantities but their conceptual interpretation differs.
+            A normalization based on atom_percent counts relative to the
+            total number of atoms which are of a particular type.
+            By contrast, weight_percent normalization factorizes in the
+            respective mass of the elements. Python libraries like pint are
+            challenged by these differences as at.-% and wt.-% both yield
+            fractional quantities.
+          enumeration: [atom_percent, weight_percent]
+        ION(NXion):
+          exists: [min, 1, max, 118]
+          chemical_symbol(NX_CHAR):
+            doc: |
+              Human-readable name of the element (e.g. Fe).
+              Name has to be a symbol of an element from the periodic table.
+              All symbols in the set of NXion instances inside the group
+              chemical_composition need to be disjoint.
+          composition(NX_FLOAT):
+            doc: |
+              Composition value for the element/ion referred to under name.
+              The value is normalized based on normalization, i.e. composition
+              is either an atom or weight percent quantity.
+            unit: NX_DIMENSIONLESS
+          composition_error(NX_FLOAT):
+            exists: optional
+            doc: |
+              Magnitude of the standard deviation of the composition (value).
+            unit: NX_DIMENSIONLESS 
     specimen(NXsample):
       exists: optional
+      method(NX_CHAR):
+        exists: recommended
+        doc: |
+          A qualifier whether the sample is a real one or a
+          virtual one (in a computer simulation)
+        enumeration: [experiment, simulation]
       identifier(NXidentifier):
         exists: recommended
         service(NX_CHAR):
@@ -120,16 +295,112 @@ NXapm(NXapm_base):
         is_persistent(NX_BOOLEAN):
       parent_identifier(NXidentifier):
         exists: recommended
+        doc: |
+          Identifier of the sample from which the sample was cut or the string
+          *None*. The purpose of this field is to support functionalities
+          for tracking sample provenance via a research data management system.
         service(NX_CHAR):
         identifier(NX_CHAR):
         is_persistent(NX_BOOLEAN):
       preparation_date(NX_DATE_TIME):
-      name(NX_CHAR):
         exists: recommended
+        doc: |
+          ISO 8601 time code with local time zone offset to UTC information
+          when the specimen was prepared.
+          
+          Ideally, report the end of the preparation, i.e. the last known time
+          the measured specimen surface was actively prepared. Ideally, this
+          matches the last timestamp that is mentioned in the digital resource
+          pointed to by parent_identifier.
+          
+          Knowing when the specimen was exposed to e.g. specific atmosphere is
+          especially required for environmentally sensitive material such as
+          hydrogen charged specimens or experiments including tracers with a
+          short half time. Additional time stamps prior to preparation_date
+          should better be placed in resources which describe but which do not pollute
+          the description here with prose. Resolving these connected pieces of information
+          is considered within the responsibility of the research data management
+          system.
+      alias(NX_CHAR):
+        exists: recommended
+        doc: |
+          Given name an alias. Better use identifier and parent_identifier instead.
+          A single NXentry should be used only for the characterization of a single specimen.
       atom_types(NX_CHAR):
-    # describing the geometry of the sample
+        doc: |
+          List of comma-separated elements from the periodic table that are
+          contained in the specimen. If the specimen substance has multiple
+          components, all elements from each component must be included in
+          `atom_types`.
+          
+          The purpose of the field is to offer research data management systems an
+          opportunity to parse the relevant elements without having to interpret
+          these from the resources pointed to by parent_identifier or walk through
+          eventually deeply nested groups in data instances.
+      description:
+        exists: optional
+        doc: |
+          Discouraged free-text field.
+      is_polycrystalline(NX_BOOLEAN):
+        exists: recommended
+        doc: |
+          Report if the specimen is polycrystalline, in which case it
+          contains a grain or phase boundary, or if the specimen is a
+          single crystal.
+      is_amorphous(NX_BOOLEAN):
+        exists: recommended
+        doc: |
+          Report if the specimen is amorphous.
+      # describing the geometry of the sample
     (NXcoordinate_system_set):
       exists: [min, 1, max, 1]
+      doc: |
+        Set to hold different coordinate systems conventions.
+        Inspect the description of the :ref:`NXcoordinate_system_set`
+        and :ref:`NXcoordinate_system` base classes how to define
+        coordinate systems in NeXus. Specific details for application
+        in atom probe microscopy follow.
+        
+        In this research field scientists usually distinguish several
+        Euclidean coordinate systems (CS):
+        
+        * World space;
+          a CS specifying a local coordinate system of the planet earth which
+          identifies into which direction gravity is pointing such that
+          the laboratory space CS can be rotated into this world CS.
+        * The laboratory space;
+          a CS specifying the room where the instrument is located in or
+          a physical landmark on the instrument, e.g. the direction of the
+          transfer rod where positive is the direction how the rod
+          has to be pushed during loading a specimen into the instrument.
+          In summary, this CS is defined by the chassis of the instrument.
+        * The specimen space;
+          a CS affixed to either the base or the initial apex of the specimen,
+          whose z axis points towards the detector.
+        * The detector space;
+          a CS affixed to the detector plane whose xy plane is usually in the
+          detector and whose z axis points towards the specimen.
+          This is a distorted space with respect to the reconstructed ion
+          positions.
+        * The reconstruction space;
+          a CS in which the reconstructed ion positions are defined.
+          The orientation depends on the analysis software used.
+        * Eventually further coordinate systems attached to the
+          flight path of individual ions might be defined.
+        
+        In atom probe microscopy a frequently used choice for the detector
+        space (CS) is discussed with the so-called detector space image
+        (stack). This is a stack of two-dimensional histograms of detected ions
+        within a predefined evaporation identifier interval. Typically, the set of
+        ion evaporation sequence IDs is grouped into chunks.
+        
+        For each chunk a histogram of the ion hit positions on the detector
+        is computed. This leaves the possibility for inconsistency between
+        the so-called detector space and the e.g. specimen space.
+        
+        The transformation here resolves this ambiguity by specifying how
+        the positive z-axes of either coordinate systems is oriented.
+        Consult the work of A. J. Breen and B. Gault and team for further details.
       (NXcoordinate_system):
         exists: [min, 1, max, infty]
         origin(NX_CHAR):
@@ -142,14 +413,121 @@ NXapm(NXapm_base):
 
     measurement(NXapm_msr):
       exists: optional
+      instrument(NXinstrument):
+        instrument_name(NX_CHAR):
+        (NXfabrication):
+          exists: recommended
+          vendor(NX_CHAR):
+          model(NX_CHAR):
+          identifier(NX_CHAR):
+            exists: recommended
+        (NXreflectron):
+          status(NX_CHAR):
+          (NXfabrication):
+            exists: recommended
+            vendor(NX_CHAR):
+            model(NX_CHAR):
+        # decelerate_electrode(NXlens_em):
+        local_electrode(NXlens_em):
+          # add flat test status
+          name(NX_CHAR):
+          (NXfabrication):
+            exists: recommended
+            vendor(NX_CHAR):
+            model(NX_CHAR):
+        ion_detector(NXdetector):
+          exists: [min, 1, max, 1]
+          (NXfabrication):
+            exists: recommended  # for LEAP systems they come shipped configured
+            vendor(NX_CHAR):
+            model(NX_CHAR):
+        pulser(NXpulser_apm):
+          (NXfabrication):
+            exists: recommended
+            vendor(NX_CHAR):
+            model(NX_CHAR):
+          pulse_mode(NX_CHAR):
+          (NXsource):
+            exists: recommended  # conditionally required if pulse_mode is not voltage!
+            (NXfabrication):
+              exists: recommended
+              vendor(NX_CHAR):
+              model(NX_CHAR):
+            wavelength(NX_FLOAT):
+        # stage_lab(NXstage_lab):
+        # analysis_chamber(NXchamber):
+        # buffer_chamber(NXchamber):
+        # load_lock_chamber(NXchamber):
+        # getter_pump(NXpump):
+        # roughening_pump(NXpump):
+        # turbomolecular_pump(NXpump):
+        status(NX_CHAR):
+      (NXevent_data_apm_set):
+        exists: [min, 0, max, 1] 
+        # the case of allowing to not have event_data but only the above-mentioned instrument
+        # details can be useful to convey details about an atom probe instrument in general
+        (NXevent_data_apm):
+          exists: recommended
+          # all these cannot be made required because for LEAP only stored in RHIT/HITS
+          # but for M-TAP and Oxcart these pieces of information are available.
+          # start_time(NX_DATE_TIME):
+          # end_time(NX_DATE_TIME):
+          # delta_time(NX_NUMBER):
+          # pulse_identifier_offset(NX_INT):
+          # pulse_identifier(NX_INT):
+          instrument(NXinstrument):
+            # (NXreflectron):
+            # decelerate_electrode(NXlens_em):
+            # local_electrode(NXlens_em):
+            ion_detector(NXdetector):
+              signal_amplitude(NX_FLOAT):
+                unit: NX_CURRENT
+                dim: (p,)
+            pulser(NXpulser_apm):
+              pulse_frequency(NX_FLOAT):
+                # unit: NX_FREQUENCY
+                # dim: (p,)
+                \@logged_against(NX_CHAR):
+              pulse_fraction(NX_FLOAT):
+                # unit: NX_DIMENSIONLESS
+                # dim: (p,)
+                \@logged_against(NX_CHAR):
+              pulse_voltage(NX_FLOAT):
+                exists: recommended  # not required for voltage pulsing
+                # unit: NX_VOLTAGE
+                # dim: (p,)
+                \@logged_against(NX_CHAR):
+              # pulse_number(NX_UINT):
+              standing_voltage(NX_FLOAT):
+                # unit: NX_VOLTAGE
+                # dim: (p,)
+                \@logged_against(NX_CHAR):
+              (NXsource):
+                exists: [min, 0, max, 2]  # not required for voltage pulsing
+                pulse_energy(NX_FLOAT):
+                  # unit: NX_ENERGY
+                  # dim: (p,)
+                  \@logged_against(NX_CHAR):
+              # laser geometry at the moment has no example nor any feedback from the community
+              # but NXpulser_apm base class shows how this could be done, plus examples for NXmpes
+            stage_lab(NXstage_lab):
+              average_temperature(NX_FLOAT):
+            analysis_chamber(NXchamber):
+              average_pressure(NX_FLOAT):
+            # buffer_chamber(NXchamber):
+            # load_lock_chamber(NXchamber):
+            # getter_pump(NXpump):
+            # roughening_pump(NXpump):
+            # turbomolecular_pump(NXpump):
+
     simulation(NXapm_sim):
       exists: optional
+
     atom_probe(NXroi):
       exists: [min, 0, max, infty]
       doc: |
-        A region-of-interest analyzed either during or after the session.
-        For which specific processed data of the measured or simulated
-        data are available.
+        A region-of-interest analyzed either during or after the session for which
+        specific processed data of the measured or simulated data are available.
       # add a default plot V = f(time/evaporation_id), essentially for each quantity
       # NEW ISSUE: check also here the PYCCAPT pipeline from P. Felfer's group
       # all other details are instances of NXprocess as steps along the pipeline
@@ -161,12 +539,12 @@ NXapm(NXapm_base):
       # NEW ISSUE: different algorithms used one could create a class for each reconstruction method
       # NEW ISSUE: make this rather an own subentry NXapm_ranging
 
-      hit_finding(NXprocess):
+      hit_finding(NXapm_hit_finding):
         exists: optional
         sequence_index(NX_POSINT):
           exists: recommended
         (NXprogram):
-          exists: [min, 1, max, unbounded]
+          exists: [min, 1, max, infty]
           program(NX_CHAR):
             \@version(NX_CHAR):
         # config of the hit_finding algorithm
@@ -177,6 +555,10 @@ NXapm(NXapm_base):
           checksum(NX_CHAR):
           algorithm(NX_CHAR):
         number_of_dld_wires(NX_UINT):
+          doc: |
+            The number of wires in the detected.
+          unit: NX_UNITLESS
+          enumeration: [1, 2, 3]
         arrival_time_pairs(NX_NUMBER):
         # results of the hit_finding algorithm
         hit_positions(NX_NUMBER):
@@ -184,20 +566,22 @@ NXapm(NXapm_base):
         hit_quality(NX_UINT):
           exists: optional
           dim: (i,)
+        hit_multiplicity(NX_UINT):
+          exists: recommended
+          dim: (i,)
+        # the following two quantities are relicts from ePOS files used to give some
+        # insight into the results of the hit_finding algorithm of IVAS/APSuite but typically
+        # used only in the context to learn about the multiplicity of an ion.
         pulses_since_last_ion(NX_UINT):
           exists: optional
           dim: (i,)
-        pulse_identifier_offset(NX_INT):
+        pulse_identifier(NX_INT):  # this is the pulse on which they came
           exists: optional
-        pulse_identifier(NX_INT):
-          exists: optional
-          dim: (i,)
-        hit_multiplicity(NX_UINT):
           dim: (i,)
         # i number of hits after hits finding but prior calibrations
 
       hit_spatial_filtering(NXprocess):
-        exists: optional
+        exists: recommended
         sequence_index(NX_POSINT):
           exists: recommended
         (NXprogram):
@@ -210,13 +594,37 @@ NXapm(NXapm_base):
           path(NX_CHAR):
           checksum(NX_CHAR):
           algorithm(NX_CHAR):
-        hit_filter(NXcs_filter_boolean_mask):  # use NXcs_filterneeds conditionally an instance of concept ../../hit_finding
-          number_of_objects(NX_UINT):
-          bitdepth(NX_UINT):
-          mask(NX_UINT):
-          identifier(NX_INT):
+        evaporation_identifier_offset(NX_INT):
+          doc: |
+            Integer used to name the first pulse to know if there is an
+            offset of the identifiers to zero.
+            
+            Identifiers can be defined either implicitly or explicitly.
+            For implicit indexing identifiers are defined on the interval
+            :math:`[identifier_offset, identifier_offset + c - 1]`.
+            
+            Therefore, implicit identifier are completely defined by the value of
+            identifier_offset and cardinality. For example if identifier run from
+            -2 to 3 the value for identifier_offset is -2.
+            
+            For explicit indexing the field identifier has to be used.
+            Fortran-/Matlab- and C-/Python-style indexing have specific implicit
+            identifier conventions where identifier_offset is 1 and 0 respectively.
+          unit: NX_UNITLESS
+        evaporation_identifier(NX_INT):
+          doc: |
+            (Molecular) ion identifier which resolves the sequence in which
+            the ions were evaporated but taking into account that a hit_finding
+            and spatial filtering was applied.
+          unit: NX_UNITLESS
+          dim: (n,)
+        # hit_filter(NXcs_filter_boolean_mask):  # use NXcs_filterneeds conditionally an instance of concept ../../hit_finding
+        #   number_of_objects(NX_UINT):
+        #   bitdepth(NX_UINT):
+        #   mask(NX_UINT):
+        #   identifier(NX_INT):
 
-      voltage_and_bowl_correction(NXprocess):
+      voltage_and_bowl(NXapm_volt_and_bowl):
         exists: optional
         sequence_index(NX_POSINT):
           exists: recommended
@@ -236,12 +644,12 @@ NXapm(NXapm_base):
         # Relevant for ranging are the calibrated data, thats why only these
         # (as an intermediate/compromise solution) are required in this version of the application definition
         raw_tof(NX_FLOAT):
-          dim: (n_ions,)
+          dim: (n,)
         # result
         calibrated_tof(NX_FLOAT):
-          dim: (n_ions,)
+          dim: (n,)
 
-      mass_to_charge_conversion(NXprocess):
+      mass_to_charge_conversion(NXapm_mass_to_charge):
         exists: recommended
         sequence_index(NX_POSINT):
           exists: recommended
@@ -250,6 +658,7 @@ NXapm(NXapm_base):
           program(NX_CHAR):
             \@version(NX_CHAR):
         (NXserialized):
+          exists: recommended
           type(NX_CHAR):
           path(NX_CHAR):
           checksum(NX_CHAR):
@@ -257,7 +666,7 @@ NXapm(NXapm_base):
         mass_to_charge(NX_FLOAT):
           dim: (n_ions,)
 
-      reconstruction(NXprocess):
+      reconstruction(NXapm_reconstruction):
         exists: recommended
         sequence_index(NX_POSINT):
           exists: recommended
@@ -301,7 +710,7 @@ NXapm(NXapm_base):
               dim: (n_x,)
               \@long_name(NX_CHAR):
 
-      ranging(NXprocess):
+      ranging(NXapm_ranging):
         exists: recommended
         sequence_index(NX_POSINT):
           exists: recommended
@@ -350,7 +759,8 @@ NXapm(NXapm_base):
               \@version(NX_CHAR):
           # config/input
           # results
-          # NEW ISSUE: add parameters of the background model in an e.g. work of A. London et al.
+          # NEW ISSUE: add parameters of the background model
+          # in an e.g. work of A. London et al.
 
         peak_search(NXprocess):
           exists: recommended
