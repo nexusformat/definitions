@@ -2,9 +2,9 @@ category: base
 doc: |
   Base class to store state and (meta)data of events over the course of an atom probe experiment.
   
-  This base class applies the concept of the :ref:`NXevent_data_em`  base class to the
-  specific needs of atom probe research. Against static and dynamic quantities are splitted to
-  avoid duplication of information. Specifically, the time interval considered is the entire time
+  This base class applies the concept of the :ref:`NXevent_data_em` base class to the specific needs
+  of atom probe research. Against static and dynamic quantities are splitted to avoid a duplication
+  of information. Specifically, the time interval considered is the entire time
   starting at start_time until end_time during which we assume the pulser triggered named pulses.
   These pulses are identified via the pulse_identifier field. The point in time when each was issued
   is specified via the combination of start_time and delta_time.
@@ -12,24 +12,22 @@ doc: |
   Conceptually and technically NeXus currently stores tensorial information as arrays of values
   (with each value of the same datatype). For instance, a field temperature(NX_FLOAT) stores
   a set of temperature values but that field when used somewhere is a concept. However, that
-  concept has no information at which point in time these temperatures were taken is there
-  is some functional relationship.
+  concept has no information at which point in time these temperatures were taken.
+  An existent functional relationship between the two concepts is not defined.
   
   However, a correct interpretation of the temperature values demands knowledge about what is
   the independent quantity on which temperature depends on or according to which frequency
   temperature values were sampled.
-  In NeXus there are two approaches which cope with these in fact correlated concepts:
+  In NeXus there are two approaches which cope with such correlations:
   One is :ref:`NXdata` where the attribute signal specifies the correlation.
   The other one is :ref:`NXlog` which, like NXdata, demands to granularize logged_against
-  (dependent signal) and independent quantity into an own group. In many cases this additional
-  grouping is undesired.
+  (dependent signal) and independent quantities into an own group.
+  In many cases this additional grouping is not desired though.
   
   One naive solution typically employed is then to store the independent variable values via a second
   vector e.g. time_stamp with the same number of entries (with dimensionality defined through symbols).
-  
   However, there is no independent logical connection between these two concepts, i.e. temperature 
-  and time_stamp! Indeed conceptually reporting temperature as a function of time_stamp is
-  a correlation between pairs of values one from each of two concepts.
+  and time_stamp.
   
   In the case of atom probe though the time that one would use in NXlog is defined implicitly via pulse_identifier,
   which is the independent variable vector against which eventually dozens of channels of data are logged.
@@ -67,8 +65,8 @@ NXevent_data_apm(NXobject):
       Delta time array which resolves for each pulse_identifier the time difference
       between when that pulse was issued and start_time.
       
-      In summary, using start_time, end_time, time, pulse_identifier_offset, and
-      pulse_identifier exactly specifies the connection between when a pulse was
+      In summary, using start_time, end_time, delta_time, pulse_identifier_offset,
+      and pulse_identifier exactly specifies the connection between when a pulse was
       issued relative to start and absolute in UTC.
     unit: NX_TIME
     dim: (p,)
@@ -92,15 +90,14 @@ NXevent_data_apm(NXobject):
   pulse_identifier(NX_INT):
     doc: |
       Identifier that contextualizes how the detector and pulser of an atom probe
-      instrument follow a sequence of pulses to trigger field evaporation.
+      instrument follows a sequence of pulses to trigger field evaporation.
       
       The pulse_identifier is used to associate thus an information about time
       when the quantities documented in this NXpulser_apm base class have been
       collected via sampling.
       
-      In virtually all cases the pulser is a blackbox which users assume does its job.
-      That is to induce pulses according to given instances in time with target properties.
-      Depending on how the instrument is configured during a measurement the target
+      In virtually all cases the pulser is a blackbox. Depending on how the
+      instrument is configured during a measurement the target
       values and thus also the actual values may change.
       
       Maybe the first part of the experiment is run at a certain pulse fraction but thereafter
@@ -109,18 +106,18 @@ NXevent_data_apm(NXobject):
       long vector which stores the set of events (e.g. pulsing events) when that value was
       measured.
       
-      This may cause several situation: In the case that e.g. the pulse_fraction is never changed
+      This may cause several situations: In the case that e.g. the pulse_fraction is never changed
       and also exact details not interesting, one stores the set value for the pulse_fraction
       and a single value for the pulse_identifier e.g. 0 to indicate that the pulse_fraction was set
       at the beginning and it was maintained constant during the measurement.
-      If the pulse_fraction was maybe changed after the 100000th pulse pulse_fraction is a
+      If the pulse_fraction was maybe changed after the 100000th pulse, pulse_fraction is a
       vector with two values one for the first and another one for the value from the 100000-th
       pulse onwards. The values of pulse_identifier are then [0, 99999] respectively.
     unit: NX_UNITLESS
     dim: (p,)
   instrument(NXinstrument):
     doc: |
-        (Meta)data of the dynamics and changes of the microscope over the course of pulsing.
+      (Meta)data of the dynamics and changes of the microscope over the course of pulsing.
     (NXreflectron):
     local_electrode(NXlens_em):
     ion_detector(NXdetector):
@@ -138,11 +135,11 @@ NXevent_data_apm(NXobject):
         # I clear say NO !
     pulser(NXpulser_apm):
     stage_lab(NXstage_lab):
-        average_temperature(NX_FLOAT):
-          doc: |
-            Average temperature at the specimen base, i.e.
-            base_temperature during the measurement.
-          unit: NX_TEMPERATURE
+      average_temperature(NX_FLOAT):
+        doc: |
+          Average temperature at the specimen base, i.e.
+          base_temperature during the measurement.
+        unit: NX_TEMPERATURE
         # normally one would use NXsensor/NXlog but point is that the temperature
         # is logged against the pulse_identifier as even in the proprietary file format from
         # AMETEK/Cameca nowhere there is the actual time when the pulse was triggered
@@ -150,20 +147,20 @@ NXevent_data_apm(NXobject):
         # from Cameca this is also the time when the first pulse was triggered
         # using NXlog does make sense when individual NXsensors have different timing
         # but for atom probe if at all the pulse-based implicit time is available
-        temperature(NX_FLOAT):
+      temperature(NX_FLOAT):
+        doc: |
+          The best estimate, at experiment time, for the temperature at the
+          sample base (furthest point along sample apex and holding assembly
+          that is removable from the sample stage).
+        unit: NX_TEMPERATURE
+        dim: (p,)
+        \@logged_against(NX_CHAR):
           doc: |
-            The best estimate, at experiment time, for the temperature at the
-            sample base (furthest point along sample apex and holding assembly
-            that is removable from the sample stage).
-          unit: NX_TEMPERATURE
-          dim: (p,)
-          \@logged_against(NX_CHAR):
-            doc: |
-              Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+            Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
     analysis_chamber(NXchamber):
       average_temperature(NX_FLOAT):
         doc: |
-            Average pressure in the analysis chamber during the measurement.
+          Average pressure in the analysis chamber during the measurement.
         unit: NX_PRESSURE
       pressure(NX_FLOAT):
         doc: |

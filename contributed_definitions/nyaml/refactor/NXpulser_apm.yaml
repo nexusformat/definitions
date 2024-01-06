@@ -1,6 +1,6 @@
 category: base
 doc: |
-  Metadata for laser- and/or voltage-pulsing in atom probe microscopy.
+  Base class for a laser- and/or voltage-pulsing device used in atom probe microscopy.
 symbols:
   doc: |
     The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -16,8 +16,8 @@ NXpulser_apm(NXobject):
     enumeration: [laser, voltage, laser_and_voltage]
   pulse_frequency(NX_FLOAT):
     doc: |
-      Frequency with which the voltage or laser pulser fire(s).
-    # the example of how the IFES APT TC's HDF format deals with such conceptually shows how awkward instance, concepts are mixed to superconcepts: "PulseFrequency : Real array, 2xn (Hz) This is the frequency of the high voltage or laser pulser. first entry : first pulse number where the spacing between this and all subsequent pulses are considered to be at the selected frequency. Each first entry must be strictly increasing in value. The second entry contains the frequency value" as data can be compressed in this case very efficiently we go for with an array of length 1xn_ions
+      Frequency with which the pulser fire(s).
+    # the example of how the IFES APT TC's HDF format deals with such data conceptually, concepts are mixed into superconcepts interleaved tuple with different units: "PulseFrequency : Real array, 2xn (Hz) This is the frequency of the high voltage or laser pulser. first entry : first pulse number where the spacing between this and all subsequent pulses are considered to be at the selected frequency. Each first entry must be strictly increasing in value. The second entry contains the frequency value" as data can be compressed in this case very efficiently we go for with an array of length 1xn_ions
     unit: NX_FREQUENCY
     dim: (p,)
     \@logged_against(NX_CHAR):
@@ -38,19 +38,19 @@ NXpulser_apm(NXobject):
         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
   pulse_voltage(NX_FLOAT):
     doc: |
-      Pulsed voltage, in laser pulsing mode this values can be omitted.
-    # example of a conditional requirement is done rigorously can be handled by OWL but not by NeXus!
-    # as either pulse_voltage is required in an appdef but then that existence constraint is independent of
-    # other values.
+      Pulsed voltage, in laser pulsing mode this field can be omitted.
+    # example of a conditional requirement that can be dealt with igorously by OWL but not by NeXus!
+    # as either pulse_voltage is required in an appdef but then that
+    # existence constraint is independent of other values.
     unit: NX_VOLTAGE
     dim: (p,)
     \@logged_against(NX_CHAR):
       doc: |
         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
   pulse_number(NX_UINT):
-    unit: NX_UNITLESS
     doc: |
       Absolute number of pulses starting from the beginning of the experiment.
+    unit: NX_UNITLESS
     dim: (p,)
     \@logged_against(NX_CHAR):
       doc: |
@@ -93,34 +93,32 @@ NXpulser_apm(NXobject):
           Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
     \@depends_on(NX_CHAR):
       doc: |
-        Path to instance of :ref:`NXcoordinate_system` which specifies
-        the reference frame in which the laser is shining.
+        Path to an instance of :ref:`NXcoordinate_system` which
+        specifies the reference frame in which the laser is shining.
     (NXbeam):
       doc: |
-        Details about specific positions along the focused laser beam
+        Details about specific positions along the laser beam
         which illuminates the (atom probe) specimen.
       incidence_vector(NX_NUMBER):
         doc: |
-          Track time-dependent settings over the course of the
-          measurement how the laser beam in tip space/reconstruction space
-          laser impinges on the sample, i.e. the mean vector is parallel to
-          the laser propagation direction.
+          Track time-dependent settings over the course of the measurement
+          how the laser beam shines on the specimen, i.e. the mean vector
+          is parallel to the laser propagation direction.
         unit: NX_LENGTH
         dim: (p, 3)
         \@logged_against(NX_CHAR):
           doc: |
             Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
-      pinhole_position(NXcollection):
+      pinhole_position(NX_NUMBER):
         doc: |
-          Track time-dependent settings over the course of the
-          measurement where the laser beam exits the
-          focusing optics.
+          Track time-dependent settings over the course of the measurement
+          where the laser beam exits the focusing optics.
         unit: NX_LENGTH
         dim: (p, 3)
         \@logged_against(NX_CHAR):
           doc: |
             Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
-      spot_position(NXcollection):
+      spot_position(NX_NUMBER):
         doc: |
           Track time-dependent settings over the course of the
           measurement where the laser hits the specimen.
@@ -135,6 +133,6 @@ NXpulser_apm(NXobject):
         laser focusing optics/pinhole-attached coordinate system is
         defined, how it has to be transformed so that it aligns with
         the specimen coordinate system.
-        A right-handed Cartesian coordinate system, the so-called laser space,
-        should be assumed, whose positive z-axis points
-        into the direction of the propagating laser beam.
+      # A right-handed Cartesian coordinate system, the so-called laser space,
+      # should be assumed, whose positive z-axis points
+      # into the direction of the propagating laser beam.
