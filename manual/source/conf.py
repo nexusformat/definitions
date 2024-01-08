@@ -164,4 +164,3 @@ latex_elements = {
     \DeclareUnicodeCharacter{1F517}{X}
     \DeclareUnicodeCharacter{2906}{<=}'''
 }
-}
