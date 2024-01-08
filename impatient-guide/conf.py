@@ -11,7 +11,8 @@
 # All configuration values have a default; values that are commented out
 # serve to show the default.
 
-import sys, os
+import os
+import sys
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -215,6 +216,9 @@ latex_logo = 'nexuslogo.png'
 # If false, no module index is generated.
 latex_domain_indices = False
 
+# Use xelatex to properly support unicode characters
+latex_engine = "xelatex"
+
 
 # -- Options for manual page output --------------------------------------------
 
@@ -291,4 +295,5 @@ epub_copyright = copyright
 #epub_tocdepth = 3
 
 # Allow duplicate toc entries.
+#epub_tocdup = True
 #epub_tocdup = True
