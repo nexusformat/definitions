@@ -162,5 +162,6 @@ latex_elements = {
     \listfiles
     \DeclareUnicodeCharacter{1F517}{X}
     \DeclareUnicodeCharacter{2906}{<=}
-    \DeclareUnicodeCharacter{394}{$\Delta$}'''
+    \DeclareUnicodeCharacter{394}{$\Delta$}
+    \DeclareUnicodeCharacter{2206}{$\Delta$}'''
 }
