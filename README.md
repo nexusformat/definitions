@@ -48,6 +48,24 @@ Note: If set this will increase the build time of the documentation by approxima
 
     setenv GH_TOKEN <access token>
 
+### Working with nyaml files
+
+There exists a simplified format of nxdl, which is called nyaml.
+There is a [tool](https://github.com/FAIRmat-NFDI/nyaml) (`nyaml2nxdl`) available to convert between nxdl and nyaml.
+This tool is already installed when you installed the requirements for this repository and it is conveniently available from the make command.
+
+You can build nyaml files for all nxdl files with invoking
+
+    make nyaml
+
+which will created `.yaml` files in a subfolder called `nyaml` in the respective directory.
+
+From this you can do your changes and create nxdl files with
+
+    make nxdl
+
+from the yaml files.
+
 ## Repository content
 
 These are the components that define the structure of NeXus data files 
