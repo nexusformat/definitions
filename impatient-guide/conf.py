@@ -186,6 +186,7 @@ latex_elements = {
 'preamble': '''%
  \pagestyle{plain}
  \pagenumbering{arabic}
+ \usepackage[utf8]{inputenc}
 ''',
 }
 
@@ -215,9 +216,6 @@ latex_logo = 'nexuslogo.png'
 
 # If false, no module index is generated.
 latex_domain_indices = False
-
-# Use xelatex to properly support unicode characters
-latex_engine = "xelatex"
 
 
 # -- Options for manual page output --------------------------------------------
