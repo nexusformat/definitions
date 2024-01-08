@@ -185,6 +185,7 @@ latex_elements = {
 'preamble': '''%
  \pagestyle{plain}
  \pagenumbering{arabic}
+ \usepackage[utf8]{inputenc}
 ''',
 }
 
