@@ -161,7 +161,27 @@ latex_elements = {
     \usepackage{amsbsy}
     \listfiles
     \DeclareUnicodeCharacter{1F517}{X}
-    \DeclareUnicodeCharacter{2906}{<=}'''
+    \DeclareUnicodeCharacter{2906}{<=}''',
+    'fontpkg': r'''
+    \setmainfont{FreeSerif}[
+    UprightFont    = *,
+    ItalicFont     = *Italic,
+    BoldFont       = *Bold,
+    BoldItalicFont = *BoldItalic
+    ]
+    \setsansfont{FreeSans}[
+    UprightFont    = *,
+    ItalicFont     = *Oblique,
+    BoldFont       = *Bold,
+    BoldItalicFont = *BoldOblique,
+    ]
+    \setmonofont{FreeMono}[
+    UprightFont    = *,
+    ItalicFont     = *Oblique,
+    BoldFont       = *Bold,
+    BoldItalicFont = *BoldOblique,
+    ]
+''',
 }
 
 latex_engine = 'xelatex'
