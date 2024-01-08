@@ -182,7 +182,7 @@ latex_elements = {
 # FIXME: roman page numbers in TOC, and no page numbers later
 #  http://osdir.com/ml/sphinx-dev/2011-03/msg00036.html
 #  BUT, latex does not recognize these two lines when in the preamble
-'preamble': '''%
+'preamble': r'''%
  \pagestyle{plain}
  \pagenumbering{arabic}
  \usepackage[utf8]{inputenc}
