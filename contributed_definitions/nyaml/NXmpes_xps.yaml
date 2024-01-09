@@ -1,192 +1,55 @@
-#lukas.pielsticker at cec.mpg.de, 04/2023
-#Draft version of a NeXus application definition for XPS.
-
 doc: This is the application definition for X-ray photoelectron spectroscopy.
 category: application
 NXmpes_xps(NXmpes):
   (NXentry):
-    end_time(NX_DATE_TIME):
-      exists: recommended
     definition(NX_CHAR):
-      enumeration: ["NXmpes_xps"]
+      enumeration: [NXmpes_xps]
+    method:
+      exists: recommended
+      doc: |
+        A name of the experimental method according to `Clause 11`_ of
+        the `ISO 18115-1:2023`_ specification.
+        
+        Examples for XPS-related experiments include:
+            * X-ray photoelectron spectroscopy (XPS)
+            * angle-resolved X-ray photoelectron spectroscopy (ARXPS)
+            * ultraviolet photoelectron spectroscopy (UPS)
+            * hard X-ray photoemission spectroscopy (HAXPES)
+            * near ambient pressure X-ray photoelectron spectroscopy (NAPXPS)
+            * electron spectroscopy for chemical analysis (ESCA)
+        
+        .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
+        .. _Clause 11: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:sec:11
     (NXinstrument):
-      energy_resolution(NX_FLOAT):
-        exists: recommended   # cannot be required. measured value (typically from Ag 3d5/2 FWHM of sputter-cleaned Ag foil), not known every time and cann update over time (detector degradation).
-        unit: NX_ENERGY
-      manufacturer(NXfabrication): # Should go to NXmpes at some point.
-        exists: recommended
-        vendor:
-          exists: recommended
-          enumeration: [
-            "SPECS GmbH",
-            "Kratos",
-            "Physical Electronics",
-            "Scienta",
-            "Thermo Fischer Scientific",
-          ]
-        model:
-          exists: recommended                  
-      work_function(NX_FLOAT):
-          exists: recommended
-          doc: "Work function of the spectrometer."
-          unit: NX_ENERGY
-      (NXsource):
-        type(NX_CHAR):
-          enumeration: [
-            "Synchrotron X-ray Source",
-            "Rotating Anode X-ray",
-            "Fixed Tube X-ray",
-            "UV Laser",
-            "Free-Electron Laser",
-            "UV Plasma Source",
-            "Metal Jet X-ray",
-          ]
-        probe(NX_CHAR):
-          doc: "Type of probe. In XPS it's always X-ray photons (or UV light in UPS), so the full NIAC list is restricted."
-          enumeration: ["x-ray", "ultraviolet"]
+      doc: XPS spectrometer
       (NXelectronanalyser):
-        (NXcollectioncolumn):
-          scheme(NX_CHAR):
-            enumeration: [
-              "Standard",
-              "Angular dispersive",
-              "Selective area",
-              "Deflector",
-            ]
-          transmission_function(NX_FLOAT):
-            exists: recommended
-            doc: "Transmission function of the electron collection column.
-              This should be a link to /entry/process/intensity_calibration/tranmission_function." 
-            units: NX_ANY
-            file(NXnote):
-              exists: recommended
-              doc: "Name of the file containing the transmission function data of the electron collection column.
-                This should be a link to /entry/instrument/collectioncolumn/transmission_function/file."            
-        (NXenergydispersion):
-          scheme(NX_CHAR):
-            enumeration:
-              [
-                "hemispherical",
-                "double hemispherical",
-                "cylindrical mirror",
-                "display mirror",
-                "retarding grid",
-              ]
-          energy_scan_mode(NX_CHAR):
-            doc: "Way of scanning the energy axis."
-            # Could potentially add some more options here.
-            enumeration: [ 
-              "fixed analyzer transmission",
-              "fixed retarding ratio",
-              "fixed energies",
-              "snapshot",
-              "imaging",
-              "detector voltage scan",
-              "constant final state",
-              "constant initial state",
-              ]
-          # Not strictly neccessary to have.      
-          iris(NXaperture):
-             exists: optional
-          analyzer_radius(NX_FLOAT):
-            exists: optional
-            description: "The radius of the hemispherical analyzer in mm (only if hemispherical analyzer is used)."
-            unit: NX_LENGTH             
-      (NXmanipulator):
-        heater_type(NX_CHAR):
-          exists: optional
-          doc: "Method of heating the sample. Can be e.g. electron beam heating, laser, halogen lamp."
-          # Could add some more options here.
-          enumeration: [ 
-              "electron beam heating",
-              "laser",
-              "halogen lamp",
-              ]
-      depends_on(NX_CHAR):
-        exists: recommended
-        doc: "Reference to the transformation describing the orientation of the analyzer relative to the beam."
-      (NXtransformations):
-        exists: recommended
-        doc: "Set of transformations, describing the relative orientation of the analyzer with respect to the beam coordinate system."
-    (NXprocess):
-        energy_calibration(NXcalibration):
-          exists: optional
-          calibration_file(NXnote):
-            exists: optional
-            doc: "Name of the calibration file containing the calibration data."     
-        intensity_calibration(NXcalibration):
-          exists: optional
-          applied(NX_BOOLEAN):
-            doc: "Has an intensity calibration been applied? 
-              That is, has the transmission function of the analyzer been taken into account?"
-          transmission_function(NX_FLOAT):
-            exists: recommended
-            doc: "Transmission function of the electron collection column.
-              This should be a link to /entry/instrument/collectioncolumn/transmission_function." 
-            units: NX_ANY  
-            file(NXnote):
-              exists: recommended
-              doc: "Name of the file containing the transmission function data."
-        energy_reference(NXcalibration):
-          exists: optional
-          applied(NX_BOOLEAN):
-            doc: "Have the energy axes been adjusted (e.g., in cases where samples are not conductive)?"
-          emission_line(NX_CHAR):
-            exists: recommended
-            doc: "Emission line which was used for the calibration."
-          offset(NX_FLOAT):
-            exists: recommended
-            doc: "Offset between measured binding energy and calibrated binding energy of the emission line."
-          binding_energy(NX_FLOAT):
-            exists: recommended
-            doc: "The binding energy that the specified emission line appeared at,
-              after adjusting the binding energy scale, in units of eV"            
-          calibrated_axis(NX_FLOAT):
-            exists: recommended
-            doc: "This is the calibrated energy axis to be used for data plotting.
-              This should be a link to /entry/data/energy."
-    (NXsample):     
-      form(NX_CHAR):
-        exists: optional
-        enumeration:
-          # There should be more options here.
-          [
-            "foil",
-            "single crystal",
-            "pellet",
-            "powder",
-          ]
-      gas_pressure(NX_FLOAT):
-        unit: NX_PRESSURE
-        doc: |
-          In the case of a fixed pressure measurement this is the scalar pressure.
-          In the case of an experiment in which pressure changes, or anyway it is recorded,
-          this is an array of length m of pressures.
-      gas_phase(NX_CHAR):
-        exists: optional
-        doc: "Description of the constituent gases of the gas phase."    
-      depends_on(NX_CHAR):
-        exists: recommended
-        doc: "Reference to a transformation describing the orientation of the sample relative to the beam coordinate system."
-      (NXtransformations):
-        exists: recommended
-        doc: "Set of transformations, describing the relative orientation of the sample with respect to the beam coordinate system."    
-    (NXdata):
-      \@axes(NX_CHAR):
-        doc: "The data should contain at least one axis called 'energy'."
-      energy(NX_NUMBER):
-        doc: |
-          The calibrated energy axis can be either in binding or kinetic energy.
-          This should be a link to either
-          /entry/process/energy calibration/calibrated_axis or 
-          /entry/process/energy_reference/calibrated_axis.
-        \@type(NX_CHAR):
+        work_function(NX_FLOAT):
           exists: recommended
-          enumeration:
-            [
-              "kinetic",
-              "binding"
-            ]
-        \@step_size(NX_FLOAT):
-          exists: optional
-          doc: "The step size between two consecutive energy values if the energy axis is evenly spaced."
+        (NXtransformations):
+          angle_beam_analyser(NX_NUMBER):
+            exists: recommended
+            doc: Angle between incoming beam and the center analyser axis.
+            unit: NX_ANGLE
+      (NXenergydispersion):
+        scheme:
+          enumeration: [hemispherical, double hemispherical, cylindrical mirror]
+        energy_scan_mode:
+          enumeration: [fixed_analyser_transmission, fixed_energy, snapshot]
+        diameter(NX_FLOAT):
+          exists: recommended
+    (NXsample):
+      (NXtransformations):
+        angle_beam_sample(NX_NUMBER):
+          exists: recommended
+          doc: Angle between incoming beam and the sample.
+          unit: NX_ANGLE
+    (NXdata):
+      \@signal:
+        enumeration: [data]
+      data(NX_NUMBER):
+        unit: NX_ANY
+        doc: |
+          Represents a measure of one- or more-dimensional photoemission counts, where the
+          varied axis may be for example energy, pump-probe delay, temperature, etc.
+          The axes traces should be linked to the actual encoder position in NXinstrument
+          or calibrated axes in NXprocess.
