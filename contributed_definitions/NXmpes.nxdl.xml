@@ -339,7 +339,48 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                         <field name="model" recommended="true"/>
                         <field name="identifier" recommended="true"/>
                     </group>
-                    <group type="NXdata" recommended="true">
+                    <!--
+ToDo:
+- With base class inheritance this should be
+  a field of type NXdata_mpes_detector
+- The field name should be aligned with the `data` field in
+  the `NXdetector` base class. But some refinement is necessary there.
+-->
+                    <group name="raw_data" type="NXdata" recommended="true">
+                        <doc>
+                             Contains the raw data collected by the detector before calibration.
+                             The data which is considered raw might change from experiment to experiment
+                             due to hardware pre-processing of the data.
+                             This field ideally collects the data with the lowest level of processing
+                             possible.
+                             
+                             The naming of fields should follow a convention to ensure compatibility.
+                             It is recommend to use the following field names:
+                             
+                             - **pixel_x**: Detector pixel in x direction.
+                             - **pixel_y**: Detector pixel in y direction.
+                             - **energy**: (Un)calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
+                             - **kx**: (Un)calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
+                             - **ky**: (Un)calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
+                             - **kz**: (Un)calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
+                             - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
+                               Unit category: NX_ANGLE
+                             - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                               Unit category: NX_ANGLE
+                             - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
+                               Unit category: NX_LENGTH
+                             - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                               Unit category: NX_LENGTH
+                             - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
+                             - **polarization_angle**: Linear polarization angle of the incoming or
+                               outgoing beam.
+                               Unit category: NX_ANGLE (° or rad)
+                             - **ellipticity**: Ellipticity of the incoming or outgoing beam.
+                               Unit category: NX_ANGLE (° or rad)
+                             - **time_of_flight**: Total time of flight. Unit category: NX_TIME_OF_FLIGHT
+                             - **time_of_flight_adc**: Time-of-flight values, analog-to-digital converted.
+                             - **external_AXIS**: Describes an axis which is coming from outside the detectors scope.
+                        </doc>
                         <attribute name="signal">
                             <enumeration>
                                 <item value="raw"/>
@@ -576,6 +617,36 @@ Optional constant settings (like lens focusing parameters on the sample: positio
             </field>
         </group>
         <group type="NXdata">
+            <doc>
+                 An NXdata field containing a view on the measured data.
+                 This NXdata field contains a collection of the main relevant fields (axes).
+                 In NXmpes, it is required to provide an energy axis.
+                 The other data fields ideally should be named according to conventions
+                 to ensure compatibility. We recommened the following field names
+                 for common data fields:
+                 
+                 - **kx**: Calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
+                 - **ky**: Calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
+                 - **kz**: Calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
+                 - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
+                   Unit category: NX_ANGLE
+                 - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                   Unit category: NX_ANGLE
+                 - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
+                   Unit category: NX_LENGTH
+                 - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                   Unit category: NX_LENGTH
+                 - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
+                 - **polarization_angle**: Linear polarization angle of the incoming or
+                   outgoing beam. This could be a link to
+                   /entry/instrument/beam/incident_polarization_angle or
+                   /entry/instrument/beam/final_polarization_angle if they exist.
+                   Unit category: NX_ANGLE (° or rad)
+                 - **ellipticity**: Ellipticity of the incoming or outgoing beam.
+                   Could be a link to /entry/instrument/beam/incident_ellipticity or
+                   /entry/instrument/beam/final_ellipticity if they exist.
+                   Unit category: NX_ANGLE (° or rad)
+            </doc>
             <attribute name="signal">
                 <enumeration>
                     <item value="data"/>
@@ -589,16 +660,15 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                      actual encoder position in NXinstrument or calibrated axes in NXprocess.
                 </doc>
             </field>
-            <field name="energy" type="NX_NUMBER" recommended="true">
+            <field name="energy" type="NX_NUMBER" units="NX_ENERGY">
                 <doc>
                      Calibrated energy axis.
                      
-                     The calibrated energy axis can be either in binding or kinetic energy.
-                     This should be a link to either
+                     This could be a link to either
                      /entry/process/energy_calibration/calibrated_axis or
                      /entry/process/energy_correction/calibrated_axis.
                 </doc>
-                <attribute name="type" type="NX_CHAR" recommended="true">
+                <attribute name="type" type="NX_CHAR">
                     <doc>
                          The energy can be either stored as kinetic or as binding energy.
                     </doc>
