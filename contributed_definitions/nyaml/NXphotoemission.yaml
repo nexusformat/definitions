@@ -62,19 +62,26 @@ NXphotoemission(NXobject):
         Photoemission instrument
       energy_resolution(NXresolution):
         exists: optional
-        doc: |
+        doc: 
+        - |
           Overall energy resolution of the instrument in case the energy of the electrons 
           is resolved.
-          
-          Refers to Terms `10.7`_ ff. and `10.24`_ of the ISO 18115-1:2023 specification.
-          
-          .. _10.7: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.7
-          .. _10.24: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24
+        - |
+          xref:
+            spec: ISO 18115-1:2023
+            term: 10.7 ff.
+            url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.7
+        - |
+          xref:
+            spec: ISO 18115-1:2023
+            term: 10.24
+            url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24 
         physical_quantity:
+          enumeration: [energy]
         type:
-        resolution(NXdata):
-          magnitude(NX_FLOAT):
-            unit: NX_ENERGY
+          exists: recommended
+        resolution(NX_FLOAT):
+          unit: NX_ENERGY
       device_information(NXfabrication):
         exists: recommended
         vendor:
@@ -87,11 +94,16 @@ NXphotoemission(NXobject):
         
         # Comment from mpes may workshop:
         # - There is much more information which can be provided for NXsource
+        exists: recommended
         doc: |
-          The source used to generate the primary photons. Properties refer strictly to
-          parameters of the source, not of the output beam. For example, the energy of the
-          source is not the optical power of the beam, but the energy of the electron beam
-          in a synchrotron and so on.
+          A source used to generate a beam. Properties refer strictly to parameters of the
+          source, not of the output beam. For example, the energy of the source is not the
+          optical power of the beam, but the energy of the electron beam in a synchrotron
+          and so on.
+
+          Note that the uppercase notation in source_TYPE means that multiple sources can
+          be provided. For example, in pump-probe experiments, it is possible to have both
+          a `source_probe` and a `source_pump`
         type:
           enumeration: [Synchrotron X-ray Source, Rotating Anode X-ray, Fixed Tube X-ray, UV Laser, Free-Electron Laser, Optical Laser, UV Plasma Source, Metal Jet X-ray, HHG laser, UV lamp, Monochromatized electron source, other]
         type_other:
@@ -102,10 +114,6 @@ NXphotoemission(NXobject):
           exists: recommended
         probe:
           exists: optional
-          doc: |
-            Type of probe. In photoemission it's always photons, so the full NIAC list is
-            restricted.
-          enumeration: [photon, x-ray, visible light, ultraviolet]
         device_information(NXfabrication):
           exists: recommended
           vendor:
@@ -126,15 +134,18 @@ NXphotoemission(NXobject):
       # we have a subdefinition NXlink to refer to a path.
       # This would also be helpful for NXtransformations
       beam_TYPE(NXbeam):
+        doc: |
+          Properties of the photon beam at a given location.
+          Should be named with the same appendix as source_TYPE, e.g.,
+          for `source_probe` it should refer to `beam_probe`.
         distance(NX_NUMBER):
           unit: NX_LENGTH
           exists: recommended
           doc: |
-            The beam emitted by this source.
-            Should be named with the same appendix, e.g.,
-            for `source_probe` it should refer to `beam_probe`.
-            Refers to the same concept as /NXentry/NXinstrument/source_TYPE
-            and may be linked.
+            Distance between the point where the current NXbeam instance is evaluating
+            the beam properties and the point where the beam interacts with the sample.
+            For photoemission, the latter is the point where the the centre of the beam
+            touches the sample surface.
         incident_energy(NX_FLOAT):
           unit: NX_ENERGY
         incident_energy_spread(NX_NUMBER):
@@ -172,27 +183,30 @@ NXphotoemission(NXobject):
             Refers to Term `10.24`_ of the ISO 18115-1:2023 specification.
             
             .. _10.24: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24
+          type:
+            exists: recommended
+          physical_quantity:
+            enumeration: [energy]
+          resolution(NX_FLOAT):
         fast_axes:
           exists: recommended
         slow_axes:
           exists: recommended
         transmission_function(NX_FLOAT):
-          exists: optional
+          exists: optional         
         (NXcollectioncolumn):
-          
-          # TODO: Comment from Anders Frisk on proposal page
-          # What is the definition of a collection column?
-          # Optional constant settings (like lens focusing parameters on the sample: position_x, position_y, working_distance)
           scheme:
             doc: |
               Scheme of the electron collection column.
-            enumeration: [Standard, Angular dispersive, Spatial dispersive, Selective area, Deflector, PEEM, Momentum Microscope, torroidal]
+            enumeration: [angular dispersive, spatial dispersive, non-dispersive]
           mode:
             exists: recommended
-            doc: |
-              Labelling of the lens setting in use.
           projection:
             exists: recommended
+          angular_acceptance(NX_FLOAT):
+            exists: optional
+          spatial_acceptance(NX_FLOAT):
+            exists: optional
           field_aperture(NXaperture):
             exists: optional
             doc: |
@@ -266,8 +280,46 @@ NXphotoemission(NXobject):
               exists: recommended
             identifier:
               exists: recommended
-          (NXdata):
+          raw_data(NXdata):
+            # ToDo:
+            # - With base class inheritance this should be
+            #   a field of type NXdata_mpes_detector
+            # - The field name should be aligned with the `data` field in 
+            #   the `NXdetector` base class. But some refinement is necessary there.
             exists: recommended
+            doc: |
+              Contains the raw data collected by the detector before calibration.
+              The data which is considered raw might change from experiment to experiment
+              due to hardware pre-processing of the data.
+              This field ideally collects the data with the lowest level of processing
+              possible.
+
+              The naming of fields should follow a convention to ensure compatibility.
+              It is recommend to use the following field names:
+
+              - **pixel_x**: Detector pixel in x direction.
+              - **pixel_y**: Detector pixel in y direction.
+              - **energy**: (Un)calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
+              - **kx**: (Un)calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
+              - **ky**: (Un)calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
+              - **kz**: (Un)calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
+              - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
+                Unit category: NX_ANGLE
+              - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                Unit category: NX_ANGLE
+              - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
+                Unit category: NX_LENGTH
+              - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                Unit category: NX_LENGTH
+              - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
+              - **polarization_angle**: Linear polarization angle of the incoming or
+                outgoing beam.
+                Unit category: NX_ANGLE (° or rad)
+              - **ellipticity**: Ellipticity of the incoming or outgoing beam.
+                Unit category: NX_ANGLE (° or rad)
+              - **time_of_flight**: Total time of flight. Unit category: NX_TIME_OF_FLIGHT
+              - **time_of_flight_adc**: Time-of-flight values, analog-to-digital converted.
+              - **external_AXIS**: Describes an axis which is coming from outside the detectors scope.
             \@signal:
               enumeration: [raw]
             raw(NX_NUMBER):
@@ -286,14 +338,16 @@ NXphotoemission(NXobject):
         sample_bias(NX_FLOAT):
           exists: recommended
           unit: NX_CURRENT
-          doc: |
+          doc:
+          - |
             Bias of the sample with respect to analyser ground.
             
             This field may also be found in NXsample if present.
-            
-            Refers to Term `8.41`_ of the ISO 18115-1:2023 specification.
-            
-            .. _8.41: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:8.41
+          - |
+            xref:
+              spec: ISO 18115-1:2023
+              term: 8.41
+              url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:8.41
         device_information(NXfabrication):
           exists: recommended
           vendor:
@@ -317,56 +371,42 @@ NXphotoemission(NXobject):
           `ISO 15472:2010`_ specification.
           
           .. _ISO 15472:2010: https://www.iso.org/standard/74811.html
-        applied(NX_BOOLEAN):
-          doc: |
-            Has an energy calibration been applied?
         calibrated_axis(NX_FLOAT):
           exists: recommended
           doc: |
             This is the calibrated energy axis to be used for data plotting.
       angular_calibration(NXcalibration):
         exists: optional
-        applied(NX_BOOLEAN):
-          doc: |
-            Has an angular calibration been applied?
         calibrated_axis(NX_FLOAT):
           exists: recommended
           doc: |
             This is the calibrated angular axis to be used for data plotting.
       spatial_calibration(NXcalibration):
         exists: optional
-        applied(NX_BOOLEAN):
-          doc: |
-            Has an spatial calibration been applied?
         calibrated_axis(NX_FLOAT):
           exists: recommended
           doc: |
             This is the calibrated spatial axis to be used for data plotting.
       momentum_calibration(NXcalibration):
         exists: optional
-        applied(NX_BOOLEAN):
-          doc: |
-            Has an momentum calibration been applied?
         calibrated_axis(NX_FLOAT):
           exists: recommended
           doc: |
             This is the momentum axis to be used for data plotting.
       energy_referencing(NXcalibration):
         exists: optional
-        doc: |
+        doc:
+        - |
           For energy referencing, the measured energies are corrected for the charging potential
           (i.e., the electrical potential of the surface region of an insulating sample, caused by
           irradiation) such that those energies correspond to a sample with no surface charge.
           Usually, the energy axis is adjusted by shifting all energies uniformally until one
           well-defined emission line peak (or the Fermi edge) is located at a known _correct_ energy.
-          
-          Refers to Term `12.74`_ ff. of the ISO 18115-1:2023 specification.
-          
-          .. _12.74: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.74
-        applied(NX_BOOLEAN):
-          doc: |
-            Have the energy axes been adjusted (e.g., in cases where samples are not
-            conductive)?
+        - |
+          xref:
+            spec: ISO 18115-1:2023
+            term: 12.74 ff.
+            url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.74
         level(NXelectron_level):
           exists: recommended
           doc: |
@@ -375,16 +415,18 @@ NXphotoemission(NXobject):
           doc: |
             Reference peak that was used for the calibration.
             
-            For example: adventitious carbon | C-C | metallic Au | elemental Si | Fermi edge
+            For example: adventitious carbon | C-C | metallic Au | elemental Si | Fermi edge | vacuum level
         binding_energy(NX_FLOAT):
           exists: recommended
-          doc: |
+          doc:
+          - |
             The binding energy (in units of eV) that the specified emission line appeared at,
-            after adjusting the binding energy scale.
-            
-            Refers to Term `12.16`_ ff. of the ISO 18115-1:2023 specification.
-            
-            .. _12.16: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
+            after adjusting the binding energy scale.          
+          - |
+            xref:
+              spec: ISO 18115-1:2023
+              term: 12.16_ ff.
+              url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
         offset(NX_FLOAT):
           exists: recommended
           doc: |
@@ -403,11 +445,6 @@ NXphotoemission(NXobject):
           kinetic energy is multiplied by the corresponding value in the relative_intensity
           field of the transmission_function. This calibration procedure is used to account for
           the different tranmsission efficiencies when using different lens modes.
-        applied(NX_BOOLEAN):
-          doc: |
-            Has an intensity calibration been applied?
-            
-            That is, has the transmission function of the analyser been taken into account?
         mapping(NXdata):
           exists: recommended
           doc: |
@@ -461,12 +498,12 @@ NXphotoemission(NXobject):
       preparation_date(NX_DATE_TIME):
         exists: recommended
         doc: |
-          Date of preparation of the sample for the photoemission experiment (i.e. cleaving, last
+          Date of preparation of the sample for the XPS experiment (i.e. cleaving, last
           annealing).
       preparation_description(NXnote):
         exists: optional
         doc: |
-          Description of the surface preparation technique for the photoemission experiment, i.e.
+          Description of the surface preparation technique for the XPS experiment, i.e.
           UHV cleaving, in-situ growth, sputtering/annealing etc. Ideally, a full report
           of the previous operations, in any format(NXnote allows to add pictures, audio,
           movies). Alternatively, a reference to the location or a unique identifier or
@@ -480,17 +517,46 @@ NXphotoemission(NXobject):
           recoded, this is an array of length m of temperatures. This should be a link to
           /entry/instrument/manipulator/sample_temperature.
       situation:
-        exists: optional
+        exists: recommended
         enumeration: [vacuum, inert atmosphere, oxidising atmosphere, reducing atmosphere]
       gas_pressure(NX_FLOAT):
         unit: NX_PRESSURE
-        exists: optional
+        exists: recommended
       bias(NX_FLOAT):
         unit: NX_VOLTAGE
         exists: optional
         doc: |
           Voltage applied to sample and sample holder.
     (NXdata):
+      doc: |
+        An NXdata field containing a view on the measured data.
+        This NXdata field contains a collection of the main relevant fields (axes).
+        In NXmpes, it is required to provide an ``energy`` axis (Unit category: NX_ENERGY).
+        The other data fields ideally should be named according to conventions
+        to ensure compatibility. We recommened the following field names
+        for common data fields:
+
+        - **kx**: Calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
+        - **ky**: Calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
+        - **kz**: Calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
+        - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
+          Unit category: NX_ANGLE
+        - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+          Unit category: NX_ANGLE
+        - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
+          Unit category: NX_LENGTH
+        - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+          Unit category: NX_LENGTH
+        - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
+        - **polarization_angle**: Linear polarization angle of the incoming or
+          outgoing beam. This could be a link to
+          /entry/instrument/beam/incident_polarization_angle or
+          /entry/instrument/beam/final_polarization_angle if they exist.
+          Unit category: NX_ANGLE (° or rad)
+        - **ellipticity**: Ellipticity of the incoming or outgoing beam.
+          Could be a link to /entry/instrument/beam/incident_ellipticity or
+          /entry/instrument/beam/final_ellipticity if they exist.
+          Unit category: NX_ANGLE (° or rad)
       \@signal:
         enumeration: [data]
       data(NX_NUMBER):
@@ -500,28 +566,3 @@ NXphotoemission(NXobject):
           varied axis may be for example energy, momentum, spatial coordinate, pump-probe
           delay, spin index, temperature, etc. The axes traces should be linked to the
           actual encoder position in NXinstrument or calibrated axes in NXprocess.
-      energy(NX_NUMBER):
-        exists: optional
-        doc: |
-          Calibrated energy axis.
-          
-          The calibrated energy axis can be either in binding or kinetic energy.
-          This should be a link to either
-          /entry/process/energy_calibration/calibrated_axis or
-          /entry/process/energy_correction/calibrated_axis.
-        \@type:
-          type: NX_CHAR
-          exists: recommended
-          doc: |
-            The energy can be either stored as kinetic (Term `3.35`_ of the ISO 18115-1:2023
-            specification) or as binding (Term `12.16`_) energy.
-            
-            .. _3.35: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.35
-            .. _12.16: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
-          enumeration: 
-            kinetic: 
-              doc: |
-                Calibrated kinetic energy axis.
-            binding: 
-              doc: |
-                Calibrated binding energy axis.
