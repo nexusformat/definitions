@@ -159,9 +159,9 @@ latex_elements = {
     'maxlistdepth': 25, # some application definitions are deeply nested
     'preamble': r'''
     \usepackage{amsbsy}
-    \usepackage[utf8]{inputenc}
     \listfiles
     \DeclareUnicodeCharacter{1F517}{X}
-    \DeclareUnicodeCharacter{2906}{<=}'''
-}
+    \DeclareUnicodeCharacter{2906}{<=}
+    \DeclareUnicodeCharacter{394}{$\Delta$}
+    \DeclareUnicodeCharacter{2206}{$\Delta$}'''
 }

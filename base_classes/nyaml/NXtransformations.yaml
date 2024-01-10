@@ -21,23 +21,42 @@ doc: |
   * ``NX_UNITLESS`` for axes for which no transformation type is specified
   
   This class will usually contain all axes of a sample stage or goniometer or
-  a detector.  The NeXus default McSTAS coordinate frame is assumed, but additional
-  useful coordinate axes may be defined by using axes for which no transformation
-  type has been specified.
+  a detector. The NeXus default :ref:`McSTAS coordinate frame<Design-CoordinateSystem>`
+  is assumed, but additional useful coordinate axes may be defined by using axes for which
+  no transformation type has been specified.
   
-  The entry point (``depends_on``) will be outside of this class and point to a
-  field in here. Following the chain may also require following ``depends_on``
-  links to transformations outside, for example to a common base table.  If
-  a relative path is given, it is relative to the group enclosing the ``depends_on``
-  specification.
+  **Transformation chain**
+  
+  The entry point of a chain of transformations is a field called ``depends_on``
+  will be outside of this class and points to a field in here. Following the chain may
+  also require following ``depends_on`` links to transformations outside, for example
+  to a common base table.  If a relative path is given, it is relative to the group
+  enclosing the ``depends_on`` specification.
   
   For a chain of three transformations, where :math:`T_1` depends on :math:`T_2`
-  and that in turn depends on :math:`T_3`, the final transformation :math:`T_f` is
+  which in turn depends on :math:`T_3`, the final *active* transformation
+  matrix :math:`T_f` is
   
-  .. math:: T_f = T_3 T_2 T_1
+  .. math:: T_f = T_3 . T_2 . T_1
   
-  In explicit terms, the transformations are a subset of affine transformations
-  expressed as 4x4 matrices that act on homogeneous coordinates, :math:`w=(x,y,z,1)^T`.
+  For example when positioning a flat detector, its pixel positions in the laboratory
+  reference frame (:ref:`McSTAS coordinate frame<Design-CoordinateSystem>` by default)
+  can be calculated by
+  
+  .. math:: X_\text{lab} = T_f . X_\text{pixel} = T_3 . T_2 . T_1 . X_\text{pixel}
+  
+  Note that :math:`T_1` comes first in the *depends-on* chain and is also applied first
+  to the pixel coordinates.
+  
+  When we say transformation :math:`A` *depends on* transformation :math:`B` we mean that
+  the physical motor that realizes :math:`A` is *stacked on top of* the motor that realizes :math:`B`.
+  So the activate coordinate transformation :math:`A` needs to be applied to a coordinate
+  before applying :math:`B`. In other words :math:`X' = B . A . X`.
+  
+  **Transformation matrix**
+  
+  In explicit terms, the transformations are a subset of affine transformations expressed as
+  4x4 active transformation matrices that act on homogeneous coordinates, :math:`X=[x,y,z,1]^T`.
   
   For rotation and translation,
   
@@ -51,7 +70,7 @@ doc: |
   attribute multiplied by the field value, and :math:`R` is defined as a rotation
   about an axis in the direction of ``vector``, of angle of the field value.
   
-  NOTE
+  **Usage**
   
   One possible use of ``NXtransformations`` is to define the motors and
   transformations for a diffractometer (goniometer).  Such use is mentioned
@@ -60,8 +79,7 @@ doc: |
   Collecting the motors of a sample table or xyz-stage in an NXtransformations
   group is equally possible.
   
-  
-  Following the section on the general dscription of axis in NXtransformations is a section which
+  Following the section on the general description of axis in NXtransformations is a section which
   documents the fields commonly used within NeXus for positioning purposes and their meaning. Whenever
   there is a need for positioning a beam line component please use the existing names. Use as many fields
   as needed in order to position the component. Feel free to add more axis if required. In the description
@@ -74,6 +92,142 @@ doc: |
   * depends_on
   
   as needed.
+  
+  **Example 1: goniometer**
+  
+  Position a sample mounted on a goniometer in the :ref:`McSTAS coordinate frame<Design-CoordinateSystem>`.
+  
+  The sample is oriented as follows
+  
+  .. math:: X_\text{lab} = R(\vec{v}_\omega, \omega) .
+                           T(\vec{v}_z, \text{sam}_z) .
+                           T(\vec{v}_y, \text{sam}_y) .
+                           T(\vec{v}_x, \text{sam}_x) .
+                           R(\vec{v}_\chi, \chi) .
+                           R(\vec{v}_\varphi, \varphi) . X_s
+  
+  where
+  
+  * :math:`R(\vec{v},a)` is a rotation around vector :math:`\vec{v}` with angle :math:`a`
+  * :math:`T(\vec{u},t)` is a translation along vector :math:`\vec{u}` over a distance :math:`t`
+  * :math:`X_s` a coordinate in the sample reference frame.
+  
+  .. code-block::
+  
+    entry:NXentry
+      sample:NXsample
+        depends_on=transformations/phi
+        transformations:NXtransformations
+          phi=0
+            @depends_on=chi
+            @transformation_type=rotation
+            @vector=[-1 -0.0037 -0.002]
+            @units=degrees
+          chi=0
+            @depends_on=sam_x
+            @transformation_type=rotation
+            @vector=[0.0046 0.0372 0.9993]
+            @units=degrees
+          sam_x=0
+            @depends_on=sam_y
+            @transformation_type=translation
+            @vector=[1 0 0]
+            @units=mm
+          sam_y=0
+            @depends_on=sam_z
+            @transformation_type=translation
+            @vector=[0 1 0]
+            @units=mm
+          sam_z=0
+            @depends_on=omega
+            @transformation_type=translation
+            @vector=[0 0 1]
+            @units=mm
+          omega=174
+            @depends_on=.
+            @transformation_type=rotation
+            @vector=[-1 0 0]
+            @units=degrees
+  
+  **Example 2: different coordinate system**
+  
+  Define a laboratory reference frame with the X-axis along the beam and the Z-axis opposite to the direction of gravity.
+  Three point detectors are positioned in this reference:
+  
+  * *transmission*:
+      * point detector in the beam
+      * 20 cm downstream from the sample (the origin of the reference frame)
+  * *vertical*:
+      * point detector 10 cm downstream from the sample
+      * making an angle of 5 degrees with the beam w.r.t. the sample
+      * positioned in the XZ-plane above the XY-plane
+  * *horizontal*:
+      * point detector 11 cm downstream from the sample
+      * making an angle of 6 degrees with the beam w.r.t. the sample
+      * positioned in the XY-plane above the XZ-plane
+  
+  The coordinates of the point detectors in the laboratory reference frame are
+  
+  * *transmission*: :math:`X_\text{lab} = T_x(20) . X_d`
+  * *vertical*: :math:`X_\text{lab} = R_y(-5) . T_x(10) . X_d`
+  * *horizontal*: :math:`X_\text{lab} = R_x(-90) . R_y(-6) . T_x(11) . X_d`
+  
+  where
+  
+  * :math:`T_x`, :math:`T_y`, :math:`T_z`: active transformation matrices for translation along the X, Y and Z axes
+  * :math:`R_x`, :math:`R_y`, :math:`R_z`: active transformation matrices for rotation around the X, Y and Z axes
+  * :math:`X_d` is a coordinate in the detector reference frame.
+  
+  Note that as these are point detectors, we only have one coordinate :math:`X_d=[0,0,0,1]^T`.
+  
+  .. code-block::
+  
+    entry:NXentry
+      instrument:NXinstrument
+        vertical:NXdetector
+          depends_on=position/distance
+          position:NXtransformations
+            distance=10            # move downstream from the sample
+              @depends_on=polar
+              @units=cm
+              @vector=[1 0 0]
+            polar=5                # title above the horizontal plane
+              @depends_on=azimuth
+              @units=degrees
+              @vector=[0 -1 0]
+            azimuth=0              # stay in the vertical plane
+              @depends_on=/entry/coordinate_system/beam
+              @units=degrees
+              @vector=[-1 0 0]
+        horizontal:NXdetector
+          depends_on=position/distance
+          position:NXtransformations
+            distance=11            # move downstream from the sample
+              @depends_on=polar
+              @units=cm
+              @vector=[1 0 0]
+            polar=6                # title above the horizontal plane
+              @depends_on=azimuth
+              @units=degrees
+              @vector=[0 -1 0]
+            azimuth=90             # rotate to the horizontal plane
+              @depends_on=/entry/coordinate_system/beam
+              @units=degrees
+              @vector=[-1 0 0]
+        transmission:NXdetector
+          depends_on=position/distance
+          position:NXtransformations
+            distance=20            # move downstream from the sample
+              @depends_on=/entry/coordinate_system/beam
+              @units=cm
+              @vector=[1 0 0]
+      coordinate_system:NXtransformations
+        beam=NaN                   # value is never used
+          @depends_on=gravity
+          @vector=[1 0 0]          # X-axis points in the beam direction
+        gravity=NaN                # value is never used
+          @depends_on=.            # end of the chain
+          @vector=[0 0 -1]         # Z-axis points up
 type: group
 ignoreExtraGroups: true
 ignoreExtraFields: true
@@ -138,7 +292,7 @@ NXtransformations(NXobject):
       type: NX_CHAR
       doc: |
         Points to the path to a field defining the axis on which this
-        depends or the string ".".
+        depends or the string "." when at the end of the chain.
     \@equipment_component:
       type: NX_CHAR
       doc: |
@@ -183,7 +337,7 @@ NXtransformations(NXobject):
       for a summary of the discussion.
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# f47cb808914aa3b75fb05b4c97d8f4ff4c1c08478e44a502c50e2ca5b50682c3
+# 6a1dc796e67a81292ff555a4e73fd6d2e67769d83ddb0686e193f8f7b1ccfef0
 # <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
 # <!--
@@ -241,23 +395,42 @@ NXtransformations(NXobject):
 # 		* ``NX_UNITLESS`` for axes for which no transformation type is specified
 # 
 # 		This class will usually contain all axes of a sample stage or goniometer or
-# 		a detector.  The NeXus default McSTAS coordinate frame is assumed, but additional
-# 		useful coordinate axes may be defined by using axes for which no transformation
-# 		type has been specified.
+# 		a detector. The NeXus default :ref:`McSTAS coordinate frame&lt;Design-CoordinateSystem&gt;`
+# 		is assumed, but additional useful coordinate axes may be defined by using axes for which
+# 		no transformation type has been specified.
 # 
-# 		The entry point (``depends_on``) will be outside of this class and point to a
-# 		field in here. Following the chain may also require following ``depends_on``
-# 		links to transformations outside, for example to a common base table.  If
-# 		a relative path is given, it is relative to the group enclosing the ``depends_on``
-# 		specification.
+# 		**Transformation chain**
+# 
+# 		The entry point of a chain of transformations is a field called ``depends_on``
+# 		will be outside of this class and points to a field in here. Following the chain may
+# 		also require following ``depends_on`` links to transformations outside, for example
+# 		to a common base table.  If a relative path is given, it is relative to the group
+# 		enclosing the ``depends_on`` specification.
 # 
 # 		For a chain of three transformations, where :math:`T_1` depends on :math:`T_2`
-# 		and that in turn depends on :math:`T_3`, the final transformation :math:`T_f` is
+# 		which in turn depends on :math:`T_3`, the final *active* transformation
+# 		matrix :math:`T_f` is
 # 
-# 		.. math:: T_f = T_3 T_2 T_1
+# 		.. math:: T_f = T_3 . T_2 . T_1
 # 
-# 		In explicit terms, the transformations are a subset of affine transformations
-# 		expressed as 4x4 matrices that act on homogeneous coordinates, :math:`w=(x,y,z,1)^T`.
+# 		For example when positioning a flat detector, its pixel positions in the laboratory
+# 		reference frame (:ref:`McSTAS coordinate frame&lt;Design-CoordinateSystem&gt;` by default)
+# 		can be calculated by
+# 
+# 		.. math:: X_\text{lab} = T_f . X_\text{pixel} = T_3 . T_2 . T_1 . X_\text{pixel}
+# 
+# 		Note that :math:`T_1` comes first in the *depends-on* chain and is also applied first
+# 		to the pixel coordinates.
+# 
+# 		When we say transformation :math:`A` *depends on* transformation :math:`B` we mean that
+# 		the physical motor that realizes :math:`A` is *stacked on top of* the motor that realizes :math:`B`.
+# 		So the activate coordinate transformation :math:`A` needs to be applied to a coordinate
+# 		before applying :math:`B`. In other words :math:`X' = B . A . X`.
+# 
+# 		**Transformation matrix**
+# 
+# 		In explicit terms, the transformations are a subset of affine transformations expressed as
+# 		4x4 active transformation matrices that act on homogeneous coordinates, :math:`X=[x,y,z,1]^T`.
 # 
 # 		For rotation and translation,
 # 
@@ -271,8 +444,8 @@ NXtransformations(NXobject):
 # 		attribute multiplied by the field value, and :math:`R` is defined as a rotation
 # 		about an axis in the direction of ``vector``, of angle of the field value.
 # 
-# 		NOTE
-# 		
+# 		**Usage**
+# 
 # 		One possible use of ``NXtransformations`` is to define the motors and
 # 		transformations for a diffractometer (goniometer).  Such use is mentioned
 # 		in the ``NXinstrument`` base class.  Use one ``NXtransformations`` group 
@@ -280,8 +453,7 @@ NXtransformations(NXobject):
 # 		Collecting the motors of a sample table or xyz-stage in an NXtransformations
 # 		group is equally possible.
 # 
-# 
-# 		Following the section on the general dscription of axis in NXtransformations is a section which
+# 		Following the section on the general description of axis in NXtransformations is a section which
 # 		documents the fields commonly used within NeXus for positioning purposes and their meaning. Whenever
 # 		there is a need for positioning a beam line component please use the existing names. Use as many fields
 # 		as needed in order to position the component. Feel free to add more axis if required. In the description
@@ -294,6 +466,143 @@ NXtransformations(NXobject):
 # 		* depends_on
 # 
 # 		as needed.
+# 
+# 		**Example 1: goniometer**
+# 
+# 		Position a sample mounted on a goniometer in the :ref:`McSTAS coordinate frame&lt;Design-CoordinateSystem&gt;`.
+# 
+# 		The sample is oriented as follows
+# 
+# 		.. math:: X_\text{lab} = R(\vec{v}_\omega, \omega) . 
+# 								 T(\vec{v}_z, \text{sam}_z) . 
+# 								 T(\vec{v}_y, \text{sam}_y) . 
+# 								 T(\vec{v}_x, \text{sam}_x) . 
+# 								 R(\vec{v}_\chi, \chi) . 
+# 								 R(\vec{v}_\varphi, \varphi) . X_s
+# 
+# 		where
+# 
+# 		* :math:`R(\vec{v},a)` is a rotation around vector :math:`\vec{v}` with angle :math:`a`
+# 		* :math:`T(\vec{u},t)` is a translation along vector :math:`\vec{u}` over a distance :math:`t`
+# 		* :math:`X_s` a coordinate in the sample reference frame.
+# 
+# 		.. code-block::
+# 
+# 		  entry:NXentry
+# 		    sample:NXsample
+# 		      depends_on=transformations/phi
+# 		      transformations:NXtransformations
+# 		        phi=0
+# 		          @depends_on=chi
+# 		          @transformation_type=rotation
+# 		          @vector=[-1 -0.0037 -0.002]
+# 		          @units=degrees
+# 		        chi=0
+# 		          @depends_on=sam_x
+# 		          @transformation_type=rotation
+# 		          @vector=[0.0046 0.0372 0.9993]
+# 		          @units=degrees
+# 		        sam_x=0
+# 		          @depends_on=sam_y
+# 		          @transformation_type=translation
+# 		          @vector=[1 0 0]
+# 		          @units=mm
+# 		        sam_y=0
+# 		          @depends_on=sam_z
+# 		          @transformation_type=translation
+# 		          @vector=[0 1 0]
+# 		          @units=mm
+# 		        sam_z=0
+# 		          @depends_on=omega
+# 		          @transformation_type=translation
+# 		          @vector=[0 0 1]
+# 		          @units=mm
+# 		        omega=174
+# 		          @depends_on=.
+# 		          @transformation_type=rotation
+# 		          @vector=[-1 0 0]
+# 		          @units=degrees
+# 
+# 		**Example 2: different coordinate system**
+# 
+# 		Define a laboratory reference frame with the X-axis along the beam and the Z-axis opposite to the direction of gravity.
+# 		Three point detectors are positioned in this reference:
+# 
+# 		* *transmission*:
+# 			* point detector in the beam
+# 			* 20 cm downstream from the sample (the origin of the reference frame)
+# 		* *vertical*:
+# 			* point detector 10 cm downstream from the sample
+# 			* making an angle of 5 degrees with the beam w.r.t. the sample
+# 			* positioned in the XZ-plane above the XY-plane
+# 		* *horizontal*:
+# 			* point detector 11 cm downstream from the sample
+# 			* making an angle of 6 degrees with the beam w.r.t. the sample
+# 			* positioned in the XY-plane above the XZ-plane
+# 
+# 		The coordinates of the point detectors in the laboratory reference frame are
+# 
+# 		* *transmission*: :math:`X_\text{lab} = T_x(20) . X_d`
+# 		* *vertical*: :math:`X_\text{lab} = R_y(-5) . T_x(10) . X_d`
+# 		* *horizontal*: :math:`X_\text{lab} = R_x(-90) . R_y(-6) . T_x(11) . X_d`
+# 
+# 		where
+# 
+# 		* :math:`T_x`, :math:`T_y`, :math:`T_z`: active transformation matrices for translation along the X, Y and Z axes
+# 		* :math:`R_x`, :math:`R_y`, :math:`R_z`: active transformation matrices for rotation around the X, Y and Z axes
+# 		* :math:`X_d` is a coordinate in the detector reference frame.
+# 
+# 		Note that as these are point detectors, we only have one coordinate :math:`X_d=[0,0,0,1]^T`.
+# 
+# 		.. code-block::
+# 
+# 		  entry:NXentry
+# 		    instrument:NXinstrument
+# 		      vertical:NXdetector
+# 		        depends_on=position/distance
+# 		        position:NXtransformations
+# 		          distance=10            # move downstream from the sample
+# 		            @depends_on=polar
+# 		            @units=cm
+# 		            @vector=[1 0 0]
+# 		          polar=5                # title above the horizontal plane
+# 		            @depends_on=azimuth
+# 		            @units=degrees
+# 		            @vector=[0 -1 0]
+# 		          azimuth=0              # stay in the vertical plane
+# 		            @depends_on=/entry/coordinate_system/beam
+# 		            @units=degrees
+# 		            @vector=[-1 0 0]
+# 		      horizontal:NXdetector
+# 		        depends_on=position/distance
+# 		        position:NXtransformations
+# 		          distance=11            # move downstream from the sample
+# 		            @depends_on=polar
+# 		            @units=cm
+# 		            @vector=[1 0 0]
+# 		          polar=6                # title above the horizontal plane
+# 		            @depends_on=azimuth
+# 		            @units=degrees
+# 		            @vector=[0 -1 0]
+# 		          azimuth=90             # rotate to the horizontal plane
+# 		            @depends_on=/entry/coordinate_system/beam
+# 		            @units=degrees
+# 		            @vector=[-1 0 0]
+# 		      transmission:NXdetector
+# 		        depends_on=position/distance
+# 		        position:NXtransformations
+# 		          distance=20            # move downstream from the sample
+# 		            @depends_on=/entry/coordinate_system/beam
+# 		            @units=cm
+# 		            @vector=[1 0 0]
+# 		    coordinate_system:NXtransformations
+# 		      beam=NaN                   # value is never used
+# 		        @depends_on=gravity
+# 		        @vector=[1 0 0]          # X-axis points in the beam direction
+# 		      gravity=NaN                # value is never used
+# 		        @depends_on=.            # end of the chain
+# 		        @vector=[0 0 -1]         # Z-axis points up
+# 
 # 	</doc>
 # 	<field name="AXISNAME" nameType="any" units="NX_TRANSFORMATION" type="NX_NUMBER" maxOccurs="unbounded">
 # 		<doc>
@@ -356,7 +665,7 @@ NXtransformations(NXobject):
 # 		<attribute name="depends_on" type="NX_CHAR">
 # 			<doc>
 # 				Points to the path to a field defining the axis on which this
-# 				depends or the string ".".
+# 				depends or the string "." when at the end of the chain.
 # 			</doc>
 # 		</attribute>
 # 		<attribute name="equipment_component" type="NX_CHAR">

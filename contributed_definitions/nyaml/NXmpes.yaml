@@ -280,8 +280,46 @@ NXmpes(NXobject):
               exists: recommended
             identifier:
               exists: recommended
-          (NXdata):
+          raw_data(NXdata):
+            # ToDo:
+            # - With base class inheritance this should be
+            #   a field of type NXdata_mpes_detector
+            # - The field name should be aligned with the `data` field in 
+            #   the `NXdetector` base class. But some refinement is necessary there.
             exists: recommended
+            doc: |
+              Contains the raw data collected by the detector before calibration.
+              The data which is considered raw might change from experiment to experiment
+              due to hardware pre-processing of the data.
+              This field ideally collects the data with the lowest level of processing
+              possible.
+
+              The naming of fields should follow a convention to ensure compatibility.
+              It is recommend to use the following field names:
+
+              - **pixel_x**: Detector pixel in x direction.
+              - **pixel_y**: Detector pixel in y direction.
+              - **energy**: (Un)calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
+              - **kx**: (Un)calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
+              - **ky**: (Un)calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
+              - **kz**: (Un)calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
+              - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
+                Unit category: NX_ANGLE
+              - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                Unit category: NX_ANGLE
+              - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
+                Unit category: NX_LENGTH
+              - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                Unit category: NX_LENGTH
+              - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
+              - **polarization_angle**: Linear polarization angle of the incoming or
+                outgoing beam.
+                Unit category: NX_ANGLE (° or rad)
+              - **ellipticity**: Ellipticity of the incoming or outgoing beam.
+                Unit category: NX_ANGLE (° or rad)
+              - **time_of_flight**: Total time of flight. Unit category: NX_TIME_OF_FLIGHT
+              - **time_of_flight_adc**: Time-of-flight values, analog-to-digital converted.
+              - **external_AXIS**: Describes an axis which is coming from outside the detectors scope.
             \@signal:
               enumeration: [raw]
             raw(NX_NUMBER):
@@ -596,7 +634,38 @@ NXmpes(NXobject):
             Flood gun creating a current of low-energy electrons.
           
             This should be a link to /entry/instrument/flood_gun.
-    (NXdata):
+    data(NXdata):
+      doc: |
+        The default NXdata field containing a view on the measured data.
+        This NXdata field contains a collection of the main relevant fields (axes).
+        In NXmpes, it is required to provide an energy axis.
+        If you want to provide additional views on your data, you can additionally use
+        the generic NXdata group of NXentry.
+        The other data fields inside this NXdata group should be named according to conventions
+        to ensure compatibility. We recommened the following field names
+        for common data fields:
+
+        - **kx**: Calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
+        - **ky**: Calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
+        - **kz**: Calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
+        - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
+          Unit category: NX_ANGLE
+        - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+          Unit category: NX_ANGLE
+        - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
+          Unit category: NX_LENGTH
+        - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+          Unit category: NX_LENGTH
+        - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
+        - **polarization_angle**: Linear polarization angle of the incoming or
+          outgoing beam. This could be a link to
+          /entry/instrument/beam/incident_polarization_angle or
+          /entry/instrument/beam/final_polarization_angle if they exist.
+          Unit category: NX_ANGLE (° or rad)
+        - **ellipticity**: Ellipticity of the incoming or outgoing beam.
+          Could be a link to /entry/instrument/beam/incident_ellipticity or
+          /entry/instrument/beam/final_ellipticity if they exist.
+          Unit category: NX_ANGLE (° or rad)
       \@signal:
         enumeration: [data]
       data(NX_NUMBER):
@@ -607,17 +676,15 @@ NXmpes(NXobject):
           delay, spin index, temperature, etc. The axes traces should be linked to the
           actual encoder position in NXinstrument or calibrated axes in NXprocess.
       energy(NX_NUMBER):
-        exists: recommended
+        unit: NX_ENERGY
         doc: |
           Calibrated energy axis.
           
-          The calibrated energy axis can be either in binding or kinetic energy.
-          This should be a link to either
+          This could be a link to either
           /entry/process/energy_calibration/calibrated_axis or
           /entry/process/energy_correction/calibrated_axis.
         \@type:
           type: NX_CHAR
-          exists: recommended
           doc: |
             The energy can be either stored as kinetic or as binding energy.
           enumeration: 
@@ -639,9 +706,20 @@ NXmpes(NXobject):
                   spec: ISO 18115-1:2023
                   term: 12.16
                   url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
+      \@energy_indices:
+        exists: recommended
+      \@energy_depends(NX_CHAR):
+        exists: recommended
+        doc: |
+          The energy can be dispersed according to different strategies. ``energy_depends`` points to
+          the path of a field defining the axis on which the energy axis depends.
 
+          For example:
+            @energy_depends: '/entry/instrument/detector/data/sensor_y' for a 2D detector
+            @energy_depends: '/entry/instrument/energydispersion/center_energy' for a swept scan
+            @energy_depends: '/entry/process/calibration/energy_calibration/calibrated_axis' for a preprocessed axis
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 75917877eb699fd52182f562910ebb9fc44a699aced8a0c2a71725fffdec89ae
+# 576bc8ae6b6e2395aca8c6297bf482fc68d82068637a9f9c895567547d4794f7
 # <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -998,6 +1076,89 @@ NXmpes(NXobject):
 #                                  Raw data before calibration.
 #                             </doc>
 #                         </field>
+#                         <field name="pixel_x" type="NX_FLOAT" optional="true" units="NX_ANY">
+#                             <!--there is also x_pixel_offset in NXdetector base class-->
+#                             <doc>
+#                                  Detector pixel in x direction.
+#                             </doc>
+#                         </field>
+#                         <field name="pixel_y" type="NX_FLOAT" optional="true" units="NX_ANY">
+#                             <doc>
+#                                  Detector pixel in y direction.
+#                             </doc>
+#                         </field>
+#                         <!--exists in NXdetector base class-->
+#                         <field name="raw_time_of_flight" type="NX_INT" optional="true" units="NX_PULSES">
+#                             <doc>
+#                                  In DAQ clock pulses
+#                             </doc>
+#                         </field>
+#                         <!--exists in NXdetector base class-->
+#                         <field name="time_of_flight" type="NX_FLOAT" optional="true" units="NX_TIME_OF_FLIGHT">
+#                             <doc>
+#                                  Total time of flight
+#                             </doc>
+#                         </field>
+#                         <field name="time_of_flight_adc" type="NX_FLOAT" optional="true" units="NX_ANY">
+#                             <doc>
+#                                  Time-of-flight values, analog-to-digital converted.
+#                             </doc>
+#                         </field>
+#                         <field name="polar_angle_manipulator" type="NX_FLOAT" optional="true" units="NX_ANGLE">
+#                             <doc>
+#                                  Polar rotation angle of the manipulator.
+#                             </doc>
+#                         </field>
+#                         <field name="azimuthal_angle_manipulator" type="NX_FLOAT" optional="true" units="NX_ANGLE">
+#                             <doc>
+#                                  Azimuthal rotation angle of the manipulator.
+#                             </doc>
+#                         </field>
+#                         <field name="delay_position" type="NX_FLOAT" optional="true" units="NX_LENGTH">
+#                             <doc>
+#                                  Delay position of delay line detector.
+#                             </doc>
+#                         </field>
+#                         <field name="delay_position_ADC" type="NX_FLOAT" optional="true" units="NX_ANY">
+#                             <doc>
+#                                  Delay position of delay line detector, analog-to-digital converted.
+#                             </doc>
+#                         </field>
+#                         <field name="time_delay_x" type="NX_FLOAT" optional="true" units="NX_TIME">
+#                             <doc>
+#                                  Time delay of delay line detector.
+#                             </doc>
+#                         </field>
+#                         <field name="time_delay_y" type="NX_FLOAT" optional="true" units="NX_TIME">
+#                             <doc>
+#                                  Time delay of delay line detector.
+#                             </doc>
+#                         </field>
+#                         <field name="voltage" type="NX_FLOAT" optional="true" units="NX_VOLTAGE">
+#                             <doc>
+#                                  Measured detector voltage
+#                             </doc>
+#                         </field>
+#                         <field name="external_AXIS" type="NX_NUMBER" optional="true" units="NX_ANY">
+#                             <doc>
+#                                  Describes an axis which is coming from outside the detectors scope.
+#                                  
+#                                  Think of a detector just being triggered for readout by the rest of the experimental setup - 
+#                                  it would just know that it collected N images, which would flatten the external parameters to one axis, too.
+#                                  This can then be linked, e.g. with NXcalibration, to the appropriate fields in the instrument and write it to the 
+#                                  top-level NXdata.
+#                             </doc>
+#                         </field>
+#                         <field name="magnetization" type="NX_CHAR">
+#                             <doc>
+#                                  missing
+#                             </doc>
+#                         </field>
+#                         <field name="scattering_direction" type="NX_CHAR">
+#                             <doc>
+#                                  missing
+#                             </doc>
+#                         </field>
 #                     </group>
 #                 </group>
 #             </group>
@@ -1270,16 +1431,16 @@ NXmpes(NXobject):
 #                      actual encoder position in NXinstrument or calibrated axes in NXprocess.
 #                 </doc>
 #             </field>
-#             <field name="energy" type="NX_NUMBER" recommended="true">
+#             <!--in NXmpes, we should require an energy axis-->
+#             <field name="energy" type="NX_NUMBER" units="NX_ENERGY">
 #                 <doc>
 #                      Calibrated energy axis.
 #                      
-#                      The calibrated energy axis can be either in binding or kinetic energy.
-#                      This should be a link to either
+#                      This could be a link to either
 #                      /entry/process/energy_calibration/calibrated_axis or
 #                      /entry/process/energy_correction/calibrated_axis.
 #                 </doc>
-#                 <attribute name="type" type="NX_CHAR" recommended="true">
+#                 <attribute name="type" type="NX_CHAR">
 #                     <doc>
 #                          The energy can be either stored as kinetic (Term `3.35`_ of the ISO 18115-1:2023
 #                          specification) or as binding (Term `12.16`_) energy.
@@ -1293,13 +1454,53 @@ NXmpes(NXobject):
 #                                  Calibrated kinetic energy axis.
 #                             </doc>
 #                         </item>
-#                         <item value="binding">
-#                             <doc>
-#                                  Calibrated binding energy axis.
-#                             </doc>
-#                         </item>
 #                     </enumeration>
+#                     <field name="binding">
+#                         <doc>
+#                              Calibrated binding energy axis.
+#                         </doc>
+#                     </field>
 #                 </attribute>
+#             </field>
+#             <field name="kx" type="NX_NUMBER" optional="true" units="NX_ANY">
+#                 <doc>
+#                      Calibrated x axis in k-space.
+#                      Units are 1/Angström.
+#                 </doc>
+#             </field>
+#             <field name="ky" type="NX_NUMBER" optional="true" units="NX_ANY">
+#                 <doc>
+#                      Calibrated y axis in k-space.
+#                      Units are 1/Angström
+#                 </doc>
+#             </field>
+#             <field name="kz" type="NX_NUMBER" optional="true" units="NX_ANY">
+#                 <doc>
+#                      Calibrated k axis in k-space.
+#                      Units are 1/Angström.
+#                 </doc>
+#             </field>
+#             <field name="delay" type="NX_NUMBER" optional="true" units="NX_TIME">
+#                 <doc>
+#                      Calibrated delay time.
+#                 </doc>
+#             </field>
+#             <field name="polarization_angle" type="NX_FLOAT" optional="true" units="NX_ANGLE">
+#                 <doc>
+#                      Linear polarization angle of the incoming or outgoing beam.
+#                      
+#                      Could be a link to /entry/instrument/beam/incident_polarization_angle or
+#                      /entry/instrument/beam/final_polarization_angle if they exist.
+#                 </doc>
+#             </field>
+#             <field name="ellipticity" type="NX_FLOAT" optional="true" units="NX_ANGLE">
+#                 <doc>
+#                      Ellipticity of the incoming or outgoing beam.
+#                      
+#                      Can be any of linear polarization angle (degrees), ellipticity (arb. units).
+#                      Could be a link to /entry/instrument/beam/incident_ellipticity or
+#                      /entry/instrument/beam/final_ellipticity if they exist.
+#                 </doc>
 #             </field>
 #         </group>
 #     </group>
