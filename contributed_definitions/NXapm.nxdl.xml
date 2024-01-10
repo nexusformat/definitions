@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-# 
+#
 # Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -67,7 +67,7 @@
                  The configuration of the I/O writer software (e.g. `pynxtools &lt;https://github.com/FAIRmat-NFDI/pynxtools&gt;`_)
                  which was used to generate this NeXus file instance.
             </doc>
-            <field name="command_line_call" type="NX_CHAR"/>
+            <!--command_line_call(NX_CHAR):-->
             <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
                 <doc>
                      A collection of all programs and libraries which are considered relevant
@@ -425,9 +425,23 @@ schema for heat treatment
                      Report if the specimen is amorphous.
                 </doc>
             </field>
+            <field name="initial_radius" type="NX_FLOAT" recommended="true" units="NX_LENGTH">
+                <doc>
+                     Ideally measured otherwise best elaborated guess of the initial radius of the
+                     specimen.
+                </doc>
+            </field>
+            <field name="shank_angle" type="NX_FLOAT" units="NX_ANGLE">
+                <doc>
+                     Ideally measured otherwise best elaborated guess of the (initial) shank angle.
+                     This is a measure of the specimen taper. Define it in such a way that the base of the specimen
+                     is modelled as a conical frustrum so that the shank angle is the (shortest) angle between
+                     the specimen space z-axis and a vector on the lateral surface of the cone.
+                </doc>
+            </field>
         </group>
-        <!--describing the geometry of the sample-->
-        <group type="NXcoordinate_system_set" minOccurs="1" maxOccurs="1">
+        <!--describing the geometry of the specimen-->
+        <group name="coordinate_system_set" type="NXcoordinate_system_set" recommended="true">
             <doc>
                  Set to hold different coordinate systems conventions.
                  Inspect the description of the :ref:`NXcoordinate_system_set`
@@ -487,13 +501,13 @@ schema for heat treatment
         </group>
         <group name="measurement" type="NXapm_msr" optional="true">
             <group name="instrument" type="NXinstrument">
-                <field name="instrument_name" type="NX_CHAR"/>
-                <group type="NXfabrication" recommended="true">
+                <field name="instrument_name" type="NX_CHAR" optional="true"/>
+                <group type="NXfabrication">
                     <field name="vendor" type="NX_CHAR"/>
                     <field name="model" type="NX_CHAR"/>
                     <field name="identifier" type="NX_CHAR" recommended="true"/>
                 </group>
-                <group type="NXreflectron">
+                <group name="reflectron" type="NXreflectron">
                     <field name="status" type="NX_CHAR"/>
                     <group type="NXfabrication" recommended="true">
                         <field name="vendor" type="NX_CHAR"/>
@@ -509,7 +523,7 @@ schema for heat treatment
                         <field name="model" type="NX_CHAR"/>
                     </group>
                 </group>
-                <group name="ion_detector" type="NXdetector" minOccurs="1" maxOccurs="1">
+                <group name="ion_detector" type="NXdetector" recommended="true">
                     <group type="NXfabrication" recommended="true">
                         <field name="vendor" type="NX_CHAR"/>
                         <field name="model" type="NX_CHAR"/>
@@ -521,7 +535,7 @@ schema for heat treatment
                         <field name="model" type="NX_CHAR"/>
                     </group>
                     <field name="pulse_mode" type="NX_CHAR"/>
-                    <group type="NXsource" recommended="true">
+                    <group type="NXsource" minOccurs="0" maxOccurs="2">
                         <group type="NXfabrication" recommended="true">
                             <field name="vendor" type="NX_CHAR"/>
                             <field name="model" type="NX_CHAR"/>
@@ -530,7 +544,14 @@ schema for heat treatment
                     </group>
                 </group>
                 <!--stage_lab(NXstage_lab):-->
-                <group name="analysis_chamber" type="NXchamber"/>
+                <group name="analysis_chamber" type="NXchamber" recommended="true">
+                    <field name="flight_path" type="NX_FLOAT" recommended="true" units="NX_LENGTH">
+                        <doc>
+                             The space inside the atom probe along which ions pass nominally
+                             when they leave the specimen and travel to the detector.
+                        </doc>
+                    </field>
+                </group>
                 <!--atmosphere(NXcollection):
 buffer_chamber(NXchamber):
 load_lock_chamber(NXchamber):
@@ -539,7 +560,7 @@ roughening_pump(NXpump):
 turbomolecular_pump(NXpump):-->
                 <field name="status" type="NX_CHAR"/>
             </group>
-            <group type="NXevent_data_apm_set" minOccurs="0" maxOccurs="1">
+            <group name="event_data_apm_set" type="NXevent_data_apm_set" optional="true">
                 <!--the case of allowing to not have event_data but only the above-mentioned instrument
 details can be useful to convey details about an atom probe instrument in general-->
                 <group type="NXevent_data_apm" recommended="true">
@@ -550,12 +571,18 @@ end_time(NX_DATE_TIME):
 delta_time(NX_NUMBER):
 pulse_identifier_offset(NX_INT):
 pulse_identifier(NX_INT):-->
-                    <group name="instrument" type="NXinstrument">
-                        <!--(NXreflectron):
+                    <group name="instrument" type="NXinstrument" recommended="true">
+                        <group name="control" type="NXcollection">
+                            <field name="evaporation_control" type="NX_CHAR"/>
+                            <field name="target_detection_rate" type="NX_FLOAT"/>
+                        </group>
+                        <!--optional groups can always be added but they will not be annotated eventually properly by pynxtools
+reflectron(NXreflectron):
 decelerate_electrode(NXlens_em):
-local_electrode(NXlens_em):-->
-                        <group name="ion_detector" type="NXdetector" optional="true"/>
-                        <!--signal_amplitude(NX_FLOAT):-->
+local_electrode(NXlens_em):
+ion_detector(NXdetector):
+exists: optional
+signal_amplitude(NX_FLOAT):-->
                         <group name="pulser" type="NXpulser_apm">
                             <field name="pulse_frequency" type="NX_FLOAT">
                                 <!--unit: NX_FREQUENCY
@@ -589,10 +616,11 @@ dim: (p,)-->
                         <!--laser geometry at the moment has no example nor any feedback from the community
 but NXpulser_apm base class shows how this could be done, plus examples for NXmpes-->
                         <group name="stage_lab" type="NXstage_lab">
-                            <field name="average_temperature" type="NX_FLOAT"/>
+                            <!--setpoint_temperature(NX_FLOAT):-->
+                            <field name="base_temperature" type="NX_FLOAT"/>
                         </group>
                         <group name="analysis_chamber" type="NXchamber">
-                            <field name="average_pressure" type="NX_FLOAT"/>
+                            <field name="chamber_pressure" type="NX_FLOAT"/>
                         </group>
                     </group>
                 </group>
@@ -604,7 +632,7 @@ getter_pump(NXpump):
 roughening_pump(NXpump):
 turbomolecular_pump(NXpump):-->
         <group name="simulation" type="NXapm_sim" optional="true"/>
-        <group name="atom_probe" type="NXroi" minOccurs="0" maxOccurs="unbounded">
+        <group name="atom_probe" type="NXroi" recommended="true">
             <doc>
                  A region-of-interest analyzed either during or after the session for which
                  specific processed data of the measured or simulated data are available.
@@ -618,9 +646,55 @@ NEW ISSUE: add section for propagation_delay(NXprocess) ?
 NEW ISSUE: make recon an own subentry NXapm_reconstruction
 NEW ISSUE: different algorithms used one could create a class for each reconstruction method
 NEW ISSUE: make this rather an own subentry NXapm_ranging-->
-            <group name="hit_finding" type="NXapm_hit_finding" optional="true">
+            <group name="initial_specimen" type="NXimage_r_set" recommended="true">
+                <doc>
+                     SEM or TEM image of the initial specimen i.e.
+                     ideally taken prior to the data acquisition.
+                </doc>
+                <group name="image_twod" type="NXdata">
+                    <attribute name="signal" type="NX_CHAR"/>
+                    <attribute name="axes" type="NX_CHAR"/>
+                    <attribute name="AXISNAME_indices" type="NX_CHAR"/>
+                    <field name="intensity" type="NX_NUMBER"/>
+                    <field name="axis_y" type="NX_NUMBER">
+                        <dimensions rank="1">
+                            <dim index="1" value="n_y"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR"/>
+                    </field>
+                    <field name="axis_x" type="NX_NUMBER">
+                        <dimensions rank="1">
+                            <dim index="1" value="n_x"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR"/>
+                    </field>
+                </group>
+            </group>
+            <!--one could use a stack_threed(NXdata) to record
+a time series of the specimen shape evolution-->
+            <group name="raw_data" type="NXprocess" recommended="true">
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+                    <field name="program" type="NX_CHAR">
+                        <attribute name="version" type="NX_CHAR"/>
+                    </field>
+                </group>
+                <!--point at least to the proprietary artifact-->
+                <group type="NXserialized" recommended="true">
+                    <field name="type" type="NX_CHAR"/>
+                    <field name="path" type="NX_CHAR"/>
+                    <field name="checksum" type="NX_CHAR"/>
+                    <field name="algorithm" type="NX_CHAR"/>
+                </group>
+            </group>
+            <group name="hit_finding" type="NXapm_hit_finding" recommended="true">
+                <!--we careful how we go about doing this here, we recommended to make some details of the hit_finding
+algorithm open namely the input and the output what the black box then does by AMETEK/Cameca
+does not have to be exposed (although this clearly is against FAIR principles but the scientific community
+is does not have the authority to decide which portions of proprietary code have to be public
+we can only make recommendations-->
+                <field name="sequence_index" type="NX_POSINT" recommended="true"/>
+                <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
                     <field name="program" type="NX_CHAR">
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
@@ -635,7 +709,9 @@ NEW ISSUE: make this rather an own subentry NXapm_ranging-->
                 <field name="number_of_dld_wires" type="NX_UINT" recommended="true"/>
                 <field name="arrival_time_pairs" type="NX_NUMBER" optional="true"/>
                 <!--results of the hit_finding algorithm-->
-                <field name="hit_positions" type="NX_NUMBER">
+                <field name="hit_quality_types" type="NX_CHAR" optional="true"/>
+                <field name="hit_quality_identifier" type="NX_UINT" optional="true"/>
+                <field name="hit_positions" type="NX_NUMBER" recommended="true">
                     <dimensions rank="2">
                         <dim index="1" value="i"/>
                         <dim index="2" value="2"/>
@@ -652,7 +728,12 @@ NEW ISSUE: make this rather an own subentry NXapm_ranging-->
                     </dimensions>
                 </field>
             </group>
-            <!--the following two quantities are relicts from ePOS files used to give some
+            <!--statistics(NXprocess):
+  multiples(NX_FLOAT):
+    doc: |
+      Fraction of multiple hits.
+    unit: NX_DIMENSIONLESS
+the following two quantities are relicts from ePOS files used to give some
 insight into the results of the hit_finding algorithm of IVAS/APSuite but typically
 used only in the context to learn about the multiplicity of an ion.
 pulses_since_last_ion(NX_UINT):
@@ -712,7 +793,7 @@ i number of hits after hits finding but prior calibrations-->
                 </group>
             </group>
             <!--at this point the original set of events p has been filtered down to n-->
-            <group name="voltage_and_bowl" type="NXapm_volt_and_bowl" optional="true">
+            <group name="voltage_and_bowl" type="NXapm_volt_and_bowl" recommended="true">
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
                 <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
                     <field name="program" type="NX_CHAR">
@@ -770,15 +851,43 @@ results-->
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
-                <group type="NXserialized" recommended="true">
+                <group name="config" type="NXserialized" recommended="true">
+                    <doc>
+                         For LEAP and IVAS/APSuite-based analyses root file which stores
+                         the settings whereby an RHIT/HITS file can be used to regenerate the
+                         reconstruction that is here referred to.
+                         
+                         The respective RHIT/HITS file should ideally be specified in the serialized
+                         group of the hit_finding section of this application definition.
+                    </doc>
+                    <field name="type" type="NX_CHAR"/>
+                    <field name="path" type="NX_CHAR"/>
+                    <field name="checksum" type="NX_CHAR"/>
+                    <field name="algorithm" type="NX_CHAR"/>
+                </group>
+                <group name="results" type="NXserialized" recommended="true">
+                    <doc>
+                         For LEAP and IVAS/APSuite-based analyses the resulting typically
+                         file with the reconstructed positions and (calibrated) mass-to-charge
+                         state ratio values.
+                         
+                         For other data collection/analysis software the data artifact which comes
+                         closest conceptually to AMETEK/Cameca's typical file formats.
+                         
+                         These are typically exported as a POS, ePOS, APT, ATO, ENV, or HDF5 file,
+                         which should be stored alongside this record in the research data
+                         management system.
+                    </doc>
                     <field name="type" type="NX_CHAR"/>
                     <field name="path" type="NX_CHAR"/>
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
                 <!--config/input-->
-                <field name="protocol_name" type="NX_CHAR"/>
-                <field name="crystallographic_calibration" type="NX_CHAR"/>
+                <field name="parameter" type="NX_CHAR"/>
+                <field name="protocol_name" type="NX_CHAR" recommended="true"/>
+                <field name="crystallographic_calibration" type="NX_CHAR" recommended="true"/>
+                <field name="field_of_view" type="NX_FLOAT" recommended="true"/>
                 <field name="reconstructed_positions" type="NX_FLOAT">
                     <dimensions rank="2">
                         <dim index="1" value="n"/>
@@ -835,7 +944,16 @@ results-->
                         <attribute name="version"/>
                     </field>
                 </group>
-                <field name="number_of_ion_types" type="NX_UINT"/>
+                <group type="NXserialized" recommended="true">
+                    <doc>
+                         The respective ranging definitions file RNG/RRNG/ENV/HDF5.
+                    </doc>
+                    <field name="type" type="NX_CHAR"/>
+                    <field name="path" type="NX_CHAR"/>
+                    <field name="checksum" type="NX_CHAR"/>
+                    <field name="algorithm" type="NX_CHAR"/>
+                </group>
+                <!--number_of_ion_types(NX_UINT):-->
                 <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_UINT"/>
                 <group name="mass_to_charge_distribution" type="NXprocess" recommended="true">
                     <field name="sequence_index" type="NX_POSINT" recommended="true"/>
@@ -873,6 +991,23 @@ results-->
                             <attribute name="version" type="NX_CHAR"/>
                         </field>
                     </group>
+                    <field name="background" type="NX_FLOAT" recommended="true" units="NX_ANY">
+                        <doc>
+                             (Out-of-sync) background levels in ppm/ns
+                             reported by e.g. IVAS/APSuite for LEAP systems.
+                        </doc>
+                    </field>
+                    <field name="mrp_value" type="NX_FLOAT" recommended="true" units="NX_DIMENSIONLESS">
+                        <doc>
+                             MRP, mass-resolving power, `D. Larson et al.
+                             &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_ (p282, Eqs. D.7 and D.8).
+                        </doc>
+                    </field>
+                    <field name="mrp_mass_to_charge" type="NX_FLOAT" recommended="true" units="NX_ANY">
+                        <doc>
+                             MRP, at which mrp_value was specified.
+                        </doc>
+                    </field>
                 </group>
                 <!--config/input
 results
@@ -887,7 +1022,30 @@ in an e.g. work of A. London et al.-->
                     </group>
                     <group type="NXpeak" minOccurs="0" maxOccurs="unbounded">
                         <field name="label" type="NX_CHAR" recommended="true"/>
-                        <field name="peak_model" type="NX_CHAR"/>
+                        <field name="description" type="NX_CHAR"/>
+                        <field name="category" type="NX_CHAR" recommended="true">
+                            <doc>
+                                 Category for the peak offering a qualitative statement of the location of the peak
+                                 in light of limited mass-resolving power that is relevant for
+                                 composition quantification. See `D. Larson et al. &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_ 
+                                 for examples of each category:
+                                 
+                                 * 0, well-separated, 10^B +, 28^Si ++
+                                 * 1, close, but typically sufficiently separated with LEAP system, 14^N +, 28^Si ++
+                                 * 2, closely overlapping, demands better than LEAP4000X MRP, 14^N +, 28^Si ++
+                                 * 3, overlapped, multi-charge state, 16^O 16^O ++, 16^O +
+                                 * 4, overlapped, same charge state, not discriminatable with a LEAP4000X, 14^N 14^N + 28^Si +
+                                 * 5, overlapped, same charge state, any expectation of resolvability, 54^Cr ++, 54^Fe ++
+                            </doc>
+                            <enumeration>
+                                <item value="0"/>
+                                <item value="1"/>
+                                <item value="2"/>
+                                <item value="3"/>
+                                <item value="4"/>
+                                <item value="5"/>
+                            </enumeration>
+                        </field>
                         <field name="position" type="NX_NUMBER"/>
                     </group>
                 </group>
@@ -902,6 +1060,19 @@ in an e.g. work of A. London et al.-->
                     <group type="NXion" minOccurs="1" maxOccurs="256">
                         <field name="isotope_vector" type="NX_UINT"/>
                         <field name="charge_state" type="NX_INT"/>
+                        <group name="charge_state_analysis" type="NXapm_charge_state_analysis" optional="true">
+                            <!--element_vector(NX_UINT):
+mass_to_charge_range(NX_FLOAT):-->
+                            <field name="min_half_life" type="NX_FLOAT"/>
+                            <field name="min_abundance" type="NX_FLOAT"/>
+                            <field name="min_abundance_product" type="NX_FLOAT"/>
+                            <field name="sacrifice_isotopic_uniqueness" type="NX_BOOLEAN"/>
+                            <field name="charge_state_vector" type="NX_INT"/>
+                            <field name="isotope_matrix" type="NX_UINT"/>
+                            <field name="mass_vector" type="NX_FLOAT"/>
+                            <field name="natural_abundance_product_vector" type="NX_FLOAT"/>
+                            <field name="min_half_life_vector" type="NX_FLOAT"/>
+                        </group>
                         <field name="mass_to_charge_range" type="NX_FLOAT"/>
                         <field name="nuclid_list" type="NX_UINT" recommended="true"/>
                         <field name="name" type="NX_CHAR" recommended="true"/>
