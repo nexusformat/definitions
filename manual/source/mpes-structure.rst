@@ -5,11 +5,13 @@ Photoemission & core-level spectroscopy
 =======================================
 
 The NXmpes application definition is designed to describe data and metadata obtained from
-various multidimensional photoemission spectroscopy (mpes) techniques.
-It is highly versatile, with the only requirement being the presence of an energy axis.
+various multidimensional photoemission spectroscopy (MPES) techniques.
+This definition is very flexible and requires just a reasonable amount of
+metadata to make the stored data interoperable and reproducible.
+The only thing needed for the actual data is the presence of an energy axis.
 
 The experimental techniques covered by this application definition are primarily limited
-to photon-in and photoelectron-out methods. If you are searching for related techniques,
+to photon-in photoelectron-out methods. If you are searching for related techniques,
 there is a good chance you will find valuable information here.
 
 Example techniques covered by this application definition include:
