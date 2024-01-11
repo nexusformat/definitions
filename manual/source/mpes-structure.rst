@@ -22,5 +22,7 @@ Example techniques covered by this application definition include:
 Additionally, we offer descriptors for specialized applications,
 such as spin- and time-resolution, near-ambient pressure conditions, dichroism, and more.
 
+Here's a list of application definitions related to photoemission spectroscopy:
+
     :ref:`NXmpes`:
        A universal application definition with minimal metadata requirements for describing all photoemission experiments.
