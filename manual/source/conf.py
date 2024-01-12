@@ -163,5 +163,6 @@ latex_elements = {
     \DeclareUnicodeCharacter{1F517}{X}
     \DeclareUnicodeCharacter{2906}{<=}
     \DeclareUnicodeCharacter{394}{$\Delta$}
-    \DeclareUnicodeCharacter{2206}{$\Delta$}'''
+    \DeclareUnicodeCharacter{2206}{$\Delta$}
+    \DeclareUnicodeCharacter{007E}{$\sim$}'''
 }
