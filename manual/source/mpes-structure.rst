@@ -8,7 +8,7 @@ The NXmpes application definition is designed to describe data and metadata obta
 various multidimensional photoemission spectroscopy (MPES) techniques.
 This definition is very flexible and requires just a reasonable amount of
 metadata to make the stored data interoperable and reproducible.
-The only thing needed for the actual data is the presence of an energy axis.
+The only requirement for the actual data is the existence of an energy axis.
 
 The experimental techniques covered by this application definition are primarily limited
 to photon-in photoelectron-out methods. If you are searching for related techniques,
