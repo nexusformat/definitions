@@ -66,7 +66,9 @@
         </field>
         <field name="method" recommended="true">
             <doc>
-                 A name of the experimental method according to `Clause 11`_ of
+                 Name of the experimental method.
+                 
+                 If applicable, this name should match the terms given by `Clause 11`_ of
                  the `ISO 18115-1:2023`_ specification.
                  
                  Examples include:
@@ -78,6 +80,9 @@
                      * near ambient pressure X-ray photoelectron spectroscopy (NAPXPS)
                      * photoelectron emission microscopy (PEEM)
                      * electron spectroscopy for chemical analysis (ESCA)
+                     * time-resolved angle-resolved X-ray photoelectron spectroscopy (trARPES)
+                     * spin-resolved angle-resolved X-ray photoelectron spectroscopy (spin-ARPES)
+                     * momentum microscopy
                  
                  .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
                  .. _Clause 11: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:sec:11
@@ -95,14 +100,14 @@
             </field>
             <field name="affiliation">
                 <doc>
-                     Name of the affiliation of the user at the point in time when the experiment was
+                     Name of the affiliation of the user at the time when the experiment was
                      performed.
                 </doc>
             </field>
         </group>
         <group type="NXinstrument">
             <doc>
-                 MPES spectrometer
+                 Description of the MPES spectrometer and its individual parts.
                  
                  This concept is related to term `12.58`_ of the ISO 18115-1:2023 standard.
                  
@@ -133,14 +138,12 @@
                 <field name="model" recommended="true"/>
                 <field name="identifier" recommended="true"/>
             </group>
-            <!--Comment from mpes may workshop:
-- There is much more information which can be provided for NXsource-->
             <group name="source_TYPE" type="NXsource" recommended="true">
                 <doc>
                      A source used to generate a beam. Properties refer strictly to parameters of the
                      source, not of the output beam. For example, the energy of the source is not the
                      optical power of the beam, but the energy of the electron beam in a synchrotron
-                     and so on.
+                     or similar.
                      
                      Note that the uppercase notation in source_TYPE means that multiple sources can
                      be provided. For example, in pump-probe experiments, it is possible to have both
@@ -184,9 +187,6 @@
                     </doc>
                 </group>
             </group>
-            <!--It would be nice if we had the notion of linking in nexus or if
-we have a subdefinition NXlink to refer to a path.
-This would also be helpful for NXtransformations-->
             <group name="beam_TYPE" type="NXbeam">
                 <doc>
                      Properties of the photon beam at a given location.
@@ -234,11 +234,8 @@ This would also be helpful for NXtransformations-->
                 </group>
                 <field name="fast_axes" recommended="true"/>
                 <field name="slow_axes" recommended="true"/>
-                <field name="transmission_function" type="NX_FLOAT" optional="true"/>
+                <group name="transmission_function" type="NXdata" optional="true"/>
                 <group type="NXcollectioncolumn">
-                    <!--TODO: Comment from Anders Frisk on proposal page
-What is the definition of a collection column?
-Optional constant settings (like lens focusing parameters on the sample: position_x, position_y, working_distance)-->
                     <field name="scheme">
                         <doc>
                              Scheme of the electron collection column.
@@ -342,11 +339,6 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                         <field name="model" recommended="true"/>
                         <field name="identifier" recommended="true"/>
                     </group>
-                    <!--ToDo:
-- With base class inheritance this should be
-a field of type NXdata_mpes_detector
-- The field name should be aligned with the `data` field in
-the `NXdetector` base class. But some refinement is necessary there.-->
                     <group name="raw_data" type="NXdata" recommended="true">
                         <doc>
                              Contains the raw data collected by the detector before calibration.
@@ -407,9 +399,9 @@ the `NXdetector` base class. But some refinement is necessary there.-->
                         </enumeration>
                     </field>
                     <field name="type" optional="true"/>
-                    <field name="value" type="NX_FLOAT" recommended="true"/>
+                    <field name="value" type="NX_FLOAT"/>
                 </group>
-                <group name="sample_heater" type="NXactuator" recommended="true">
+                <group name="sample_heater" type="NXactuator" optional="true">
                     <field name="name" recommended="true"/>
                     <field name="physical_quantity">
                         <enumeration>
@@ -417,8 +409,19 @@ the `NXdetector` base class. But some refinement is necessary there.-->
                         </enumeration>
                     </field>
                     <field name="type" optional="true"/>
-                    <field name="heater_power" type="NX_FLOAT" recommended="true"/>
+                    <field name="heater_power" type="NX_FLOAT"/>
                     <group type="NXpid" recommended="true">
+                        <field name="setpoint" type="NX_FLOAT" recommended="true"/>
+                    </group>
+                </group>
+                <group name="cryostat" type="NXactuator" optional="true">
+                    <field name="physical_quantity">
+                        <enumeration>
+                            <item value="temperature"/>
+                        </enumeration>
+                    </field>
+                    <field name="type" optional="true"/>
+                    <group type="NXpid">
                         <field name="setpoint" type="NX_FLOAT" recommended="true"/>
                     </group>
                 </group>
@@ -430,7 +433,7 @@ the `NXdetector` base class. But some refinement is necessary there.-->
                         </enumeration>
                     </field>
                     <field name="type" optional="true"/>
-                    <field name="value" type="NX_FLOAT" recommended="true"/>
+                    <field name="value" type="NX_FLOAT"/>
                 </group>
                 <group name="sample_bias_voltmeter" type="NXsensor" recommended="true">
                     <field name="name" recommended="true"/>
@@ -440,7 +443,19 @@ the `NXdetector` base class. But some refinement is necessary there.-->
                         </enumeration>
                     </field>
                     <field name="type" optional="true"/>
-                    <field name="value" type="NX_FLOAT" recommended="true"/>
+                    <field name="value" type="NX_FLOAT"/>
+                </group>
+                <group name="sample_bias_potentiostat" type="NXactuator" recommended="true">
+                    <field name="name" recommended="true"/>
+                    <field name="physical_quantity">
+                        <enumeration>
+                            <item value="voltage"/>
+                        </enumeration>
+                    </field>
+                    <field name="type" optional="true"/>
+                    <group type="NXpid" recommended="true">
+                        <field name="setpoint" type="NX_FLOAT" recommended="true"/>
+                    </group>
                 </group>
                 <group name="device_information" type="NXfabrication" recommended="true">
                     <field name="vendor" recommended="true"/>
@@ -459,7 +474,7 @@ the `NXdetector` base class. But some refinement is necessary there.-->
                     </enumeration>
                 </field>
                 <field name="type" optional="true"/>
-                <field name="value" type="NX_FLOAT" recommended="true" units="NX_PRESSURE">
+                <field name="value" type="NX_FLOAT" units="NX_PRESSURE">
                     <doc>
                          In case of a single or averaged gas pressure measurement, this is the scalar gas pressure around
                          the sample. It can also be an 1D array of measured pressures (without time stamps).
@@ -639,7 +654,7 @@ the `NXdetector` base class. But some refinement is necessary there.-->
             <field name="name"/>
             <group type="NXsubstance" recommended="true">
                 <doc>
-                     For samples containing a single pure substances. For mixtures use the
+                     For samples containing a single pure substance. For mixtures use the
                      NXsample_component_set and NXsample_component group in NXsample instead.
                 </doc>
                 <field name="molecular_formula_hill" recommended="true">
@@ -700,6 +715,12 @@ the `NXdetector` base class. But some refinement is necessary there.-->
                          This should be a link to /entry/instrument/manipulator/sample_heater.
                     </doc>
                 </group>
+                <group name="cryostat" type="NXactuator" optional="true">
+                    <doc>
+                         Cryostat for cooling the sample.
+                         This should be a link to /entry/instrument/manipulator/cryostat.
+                    </doc>
+                </group>
             </group>
             <group name="gas_pressure" type="NXenvironment" recommended="true">
                 <doc>
@@ -723,7 +744,14 @@ the `NXdetector` base class. But some refinement is necessary there.-->
                 </doc>
                 <group name="voltmeter" type="NXsensor">
                     <doc>
-                         Sensor setting/measuring the applied voltage.
+                         Sensor measuring the applied voltage.
+                         
+                         This should be a link to /entry/instrument/manipulator/sample_bias_voltmeter.
+                    </doc>
+                </group>
+                <group name="sample_bias_potentiostat" type="NXactuator">
+                    <doc>
+                         Actuator applying a voltage to sample and sample holder.s
                          
                          This should be a link to /entry/instrument/manipulator/sample_bias_voltmeter.
                     </doc>
@@ -838,11 +866,10 @@ the `NXdetector` base class. But some refinement is necessary there.-->
             <attribute name="energy_depends" type="NX_CHAR" recommended="true">
                 <doc>
                      The energy can be dispersed according to different strategies. ``energy_depends`` points to
-                     the path of a field defining the axis on which the energy axis depends.
+                     the path of a field defining the calibrated axis on which the energy axis depends.
                      
                      For example:
-                       @energy_depends: '/entry/instrument/detector/data/sensor_y' for a 2D detector
-                       @energy_depends: '/entry/instrument/energydispersion/center_energy' for a swept scan
+                       @energy_depends: 'entry/process/energy_calibration'
                 </doc>
             </attribute>
         </group>
