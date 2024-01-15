@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXmanipulator" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXmanipulator" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
          Extension of NXpositioner to include fields to describe the use of manipulators
          in photoemission experiments.
@@ -41,39 +41,182 @@
              Type of manipulator, Hexapod, Rod, etc.
         </doc>
     </field>
-    <field name="cryocoolant" type="NX_BOOLEAN">
+    <group name="cryostat" type="NXactuator">
         <doc>
-             Is cryocoolant flowing through the manipulator?
+             Cryostat for cooling the sample.
         </doc>
-    </field>
-    <field name="cryostat_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
+        <field name="physical_quantity">
+            <enumeration>
+                <item value="temperature"/>
+            </enumeration>
+        </field>
+        <group type="NXpid">
+            <field name="setpoint" type="NX_FLOAT" units="NX_TEMPERATURE">
+                <doc>
+                     In case of a fixed or averaged cooling temperature, this is the scalar temperature setpoint.
+                     It can also be a 1D array of temperature setpoints (without time stamps).
+                </doc>
+            </field>
+            <group name="setpoint_log" type="NXlog">
+                <field name="value" type="NX_FLOAT" units="NX_TEMPERATURE">
+                    <doc>
+                         In the case of an experiment in which the temperature is changed and the setpoints are
+                         recorded with time stamps, this is an array of length m of temperature setpoints.
+                    </doc>
+                </field>
+            </group>
+        </group>
+    </group>
+    <group name="temperature_sensor" type="NXsensor">
         <doc>
-             Temperature of the cryostat (coldest point)
+             Temperature sensor measuring the sample temperature.
         </doc>
-    </field>
-    <field name="heater_power" type="NX_FLOAT" units="NX_POWER">
+        <field name="measurement">
+            <enumeration>
+                <item value="temperature"/>
+            </enumeration>
+        </field>
+        <field name="value" type="NX_FLOAT" units="NX_TEMPERATURE">
+            <doc>
+                 In case of a single or averaged temperature measurement, this is the scalar temperature measured
+                 by the sample temperature sensor. It can also be a 1D array of measured temperatures
+                 (without time stamps).
+            </doc>
+        </field>
+        <group name="value_log" type="NXlog">
+            <field name="value" type="NX_FLOAT" units="NX_TEMPERATURE">
+                <doc>
+                     In the case of an experiment in which the temperature changes and is recorded with time stamps,
+                     this is an array of length m of temperatures.
+                </doc>
+            </field>
+        </group>
+    </group>
+    <group name="sample_heater" type="NXactuator">
         <doc>
-             Power in the heater for temperature control.
+             Device to heat the sample.
         </doc>
-    </field>
-    <field name="sample_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
+        <field name="physical_quantity">
+            <enumeration>
+                <item value="temperature"/>
+            </enumeration>
+        </field>
+        <field name="heater_power" type="NX_FLOAT" units="NX_POWER">
+            <doc>
+                 In case of a fixed or averaged heating power, this is the scalar heater power.
+                 It can also be a 1D array of heater powers (without time stamps).
+            </doc>
+        </field>
+        <group name="heater_power_log" type="NXlog">
+            <field name="value" type="NX_FLOAT" units="NX_POWER">
+                <doc>
+                     In the case of an experiment in which the heater power is changed and recorded with time stamps,
+                     this is an array of length m of temperature setpoints.
+                </doc>
+            </field>
+        </group>
+        <group type="NXpid">
+            <field name="setpoint" type="NX_FLOAT" units="NX_TEMPERATURE">
+                <doc>
+                     In case of a fixed or averaged temperature, this is the scalar temperature setpoint.
+                     It can also be a 1D array of temperature setpoints (without time stamps).
+                </doc>
+            </field>
+            <group name="setpoint_log" type="NXlog">
+                <field name="value" type="NX_FLOAT" units="NX_TEMPERATURE">
+                    <doc>
+                         In the case of an experiment in which the temperature is changed and the setpoints are
+                         recorded with time stamps, this is an array of length m of temperature setpoints.
+                    </doc>
+                </field>
+            </group>
+        </group>
+    </group>
+    <group name="drain_current_amperemeter" type="NXsensor">
         <doc>
-             Temperature at the closest point to the sample. This field may also be found in
-             NXsample if present.
+             Amperemeter measuring the drain current of the sample and sample holder.
         </doc>
-    </field>
-    <field name="drain_current" type="NX_FLOAT" units="NX_CURRENT">
+        <field name="measurement">
+            <enumeration>
+                <item value="current"/>
+            </enumeration>
+        </field>
+        <field name="value" type="NX_FLOAT" units="NX_CURRENT">
+            <doc>
+                 In case of a single or averaged drain current measurement, this is the scalar drain current measured between
+                 the sample and sample holder. It can also be an 1D array of measured currents (without time stamps).
+            </doc>
+        </field>
+        <group name="value_log" type="NXlog">
+            <field name="value" type="NX_FLOAT" units="NX_CURRENT">
+                <doc>
+                     In the case of an experiment in which the current changes and is recorded with
+                     time stamps, this is an array of length m of currents.
+                </doc>
+            </field>
+        </group>
+    </group>
+    <group name="sample_bias_potentiostat" type="NXactuator">
         <doc>
-             Current to neutralize the photoemission current. This field may also be found in
-             NXsample if present.
+             Actuator applying a voltage to sample and sample holder.
         </doc>
-    </field>
-    <field name="sample_bias" type="NX_FLOAT" units="NX_CURRENT">
+        <field name="physical_quantity">
+            <enumeration>
+                <item value="voltage"/>
+            </enumeration>
+        </field>
+        <group type="NXpid">
+            <field name="setpoint" type="NX_FLOAT" units="NX_VOLTAGE">
+                <doc>
+                     In case of a fixed or averaged applied bias, this is the scalar voltage applied between
+                     sample and sample holder. It can also be an 1D array of voltage setpoints (without time stamps).
+                </doc>
+            </field>
+            <group name="setpoint_log" type="NXlog">
+                <field name="value" type="NX_FLOAT" units="NX_VOLTAGE">
+                    <doc>
+                         In the case of an experiment in which the bias is changed and the setpoints are
+                         recorded with time stamps, this is an array of length m of voltage setpoints.
+                    </doc>
+                </field>
+            </group>
+        </group>
+    </group>
+    <group name="sample_bias_voltmeter" type="NXsensor">
         <doc>
-             Possible bias of the sample with trespect to analyser ground. This field may
-             also be found in NXsample if present.
+             Sensor measuring the voltage applied to sample and sample holder.
         </doc>
-    </field>
+        <field name="measurement">
+            <enumeration>
+                <item value="voltage"/>
+            </enumeration>
+        </field>
+        <field name="value" type="NX_FLOAT" units="NX_VOLTAGE">
+            <doc>
+                 In case of a single or averaged bias measurement, this is the scalar voltage measured between
+                 sample and sample holder. It can also be an 1D array of measured voltages (without time stamps).
+            </doc>
+        </field>
+        <group name="value_log" type="NXlog">
+            <field name="value" type="NX_FLOAT" units="NX_VOLTAGE">
+                <doc>
+                     In the case of an experiment in which the bias changes and is recorded with
+                     time stamps, this is an array of length m of voltages.
+                </doc>
+            </field>
+        </group>
+    </group>
+    <group type="NXactuator">
+        <doc>
+             Any additional actuator on the manipulator used to control an external
+             condition.
+        </doc>
+    </group>
+    <group type="NXsensor">
+        <doc>
+             Any additional sensors on the manipulator used to monitor an external condition.
+        </doc>
+    </group>
     <group type="NXpositioner">
         <doc>
              Class to describe the motors that are used in the manipulator
@@ -97,4 +240,5 @@
              the reference coordinate system.
         </doc>
     </group>
+    <group type="NXfabrication"/>
 </definition>
