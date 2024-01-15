@@ -85,10 +85,10 @@ properties at a coarser-scale.
 The key motivation to such coarse-graining is to reduce the complexity of the
 description. On the one hand to support visualization and scientific analyses - not only
 of crystal defect arrangements. On the other hand it is the hope that using descriptors
-at a coarser level, i.e. nanometer, micrometer, and larger, it is still possible
-to find sufficiently accurate and precise descriptors which avoid that one has
-to account for the dynamics of each atom to predict or understand the properties
-of defects and their dynamics.
+at a coarser level, i.e. nanometre, micrometre, and larger, it is still possible
+to find sufficiently accurate and precise descriptors that avoid one having to account
+for the dynamics of each atom to predict or understand the properties of defects
+and their dynamics.
 
 Nevertheless, experience has shown that computational-geometry-based descriptions
 when combined with hierarchical clustering/labeling methods, applied on set of
@@ -109,19 +109,19 @@ for frequently used shapes and geometric primitives are proposed:
         A description for a set of possibly dissimilar spheres.
 
     :ref:`NXcg_ellipsoid_set`:
-        A description for a set of possibly dissimilar rotated ellipsoids.
+        A description for a set of possibly dissimilar oriented ellipsoids.
 
     :ref:`NXcg_cylinder_set`:
-        A description for a set of possibly dissimilar rotated cylinders.
+        A description for a set of possibly dissimilar oriented cylinders.
 
     :ref:`NXcg_point_set`:
-        A collection of points with labels or mark data.
+        A collection of points with labels.
 
     :ref:`NXcg_polyline_set`:
-        A collection of lines and linearized segments.
+        A collection of lines and linear segments.
 
     :ref:`NXcg_triangle_set`:
-        A collection (or soup) of triangles.
+        A collection of triangles.
 
     :ref:`NXcg_parallelogram_set`:
         A collection of possibly dissimilar parallelograms.
@@ -130,31 +130,32 @@ for frequently used shapes and geometric primitives are proposed:
         A mesh of triangles.
 
     :ref:`NXcg_polygon_set`:
-        A collection (or soup) of polygons.
+        A collection of polygons.
 
     :ref:`NXcg_polyhedron_set`:
-        A collection (or soup) of polyhedra.
+        A collection of polyhedra.
 
     :ref:`NXcg_roi_set`:
         A container to host a number of different types of primitives.
 
     :ref:`NXcg_tetrahedron_set`:
-        A collection (or soup) of tetrahedra.
+        A collection of tetrahedra.
 
     :ref:`NXcg_hexahedron_set`:
-        A collection (or soup) of hexahedra with capabilities to represent
+        A collection of hexahedra with capabilities to represent
         also simpler (bounding) boxes for e.g. binary trees.
 
-These base classes make use of base classes which describe data structures:
+These base classes describe data structures used for more complex geometries:
 
     :ref:`NXcg_face_list_data_structure`:
         In essence, the usual way how polygon/polyhedra data are reported:
-        Via a list of vertices and faces with identifier and properties.
+        A list of vertices and faces with identifier and properties.
 
     :ref:`NXcg_half_edge_data_structure`:
-        A half-edge data structure is a useful complementary descriptor for
-        polygon/polyhedra which enables topological analyses and traversal
-        of the graph how polygons and polyhedra can alternatively be described.
+        A half-edge data structure (also known as a doubly connected edge list)
+        is a useful complementary descriptor for polygon/polyhedra which enables
+        topological analyses and traversal of the graph of how polygons and
+        polyhedra are connected.
 
     :ref:`NXcg_unit_normal_set`:
         As an additional structuring element especially for meshes, well-documented
@@ -169,9 +170,8 @@ These base classes make use of base classes which describe data structures:
         convex hull, are frequently used geometrical models for describing
         a boundary or edge to a set of geometric primitives.
 
-Furthermore, a few base classes are defined for documenting the working with
-discretized representations of material (area or volume) which can be useful
-not only for stencil-based methods:
+Next, a few base classes are defined for documenting discretized representations
+of material (area or volume) which can be useful not only for stencil-based methods:
 
     :ref:`NXcg_grid`:
         A grid of cells.
@@ -182,24 +182,23 @@ not only for stencil-based methods:
     :ref:`NXcg_marching_cubes`:
         An approach to store metadata of a specific implementation of
         the Marching Cubes algorithm, whose sensitivity to specific topological
-        configurations is known to result in different triangle soups.
+        configurations is known to result in different triangle collections.
 
     :ref:`NXdelocalization`:
         An approach to document procedures whereby a scalar field
-        is smoothened in a controlled manner.
+        is smoothed in a controlled manner.
 
     :ref:`NXsimilarity_grouping`:
-        An alias for NXclustering.
+        An alternative for NXclustering.
 
     :ref:`NXclustering`:
         A description for clustering of objects (such as atoms or features).
 
     :ref:`NXorientation_set`:
-        A set of rotations to describe the relative orientation of members of a set of features/objects.
+        A set of parameters to describe the relative orientation of members of a set of features/objects.
 
     :ref:`NXslip_system_set`:
-        Metadata to a set of slip system/slip system family for
-        a given crystal structure.
+        Metadata for a set of slip systems in a given crystal structure.
 
     :ref:`NXms_feature_set`:
         Generic base class to describe any nested set of features
