@@ -57,7 +57,7 @@ This is the set of base classes for describing an optical experiment.
        Description of an optical lens.
        
     :ref:`NXpolarizer_opt`
-       A spin polarizer.
+       An optical polarizer.
 
     :ref:`NXwaveplate`
        A waveplate or retarder.
