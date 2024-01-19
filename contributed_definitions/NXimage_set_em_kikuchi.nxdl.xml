@@ -1,29 +1,54 @@
-<?xml version="1.0" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
-<definition category="base" extends="NXobject" name="NXimage_set_em_kikuchi" type="group" xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXimage_set_em_kikuchi" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
+        <symbol name="n_sc">
+            <doc>
+                 Number of scanned points. Scan point may have none, one, or more pattern.
+            </doc>
+        </symbol>
         <symbol name="n_p">
             <doc>
-                 Number of scan points, one pattern per scan point.
+                 Number of diffraction pattern.
             </doc>
         </symbol>
         <symbol name="n_y">
             <doc>
-                 Number of pixel per Kikuchi pattern in the slow direction
+                 Number of pixel per Kikuchi pattern in the slow direction.
             </doc>
         </symbol>
         <symbol name="n_x">
             <doc>
-                 Number of pixel per Kikuchi pattern in the fast direction
+                 Number of pixel per Kikuchi pattern in the fast direction.
             </doc>
         </symbol>
     </symbols>
     <doc>
-         Electron backscatter diffraction (EBSD) Kikuchi pattern.
-         
-         The container can also store data related to a post-processing of these
-         Kikuchi pattern, which is the backbone of orientation microscopy
-         especially in materials science and materials engineering.
+         Measured set of electron backscatter diffraction data, aka Kikuchi pattern.
+         Kikuchi pattern are the raw data for computational workflows in the field
+         of orientation (imaging) microscopy. The technique is especially used in
+         materials science and materials engineering.
          
          Based on a fuse of the `M. A. Jackson et al. &lt;https://doi.org/10.1186/2193-9772-3-4&gt;`_
          of the DREAM.3D community and the open H5OINA format of Oxford Instruments
@@ -37,291 +62,144 @@
          * `A. J. Schwartz et al. &lt;https://doi.org/10.1007/978-1-4757-3205-4&gt;`_  
          * `P. A. Rottman et al. &lt;https://doi.org/10.1016/j.mattod.2021.05.003&gt;`_  
          
-         With serial-sectioning this involves however always a sequence of
-         measuring, milling. In this regard, each serial section (measuring) and milling
+         With serial-sectioning this involves however always a sequence of measuring,
+         milling. In this regard, each serial section (measuring) and milling
          is an own NXevent_data_em instance and thus there such a three-dimensional
          characterization should be stored as a set of two-dimensional data,
          with as many NXevent_data_em instances as sections were measured.
          
          These measured serial sectioning images need virtually always post-processing
-         to arrive at the aligned and cleaned image stack respective digital
-         microstructure representation as (a representative) volume element.
-         Several software packages are available for this post-processing.
+         to arrive at the aligned and cleaned image stack before a respective digital
+         model of the inspected microstructure can be analyzed. The resulting volume
+         is often termed a so-called (representative) volume element (RVE).
+         Several software packages are available for performing this post-processing.
          For now we do not consider metadata of these post-processing steps
-         as a part of this base class.
+         as a part of this base class because the connection between the large variety
+         of such post-processing steps and the measured electron microscopy data
+         is usually very small.
+         
+         If we envision a (knowledge) graph for EBSD it consists of individual
+         sub-graphs which convey information about the specimen preparation,
+         the measurement of the specimen in the electron microscope,
+         the indexing of the collected Kikuchi pattern stack,
+         eventual post-processing of the indexed orientation image
+         via similarity grouping algorithms to yield (grains, texture).
+         Conceptually these post-processing steps are most frequently
+         serving the idea to reconstruct quantitatively so-called
+         microstructural features (grains, phases, interfaces). Materials scientists
+         use these features according to the multi-scale materials modeling paradigm
+         to infer material properties. They do so by quantifying correlations between
+         the spatial arrangement of the features, their individual properties,
+         and (macroscopic) properties of materials.
     </doc>
-    <group type="NXdata">
+    <!--a collection of pattern-related metadata-->
+    <group type="NXprocess">
         <doc>
-             Collected Kikuchi pattern as an image stack.
+             Details how Kikuchi pattern were processed from the detector readings.
+             Scientists interested in EBSD should inspect the respective NXem_ebsd
+             application definition which can be used as a partner application definition
+             to detail substantially more details to this processing.
         </doc>
-        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+    </group>
+    <group name="stack" type="NXdata">
+        <doc>
+             Collected Kikuchi pattern as an image stack. As raw and closest to the
+             first retrievable measured data as possible, i.e. do not use this
+             container to store already averaged, filtered or whatever post-processed
+             pattern unless these are generated unmodifiably by the instrument
+             given the way how the instrument and control software was configured
+             for your microscope session.
+        </doc>
+        <field name="scan_point_identifier" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 Array which resolves the scan point to which each pattern belongs.
+                 Scan points are evaluated in sequence starting from scan point zero
+                 until scan point n_sc - 1. Evaluating the cumulated of this array
+                 decodes which pattern in intensity belong to which scan point.
+                 In an example we may assume we collected three scan points. For the first
+                 we measure one pattern, for the second we measure three pattern,
+                 for the last we measure no pattern.
+                 The values of scan_point_identifier will be 0, 1, 1, 1, as we have
+                 measured four pattern in total.
+                 
+                 In most cases usually one pattern is averaged by the detector for
+                 some amount of time and then reported as one pattern. Use compressed
+                 arrays allows to store the scan_point_identifier efficiently.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_p"/>
+            </dimensions>
+        </field>
+        <field name="data_counts" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Signal intensity. For so-called three-dimensional or serial sectioning
+                 EBSD it is necessary to follow a sequence of specimen surface preparation
+                 and data collection. In this case users should collect the data for each
+                 serial sectioning step in an own instance of NXimage_set_em_kikuchi.
+                 All eventual post-processing of these measured data should be documented
+                 via NXebsd, resulting microstructure representations should be stored
+                 as NXms.
+            </doc>
             <dimensions rank="3">
                 <dim index="1" value="n_p"/>
                 <dim index="2" value="n_y"/>
                 <dim index="3" value="n_x"/>
             </dimensions>
-            <attribute name="long_name" type="NX_CHAR">
+            <!--n_p fast 2, n_y faster 1, n_x fastest 0
+in axes fast to fastest
+while for _indices fastest to fast-->
+            <attribute name="long_name">
                 <doc>
                      Kikuchi pattern intensity
                 </doc>
             </attribute>
         </field>
-        <field name="image_id" type="NX_NUMBER" units="NX_UNITLESS">
+        <!--\@signal: intensity
+\@axes: [pattern_identifier, ypos, xpos]
+\@xpos_indices: 0
+\@ypos_indices: 1
+\@pattern_identifier_indices: 2-->
+        <field name="pattern_identifier" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 Pattern are enumerated starting from 0 to n_p - 1.
+            </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_p"/>
             </dimensions>
-            <attribute name="long_name" type="NX_CHAR">
+            <attribute name="long_name">
                 <doc>
                      Kikuchi pattern identifier
                 </doc>
             </attribute>
         </field>
-        <field name="ypos" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Pixel coordinate along the y direction.
+            </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_y"/>
             </dimensions>
-            <attribute name="long_name" type="NX_CHAR">
+            <attribute name="long_name">
                 <doc>
                      Label for the y axis
                 </doc>
             </attribute>
         </field>
-        <field name="xpos" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Pixel coordinate along the x direction.
+            </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_x"/>
             </dimensions>
-            <attribute name="long_name" type="NX_CHAR">
+            <attribute name="long_name">
                 <doc>
                      Label for the x axis
                 </doc>
             </attribute>
         </field>
     </group>
-    <field name="grid_type" type="NX_CHAR">
-        <doc>
-             Which pixel primitive shape is used.
-        </doc>
-        <enumeration>
-            <item value="square"/>
-            <item value="hexagon"/>
-        </enumeration>
-    </field>
-    <field name="step_size" type="NX_NUMBER" units="NX_LENGTH">
-        <doc>
-             The prescribed step size. First value is for the slow changing, 
-             second value is for the fast changing dimension.
-        </doc>
-        <dimensions rank="1">
-            <dim index="1" value="2"/>
-        </dimensions>
-    </field>
-    <group name="calibration" type="NXprocess"/>
-    <group name="oim" type="NXprocess">
-        <doc>
-             OIM, orientation imaging microscopy.
-             Post-processing of the Kikuchi pattern to identify orientations.
-        </doc>
-        <field name="pattern_quality" type="NX_FLOAT" units="NX_UNITLESS">
-            <dimensions rank="1">
-                <dim index="1" value="n_p"/>
-            </dimensions>
-        </field>
-        <field name="pattern_center" type="NX_NUMBER" units="NX_LENGTH">
-            <dimensions rank="1">
-                <dim index="1" value="n_p"/>
-            </dimensions>
-        </field>
-        <field name="detector_distance" type="NX_FLOAT" units="NX_LENGTH">
-            <dimensions rank="1">
-                <dim index="1" value="n_p"/>
-            </dimensions>
-        </field>
-        <group name="background_correction" type="NXprocess">
-            <doc>
-                 Details about the background correction applied to each Kikuchi pattern.
-            </doc>
-        </group>
-        <group name="band_detection" type="NXprocess">
-            <field name="mode" type="NX_CHAR">
-                <doc>
-                     How are Kikuchi bands detected
-                </doc>
-                <enumeration>
-                    <item value="center"/>
-                </enumeration>
-            </field>
-            <field name="band_contrast" type="NX_NUMBER" units="NX_UNITLESS">
-                <dimensions rank="1">
-                    <dim index="1" value="n_p"/>
-                </dimensions>
-            </field>
-            <field name="band_slope" type="NX_NUMBER" units="NX_UNITLESS">
-                <dimensions rank="1">
-                    <dim index="1" value="n_p"/>
-                </dimensions>
-            </field>
-            <field name="bands" type="NX_NUMBER" units="NX_UNITLESS">
-                <doc>
-                     How many bands were detected in the pattern.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_p"/>
-                </dimensions>
-            </field>
-        </group>
-        <group name="indexing" type="NXprocess">
-            <group name="reflector" type="NXcollection">
-                <doc>
-                     Lattice planes used as reflectors for indexing pattern
-                     in electron-backscatter diffraction (EBSD).
-                     One collection for each reflector.
-                </doc>
-                <field name="unit_cell_abc" type="NX_FLOAT" units="NX_LENGTH">
-                    <doc>
-                         Crystallography unit cell parameters a, b, and c
-                    </doc>
-                    <dimensions rank="1">
-                        <dim index="1" value="3"/>
-                    </dimensions>
-                </field>
-                <field name="unit_cell_alphabetagamma" type="NX_FLOAT" units="NX_ANGLE">
-                    <doc>
-                         Crystallography unit cell parameters alpha, beta, and gamma
-                    </doc>
-                    <dimensions rank="1">
-                        <dim index="1" value="3"/>
-                    </dimensions>
-                </field>
-                <field name="unit_cell_class" type="NX_CHAR">
-                    <enumeration>
-                        <item value="triclinic"/>
-                        <item value="monoclinic"/>
-                        <item value="orthorhombic"/>
-                        <item value="tetragonal"/>
-                        <item value="rhombohedral"/>
-                        <item value="hexagonal"/>
-                        <item value="cubic"/>
-                    </enumeration>
-                </field>
-                <field name="space_group" type="NX_CHAR">
-                    <doc>
-                         Crystallographic space group
-                    </doc>
-                </field>
-                <field name="laue_group" type="NX_CHAR">
-                    <doc>
-                         Laue group
-                    </doc>
-                </field>
-                <field name="phase_identifier" type="NX_UINT" units="NX_UNITLESS">
-                    <doc>
-                         Numeral identifier for each phase. The value 0 is reversed for the unknown
-                         phase.
-                    </doc>
-                </field>
-                <field name="phase_name" type="NX_CHAR">
-                    <doc>
-                         Name of the phase/alias.
-                    </doc>
-                </field>
-                <field name="number_of_reflectors" type="NX_UINT"/>
-                <field name="miller_indices" type="NX_NUMBER" units="NX_UNITLESS">
-                    <doc>
-                         Miller indices :math:`(hkl)[uvw]`.
-                    </doc>
-                    <dimensions rank="2">
-                        <dim index="1" value="number_of_reflectors"/>
-                        <dim index="2" value="6"/>
-                    </dimensions>
-                </field>
-            </group>
-            <field name="mode" type="NX_CHAR">
-                <doc>
-                     How are pattern being indexed?
-                </doc>
-                <enumeration>
-                    <item value="optimize_bd"/>
-                </enumeration>
-            </field>
-            <field name="min_bands" type="NX_NUMBER">
-                <doc>
-                     Minimum number of bands required to index the pattern
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_p"/>
-                </dimensions>
-            </field>
-            <field name="status" type="NX_NUMBER" units="NX_UNITLESS">
-                <doc>
-                     Which return value did the indexing algorithm yield for each pattern.
-                     
-                     * Details about bad pixels  
-                     * Too high angular deviation  
-                     * No solution  
-                     * Not analyzed  
-                     * Success  
-                     * Unexpected errors  
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_p"/>
-                </dimensions>
-            </field>
-            <field name="phase_identifier" type="NX_UINT" units="NX_UNITLESS">
-                <doc>
-                     Labels referring to the phase_identifier for each pattern (from reflectors) that
-                     matched best.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_p"/>
-                </dimensions>
-            </field>
-            <field name="mean_angular_deviation" type="NX_FLOAT" units="NX_ANGLE">
-                <dimensions rank="1">
-                    <dim index="1" value="n_p"/>
-                </dimensions>
-            </field>
-            <field name="confidence_index" type="NX_FLOAT" units="NX_UNITLESS">
-                <dimensions rank="1">
-                    <dim index="1" value="n_p"/>
-                </dimensions>
-            </field>
-        </group>
-    </group>
-    <group name="binning" type="NXcollection">
-        <field name="mode" type="NX_CHAR">
-            <doc>
-                 Free-text description for instrument specific settings
-            </doc>
-        </field>
-        <field name="binning" type="NX_UINT" units="NX_UNITLESS">
-            <doc>
-                 How is the camera signal binned.
-                 First the number of pixel along the slow direction.
-                 Second the number of pixel along the fast direction.
-            </doc>
-            <dimensions rank="1">
-                <dim index="1" value="2"/>
-            </dimensions>
-        </field>
-    </group>
-    <group name="hough_transformation" type="NXprocess">
-        <field name="resolution" type="NX_NUMBER" units="NX_UNITLESS"/>
-    </group>
-    <group name="profiling" type="NXcollection">
-        <field name="acquisition_speed" type="NX_FLOAT" units="NX_FREQUENCY">
-            <doc>
-                 Average number of patterns taken on average.
-            </doc>
-        </field>
-        <field name="acquisition_time" type="NX_FLOAT" units="NX_TIME">
-            <doc>
-                 Wall-clock time the acquisition took.
-            </doc>
-        </field>
-        <field name="hit_rate" type="NX_FLOAT" units="NX_DIMENSIONLESS">
-            <doc>
-                 Fraction of successfully indexed pattern of the set.
-            </doc>
-        </field>
-    </group>
+    <!--maybe time code data when the pattern were taken?
+key is it all happened in between the time defined in NXevent_data_em
+optionally link to NXebsd instance?-->
 </definition>

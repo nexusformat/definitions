@@ -45,6 +45,8 @@ def nxdl_indices() -> Dict[str, dict]:
         nxclass_name = nxdl_file.with_suffix("").stem
         classes.append(nxclass_name)
         summary = get_nxclass_description(nxdl_file, namespaces)
+        if "NXcg" in nxclass_name or "NXapm" in nxclass_name or "NXms" in nxclass_name:
+            continue
         rst_lines.append("\n")
         rst_lines.append(f":ref:`{nxclass_name}`\n")
         rst_lines.append(f"{indentation}{summary}\n")
@@ -57,6 +59,21 @@ def nxdl_indices() -> Dict[str, dict]:
         rst_lines.append(".. toctree::\n")
         rst_lines.append(f"{indentation}:hidden:\n")
         rst_lines.append("\n")
+        if "index_file" in section.keys():
+            file = section["index_file"]
+            print("----------", file)
+            file = os.path.abspath(file)
+        else:
+            file = ""
+            print("---------++++++++-", section)
+        if file.endswith("contributed_definitions/index.rst"):
+            rst_lines.append(f"{indentation}em-structure\n")
+            rst_lines.append(f"{indentation}ellipsometry-structure\n")
+            rst_lines.append(f"{indentation}mpes-structure\n")
+            rst_lines.append(f"{indentation}apm-structure\n")
+            rst_lines.append(f"{indentation}transport-structure\n")
+            rst_lines.append(f"{indentation}cgms-structure\n")
+
         for cname in sorted(classes):
             rst_lines.append(f"{indentation}{cname}\n")
 
@@ -141,5 +158,22 @@ definitions as either in *incubation* or a special
 case not for general use.  The :ref:`NIAC` is charged to review any new contributed
 definitions and provide feedback to the authors before ratification
 and acceptance as either a base class or application definition.
+
+Some contributions are grouped together:
+  :ref:`Optical Spectroscopy <Ellipsometry-Structure>`
+
+  :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure>`
+
+  :ref:`Atom Probe Microscopy <Apm-Structure>`
+
+  :ref:`Electron Microscopy <Em-Structure>`
+
+  :ref:`Transport Measurements <Transport-Structure>`
+
+  :ref:`Geometry and Microstructures  <CgmsFeatures-Structure>`
+
+
+and others are simply listed here:
+
     """,
 }

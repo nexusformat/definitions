@@ -99,9 +99,10 @@ htmlhelp_basename = 'NeXusManualdoc'
 
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {
-    'maxlistdepth':7, # some application definitions are deeply nested
+    'maxlistdepth':25, # some application definitions are deeply nested
     'preamble': r'''
     \usepackage{amsbsy}
     \DeclareUnicodeCharacter{1F517}{X}
-    \DeclareUnicodeCharacter{2906}{<=}'''
+    \DeclareUnicodeCharacter{2906}{<=}
+    \listfiles'''
 }
