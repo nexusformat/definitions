@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-#
+# 
 # Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
-#
+# 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -38,7 +38,7 @@
         </symbol>
     </symbols>
     <doc>
-         Base class to document an algorithm for recovering charge state and nuclid composition of a (molecular) ion.
+         Base class to document an algorithm for recovering charge state and nuclide composition of a (molecular) ion.
          
          Currently ranging definitions in the research field of atom probe face have limitations:
          
@@ -50,17 +50,16 @@
             mass-to-charge-state-ratio intervals surplus the composition of elements
             that build the (molecular) ion.
          3. Therefore, classical ranging definitions demand a post-processing with an algorithm
-            which can identify the nuclids from which the (molecular) ion is constructed
-            and a charge state possibly recovered.
-            Combinatorial algorithms are used for this purpose.
+            which can identify nuclides from which the (molecular) ion is constructed
+            and a charge state possibly recovered. Combinatorial algorithms are used for this purpose.
          
          This base class documents the configuration and results of such an algorithm.
     </doc>
     <!--Details and results of the combinatorial analyses of a ranging definition
 to clarify (if possible) the charge_state of an ion and its (not necessarily)
-unique combination of nuclids contained including their multiplicity.
+unique combination of nuclides contained including their multiplicity.
 input/config-->
-    <field name="element_vector" type="NX_UINT" units="NX_UNITLESS">
+    <field name="element" type="NX_UINT" units="NX_UNITLESS">
         <doc>
              Input constraint, list of proton numbers for each element of the ranging
              definition. The list contains each element as many times as its multiplicity.
@@ -86,69 +85,70 @@ input/config-->
     </field>
     <field name="min_half_life" type="NX_FLOAT" units="NX_TIME">
         <doc>
-             Input constraint, minimum half life for how long each nuclid of each
+             Input constraint, minimum half life for how long each nuclide of each
              (molecular) ion needs to be stable such that the ion qualifies as a candidate.
         </doc>
     </field>
     <field name="min_abundance" type="NX_FLOAT" units="NX_DIMENSIONLESS">
         <doc>
-             Input constraint, minimum natural abundance of each nuclid of each
+             Input constraint, minimum natural abundance of each nuclide of each
              (molecular) ion such that the ion qualifies as a candidate.
         </doc>
     </field>
     <field name="sacrifice_isotopic_uniqueness" type="NX_BOOLEAN">
         <doc>
              If the value is false, it means that non-unique solutions are accepted.
-             These are solutions where multiple candidates have been built from different
-             nuclids but the charge_state of all the ions is the same.
+             These are solutions where multiple candidates have been built from
+             different nuclide instances but the charge_state of all the ions is the same.
         </doc>
     </field>
     <!--min_abundance_product(NX_FLOAT):
   doc: |
     For each candidate TO BE DEFINED.
   unit: NX_DIMENSIONLESS
-  dim: (n_cand,)
-output/results
+  dim: (n_cand,)-->
+    <!--output/results
 the n_cand can be 1 in which case all quantities below are scalar-->
-    <field name="charge_state_vector" type="NX_INT" units="NX_UNITLESS">
+    <field name="charge_state" type="NX_INT" units="NX_UNITLESS">
         <doc>
-             Signed charge, i.e. integer multiple of the elementary charge.
+             Signed charge, i.e. integer multiple of the elementary
+             charge of each candidate.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="n_cand"/>
         </dimensions>
     </field>
-    <field name="isotope_matrix" type="NX_UINT" units="NX_UNITLESS">
+    <field name="nuclide_hash" type="NX_UINT" units="NX_UNITLESS">
         <doc>
-             List of nuclids building each candidate.
-             Each list is sorted in descending order.
-             Unused values up to n_ivec_max are nullified.
+             Table of nuclide instances of which each candidate is composed.
+             Each row vector is sorted in descending order. Unused values are nullified.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="n_cand"/>
             <dim index="2" value="n_ivec_max"/>
         </dimensions>
     </field>
-    <field name="mass_vector" type="NX_FLOAT" units="NX_MASS">
+    <field name="mass" type="NX_FLOAT" units="NX_MASS">
         <doc>
-             Accumulated mass of the nuclids in each candidate.
+             Accumulated mass of the nuclides in each candidate.
              Not corrected for quantum effects.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="n_cand"/>
         </dimensions>
     </field>
-    <field name="natural_abundance_product_vector" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+    <field name="natural_abundance_product" type="NX_FLOAT" units="NX_DIMENSIONLESS">
         <doc>
-             The product of the natural abundances of the nuclids for each candidate.
+             The product of the natural abundances of the nuclides for each candidate.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="n_cand"/>
         </dimensions>
     </field>
-    <field name="min_half_life_vector" type="NX_FLOAT" units="NX_TIME">
+    <field name="shortest_half_life" type="NX_FLOAT" units="NX_TIME">
         <doc>
-             For each candidate the half life of the nuclid with the shortest half life.
+             For each candidate the half life of that nuclide which has the shortest half
+             life.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="n_cand"/>
