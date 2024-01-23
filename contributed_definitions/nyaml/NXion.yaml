@@ -24,32 +24,34 @@ NXion(NXobject):
       
       The identifier zero is reserved for the special unknown ion type.
     unit: NX_UNITLESS
-  isotope_vector(NX_UINT):
+  nuclid_hash(NX_UINT):
     doc: |
-      Row vector of isotope hash values. The individual hash values are
-      built with the following hash function:
+      Vector of nuclid hash values.
       
-      The hash value :math:`H` is :math:`H = Z + N*256` with :math:`Z`
-      the number of protons and :math:`N` the number of neutrons
-      of each isotope respectively. Z and N have to be 8-bit unsigned integers.
+      Individual hash values :math:`H` is :math:`H = Z + N*256` with :math:`Z`
+      encode the number of protons :math:`Z` and the number of neutrons :math:`N`
+      of each nuclid respectively. :math:`Z` and :math:`N` have to be 8-bit unsigned integers.
       
-      The array is sorted in decreasing order with unused values nullified.
-      For the rationale behind this `M. Kühbach et al. (2021) <https://doi.org/10.1017/S1431927621012241>`_
+      The array is sorted in decreasing order. For the rationale behind this see `M. Kühbach et al. (2021) <https://doi.org/10.1017/S1431927621012241>`_
     unit: NX_UNITLESS
-    dim: (1, n_ivecmax)
+    dim: (n_ivecmax,)
   nuclid_list(NX_UINT):
     doc: |
-      Table which decodes the isotope_vector into a human-readable matrix of nuclids.
-      The first row specifies the nuclid mass number, i.e. using the hashvalues
-      from the isotope_vector this is :math:`Z + N`. 
+      Table which decodes the entries in nuclid_hash into a human-readable matrix of nuclids.
+      The first column specifies the nuclid mass number, i.e. using the hashvalues
+      from the isotope_vector this is :math:`Z + N` or 0. The value 0 documents that no
+      isotope-specific information about the element encoded is relevant.
+      The second row specifies the number of protons :math:`Z` or 0.
+      The value 0 in this case documents a placeholder or that no element-specific
+      information is relevant.
       Taking a carbon-14 nuclid as an example the mass number is 14.
-      The second row specifies the number of protons :math:`Z`, e.g. 6 as
-      for the carbon-14 example. 
-      This notation is thus mapping the notation of using superscribed
-      nuclid mass and subscripted number of protons. The array is stored
-      matching the order of isotope_vector with unused values nullified.
+      That is encoded as a value pair (14, 6) as one row of the table.
+      
+      Therefore, this notation is the typical superscribed nuclid mass number
+      and subscripted number of protons element notation e.g. :math:`^{14}C`.
+      The array is stored matching the order of nuclid_hash.
     unit: NX_UNITLESS
-    dim: (2, n_ivecmax)
+    dim: (n_ivecmax, 2)
   # color(NX_CHAR):
   #   doc: |
   #     Color code used for visualizing such ions.
