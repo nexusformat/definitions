@@ -51,51 +51,54 @@ i be careful n_comb can vary for every instance of (NXion) !-->
          This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
          The purpose and need of the paraprobe-transcoder tool is to create a standardized representation
          of reconstructed position and mass-to-charge-state-ratio values surplus other pieces of information
-         to enable working with atom probe data in reconstruction space.
+         to enable working with atom probe data in reconstruction space in the paraprobe-toolbox.
          This includes ranging definitions which map mass-to-charge-state ratio values onto iontypes.
-         So far the atom probe community has not yet agreed upon a comprehensive standardization for 
-         information exchange especially when it comes to the communication of configurations and results
-         from analyses of atom probe data. Instead, different simplistic file formats are used, such as POS,
-         ePOS, APT, or RNG and RRNG. None of these formats, though, document the provenance of, and thus the
-         sequence in which certain analysis steps were performed or which specific input and
-         configuration was used.
+         
+         So far the atom probe community has not yet agreed upon a comprehensive standardization on how to
+         exchange information especially when it comes to the communication of configurations and results
+         from analyses of atom probe data. Instead, different simplistic file formats are used, such as POS, ePOS,
+         APT, or RNG and RRNG. None of these formats, though, are self-descriptive, standardize, or document
+         their origin and thus the sequence in which the file was generated during an analysis.
          
          Paraprobe-transcoder solves this limitation by interpreting the information content in such files
          and standardize the representation prior injection into the scientific data analysis tools of the toolbox.
          Therefore, the here proposed set of NeXus base classes and application definitions can be a useful
-         starting point that enable the atom probe community to take advantage of standardized information
+         starting point for the atom probe community to take advantage of standardized information
          exchange and improve the here proposed classes and concepts to become more inclusive.
          
          Paraprobe-transcoder uses a Python library developed based on efforts by members of the
          global atom probe community `International Field Emission Society (IFES) Atom Probe Technical Committee (APT TC) &lt;https://www.github.com/atomprobe-tc/ifes_apt_tc_data_modeling&gt;`_. This library offers the
-         actual low-level I/O operations and respective information interpretation.
+         actual low-level I/O operations and respective information interpretation of above-mentioned file formats.
     </doc>
-    <!--by default for appdefs the value of the exists keyword is required unless it is explicitly specified differently-->
     <group type="NXentry" minOccurs="1" maxOccurs="1">
         <field name="definition" type="NX_CHAR">
-            <attribute name="version" type="NX_CHAR">
-                <enumeration>
-                    <item value="NXapm_paraprobe_transcoder_results"/>
-                </enumeration>
-            </attribute>
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_paraprobe_transcoder_results"/>
+            </enumeration>
         </field>
-        <!--config-->
-        <field name="analysis_identifier" type="NX_UINT"/>
-        <group name="config" type="NXserialized">
-            <field name="type" type="NX_CHAR"/>
-            <field name="path" type="NX_CHAR"/>
-            <field name="checksum" type="NX_CHAR"/>
-            <field name="algorithm" type="NX_CHAR"/>
-        </group>
+        <!--tasks-->
         <group name="atom_probe" type="NXapm_paraprobe_tool_results">
-            <!--this is currently a trick but should in the future be renamed to have a one-to-one
-representation equivalence of reconstructed position and mass-to-charge-state-ratio value
-arrays such that
-the doc-string of the concept atom_probe(NXinstrument) should be used for
-supplementary material to a paper but here no longer reported as it is way too specific
-APSuite, RRNG, RNG, and NeXus/HDF5 NXapm in such a way that they can
-be used with the tools of the paraprobe-toolbox.
-results-->
+            <!--this group mirrors the NXapm application definition
+config-->
+            <field name="analysis_identifier" type="NX_UINT"/>
+            <group name="config" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+            </group>
+            <group name="window" type="NXcs_filter_boolean_mask" optional="true">
+                <doc>
+                     By default the entire reconstructed volume is processed.
+                     In this case, using window is also equivalent to an
+                     NXspatial_filter that specified a window *entire_dataset*.
+                </doc>
+                <field name="number_of_ions" type="NX_UINT"/>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <!--results-->
             <group name="mass_to_charge_conversion" type="NXprocess">
                 <field name="mass_to_charge" type="NX_FLOAT" units="NX_ANY">
                     <doc>
@@ -154,21 +157,25 @@ results-->
                     </group>
                 </group>
             </group>
+            <!--(NXapm_charge_state_analysis):
+profiling-->
+            <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <field name="program" type="NX_CHAR">
+                    <attribute name="version" type="NX_CHAR"/>
+                </field>
+            </group>
+            <group name="profiling" type="NXcs_profiling">
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="status" type="NX_CHAR"/>
+                <field name="current_working_directory" type="NX_CHAR"/>
+                <field name="total_elapsed_time" type="NX_NUMBER" optional="true"/>
+                <field name="number_of_processes" type="NX_POSINT"/>
+                <field name="number_of_threads" type="NX_POSINT"/>
+                <field name="number_of_gpus" type="NX_POSINT"/>
+            </group>
         </group>
-        <!--(NXcharge_state_model):-->
-        <group type="NXprogram"/>
-        <group name="profiling" type="NXcs_profiling">
-            <field name="start_time" type="NX_DATE_TIME"/>
-            <field name="end_time" type="NX_DATE_TIME"/>
-            <field name="status" type="NX_CHAR"/>
-            <field name="results_path" type="NX_CHAR" recommended="true"/>
-            <field name="current_working_directory" type="NX_CHAR"/>
-            <field name="total_elapsed_time" type="NX_NUMBER"/>
-            <field name="number_of_processes" type="NX_POSINT"/>
-            <field name="number_of_threads" type="NX_POSINT"/>
-            <field name="number_of_gpus" type="NX_POSINT"/>
-        </group>
-        <!--use more detailed constraint set to describe a computer-->
+        <!--global-->
         <group type="NXuser" minOccurs="0" maxOccurs="unbounded">
             <doc>
                  If used, metadata of at least the person who performed this analysis.

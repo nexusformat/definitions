@@ -21,41 +21,34 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_ranger_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_selector_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
         <symbol name="n_ions">
             <doc>
-                 The total number of ions in the reconstructed volume.
+                 The total number of ions in the reconstruction.
             </doc>
         </symbol>
     </symbols>
     <doc>
-         Application definition for results files of the paraprobe-ranger tool.
+         Application definition for results files of the paraprobe-selector tool.
          
          This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
-         The purpose and need of the paraprobe-ranger tool is to apply a given set of ranging definitions within
-         a certain (possibly complicated) selection of ions (based on their properties or location in the
-         reconstructed volume.
+         The purpose and need of the paraprobe-selector tool is to identify which reconstructed positions
+         are located inside or on the surface of a (possibly complicated) region-of-interest (ROI).
+         In addition, the tool allows to filter ions for properties.
     </doc>
     <group type="NXentry" minOccurs="1" maxOccurs="1">
         <field name="definition" type="NX_CHAR">
             <attribute name="version" type="NX_CHAR"/>
             <enumeration>
-                <item value="NXapm_paraprobe_ranger_results"/>
+                <item value="NXapm_paraprobe_selector_results"/>
             </enumeration>
         </field>
         <!--tasks-->
-        <group name="apply_existent_ranging" type="NXapm_paraprobe_tool_results">
-            <doc>
-                 Paraprobe-ranger loads the iontypes and evaluates for each
-                 ion on which iontype it matches. If it matches on None, the
-                 ion is considered of the default *unknown_type*. This iontype
-                 is marked with a 0 in the iontypes array.
-            </doc>
-            <!--#MK::number_of_ion_types(NX_POSINT):-->
+        <group name="roi_selection" type="NXapm_paraprobe_tool_results">
             <field name="analysis_identifier" type="NX_UINT"/>
             <group name="config" type="NXserialized">
                 <field name="type" type="NX_CHAR"/>
@@ -63,32 +56,12 @@
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
             </group>
+            <!--results-->
             <group name="window" type="NXcs_filter_boolean_mask">
                 <field name="number_of_ions" type="NX_UINT"/>
                 <field name="bitdepth" type="NX_UINT"/>
                 <field name="mask" type="NX_UINT"/>
             </group>
-            <!--results-->
-            <group type="NXion" minOccurs="1" maxOccurs="256">
-                <field name="nuclide_hash" type="NX_UINT"/>
-                <field name="nuclide_list" type="NX_UINT" recommended="true"/>
-                <field name="charge_state" type="NX_INT"/>
-                <field name="mass_to_charge_range" type="NX_FLOAT"/>
-                <field name="name" type="NX_CHAR" optional="true"/>
-            </group>
-            <field name="iontypes" type="NX_UINT" units="NX_UNITLESS">
-                <doc>
-                     The iontype (identifier) for each ion that was best matching, stored
-                     in the order of the evaporation sequence ID. The here computed iontypes
-                     do not take into account the charge state of the ion which is
-                     equivalent to interpreting a RNG and RRNG range files for each
-                     ion in such a way that only the those elements are considered of which
-                     a (molecular) ion is assumed composed according to the NXion instances.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_ions"/>
-                </dimensions>
-            </field>
             <!--profiling-->
             <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
                 <field name="program" type="NX_CHAR">
@@ -100,7 +73,7 @@
                 <field name="end_time" type="NX_DATE_TIME"/>
                 <field name="status" type="NX_CHAR"/>
                 <field name="current_working_directory" type="NX_CHAR"/>
-                <field name="total_elapsed_time" type="NX_NUMBER" optional="true"/>
+                <field name="total_elapsed_time" type="NX_NUMBER"/>
                 <field name="number_of_processes" type="NX_POSINT"/>
                 <field name="number_of_threads" type="NX_POSINT"/>
                 <field name="number_of_gpus" type="NX_POSINT"/>
