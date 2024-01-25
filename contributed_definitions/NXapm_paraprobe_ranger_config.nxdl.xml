@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-# 
+#
 # Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -59,6 +59,7 @@
                 <field name="path" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
+                <field name="position" type="NX_CHAR"/>
                 <field name="mass_to_charge" type="NX_CHAR"/>
             </group>
             <group name="ranging" type="NXserialized">
@@ -68,15 +69,17 @@
                 <field name="algorithm" type="NX_CHAR"/>
                 <field name="ranging_definitions" type="NX_CHAR"/>
             </group>
-            <group name="spatial_filter" type="NXspatial_filter" optional="true">
+            <group name="spatial_filter" type="NXspatial_filter">
                 <field name="windowing_method" type="NX_CHAR"/>
-                <group type="NXcg_hexahedron_set" optional="true">
+                <group name="hexahedron_set" type="NXcg_hexahedron_set" optional="true">
                     <field name="dimensionality" type="NX_POSINT"/>
                     <field name="cardinality" type="NX_POSINT"/>
                     <field name="identifier_offset" type="NX_INT"/>
-                    <group name="hexahedra" type="NXcg_face_list_data_structure"/>
+                    <group name="hexahedra" type="NXcg_face_list_data_structure">
+                        <field name="vertices" type="NX_UINT"/>
+                    </group>
                 </group>
-                <group type="NXcg_cylinder_set" optional="true">
+                <group name="cylinder_set" type="NXcg_cylinder_set" optional="true">
                     <field name="dimensionality" type="NX_POSINT"/>
                     <field name="cardinality" type="NX_POSINT"/>
                     <field name="identifier_offset" type="NX_INT"/>
@@ -84,7 +87,7 @@
                     <field name="height" type="NX_NUMBER"/>
                     <field name="radii" type="NX_NUMBER"/>
                 </group>
-                <group type="NXcg_ellipsoid_set" optional="true">
+                <group name="ellipsoid_set" type="NXcg_ellipsoid_set" optional="true">
                     <field name="dimensionality" type="NX_POSINT"/>
                     <field name="cardinality" type="NX_POSINT"/>
                     <field name="identifier_offset" type="NX_INT"/>
@@ -92,19 +95,17 @@
                     <field name="half_axes_radii" type="NX_NUMBER"/>
                     <field name="orientation" type="NX_NUMBER"/>
                 </group>
-                <group type="NXcg_polyhedron_set" optional="true"/>
+                <group name="polyhedron_set" type="NXcg_polyhedron_set" optional="true"/>
                 <!--TODO-->
-                <group type="NXcs_filter_boolean_mask" optional="true">
+                <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
                     <field name="number_of_objects" type="NX_UINT"/>
                     <field name="bitdepth" type="NX_UINT"/>
                     <field name="mask" type="NX_UINT"/>
-                    <!--will this be a scalar if the next line is omitted?
+                    <!--leave open if scalar or matrix
   dim: (i,)-->
                     <field name="identifier" type="NX_UINT"/>
                 </group>
             </group>
-            <!--likewise so this one
-  dim: (j,)-->
             <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
                 <field name="min_incr_max" type="NX_INT"/>
             </group>
@@ -116,12 +117,16 @@
                 <field name="method" type="NX_CHAR"/>
                 <field name="match" type="NX_NUMBER"/>
             </group>
-            <group name="profiling" type="NXcs_profiling" recommended="true">
-                <field name="start_time" type="NX_DATE_TIME"/>
-                <field name="end_time" type="NX_DATE_TIME"/>
-                <field name="results_path" type="NX_CHAR" recommended="true"/>
-                <field name="current_working_directory" type="NX_CHAR"/>
-            </group>
+        </group>
+        <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+            <field name="program" type="NX_CHAR">
+                <attribute name="version" type="NX_CHAR"/>
+            </field>
+        </group>
+        <group name="profiling" type="NXcs_profiling" recommended="true">
+            <field name="start_time" type="NX_DATE_TIME"/>
+            <field name="end_time" type="NX_DATE_TIME"/>
+            <field name="current_working_directory" type="NX_CHAR"/>
         </group>
     </group>
     <!--molecular_ion_search(NXapm_paraprobe_tool_config):
