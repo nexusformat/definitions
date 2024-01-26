@@ -233,16 +233,12 @@ tool one such pair is proposed:
         Apply ranging definitions and explore possible molecular ions.
         Store applied ranging definitions and combinatorial analyses of possible iontypes.
 
-The definitions of the following tools remain to become refactored like those for the above-mentioned tools:
-
-    :ref:`NXapm_paraprobe_config_selector`:
-        Configuration of paraprobe-selector
+    :ref:`NXapm_paraprobe_selector_config`, :ref:`NXapm_paraprobe_selector_results`:
+        Configuration and results respectively of paraprobe-selector tool.
         Defining complex spatial regions-of-interest to filter reconstructed datasets.
-
-    :ref:`NXapm_paraprobe_results_selector`:
-        Results of paraprobe-selector
         Store which points are inside or on the boundary of complex spatial regions-of-interest.
 
+The definitions of the following tools remain to become refactored like those for the above-mentioned tools:
 
     :ref:`NXapm_paraprobe_config_surfacer`:
         Configuration of paraprobe-surfacer
