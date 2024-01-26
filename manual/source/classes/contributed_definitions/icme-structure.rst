@@ -29,12 +29,7 @@ concepts which are equally modellable with NeXus:
     :ref:`NXms_recon`:
         A base class for documenting results of reconstructed microstructures.
 
-    :ref:`NXms_score_config`:
-        A specific example of how :ref:`NXapm_paraprobe_config_ranger` can be
-        specialized for documenting the configuration of a computer simulation
-        with the static recrystallization cellular automata model SCORE.
-
-    :ref:`NXms_score_results`:
-        A specific example of how :ref:`NXms` can be specialized for documenting
-        results of computer simulations with the static recrystallization
-        cellular automata model SCORE.
+    :ref:`NXms_score_config`, :ref:`NXms_score_results`:
+        A specific example of an application definition for documenting the
+        configuration and results respectively of a computer simulation with
+        the static recrystallization cellular automata model SCORE.
