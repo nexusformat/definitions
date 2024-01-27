@@ -1,19 +1,21 @@
 category: application
 doc: |
-  Application definition for a configuration file of the paraprobe-selector tool.
+  Application definition for a configuration file of the paraprobe-tessellator tool.
   
   This tool is part of the paraprobe-toolbox. Inspect :ref:`NXapm_paraprobe_tool_config` for details.
-symbols:
-  doc: |
-    The symbols used in the schema to specify e.g. dimensions of arrays.
+# n_control_points: The number of control points for tessellating regions instead of tessellating the volume about ion positions.
+# an example for limited conditions in NeXus
+# if windowing_method is entire_dataset: no constraint on existence of NXcg and NXcs instances
+# if windowing_method is union_of_primitives: sum of cardinality of NXcg >= 0
+# if windowing_method is bitmasked_points: sum cardinality of NXcg := 0 and cardinality of NXcs_filter_boolean_mask == 1
 type: group
-NXapm_paraprobe_selector_config(NXobject):
+NXapm_paraprobe_tessellator_config(NXobject):
   (NXentry):
     exists: [min, 1, max, 1]
     definition(NX_CHAR):
       \@version(NX_CHAR):
-      enumeration: [NXapm_paraprobe_selector_config]
-    select(NXapm_paraprobe_tool_config):
+      enumeration: [NXapm_paraprobe_tessellator_config]
+    tessellate(NXapm_paraprobe_tool_config):
       exists: [min, 1, max, 1]
       (NXidentifier):
         exists: optional
@@ -32,7 +34,18 @@ NXapm_paraprobe_selector_config(NXobject):
         checksum(NX_CHAR):
         algorithm(NX_CHAR):
         ranging_definitions(NX_CHAR):
-      # filter that represent here also the tool-specific config
+      ion_to_edge_distance(NXserialized):
+        type(NX_CHAR):
+        path(NX_CHAR):
+        checksum(NX_CHAR):
+        algorithm(NX_CHAR):
+        distance(NX_CHAR):
+          doc: |
+            Absolute in the (HDF5) file that points to the
+            distance values. The tool assumes that the
+            values are stored in the same order as the
+            points.
+      # filter that are here tool-specific parameter
       spatial_filter(NXspatial_filter):
         windowing_method(NX_CHAR):
         hexahedron_set(NXcg_hexahedron_set):
@@ -80,7 +93,37 @@ NXapm_paraprobe_selector_config(NXobject):
         exists: optional
         method(NX_CHAR):
         match(NX_NUMBER):
-
+      # config
+      method(NX_CHAR):
+        doc: |
+          The method used to compute the tessellation.
+          The value *default* configures the computation of the Voronoi tessellation.
+        # check versions prior paraprobe-toolbox v0.5 for control_point-based method
+        enumeration: [default]
+      has_cell_volume(NX_BOOLEAN):
+        doc: |
+          Specifies if the tool should report the volume of each cell.
+      has_cell_neighbors(NX_BOOLEAN):
+        doc: |
+          Specifies if the tool should report the first-order neighbors of each cell.
+      has_cell_geometry(NX_BOOLEAN):
+        doc: |
+          Specifies if the tool should report the facets and vertices of each cell.
+      has_cell_edge_detection(NX_BOOLEAN):
+        doc: |
+          Specifies if the tool should report for each cell if it makes contact with
+          the tight axis-aligned bounding box about the point cloud.
+          This can be used to identify if the shape of the cell is likely affected
+          by the edge of the dataset or if cells are deeply enough embedded
+          into the point cloud so that the shape of their cells are not affected
+          anymore by the boundary. This is valuable information to judge
+          about the significance of finite size effects.
+      # erosion_distance(NX_FLOAT):
+      #   doc: |
+      #     Maximum distance for which cells are eroded.
+      #   unit: NX_LENGTH
+      #   \@units: nm
+      #   minValue: EPSILON
       # profiling
       programID(NXprogram):
         exists: [min, 1, max, infty]

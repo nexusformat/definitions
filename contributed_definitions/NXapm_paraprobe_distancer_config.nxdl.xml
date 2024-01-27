@@ -21,14 +21,14 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_selector_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_distancer_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
     </symbols>
     <doc>
-         Application definition for a configuration file of the paraprobe-selector tool.
+         Application definition for a configuration file of the paraprobe-distancer tool.
          
          This tool is part of the paraprobe-toolbox. Inspect :ref:`NXapm_paraprobe_tool_config` for details.
     </doc>
@@ -36,10 +36,10 @@
         <field name="definition" type="NX_CHAR">
             <attribute name="version" type="NX_CHAR"/>
             <enumeration>
-                <item value="NXapm_paraprobe_selector_config"/>
+                <item value="NXapm_paraprobe_distancer_config"/>
             </enumeration>
         </field>
-        <group name="select" type="NXapm_paraprobe_tool_config" minOccurs="1" maxOccurs="1">
+        <group name="point_to_triangle" type="NXapm_paraprobe_tool_config" minOccurs="1" maxOccurs="1">
             <group type="NXidentifier" optional="true"/>
             <field name="analysis_identifier" type="NX_UINT" recommended="true"/>
             <group name="reconstruction" type="NXserialized">
@@ -57,7 +57,7 @@
                 <field name="algorithm" type="NX_CHAR"/>
                 <field name="ranging_definitions" type="NX_CHAR"/>
             </group>
-            <!--filter that represent here also the tool-specific config-->
+            <!--filter that are here tool-specific parameter-->
             <group name="spatial_filter" type="NXspatial_filter">
                 <field name="windowing_method" type="NX_CHAR"/>
                 <group name="hexahedron_set" type="NXcg_hexahedron_set" optional="true">
@@ -106,6 +106,66 @@
                 <field name="method" type="NX_CHAR"/>
                 <field name="match" type="NX_NUMBER"/>
             </group>
+            <!--config-->
+            <field name="method" type="NX_CHAR">
+                <doc>
+                     Specifies for which point the tool will compute distances.
+                     
+                     The value *default* configures that distances are computed for all points.
+                     The value *skin* configures that distances are computed only for those
+                     points which are not farther away located to a triangle than
+                     threshold_distance.
+                </doc>
+                <enumeration>
+                    <item value="default"/>
+                    <item value="skin"/>
+                </enumeration>
+            </field>
+            <field name="threshold_distance" type="NX_FLOAT" optional="true" units="NX_LENGTH">
+                <doc>
+                     Maximum distance for which distances are
+                     computed when *method* is *skin*.
+                </doc>
+            </field>
+            <!--nm-->
+            <field name="number_of_triangle_sets" type="NX_UINT" units="NX_UNITLESS">
+                <doc>
+                     How many triangle sets to consider.
+                     Multiple triangle sets can be defined which are
+                     composed into one joint triangle set for the analysis.
+                </doc>
+            </field>
+            <group name="triangle_setID" type="NXserialized" minOccurs="1" maxOccurs="unbounded">
+                <doc>
+                     Each triangle_set that is referred to here should be a face_list_data_structure,
+                     i.e. an array of (n_vertices, 3) of NX_FLOAT for vertex coordinates, an (n_facets, 3)
+                     array of NX_UINT incident vertices of each facet. Vertex indices are assumed to
+                     start at zero and must not exceed n_vertices - 1, i.e. the identifier_offset is 0.
+                     Facet normal have to be provided as an array of (n_facets, 3) of NX_FLOAT.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="vertices" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the array
+                         of vertex positions for the triangles in that triangle_set.
+                    </doc>
+                </field>
+                <field name="facet_indices" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the array
+                         of facet indices for the triangles in that triangle_set.
+                    </doc>
+                </field>
+                <field name="facet_normals" type="NX_CHAR" optional="true">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the array
+                         of facet normal vectors for the triangles in that triangle_set.
+                    </doc>
+                </field>
+            </group>
             <!--profiling-->
             <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
                 <field name="program" type="NX_CHAR">
@@ -119,4 +179,5 @@
             </group>
         </group>
     </group>
+    <!--point_set_to_polyline_set(NXapm_paraprobe_tool_config):-->
 </definition>
