@@ -234,38 +234,24 @@ tool one such pair is proposed:
         Store applied ranging definitions and combinatorial analyses of possible iontypes.
 
     :ref:`NXapm_paraprobe_selector_config`, :ref:`NXapm_paraprobe_selector_results`:
-        Configuration and results respectively of paraprobe-selector tool.
+        Configuration and results respectively of the paraprobe-selector tool.
         Defining complex spatial regions-of-interest to filter reconstructed datasets.
         Store which points are inside or on the boundary of complex spatial regions-of-interest.
 
-The definitions of the following tools remain to become refactored like those for the above-mentioned tools:
-
-    :ref:`NXapm_paraprobe_config_surfacer`:
-        Configuration of paraprobe-surfacer
-        Create a model for the edge of a point cloud via convex hulls, alpha shapes.
-
-    :ref:`NXapm_paraprobe_results_surfacer`:
-        Results of paraprobe-surfacer
+    :ref:`NXapm_paraprobe_surfacer_config`, :ref:`NXapm_paraprobe_surfacer_results`:
+        Configuration and results respectively of the paraprobe-surfacer tool.
+        Create a model for the edge of a point cloud via convex hulls, alpha shapes, or alpha-wrappings.
         Store triangulated surface meshes of models for the edge of a dataset.
 
+    :ref:`NXapm_paraprobe_distancer_config`, :ref:`NXapm_paraprobe_distancer_results`:
+        Configuration and results respectively of the paraprobe-distancer tool.
+        Compute and store analytical distances between ions to a set of triangles.
 
-    :ref:`NXapm_paraprobe_config_distancer`:
-        Configuration of paraprobe-distancer
-        Compute analytical distances between ions to a set of triangles.
+    :ref:`NXapm_paraprobe_tessellator_config`, :ref:`NXapm_paraprobe_tessellator_results`:
+        Configuration and results respectively of the of paraprobe-tessellator tool.
+        Compute and store Voronoi cells and properties of these for all ions in a dataset.
 
-    :ref:`NXapm_paraprobe_results_distancer`:
-        Results of paraprobe-distancer
-        Store analytical distances between ions to a set of triangles.
-
-
-    :ref:`NXapm_paraprobe_config_tessellator`:
-        Configuration of paraprobe-tessellator
-        Compute Voronoi cells for if desired all ions in a dataset.
-
-    :ref:`NXapm_paraprobe_results_tessellator`:
-        Results of paraprobe-tessellator
-        Store volume of all Voronoi cells about each ion in the dataset.
-
+The definitions of the following tools remain to become refactored like those for the above-mentioned tools:
 
     :ref:`NXapm_paraprobe_config_nanochem`:
         Configuration of paraprobe-nanochem
@@ -276,7 +262,6 @@ The definitions of the following tools remain to become refactored like those fo
         Store all results of delocalization, isosurface, and interface detection algorithms,
         store all extracted triangulated surface meshes of found microstructural features,
         store composition profiles and corresponding geometric primitives (ROIs).
-
 
     :ref:`NXapm_paraprobe_config_intersector`:
         Configuration of paraprobe-intersector
