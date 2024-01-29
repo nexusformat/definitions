@@ -19,3 +19,6 @@ dichroism and many more.
 
     :ref:`NXmpes`:
        A general appdef with minimalistic metadata requirements to describe all photemission experiments.
+
+    :ref:`NXmpes_arpes`:
+       An appdef for angle-resolved photoemission spectroscopy (ARPES) experiments.
