@@ -112,8 +112,8 @@ elif html_theme== 'alabaster': # Alabaster allows a very high degree of control 
         'logo_name': True,
         'github_button': True,
         'github_type': 'watch',
-        'github_repo': 'nexus_definitions/tree/fairmat',
-        'github_user': 'FAIRmat-Experimental',
+        'github_repo': 'nexus_definitions',
+        'github_user': 'FAIRmat-NFDI',
         'github_count': 'false', # We don't get the cute counter baloon if we want to point to the branch
         'sidebar_width': '300px',
         'body_max_width': 'auto',
