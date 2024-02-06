@@ -264,6 +264,51 @@
 			    https://www.nexusformat.org/NIAC2018Minutes.html
 		</doc>
 	</attribute>
+	<attribute name="default_slice" type="NX_CHAR_OR_NUMBER">
+		<doc>
+			Which slice of data to show in a plot by default. This is useful especially for
+			datasets with more than 2 dimensions.
+
+			Should be an array of length equal to the number of dimensions
+			in the data, with the following possible values:
+
+			* ".": All the data in this dimension should be included
+			* Integer: Only this slice should be used.
+			* String: Only this slice should be used. Use if ``AXISNAME`` is a string
+			  array.
+
+			Example::
+
+			  data:NXdata
+				@signal = "data"
+				@axes = ["image_id", "channel", ".", "."]
+				@image_id_indices = 0
+				@channel_indices = 1
+				@default_slice = [".", "difference", ".", "."]
+				image_id = [1, ..., nP]
+				channel = ["threshold_1", "threshold_2", "difference"]
+				data = uint[nP, nC, i, j]
+
+			Here, a data array with four dimensions, including the number of images
+			(nP) and number of channels (nC), specifies more dimensions than can be
+			visualized with a 2D image viewer for a given image.  Therefore the
+			default_slice attribute specifies that the "difference" channel should be
+			shown by default.
+
+			Alternate version using an integer would look like this (note 2 is a string)::
+
+			  data:NXdata
+				@signal = "data"
+				@axes = ["image_id", "channel", ".", "."]
+				@image_id_indices = 0
+				@channel_indices = 1
+				@default_slice = [".", "2", ".", "."]
+				image_id = [1, ..., nP]
+				channel = ["threshold_1", "threshold_2", "difference"]
+				data = uint[nP, nC, i, j]
+
+		</doc>
+	</attribute>
 	<attribute name="AXISNAME_indices" type="NX_INT">
 		<!-- 
 			nxdl.xsd rules do not allow us to show this as a variable name 
@@ -294,7 +339,7 @@
 	</attribute>
 	
 	<!-- Data and coordinate fields -->
-	<field name="AXISNAME" type="NX_NUMBER" nameType="any">
+	<field name="AXISNAME" type="NX_CHAR_OR_NUMBER" nameType="any">
 		<doc>
 			Coordinate values along one or more :ref:`data &lt;/NXdata/DATA-field&gt;` dimensions. The rank must be equal
 			to the number of dimensions it spans.
@@ -302,6 +347,9 @@
 			As the upper case ``AXISNAME`` indicates, the names of the ``AXISNAME`` fields can be chosen :ref:`freely &lt;validItemName&gt;`.
 			The :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute can be used to find all datasets in the
 			``NXdata`` that contain coordinate values.
+
+			Most AXISNAME fields will be sequences of numbers but if an axis is better represented using names, such as channel names,
+			an array of NX_CHAR can be provided.
 		</doc>
 		<attribute name="long_name"><doc>Axis label</doc></attribute>
 		<attribute name="units">

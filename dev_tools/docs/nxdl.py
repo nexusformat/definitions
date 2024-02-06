@@ -13,8 +13,13 @@ from ..globals.errors import NXDLParseError
 from ..globals.nxdl import NXDL_NAMESPACE
 from ..globals.urls import REPO_URL
 from ..utils.github import get_file_contributors_via_api
+from ..utils.nxdl_utils import get_inherited_nodes
 from ..utils.types import PathLike
 from .anchor_list import AnchorRegistry
+
+# controlling the length of progressively more indented sub-node
+MIN_COLLAPSE_HINT_LINE_LENGTH = 20
+MAX_COLLAPSE_HINT_LINE_LENGTH = 80
 
 
 class NXClassDocGenerator:
@@ -129,7 +134,7 @@ class NXClassDocGenerator:
         # print official description of this class
         self._print("")
         self._print("**Description**:\n")
-        self._print_doc(self._INDENTATION_UNIT, ns, root, required=True)
+        self._print_doc_enum("", ns, root, required=True)
 
         # print symbol list
         node_list = root.xpath("nx:symbols", namespaces=ns)
@@ -139,7 +144,7 @@ class NXClassDocGenerator:
         elif len(node_list) > 1:
             raise Exception(f"Invalid symbol table in {nxclass_name}")
         else:
-            self._print_doc(self._INDENTATION_UNIT, ns, node_list[0])
+            self._print_doc_enum("", ns, node_list[0])
             for node in node_list[0].xpath("nx:symbol", namespaces=ns):
                 doc = self._get_doc_line(ns, node)
                 self._print(f"  **{node.get('name')}**", end="")
@@ -518,6 +523,38 @@ class NXClassDocGenerator:
                     self._print(f"{indent}{line}")
                 self._print()
 
+    def long_doc(self, ns, node, left_margin):
+        length = 0
+        line = "documentation"
+        fnd = False
+        blocks = self._get_doc_blocks(ns, node)
+        max_characters = max(
+            MIN_COLLAPSE_HINT_LINE_LENGTH, (MAX_COLLAPSE_HINT_LINE_LENGTH - left_margin)
+        )
+        for block in blocks:
+            lines = block.splitlines()
+            length += len(lines)
+            for single_line in lines:
+                if len(single_line) > 2 and single_line[0] != "." and not fnd:
+                    fnd = True
+                    line = single_line[:max_characters]
+        return (length, line, blocks)
+
+    def _print_doc_enum(self, indent, ns, node, required=False):
+        collapse_indent = indent
+        node_list = node.xpath("nx:enumeration", namespaces=ns)
+        (doclen, line, blocks) = self.long_doc(ns, node, len(indent))
+        if len(node_list) + doclen > 1:
+            collapse_indent = f"{indent}    "
+            self._print(f"{indent}{self._INDENTATION_UNIT}.. collapse:: {line} ...\n")
+        self._print_doc(
+            collapse_indent + self._INDENTATION_UNIT, ns, node, required=required
+        )
+        if len(node_list) == 1:
+            self._print_enumeration(
+                collapse_indent + self._INDENTATION_UNIT, ns, node_list[0]
+            )
+
     def _print_attribute(self, ns, kind, node, optional, indent, parent_path):
         name = node.get("name")
         index_name = name
@@ -526,12 +563,9 @@ class NXClassDocGenerator:
         )
         self._print(f"{indent}.. index:: {index_name} ({kind} attribute)\n")
         self._print(
-            f"{indent}**@{name}**: {optional}{self._format_type(node)}{self._format_units(node)}\n"
+            f"{indent}**@{name}**: {optional}{self._format_type(node)}{self._format_units(node)} {self.get_first_parent_ref(f'{parent_path}/{name}', 'attribute')}\n"
         )
-        self._print_doc(indent + self._INDENTATION_UNIT, ns, node)
-        node_list = node.xpath("nx:enumeration", namespaces=ns)
-        if len(node_list) == 1:
-            self._print_enumeration(indent + self._INDENTATION_UNIT, ns, node_list[0])
+        self._print_doc_enum(indent, ns, node)
 
     def _print_if_deprecated(self, ns, node, indent):
         deprecated = node.get("deprecated", None)
@@ -569,17 +603,12 @@ class NXClassDocGenerator:
                 f"{self._format_type(node)}"
                 f"{dims}"
                 f"{self._format_units(node)}"
+                f" {self.get_first_parent_ref(f'{parent_path}/{name}', 'field')}"
                 "\n"
             )
 
             self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
-            self._print_doc(indent + self._INDENTATION_UNIT, ns, node)
-
-            node_list = node.xpath("nx:enumeration", namespaces=ns)
-            if len(node_list) == 1:
-                self._print_enumeration(
-                    indent + self._INDENTATION_UNIT, ns, node_list[0]
-                )
+            self._print_doc_enum(indent, ns, node)
 
             for subnode in node.xpath("nx:attribute", namespaces=ns):
                 optional = self._get_required_or_optional_text(subnode)
@@ -605,10 +634,12 @@ class NXClassDocGenerator:
             # target = hTarget.replace(".. _", "").replace(":\n", "")
             # TODO: https://github.com/nexusformat/definitions/issues/1057
             self._print(f"{indent}{hTarget}")
-            self._print(f"{indent}**{name}**: {optional_text}{typ}\n")
+            self._print(
+                f"{indent}**{name}**: {optional_text}{typ} {self.get_first_parent_ref(f'{parent_path}/{name}', 'group')}\n"
+            )
 
             self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
-            self._print_doc(indent + self._INDENTATION_UNIT, ns, node)
+            self._print_doc_enum(indent, ns, node)
 
             for subnode in node.xpath("nx:attribute", namespaces=ns):
                 optional = self._get_required_or_optional_text(subnode)
@@ -639,8 +670,49 @@ class NXClassDocGenerator:
                 f"(suggested target: ``{node.get('target')}``)"
                 "\n"
             )
-            self._print_doc(indent + self._INDENTATION_UNIT, ns, node)
+            self._print_doc_enum(indent, ns, node)
 
     def _print(self, *args, end="\n"):
         # TODO: change instances of \t to proper indentation
         self._rst_lines.append(" ".join(args) + end)
+
+    def get_first_parent_ref(self, path, tag):
+        nx_name = path[1 : path.find("/", 1)]
+        path = path[path.find("/", 1) :]
+
+        try:
+            parents = get_inherited_nodes(path, nx_name)[2]
+        except FileNotFoundError:
+            return ""
+        if len(parents) > 1:
+            parent = parents[1]
+            parent_path = parent_display_name = parent.attrib["nxdlpath"]
+            parent_path_segments = parent_path[1:].split("/")
+            parent_def_name = parent.attrib["nxdlbase"][
+                parent.attrib["nxdlbase"]
+                .rfind("/") : parent.attrib["nxdlbase"]
+                .rfind(".nxdl")
+            ]
+
+            # Case where the first parent is a base_class
+            if parent_path_segments[0] == "":
+                return ""
+
+            # special treatment for NXnote@type
+            if (
+                tag == "attribute"
+                and parent_def_name == "/NXnote"
+                and parent_path == "/type"
+            ):
+                return ""
+
+            if tag == "attribute":
+                pos_of_right_slash = parent_path.rfind("/")
+                parent_path = (
+                    parent_path[:pos_of_right_slash]
+                    + "@"
+                    + parent_path[pos_of_right_slash + 1 :]
+                )
+            parent_display_name = f"{parent_def_name[1:]}{parent_path}"
+            return f":ref:`⤆ </{parent_display_name}-{tag}>`"
+        return ""

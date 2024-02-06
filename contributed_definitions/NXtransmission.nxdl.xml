@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2022 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--FAIRmat consortium 21.07.2022
+Draft NeXus application definition for transmission experiments-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXtransmission" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             Variables used throughout the experiment
+        </doc>
+        <symbol name="N_wavelengths">
+            <doc>
+                 Number of wavelength points
+            </doc>
+        </symbol>
+        <symbol name="N_scans">
+            <doc>
+                 Number of scans
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for transmission experiments
+    </doc>
+    <group type="NXentry">
+        <doc>
+             This application definition
+        </doc>
+        <field name="definition">
+            <doc>
+                 An application definition for transmission.
+            </doc>
+            <attribute name="version">
+                <doc>
+                     Version number to identify which definition of this application definition was
+                     used for this entry/data.
+                </doc>
+            </attribute>
+            <attribute name="url">
+                <doc>
+                     URL where to find further material (documentation, examples) relevant to the
+                     application definition.
+                </doc>
+            </attribute>
+            <enumeration>
+                <item value="NXtransmission"/>
+            </enumeration>
+        </field>
+        <field name="start_time" type="NX_DATE_TIME">
+            <doc>
+                 Start time of the experiment.
+            </doc>
+        </field>
+        <field name="experiment_identifier" type="NX_CHAR">
+            <doc>
+                 Unique identifier of the experiment, such as a (globally persistent)
+                   unique identifier.
+                 
+                 * The identifier is usually defined by the facility or principle
+                   investigator.
+                 * The identifier enables to link experiments to e.g. proposals.
+            </doc>
+        </field>
+        <field name="experiment_description" type="NX_CHAR" optional="true">
+            <doc>
+                 An optional free-text description of the experiment. However, details of the
+                 experiment should be defined in the specific fields of this application
+                 definition rather than in this experiment description.
+            </doc>
+        </field>
+        <!--TODO: Just used a NXmanufacturer, maybe
+it is nicer to introduce a general NXprogram class?
+However, a program may also be viewed as some sort
+of instrument.-->
+        <group name="acquisition_program" type="NXfabrication" optional="true">
+            <field name="model" type="NX_CHAR">
+                <doc>
+                     Commercial or otherwise defined given name to the program that was
+                     used to generate the result file(s) with measured data and metadata.
+                </doc>
+            </field>
+            <field name="identifier" type="NX_CHAR">
+                <doc>
+                     Version number of the program that was used to generate the result
+                     file(s) with measured data and metadata.
+                </doc>
+            </field>
+            <attribute name="url" type="NX_CHAR" recommended="true">
+                <doc>
+                     Website of the software
+                </doc>
+            </attribute>
+        </group>
+        <group name="operator" type="NXuser" minOccurs="1">
+            <doc>
+                 Contact information of at least the user of the instrument or the investigator
+                 who performed this experiment. Adding multiple users if relevant is recommended.
+            </doc>
+            <field name="name">
+                <doc>
+                     Name of the user.
+                </doc>
+            </field>
+            <field name="affiliation">
+                <doc>
+                     Name of the affiliation of the user at the point in time when the experiment was
+                     performed.
+                </doc>
+            </field>
+            <field name="address">
+                <doc>
+                     Street address of the user's affiliation.
+                </doc>
+            </field>
+            <field name="email">
+                <doc>
+                     Email address of the user.
+                </doc>
+            </field>
+            <field name="url" recommended="true">
+                <doc>
+                     Author ID defined by reasearch id services, e.g. orcid (https://orcid.org/).
+                </doc>
+            </field>
+            <field name="telephone_number" recommended="true">
+                <doc>
+                     Telephone number of the user.
+                </doc>
+            </field>
+        </group>
+        <group name="instrument" type="NXinstrument">
+            <group name="manufacturer" type="NXfabrication" recommended="true">
+                <doc>
+                     Manufacturer of the instrument.
+                </doc>
+            </group>
+            <group name="common_beam_mask" type="NXslit">
+                <doc>
+                     Common beam mask to shape the incident beam
+                </doc>
+                <field name="y_gap" type="NX_NUMBER" units="NX_UNITLESS">
+                    <doc>
+                         The height of the common beam in percentage of the beam
+                    </doc>
+                </field>
+            </group>
+            <field name="common_beam_depolarizer" type="NX_BOOLEAN">
+                <doc>
+                     If true, the incident beam is depolarized.
+                </doc>
+            </field>
+            <field name="polarizer" type="NX_NUMBER" units="NX_ANGLE">
+                <doc>
+                     Polarizer value inside the beam path
+                </doc>
+            </field>
+            <group name="ref_attenuator" type="NXattenuator">
+                <doc>
+                     Attenuator in the reference beam
+                </doc>
+                <field name="attenuator_transmission" type="NX_FLOAT"/>
+            </group>
+            <group name="sample_attenuator" type="NXattenuator">
+                <doc>
+                     Attenuator in the sample beam
+                </doc>
+                <field name="attenuator_transmission" type="NX_FLOAT"/>
+            </group>
+            <group name="spectrometer" type="NXmonochromator">
+                <field name="wavelength" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                         Wavelength value(s) used for the measurement.
+                         An array of 1 or more elements. Length defines N_wavelenghts
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="N_wavelengths"/>
+                    </dimensions>
+                </field>
+                <field name="spectral_resolution" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                    <doc>
+                         Overall spectral resolution of this spectrometer.
+                         If several gratings are employed the spectral resoultion
+                         should rather be specified for each grating inside the
+                         NXgrating group of this spectrometer.
+                    </doc>
+                </field>
+                <group type="NXgrating" optional="true">
+                    <doc>
+                         Diffraction grating, as could be used in a monochromator.
+                         If two or more gratings were used, define the angular
+                         dispersion and the wavelength range (min/max wavelength)
+                         for each grating and make sure that the wavelength ranges
+                         do not overlap. The dispersion should be defined for the
+                         entire wavelength range of the experiment.
+                    </doc>
+                    <field name="angular_dispersion" type="NX_NUMBER" optional="true">
+                        <doc>
+                             Dispersion of the grating in nm/mm used.
+                        </doc>
+                    </field>
+                    <field name="blaze_wavelength" type="NX_NUMBER" optional="true" units="NX_LENGTH">
+                        <doc>
+                             The blaze wavelength of the grating used.
+                        </doc>
+                    </field>
+                    <field name="spectral_resolution" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                        <doc>
+                             Overall spectral resolution of the instrument
+                             when this grating is used.
+                        </doc>
+                    </field>
+                    <field name="wavelength_range" type="NX_NUMBER" units="NX_LENGTH">
+                        <doc>
+                             Wavelength range in which this grating was used
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="2"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+            <group type="NXdetector">
+                <field name="wavelength_range" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                         Wavelength range in which this detector was used
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="2"/>
+                    </dimensions>
+                </field>
+                <field name="type" type="NX_CHAR">
+                    <doc>
+                         Detector type
+                    </doc>
+                    <enumeration>
+                        <item value="PMT"/>
+                        <item value="PbS"/>
+                        <item value="InGaAs"/>
+                    </enumeration>
+                </field>
+                <field name="response_time" type="NX_NUMBER" optional="true" units="NX_TIME">
+                    <doc>
+                         Response time of the detector
+                    </doc>
+                </field>
+                <field name="gain" type="NX_NUMBER" optional="true">
+                    <doc>
+                         Detector gain
+                    </doc>
+                </field>
+                <group name="slit" type="NXslit">
+                    <doc>
+                         Slit setting used for measurement with this detector
+                    </doc>
+                    <field name="type" type="NX_CHAR">
+                        <enumeration>
+                            <item value="fixed"/>
+                            <item value="servo"/>
+                        </enumeration>
+                    </field>
+                </group>
+            </group>
+            <field name="time_points" type="NX_NUMBER" optional="true" units="NX_TIME">
+                <doc>
+                     An array of relative scan start time points.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="N_scans"/>
+                </dimensions>
+            </field>
+            <field name="measured_data" type="NX_NUMBER">
+                <doc>
+                     Resulting data from the measurement.
+                     The length of the 2nd dimension is
+                     the number of time points.
+                     If it has length one the time_points
+                     may be empty.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="N_scans"/>
+                    <dim index="2" value="N_wavelengths"/>
+                </dimensions>
+            </field>
+            <group type="NXsource">
+                <doc>
+                     The lamp used for illumination
+                </doc>
+                <field name="type" type="NX_CHAR">
+                    <doc>
+                         The type of lamp, e.g. halogen, D2 etc.
+                    </doc>
+                    <enumeration>
+                        <item value="halogen"/>
+                        <item value="D2"/>
+                    </enumeration>
+                </field>
+                <field name="spectrum" type="NX_NUMBER" optional="true">
+                    <doc>
+                         The spectrum of the lamp used
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="N_wavelengths"/>
+                    </dimensions>
+                </field>
+                <field name="wavelength_range" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                         Wavelength range in which the lamp was used
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="2"/>
+                    </dimensions>
+                </field>
+            </group>
+        </group>
+        <group type="NXsample">
+            <!--TODO: This should be extended by a generic
+NXsample class.-->
+            <doc>
+                 Properties of the sample measured
+            </doc>
+            <field name="name" type="NX_CHAR"/>
+        </group>
+        <group name="data" type="NXdata">
+            <doc>
+                 A default view of the data emitted intensity vs. wavelength.
+                 From measured_data plot intensity and wavelength.
+            </doc>
+            <attribute name="axes">
+                <doc>
+                     We recommend to use wavelength as a default attribute, but it can be
+                     replaced by any suitable parameter along the X-axis.
+                </doc>
+            </attribute>
+        </group>
+    </group>
+</definition>
