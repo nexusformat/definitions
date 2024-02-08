@@ -8,6 +8,7 @@ Do not use these URL's for validation. That's what
 relative URI "../nxdl.xsd" which means validation
 can only be done for NXDL files in subdirectories.
 """
+
 import os
 from subprocess import CalledProcessError, run
 from typing import Optional
