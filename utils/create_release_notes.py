@@ -128,10 +128,9 @@ def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
             #   t.commit == commit
             #   t.commit.last_modified != commit.last_modified
             commit = repo.get_commit(t.commit.sha)
-            dt = str2time(commit.last_modified)
+            dt = commit.last_modified_datetime
             earliest = min(dt, earliest or dt)
 
-    earliest = earliest.astimezone(datetime.timezone.utc)
     logger.debug(f"# tags: {len(tags)} {earliest}")
 
     # fmt: off
@@ -197,18 +196,6 @@ def parse_command_line():
     return parser.parse_args()
 
 
-def str2time(time_string):
-    """convert date/time string to datetime object
-    
-    input string example: ``Tue, 20 Dec 2016 17:35:40 GMT``
-    """
-    if time_string is None:
-        msg = f"need valid date/time string, not: {time_string}"
-        logger.error(msg)
-        raise ValueError(msg)
-    return datetime.datetime.strptime(time_string, "%a, %d %b %Y %H:%M:%S %Z")
-
-
 def report(title, repo, milestone, tags, pulls, issues, commits):
     print(f"## {title}")
     print("")
@@ -234,7 +221,7 @@ def report(title, repo, milestone, tags, pulls, issues, commits):
         print("-" * 5, " | ", "-" * 5, " | ", "-" * 5)
         for k, tag in sorted(tags.items()):
             commit = repo.get_commit(tag.commit.sha)
-            when = str2time(commit.last_modified).strftime("%Y-%m-%d")
+            when = commit.last_modified_datetime.strftime("%Y-%m-%d")
             print(f"[{tag.commit.sha[:7]}]({tag.commit.html_url}) | {when} | {k}")
     print("")
     print("### Pull Requests")
@@ -246,7 +233,7 @@ def report(title, repo, milestone, tags, pulls, issues, commits):
         print("-" * 5, " | ", "-" * 5, " | ", "-" * 5, " | ", "-" * 5)
         for k, pull in sorted(pulls.items()):
             state = {True: "merged", False: "closed"}[pull.merged]
-            when = str2time(pull.last_modified).strftime("%Y-%m-%d")
+            when = pull.closed_at.strftime("%Y-%m-%d")
             # fmt: off
             print(
                 f"[#{pull.number}]({pull.html_url})"
