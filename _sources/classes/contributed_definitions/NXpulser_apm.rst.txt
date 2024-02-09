@@ -14,7 +14,7 @@ NXpulser_apm
 ..
     Contributors List
 
-    .. |contrib_name| replace:: Kuehbachm|mkuehbach|https://avatars.githubusercontent.com/u/14091504?v=4|2022-06-21
+    .. |contrib_name| replace:: Kuehbachm|mkuehbach|https://avatars.githubusercontent.com/u/14091504?v=4|2022-09-13
 
     .. |contrib_name| replace:: Sanbrock|sanbrock|https://avatars.githubusercontent.com/u/45483558?v=4|2022-03-02
 
@@ -24,7 +24,7 @@ NXpulser_apm
 
 **Description**:
 
-  Metadata for laser-, voltage-, or combined pulsing triggering field evaporation.
+  Metadata for laser- and/or voltage-pulsing in atom probe microscopy.
 
 **Symbols**:
 
@@ -33,9 +33,9 @@ NXpulser_apm
   **n_ions**: Total number of ions collected.
 
 **Groups cited**:
-  :ref:`NXbeam`, :ref:`NXcollection`, :ref:`NXmanufacturer`, :ref:`NXsource`, :ref:`NXtransformations`
+  :ref:`NXbeam`, :ref:`NXcollection`, :ref:`NXfabrication`, :ref:`NXsource`, :ref:`NXtransformations`
 
-.. index:: NXsource (base class); used in base class, NXmanufacturer (base class); used in base class, NXtransformations (base class); used in base class, NXbeam (base class); used in base class, NXcollection (base class); used in base class
+.. index:: NXfabrication (base class); used in base class, NXsource (base class); used in base class, NXbeam (base class); used in base class, NXcollection (base class); used in base class, NXtransformations (base class); used in base class
 
 **Structure**:
 
@@ -43,17 +43,19 @@ NXpulser_apm
 
   .. index:: pulse_mode (field)
 
-  **pulse_mode**: (optional) :ref:`NX_CHAR <NX_CHAR>`
+  **pulse_mode**: (optional) :ref:`NX_CHAR <NX_CHAR>` 
 
-    How is field evaporation physically triggered.
+    .. collapse:: How is field evaporation physically triggered. ...
 
-    Any of these values: ``laser`` | ``high_voltage`` | ``laser_and_high_voltage``
+        How is field evaporation physically triggered.
+
+        Any of these values: ``laser`` | ``voltage`` | ``laser_and_voltage``
 
   .. _/NXpulser_apm/pulse_frequency-field:
 
   .. index:: pulse_frequency (field)
 
-  **pulse_frequency**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_FREQUENCY <NX_FREQUENCY>`}
+  **pulse_frequency**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: 1, Dimensions: [n_ions]) {units=\ :ref:`NX_FREQUENCY <NX_FREQUENCY>`} 
 
     Frequency with which the high voltage or laser pulser fires.
 
@@ -61,107 +63,153 @@ NXpulser_apm
 
   .. index:: pulse_fraction (field)
 
-  **pulse_fraction**: (optional) :ref:`NX_NUMBER <NX_NUMBER>` {units=\ :ref:`NX_UNITLESS <NX_UNITLESS>`}
+  **pulse_fraction**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: 1, Dimensions: [n_ions]) {units=\ :ref:`NX_DIMENSIONLESS <NX_DIMENSIONLESS>`} 
 
-    Fraction of the pulse_voltage that is applied in addition
-    to the standing_voltage at peak voltage of a pulse.
+    .. collapse:: Fraction of the pulse_voltage that is applied in addition ...
+
+        Fraction of the pulse_voltage that is applied in addition
+        to the standing_voltage at peak voltage of a pulse.
+
+        If a standing voltage is applied, this gives nominal pulse fraction
+        (as a function of standing voltage). Otherwise this field should not be
+        present.
 
   .. _/NXpulser_apm/pulsed_voltage-field:
 
   .. index:: pulsed_voltage (field)
 
-  **pulsed_voltage**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: 1, Dimensions: [n_ions]) {units=\ :ref:`NX_VOLTAGE <NX_VOLTAGE>`}
+  **pulsed_voltage**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: 1, Dimensions: [n_ions]) {units=\ :ref:`NX_VOLTAGE <NX_VOLTAGE>`} 
 
+    .. collapse:: In laser pulsing mode the values will be zero so the this field is recommended ...
+
+        In laser pulsing mode the values will be zero so the this field is recommended.
+        However, for voltage pulsing mode it is highly recommended that users report the pulsed_voltage.
+
+  .. _/NXpulser_apm/pulse_number-field:
+
+  .. index:: pulse_number (field)
+
+  **pulse_number**: (optional) :ref:`NX_UINT <NX_UINT>` (Rank: 1, Dimensions: [n_ions]) {units=\ :ref:`NX_UNITLESS <NX_UNITLESS>`} 
+
+    Absolute number of pulses starting from the beginning of the experiment.
 
   .. _/NXpulser_apm/standing_voltage-field:
 
   .. index:: standing_voltage (field)
 
-  **standing_voltage**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: 1, Dimensions: [n_ions]) {units=\ :ref:`NX_VOLTAGE <NX_VOLTAGE>`}
+  **standing_voltage**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` (Rank: 1, Dimensions: [n_ions]) {units=\ :ref:`NX_VOLTAGE <NX_VOLTAGE>`} 
 
-    Direct current voltage between the specimen and the
-    (local electrode) in the case of local electrode atom
-    probe (LEAP) instrument.
+    .. collapse:: Direct current voltage between the specimen and the (local electrode) in ...
 
-  .. _/NXpulser_apm/laser_gun-group:
+        Direct current voltage between the specimen and the (local electrode) in
+        the case of local electrode atom probe (LEAP) instrument.
+        The standing voltage applied to the sample, relative to system ground.
 
-  **laser_gun**: (optional) :ref:`NXsource`
+  .. _/NXpulser_apm/FABRICATION-group:
 
-    Atom probe microscopes use controlled laser, voltage,
-    or a combination of pulsing strategies to trigger the
-    excitation and eventual field evaporation/emission of
-    an ion during an atom probe microscopy experiment.
+  **FABRICATION**: (optional) :ref:`NXfabrication` 
 
-    .. _/NXpulser_apm/laser_gun/name-field:
+
+  .. _/NXpulser_apm/SOURCE-group:
+
+  **SOURCE**: (optional) :ref:`NXsource` 
+
+    .. collapse:: Atom probe microscopes use controlled laser, voltage, ...
+
+        Atom probe microscopes use controlled laser, voltage,
+        or a combination of pulsing strategies to trigger the
+        excitation and eventual field evaporation/emission of
+        an ion during an experiment.
+
+    .. _/NXpulser_apm/SOURCE/name-field:
 
     .. index:: name (field)
 
-    **name**: (optional) :ref:`NX_CHAR <NX_CHAR>`
+    **name**: (optional) :ref:`NX_CHAR <NX_CHAR>` :ref:`⤆ </NXsource/name-field>`
 
       Given name/alias.
 
-    .. _/NXpulser_apm/laser_gun/wavelength-field:
+    .. _/NXpulser_apm/SOURCE/wavelength-field:
 
     .. index:: wavelength (field)
 
-    **wavelength**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_WAVELENGTH <NX_WAVELENGTH>`}
+    **wavelength**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_WAVELENGTH <NX_WAVELENGTH>`} 
 
       Nominal wavelength of the laser radiation.
 
-    .. _/NXpulser_apm/laser_gun/power-field:
+    .. _/NXpulser_apm/SOURCE/power-field:
 
     .. index:: power (field)
 
-    **power**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_POWER <NX_POWER>`}
+    **power**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_POWER <NX_POWER>`} :ref:`⤆ </NXsource/power-field>`
 
-      Average power of the laser source while illuminating the specimen.
+      Nominal power of the laser source while illuminating the specimen.
 
-    .. _/NXpulser_apm/laser_gun/pulse_energy-field:
+    .. _/NXpulser_apm/SOURCE/pulse_energy-field:
 
     .. index:: pulse_energy (field)
 
-    **pulse_energy**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_ENERGY <NX_ENERGY>`}
+    **pulse_energy**: (optional) :ref:`NX_FLOAT <NX_FLOAT>` {units=\ :ref:`NX_ENERGY <NX_ENERGY>`} 
 
       Average energy of the laser at peak of each pulse.
 
-    .. _/NXpulser_apm/laser_gun/MANUFACTURER-group:
+    .. _/NXpulser_apm/SOURCE/FABRICATION-group:
 
-    **MANUFACTURER**: (optional) :ref:`NXmanufacturer`
+    **FABRICATION**: (optional) :ref:`NXfabrication` 
 
 
-    .. _/NXpulser_apm/laser_gun/TRANSFORMATIONS-group:
+    .. _/NXpulser_apm/SOURCE/BEAM-group:
 
-    **TRANSFORMATIONS**: (optional) :ref:`NXtransformations`
+    **BEAM**: (optional) :ref:`NXbeam` 
 
-      Affine transformations which describe the geometry how the
-      laser focusing optics/pinhole-attached coordinate system is
-      defined, how it has to be transformed so that it aligns with
-      the specimen coordinate system.
-      A right-handed Cartesian coordinate system, the so-called laser space,
-      should be assumed, whose positive z-axis points
-      into the direction of the propagating laser beam.
+      .. collapse:: Details about specific positions along the focused laser beam ...
 
-  .. _/NXpulser_apm/laser_beam-group:
+          Details about specific positions along the focused laser beam
+          which illuminates the (atom probe) specimen.
 
-  **laser_beam**: (optional) :ref:`NXbeam`
+      .. _/NXpulser_apm/SOURCE/BEAM/incidence_vector-group:
 
-    Details about specific positions along the focused laser beam
-    which illuminates the (atom probe) specimen.
+      **incidence_vector**: (optional) :ref:`NXcollection` 
 
-    .. _/NXpulser_apm/laser_beam/pinhole_position-group:
+        .. collapse:: Track time-dependent settings over the course of the ...
 
-    **pinhole_position**: (optional) :ref:`NXcollection`
+            Track time-dependent settings over the course of the
+            measurement how the laser beam in tip space/reconstruction space
+            laser impinges on the sample, i.e. the mean vector is parallel to
+            the laser propagation direction.
 
-      Track time-dependent settings over the course of the
-      measurement where the laser beam exits the 
-      focusing optics.
+      .. _/NXpulser_apm/SOURCE/BEAM/pinhole_position-group:
 
-    .. _/NXpulser_apm/laser_beam/spot_position-group:
+      **pinhole_position**: (optional) :ref:`NXcollection` 
 
-    **spot_position**: (optional) :ref:`NXcollection`
+        .. collapse:: Track time-dependent settings over the course of the ...
 
-      Track time-dependent settings over the course of the
-      measurement where the laser hits the specimen.
+            Track time-dependent settings over the course of the
+            measurement where the laser beam exits the 
+            focusing optics.
+
+      .. _/NXpulser_apm/SOURCE/BEAM/spot_position-group:
+
+      **spot_position**: (optional) :ref:`NXcollection` 
+
+        .. collapse:: Track time-dependent settings over the course of the ...
+
+            Track time-dependent settings over the course of the
+            measurement where the laser hits the specimen.
+
+    .. _/NXpulser_apm/SOURCE/TRANSFORMATIONS-group:
+
+    **TRANSFORMATIONS**: (optional) :ref:`NXtransformations` :ref:`⤆ </NXsource/TRANSFORMATIONS-group>`
+
+      .. collapse:: Affine transformations which describe the geometry how the ...
+
+          Affine transformations which describe the geometry how the
+          laser focusing optics/pinhole-attached coordinate system is
+          defined, how it has to be transformed so that it aligns with
+          the specimen coordinate system.
+          A right-handed Cartesian coordinate system, the so-called laser space,
+          should be assumed, whose positive z-axis points
+          into the direction of the propagating laser beam.
 
 
 Hypertext Anchors
@@ -171,20 +219,23 @@ List of hypertext anchors for all groups, fields,
 attributes, and links defined in this class.
 
 
-* :ref:`/NXpulser_apm/laser_beam-group </NXpulser_apm/laser_beam-group>`
-* :ref:`/NXpulser_apm/laser_beam/pinhole_position-group </NXpulser_apm/laser_beam/pinhole_position-group>`
-* :ref:`/NXpulser_apm/laser_beam/spot_position-group </NXpulser_apm/laser_beam/spot_position-group>`
-* :ref:`/NXpulser_apm/laser_gun-group </NXpulser_apm/laser_gun-group>`
-* :ref:`/NXpulser_apm/laser_gun/MANUFACTURER-group </NXpulser_apm/laser_gun/MANUFACTURER-group>`
-* :ref:`/NXpulser_apm/laser_gun/name-field </NXpulser_apm/laser_gun/name-field>`
-* :ref:`/NXpulser_apm/laser_gun/power-field </NXpulser_apm/laser_gun/power-field>`
-* :ref:`/NXpulser_apm/laser_gun/pulse_energy-field </NXpulser_apm/laser_gun/pulse_energy-field>`
-* :ref:`/NXpulser_apm/laser_gun/TRANSFORMATIONS-group </NXpulser_apm/laser_gun/TRANSFORMATIONS-group>`
-* :ref:`/NXpulser_apm/laser_gun/wavelength-field </NXpulser_apm/laser_gun/wavelength-field>`
+* :ref:`/NXpulser_apm/FABRICATION-group </NXpulser_apm/FABRICATION-group>`
 * :ref:`/NXpulser_apm/pulse_fraction-field </NXpulser_apm/pulse_fraction-field>`
 * :ref:`/NXpulser_apm/pulse_frequency-field </NXpulser_apm/pulse_frequency-field>`
 * :ref:`/NXpulser_apm/pulse_mode-field </NXpulser_apm/pulse_mode-field>`
+* :ref:`/NXpulser_apm/pulse_number-field </NXpulser_apm/pulse_number-field>`
 * :ref:`/NXpulser_apm/pulsed_voltage-field </NXpulser_apm/pulsed_voltage-field>`
+* :ref:`/NXpulser_apm/SOURCE-group </NXpulser_apm/SOURCE-group>`
+* :ref:`/NXpulser_apm/SOURCE/BEAM-group </NXpulser_apm/SOURCE/BEAM-group>`
+* :ref:`/NXpulser_apm/SOURCE/BEAM/incidence_vector-group </NXpulser_apm/SOURCE/BEAM/incidence_vector-group>`
+* :ref:`/NXpulser_apm/SOURCE/BEAM/pinhole_position-group </NXpulser_apm/SOURCE/BEAM/pinhole_position-group>`
+* :ref:`/NXpulser_apm/SOURCE/BEAM/spot_position-group </NXpulser_apm/SOURCE/BEAM/spot_position-group>`
+* :ref:`/NXpulser_apm/SOURCE/FABRICATION-group </NXpulser_apm/SOURCE/FABRICATION-group>`
+* :ref:`/NXpulser_apm/SOURCE/name-field </NXpulser_apm/SOURCE/name-field>`
+* :ref:`/NXpulser_apm/SOURCE/power-field </NXpulser_apm/SOURCE/power-field>`
+* :ref:`/NXpulser_apm/SOURCE/pulse_energy-field </NXpulser_apm/SOURCE/pulse_energy-field>`
+* :ref:`/NXpulser_apm/SOURCE/TRANSFORMATIONS-group </NXpulser_apm/SOURCE/TRANSFORMATIONS-group>`
+* :ref:`/NXpulser_apm/SOURCE/wavelength-field </NXpulser_apm/SOURCE/wavelength-field>`
 * :ref:`/NXpulser_apm/standing_voltage-field </NXpulser_apm/standing_voltage-field>`
 
 **NXDL Source**:
