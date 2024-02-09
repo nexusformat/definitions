@@ -95,19 +95,23 @@ def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
     logger.debug(f"repo: {repo}")
 
     # fmt: off
-    milestones = [
+    all_milestones = tuple(repo.get_milestones(state="all"))
+    matching_milestones = tuple(
         m
-        for m in repo.get_milestones(state="all")
+        for m in all_milestones
         if m.title == milestone_name
-    ]
+    )
     # fmt: on
-    if len(milestones) == 0:
-        msg = f"Could not find milestone: {milestone_name}"
+    if len(matching_milestones) == 0:
+        msg = f"Could not find milestone to match '{milestone_name}':"
+        for m in all_milestones:
+            msg += f"\n\t{m.title}"
         logger.error(msg)
         raise ValueError(msg)
-    milestone = milestones[0]
+    milestone = matching_milestones[0]
     logger.debug(f"milestone: {milestone}")
 
+    logger.debug(f"compare: {base_tag_name} -> {head_branch_name}")
     compare = repo.compare(base_tag_name, head_branch_name)
     logger.debug(f"compare: {compare}")
 
@@ -126,7 +130,9 @@ def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
             commit = repo.get_commit(t.commit.sha)
             dt = str2time(commit.last_modified)
             earliest = min(dt, earliest or dt)
-    logger.debug(f"# tags: {len(tags)}")
+
+    earliest = earliest.astimezone(datetime.timezone.utc)
+    logger.debug(f"# tags: {len(tags)} {earliest}")
 
     # fmt: off
     pulls = {
