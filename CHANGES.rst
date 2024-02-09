@@ -22,10 +22,28 @@ Highlights of each release are described below.  For more details, see our wiki
 which provides links to the Release Notes (itemized list of changes) for any release.
 
 
-v2023.06
+v2024.02
 ++++++++
 
-expected *2023-06*
+released *2024-02-09*
+
+This release is the result of a NIAC meeting in 2022-09,
+NeXus Code Camps in 2022-06 and 2023-06,
+and substantial work by the NeXus Community, the FAIRmat consortium and NIAC members.
+
+Summary statistics from the GitHub definitions repository show
+this activity since the (previous) v2022.07 release:
+
+=============   ========
+activity        quantity
+=============   ========
+Pull Requests   67
+Issues          34
+Commits         413
+=============   ========
+
+See the wiki for more details:
+https://github.com/nexusformat/definitions/wiki/releasenotes__v2024.02
 
 New Features
 ------------
@@ -37,31 +55,68 @@ recommendation that this attribute be specified.
 
 NXxas: Added `NXdata/mode` to report detection method.
 
+Add various flux fields to NXbeam.
+
+Add virtual pixel handling to NXdetector.
+
+Add h5py example scripts.
+
+Add equipment_component attribute to NXtransformations.
+
+Add countrate_correction_lookup_table to NXdetector for NXmx.
+
+Allow axis fields to be numbers or strings and add a default_slice attribute to NXdata.
+
+Add new NXdetector_channel base class.
+
+Add favicon to manual web pages.
+
+Add many new contributed definitions from FAIRmat.
+
+Allow NeXus definitions to be created with YAML.
+
+Add recent contributors links to NeXus classes html pages.
+
+Improve link navigation in application definition items and collapse doc strings.
+
+
 Fixes
 -----------
 
-Added missing close parenthesis in rendering of suggested target.
+Add missing close parenthesis in rendering of suggested target.
+
+Amend text that mistakenly deprecated NXaperture.
+
+Generalize NXsource type for electron sources.
 
 Maintenance
 -----------
 
-NXdata: clarify how errors are described in documentation.
+NXdata: clarify how errors are described in documentation; remove obsolete dimension
+index attribute; clarify that attributes that name other fields must be existing
+children of group; improve documentation on axes.
 
-NXmx: clarify pixel size.
+NXmx: clarify pixel size, update NXbeam documentation on incident_wavelength_spectrum,
+make countrate_correction_lookup_table optional
 
-NXsas: Various fields and groups changed to optional.  Only those deemed
+NXsas: Various fields and groups changed to optional. Only those deemed
 necessary for data reduction are required.
 
-NXtransformations: Add ``equipment_component`` attribute
+NXtransformations: Add ``equipment_component`` attribute.
 
 NXxas: `data` fields` changed from `NX_INT` to `NX_NUMBER`.
 
-NXxpcs: clarify use of ``entry_identifier``, ``entry_identifier_uuid``, and ``scan_number``.
+NXxpcs: clarify use of ``entry_identifier``, ``entry_identifier_uuid``, and ``scan_number``;
+fix some units.
+
+Clarify how NXbeam can be in NXinstrument groups or NXsample.
+
+
 
 Deprecations
 ------------
 
-NXdata: deprecate `errors` field in favor of `VARIABLE_errors` for the signal field.
+NXdata: deprecate `errors` field in favor of `FIELDNAME_errors` for the signal field.
 
 ..
   Contributors
