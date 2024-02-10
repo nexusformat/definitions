@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-# 
+#
 # Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
-# 
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -22,112 +22,207 @@
 # For further information, see http://www.nexusformat.org
 -->
 <definition name="NXxas" extends="NXobject" type="group"
-    category="application"
-    xmlns="http://definition.nexusformat.org/nxdl/3.1"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd "
-    >
-    <symbols>
-        <doc>
-		    The symbol(s) listed here will be used below to coordinate datasets with the same shape.
-        </doc>
-		<symbol name="nP">
-		    <doc>Number of points</doc>
-        </symbol>
-	</symbols>
+            category="application"
+            xmlns="http://definition.nexusformat.org/nxdl/3.1"
+            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+            xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd "
+            >
+  <symbols>
     <doc>
-      This is an application definition for raw data from an X-ray absorption spectroscopy experiment. 
-      
-      This is essentially a scan on energy versus incoming/ 
-      absorbed beam.
+      The symbol(s) listed here will be used below to coordinate datasets with the same shape.
     </doc>
-    <group type="NXentry">
-        <attribute name="entry">
-            <doc>
-               NeXus convention is to use "entry1", "entry2", ... 
-               for analysis software to locate each entry.
-            </doc>
-        </attribute>
-        <field name="title"/>
-        <field name="start_time" type="NX_DATE_TIME"/>
-        <field name="definition">
-            <doc> Official NeXus NXDL schema to which this file conforms </doc>
-            <enumeration>
-                <item value="NXxas"></item>
-            </enumeration>
+    <symbol name="nP">
+      <doc>Number of points</doc>
+    </symbol>
+  </symbols>
+  <doc>
+    This is an application definition for raw data from an X-ray absorption spectroscopy experiment.
+
+    This is essentially a scan on energy versus incoming/
+    absorbed beam.
+  </doc>
+  <group type="NXentry">
+    <attribute name="entry">
+      <doc>
+        NeXus convention is to use "entry1", "entry2", ...
+        for analysis software to locate each entry.
+      </doc>
+    </attribute>
+    <field name="title"/>
+    <field name="start_time" type="NX_DATE_TIME"/>
+    <field name="definition">
+      <doc> Official NeXus NXDL schema to which this file conforms </doc>
+      <enumeration>
+        <item value="NXxas"></item>
+      </enumeration>
+    </field>
+    <group type="NXinstrument">
+      <group type="NXsource">
+        <field name="type"/>
+        <field name="name"/>
+        <field name="probe">
+          <enumeration>
+            <item value="x-ray"/>
+          </enumeration>
         </field>
-        <group type="NXinstrument">
-            <group type="NXsource">
-                <field name="type"/>
-                <field name="name"/>
-                <field name="probe">
-                    <enumeration>
-                        <item value="x-ray"/>
-                    </enumeration>
-                </field>
-            </group>
-            <group type="NXmonochromator" name="monochromator">
-              <field name="energy" axis="1" type="NX_FLOAT">
-                <dimensions rank="1">
-                  <dim index="1" value="nP" />
-                </dimensions>
-              </field>
-            </group>
-            <group type="NXdetector" name="incoming_beam">
-              <field name="data" type="NX_NUMBER">
-                <dimensions rank="1">
-                  <dim index="1" value="nP" />
-                </dimensions>
-              </field>
-            </group>
-            <group type="NXdetector" name="absorbed_beam">
-              <field name="data" type="NX_NUMBER">
-                  <doc>This data corresponds to the sample signal.</doc>
-                <dimensions rank="1">
-                  <dim index="1" value="nP" />
-                </dimensions>
-              </field>
-            </group>
-        </group>
-        <group type="NXsample">
-            <field name="name">
-                <doc>Descriptive name of sample</doc>
-            </field>
-        </group>
-        <group type="NXmonitor">
-            <field name="mode">
-                <doc>
-                    Count to a preset value based on either clock time (timer)
-                    or received monitor counts (monitor).
-                </doc>
-                <enumeration>
-                    <item value="monitor"/>
-                    <item value="timer"/>
-                </enumeration>
-            </field>
-            <field name="preset" type="NX_FLOAT">
-                <doc>preset value for time or monitor</doc>
-            </field>
-            <field name="data" type="NX_NUMBER">
-		<doc>This field could be a link to ``/NXentry/NXinstrument/incoming_beam:NXdetector/data``</doc>
-              <dimensions rank="1">
-                <dim index="1" value="nP" />
-              </dimensions>
-            </field>
-        </group>
-        <group type="NXdata">
-          <link name="energy" target="/NXentry/NXinstrument/monochromator:NXmonochromator/energy"/>
-          <link name="absorbed_beam" target="/NXentry/NXinstrument/absorbed_beam:NXdetector/data"/>
-	  <field name="mode">
-	    <doc>Detection method used for observing the sample absorption (pick one from the enumerated list and spell exactly)</doc>
-              <enumeration>
-                <item value="Total Electron Yield" />
-                <item value="Partial Electron Yield" />
-                <item value="Auger Electron Yield" />
-                <item value="Fluorescence Yield" />
-                <item value="Transmission" />
-              </enumeration>
+      </group>
+      <group type="NXmonochromator" name="monochromator">
+        <doc>
+          A monochromator selects the X-ray beam energy.  An XAS
+          dataset will use an array of floats to represent the energy,
+          typically in units of eV, but occassionally and acceptably in
+          units of keV or degrees (angle of monochromator crystal).
+
+          The crystal should be specied, including chemical formula, miller
+          indices, and preferrably stating the d-spacing used to convert
+          between angle and energy.
+
+        </doc>
+        <field name="energy" axis="1" type="NX_FLOAT">
+          <dimensions rank="1">
+            <dim index="1" value="nP" />
+          </dimensions>
+        </field>
+        <field name="energy_units" type="NX_CHAR">
+          <doc>units used for monochromator energy.  Choices are in the list.</doc>
+          <enumeration>
+            <item value="eV"/>
+            <item value="keV"/>
+            <item value="degrees"/>
+            <item value="angstrom"/>
+          </enumeration>
+        </field>
+
+        <group type="NXcrystal">
+          <doc>
+            Crystal used for monochromator:
+            chemical_formula, d_spacing, and reflection should be specified
+          </doc>
+          <field name="chemical_formula"></field>
+          <field name="d_spacing" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>spacing between crystal planes of the reflection, in Angstroms</doc>
+          </field>
+          <field name="reflection" type="NX_INT" units="NX_UNITLESS">
+            <doc>Miller indices (hkl) values of nominal reflection</doc>
+            <dimensions><dim index="1" value="3"/></dimensions>
           </field>
         </group>
+      </group>
+      <group type="NXdetector" name="i0">
+        <doc>monitoring the intensity of the incident beam.</doc>
+        <field name="data" type="NX_NUMBER">
+          <dimensions rank="1">
+            <dim index="1" value="nP" />
+          </dimensions>
+        </field>
+      </group>
+
+      <group type="NXdetector" name="itrans">
+        <doc>monitoring the intensity of the transmitted beam.</doc>
+        <field name="data" type="NX_NUMBER">
+          <dimensions rank="1">
+            <dim index="1" value="nP" />
+          </dimensions>
+        </field>
+      </group>
+
+      <group type="NXdetector" name="ifluor">
+        <doc>monitoring the intensity of the fluorescence or emitted beam.</doc>
+        <field name="data" type="NX_NUMBER">
+          <dimensions rank="1">
+            <dim index="1" value="nP" />
+          </dimensions>
+        </field>
+        <field name="mode">
+          <doc>Type of fluorescence or emission signal detected (pick one from enumerated list)</doc>
+          <enumeration>
+            <item value="Total Fluorescence Yield" />
+            <item value="Partial Fluorescence Yield" />
+            <item value="Total Electron Yield" />
+            <item value="Partial Electron Yield" />
+            <item value="Other" />
+          </enumeration>
+        </field>
+      </group>
+
+      <group type="NXdetector" name="irefer">
+        <doc>monitoring the intensity of the reference channel beam</doc>
+        <field name="data" type="NX_NUMBER">
+          <dimensions rank="1">
+            <dim index="1" value="nP" />
+          </dimensions>
+        </field>
+        <field name="mode">
+          <doc>Type of reference channel used (pick one from enumerated list)</doc>
+          <enumeration>
+            <item value="Transmission, downstream of Itrans" />
+            <item value="Fluoresscence, upstream of sample" />
+          </enumeration>
+        </field>
+
+      </group>
     </group>
+
+    <group type="NXsample">
+      <field name="name">
+        <doc>Descriptive name of sample</doc>
+      </field>
+    </group>
+
+    <group type="NXscan">
+      <doc>
+        description of the energy scan and detectors used
+      </doc>
+      <field name="start_time" type="NX_DATE_TIME"/>
+      <field name="end_time" type="NX_DATE_TIME"/>
+      <field name="nP" type="NX_INT">
+        <doc> number of data points, or rows in the data table </doc>
+      </field>
+      <field name="nCol" type="NX_INT">
+        <doc>  number of  detector channnels or columns in the  data  table </doc>
+      </field>
+      <group type="NXxrayedge" name="xrayedge">
+        <field name="element" type="NX_CHAR" minOccurs="1"/>
+        <field name="edge" type="NX_CHAR" minOccurs="1"/>
+      </group>
+      <field name="scan_mode">
+        <doc>Whether scan of energy was continuous or step scan</doc>
+        <enumeration>
+          <item value="Continuous" />
+          <item value="Step" />
+        </enumeration>
+      </field>
+      <field name="data" type="NX_NUMBER">
+        <doc> raw data table </doc>
+        <dimensions rank="2">
+          <dim index="1" value="nP" />
+          <dim index="2" value="nCol" />
+        </dimensions>
+      </field>
+      <field name="column_labels" type="NX_CHAR">
+        <doc> labels for columns in the raw data table </doc>
+        <dimensions rank="1">
+          <dim index="1" value="nCol" />
+        </dimensions>
+      </field>
+    </group>
+
+
+    <group type="NXdata">
+      <link name="energy" target="/NXentry/NXinstrument/monochromator:NXmonochromator/energy"/>
+      <link name="i0" target="/NXentry/NXinstrument/i0:NXdetector/data"/>
+      <link name="itrans" target="/NXentry/NXinstrument/itrans:NXdetector/data"/>
+      <link name="ifluor" target="/NXentry/NXinstrument/ifluor:NXdetector/data"/>
+      <link name="irefer" target="/NXentry/NXinstrument/irefer:NXdetector/data"/>
+      <link name="column_names" target="/NXentry/NXscan/column_names:/data"/>
+      <link name="rawdata" target="/NXentry/NXscan/data:NXdata/data"/>
+      <field name="mode">
+        <doc>Detection method used for measuring absorption (pick one from the enumerated list)</doc>
+        <enumeration>
+          <item value="Transmission" />
+          <item value="Fluorescence" />
+        </enumeration>
+      </field>
+    </group>
+  </group>
 </definition>
