@@ -73,7 +73,7 @@ NXphotoemission(NXobject):
     (NXinstrument):
       doc:
       - |
-        Description of the MPES spectrometer and its individual parts.
+        Description of the photoemission spectrometer and its individual parts.
       - |
         xref:
           spec: ISO 18115-1:2023
@@ -87,6 +87,27 @@ NXphotoemission(NXobject):
           exists: recommended
         identifier:
           exists: recommended
+      energy_resolution(NXresolution):
+        exists: optional
+        doc:
+        - |
+          Overall energy resolution of the photoemission instrument
+        - |
+          xref:
+            spec: ISO 18115-1:2023
+            term: 10.7 ff.
+            url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.7
+        - |
+          xref:
+            spec: ISO 18115-1:2023
+            term: 10.24
+            url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24
+        physical_quantity:
+          enumeration: [energy]
+        type:
+          exists: recommended
+        resolution(NX_FLOAT):
+          unit: NX_ENERGY
       source_TYPE(NXsource):
         exists: recommended
         doc: |
@@ -165,6 +186,13 @@ NXphotoemission(NXobject):
           identifier:
             exists: recommended
         description:
+        energy_resolution(NXresolution):
+          exists: recommended
+          type:
+            exists: recommended
+          physical_quantity:
+            enumeration: [energy]
+          resolution(NX_FLOAT):
         work_function(NX_FLOAT):
           unit: NX_ENERGY
           exists: recommended
@@ -565,7 +593,7 @@ NXphotoemission(NXobject):
         sample_preparation(NXphysical_process):
           exists: recommended
           doc: |
-            Details about the sample preparation for the MPES experiment (e.g. UHV cleaving,
+            Details about the sample preparation for the photoemission experiment (e.g. UHV cleaving,
             in-situ growth, sputtering/annealing, etc.).
           start_time(NX_DATE_TIME):
           end_time(NX_DATE_TIME):
@@ -573,7 +601,8 @@ NXphotoemission(NXobject):
           method:
             exists: recommended
             doc: |
-              Details about the method of sample preparation before the MPES experiment.
+              Details about the method of sample preparation before the photoemission
+              experiment.
       temperature(NXenvironment):
         exists: recommended
         doc: |
@@ -644,10 +673,9 @@ NXphotoemission(NXobject):
       doc: |
         The default NXdata field containing a view on the measured data.
         This NXdata field contains a collection of the main relevant fields (axes).
-        In NXmpes, it is required to provide an energy axis.
         If you want to provide additional views on your data, you can additionally use
         the generic NXdata group of NXentry.
-        The other data fields inside this NXdata group should be named according to conventions
+        The data fields inside this NXdata group should be named according to conventions
         to ensure compatibility. We recommened the following field names
         for common data fields:
         
@@ -681,9 +709,56 @@ NXphotoemission(NXobject):
           varied axis may be for example energy, momentum, spatial coordinate, pump-probe
           delay, spin index, temperature, etc. The axes traces should be linked to the
           actual encoder position in NXinstrument or calibrated axes in NXprocess.
+      energy(NX_NUMBER):
+        exists: optional
+        unit: NX_ENERGY
+        doc: |
+          Calibrated energy axis.
+          
+          This could be a link to either
+          /entry/process/energy_calibration/calibrated_axis or
+          /entry/process/energy_correction/calibrated_axis.
+        \@type:
+          type: NX_CHAR
+          doc: |
+            The energy can be either stored as kinetic or as binding energy.
+          enumeration:
+            kinetic:
+              doc:
+              - |
+                Calibrated kinetic energy axis.
+              - |
+                In case the kinetic energy axis is referenced to the Fermi level :math:`E_F`
+                (e.g., in entry/process/energy_referencing), kinetic energies :math:`E` are
+                provided as :math:`E-E_F`.
+              - |
+                xref:
+                  spec: ISO 18115-1:2023
+                  term: 3.35
+                  url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.35
+            binding:
+              doc:
+              - |
+                Calibrated binding energy axis.
+              - |
+                xref:
+                  spec: ISO 18115-1:2023
+                  term: 12.16
+                  url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
+      \@energy_indices:
+        exists: optional
+      \@energy_depends:
+        type: NX_CHAR
+        exists: optional
+        doc: |
+          The energy can be dispersed according to different strategies. ``energy_depends`` points to
+          the path of a field defining the calibrated axis on which the energy axis depends.
+          
+          For example:
+            @energy_depends: 'entry/process/energy_calibration'
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 897441915df14276256f541060d56755365af4c1fe504ff559e4bd7d773c58ea
+# 2c9868e393a461b026ebbcc9edafd3697d2bb79345d85b310ab9e05533096919
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -799,15 +874,20 @@ NXphotoemission(NXobject):
 #         </group>
 #         <group type="NXinstrument">
 #             <doc>
-#                  Description of the MPES spectrometer and its individual parts.
+#                  Description of the photoemission spectrometer and its individual parts.
 #                  
 #                  This concept is related to term `12.58`_ of the ISO 18115-1:2023 standard.
 #                  
 #                  .. _12.58: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.58
 #             </doc>
+#             <group name="device_information" type="NXfabrication" recommended="true">
+#                 <field name="vendor" recommended="true"/>
+#                 <field name="model" recommended="true"/>
+#                 <field name="identifier" recommended="true"/>
+#             </group>
 #             <group name="energy_resolution" type="NXresolution" optional="true">
 #                 <doc>
-#                      Overall energy resolution of the MPES instrument
+#                      Overall energy resolution of the photoemission instrument
 #                      
 #                      This concept is related to term `10.7 ff.`_ of the ISO 18115-1:2023 standard.
 #                      
@@ -824,11 +904,6 @@ NXphotoemission(NXobject):
 #                 </field>
 #                 <field name="type" recommended="true"/>
 #                 <field name="resolution" type="NX_FLOAT" units="NX_ENERGY"/>
-#             </group>
-#             <group name="device_information" type="NXfabrication" recommended="true">
-#                 <field name="vendor" recommended="true"/>
-#                 <field name="model" recommended="true"/>
-#                 <field name="identifier" recommended="true"/>
 #             </group>
 #             <group name="source_TYPE" type="NXsource" recommended="true">
 #                 <doc>
@@ -915,8 +990,7 @@ NXphotoemission(NXobject):
 #                     <field name="identifier" recommended="true"/>
 #                 </group>
 #                 <field name="description"/>
-#                 <field name="work_function" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
-#                 <group name="energy_resolution" type="NXresolution" optional="true">
+#                 <group name="energy_resolution" type="NXresolution" recommended="true">
 #                     <field name="type" recommended="true"/>
 #                     <field name="physical_quantity">
 #                         <enumeration>
@@ -925,6 +999,7 @@ NXphotoemission(NXobject):
 #                     </field>
 #                     <field name="resolution" type="NX_FLOAT"/>
 #                 </group>
+#                 <field name="work_function" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
 #                 <field name="fast_axes" recommended="true"/>
 #                 <field name="slow_axes" recommended="true"/>
 #                 <group name="transmission_function" type="NXdata" optional="true"/>
@@ -1382,14 +1457,15 @@ NXphotoemission(NXobject):
 #                 </doc>
 #                 <group name="sample_preparation" type="NXphysical_process" recommended="true">
 #                     <doc>
-#                          Details about the sample preparation for the MPES experiment (e.g. UHV cleaving,
+#                          Details about the sample preparation for the photoemission experiment (e.g. UHV cleaving,
 #                          in-situ growth, sputtering/annealing, etc.).
 #                     </doc>
 #                     <field name="start_time" type="NX_DATE_TIME"/>
 #                     <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
 #                     <field name="method" recommended="true">
 #                         <doc>
-#                              Details about the method of sample preparation before the MPES experiment.
+#                              Details about the method of sample preparation before the photoemission
+#                              experiment.
 #                         </doc>
 #                     </field>
 #                 </group>
@@ -1481,10 +1557,9 @@ NXphotoemission(NXobject):
 #             <doc>
 #                  The default NXdata field containing a view on the measured data.
 #                  This NXdata field contains a collection of the main relevant fields (axes).
-#                  In NXmpes, it is required to provide an energy axis.
 #                  If you want to provide additional views on your data, you can additionally use
 #                  the generic NXdata group of NXentry.
-#                  The other data fields inside this NXdata group should be named according to conventions
+#                  The data fields inside this NXdata group should be named according to conventions
 #                  to ensure compatibility. We recommened the following field names
 #                  for common data fields:
 #                  
@@ -1523,7 +1598,7 @@ NXphotoemission(NXobject):
 #                      actual encoder position in NXinstrument or calibrated axes in NXprocess.
 #                 </doc>
 #             </field>
-#             <field name="energy" type="NX_NUMBER" units="NX_ENERGY" optional="true">
+#             <field name="energy" type="NX_NUMBER" optional="true" units="NX_ENERGY">
 #                 <doc>
 #                      Calibrated energy axis.
 #                      
