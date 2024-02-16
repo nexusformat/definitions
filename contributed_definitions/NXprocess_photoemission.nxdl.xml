@@ -21,14 +21,40 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXprocess_photoemission" extends="NXprocess" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXprocess_photoemission" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
          :ref:`NXprocess_photoemission` describes events of data processing, reconstruction,
          or analysis for photoemission-related data.
           
           It extends the NXprocess class and provides a glossary of explicitly named processes
           and their metadata which are typical for photoemission data.
+         
+          For now, the extension of NXprocess is performed by simply copying all existing groups, fields,
+          and attibute from NXprocess. In the future, it is envisioned that this extension can be solved by
+          base class inheritance.
     </doc>
+    <field name="program" type="NX_CHAR">
+        <doc>
+             Name of the program used
+        </doc>
+    </field>
+    <field name="sequence_index" type="NX_POSINT">
+        <doc>
+             Sequence index of processing,
+             for determining the order of multiple **NXprocess** steps.
+             Starts with 1.
+        </doc>
+    </field>
+    <field name="version" type="NX_CHAR">
+        <doc>
+             Version of the program used
+        </doc>
+    </field>
+    <field name="date" type="NX_DATE_TIME">
+        <doc>
+             Date and time of processing.
+        </doc>
+    </field>
     <group name="energy_calibration" type="NXcalibration">
         <doc>
              Calibration event on the energy axis.
@@ -38,30 +64,91 @@
              
              .. _ISO 15472:2010: https://www.iso.org/standard/74811.html
         </doc>
-        <field name="calibrated_axis" type="NX_FLOAT">
+        <field name="calibrated_axis" type="NX_FLOAT" units="NX_ENERGY">
             <doc>
                  This is the calibrated energy axis to be used for data plotting.
             </doc>
         </field>
     </group>
-    <group name="angular_calibration" type="NXcalibration">
+    <group name="momentum_calibration" type="NXcalibration">
+        <doc>
+             Calibration event of the momentum axis.
+        </doc>
         <field name="calibrated_axis" type="NX_FLOAT">
+            <doc>
+                 This is the momentum axis to be used for data plotting.
+            </doc>
+        </field>
+    </group>
+    <group name="kK_calibration" type="NXcalibration">
+        <doc>
+             Calibration event on a k-space axis.
+             
+             It is envisioned that the individual calibrations for each angle are
+             stored as kx_calibration, ky_calibration, kz_calibration, in accordance
+             with the axis name definitions in NXdata_photoemission.
+        </doc>
+        <field name="calibrated_axis" type="NX_FLOAT" units="NX_WAVENUMBER">
+            <doc>
+                 This is the calibrated k-space axis to be used for data plotting.
+            </doc>
+        </field>
+    </group>
+    <group name="angularANGLE_calibration" type="NXcalibration">
+        <doc>
+             Calibration event of an angular axis.
+             
+             It is envisioned that the individual calibrations for each angle are
+             stored as angular0_calibration, angular1_calibration, etc., in accordance
+             with the axis name definitions in NXdata_photoemission.
+        </doc>
+        <field name="calibrated_axis" type="NX_FLOAT" units="NX_ANGLE">
             <doc>
                  This is the calibrated angular axis to be used for data plotting.
             </doc>
         </field>
     </group>
-    <group name="spatial_calibration" type="NXcalibration">
-        <field name="calibrated_axis" type="NX_FLOAT">
+    <group name="spatialSPATIAL_calibration" type="NXcalibration">
+        <doc>
+             Calibration event of a spatial axis.
+             
+             It is envisioned that the individual calibrations for each angle are
+             stored as spatial0_calibration, spatial1_calibration, etc., in accordance
+             with the axis name definitions in NXdata_photoemission.
+        </doc>
+        <field name="calibrated_axis" type="NX_FLOAT" units="NX_LENGTH">
             <doc>
                  This is the calibrated spatial axis to be used for data plotting.
             </doc>
         </field>
     </group>
-    <group name="momentum_calibration" type="NXcalibration" optional="true">
-        <field name="calibrated_axis" type="NX_FLOAT">
+    <group name="delay_calibration" type="NXcalibration">
+        <doc>
+             Calibration event of the delay time.
+        </doc>
+        <field name="calibrated_axis" type="NX_FLOAT" units="NX_TIME">
             <doc>
-                 This is the momentum axis to be used for data plotting.
+                 This is the calibrated delay time axis to be used for data plotting.
+            </doc>
+        </field>
+    </group>
+    <group name="polarization_angle_calibration" type="NXcalibration">
+        <doc>
+             Calibration event of the beam polarization angle.
+        </doc>
+        <field name="calibrated_axis" type="NX_FLOAT" units="NX_ANGLE">
+            <doc>
+                 This is the calibrated polarization angle axis to be used for data plotting.
+            </doc>
+        </field>
+    </group>
+    <group name="ellipticity_calibration" type="NXcalibration">
+        <doc>
+             Calibration event of the ellipticity of the incoming or outgoing beam.
+        </doc>
+        <field name="calibrated_axis" type="NX_FLOAT" units="NX_ANGLE">
+            <doc>
+                 This is the calibrated ellipticity axis to be used for data plotting.
             </doc>
         </field>
     </group>
@@ -105,7 +192,7 @@
                  emission line.
             </doc>
         </field>
-        <field name="calibrated_axis" type="NX_FLOAT">
+        <field name="calibrated_axis" type="NX_FLOAT" units="NX_ENERGY">
             <doc>
                  This is the calibrated energy axis to be used for data plotting.
                  
@@ -156,4 +243,41 @@
             </field>
         </group>
     </group>
+    <group type="NXregistration">
+        <doc>
+             Describes the operations of image registration
+        </doc>
+    </group>
+    <group type="NXdistortion">
+        <doc>
+             Describes the operations of image distortion correction
+        </doc>
+    </group>
+    <group type="NXcalibration">
+        <doc>
+             Describes the operations of calibration procedures, e.g. axis calibrations.
+        </doc>
+    </group>
+    <group type="NXnote">
+        <doc>
+             The note will contain information about how the data was processed
+             or anything about the data provenance.
+             The contents of the note can be anything that the processing code
+             can understand, or simple text.
+             
+             The name will be numbered to allow for ordering of steps.
+        </doc>
+    </group>
+    <attribute name="default">
+        <doc>
+             .. index:: plotting
+             
+             Declares which child group contains a path leading
+             to a :ref:`NXdata` group.
+             
+             It is recommended (as of NIAC2014) to use this attribute
+             to help define the path to the default dataset to be plotted.
+             See https://www.nexusformat.org/2014_How_to_find_default_data.html
+        </doc>
+    </attribute>
 </definition>
