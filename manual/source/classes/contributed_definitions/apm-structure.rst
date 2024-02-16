@@ -205,14 +205,11 @@ is useful and future-proof strategy for software development and data analyses a
 automated provenance tracking which happens silently in the background.
 
 Base classes have been defined to group common pieces of information for each tool of the
-toolbox. These base classes are:
+toolbox. For each tool we define a pair of base classes. One for the configuration (input) side
+and one for the results (output) side:
 
-    :ref:`NXapm_paraprobe_tool_config`:
-        Common parts of configuration settings useful for several tools of the paraprobe-toolbox.
-
-    :ref:`NXapm_paraprobe_tool_results`:
-        Common parts of results useful for several tools of the paraprobe-toolbox.
-
+    :ref:`NXapm_paraprobe_tool_config`, :ref:`NXapm_paraprobe_tool_results`:
+     Common parts of configuration settings and results respectively useful for several tools of the paraprobe-toolbox.
 
 .. _ApmParaprobeAppDef:
 
