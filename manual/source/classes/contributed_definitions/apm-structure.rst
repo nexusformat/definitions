@@ -248,47 +248,23 @@ tool one such pair is proposed:
         Compute and store analytical distances between ions to a set of triangles.
 
     :ref:`NXapm_paraprobe_tessellator_config`, :ref:`NXapm_paraprobe_tessellator_results`:
-        Configuration and results respectively of the of paraprobe-tessellator tool.
+        Configuration and results respectively of the paraprobe-tessellator tool.
         Compute and store Voronoi cells and properties of these for all ions in a dataset.
 
-The definitions of the following tools remain to become refactored like those for the above-mentioned tools:
+    :ref:`NXapm_paraprobe_spatstat_config`, :ref:`NXapm_paraprobe_spatstat_results`:
+        Configuration and results respectively of the paraprobe-spatstat tool.
+        Compute spatial statistics on the entire or selected regions of the reconstructed dataset.
 
-    :ref:`NXapm_paraprobe_config_nanochem`:
-        Configuration of paraprobe-nanochem
-        Compute delocalization, iso-surfaces, analyze 3D objects, and composition profiles.
+    :ref:`NXapm_paraprobe_clusterer_config`, :ref:`NXapm_paraprobe_clusterer_results`:
+        Configuration and results resepctively of the paraprobe-clusterer tool.
+        Compute cluster analyses with established machine learning algorithms using CPU or GPUs.
 
-    :ref:`NXapm_paraprobe_results_nanochem`:
-        Results of paraprobe-nanochem
-        Store all results of delocalization, isosurface, and interface detection algorithms,
-        store all extracted triangulated surface meshes of found microstructural features,
-        store composition profiles and corresponding geometric primitives (ROIs).
+    :ref:`NXapm_paraprobe_nanochem_config`, :ref:`NXapm_paraprobe_nanochem_results`:
+        Configuration and results resepctively of the paraprobe-nanochem tool.
+        Compute delocalization, iso-surfaces, analyze 3D objects, composition profiles, and mesh interfaces.
 
-    :ref:`NXapm_paraprobe_config_intersector`:
-        Configuration of paraprobe-intersector
-        Assess intersections and proximity of 3D triangulated surface meshes in
-        continuum space to study the effect the parameterization of surface
-        extraction algorithms on the resulting shape, spatial arrangement,
-        and colocation of 3D objects via graph-based techniques.
-
-    :ref:`NXapm_paraprobe_results_intersector`:
-        Results of paraprobe-intersector
-        Store graph of microstructural features and relations/link identified between them.
-
-
-    :ref:`NXapm_paraprobe_config_spatstat`:
-        Configuration of paraprobe-spatstat
-        Spatial statistics on the entire or selected regions of the reconstructed dataset.
-
-    :ref:`NXapm_paraprobe_results_spatstat`:
-        Results of paraprobe-spatstat
-        Store spatial correlation functions.
-
-
-    :ref:`NXapm_paraprobe_config_clusterer`:
-        Configuration of paraprobe-clusterer
-        Import cluster analysis results of IVAS/APSuite and perform clustering
-        analyses in a Python ecosystem.
-
-    :ref:`NXapm_paraprobe_results_clusterer`:
-        Results of paraprobe-clusterer
-        Store results of cluster analyses.
+    :ref:`NXapm_paraprobe_intersector_config`, :ref:`NXapm_paraprobe_intersector_results`:
+        Configuration and results resepctively of the paraprobe-intersector tool.
+        Analyze volumetric intersections and proximity of 3D objects discretized as triangulated surface meshes
+        in continuum space to study the effect the parameterization of surface extraction algorithms on the resulting shape,
+        spatial arrangement, and colocation of 3D objects via graph-based techniques.
