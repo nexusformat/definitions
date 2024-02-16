@@ -1,8 +1,8 @@
 .. _Mpes-Structure-Fairmat:
 
-==============================================
-B2/B3: Photoemission & core-level spectroscopy
-==============================================
+==========================
+Photoemission spectroscopy
+==========================
 
 .. index::
    IntroductionMpes1
