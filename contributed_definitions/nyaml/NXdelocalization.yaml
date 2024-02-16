@@ -14,7 +14,7 @@ symbols:
     Number of mark data per point/object.
   n_atoms: |
     Number of atoms in the whitelist.
-  n_isotopes: |
+  n_nuclides: |
     Number of isotopes in the whitelist.
 type: group
 NXdelocalization(NXobject):
@@ -39,52 +39,46 @@ NXdelocalization(NXobject):
   # this weight is the multiplicity with respect to the interpretation model
   # i.e. a C:2 molecular ion has a multiplicity of 2 if the ion is considered
   # and the interpretation model that to consider carbon atoms or carbon ions
-  weighting_model(NX_CHAR):
+  weighting_model(NXmatch_filter):
     doc: |
       The weighting model specifies how mark data are mapped to a weight per point/object.
-      For atom probe microscopy (APM) as an example, different models are used which
-      account differently for the multiplicity of an ion/atom:
-      
-      * default, points all get the same weight 1.;
-        for APM this is equivalent to (molecular) iontype-based delocalization
-      * atomic_decomposition, points get as much weight as they have atoms
-        of a type in element_whitelist,
-      * isotope_decomposition, points get as much weight as they have
-        nuclids of a type in isotope_whitelist.
-      
-      This description shows an example that could be reinterpreted for
-      similar such data processing steps in other fields of science.
-    enumeration: [default, atomic_decomposition, isotope_decomposition]
-  # other
-  # can one conditionally set a field required if a weighting_model has a
-  # specific value,
-  # i.e. if atomic_decomposition is set element_whitelist t is required
-  # i.e. if isotope_decomposition is set isotope_whitelist is required?
-  element_whitelist(NX_UINT):
-    doc: |
-      A list of elements (via proton number) to consider for the atomic_decomposition
-      weighting model. Elements must exist in the periodic table of elements.
-    unit: NX_UNITLESS
-    dim: (n_atoms,)
-  isotope_whitelist(NX_UINT):
-    doc: |
-      A list of isotopes to consider for the isotope_decomposition weighting model.
-      Isotopes must exist in the nuclid table. Entries in the fastest changing
-      dimension should be the pair of proton (first entry) and neutron number
-      (second entry).
-    unit: NX_UNITLESS
-    dim: (n_isotopes, 2)
-  mark(NX_NUMBER):
-    doc: |
-      Attribute data for each member of the point cloud. For APM these are the
-      iontypes generated via ranging. The number of mark data per point is 1
-      in the case for atom probe.
-    unit: NX_UNITLESS
-    dim: (n_p, n_m)
-  weight(NX_NUMBER):
-    doc: |
-      Weighting factor with which the integrated intensity per grid cell is
-      multiplied specifically for each point/object. For APM the weight are
-      positive integer values, specifically the multiplicity of the ion,
-      according to the details of the weighting_model.
-    unit: NX_UNITLESS
+    weighting_method(NX_CHAR):
+      doc: |
+        As an example from the research field of atom probe points/objects are (molecular) ions.
+        Different methods are used for weighting ions:
+        
+        * default, points get all the same weight 1., which for atom probe is equivalent
+           to (molecular) iontype-based delocalization.
+        * element, points get as much weight as they have atoms representing a nuclide
+          with a proton number that is matching to a respective entry in whitelist.
+          In atom probe jargon, this means atomic_decomposition.
+        * isotope, points get as much weight as they have atoms representing a nuclides
+          from a respective entry in whitelist.
+          In atom probe jargon, this means isotope_decomposition.
+      enumeration: [default, element, isotope]
+    # method is specialized from NXmatch_filter
+    method(NX_CHAR):
+      enumeration: [whitelist]
+    match(NX_UINT):
+      doc: |
+        A list of nuclides based on which to evaluate the weight. Nuclides need to exist in the nuclide table.
+        Values are nuclide (isotope) hash values using the following hashing rule :math:`$H = Z + 256 * N$`
+        with :math:`$Z$` the number of protons and :math:`$N$` the number of neutrons of the nuclide.
+        For elements set :math:`$N$` to zero.
+      unit: NX_UNITLESS
+      dim: (n_nuclides,)
+    mark(NX_NUMBER):
+      doc: |
+        Attribute data for each member of the point cloud. For APM these are the
+        iontypes generated via ranging. The number of mark data per point is 1
+        in the case for atom probe.
+      unit: NX_UNITLESS
+      dim: (n_p, n_m)
+    weight(NX_NUMBER):
+      doc: |
+        Weighting factor with which the integrated intensity per grid cell is
+        multiplied specifically for each point/object. For APM the weight are
+        positive integer values, specifically the multiplicity of the ion,
+        according to the details of the weighting_method.
+      unit: NX_UNITLESS
+      dim: (n_p,)
