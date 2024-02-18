@@ -31,6 +31,16 @@
                  How many iontypes does the delocalization filter specify.
             </doc>
         </symbol>
+        <symbol name="n_grid">
+            <doc>
+                 How many grid_resolutions values.
+            </doc>
+        </symbol>
+        <symbol name="n_var">
+            <doc>
+                 How many kernel_variance values.
+            </doc>
+        </symbol>
         <symbol name="n_control_pts">
             <doc>
                  How many disjoint control points are defined.
@@ -64,16 +74,19 @@
                 <item value="NXapm_paraprobe_nanochem_config"/>
             </enumeration>
         </field>
-        <!--number_of_tasks(NX_UINT):
-  doc: |
-    How many tasks should the tool execute.
-  unit: NX_UNITLESS-->
-        <group name="delocalizationID" type="NXapm_paraprobe_tool_config" minOccurs="1" maxOccurs="unbounded">
+        <group name="delocalization" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="1">
             <doc>
                  Discretization and distributing of the ion point cloud on a 3D grid
-                 to enable continuum-scale analyses. By default the tool computes a full
-                 kernel density estimation of decomposed ions to create one discretized
-                 field for each element.
+                 to enable continuum-scale analyses.
+                 
+                 By default, the tool computes a full kernel density estimation of decomposed
+                 ions to create one discretized field for each element.
+                 
+                 One delocalization task configures a parameter sweep with at least one
+                 delocalization. The total number of runs depends on the number of
+                 grid_resolution and kernel_variance values. For example, setting two grid_resolutions
+                 and three kernel_variance will compute six runs. Two sets of three with the first set using
+                 the first grid_resolutions and in sequence the kernel_variance respectively.
             </doc>
             <!-- Although, this uses an efficient multithreaded algorithm the computation is costly.
  Therefore, it can be advantageous for users to load an already computed delocalization.
@@ -236,11 +249,15 @@ identifier(NX_UINT):-->
                     <dim index="2" value="n_ivec_max"/>
                 </dimensions>
             </field>
-            <field name="grid_resolution" type="NX_FLOAT" units="NX_LENGTH">
+            <field name="grid_resolutions" type="NX_FLOAT" units="NX_LENGTH">
                 <doc>
-                     Edge length of the cubic cells used for discretizing the reconstructed dataset
-                     on a cuboidal 3D grid (:ref:`NXcg_grid`).
+                     Array of edge lengths of the cubic cells used for discretizing the reconstructed dataset
+                     on a cuboidal 3D grid (:ref:`NXcg_grid`). The tool performs as many delocalization
+                     computations as values in are specified in grid_resolutions.
                 </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_grid"/>
+                </dimensions>
             </field>
             <field name="kernel_size" type="NX_UINT" units="NX_UNITLESS">
                 <doc>
@@ -251,9 +268,14 @@ identifier(NX_UINT):-->
             </field>
             <field name="kernel_variance" type="NX_FLOAT" units="NX_LENGTH">
                 <doc>
-                     Variance of the Gaussian Ansatz kernel (:math:`\sigma_x = \sigma_y = 2 \cdot
-                     \sigma_z` holds).
+                     Array of variance values :math:`\sigma` of the Gaussian Ansatz kernel
+                     (:math:`\sigma_x := \sigma`, :math:`\sigma_x = \sigma_y = 2 \cdot \sigma_z`).
+                     The tool performs as many delocalization computations as values are specified
+                     in kernel_variance.
                 </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_var"/>
+                </dimensions>
             </field>
             <field name="normalization" type="NX_CHAR">
                 <doc>
@@ -511,22 +533,11 @@ identifier(NX_UINT):-->
                     </doc>
                 </field>
             </group>
-            <!--has_object_mesh_smoothing(NX_BOOLEAN):
+        </group>
+        <!--has_object_mesh_smoothing(NX_BOOLEAN):
   doc: Specifies if the tool should post-process each mesh to improve the mesh quality.
 mesh_smoothing(NXprocess):
-NEW ISSUE: here we need to specify how the meshes were smoothened
-profiling (only stored in the first instance of spatial_statistics)-->
-            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
-                <field name="program" type="NX_CHAR">
-                    <attribute name="version" type="NX_CHAR"/>
-                </field>
-            </group>
-            <group name="profiling" type="NXcs_profiling" recommended="true">
-                <field name="start_time" type="NX_DATE_TIME"/>
-                <field name="end_time" type="NX_DATE_TIME"/>
-                <field name="current_working_directory" type="NX_CHAR"/>
-            </group>
-        </group>
+NEW ISSUE: here we need to specify how the meshes were smoothened-->
         <group name="interface_meshing" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="1">
             <doc>
                  Use a principle component analysis (PCA) to mesh a single free-standing interface patch within
@@ -661,8 +672,7 @@ identifier(NX_UINT):-->
                 <field name="algorithm" type="NX_CHAR"/>
                 <field name="control_points" type="NX_CHAR">
                     <doc>
-                         Absolute path in the HDF5 control point file pointed to by path which contains
-                         the X, Y, Z position matrix of disjoint control points.
+                         X, Y, Z position matrix of disjoint control points.
                     </doc>
                 </field>
             </group>
@@ -676,10 +686,12 @@ identifier(NX_UINT):-->
                     <item value="pca_plus_dcom"/>
                 </enumeration>
             </field>
-            <group name="decorating_iontypes_filter" type="NXmatch_filter">
+            <group name="decoration_filter" type="NXmatch_filter">
                 <doc>
-                     Specify the types of those ions that decorate the interface and can thus be assumed
-                     to serve as useful markers for locating the interface and refining the interface mesh.
+                     Specify those nuclides which the tool should inspect iontypes for if they contain such nuclides.
+                     If this is the case ions of such type are taken with the number of nuclides of this multiplicity found.
+                     The atoms of these ions are assumed to serve as useful markers for locating the interface and
+                     refining the interface mesh.
                 </doc>
                 <field name="method" type="NX_CHAR">
                     <enumeration>
@@ -688,10 +700,11 @@ identifier(NX_UINT):-->
                 </field>
                 <field name="match" type="NX_UINT" units="NX_UNITLESS">
                     <doc>
-                         Array of iontypes to filter.
+                         Array of nuclide iontypes to filter.
                     </doc>
-                    <dimensions rank="1">
+                    <dimensions rank="2">
                         <dim index="1" value="n_fct_filter_cand"/>
+                        <dim index="2" value="n_ivec_max"/>
                     </dimensions>
                 </field>
             </group>
@@ -738,17 +751,6 @@ identifier(NX_UINT):-->
                     <dim index="1" value="n_fct_iterations"/>
                 </dimensions>
             </field>
-            <!--profiling (only stored in the first instance of spatial_statistics)-->
-            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
-                <field name="program" type="NX_CHAR">
-                    <attribute name="version" type="NX_CHAR"/>
-                </field>
-            </group>
-            <group name="profiling" type="NXcs_profiling" recommended="true">
-                <field name="start_time" type="NX_DATE_TIME"/>
-                <field name="end_time" type="NX_DATE_TIME"/>
-                <field name="current_working_directory" type="NX_CHAR"/>
-            </group>
         </group>
         <group name="oned_profile" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="1">
             <doc>
@@ -934,17 +936,17 @@ NEW ISSUE: child group is required only when a field has a certain value?-->
                          normals.
                     </doc>
                 </field>
-            </group>
-            <!--triangulated surface meshes are only approximations to eventually curved shape of objects
+                <!--triangulated surface meshes are only approximations to eventually curved shape of objects
 consequently, vertex and facet normals typically differ, the former are typically interpolated
 from normals of neighboring facets, type of weighting schemes can affect results quantitatively-->
-            <group name="patch_identifier_filter" type="NXmatch_filter" optional="true">
-                <doc>
-                     If interface_model is isosurface this filter can be used to restrict the analysis to specific
-                     patches of an iso-surface.
-                </doc>
-                <field name="method" type="NX_CHAR"/>
-                <field name="match" type="NX_NUMBER"/>
+                <group name="patch_filter" type="NXmatch_filter" optional="true">
+                    <doc>
+                         If interface_model is isosurface this filter can be used to restrict the analysis to specific
+                         patches of an iso-surface.
+                    </doc>
+                    <field name="method" type="NX_CHAR"/>
+                    <field name="match" type="NX_NUMBER"/>
+                </group>
             </group>
             <field name="distancing_model" type="NX_CHAR">
                 <doc>
@@ -973,7 +975,8 @@ from normals of neighboring facets, type of weighting schemes can affect results
                      For each ROI, how wide (radius) should the cylindrical ROI be.
                 </doc>
             </field>
-            <!--profiling (only stored in the first instance of spatial_statistics)-->
+        </group>
+        <group name="summary" type="NXapm_paraprobe_tool_common">
             <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
                 <field name="program" type="NX_CHAR">
                     <attribute name="version" type="NX_CHAR"/>
@@ -983,6 +986,7 @@ from normals of neighboring facets, type of weighting schemes can affect results
                 <field name="start_time" type="NX_DATE_TIME"/>
                 <field name="end_time" type="NX_DATE_TIME"/>
                 <field name="current_working_directory" type="NX_CHAR"/>
+                <field name="total_elapsed_time" type="NX_FLOAT"/>
             </group>
         </group>
     </group>

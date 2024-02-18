@@ -8,6 +8,10 @@ symbols:
     The symbols used in the schema to specify e.g. dimensions of arrays.
   n_ityp_deloc_cand: |
     How many iontypes does the delocalization filter specify.
+  n_grid: |
+    How many grid_resolutions values.
+  n_var: |
+    How many kernel_variance values.
   n_control_pts: |
     How many disjoint control points are defined.
   n_fct_filter_cand: |
@@ -23,17 +27,20 @@ NXapm_paraprobe_nanochem_config(NXobject):
     definition(NX_CHAR):
       \@version(NX_CHAR):
       enumeration: [NXapm_paraprobe_nanochem_config]
-    # number_of_tasks(NX_UINT):
-    #   doc: |
-    #     How many tasks should the tool execute.
-    #   unit: NX_UNITLESS
-    delocalizationID(NXapm_paraprobe_tool_config):
-      exists: [min, 1, max, infty]
+    delocalization(NXapm_paraprobe_tool_config):
+      exists: [min, 0, max, 1]
       doc: |
         Discretization and distributing of the ion point cloud on a 3D grid
-        to enable continuum-scale analyses. By default the tool computes a full
-        kernel density estimation of decomposed ions to create one discretized
-        field for each element.
+        to enable continuum-scale analyses.
+        
+        By default, the tool computes a full kernel density estimation of decomposed
+        ions to create one discretized field for each element.
+        
+        One delocalization task configures a parameter sweep with at least one
+        delocalization. The total number of runs depends on the number of
+        grid_resolution and kernel_variance values. For example, setting two grid_resolutions
+        and three kernel_variance will compute six runs. Two sets of three with the first set using
+        the first grid_resolutions and in sequence the kernel_variance respectively.
       #  Although, this uses an efficient multithreaded algorithm the computation is costly.
       #  Therefore, it can be advantageous for users to load an already computed delocalization.
       #  This can be achieved with the load_existent option.
@@ -175,11 +182,13 @@ NXapm_paraprobe_nanochem_config(NXobject):
           Nuclides are identified as hashed nuclide (see :ref:`NXion`) for further details.
         unit: NX_UNITLESS
         dim: (n_ityp_deloc_cand, n_ivec_max)
-      grid_resolution(NX_FLOAT):
+      grid_resolutions(NX_FLOAT):
         doc: |
-          Edge length of the cubic cells used for discretizing the reconstructed dataset
-          on a cuboidal 3D grid (:ref:`NXcg_grid`).
+          Array of edge lengths of the cubic cells used for discretizing the reconstructed dataset
+          on a cuboidal 3D grid (:ref:`NXcg_grid`). The tool performs as many delocalization
+          computations as values in are specified in grid_resolutions.
         unit: NX_LENGTH
+        dim: (n_grid,)
       kernel_size(NX_UINT):
         doc: |
           Half the width of a :math:`{(2 \cdot n + 1)}^3` cubic kernel of cubic voxel
@@ -188,9 +197,12 @@ NXapm_paraprobe_nanochem_config(NXobject):
         unit: NX_UNITLESS
       kernel_variance(NX_FLOAT):
         doc: |
-            Variance of the Gaussian Ansatz kernel (:math:`\sigma_x = \sigma_y = 2 \cdot
-            \sigma_z` holds).
+            Array of variance values :math:`\sigma` of the Gaussian Ansatz kernel
+            (:math:`\sigma_x := \sigma`, :math:`\sigma_x = \sigma_y = 2 \cdot \sigma_z`).
+            The tool performs as many delocalization computations as values are specified
+            in kernel_variance.
         unit: NX_LENGTH
+        dim: (n_var,)
       normalization(NX_CHAR):
         doc: |
           How should the results of the kernel-density estimation be normalized into quantities.
@@ -404,17 +416,6 @@ NXapm_paraprobe_nanochem_config(NXobject):
         #   doc: Specifies if the tool should post-process each mesh to improve the mesh quality.
         # mesh_smoothing(NXprocess):
         # NEW ISSUE: here we need to specify how the meshes were smoothened
-      # profiling (only stored in the first instance of spatial_statistics)
-      programID(NXprogram):
-        exists: [min, 1, max, infty]
-        program(NX_CHAR):
-          \@version(NX_CHAR):
-      profiling(NXcs_profiling):
-        exists: recommended
-        start_time(NX_DATE_TIME):
-        end_time(NX_DATE_TIME):
-        current_working_directory(NX_CHAR):
-
 
     interface_meshing(NXapm_paraprobe_tool_config):
       exists: [min, 0, max, 1]
@@ -538,25 +539,26 @@ NXapm_paraprobe_nanochem_config(NXobject):
         algorithm(NX_CHAR):
         control_points(NX_CHAR):
           doc: |
-            Absolute path in the HDF5 control point file pointed to by path which contains
-            the X, Y, Z position matrix of disjoint control points.
+            X, Y, Z position matrix of disjoint control points.
       method(NX_CHAR):
         doc: |
           Method used for identifying and refining the location of the interface. Currently,
           paraprobe-nanochem implements a PCA followed by an iterative loop of isotropic
           mesh refinement and DCOM step(s), paired with self-intersection detection.
         enumeration: [pca_plus_dcom]
-      decorating_iontypes_filter(NXmatch_filter):
+      decoration_filter(NXmatch_filter):
         doc: |
-          Specify the types of those ions that decorate the interface and can thus be assumed
-          to serve as useful markers for locating the interface and refining the interface mesh.
+          Specify those nuclides which the tool should inspect iontypes for if they contain such nuclides.
+          If this is the case ions of such type are taken with the number of nuclides of this multiplicity found.
+          The atoms of these ions are assumed to serve as useful markers for locating the interface and
+          refining the interface mesh.
         method(NX_CHAR):
           enumeration: [whitelist]
         match(NX_UINT):
           doc: |
-            Array of iontypes to filter.
+            Array of nuclide iontypes to filter.
           unit: NX_UNITLESS
-          dim: (n_fct_filter_cand,)
+          dim: (n_fct_filter_cand, n_ivec_max)
       number_of_iterations(NX_UINT):
         doc: |
           How many times should the DCOM and mesh refinement be applied?
@@ -590,17 +592,6 @@ NXapm_paraprobe_nanochem_config(NXobject):
           those for the second DCOM iteration and so on and so forth.
         unit: NX_UNITLESS
         dim: (n_fct_iterations,)
-      # profiling (only stored in the first instance of spatial_statistics)
-      programID(NXprogram):
-        exists: [min, 1, max, infty]
-        program(NX_CHAR):
-          \@version(NX_CHAR):
-      profiling(NXcs_profiling):
-        exists: recommended
-        start_time(NX_DATE_TIME):
-        end_time(NX_DATE_TIME):
-        current_working_directory(NX_CHAR):
-
 
     oned_profile(NXapm_paraprobe_tool_config):
       exists: [min, 0, max, 1]
@@ -767,13 +758,13 @@ NXapm_paraprobe_nanochem_config(NXobject):
         # triangulated surface meshes are only approximations to eventually curved shape of objects
         # consequently, vertex and facet normals typically differ, the former are typically interpolated
         # from normals of neighboring facets, type of weighting schemes can affect results quantitatively
-      patch_identifier_filter(NXmatch_filter):
-        exists: optional
-        doc: |
-          If interface_model is isosurface this filter can be used to restrict the analysis to specific
-          patches of an iso-surface.
-        method(NX_CHAR):
-        match(NX_NUMBER):
+        patch_filter(NXmatch_filter):
+          exists: optional
+          doc: |
+            If interface_model is isosurface this filter can be used to restrict the analysis to specific
+            patches of an iso-surface.
+          method(NX_CHAR):
+          match(NX_NUMBER):
       distancing_model(NX_CHAR):
         doc: |
           Which type of distance should be reported for the profile.
@@ -790,7 +781,8 @@ NXapm_paraprobe_nanochem_config(NXobject):
         doc: |
           For each ROI, how wide (radius) should the cylindrical ROI be.
         unit: NX_LENGTH
-      # profiling (only stored in the first instance of spatial_statistics)
+
+    summary(NXapm_paraprobe_tool_common): 
       programID(NXprogram):
         exists: [min, 1, max, infty]
         program(NX_CHAR):
@@ -800,3 +792,4 @@ NXapm_paraprobe_nanochem_config(NXobject):
         start_time(NX_DATE_TIME):
         end_time(NX_DATE_TIME):
         current_working_directory(NX_CHAR):
+        total_elapsed_time(NX_FLOAT):
