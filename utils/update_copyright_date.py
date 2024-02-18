@@ -12,12 +12,19 @@ See copyright text at bottom of this file for example.
 
 import os, sys
 import mimetypes
-from build_preparation import ROOT_DIR_EXPECTED_RESOURCES
 import datetime
 
 YEAR = datetime.datetime.now().year
 LEFT_SIDE_TEXT_MATCH = "Copyright (C) "
 RIGHT_SIDE_TEXT_MATCH = " NeXus International Advisory Committee (NIAC)"
+ROOT_DIR_EXPECTED_RESOURCES = {
+    "files": """COPYING LGPL.txt Makefile NXDL_VERSION
+                nxdl.xsd nxdlTypes.xsd README.md
+             """.split(),
+    "subdirs": """applications base_classes contributed_definitions manual
+                 package utils www impatient-guide
+               """.split(),
+}
 
 
 def update(filename):
