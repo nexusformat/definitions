@@ -89,25 +89,36 @@ NXphotoemission(NXobject):
           exists: recommended
       energy_resolution(NXresolution):
         exists: optional
-        doc:
-        - |
+        doc: |
           Overall energy resolution of the photoemission instrument
-        - |
-          xref:
-            spec: ISO 18115-1:2023
-            term: 10.7 ff.
-            url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.7
-        - |
-          xref:
-            spec: ISO 18115-1:2023
-            term: 10.24
-            url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24
         physical_quantity:
           enumeration: [energy]
         type:
           exists: recommended
         resolution(NX_FLOAT):
           unit: NX_ENERGY
+          doc:
+          - |
+            Minimum distinguishable energy separation in the energy spectra.
+          - |
+            xref:
+              spec: ISO 18115-1:2023
+              term: 10.24
+              url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24
+        resolution_errors(NX_FLOAT):
+          exists: optional
+          unit: NX_ENERGY
+        relative_resolution(NX_FLOAT):
+          exists: optional
+          doc:
+          - |
+            Ratio of the energy resolution of the photoemission spectrometer at a specified energy
+            value to that energy value.
+          - |
+            xref:
+              spec: ISO 18115-1:2023
+              term: 10.7 ff.
+              url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.7
       sourceTYPE(NXsource):
         exists: recommended
         doc: |
@@ -246,7 +257,17 @@ NXphotoemission(NXobject):
           scheme:
             enumeration: [tof, hemispherical, double hemispherical, cylindrical mirror, display mirror, retarding grid]
           pass_energy(NX_FLOAT):
+            exists: recommended
             unit: NX_ENERGY
+            doc: |
+              Either `pass_energy` or `drift_energy` must be supplied. `pass_energy` should be used when working
+              with hemispherical analysers.
+          drift_energy(NX_FLOAT):
+            exists: recommended
+            unit: NX_ENERGY
+            doc: |
+              Either `pass_energy` or `drift_energy` must be supplied. `drift_energy` should be used if a TOF is used in the
+              energy dispersive part of the electron analyzer.
           energy_scan_mode:
             exists: recommended
           entrance_slit(NXaperture):
@@ -516,7 +537,7 @@ NXphotoemission(NXobject):
           - |
             xref:
               spec: ISO 18115-1:2023
-              term: 12.16_ ff.
+              term: 12.16 ff.
               url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
         offset(NX_FLOAT):
           exists: recommended
@@ -758,7 +779,7 @@ NXphotoemission(NXobject):
             @energy_depends: 'entry/process/energy_calibration'
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 4b58c4cdd9078dd140bd47103c4a509924a01b9bdc6234eea85de4b0ae1ff8ca
+# 0d8966b0c7a3202898862d4975fb97f57ba7aa8bdd2a05d0d4b2d766438e1121
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -888,14 +909,6 @@ NXphotoemission(NXobject):
 #             <group name="energy_resolution" type="NXresolution" optional="true">
 #                 <doc>
 #                      Overall energy resolution of the photoemission instrument
-#                      
-#                      This concept is related to term `10.7 ff.`_ of the ISO 18115-1:2023 standard.
-#                      
-#                      .. _10.7 ff.: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.7
-#                      
-#                      This concept is related to term `10.24`_ of the ISO 18115-1:2023 standard.
-#                      
-#                      .. _10.24: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24
 #                 </doc>
 #                 <field name="physical_quantity">
 #                     <enumeration>
@@ -903,7 +916,26 @@ NXphotoemission(NXobject):
 #                     </enumeration>
 #                 </field>
 #                 <field name="type" recommended="true"/>
-#                 <field name="resolution" type="NX_FLOAT" units="NX_ENERGY"/>
+#                 <field name="resolution" type="NX_FLOAT" units="NX_ENERGY">
+#                     <doc>
+#                          Minimum distinguishable energy separation in the energy spectra.
+#                          
+#                          This concept is related to term `10.24`_ of the ISO 18115-1:2023 standard.
+#                          
+#                          .. _10.24: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24
+#                     </doc>
+#                 </field>
+#                 <field name="resolution_errors" type="NX_FLOAT" optional="true" units="NX_ENERGY"/>
+#                 <field name="relative_resolution" type="NX_FLOAT" optional="true">
+#                     <doc>
+#                          Ratio of the energy resolution of the photoemission spectrometer at a specified energy
+#                          value to that energy value.
+#                          
+#                          This concept is related to term `10.7 ff.`_ of the ISO 18115-1:2023 standard.
+#                          
+#                          .. _10.7 ff.: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.7
+#                     </doc>
+#                 </field>
 #             </group>
 #             <group name="sourceTYPE" type="NXsource" recommended="true">
 #                 <doc>
@@ -1058,7 +1090,18 @@ NXphotoemission(NXobject):
 #                             <item value="retarding grid"/>
 #                         </enumeration>
 #                     </field>
-#                     <field name="pass_energy" type="NX_FLOAT" units="NX_ENERGY"/>
+#                     <field name="pass_energy" type="NX_FLOAT" recommended="true" units="NX_ENERGY">
+#                         <doc>
+#                              Either `pass_energy` or `drift_energy` must be supplied. `pass_energy` should be used when working
+#                              with hemispherical analysers.
+#                         </doc>
+#                     </field>
+#                     <field name="drift_energy" type="NX_FLOAT" recommended="true" units="NX_ENERGY">
+#                         <doc>
+#                              Either `pass_energy` or `drift_energy` must be supplied. `drift_energy` should be used if a TOF is used in the
+#                              energy dispersive part of the electron analyzer.
+#                         </doc>
+#                     </field>
 #                     <field name="energy_scan_mode" recommended="true"/>
 #                     <group name="entrance_slit" type="NXaperture" optional="true">
 #                         <doc>
@@ -1357,9 +1400,9 @@ NXphotoemission(NXobject):
 #                          The binding energy (in units of eV) that the specified emission line appeared at,
 #                          after adjusting the binding energy scale.
 #                          
-#                          This concept is related to term `12.16_ ff.`_ of the ISO 18115-1:2023 standard.
+#                          This concept is related to term `12.16 ff.`_ of the ISO 18115-1:2023 standard.
 #                          
-#                          .. _12.16_ ff.: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
+#                          .. _12.16 ff.: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
 #                     </doc>
 #                 </field>
 #                 <field name="offset" type="NX_FLOAT" recommended="true">
