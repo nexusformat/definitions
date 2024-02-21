@@ -53,27 +53,36 @@
         <field name="start_time" type="NX_DATE_TIME">
             <doc>
                  Datetime of the start of the measurement.
+                 Should be a ISO8601 date/time stamp. It is recommended to add an explicit time zone,
+                 otherwise the local time zone is assumed per ISO8601.
             </doc>
         </field>
         <field name="end_time" type="NX_DATE_TIME" recommended="true">
             <doc>
                  Datetime of the end of the measurement.
+                 Should be a ISO8601 date/time stamp. It is recommended to add an explicit time zone,
+                 otherwise the local time zone is assumed per ISO8601.
             </doc>
         </field>
         <field name="method" recommended="true">
             <doc>
-                 A name of the experimental method according to `Clause 11`_ of
+                 Name of the experimental method.
+                 
+                 If applicable, this name should match the terms given by `Clause 11`_ of
                  the `ISO 18115-1:2023`_ specification.
                  
                  Examples include:
-                 	* X-ray photoelectron spectroscopy (XPS)
-                 	* angle-resolved X-ray photoelectron spectroscopy (ARXPS)
-                 	* ultraviolet photoelectron spectroscopy (UPS)
-                 	* angle-resolved photoelectron spectroscopy (ARPES)
-                 	* hard X-ray photoemission spectroscopy (HAXPES)
-                 	* near ambient pressure X-ray photoelectron spectroscopy (NAPXPS)
-                 	* photoelectron emission microscopy (PEEM)
-                 	* electron spectroscopy for chemical analysis (ESCA)
+                     * X-ray photoelectron spectroscopy (XPS)
+                     * angle-resolved X-ray photoelectron spectroscopy (ARXPS)
+                     * ultraviolet photoelectron spectroscopy (UPS)
+                     * angle-resolved photoelectron spectroscopy (ARPES)
+                     * hard X-ray photoemission spectroscopy (HAXPES)
+                     * near ambient pressure X-ray photoelectron spectroscopy (NAPXPS)
+                     * photoelectron emission microscopy (PEEM)
+                     * electron spectroscopy for chemical analysis (ESCA)
+                     * time-resolved angle-resolved X-ray photoelectron spectroscopy (trARPES)
+                     * spin-resolved angle-resolved X-ray photoelectron spectroscopy (spin-ARPES)
+                     * momentum microscopy
                  
                  .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
                  .. _Clause 11: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:sec:11
@@ -91,16 +100,16 @@
             </field>
             <field name="affiliation">
                 <doc>
-                     Name of the affiliation of the user at the point in time when the experiment was
+                     Name of the affiliation of the user at the time when the experiment was
                      performed.
                 </doc>
             </field>
         </group>
         <group type="NXinstrument">
             <doc>
-                 MPES spectrometer
+                 Description of the MPES spectrometer and its individual parts.
                  
-                     This concept is related to term `12.58`_ of the ISO 18115-1:2023 standard.
+                 This concept is related to term `12.58`_ of the ISO 18115-1:2023 standard.
                  
                  .. _12.58: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.58
             </doc>
@@ -108,35 +117,37 @@
                 <doc>
                      Overall energy resolution of the MPES instrument
                      
-                         This concept is related to term `10.7 ff.`_ of the ISO 18115-1:2023 standard.
+                     This concept is related to term `10.7 ff.`_ of the ISO 18115-1:2023 standard.
                      
                      .. _10.7 ff.: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.7
                      
-                         This concept is related to term `10.24`_ of the ISO 18115-1:2023 standard.
+                     This concept is related to term `10.24`_ of the ISO 18115-1:2023 standard.
                      
                      .. _10.24: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24
                 </doc>
-                <field name="physical_quantity"/>
-                <field name="type"/>
-                <group name="resolution" type="NXdata">
-                    <field name="magnitude" type="NX_FLOAT" units="NX_ENERGY"/>
-                </group>
+                <field name="physical_quantity">
+                    <enumeration>
+                        <item value="energy"/>
+                    </enumeration>
+                </field>
+                <field name="type" recommended="true"/>
+                <field name="resolution" type="NX_FLOAT" units="NX_ENERGY"/>
             </group>
             <group name="device_information" type="NXfabrication" recommended="true">
                 <field name="vendor" recommended="true"/>
                 <field name="model" recommended="true"/>
                 <field name="identifier" recommended="true"/>
             </group>
-            <group name="source_TYPE" type="NXsource">
-                <!--
-Comment from mpes may workshop:
-- There is much more information which can be provided for NXsource
--->
+            <group name="source_TYPE" type="NXsource" recommended="true">
                 <doc>
-                     The source used to generate the primary photons. Properties refer strictly to
-                     parameters of the source, not of the output beam. For example, the energy of the
-                     source is not the optical power of the beam, but the energy of the electron beam
-                     in a synchrotron and so on.
+                     A source used to generate a beam. Properties refer strictly to parameters of the
+                     source, not of the output beam. For example, the energy of the source is not the
+                     optical power of the beam, but the energy of the electron beam in a synchrotron
+                     or similar.
+                     
+                     Note that the uppercase notation in source_TYPE means that multiple sources can
+                     be provided. For example, in pump-probe experiments, it is possible to have both
+                     a `source_probe` and a `source_pump`
                 </doc>
                 <field name="type">
                     <enumeration>
@@ -160,18 +171,7 @@ Comment from mpes may workshop:
                     </doc>
                 </field>
                 <field name="name" recommended="true"/>
-                <field name="probe" optional="true">
-                    <doc>
-                         Type of probe. In photoemission it's always photons, so the full NIAC list is
-                         restricted.
-                    </doc>
-                    <enumeration>
-                        <item value="photon"/>
-                        <item value="x-ray"/>
-                        <item value="visible light"/>
-                        <item value="ultraviolet"/>
-                    </enumeration>
-                </field>
+                <field name="probe" optional="true"/>
                 <group name="device_information" type="NXfabrication" recommended="true">
                     <field name="vendor" recommended="true"/>
                     <field name="model" recommended="true"/>
@@ -187,9 +187,6 @@ Comment from mpes may workshop:
                     </doc>
                 </group>
             </group>
-            <!--It would be nice if we had the notion of linking in nexus or if
-we have a subdefinition NXlink to refer to a path.
-This would also be helpful for NXtransformations-->
             <group name="beam_TYPE" type="NXbeam">
                 <doc>
                      Properties of the photon beam at a given location.
@@ -208,13 +205,14 @@ This would also be helpful for NXtransformations-->
                 <field name="incident_energy_spread" type="NX_NUMBER" recommended="true" units="NX_ENERGY"/>
                 <field name="incident_polarization" type="NX_NUMBER" recommended="true" units="NX_ANY"/>
                 <field name="extent" type="NX_FLOAT" recommended="true"/>
-                <group name="associated_source" type="NXsource">
+                <group name="associated_source" type="NXsource" recommended="true">
                     <doc>
                          The source that emitted this beam.
                          Should be named with the same appendix, e.g.,
                          for `beam_probe` it should refer to `source_probe`.
                          Refers to the same concept as /NXentry/NXinstrument/source_TYPE
                          and may be linked.
+                         Should be specified if an associated source exists.
                     </doc>
                 </group>
             </group>
@@ -225,40 +223,35 @@ This would also be helpful for NXtransformations-->
                     <field name="identifier" recommended="true"/>
                 </group>
                 <field name="description"/>
-                <field name="energy_resolution" type="NX_FLOAT" recommended="true" units="NX_ENERGY">
-                    <doc>
-                         Energy resolution of the analyser with the current setting. May be linked from a
-                         NXcalibration.
-                         
-                             This concept is related to term `10.24`_ of the ISO 18115-1:2023 standard.
-                         
-                         .. _10.24: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24
-                    </doc>
-                </field>
+                <field name="work_function" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
+                <group name="energy_resolution" type="NXresolution" recommended="true">
+                    <field name="type" recommended="true"/>
+                    <field name="physical_quantity">
+                        <enumeration>
+                            <item value="energy"/>
+                        </enumeration>
+                    </field>
+                    <field name="resolution" type="NX_FLOAT"/>
+                </group>
                 <field name="fast_axes" recommended="true"/>
                 <field name="slow_axes" recommended="true"/>
-                <field name="transmission_function" type="NX_FLOAT" optional="true"/>
+                <group name="transmission_function" type="NXdata" optional="true"/>
                 <group type="NXcollectioncolumn">
-                    <!--TODO: Comment from Anders Frisk on proposal page
-What is the definition of a collection column?
-Optional constant settings (like lens focusing parameters on the sample: position_x, position_y, working_distance)-->
                     <field name="scheme">
                         <doc>
                              Scheme of the electron collection column.
                         </doc>
                         <enumeration>
-                            <item value="Standard"/>
-                            <item value="Angular dispersive"/>
-                            <item value="Spatial dispersive"/>
-                            <item value="Selective area"/>
-                            <item value="Deflector"/>
-                            <item value="PEEM"/>
-                            <item value="Momentum Microscope"/>
-                            <item value="Torroidal"/>
+                            <item value="angular dispersive"/>
+                            <item value="spatial dispersive"/>
+                            <item value="momentum dispersive"/>
+                            <item value="non-dispersive"/>
                         </enumeration>
                     </field>
-                    <field name="mode" recommended="true"/>
+                    <field name="lens_mode" recommended="true"/>
                     <field name="projection" recommended="true"/>
+                    <field name="angular_acceptance" type="NX_FLOAT" optional="true"/>
+                    <field name="spatial_acceptance" type="NX_FLOAT" optional="true"/>
                     <group name="field_aperture" type="NXaperture" optional="true">
                         <doc>
                              The size and position of the field aperture inserted in the column. To add
@@ -299,7 +292,7 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                         </enumeration>
                     </field>
                     <field name="pass_energy" type="NX_FLOAT" units="NX_ENERGY"/>
-                    <field name="energy_scan_mode"/>
+                    <field name="energy_scan_mode" recommended="true"/>
                     <group name="entrance_slit" type="NXaperture" optional="true">
                         <doc>
                              Size, position and shape of the entrance slit in dispersive analyzers.
@@ -348,7 +341,41 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                         <field name="model" recommended="true"/>
                         <field name="identifier" recommended="true"/>
                     </group>
-                    <group type="NXdata" recommended="true">
+                    <group name="raw_data" type="NXdata" recommended="true">
+                        <doc>
+                             Contains the raw data collected by the detector before calibration.
+                             The data which is considered raw might change from experiment to experiment
+                             due to hardware pre-processing of the data.
+                             This field ideally collects the data with the lowest level of processing
+                             possible.
+                             
+                             The naming of fields should follow a convention to ensure compatibility.
+                             It is recommend to use the following field names:
+                             
+                             - **pixel_x**: Detector pixel in x direction.
+                             - **pixel_y**: Detector pixel in y direction.
+                             - **energy**: (Un)calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
+                             - **kx**: (Un)calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
+                             - **ky**: (Un)calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
+                             - **kz**: (Un)calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
+                             - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
+                               Unit category: NX_ANGLE
+                             - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                               Unit category: NX_ANGLE
+                             - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
+                               Unit category: NX_LENGTH
+                             - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                               Unit category: NX_LENGTH
+                             - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
+                             - **polarization_angle**: Linear polarization angle of the incoming or
+                               outgoing beam.
+                               Unit category: NX_ANGLE (° or rad)
+                             - **ellipticity**: Ellipticity of the incoming or outgoing beam.
+                               Unit category: NX_ANGLE (° or rad)
+                             - **time_of_flight**: Total time of flight. Unit category: NX_TIME_OF_FLIGHT
+                             - **time_of_flight_adc**: Time-of-flight values, analog-to-digital converted.
+                             - **external_AXIS**: Describes an axis which is coming from outside the detectors scope.
+                        </doc>
                         <attribute name="signal">
                             <enumeration>
                                 <item value="raw"/>
@@ -366,23 +393,129 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                 <doc>
                      Manipulator for positioning of the sample.
                 </doc>
-                <field name="sample_temperature" type="NX_FLOAT" recommended="true" units="NX_TEMPERATURE"/>
-                <field name="drain_current" type="NX_FLOAT" recommended="true" units="NX_CURRENT"/>
-                <field name="sample_bias" type="NX_FLOAT" recommended="true" units="NX_CURRENT">
-                    <doc>
-                         Bias of the sample with respect to analyser ground.
-                         
-                         This field may also be found in NXsample if present.
-                         
-                             This concept is related to term `8.41`_ of the ISO 18115-1:2023 standard.
-                         
-                         .. _8.41: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:8.41
-                    </doc>
-                </field>
+                <group name="temperature_sensor" type="NXsensor" recommended="true">
+                    <field name="name" recommended="true"/>
+                    <field name="measurement">
+                        <enumeration>
+                            <item value="temperature"/>
+                        </enumeration>
+                    </field>
+                    <field name="type" optional="true"/>
+                    <field name="value" type="NX_FLOAT"/>
+                </group>
+                <group name="sample_heater" type="NXactuator" optional="true">
+                    <field name="name" recommended="true"/>
+                    <field name="physical_quantity">
+                        <enumeration>
+                            <item value="temperature"/>
+                        </enumeration>
+                    </field>
+                    <field name="type" optional="true"/>
+                    <field name="heater_power" type="NX_FLOAT"/>
+                    <group type="NXpid" recommended="true">
+                        <field name="setpoint" type="NX_FLOAT" recommended="true"/>
+                    </group>
+                </group>
+                <group name="cryostat" type="NXactuator" optional="true">
+                    <field name="name" recommended="true"/>
+                    <field name="physical_quantity">
+                        <enumeration>
+                            <item value="temperature"/>
+                        </enumeration>
+                    </field>
+                    <field name="type" optional="true"/>
+                    <group type="NXpid">
+                        <field name="setpoint" type="NX_FLOAT" recommended="true"/>
+                    </group>
+                </group>
+                <group name="drain_current_amperemeter" type="NXsensor" optional="true">
+                    <field name="name" recommended="true"/>
+                    <field name="measurement">
+                        <enumeration>
+                            <item value="current"/>
+                        </enumeration>
+                    </field>
+                    <field name="type" optional="true"/>
+                    <field name="value" type="NX_FLOAT"/>
+                </group>
+                <group name="sample_bias_voltmeter" type="NXsensor" recommended="true">
+                    <field name="name" recommended="true"/>
+                    <field name="measurement">
+                        <enumeration>
+                            <item value="voltage"/>
+                        </enumeration>
+                    </field>
+                    <field name="type" optional="true"/>
+                    <field name="value" type="NX_FLOAT"/>
+                </group>
+                <group name="sample_bias_potentiostat" type="NXactuator" recommended="true">
+                    <field name="name" recommended="true"/>
+                    <field name="physical_quantity">
+                        <enumeration>
+                            <item value="voltage"/>
+                        </enumeration>
+                    </field>
+                    <field name="type" optional="true"/>
+                    <group type="NXpid" recommended="true">
+                        <field name="setpoint" type="NX_FLOAT" recommended="true"/>
+                    </group>
+                </group>
                 <group name="device_information" type="NXfabrication" recommended="true">
                     <field name="vendor" recommended="true"/>
                     <field name="model" recommended="true"/>
-                    <field name="identifier" recommended="true"/>
+                    <field name="identifier"/>
+                </group>
+            </group>
+            <group name="pressure_gauge" type="NXsensor" recommended="true">
+                <doc>
+                     Device to measure the gas pressure around the sample.
+                </doc>
+                <field name="name" recommended="true"/>
+                <field name="measurement">
+                    <enumeration>
+                        <item value="pressure"/>
+                    </enumeration>
+                </field>
+                <field name="type" optional="true"/>
+                <field name="value" type="NX_FLOAT" units="NX_PRESSURE">
+                    <doc>
+                         In case of a single or averaged gas pressure measurement, this is the scalar gas pressure around
+                         the sample. It can also be an 1D array of measured pressures (without time stamps).
+                    </doc>
+                </field>
+                <group name="value_log" type="NXlog" optional="true">
+                    <field name="value" type="NX_NUMBER" units="NX_PRESSURE">
+                        <doc>
+                             In the case of an experiment in which the gas pressure changes and is recorded,
+                             this is an array of length m of gas pressures.
+                        </doc>
+                    </field>
+                </group>
+            </group>
+            <group name="flood_gun" type="NXactuator" optional="true">
+                <doc>
+                     Device to bring low-energy electrons to the sample for charge neutralization
+                </doc>
+                <field name="name" recommended="true"/>
+                <field name="physical_quantity">
+                    <enumeration>
+                        <item value="current"/>
+                    </enumeration>
+                </field>
+                <field name="type" optional="true"/>
+                <field name="current" type="NX_FLOAT" recommended="true" units="NX_CURRENT">
+                    <doc>
+                         In case of a fixed or averaged electron current, this is the scalar current.
+                         It can also be an 1D array of output current (without time stamps).
+                    </doc>
+                </field>
+                <group name="current_log" type="NXlog" optional="true">
+                    <field name="value" type="NX_NUMBER" units="NX_CURRENT">
+                        <doc>
+                             In the case of an experiment in which the electron current is changed and
+                             recorded with time stamps, this is an array of length m of current setpoints.
+                        </doc>
+                    </field>
                 </group>
             </group>
         </group>
@@ -436,7 +569,7 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                      Usually, the energy axis is adjusted by shifting all energies uniformally until one
                      well-defined emission line peak (or the Fermi edge) is located at a known _correct_ energy.
                      
-                         This concept is related to term `12.74 ff.`_ of the ISO 18115-1:2023 standard.
+                     This concept is related to term `12.74 ff.`_ of the ISO 18115-1:2023 standard.
                      
                      .. _12.74 ff.: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.74
                 </doc>
@@ -449,7 +582,7 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                     <doc>
                          Reference peak that was used for the calibration.
                          
-                         For example: adventitious carbon | C-C | metallic Au | elemental Si | Fermi edge
+                         For example: adventitious carbon | C-C | metallic Au | elemental Si | Fermi edge | vacuum level
                     </doc>
                 </field>
                 <field name="binding_energy" type="NX_FLOAT" recommended="true">
@@ -457,7 +590,7 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                          The binding energy (in units of eV) that the specified emission line appeared at,
                          after adjusting the binding energy scale.
                          
-                             This concept is related to term `12.16_ ff.`_ of the ISO 18115-1:2023 standard.
+                         This concept is related to term `12.16_ ff.`_ of the ISO 18115-1:2023 standard.
                          
                          .. _12.16_ ff.: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
                     </doc>
@@ -483,7 +616,7 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                      field of the transmission_function. This calibration procedure is used to account for
                      the different tranmsission efficiencies when using different lens modes.
                 </doc>
-                <group name="mapping" type="NXdata" recommended="true">
+                <group name="transmission_function" type="NXdata" recommended="true">
                     <doc>
                          Transmission function of the electron analyser.
                          
@@ -522,20 +655,16 @@ Optional constant settings (like lens focusing parameters on the sample: positio
         </group>
         <group type="NXsample">
             <field name="name"/>
-            <field name="chemical_formula" recommended="true">
+            <group type="NXsubstance" recommended="true">
                 <doc>
-                     The chemical formula of the sample. For mixtures use the NXsample_component
-                     group in NXsample instead.
+                     For samples containing a single pure substance. For mixtures use the
+                     NXsample_component_set and NXsample_component group in NXsample instead.
                 </doc>
-            </field>
-            <group name="sample_history" type="NXnote" recommended="true">
-                <doc>
-                     A descriptor to keep track of the treatment of the sample before entering the
-                     photoemission experiment. Ideally, a full report of the previous operations, in
-                     any format (NXnote allows to add pictures, audio, movies). Alternatively, a
-                     reference to the location or a unique identifier or other metadata file. In the
-                     case these are not available, free-text description.
-                </doc>
+                <field name="molecular_formula_hill" recommended="true">
+                    <doc>
+                         The chemical formula of the sample (using CIF conventions).
+                    </doc>
+                </field>
             </group>
             <field name="atom_types" recommended="true">
                 <doc>
@@ -546,29 +675,6 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                 </doc>
             </field>
             <field name="physical_form" recommended="true"/>
-            <field name="preparation_date" type="NX_DATE_TIME" recommended="true">
-                <doc>
-                     Date of preparation of the sample for the XPS experiment (i.e. cleaving, last
-                     annealing).
-                </doc>
-            </field>
-            <group name="preparation_description" type="NXnote" optional="true">
-                <doc>
-                     Description of the surface preparation technique for the XPS experiment, i.e.
-                     UHV cleaving, in-situ growth, sputtering/annealing etc. Ideally, a full report
-                     of the previous operations, in any format(NXnote allows to add pictures, audio,
-                     movies). Alternatively, a reference to the location or a unique identifier or
-                     other metadata file. In the case these are not available, free-text description.
-                </doc>
-            </group>
-            <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE" recommended="true">
-                <doc>
-                     In the case of a fixed temperature measurement this is the scalar temperature of
-                     the sample. In the case of an experiment in which the temperature is changed and
-                     recoded, this is an array of length m of temperatures. This should be a link to
-                     /entry/instrument/manipulator/sample_temperature.
-                </doc>
-            </field>
             <field name="situation" recommended="true">
                 <enumeration>
                     <item value="vacuum"/>
@@ -577,14 +683,141 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                     <item value="reducing atmosphere"/>
                 </enumeration>
             </field>
-            <field name="gas_pressure" type="NX_FLOAT" units="NX_PRESSURE" recommended="true"/>
-            <field name="bias" type="NX_FLOAT" units="NX_VOLTAGE" optional="true">
+            <group name="sample_history" type="NXsample_history" recommended="true">
                 <doc>
-                     Voltage applied to sample and sample holder.
+                     A set of activities that occurred to the sample prior to/during photoemission
+                     experiment.
                 </doc>
-            </field>
+                <group name="sample_preparation" type="NXphysical_process" recommended="true">
+                    <doc>
+                         Details about the sample preparation for the MPES experiment (e.g. UHV cleaving,
+                         in-situ growth, sputtering/annealing, etc.).
+                    </doc>
+                    <field name="start_time" type="NX_DATE_TIME"/>
+                    <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+                    <field name="method" recommended="true">
+                        <doc>
+                             Details about the method of sample preparation before the MPES experiment.
+                        </doc>
+                    </field>
+                </group>
+            </group>
+            <group name="temperature" type="NXenvironment" recommended="true">
+                <doc>
+                     Sample temperature (either controlled or just measured).
+                </doc>
+                <group name="temperature_sensor" type="NXsensor">
+                    <doc>
+                         Temperature sensor measuring the sample temperature.
+                         This should be a link to /entry/instrument/manipulator/temperature_sensor.
+                    </doc>
+                </group>
+                <group name="sample_heater" type="NXactuator" optional="true">
+                    <doc>
+                         Device to heat the sample.
+                         This should be a link to /entry/instrument/manipulator/sample_heater.
+                    </doc>
+                </group>
+                <group name="cryostat" type="NXactuator" optional="true">
+                    <doc>
+                         Cryostat for cooling the sample.
+                         This should be a link to /entry/instrument/manipulator/cryostat.
+                    </doc>
+                </group>
+            </group>
+            <group name="gas_pressure" type="NXenvironment" recommended="true">
+                <doc>
+                     Gas pressure surrounding the sample.
+                </doc>
+                <group name="pressure_gauge" type="NXsensor">
+                    <doc>
+                         Gauge measuring the gas pressure.
+                         
+                         This should be a link to /entry/instrument/pressure_gauge.
+                    </doc>
+                </group>
+            </group>
+            <group name="bias" type="NXenvironment" recommended="true">
+                <doc>
+                     Bias of the sample with respect to analyser ground.
+                     
+                     This concept is related to term `8.41`_ of the ISO 18115-1:2023 standard.
+                     
+                     .. _8.41: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:8.41
+                </doc>
+                <group name="voltmeter" type="NXsensor">
+                    <doc>
+                         Sensor measuring the applied voltage.
+                         
+                         This should be a link to /entry/instrument/manipulator/sample_bias_voltmeter.
+                    </doc>
+                </group>
+                <group name="potentiostat" type="NXactuator" optional="true">
+                    <doc>
+                         Actuator applying a voltage to sample and sample holder.
+                         
+                         This should be a link to /entry/instrument/manipulator/sample_bias_potentiostat.
+                    </doc>
+                </group>
+            </group>
+            <group name="drain_current" type="NXenvironment" optional="true">
+                <doc>
+                     Drain current of the sample and sample holder.
+                </doc>
+                <group name="amperemeter" type="NXsensor">
+                    <doc>
+                         Amperemeter measuring the drain current of the sample and sample holder.
+                         
+                         This should be a link to /entry/instrument/manipulator/drain_current_amperemeter.
+                    </doc>
+                </group>
+            </group>
+            <group name="flood_gun_current" type="NXenvironment" optional="true">
+                <doc>
+                     Current of low-energy electrons to the sample for charge neutralization.
+                </doc>
+                <group name="flood_gun" type="NXactuator">
+                    <doc>
+                         Flood gun creating a current of low-energy electrons.
+                         
+                         This should be a link to /entry/instrument/flood_gun.
+                    </doc>
+                </group>
+            </group>
         </group>
-        <group type="NXdata">
+        <group name="data" type="NXdata">
+            <doc>
+                 The default NXdata field containing a view on the measured data.
+                 This NXdata field contains a collection of the main relevant fields (axes).
+                 In NXmpes, it is required to provide an energy axis.
+                 If you want to provide additional views on your data, you can additionally use
+                 the generic NXdata group of NXentry.
+                 The other data fields inside this NXdata group should be named according to conventions
+                 to ensure compatibility. We recommened the following field names
+                 for common data fields:
+                 
+                 - **kx**: Calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
+                 - **ky**: Calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
+                 - **kz**: Calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
+                 - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
+                   Unit category: NX_ANGLE
+                 - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                   Unit category: NX_ANGLE
+                 - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
+                   Unit category: NX_LENGTH
+                 - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
+                   Unit category: NX_LENGTH
+                 - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
+                 - **polarization_angle**: Linear polarization angle of the incoming or
+                   outgoing beam. This could be a link to
+                   /entry/instrument/beam/incident_polarization_angle or
+                   /entry/instrument/beam/final_polarization_angle if they exist.
+                   Unit category: NX_ANGLE (° or rad)
+                 - **ellipticity**: Ellipticity of the incoming or outgoing beam.
+                   Could be a link to /entry/instrument/beam/incident_ellipticity or
+                   /entry/instrument/beam/final_ellipticity if they exist.
+                   Unit category: NX_ANGLE (° or rad)
+            </doc>
             <attribute name="signal">
                 <enumeration>
                     <item value="data"/>
@@ -598,16 +831,15 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                      actual encoder position in NXinstrument or calibrated axes in NXprocess.
                 </doc>
             </field>
-            <field name="energy" type="NX_NUMBER" recommended="true">
+            <field name="energy" type="NX_NUMBER" units="NX_ENERGY">
                 <doc>
                      Calibrated energy axis.
                      
-                     The calibrated energy axis can be either in binding or kinetic energy.
-                     This should be a link to either
+                     This could be a link to either
                      /entry/process/energy_calibration/calibrated_axis or
                      /entry/process/energy_correction/calibrated_axis.
                 </doc>
-                <attribute name="type" type="NX_CHAR" recommended="true">
+                <attribute name="type" type="NX_CHAR">
                     <doc>
                          The energy can be either stored as kinetic or as binding energy.
                     </doc>
@@ -616,7 +848,11 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                             <doc>
                                  Calibrated kinetic energy axis.
                                  
-                                     This concept is related to term `3.35`_ of the ISO 18115-1:2023 standard.
+                                 In case the kinetic energy axis is referenced to the Fermi level :math:`E_F`
+                                 (e.g., in entry/process/energy_referencing), kinetic energies :math:`E` are
+                                 provided as :math:`E-E_F`.
+                                 
+                                 This concept is related to term `3.35`_ of the ISO 18115-1:2023 standard.
                                  
                                  .. _3.35: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.35
                             </doc>
@@ -625,7 +861,7 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                             <doc>
                                  Calibrated binding energy axis.
                                  
-                                     This concept is related to term `12.16`_ of the ISO 18115-1:2023 standard.
+                                 This concept is related to term `12.16`_ of the ISO 18115-1:2023 standard.
                                  
                                  .. _12.16: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
                             </doc>
@@ -633,6 +869,16 @@ Optional constant settings (like lens focusing parameters on the sample: positio
                     </enumeration>
                 </attribute>
             </field>
+            <attribute name="energy_indices" recommended="true"/>
+            <attribute name="energy_depends" type="NX_CHAR" recommended="true">
+                <doc>
+                     The energy can be dispersed according to different strategies. ``energy_depends`` points to
+                     the path of a field defining the calibrated axis on which the energy axis depends.
+                     
+                     For example:
+                       @energy_depends: 'entry/process/energy_calibration'
+                </doc>
+            </attribute>
         </group>
     </group>
 </definition>

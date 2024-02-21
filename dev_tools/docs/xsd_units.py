@@ -5,7 +5,6 @@ text (.rst) document for use in the NeXus manual in
 the NXDL chapter.
 """
 
-
 from pathlib import Path
 from typing import List
 
