@@ -369,7 +369,7 @@
                         <field name="model" recommended="true"/>
                         <field name="identifier" recommended="true"/>
                     </group>
-                    <group name="raw_data" type="NXdata" recommended="true">
+                    <group name="raw_data" type="NXdata_photoemission_detector" recommended="true">
                         <doc>
                              Contains the raw data collected by the detector before calibration.
                              The data which is considered raw might change from experiment to experiment
@@ -377,12 +377,13 @@
                              This field ideally collects the data with the lowest level of processing
                              possible.
                              
-                             The naming of fields should follow a convention to ensure compatibility.
-                             It is recommend to use the following field names:
+                             The naming of fields should follow the convention defined in the
+                             :ref:`NXdata_photoemission_detector` base class:
                              
                              - **pixel_x**: Detector pixel in x direction.
                              - **pixel_y**: Detector pixel in y direction.
                              - **energy**: (Un)calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
+                             - **momentum**: Calibrated momentum axis. Unit category: NX_ANY (e.g., kg*m/s).
                              - **kx**: (Un)calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
                              - **ky**: (Un)calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
                              - **kz**: (Un)calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
@@ -555,121 +556,48 @@
                 </doc>
             </group>
         </group>
-        <group type="NXprocess" recommended="true">
+        <group type="NXprocess_photoemission" recommended="true">
             <doc>
                  Document an event of data processing, reconstruction, or analysis for this data.
-                 Describe the appropriate axis calibrations for your experiment using one or more
-                 of the following NXcalibrations
+                 The appropriate axis calibrations for a given experiment should be described using
+                 one or more of the following NXcalibrations. The individual calibrations for a given
+                 `AXISNAME` in `data` should be called `AXISNAME_calibration`.
             </doc>
             <group name="energy_calibration" type="NXcalibration" optional="true">
-                <doc>
-                     Calibration event on the energy axis.
-                     
-                     For XPS, the calibration should ideally be performed according to
-                     `ISO 15472:2010`_ specification.
-                     
-                     .. _ISO 15472:2010: https://www.iso.org/standard/74811.html
-                </doc>
-                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
-                    <doc>
-                         This is the calibrated energy axis to be used for data plotting.
-                    </doc>
-                </field>
-            </group>
-            <group name="angular_calibration" type="NXcalibration" optional="true">
-                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
-                    <doc>
-                         This is the calibrated angular axis to be used for data plotting.
-                    </doc>
-                </field>
-            </group>
-            <group name="spatial_calibration" type="NXcalibration" optional="true">
-                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
-                    <doc>
-                         This is the calibrated spatial axis to be used for data plotting.
-                    </doc>
-                </field>
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
             </group>
             <group name="momentum_calibration" type="NXcalibration" optional="true">
-                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
-                    <doc>
-                         This is the momentum axis to be used for data plotting.
-                    </doc>
-                </field>
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
+            </group>
+            <group name="kK_calibration" type="NXcalibration" optional="true">
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
+            </group>
+            <group name="angularANGLE_calibration" type="NXcalibration" optional="true">
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
+            </group>
+            <group name="spatialSPATIAL_calibration" type="NXcalibration" optional="true">
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
+            </group>
+            <group name="delay_calibration" type="NXcalibration" optional="true">
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
+            </group>
+            <group name="polarization_angle_calibration" type="NXcalibration" optional="true">
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
+            </group>
+            <group name="ellipticity_calibration" type="NXcalibration" optional="true">
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
             </group>
             <group name="energy_referencing" type="NXcalibration" optional="true">
-                <doc>
-                     For energy referencing, the measured energies are corrected for the charging potential
-                     (i.e., the electrical potential of the surface region of an insulating sample, caused by
-                     irradiation) such that those energies correspond to a sample with no surface charge.
-                     Usually, the energy axis is adjusted by shifting all energies uniformally until one
-                     well-defined emission line peak (or the Fermi edge) is located at a known _correct_ energy.
-                     
-                     This concept is related to term `12.74 ff.`_ of the ISO 18115-1:2023 standard.
-                     
-                     .. _12.74 ff.: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.74
-                </doc>
-                <group name="level" type="NXelectron_level" recommended="true">
-                    <doc>
-                         Electronic core or valence level that was used for the calibration.
-                    </doc>
-                </group>
-                <field name="reference_peak">
-                    <doc>
-                         Reference peak that was used for the calibration.
-                         
-                         For example: adventitious carbon | C-C | metallic Au | elemental Si | Fermi edge | vacuum level
-                    </doc>
-                </field>
-                <field name="binding_energy" type="NX_FLOAT" recommended="true">
-                    <doc>
-                         The binding energy (in units of eV) that the specified emission line appeared at,
-                         after adjusting the binding energy scale.
-                         
-                         This concept is related to term `12.16 ff.`_ of the ISO 18115-1:2023 standard.
-                         
-                         .. _12.16 ff.: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
-                    </doc>
-                </field>
-                <field name="offset" type="NX_FLOAT" recommended="true">
-                    <doc>
-                         Offset between measured binding energy and calibrated binding energy of the
-                         emission line.
-                    </doc>
-                </field>
-                <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
-                    <doc>
-                         This is the calibrated energy axis to be used for data plotting.
-                         
-                         This should link to /entry/data/energy.
-                    </doc>
-                </field>
+                <group name="level" type="NXelectron_level" recommended="true"/>
+                <field name="reference_peak"/>
+                <field name="binding_energy" type="NX_FLOAT" recommended="true"/>
+                <field name="offset" type="NX_FLOAT" recommended="true"/>
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
             </group>
             <group name="transmission_correction" type="NXcalibration" optional="true">
-                <doc>
-                     In the transmission correction, each intensity measurement for electrons of a given
-                     kinetic energy is multiplied by the corresponding value in the relative_intensity
-                     field of the transmission_function. This calibration procedure is used to account for
-                     the different tranmsission efficiencies when using different lens modes.
-                </doc>
                 <group name="transmission_function" type="NXdata" recommended="true">
-                    <doc>
-                         Transmission function of the electron analyser.
-                         
-                         The transmission function (TF) specifies the detection efficiency for electrons of
-                         different kinetic energy passing through the electron analyser.
-                         This can be a link to /entry/instrument/electronanalyser/transmission_function.
-                    </doc>
-                    <attribute name="signal">
-                        <enumeration>
-                            <item value="relative_intensity"/>
-                        </enumeration>
-                    </attribute>
-                    <attribute name="axes">
-                        <enumeration>
-                            <item value="kinetic_energy"/>
-                        </enumeration>
-                    </attribute>
+                    <attribute name="signal"/>
+                    <attribute name="axes"/>
                     <field name="kinetic_energy" type="NX_FLOAT" units="NX_ENERGY">
                         <doc>
                              Kinetic energy values
@@ -822,16 +750,18 @@
                 </group>
             </group>
         </group>
-        <group name="data" type="NXdata">
+        <group name="data" type="NXdata_photoemission">
             <doc>
                  The default NXdata field containing a view on the measured data.
                  This NXdata field contains a collection of the main relevant fields (axes).
                  If you want to provide additional views on your data, you can additionally use
                  the generic NXdata group of NXentry.
-                 The data fields inside this NXdata group should be named according to conventions
-                 to ensure compatibility. We recommened the following field names
-                 for common data fields:
                  
+                 The naming of fields should follow the convention defined in the
+                 :ref:`NXdata_photoemission` base class:
+                 
+                 - **energy**: Calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
+                 - **momentum**: Calibrated momentum axis. Unit category: NX_ANY (e.g., kg*m/s).
                  - **kx**: Calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
                  - **ky**: Calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
                  - **kz**: Calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
@@ -867,45 +797,6 @@
                      actual encoder position in NXinstrument or calibrated axes in NXprocess.
                 </doc>
             </field>
-            <field name="energy" type="NX_NUMBER" optional="true" units="NX_ENERGY">
-                <doc>
-                     Calibrated energy axis.
-                     
-                     This could be a link to either
-                     /entry/process/energy_calibration/calibrated_axis or
-                     /entry/process/energy_correction/calibrated_axis.
-                </doc>
-                <attribute name="type" type="NX_CHAR">
-                    <doc>
-                         The energy can be either stored as kinetic or as binding energy.
-                    </doc>
-                    <enumeration>
-                        <item value="kinetic">
-                            <doc>
-                                 Calibrated kinetic energy axis.
-                                 
-                                 In case the kinetic energy axis is referenced to the Fermi level :math:`E_F`
-                                 (e.g., in entry/process/energy_referencing), kinetic energies :math:`E` are
-                                 provided as :math:`E-E_F`.
-                                 
-                                 This concept is related to term `3.35`_ of the ISO 18115-1:2023 standard.
-                                 
-                                 .. _3.35: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.35
-                            </doc>
-                        </item>
-                        <item value="binding">
-                            <doc>
-                                 Calibrated binding energy axis.
-                                 
-                                 This concept is related to term `12.16`_ of the ISO 18115-1:2023 standard.
-                                 
-                                 .. _12.16: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
-                            </doc>
-                        </item>
-                    </enumeration>
-                </attribute>
-            </field>
-            <attribute name="energy_indices" optional="true"/>
             <attribute name="energy_depends" type="NX_CHAR" optional="true">
                 <doc>
                      The energy can be dispersed according to different strategies. ``energy_depends`` points to
