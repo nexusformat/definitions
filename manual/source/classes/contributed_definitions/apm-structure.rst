@@ -208,8 +208,8 @@ Base classes have been defined to group common pieces of information for each to
 toolbox. For each tool we define a pair of base classes. One for the configuration (input) side
 and one for the results (output) side:
 
-    :ref:`NXapm_paraprobe_tool_config`, :ref:`NXapm_paraprobe_tool_results`:
-     Common parts of configuration settings and results respectively useful for several tools of the paraprobe-toolbox.
+    :ref:`NXapm_paraprobe_tool_config`, :ref:`NXapm_paraprobe_tool_results`, :ref:`NXapm_paraprobe_tool_common`:
+     Configuration, results, and common parts respectively useful for the application definitions for tools of the paraprobe-toolbox.
 
 .. _ApmParaprobeAppDef:
 
