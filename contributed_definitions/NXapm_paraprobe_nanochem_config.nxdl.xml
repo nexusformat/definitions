@@ -61,6 +61,11 @@
                  Maximum number of atoms per molecular ion.
             </doc>
         </symbol>
+        <symbol name="n_rois">
+            <doc>
+                 Number of cylinder ROIs to place for oned_profile if no feature mesh is used.
+            </doc>
+        </symbol>
     </symbols>
     <doc>
          Application definition for a configuration file of the paraprobe-nanochem tool.
@@ -108,7 +113,7 @@
                 <field name="algorithm" type="NX_CHAR"/>
                 <field name="ranging_definitions" type="NX_CHAR"/>
             </group>
-            <group name="surface" type="NXserialized" recommended="true">
+            <group name="surface" type="NXserialized">
                 <doc>
                      A precomputed triangulated surface mesh representing a model (of the surface)
                      of the edge of the dataset. This model can be used to detect and control
@@ -139,6 +144,7 @@
                 <field name="path" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
+                <field name="distance" type="NX_CHAR"/>
             </group>
             <group name="spatial_filter" type="NXspatial_filter">
                 <field name="windowing_method" type="NX_CHAR"/>
@@ -817,6 +823,70 @@ identifier(NX_UINT):-->
                 <field name="path" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
+                <field name="distance" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the distance values.
+                         The tool assumes that the values are stored in the same order as
+                         points (ions).
+                    </doc>
+                </field>
+            </group>
+            <group name="feature" type="NXserialized">
+                <doc>
+                     A precomputed triangulated mesh of the feature representing a model of the
+                     interface at which to place ROIs to profile.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="vertices" type="NX_CHAR">
+                    <doc>
+                         Absolute HDF5 path to the dataset that specifies the array of vertex positions.
+                    </doc>
+                </field>
+                <field name="indices" type="NX_CHAR">
+                    <doc>
+                         Absolute HDF5 path to the dataset that specifies the array of facet indices
+                         which refer to vertices.
+                    </doc>
+                </field>
+                <field name="facet_normals" type="NX_CHAR">
+                    <doc>
+                         Absolute HDF5 path to the dataset that  specifies the array of facet signed unit
+                         normals.
+                    </doc>
+                </field>
+                <field name="vertex_normals" type="NX_CHAR">
+                    <doc>
+                         Absolute HDF5 path to the dataset that specifies the array of vertex signed unit
+                         normals.
+                    </doc>
+                </field>
+                <!--triangulated surface meshes are only approximations to eventually curved shape of objects
+consequently, vertex and facet normals typically differ, the former are typically interpolated
+from normals of neighboring facets, type of weighting schemes can affect results quantitatively-->
+                <group name="patch_filter" type="NXmatch_filter" optional="true">
+                    <doc>
+                         If interface_model is isosurface this filter can be used to restrict the analysis to specific
+                         patches of an iso-surface.
+                    </doc>
+                    <field name="method" type="NX_CHAR"/>
+                    <field name="match" type="NX_NUMBER"/>
+                </group>
+            </group>
+            <group name="feature_distance" type="NXserialized" recommended="true">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="distance" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the distance values.
+                         The tool assumes that the values are stored in the same order as
+                         points (ions).
+                    </doc>
+                </field>
             </group>
             <group name="spatial_filter" type="NXspatial_filter">
                 <field name="windowing_method" type="NX_CHAR"/>
@@ -867,87 +937,6 @@ identifier(NX_UINT):-->
                 <field name="match" type="NX_NUMBER"/>
             </group>
             <!--config-->
-            <field name="interface_model" type="NX_CHAR">
-                <doc>
-                     Interfacial excess computations are performed for ROIs at selected facets or a triangulated interface patch
-                     obtained from e.g. a previous interface_mesh processing.
-                     
-                     For instance many scientist compute the interfacial excess for selected triangle facets of an iso-surface.
-                     In this case, computed iso-surfaces of paraprobe could be used. An example are triangle facet sets about
-                     closed polyhedra, for instance to compute interfacial excess related to phase boundaries of second-phase precipitates.
-                     
-                     Another example are free-standing triangle patches of the iso-surfaces which paraprobe creates.
-                     These could be characterized for interfacial excess. The sub-routines during iso-surface computations
-                     already include a procedure to automatically align local triangle normals based on the gradients of
-                     e.g. composition fields.
-                     
-                     Often scientists face situations in which neither a significant composition gradient across an interface
-                     (grain or phase boundary) exists nor latent crystallographic information about the adjoining crystal is
-                     available or reliable enough.
-                     
-                     In this case `P. Felfer et al. &lt;https://doi.org/10.1016/j.ultramic.2015.06.002&gt;`_ proposed a method to manually place control points and run an automated tessellation-based algorithm to create a triangulated surface patch,
-                     i.e. a model of the location of the interface. In a post-processing step, this triangle set can then be used to
-                     compute again interfacial excess in an automated manner by placing ROIs and aligning these with consistently oriented triangle normals.
-                     
-                     A similar use case is conceptually the one proposed by `X. Zhou et al. &lt;https://doi.org/10.1016/j.actamat.2022.117633&gt;`_ who used first a deep-learning method to locate planar triangulated grain boundary patches. These are eventually processed further with manual editing of the mesh via tools like Blender. Once the user is satisfied with the mesh, the computations of interfacial excess reduce again to an automated placing of ROIs, computations of the distributing of ions to respective ROIs, and plotting the results.
-                     
-                     Another approach for constructing an triangulated surface patch of an interface is to use point cloud processing methods that have been proposed in the laser-scanning, geoinformatics, and CAD community. Different computational geometry methods exist for fitting a parameterized surface to a set of points, using e.g.
-                     non-uniform rational B-splines (NURBS) and triangulating these according to prescribed mesh quality demands.
-                     The advantage of these methods is that they are fully automatable and pick up curved interface segments.
-                     The disadvantage is their often strong sensitivity on the parameterization.
-                     
-                     In all aforementioned cases except an interface_mesh is generated on which the here proposed method
-                     can be applied. In summary, a given an interfacial_excess analysis takes an interface_mesh, places ROIs
-                     automatically and evaluates the spatial distribution of ions as a function of the signed distance to the interface
-                     patch.
-                </doc>
-                <enumeration>
-                    <item value="isosurface"/>
-                    <item value="external"/>
-                </enumeration>
-            </field>
-            <!--NEW ISSUE: how to implement and also check consistently via NeXus that a
-NEW ISSUE: child group is required only when a field has a certain value?-->
-            <group name="interface_mesh" type="NXserialized">
-                <field name="type" type="NX_CHAR"/>
-                <field name="path" type="NX_CHAR"/>
-                <field name="checksum" type="NX_CHAR"/>
-                <field name="algorithm" type="NX_CHAR"/>
-                <field name="vertices" type="NX_CHAR">
-                    <doc>
-                         Absolute HDF5 path to the dataset that specifies the array of vertex positions.
-                    </doc>
-                </field>
-                <field name="indices" type="NX_CHAR">
-                    <doc>
-                         Absolute HDF5 path to the dataset that specifies the array of facet indices
-                         which refer to vertices.
-                    </doc>
-                </field>
-                <field name="facet_normals" type="NX_CHAR">
-                    <doc>
-                         Absolute HDF5 path to the dataset that  specifies the array of facet signed unit
-                         normals.
-                    </doc>
-                </field>
-                <field name="vertex_normals" type="NX_CHAR">
-                    <doc>
-                         Absolute HDF5 path to the dataset that specifies the array of vertex signed unit
-                         normals.
-                    </doc>
-                </field>
-                <!--triangulated surface meshes are only approximations to eventually curved shape of objects
-consequently, vertex and facet normals typically differ, the former are typically interpolated
-from normals of neighboring facets, type of weighting schemes can affect results quantitatively-->
-                <group name="patch_filter" type="NXmatch_filter" optional="true">
-                    <doc>
-                         If interface_model is isosurface this filter can be used to restrict the analysis to specific
-                         patches of an iso-surface.
-                    </doc>
-                    <field name="method" type="NX_CHAR"/>
-                    <field name="match" type="NX_NUMBER"/>
-                </group>
-            </group>
             <field name="distancing_model" type="NX_CHAR">
                 <doc>
                      Which type of distance should be reported for the profile.
@@ -964,10 +953,38 @@ from normals of neighboring facets, type of weighting schemes can affect results
                     <item value="triangle_outer_unit_normal"/>
                 </enumeration>
             </field>
+            <field name="roi_cylinder_center" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     Explicit x, y, z coordinates (in the paraprobe coordinate system) where ROIs
+                     should be placed if feature is absent.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="n_rois"/>
+                    <dim index="2" value="3"/>
+                </dimensions>
+            </field>
+            <field name="roi_cylinder_orientation" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     Explicit outer unit normal which explains into which direction each cylinder ROI
+                     is oriented.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="n_rois"/>
+                    <dim index="2" value="3"/>
+                </dimensions>
+            </field>
+            <!--
+not yet implemented the case to have ROIs of different size for each triangle of
+the feature mesh
+-->
             <field name="roi_cylinder_height" type="NX_FLOAT" units="NX_LENGTH">
                 <doc>
-                     For each ROI, how high (projected on the cylinder axis) should the cylindrical
-                     ROI be.
+                     For each ROI, how high (projected on the cylinder axis) should the cylindrical ROI be.
+                     
+                     If roi_cylinder_center and roi_cylinder_orientation have been defined, roi_cylinder_height
+                     and roi_cylinder_radius can be defined as arrays of size (n_rois,) to instruct the tool to
+                     place a collection of ROIs with different size.
+                     Otherwise, roi_cylinder_height and roi_cylinder_radius have to be a scalars.
                 </doc>
             </field>
             <field name="roi_cylinder_radius" type="NX_FLOAT" units="NX_LENGTH">
