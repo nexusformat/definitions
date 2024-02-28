@@ -1,10 +1,10 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-#
+# 
 # Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
-#
+# 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXdelocalization" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXdelocalization" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -48,23 +48,23 @@
         </symbol>
     </symbols>
     <doc>
-         Base class of the configuration and results of a delocalization algorithm.
+         Base class to describe the delocalization of point-like objects on a grid.
          
-         Delocalization is used to distribute point-like objects on a grid to obtain
-         e.g. smoother count, composition, or concentration values of scalar fields
-         and compute gradients of these fields.
+         Such a procedure is for instance used in image processing and e.g. atom probe
+         microscopy (APM) to discretize a point cloud onto a grid to enable e.g.
+         computing of point density, composition, or concentration values, obtain
+         scalar fields, and compute gradients of these fields.
     </doc>
-    <group name="grid" type="NXcg_grid">
+    <field name="grid">
         <doc>
-             Details about the grid on which the delocalization is applied.
+             Reference or link to the grid on which the delocalization is applied.
         </doc>
-    </group>
-    <!--grid(NX_CHAR):
-  doc: |
-    Reference or link to the grid on which the delocalization is applied.
-objects(NX_CHAR):
-  doc: |
-   Reference or link to the points which are delocalized on the grid.-->
+    </field>
+    <field name="objects">
+        <doc>
+             Reference or link to the points which are delocalized on the grid.
+        </doc>
+    </field>
     <!--for APM the speciality is nothing but:
 each point marks the location of an ion (object) in the tomographic reconstruction
 there is a boolean mask which filters which ions, i.e. points are considered
@@ -76,18 +76,18 @@ all ions which are not considered,
 this weight is the multiplicity with respect to the interpretation model
 i.e. a C:2 molecular ion has a multiplicity of 2 if the ion is considered
 and the interpretation model that to consider carbon atoms or carbon ions-->
-    <field name="weighting_model" type="NX_CHAR">
+    <field name="weighting_model">
         <doc>
-             The weighting model specifies how mark data are mapped to a weight per point/object.
+             The weighting model specifies how mark data are mapped to a weight per point.
              For atom probe microscopy (APM) as an example, different models are used which
              account differently for the multiplicity of an ion/atom:
              
              * default, points all get the same weight 1.;
-               for APM this is equivalent to (molecular) iontype-based delocalization
+               for APM this is equivalent to ion species
              * atomic_decomposition, points get as much weight as they have atoms
                of a type in element_whitelist,
              * isotope_decomposition, points get as much weight as they have
-               nuclids of a type in isotope_whitelist.
+               isotopes of a type in isotope_whitelist.
              
              This description shows an example that could be reinterpreted for
              similar such data processing steps in other fields of science.
@@ -124,22 +124,22 @@ i.e. if isotope_decomposition is set isotope_whitelist is required?-->
             <dim index="2" value="2"/>
         </dimensions>
     </field>
-    <field name="mark" type="NX_NUMBER" units="NX_UNITLESS">
+    <field name="mark" type="NX_NUMBER">
         <doc>
              Attribute data for each member of the point cloud. For APM these are the
-             iontypes generated via ranging. The number of mark data per point is 1
-             in the case for atom probe.
+             ion species labels generated via ranging. The number of mark data per
+             point is 1 in the case for atom probe.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="n_p"/>
             <dim index="2" value="n_m"/>
         </dimensions>
     </field>
-    <field name="weight" type="NX_NUMBER" units="NX_UNITLESS">
+    <field name="weight" type="NX_NUMBER">
         <doc>
              Weighting factor with which the integrated intensity per grid cell is
-             multiplied specifically for each point/object. For APM the weight are
-             positive integer values, specifically the multiplicity of the ion,
+             multiplied specifically for each point. For APM the weight are positive
+             integer values, specifically the multiplicity of the ion,
              according to the details of the weighting_model.
         </doc>
     </field>
