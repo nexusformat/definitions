@@ -19,7 +19,7 @@ NXmpes_arpes(NXmpes):
         (NXtransformations):
           doc: "Set of transformations, describing the orientation of the ARPES coordinate system with respect to the beam coordinate system (.)."
     (NXinstrument):
-      angular_resolution(NXresolution):
+      angularN_resolution(NXresolution):
         exists: recommended
         doc:
         - |
@@ -119,7 +119,7 @@ NXmpes_arpes(NXmpes):
       situation:
         enumeration: ["vacuum"]
       depends_on(NX_CHAR):
-        doc: "Reference to a transformation describing the orientation of the sample within the arpes_geometry coordinate system."
+        doc: "Reference to the end of the transformation chain, orienting the sample surface within the arpes_geometry coordinate system (sample_azimuth or anything depending on it)."
       transformations(NXtransformations):
         doc: "Set of transformations, describing the relative orientation of the sample with respect to the arpes_geometry coordinate system."
         sample_polar(NX_NUMBER):
@@ -131,6 +131,15 @@ NXmpes_arpes(NXmpes):
             enumeration: ["[0, 1, 0]"]
           \@depends_on:
             doc: "Path to a transformation that places the sample surface into the origin of the arpes_geometry coordinate system."
+        offset_polar(NX_NUMBER):
+          doc: "Offset of polar rotation."
+          unit: NX_ANGLE
+          \@transformation_type:
+            enumeration: ["rotation"]
+          \@vector:
+            enumeration: ["[0, 1, 0]"]
+          \@depends_on:
+            enumeration: ["sample_polar"]
         sample_tilt(NX_NUMBER):
           doc: "Rotation about the x axis (typically a manipulator tilt)."
           unit: NX_ANGLE
@@ -139,7 +148,16 @@ NXmpes_arpes(NXmpes):
           \@vector:
             enumeration: ["[1, 0, 0]"]
           \@depends_on:
-            enumeration: ["sample_polar"]
+            enumeration: ["offset_polar"]
+        offset_tilt(NX_NUMBER):
+          doc: "Offset of tilt rotation."
+          unit: NX_ANGLE
+          \@transformation_type:
+            enumeration: ["rotation"]
+          \@vector:
+            enumeration: ["[1, 0, 0]"]
+          \@depends_on:
+            enumeration: ["sample_tilt"]
         sample_azimuth(NX_NUMBER):
           doc: "Rotation about the z axis (azimuthal rotation within the sample plane)."
           unit: NX_ANGLE
@@ -148,7 +166,16 @@ NXmpes_arpes(NXmpes):
           \@vector:
             enumeration: ["[0, 0, 1]"]
           \@depends_on:
-            enumeration: ["sample_tilt"]
+            enumeration: ["offset_tilt"]
+        offset_azimuth(NX_NUMBER):
+          doc: "Offset of azimuthal rotation."
+          unit: NX_ANGLE
+          \@transformation_type:
+            enumeration: ["rotation"]
+          \@vector:
+            enumeration: ["[0, 0, 1]"]
+          \@depends_on:
+            enumeration: ["sample_azimuth"]
     (NXdata):
       \@signal:
         enumeration: ["data"] # There is an object named data that contains the signal
