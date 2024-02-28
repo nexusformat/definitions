@@ -43,14 +43,14 @@ NXem(NXem_base):
   # other than for base classes the default existentiality constraint is
   # exists: required therefore spelling this out is omitted for convenience
   # a releasing of this default constraint is possible with writing exists:
-  \@NX_class:
-  \@file_time(NX_DATE_TIME):
-  \@file_name(NX_CHAR):
-  \@file_update_time(NX_DATE_TIME):
-  \@NeXus_version(NX_CHAR):
-  \@HDF5_Version(NX_CHAR):
-  \@h5py_version(NX_CHAR):
-  \@default(NX_CHAR):
+  # \@NX_class:
+  # \@file_time(NX_DATE_TIME):
+  # \@file_name(NX_CHAR):
+  # \@file_update_time(NX_DATE_TIME):
+  # \@NeXus_version(NX_CHAR):
+  # \@HDF5_Version(NX_CHAR):
+  # \@h5py_version(NX_CHAR):
+  # \@default(NX_CHAR):
   (NXentry):  # means ENTRY(NXentry)
     exists: [min, 1, max, infty]
     definition(NX_CHAR):
@@ -60,7 +60,8 @@ NXem(NXem_base):
   # however as there are cases when this cannot be assured we cannot
   # make the default required, one example is e.g. a NeXus instance
   # where scientists just store conventions without a default plot
-    cs_profiling(NXcs_profiling):
+    profiling(NXcs_profiling):
+      exists: recommended
       doc: |
         The configuration of the I/O writer software (e.g. `pynxtools <https://github.com/FAIRmat-NFDI/pynxtools>`_)
         which was used to generate this NeXus file instance.
@@ -92,9 +93,10 @@ NXem(NXem_base):
       is_persistent(NX_BOOLEAN):
     experiment_alias(NX_CHAR):
       doc: |
-        Either an identifier or an alias that is human-friendly so that
-        scientist find that experiment again
+        Either an identifier or an alias that is human-friendly so
+        that scientists find that experiment again.
     experiment_description(NX_CHAR):  # no docstring overwritten means accepting it as it is defined in NXem_base
+      exists: optional
     start_time(NX_DATE_TIME):
     end_time(NX_DATE_TIME):
       exists: recommended
@@ -107,7 +109,7 @@ NXem(NXem_base):
       checksum(NX_CHAR):
       algorithm(NX_CHAR):
     (NXuser):
-      exists: [min, 1, max, infty]
+      exists: [min, 0, max, infty]
       name(NX_CHAR):
       identifier(NXidentifier):
         exists: recommended
@@ -117,6 +119,7 @@ NXem(NXem_base):
       # all other fields are optional but clearly defined in NXem_base
     sample(NXsample):
       method(NX_CHAR):
+        enumeration: [experiment, simulation]
       identifier(NXidentifier):
         exists: recommended
         service(NX_CHAR):
@@ -160,9 +163,17 @@ NXem(NXem_base):
           exists: recommended
         location(NX_CHAR):
           exists: recommended
+        control_program(NXprogram):
+          exists: recommended
+          doc: |
+            Details about the control program used for operating the microscope.
+          program(NX_CHAR):
+            \@version(NX_CHAR):
         (NXfabrication):
           vendor(NX_CHAR):
           model(NX_CHAR):
+          identifier(NX_CHAR):
+            exists: recommended
         (NXdetector):
           exists: [min, 0, max, infty]
           (NXfabrication):
@@ -172,15 +183,17 @@ NXem(NXem_base):
           electron_source(NXsource):
             emitter_type(NX_CHAR):
             probe(NX_CHAR):
+            # voltage like all other dynamic quantities should better be placed in instances of NXevent_data_em
         (NXibeam_column):
-          exists: optional
+          exists: [min, 0, max, 1]
+          # there are tri-beam SEMs but they typically use a laser for which we should have an own base class
           ion_source(NXsource):
             probe(NXion):
-            # voltage(NX_NUMBER): 
+            # voltage(NX_NUMBER): also this better in instances of NXevent_data_em
             # does not have to be written out unless that field should be required!
             # like all other sub-graphs in the NXibeam_column base class and all
             # the fields they can be used
-      (NXevent_data_em_set):
+      event_data_em_set(NXevent_data_em_set):
         exists: [min, 0, max, 1]
         # an instance must not have an NXevent_data_em_set but if it has one it must not be more than 1 !
         (NXevent_data_em):
@@ -204,7 +217,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
               title(NX_CHAR):
               intensity(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -215,7 +227,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
               title(NX_CHAR):
               intensity(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -228,7 +239,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
               title(NX_CHAR):
               intensity(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -243,7 +253,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
               title(NX_CHAR):
               intensity(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -256,7 +265,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
               title(NX_CHAR):
               intensity(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -271,7 +279,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
               title(NX_CHAR):
               intensity(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -298,7 +305,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_CHAR):
-              \@long_name(NX_CHAR):
               title:
               real(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -311,7 +317,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_CHAR):
-              \@long_name(NX_CHAR):
               title:
               real(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -326,7 +331,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_CHAR):
-              \@long_name(NX_CHAR):
               title:
               real(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -343,7 +347,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_CHAR):
-              \@long_name(NX_CHAR):
               title:
               real(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -358,7 +361,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_CHAR):
-              \@long_name(NX_CHAR):
               title:
               real(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -375,7 +377,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_CHAR):
-              \@long_name(NX_CHAR):
               title:
               real(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -399,12 +400,21 @@ NXem(NXem_base):
                 checksum(NX_CHAR):
                 algorithm(NX_CHAR):
               detector_identifier(NX_CHAR):
+            spectrum_zerod(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_INT):
+              title(NX_CHAR):
+              intensity(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_energy(NX_NUMBER):
+                \@long_name(NX_CHAR):
             spectrum_oned(NXdata):
               exists: optional
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
               title(NX_CHAR):
               intensity(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -417,7 +427,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
               title(NX_CHAR):
               intensity(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -432,7 +441,6 @@ NXem(NXem_base):
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
               title(NX_CHAR):
               intensity(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -446,7 +454,9 @@ NXem(NXem_base):
                 \@long_name(NX_CHAR):
               # collection(NXdata):
           em_lab(NXinstrument):
+            exists: recommended
             (NXebeam_column):
+              operation_mode(NX_CHAR):
               electron_source(NXsource):
                 voltage(NX_NUMBER):
             (NXibeam_column):
@@ -454,6 +464,29 @@ NXem(NXem_base):
               ion_source(NXsource):
                 probe(NXion):
                 voltage(NX_NUMBER):
+            (NXscanbox_em):
+              exists: optional
+              scan_schema(NX_CHAR):
+              dwell_time(NX_NUMBER):
+            (NXstage_lab):
+              exists: optional
+            (NXdetector):
+              exists: optional
+              mode(NX_CHAR):
+            heater(NXactuator):
+              exists: optional
+              current(NX_NUMBER):
+                doc: |
+                  Nominal current of the heater.
+                unit: NX_CURRENT
+              voltage(NX_NUMBER):
+                doc: |
+                  Nominal voltage of the heater.
+                unit: NX_VOLTAGE
+              power(NX_NUMBER):
+                doc: |
+                  Nominal power of the heater.
+                unit: NX_POWER
       # why at all do we need to add here (NXinstrument) ?
       # nyaml2nxdl could query the NXem_msr base class definition
       # and check if an identifier named em_lab exists in this case
