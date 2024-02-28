@@ -19,13 +19,8 @@ doc: |
   The configuration and results of a run of a tool from the toolbox is documented
   using binary container formats. Currently, paraprobe-toolbox uses the
   Hierarchical Data Format 5 (HDF5).
-# container formats typically use graphs - trees to be more specific - to organize
-# metadata and data. Information is granularized via labelled property graphs.
-# symbols:
-#   doc: |
-#     The symbols used in the schema to specify e.g. dimensions of arrays.
 type: group
-NXapm_paraprobe_tool_config(NXprocess):
+NXapm_paraprobe_tool_config(NXobject):
   # sequence_id is inherited from NXprocess
   (NXidentifier):
   analysis_identifier(NX_UINT):
@@ -39,27 +34,8 @@ NXapm_paraprobe_tool_config(NXprocess):
       Although offered here for convenience we strongly encourage to
       parameterize such descriptions as much as possible to support
       reusage and clearer communication.
-  (NXprogram):
-  profiling(NXcs_profiling):
-    doc: |
-      Metadata of the computational process whereby this configuration was generated.
-      There is a special set of tools called paraprobe-parmsetup which can be used
-      to conveniently create HDF5 configuration files, i.e. instances.
-    results_path(NX_CHAR):
-      doc: |
-        Path where the tool stores tool-specific results. If not specified,
-        results will be stored in the current working directory.
-    start_time(NX_DATE_TIME):
-      doc: |
-        ISO 8601 formatted time code with local time zone offset to UTC
-        information included when the creation of the configuration was started,
-        i.e. when the respective executable/tool was started as a process.
-    end_time(NX_DATE_TIME):
-      doc: |
-        ISO 8601 formatted time code with local time zone offset to UTC
-        information included when the creation of the configuration was
-        completed and the respective process of the tool exited.
-
+  # tool-specific input, examples for definitions for common types of input granularized into this
+  # base class from which tool-specific appdefs inherit
   reconstruction(NXserialized):
     doc: |
       Specification of the tomographic reconstruction to use for this analysis.
@@ -77,7 +53,7 @@ NXapm_paraprobe_tool_config(NXprocess):
       doc: |
         Name of the node which resolves the mass-to-charge-state-ratio
         values to use for this analysis.
-  iontypes(NXserialized):
+  ranging(NXserialized):
     doc: |
       Specification of the ranging definitions to use for this analysis.
       
@@ -93,3 +69,26 @@ NXapm_paraprobe_tool_config(NXprocess):
       doc: |
         Name of the (parent) node directly below which (in the hierarchy)
         the ranging definition for (molecular) ions are stored.
+  surface(NXserialized):
+    doc: |
+      Specification of the triangulated surface mesh to use for this analysis.
+      
+      Such a surface mesh can be used to define the edge of the reconstructed
+      volume to account for finite size effects.
+    # mesh(NX_CHAR):
+    #   doc: |
+    #     Name of the (parent) node directly below which (in the hierarchy)
+    #     an instance of :ref:`NXcg_triangle_set` is stored.
+  surface_distance(NXserialized):
+    doc: |
+      Specification of the point-to-triangulated-surface-mesh distances to
+      use for this analysis.
+    distance(NX_CHAR):
+      doc: |
+        Absolute path in the (HDF5) file that points to the distance values.
+        The tool assumes that the values are stored in the same order as
+        points (ions).
+  # filters
+  (NXspatial_filter):
+  (NXsubsampling_filter):
+  (NXmatch_filter):

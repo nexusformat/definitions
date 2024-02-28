@@ -1,0 +1,338 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_spatstat_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_ivec_max">
+            <doc>
+                 Maximum number of atoms per molecular ion. Should be 32 for paraprobe.
+            </doc>
+        </symbol>
+        <symbol name="n_ion_source">
+            <doc>
+                 Number of different source iontypes to distinguish.
+            </doc>
+        </symbol>
+        <symbol name="n_ion_target">
+            <doc>
+                 Number of different target iontypes to distinguish.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for a configuration file of the paraprobe-spatstat tool.
+         
+         This tool is part of the paraprobe-toolbox. Inspect :ref:`NXapm_paraprobe_tool_config` for details.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_paraprobe_spatstat_config"/>
+            </enumeration>
+        </field>
+        <field name="number_of_tasks" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 How many spatial_statistics tasks should the tool execute.
+            </doc>
+        </field>
+        <group name="spatial_statisticsID" type="NXapm_paraprobe_tool_config" minOccurs="1" maxOccurs="unbounded">
+            <group type="NXidentifier" optional="true"/>
+            <field name="analysis_identifier" type="NX_UINT" recommended="true"/>
+            <group name="reconstruction" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="position" type="NX_CHAR"/>
+                <field name="mass_to_charge" type="NX_CHAR"/>
+            </group>
+            <group name="ranging" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="ranging_definitions" type="NX_CHAR"/>
+            </group>
+            <group name="surface_distance" type="NXserialized" optional="true">
+                <doc>
+                     Distance between each ion and triangulated surface mesh.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="distance" type="NX_CHAR"/>
+                <field name="edge_distance" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Threshold to define how far an ion has to lay at least from the edge
+                         of the dataset so that the ion can act as a source. This means that
+                         an ROI is placed at the location of the ion and its neighbors are
+                         analyzed how they contribute to the computed statistics.
+                         
+                         The edge_distance threshold can be combined with the feature_distance threshold. This threshold defines defines up to which distance to a
+                         microstructural feature an ROI is placed.
+                         
+                         The threshold is useful to process the dataset such that ROIs do
+                         not protrude out of the dataset as this would add bias.
+                    </doc>
+                </field>
+            </group>
+            <group name="feature_distance" type="NXserialized" optional="true">
+                <doc>
+                     Distance between each ion and triangulated mesh of microstructural features.
+                     In addition to spatial filtering and considering how far ions lie to the
+                     edge of the dataset, it is possible to restrict the analyses to a sub-set of
+                     ions within a distance not farther away to a feature than the feature_distance
+                     threshold value.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="distance" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file which points to the distance of each
+                         ion to the closest feature.
+                    </doc>
+                </field>
+                <field name="feature_distance" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Threshold to define how close an ion has to lay to a feature so that
+                         the ion can at all qualify as a source, i.e. that an ROI is placed
+                         at the location of the ion and its neighbors are then analyzed
+                         how they contribute to the computed statistics.
+                         
+                         Recall that this feature_distance threshold is used in combination
+                         with the edge_distance threshold when placing ROI about source ions.
+                    </doc>
+                </field>
+            </group>
+            <group name="spatial_filter" type="NXspatial_filter">
+                <field name="windowing_method" type="NX_CHAR"/>
+                <group name="hexahedron_set" type="NXcg_hexahedron_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <group name="hexahedra" type="NXcg_face_list_data_structure">
+                        <field name="vertices" type="NX_UINT"/>
+                    </group>
+                </group>
+                <group name="cylinder_set" type="NXcg_cylinder_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="height" type="NX_NUMBER"/>
+                    <field name="radii" type="NX_NUMBER"/>
+                </group>
+                <group name="ellipsoid_set" type="NXcg_ellipsoid_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="half_axes_radii" type="NX_NUMBER"/>
+                    <field name="orientation" type="NX_NUMBER"/>
+                </group>
+                <group name="polyhedron_set" type="NXcg_polyhedron_set" optional="true"/>
+                <!--TODO-->
+                <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
+                    <field name="number_of_objects" type="NX_UINT"/>
+                    <field name="bitdepth" type="NX_UINT"/>
+                    <field name="mask" type="NX_UINT"/>
+                </group>
+            </group>
+            <!--leave open if scalar or matrix
+  dim: (i,)
+identifier(NX_UINT):-->
+            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
+                <field name="min_incr_max" type="NX_INT"/>
+            </group>
+            <group name="iontype_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <!--config-->
+            <field name="randomize_iontypes" type="NX_BOOLEAN">
+                <doc>
+                     Specifies, if the iontypes are randomized for the point cloud or not.
+                     Internally, paraprobe uses a sequentially executed deterministic MT19987
+                     (MersenneTwister) pseudo-random number generator to shuffle the
+                     iontypes randomly across the entire set of ions. That is the total
+                     number of ions of either type remain the same but the information about
+                     their location is randomized.
+                </doc>
+            </field>
+            <group name="random_number_generator" type="NXcs_prng" recommended="true">
+                <field name="type" type="NX_CHAR"/>
+                <field name="seed" type="NX_NUMBER"/>
+                <field name="warmup" type="NX_NUMBER"/>
+            </group>
+            <field name="ion_query_type_source" type="NX_CHAR">
+                <doc>
+                     How should the iontype be interpreted on the source-side, i.e.
+                     all these ion positions where a regions-of-interest (ROI) around
+                     so-called source ions will be placed. Different options exist
+                     how iontypes are interpreted given an iontype represents
+                     in general a (molecular) ion with different isotopes that have
+                     individually different multiplicity.
+                       
+                     The value resolve_all will set an ion active in the analysis regardless
+                     of which iontype it is. Each active ion is accounted for once.
+                     
+                     The value resolve_unknown will set an ion active when the ion is
+                     of the UNKNOWNTYPE type. Each active ion is accounted for once.
+                     
+                     The value resolve_ion will set an ion active if it is of the specific
+                     iontype, irregardless of its elemental or isotopic details.
+                     Each active ion is counted once.
+                     
+                     The value resolve_element will set an ion active, and most importantly,
+                     account for each as many times as the (molecular) ion contains
+                     atoms of elements in the whitelist ion_query_isotope_vector.
+                     
+                     The value resolve_isotope will set an ion active, and most importantly,
+                     account for each as many times as the (molecular) ion contains
+                     isotopes in the whitelist ion_query_isotope_vector.
+                     
+                     In effect, ion_query_isotope_vector acts as a whitelist to filter
+                     which ions are considered as source ions of the correlation statistics
+                     and how the multiplicity of each ion will be factorized, i.e. how
+                     often it is accounted for.
+                </doc>
+                <enumeration>
+                    <item value="resolve_all"/>
+                    <item value="resolve_unknown"/>
+                    <item value="resolve_ion"/>
+                    <item value="resolve_element"/>
+                    <item value="resolve_isotope"/>
+                </enumeration>
+            </field>
+            <field name="ion_query_nuclide_source" type="NX_UINT" units="NX_UNITLESS">
+                <doc>
+                     Matrix of isotope vectors, as many as rows as different candidates
+                     for iontypes should be distinguished as possible source iontypes.
+                     In the simplest case, the matrix contains only the proton number
+                     of the element in the row, all other values set to zero.
+                     Combined with ion_query_type_source set to resolve_element this will
+                     recover usual spatial correlation statistics like the 1NN C-C
+                     spatial statistics.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="n_ion_source"/>
+                    <dim index="2" value="n_ivec_max"/>
+                </dimensions>
+            </field>
+            <field name="ion_query_type_target" type="NX_CHAR">
+                <doc>
+                     Similarly as ion_query_type_source how should iontypes be interpreted
+                     on the target-side, i.e. how many counts will be bookkept for ions
+                     which are neighbors of source ions within or on the surface of each
+                     inspection/ROI about each source ion.
+                     Source ion in the center of the ROI are not accounted for during
+                     counting the summary statistics.
+                     For details about the resolve values consider the explanations in
+                     ion_query_type_source. These account for ion_query_type_target as well.
+                </doc>
+                <enumeration>
+                    <item value="resolve_all"/>
+                    <item value="resolve_unknown"/>
+                    <item value="resolve_ion"/>
+                    <item value="resolve_element"/>
+                    <item value="resolve_isotope"/>
+                </enumeration>
+            </field>
+            <!--NEW ISSUE: conditionally required only when resolve_isotope-->
+            <field name="ion_query_nuclide_target" type="NX_UINT" units="NX_UNITLESS">
+                <doc>
+                     Matrix of isotope vectors, as many as rows as different candidates for
+                     iontypes to distinguish as possible targets. See additional comments
+                     under ion_query_isotope_vector_source.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="n_ion_target"/>
+                    <dim index="2" value="n_ivec_max"/>
+                </dimensions>
+            </field>
+            <group name="statistics" type="NXprocess">
+                <doc>
+                     Specifies which spatial statistics to compute.
+                </doc>
+                <group name="knn" type="NXprocess" minOccurs="0" maxOccurs="1">
+                    <doc>
+                         Compute k-th nearest neighbour statistics.
+                    </doc>
+                    <field name="kth" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Order k.
+                        </doc>
+                    </field>
+                    <field name="min_incr_max" type="NX_FLOAT" units="NX_LENGTH">
+                        <doc>
+                             Minimum value, increment, and maximum value of the histogram binning.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                </group>
+                <group name="rdf" type="NXprocess" minOccurs="0" maxOccurs="1">
+                    <doc>
+                         Compute radial distribution function.
+                    </doc>
+                    <field name="min_incr_max" type="NX_FLOAT" units="NX_LENGTH">
+                        <doc>
+                             Minimum value, increment, and maximum value of the histogram binning.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+        </group>
+        <!--NEW ISSUE: ripleyk(NXcollection):
+NEW ISSUE: two_point(NXcollection):-->
+        <group name="common" type="NXapm_paraprobe_tool_common">
+            <field name="status" type="NX_CHAR"/>
+            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <field name="program" type="NX_CHAR">
+                    <attribute name="version" type="NX_CHAR"/>
+                </field>
+            </group>
+            <group name="profiling" type="NXcs_profiling" recommended="true">
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="total_elapsed_time" type="NX_FLOAT"/>
+                <field name="current_working_directory" type="NX_CHAR"/>
+            </group>
+        </group>
+    </group>
+</definition>

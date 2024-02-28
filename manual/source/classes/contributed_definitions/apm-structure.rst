@@ -205,14 +205,11 @@ is useful and future-proof strategy for software development and data analyses a
 automated provenance tracking which happens silently in the background.
 
 Base classes have been defined to group common pieces of information for each tool of the
-toolbox. These base classes are:
+toolbox. For each tool we define a pair of base classes. One for the configuration (input) side
+and one for the results (output) side:
 
-    :ref:`NXapm_paraprobe_tool_config`:
-        Common parts of configuration settings useful for several tools of the paraprobe-toolbox.
-
-    :ref:`NXapm_paraprobe_tool_results`:
-        Common parts of results useful for several tools of the paraprobe-toolbox.
-
+    :ref:`NXapm_paraprobe_tool_config`, :ref:`NXapm_paraprobe_tool_results`, :ref:`NXapm_paraprobe_tool_common`:
+     Configuration, results, and common parts respectively useful for the application definitions for tools of the paraprobe-toolbox.
 
 .. _ApmParaprobeAppDef:
 
@@ -233,81 +230,38 @@ tool one such pair is proposed:
         Apply ranging definitions and explore possible molecular ions.
         Store applied ranging definitions and combinatorial analyses of possible iontypes.
 
-The definitions of the following tools remain to become refactored like those for the above-mentioned tools:
-
-    :ref:`NXapm_paraprobe_config_selector`:
-        Configuration of paraprobe-selector
+    :ref:`NXapm_paraprobe_selector_config`, :ref:`NXapm_paraprobe_selector_results`:
+        Configuration and results respectively of the paraprobe-selector tool.
         Defining complex spatial regions-of-interest to filter reconstructed datasets.
-
-    :ref:`NXapm_paraprobe_results_selector`:
-        Results of paraprobe-selector
         Store which points are inside or on the boundary of complex spatial regions-of-interest.
 
-
-    :ref:`NXapm_paraprobe_config_surfacer`:
-        Configuration of paraprobe-surfacer
-        Create a model for the edge of a point cloud via convex hulls, alpha shapes.
-
-    :ref:`NXapm_paraprobe_results_surfacer`:
-        Results of paraprobe-surfacer
+    :ref:`NXapm_paraprobe_surfacer_config`, :ref:`NXapm_paraprobe_surfacer_results`:
+        Configuration and results respectively of the paraprobe-surfacer tool.
+        Create a model for the edge of a point cloud via convex hulls, alpha shapes, or alpha-wrappings.
         Store triangulated surface meshes of models for the edge of a dataset.
 
+    :ref:`NXapm_paraprobe_distancer_config`, :ref:`NXapm_paraprobe_distancer_results`:
+        Configuration and results respectively of the paraprobe-distancer tool.
+        Compute and store analytical distances between ions to a set of triangles.
 
-    :ref:`NXapm_paraprobe_config_distancer`:
-        Configuration of paraprobe-distancer
-        Compute analytical distances between ions to a set of triangles.
+    :ref:`NXapm_paraprobe_tessellator_config`, :ref:`NXapm_paraprobe_tessellator_results`:
+        Configuration and results respectively of the paraprobe-tessellator tool.
+        Compute and store Voronoi cells and properties of these for all ions in a dataset.
 
-    :ref:`NXapm_paraprobe_results_distancer`:
-        Results of paraprobe-distancer
-        Store analytical distances between ions to a set of triangles.
+    :ref:`NXapm_paraprobe_spatstat_config`, :ref:`NXapm_paraprobe_spatstat_results`:
+        Configuration and results respectively of the paraprobe-spatstat tool.
+        Compute spatial statistics on the entire or selected regions of the reconstructed dataset.
 
+    :ref:`NXapm_paraprobe_clusterer_config`, :ref:`NXapm_paraprobe_clusterer_results`:
+        Configuration and results resepctively of the paraprobe-clusterer tool.
+        Compute cluster analyses with established machine learning algorithms using CPU or GPUs.
 
-    :ref:`NXapm_paraprobe_config_tessellator`:
-        Configuration of paraprobe-tessellator
-        Compute Voronoi cells for if desired all ions in a dataset.
+    :ref:`NXapm_paraprobe_nanochem_config`, :ref:`NXapm_paraprobe_nanochem_results`:
+        Configuration and results resepctively of the paraprobe-nanochem tool.
+        Compute delocalization, iso-surfaces, analyze 3D objects, composition profiles, and mesh interfaces.
 
-    :ref:`NXapm_paraprobe_results_tessellator`:
-        Results of paraprobe-tessellator
-        Store volume of all Voronoi cells about each ion in the dataset.
-
-
-    :ref:`NXapm_paraprobe_config_nanochem`:
-        Configuration of paraprobe-nanochem
-        Compute delocalization, iso-surfaces, analyze 3D objects, and composition profiles.
-
-    :ref:`NXapm_paraprobe_results_nanochem`:
-        Results of paraprobe-nanochem
-        Store all results of delocalization, isosurface, and interface detection algorithms,
-        store all extracted triangulated surface meshes of found microstructural features,
-        store composition profiles and corresponding geometric primitives (ROIs).
-
-
-    :ref:`NXapm_paraprobe_config_intersector`:
-        Configuration of paraprobe-intersector
-        Assess intersections and proximity of 3D triangulated surface meshes in
-        continuum space to study the effect the parameterization of surface
-        extraction algorithms on the resulting shape, spatial arrangement,
-        and colocation of 3D objects via graph-based techniques.
-
-    :ref:`NXapm_paraprobe_results_intersector`:
-        Results of paraprobe-intersector
-        Store graph of microstructural features and relations/link identified between them.
-
-
-    :ref:`NXapm_paraprobe_config_spatstat`:
-        Configuration of paraprobe-spatstat
-        Spatial statistics on the entire or selected regions of the reconstructed dataset.
-
-    :ref:`NXapm_paraprobe_results_spatstat`:
-        Results of paraprobe-spatstat
-        Store spatial correlation functions.
-
-
-    :ref:`NXapm_paraprobe_config_clusterer`:
-        Configuration of paraprobe-clusterer
-        Import cluster analysis results of IVAS/APSuite and perform clustering
-        analyses in a Python ecosystem.
-
-    :ref:`NXapm_paraprobe_results_clusterer`:
-        Results of paraprobe-clusterer
-        Store results of cluster analyses.
+    :ref:`NXapm_paraprobe_intersector_config`, :ref:`NXapm_paraprobe_intersector_results`:
+        Configuration and results resepctively of the paraprobe-intersector tool.
+        Analyze volumetric intersections and proximity of 3D objects discretized as triangulated surface meshes
+        in continuum space to study the effect the parameterization of surface extraction algorithms on the resulting shape,
+        spatial arrangement, and colocation of 3D objects via graph-based techniques.

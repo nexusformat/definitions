@@ -1,0 +1,289 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_surfacer_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_ions">
+            <doc>
+                 The total number of ions in the reconstruction.
+            </doc>
+        </symbol>
+        <symbol name="n_v_tri">
+            <doc>
+                 The number of vertices of the alpha complex.
+            </doc>
+        </symbol>
+        <symbol name="n_f_tri">
+            <doc>
+                 The number of faces of the alpha complex.
+            </doc>
+        </symbol>
+        <symbol name="n_f_tri_xdmf">
+            <doc>
+                 The total number of XDMF values to represent all faces of triangles via XDMF.
+            </doc>
+        </symbol>
+        <symbol name="n_f_tet_xdmf">
+            <doc>
+                 The total number of XDMF values to represent all faces of tetrahedra via XDMF.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for results files of the paraprobe-surfacer tool.
+         
+         This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
+         The purpose and need of the paraprobe-surfacer tool is the generation of meshed
+         representation of the surface of the the reconstructed volume (or a portion) of it
+         using different algorithms from the computational geometry community.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_paraprobe_surfacer_results"/>
+            </enumeration>
+        </field>
+        <!--tasks-->
+        <group name="point_set_wrapping" type="NXapm_paraprobe_tool_results">
+            <doc>
+                 Paraprobe-surfacer can be used to load a ROI that is the entire or a
+                 sub-set of the ion point cloud. In the point_cloud_wrapping process
+                 the tool computes a triangulated surface mesh which encloses the
+                 ROI/point cloud. This mesh can be seen as a model for the edge of
+                 the dataset.
+                 
+                 Different algorithms can be used with paraprobe-surfacer to create
+                 this mesh such as convex hulls, alpha-shapes as their generalization,
+                 or alpha wrappings.
+                 
+                 Ideally, the resulting mesh should be a watertight polyhedron.
+                 This polyhedron is not necessarily convex. For some algorithms there
+                 is no guarantee that the resulting mesh yields a watertight mesh.
+            </doc>
+            <!--config-->
+            <group name="window" type="NXcs_filter_boolean_mask">
+                <field name="number_of_ions" type="NX_UINT"/>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <!--results-->
+            <group name="alpha_complexID" type="NXcg_alpha_complex" minOccurs="0" maxOccurs="unbounded">
+                <!--(NXcg_grid): currently we do not store the underlying grid
+for eventually performed preprocessing-->
+                <group name="window" type="NXcs_filter_boolean_mask">
+                    <doc>
+                         A bitmask which identifies exactly all those ions whose positions
+                         were considered when defining the filtered point set from which
+                         that alpha_complex instance was computed.
+                         
+                         This window can be different to the window of the *point_set_wrapping*
+                         parent group because irrelevant ions might have been filtered out in addition
+                         to the window defined in *point_set_wrapping* to reduce e.g. computational
+                         costs of the alpha complex computation.
+                    </doc>
+                    <!--filtered in addition to the ROI or again the entire dataset-->
+                    <field name="number_of_ions" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Number of ions covered by the mask.
+                        </doc>
+                    </field>
+                    <field name="bitdepth" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Number of bits assumed matching on a default datatype.
+                        </doc>
+                    </field>
+                    <field name="mask" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             The bitfield of the mask. See :ref:`NXcs_filter_boolean_mask` for
+                             how this bitfield is to be interpreted.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_ions"/>
+                        </dimensions>
+                    </field>
+                </group>
+                <field name="dimensionality" type="NX_UINT" units="NX_UNITLESS">
+                    <enumeration>
+                        <item value="2"/>
+                        <item value="3"/>
+                    </enumeration>
+                </field>
+                <field name="type" type="NX_CHAR">
+                    <enumeration>
+                        <item value="convex_hull"/>
+                        <item value="alpha_shape"/>
+                        <item value="alpha_wrapping"/>
+                        <item value="other"/>
+                        <item value="undefined"/>
+                    </enumeration>
+                </field>
+                <field name="mode" type="NX_CHAR">
+                    <enumeration>
+                        <item value="general"/>
+                        <item value="regularized"/>
+                    </enumeration>
+                </field>
+                <field name="alpha" type="NX_NUMBER" units="NX_ANY"/>
+                <field name="offset" type="NX_NUMBER" optional="true" units="NX_LENGTH"/>
+                <group name="triangle_set" type="NXcg_triangle_set" optional="true">
+                    <doc>
+                         The set of triangles in the coordinate system paraprobe
+                         which discretizes the exterior surface of the alpha complex.
+                    </doc>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <group name="triangles" type="NXcg_face_list_data_structure">
+                        <field name="dimensionality" type="NX_POSINT"/>
+                        <field name="number_of_vertices" type="NX_POSINT"/>
+                        <field name="number_of_faces" type="NX_POSINT"/>
+                        <field name="vertex_identifier_offset" type="NX_INT"/>
+                        <field name="face_identifier_offset" type="NX_INT"/>
+                        <field name="vertices" type="NX_FLOAT" units="NX_LENGTH">
+                            <dimensions rank="2">
+                                <dim index="1" value="n_v_tri"/>
+                                <dim index="2" value="3"/>
+                            </dimensions>
+                        </field>
+                        <field name="faces" type="NX_UINT" units="NX_UNITLESS">
+                            <dimensions rank="2">
+                                <dim index="1" value="n_f_tri"/>
+                                <dim index="2" value="3"/>
+                            </dimensions>
+                        </field>
+                        <field name="xdmf_topology" type="NX_UINT" units="NX_UNITLESS">
+                            <doc>
+                                 A list of as many tuples of XDMF topology key, XDMF number
+                                 of vertices and a triple of vertex indices specifying each
+                                 triangle. The total number of entries is n_f_tri * (1+1+3).
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_f_tri_xdmf"/>
+                            </dimensions>
+                        </field>
+                        <field name="is_watertight" type="NX_BOOLEAN" optional="true">
+                            <doc>
+                                 Do the triangles define a triangulated surface mesh that is watertight?
+                            </doc>
+                        </field>
+                        <field name="volume" type="NX_FLOAT" optional="true" units="NX_VOLUME">
+                            <doc>
+                                 The volume which the triangulated surface mesh
+                                 encloses if that mesh is watertight.
+                            </doc>
+                        </field>
+                    </group>
+                </group>
+                <group name="interior_tetrahedra" type="NXcg_tetrahedron_set" optional="true">
+                    <doc>
+                         The set of tetrahedra which represent the interior volume
+                         of the complex if that is a closed two-manifold.
+                    </doc>
+                    <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS"/>
+                    <field name="volume" type="NX_FLOAT" optional="true" units="NX_VOLUME">
+                        <doc>
+                             The accumulated volume of all interior tetrahedra.
+                        </doc>
+                    </field>
+                    <group name="tetrahedra" type="NXcg_face_list_data_structure" optional="true">
+                        <field name="number_of_vertices" type="NX_POSINT"/>
+                        <field name="number_of_faces" type="NX_POSINT"/>
+                        <field name="vertex_identifier_offset" type="NX_INT"/>
+                        <field name="face_identifier_offset" type="NX_INT"/>
+                        <field name="vertices" type="NX_FLOAT" units="NX_LENGTH">
+                            <dimensions rank="2">
+                                <dim index="1" value="n_v_tet"/>
+                                <dim index="2" value="3"/>
+                            </dimensions>
+                        </field>
+                        <field name="xdmf_topology" type="NX_UINT" units="NX_UNITLESS">
+                            <doc>
+                                 A list of as many tuples of XDMF topology key, XDMF number
+                                 of vertices and a triple of vertex indices specifying each
+                                 triangle. The total number of entries is n_f_tet * (1+1+4).
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_f_tet_xdmf"/>
+                            </dimensions>
+                        </field>
+                    </group>
+                </group>
+            </group>
+        </group>
+        <!--TRIANGLE_SET_WRAPPING(NXprocess):
+For the future as we may wish to wrap primitives other like triangles or polylines.-->
+        <group name="common" type="NXapm_paraprobe_tool_common">
+            <field name="status" type="NX_CHAR"/>
+            <field name="analysis_identifier" type="NX_UINT"/>
+            <group name="config" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+            </group>
+            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <field name="program" type="NX_CHAR">
+                    <attribute name="version" type="NX_CHAR"/>
+                </field>
+            </group>
+            <group name="profiling" type="NXcs_profiling" recommended="true">
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="total_elapsed_time" type="NX_FLOAT"/>
+                <field name="current_working_directory" type="NX_CHAR"/>
+                <field name="number_of_processes" type="NX_POSINT"/>
+                <field name="number_of_threads" type="NX_POSINT"/>
+                <field name="number_of_gpus" type="NX_POSINT"/>
+            </group>
+            <group name="userID" type="NXuser" minOccurs="0" maxOccurs="unbounded">
+                <doc>
+                     If used, metadata of at least the person who performed this analysis.
+                </doc>
+                <field name="name" type="NX_CHAR"/>
+            </group>
+            <group name="coordinate_system_set" type="NXcoordinate_system_set" minOccurs="1" maxOccurs="1">
+                <group name="paraprobe" type="NXcoordinate_system">
+                    <field name="type" type="NX_CHAR"/>
+                    <field name="handedness" type="NX_CHAR"/>
+                    <field name="x" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="y" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="z" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+        </group>
+    </group>
+</definition>

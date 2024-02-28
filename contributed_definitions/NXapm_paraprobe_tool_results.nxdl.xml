@@ -22,6 +22,8 @@
 # For further information, see http://www.nexusformat.org
 -->
 <!--
+thereby implicitly all \@default attributes for geometric primitives point to the
+single instance ENTRY[entry]/COORDINATE_SYSTEM_SET[coordinate_system_set]/paraprobe
 symbols:
   doc: |
     The symbols used in the schema to specify e.g. dimensions of arrays.-->
@@ -46,91 +48,40 @@ symbols:
          The configuration and results of a run of a tool from the toolbox is documented
          using binary container formats. Currently, paraprobe-toolbox uses the
          Hierarchical Data Format 5 (HDF5).
+         
+         The paraprobe coordinate system is the reference *NXcoordinate_system*
+         for each geometric primitive.
     </doc>
-    <group type="NXidentifier"/>
-    <field name="analysis_identifier" type="NX_UINT" units="NX_UNITLESS">
-        <doc>
-             Internal identifier used by the tool to refer to an analysis (aka simulation
-             id).
-        </doc>
-    </field>
+    <!--config section-->
     <field name="description" type="NX_CHAR">
         <doc>
              Possibility for leaving a free-text description about this analysis.
         </doc>
     </field>
-    <group name="config" type="NXserialized">
+    <group name="window" type="NXcs_filter_boolean_mask">
         <doc>
-             The configuration file that was used to parameterize the algorithms
-             which the tool executes.
+             A bitmask which identifies all ions considered in the analysis.
         </doc>
-    </group>
-    <group type="NXprogram"/>
-    <group name="profiling" type="NXcs_profiling">
-        <field name="results_path" type="NX_CHAR">
+        <field name="number_of_ions" type="NX_UINT" units="NX_UNITLESS">
             <doc>
-                 Path where the tool stores tool-specific results. If not specified,
-                 results will be stored in the current working directory.
+                 Number of ions covered by the mask.
+                 By default, the total number of ions in the dataset.
             </doc>
         </field>
-        <field name="start_time" type="NX_DATE_TIME">
+        <field name="bitdepth" type="NX_UINT" units="NX_UNITLESS">
             <doc>
-                 ISO 8601 formatted time code with local time zone offset to UTC
-                 information included when the analysis in this results file was started,
-                 i.e. when the respective executable/tool was started as a process.
+                 Number of bits assumed matching on a default datatype.
             </doc>
         </field>
-        <field name="end_time" type="NX_DATE_TIME">
+        <field name="mask" type="NX_UINT" units="NX_UNITLESS">
             <doc>
-                 ISO 8601 formatted time code with local time zone offset to UTC
-                 information included when the analysis in this results file were
-                 completed and the respective process of the tool exited.
+                 The mask. The length of the mask is an integer multiple of bitdepth.
+                 In such case, padded bits are set to 0.
             </doc>
-        </field>
-        <field name="status" type="NX_CHAR">
-            <doc>
-                 A statement whether the tool executable managed to process the analysis
-                 or whether this failed. Status is written to the results file after the
-                 end_time beyond which point in time the tool must no longer compute
-                 any further analysis results but exit.
-                 
-                 Only when this status message is present and its value is `success`,
-                 one should consider the results of the tool. In all other cases it might
-                 b that the tool has terminated prematurely or another error occurred.
-            </doc>
-            <enumeration>
-                <item value="success"/>
-                <item value="failure"/>
-            </enumeration>
+            <dimensions rank="1">
+                <dim index="1" value="i"/>
+            </dimensions>
         </field>
     </group>
-    <group type="NXuser"/>
-    <group type="NXcoordinate_system_set">
-        <doc>
-             Details about coordinate systems (reference frames) used. In atom probe several coordinate
-             systems have to be distinguished. Names of instances of such :ref:`NXcoordinate_system`
-             should be documented explicitly and doing so by picking from the
-             following controlled set of names:
-             
-             * paraprobe
-             * lab
-             * specimen
-             * laser
-             * instrument
-             * detector
-             * recon
-             
-             The aim of this convention is to support users with contextualizing which reference
-             frame each instance (coordinate system) is. If needed, instances of :ref:`NXtransformations`
-             are used to detail the explicit affine transformations whereby one can convert
-             rpresentations between different reference frames.
-             Inspect :ref:`NXtransformations` for further details.
-        </doc>
-        <group type="NXcoordinate_system">
-            <group type="NXtransformations"/>
-        </group>
-    </group>
-    <!--add further fields coming from using the charge state recovery
-workflow from the ifes_apt_tc_data_modeling library
-#MK::end of the tool-specific section-->
+    <!--typically tool-specific section follows-->
 </definition>

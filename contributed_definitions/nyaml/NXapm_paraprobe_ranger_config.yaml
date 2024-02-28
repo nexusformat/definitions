@@ -17,9 +17,10 @@ NXapm_paraprobe_ranger_config(NXobject):
     exists: [min, 1, max, 1]
     definition(NX_CHAR):
       \@version(NX_CHAR):
-        enumeration: [NXapm_paraprobe_ranger_config]
-    apply_existent_ranging(NXapm_paraprobe_tool_config):
-      exists: [min, 0, max, 1]
+      enumeration: [NXapm_paraprobe_ranger_config]
+    # tool-specific
+    range(NXapm_paraprobe_tool_config):
+      exists: [min, 1, max, 1]
       (NXidentifier):
         exists: optional
       analysis_identifier(NX_UINT):
@@ -29,6 +30,7 @@ NXapm_paraprobe_ranger_config(NXobject):
         path(NX_CHAR):
         checksum(NX_CHAR):
         algorithm(NX_CHAR):
+        position(NX_CHAR):
         mass_to_charge(NX_CHAR):
       ranging(NXserialized):
         type(NX_CHAR):
@@ -36,16 +38,17 @@ NXapm_paraprobe_ranger_config(NXobject):
         checksum(NX_CHAR):
         algorithm(NX_CHAR):
         ranging_definitions(NX_CHAR):
+      # filter
       spatial_filter(NXspatial_filter):
-        exists: optional
         windowing_method(NX_CHAR):
-        (NXcg_hexahedron_set):
+        hexahedron_set(NXcg_hexahedron_set):
           exists: optional
           dimensionality(NX_POSINT):
           cardinality(NX_POSINT):
           identifier_offset(NX_INT):
           hexahedra(NXcg_face_list_data_structure):
-        (NXcg_cylinder_set):
+            vertices(NX_UINT):
+        cylinder_set(NXcg_cylinder_set):
           exists: optional
           dimensionality(NX_POSINT):
           cardinality(NX_POSINT):
@@ -53,7 +56,7 @@ NXapm_paraprobe_ranger_config(NXobject):
           center(NX_NUMBER):
           height(NX_NUMBER):
           radii(NX_NUMBER):
-        (NXcg_ellipsoid_set):
+        ellipsoid_set(NXcg_ellipsoid_set):
           exists: optional
           dimensionality(NX_POSINT):
           cardinality(NX_POSINT):
@@ -61,19 +64,17 @@ NXapm_paraprobe_ranger_config(NXobject):
           center(NX_NUMBER):
           half_axes_radii(NX_NUMBER):
           orientation(NX_NUMBER):
-        (NXcg_polyhedron_set):
+        polyhedron_set(NXcg_polyhedron_set):
           exists: optional
           # TODO
-        (NXcs_filter_boolean_mask):
+        bitmask(NXcs_filter_boolean_mask):
           exists: optional
           number_of_objects(NX_UINT):
           bitdepth(NX_UINT):
           mask(NX_UINT):
-          # will this be a scalar if the next line is omitted?
+          # leave open if scalar or matrix
           #   dim: (i,)
           identifier(NX_UINT):
-          # likewise so this one
-          #   dim: (j,)
       evaporation_id_filter(NXsubsampling_filter):
         exists: optional
         min_incr_max(NX_INT):
@@ -85,13 +86,8 @@ NXapm_paraprobe_ranger_config(NXobject):
         exists: optional
         method(NX_CHAR):
         match(NX_NUMBER):
-      profiling(NXcs_profiling):
-        exists: recommended
-        start_time(NX_DATE_TIME):
-        end_time(NX_DATE_TIME):
-        results_path(NX_CHAR):
-          exists: recommended
-        current_working_directory(NX_CHAR):
+
+      # tool-specific parameter
     # molecular_ion_search(NXapm_paraprobe_tool_config):
       # exists: ['min', '0', 'max', 'unbounded']
       # # extent if needed
@@ -207,3 +203,15 @@ NXapm_paraprobe_ranger_config(NXobject):
         # checksum(NX_CHAR):
         # algorithm(NX_CHAR):
         # ranging_definitions(NX_CHAR):
+    common(NXapm_paraprobe_tool_common): 
+      status(NX_CHAR):
+      programID(NXprogram):
+        exists: [min, 1, max, infty]
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+      profiling(NXcs_profiling):
+        exists: recommended
+        start_time(NX_DATE_TIME):
+        end_time(NX_DATE_TIME):
+        total_elapsed_time(NX_FLOAT):
+        current_working_directory(NX_CHAR):
