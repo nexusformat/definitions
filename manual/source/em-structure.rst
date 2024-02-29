@@ -1,8 +1,8 @@
 .. _Em-Structure-Fairmat:
 
-=======================
-B1: Electron microscopy
-=======================
+===================
+Electron microscopy
+===================
 
 Electron microscopy is a cross-cutting characterization technique of key demand and relevance within materials science, materials engineering, and bio-science/omics research communities.
 
