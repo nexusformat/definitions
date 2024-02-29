@@ -37,10 +37,8 @@ In summary, scientists place a specimen/sample into the microscope, calibrate th
 A microscope session ends with the scientist removing the specimen from the instrument or parking it so that the next user can start a session. Occasionally, service technicians perform calibrations and maintenance which also can be described as a session on the microscope. We have provided base classes to describe these steps and events and an application definition for electron microscopy:
 
     :ref:`NXem`:
-        An application definition which explores the possibilities of electron microscopes. This application definition sets constraints on :ref:`NXem_base`.
+        An application definition which explores the possibilities of electron microscopes.
 
-    :ref:`NXem_base`:
-        A base class to serve as a blueprint for documenting research with electron microscopy (real microscope or simulated electron beam matter interaction).
 
 .. _EmBC:
 
