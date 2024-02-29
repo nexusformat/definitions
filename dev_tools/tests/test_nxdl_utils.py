@@ -1,6 +1,7 @@
 """This is a code that performs several tests on nexus tool
 
 """
+
 #
 # Copyright The NOMAD Authors.
 #

@@ -6,8 +6,9 @@
 
 # -- Path setup --------------------------------------------------------------
 
-import sys, os, datetime
-
+import datetime
+import os
+import sys
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -111,8 +112,8 @@ elif html_theme== 'alabaster': # Alabaster allows a very high degree of control 
         'logo_name': True,
         'github_button': True,
         'github_type': 'watch',
-        'github_repo': 'nexus_definitions/tree/fairmat',
-        'github_user': 'FAIRmat-Experimental',
+        'github_repo': 'nexus_definitions',
+        'github_user': 'FAIRmat-NFDI',
         'github_count': 'false', # We don't get the cute counter baloon if we want to point to the branch
         'sidebar_width': '300px',
         'body_max_width': 'auto',
@@ -160,5 +161,7 @@ latex_elements = {
     \usepackage{amsbsy}
     \listfiles
     \DeclareUnicodeCharacter{1F517}{X}
-    \DeclareUnicodeCharacter{2906}{<=}'''
+    \DeclareUnicodeCharacter{2906}{<=}
+    \DeclareUnicodeCharacter{394}{$\Delta$}
+    \DeclareUnicodeCharacter{2206}{$\Delta$}'''
 }

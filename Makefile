@@ -5,19 +5,18 @@
 
 PYTHON = python3
 SPHINX = sphinx-build
-BUILD_DIR = "build"
-BASE_CLASS_DIR := base_classes
-CONTRIB_DIR := contributed_definitions
-APPDEF_DIR := applications
-NXDL_DIRS := $(BASE_CLASS_DIR) $(CONTRIB_DIR) $(APPDEF_DIR)
-NYAML_SUBDIR := nyaml
-NYAML_APPENDIX := _parsed
+BUILD_DIR = build
+BASE_CLASS_DIR = base_classes
+CONTRIB_DIR = contributed_definitions
+APPDEF_DIR = applications
+NYAML_SUBDIR = nyaml
 
-NXDL_BC := $(wildcard $(BASE_CLASS_DIR)/*.nxdl.xml)
-NXDL_CONTRIB := $(wildcard $(CONTRIB_DIR)/*.nxdl.xml)
-NXDL_APPDEF := $(wildcard $(APPDEF_DIR)/*.nxdl.xml)
+YBC_NXDL_TARGETS = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(BASE_CLASS_DIR)/nyaml/*.yaml)))
+YCONTRIB_NXDL_TARGETS = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(CONTRIB_DIR)/nyaml/*.yaml)))
+YAPPDEF_NXDL_TARGETS = $(patsubst %.yaml,%.nxdl.xml,$(subst /nyaml/,/, $(wildcard $(APPDEF_DIR)/nyaml/*.yaml)))
 
-.PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local nyaml nxdl
+
+.PHONY: help install style autoformat test clean prepare html pdf impatient-guide all local nxdl nyaml
 
 help ::
 	@echo ""
@@ -29,12 +28,15 @@ help ::
 	@echo "make autoformat         Format all files to the coding style conventions."
 	@echo "make test               Run NXDL syntax and documentation tests."
 	@echo "make clean              Remove all build files."
+	@echo "make clean-nyaml        Remove all nyaml files."
 	@echo "make prepare            (Re)create all build files."
 	@echo "make html               Build HTML version of manual. Requires prepare first."
 	@echo "make pdf                Build PDF version of manual. Requires prepare first."
 	@echo "make impatient-guide    Build html & PDF versions of the Guide for the Impatient. Requires prepare first."
 	@echo "make all                Builds complete web site for the manual (in build directory)."
 	@echo "make local              (Developer use) Test, prepare and build the HTML manual."
+	@echo "make nxdl               Build NXDL files from NYAML files in nyaml subdirectories."
+	@echo "make nyaml              Build NYAML files to nyaml subdirectories from NXDL files."
 	@echo ""
 	@echo "Note:  All builds of the manual will occur in the 'build/' directory."
 	@echo "   For a complete build, run 'make all' in the root directory."
@@ -101,27 +103,19 @@ all ::
 	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus-fairmat.pdf`"
 
 $(BASE_CLASS_DIR)/%.nxdl.xml : $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)/%.yaml
-	nyaml2nxdl $<
-	mv $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
+	nyaml2nxdl $< --output-file $@
 
 $(CONTRIB_DIR)/%.nxdl.xml : $(CONTRIB_DIR)/$(NYAML_SUBDIR)/%.yaml
-	nyaml2nxdl $<
-	mv $(CONTRIB_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
+	nyaml2nxdl $< --output-file $@
 
 $(APPDEF_DIR)/%.nxdl.xml : $(APPDEF_DIR)/$(NYAML_SUBDIR)/%.yaml
-	nyaml2nxdl $<
-	mv $(APPDEF_DIR)/$(NYAML_SUBDIR)/$*.nxdl.xml $@
+	nyaml2nxdl $< --output-file $@
 
-NXDLS := $(NXDL_APPDEF) $(NXDL_CONTRIB) $(NXDL_BC)
-nyaml :
-	for file in $(NXDLS); do\
-		mkdir -p "$${file%/*}/nyaml";\
-		nyaml2nxdl $${file};\
-		FNAME=$${file##*/};\
-		mv -- "$${file%.nxdl.xml}_parsed.yaml" "$${file%/*}/nyaml/$${FNAME%.nxdl.xml}.yaml";\
-	done
+nxdl: $(YBC_NXDL_TARGETS) $(YCONTRIB_NXDL_TARGETS) $(YAPPDEF_NXDL_TARGETS)
 
-nxdl: $(NXDL_APPDEF) $(NXDL_CONTRIB) $(NXDL_BC)
+nyaml:
+	$(MAKE) -f nyaml.mk
+
 
 # NeXus - Neutron and X-ray Common Data Format
 #

@@ -1,29 +1,30 @@
 .. _Mpes-Structure-Fairmat:
 
-==========================
-Photoemission spectroscopy
-==========================
+=======================================
+Photoemission & core-level spectroscopy
+=======================================
 
-.. index::
-   IntroductionMpes1
-   MpesAppDef1
+The NXmpes application definition is designed to describe data and metadata obtained from
+various multidimensional photoemission spectroscopy (MPES) techniques.
+This definition is very flexible and requires just a reasonable amount of
+metadata to make the stored data interoperable and reproducible.
+The only requirement for the actual data is the existence of an energy axis.
 
-.. _IntroductionMpes1:
+The experimental techniques covered by this application definition are primarily limited
+to photon-in photoelectron-out methods. If you are searching for related techniques,
+there is a good chance you will find valuable information here.
 
-Introduction
-############
+Example techniques covered by this application definition include:
 
-Set of data storage objects to describe photoemission experiments including x-ray photoelectron spectroscopy (XPS), ultraviolet photoelectron spectroscopy (UPS),
-hard x-ray photoelectron spectroscopy (HAXPES), angle-resolved photoemission spectroscopy (ARPES), two-photon photoemission (2PPE) 
-and photoemission electron microscopy (PEEM). We also included descriptors for advanced specializations, such as spin-resolution, time resolution, 
-near-ambient pressure conditions, dichroism etc.
+- X-ray/UV photoelectron spectroscopy (XPS/UPS)
+- Angle-resolved photoemission spectroscopy (ARPES)
+- Two-photon photoemission (2PPE)
+- Photoemission electron microscopy (PEEM)
 
-.. _MpesAppDef1:
+Additionally, we offer descriptors for specialized applications,
+such as spin- and time-resolution, near-ambient pressure conditions, dichroism, and more.
 
-Application Definitions
-#######################
-
-We created two new application definitions:
+Here's a list of application definitions related to photoemission spectroscopy:
 
     :ref:`NXmpes`:
-       A general appdef with minimalistic metadata requirements, apt to describe all photemission experiments.
+       A universal application definition with minimal metadata requirements for describing all photoemission experiments.
