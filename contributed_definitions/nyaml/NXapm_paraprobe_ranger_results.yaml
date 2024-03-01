@@ -1,0 +1,93 @@
+category: application
+doc: |
+  Application definition for results files of the paraprobe-ranger tool.
+  
+  This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
+  The purpose and need of the paraprobe-ranger tool is to apply a given set of ranging definitions within
+  a certain (possibly complicated) selection of ions (based on their properties or location in the
+  reconstructed volume.
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_ions: |
+    The total number of ions in the reconstructed volume.
+type: group
+NXapm_paraprobe_ranger_results(NXobject):
+  (NXentry):
+    exists: [min, 1, max, 1]
+    definition(NX_CHAR):
+      \@version(NX_CHAR):
+      enumeration: [NXapm_paraprobe_ranger_results]
+    # tasks
+    iontypes(NXapm_paraprobe_tool_results):
+      doc: |
+        Paraprobe-ranger loads the iontypes and evaluates for each
+        ion on which iontype it matches. If it matches on None, the
+        ion is considered of the default *unknown_type*. This iontype
+        is marked with a 0 in the iontypes array.
+      ##MK::number_of_ion_types(NX_POSINT):
+      # config
+      window(NXcs_filter_boolean_mask):
+        number_of_ions(NX_UINT):
+        bitdepth(NX_UINT):
+        mask(NX_UINT):
+      # results
+      (NXion):
+        exists: [min, 1, max, 256]
+        nuclide_hash(NX_UINT):
+        nuclide_list(NX_UINT):
+          exists: recommended
+        charge_state(NX_INT):
+        mass_to_charge_range(NX_FLOAT):
+        name(NX_CHAR):
+          exists: optional
+      iontypes(NX_UINT):
+        doc: |
+          The iontype (identifier) for each ion that was best matching, stored
+          in the order of the evaporation sequence ID. The here computed iontypes
+          do not take into account the charge state of the ion which is
+          equivalent to interpreting a RNG and RRNG range files for each
+          ion in such a way that only the those elements are considered of which
+          a (molecular) ion is assumed composed according to the NXion instances.
+        unit: NX_UNITLESS
+        dim: (n_ions,)
+    common(NXapm_paraprobe_tool_common): 
+      status(NX_CHAR):
+      analysis_identifier(NX_UINT):
+      config(NXserialized):
+        type(NX_CHAR):
+        path(NX_CHAR):
+        checksum(NX_CHAR):
+        algorithm(NX_CHAR):
+      programID(NXprogram):
+        exists: [min, 1, max, infty]
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+      profiling(NXcs_profiling):
+        exists: recommended
+        start_time(NX_DATE_TIME):
+        end_time(NX_DATE_TIME):
+        total_elapsed_time(NX_FLOAT): 
+        current_working_directory(NX_CHAR):
+        number_of_processes(NX_POSINT):
+        number_of_threads(NX_POSINT):
+        number_of_gpus(NX_POSINT):
+      userID(NXuser):
+        exists: [min, 0, max, infty]
+        doc: |
+          If used, metadata of at least the person who performed this analysis.
+        name(NX_CHAR):
+      coordinate_system_set(NXcoordinate_system_set):
+        exists: [min, 1, max, 1]
+        paraprobe(NXcoordinate_system):
+          type(NX_CHAR):
+          handedness(NX_CHAR):
+          x(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)
+          y(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)
+          z(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)
