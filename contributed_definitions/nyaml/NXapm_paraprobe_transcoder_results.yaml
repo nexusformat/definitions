@@ -1,0 +1,143 @@
+category: application
+doc: |
+  Application definition for results files of the paraprobe-transcoder tool.
+  
+  This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
+  The purpose and need of the paraprobe-transcoder tool is to create a standardized representation
+  of reconstructed position and mass-to-charge-state-ratio values surplus other pieces of information
+  to enable working with atom probe data in reconstruction space in the paraprobe-toolbox.
+  This includes ranging definitions which map mass-to-charge-state ratio values onto iontypes.
+  
+  So far the atom probe community has not yet agreed upon a comprehensive standardization on how to
+  exchange information especially when it comes to the communication of configurations and results
+  from analyses of atom probe data. Instead, different simplistic file formats are used, such as POS, ePOS,
+  APT, or RNG and RRNG. None of these formats, though, are self-descriptive, standardize, or document
+  their origin and thus the sequence in which the file was generated during an analysis.
+  
+  Paraprobe-transcoder solves this limitation by interpreting the information content in such files
+  and standardize the representation prior injection into the scientific data analysis tools of the toolbox.
+  Therefore, the here proposed set of NeXus base classes and application definitions can be a useful
+  starting point for the atom probe community to take advantage of standardized information
+  exchange and improve the here proposed classes and concepts to become more inclusive.
+  
+  Paraprobe-transcoder uses a Python library developed based on efforts by members of the
+  global atom probe community `International Field Emission Society (IFES) Atom Probe Technical Committee (APT TC) <https://www.github.com/atomprobe-tc/ifes_apt_tc_data_modeling>`_. This library offers the
+  actual low-level I/O operations and respective information interpretation of above-mentioned file formats.
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_ions: |
+    The total number of ions in the reconstruction.
+  n_ivec_max: |
+    Maximum number of allowed atoms per (molecular) ion (fragment).
+    Needs to match maximum_number_of_atoms_per_molecular_ion.
+  n_topology: |
+    Total number of integers in the supplementary XDMF topology array.
+# i be careful n_comb can vary for every instance of (NXion) !
+type: group
+NXapm_paraprobe_transcoder_results(NXobject):
+  (NXentry):
+    exists: [min, 1, max, 1]
+    definition(NX_CHAR):
+      \@version(NX_CHAR):
+      enumeration: [NXapm_paraprobe_transcoder_results]
+    # tasks
+    atom_probe(NXapm_paraprobe_tool_results):
+      # this group mirrors the NXapm application definition
+      # config
+      analysis_identifier(NX_UINT):
+      config(NXserialized):
+        type(NX_CHAR):
+        path(NX_CHAR):
+        checksum(NX_CHAR):
+        algorithm(NX_CHAR):
+      window(NXcs_filter_boolean_mask):
+        exists: optional
+        doc: |
+          By default the entire reconstructed volume is processed.
+          In this case, using window is also equivalent to an
+          NXspatial_filter that specified a window *entire_dataset*.
+        number_of_ions(NX_UINT):
+        bitdepth(NX_UINT):
+        mask(NX_UINT):
+      # results
+      mass_to_charge_conversion(NXprocess):
+        mass_to_charge(NX_FLOAT):
+          doc: |
+            Mass-to-charge-state-ratio values.
+          unit: NX_ANY  # u
+          dim: (n_ions,)
+      reconstruction(NXprocess):
+        reconstructed_positions(NX_FLOAT):
+          doc: |
+            Three-dimensional reconstructed positions of the ions.
+            Interleaved array of x, y, z positions in the specimen space.
+          unit: NX_LENGTH
+          dim: (n_ions, 3)
+          \@depends_on(NX_CHAR):
+            doc: |
+              Point to the coordinate system in which these positions are defined.
+        visualization(NXprocess):
+          exists: recommended
+          xdmf_topology(NX_UINT):
+            doc: |
+              An array of triplets of integers which can serve as a supplementary
+              array for Paraview to display the reconstruction. The XDMF datatype
+              is here 1, the number of primitives 1 per triplet, the last integer
+              in each triplet is the identifier of each point starting from zero.
+            unit: NX_UNITLESS
+            dim: (n_topology,)
+      ranging(NXprocess):
+        peak_identification(NXprocess):
+          doc: |
+            Details about how peaks are interpreted as ion types or not.
+          (NXion):
+            exists: [min, 1, max, 256]
+            nuclide_hash(NX_UINT):
+            nuclide_list(NX_UINT):
+              exists: recommended
+            charge_state(NX_INT):
+            mass_to_charge_range(NX_FLOAT):
+              unit: NX_ANY  # u
+              dim: (i, 2)
+            # (NXapm_charge_state_analysis):
+    common(NXapm_paraprobe_tool_common): 
+      status(NX_CHAR):
+      analysis_identifier(NX_UINT):
+      config(NXserialized):
+        type(NX_CHAR):
+        path(NX_CHAR):
+        checksum(NX_CHAR):
+        algorithm(NX_CHAR):
+      programID(NXprogram):
+        exists: [min, 1, max, infty]
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+      profiling(NXcs_profiling):
+        exists: recommended
+        start_time(NX_DATE_TIME):
+        end_time(NX_DATE_TIME):
+        total_elapsed_time(NX_FLOAT):
+        current_working_directory(NX_CHAR):
+        number_of_processes(NX_POSINT):
+        number_of_threads(NX_POSINT):
+        number_of_gpus(NX_POSINT):
+      userID(NXuser):
+        exists: [min, 0, max, infty]
+        doc: |
+          If used, metadata of at least the person who performed this analysis.
+        name(NX_CHAR):
+      coordinate_system_set(NXcoordinate_system_set):
+        exists: [min, 1, max, 1]
+        paraprobe(NXcoordinate_system):
+          type(NX_CHAR):
+          handedness(NX_CHAR):
+          x(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)
+          y(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)
+          z(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)

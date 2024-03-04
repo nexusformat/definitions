@@ -87,6 +87,9 @@ The following base classes are defined to incentivize the use of NeXus for using
 computational-geometry-based descriptions. In what follows, base classes
 for frequently used shapes and geometric primitives are proposed:
 
+    :ref:`NXcg_primitive_set`:
+        A base class to inherit from when defining base classes for specific primitives such as these:
+
     :ref:`NXcg_sphere_set`:
         A base class for a set of possibly dissimilar spheres.
 
@@ -222,17 +225,14 @@ input parameters and to summarize its performance statistics:
     :ref:`NXcs_computer`:
         A base class for documenting a computer.
 
-    :ref:`NXcs_cpu`:
-        A base class for documenting a central processing unit.
+    :ref:`NXcs_cpu_sys`, :ref:`NXcs_cpu_obj`, :ref:`NXcs_cpu`:
+        Base classes for documenting a central processing unit.
 
-    :ref:`NXcs_gpu`:
-        A base class for documenting a graphical processing unit / accelerator.
+    :ref:`NXcs_gpu_sys`, :ref:`NXcs_gpu_obj`, :ref:`NXcs_gpu`:
+        Base classes for documenting a graphical processing unit / accelerator.
 
-    :ref:`NXcs_mm_sys`:
-        A base class for documenting the (main) memory (sub-)system.
+    :ref:`NXcs_mm_sys`, :ref:`NXcs_mm_obj`:
+        Base classes for documenting the (main) memory (sub-)system.
 
-    :ref:`NXcs_io_sys`:
-        A base class for documenting the input/output system.
-
-    :ref:`NXcs_io_obj`:
-        A base class for storing data inside an :ref:`NXcs_io_sys` instance.
+    :ref:`NXcs_io_sys`, :ref:`NXcs_io_obj`:
+        Base classes for documenting the input/output system.

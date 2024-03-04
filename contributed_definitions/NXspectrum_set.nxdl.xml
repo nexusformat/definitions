@@ -28,6 +28,11 @@
                  Number of scan points.
             </doc>
         </symbol>
+        <symbol name="n_z">
+            <doc>
+                 Number of pixel in the slowest direction.
+            </doc>
+        </symbol>
         <symbol name="n_y">
             <doc>
                  Number of pixel in the slow direction.
@@ -46,6 +51,11 @@
     </symbols>
     <doc>
          Base class container for reporting a set of spectra.
+         
+         The mostly commonly used scanning methods are supported.
+         That is one-, two-, three-dimensional regularly sampled ROIs.
+         
+         For randomly or dissimilarly spaced scan points use collection instead.
     </doc>
     <!--for EELS we likely need a complex-valued NXspectrum_c_set to this
 NXspectrum_set base class here which should then be splitted into an
@@ -77,22 +87,17 @@ NXspectrum_set to reduce redundant fields and specialized NXspectrum_r/c_set-->
     </group>
     <!--#MK::feel free to contact us when you would like to include
 lik omega/q mapping more complicated scan pattern than rectangular ones.-->
-    <group name="stack" type="NXdata">
+    <group name="spectrum_zerod" type="NXdata">
         <doc>
-             Collected spectra for all pixels of a rectangular region-of-interest.
-             
-             This representation supports rectangular scan pattern with equidistant
-             energy bins. For randomly or dissimilarly spaced scan points
-             use collection instead.
+             One spectrum for one pixel in a ROI aka spot measurement.
         </doc>
         <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
             <doc>
                  Counts
             </doc>
-            <dimensions rank="3">
-                <dim index="1" value="n_y"/>
-                <dim index="2" value="n_x"/>
-                <dim index="3" value="n_energy"/>
+            <dimensions>
+                <dim index="1" value="n_x"/>
+                <dim index="2" value="n_energy"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
@@ -100,21 +105,36 @@ lik omega/q mapping more complicated scan pattern than rectangular ones.-->
                 </doc>
             </attribute>
         </field>
-        <!--\@signal: counts
-\@axes: [ypos, xpos, energy]
-\@ypos_indices: 0
-\@xpos_indices: 1
-\@energy_indices: 2-->
-        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="axis_energy" type="NX_NUMBER" units="NX_ENERGY">
             <doc>
-                 Coordinate along y direction.
+                 Energy axis
             </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_y"/>
+            <dimensions>
+                <dim index="1" value="n_energy"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Pixel coordinate along y direction
+                     Energy
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="spectrum_oned" type="NXdata">
+        <doc>
+             One spectrum for each pixel of an equidistantly
+             sampled one-dimensional ROI.
+        </doc>
+        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Counts
+            </doc>
+            <dimensions>
+                <dim index="1" value="n_x"/>
+                <dim index="2" value="n_energy"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Counts
                 </doc>
             </attribute>
         </field>
@@ -122,7 +142,7 @@ lik omega/q mapping more complicated scan pattern than rectangular ones.-->
             <doc>
                  Coordinate along x direction.
             </doc>
-            <dimensions rank="1">
+            <dimensions>
                 <dim index="1" value="n_x"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
@@ -135,7 +155,141 @@ lik omega/q mapping more complicated scan pattern than rectangular ones.-->
             <doc>
                  Energy axis
             </doc>
-            <dimensions rank="1">
+            <dimensions>
+                <dim index="1" value="n_energy"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Energy
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="spectrum_twod" type="NXdata">
+        <doc>
+             One spectrum for each pixel of an equidistantly
+             sampled two-dimensional ROI.
+        </doc>
+        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Counts
+            </doc>
+            <dimensions>
+                <dim index="1" value="n_y"/>
+                <dim index="2" value="n_x"/>
+                <dim index="3" value="n_energy"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Counts
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Coordinate along y direction.
+            </doc>
+            <dimensions>
+                <dim index="1" value="n_y"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Pixel coordinate along y direction
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Coordinate along x direction.
+            </doc>
+            <dimensions>
+                <dim index="1" value="n_x"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Pixel coordinate along x direction
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_energy" type="NX_NUMBER" units="NX_ENERGY">
+            <doc>
+                 Energy axis
+            </doc>
+            <dimensions>
+                <dim index="1" value="n_energy"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Energy
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="spectrum_threed" type="NXdata">
+        <doc>
+             One spectrum for each voxel of an equidistantly
+             sampled three-dimensional ROI.
+        </doc>
+        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Counts
+            </doc>
+            <dimensions>
+                <dim index="1" value="n_z"/>
+                <dim index="2" value="n_y"/>
+                <dim index="3" value="n_x"/>
+                <dim index="4" value="n_energy"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Counts
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_z" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Coordinate along z direction.
+            </doc>
+            <dimensions>
+                <dim index="1" value="n_z"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Pixel coordinate along z direction
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Coordinate along y direction.
+            </doc>
+            <dimensions>
+                <dim index="1" value="n_y"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Pixel coordinate along y direction
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Coordinate along x direction.
+            </doc>
+            <dimensions>
+                <dim index="1" value="n_x"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Pixel coordinate along x direction
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_energy" type="NX_NUMBER" units="NX_ENERGY">
+            <doc>
+                 Energy axis
+            </doc>
+            <dimensions>
                 <dim index="1" value="n_energy"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
@@ -149,54 +303,17 @@ lik omega/q mapping more complicated scan pattern than rectangular ones.-->
 if there is interest to support arbitrary scan pattern one should use
 scan points and contact us to generalize this base class and related
 base classes-->
-    <group name="summary" type="NXdata">
-        <doc>
-             Accumulated counts over all pixels of the region-of-interest.
-             This representation supports a rectangular scan pattern with
-             equidistant energy bins.
-        </doc>
-        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
-            <doc>
-                 Accumulated counts
-            </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_energy"/>
-            </dimensions>
-            <attribute name="long_name" type="NX_CHAR">
-                <doc>
-                     Counts
-                </doc>
-            </attribute>
-        </field>
-        <!--\@signal: counts
-\@axes: [energy]
-\@energy_indices: 0-->
-        <field name="axis_energy" type="NX_NUMBER" units="NX_ENERGY">
-            <doc>
-                 Energy axis
-            </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_energy"/>
-            </dimensions>
-            <attribute name="long_name" type="NX_CHAR">
-                <doc>
-                     Energy
-                </doc>
-            </attribute>
-        </field>
-    </group>
     <group name="collection" type="NXdata">
         <doc>
-             Collected spectra for each scan point.
-             
-             This representation supports equidistant energy bins.
-             For rectangular sampling use stack and summary instead.
+             One spectrum for each scan point. This representation supports
+             equidistant energy bins. For rectangular sampling use respective
+             one-, two-, and three-dimensional variants instead.
         </doc>
         <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
             <doc>
                  Counts
             </doc>
-            <dimensions rank="2">
+            <dimensions>
                 <dim index="1" value="n_p"/>
                 <dim index="2" value="n_energy"/>
             </dimensions>
@@ -206,15 +323,11 @@ base classes-->
                 </doc>
             </attribute>
         </field>
-        <!--\@signal: counts
-\@axes: [scan_point_id, energy]
-\@scan_point_indices: 1
-\@energy_indices: 0-->
         <field name="axis_scan_point_id" type="NX_INT" units="NX_UNITLESS">
             <doc>
                  Scan point identifier
             </doc>
-            <dimensions rank="1">
+            <dimensions>
                 <dim index="1" value="n_p"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
@@ -227,7 +340,7 @@ base classes-->
             <doc>
                  Energy axis
             </doc>
-            <dimensions rank="1">
+            <dimensions>
                 <dim index="1" value="n_energy"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">

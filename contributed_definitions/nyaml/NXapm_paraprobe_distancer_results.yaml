@@ -1,0 +1,140 @@
+category: application
+doc: |
+  Application definition for results files of the paraprobe-distancer tool.
+  
+  This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
+  The paraprobe-distancer tool can be used for the computing of the shortest Euclidean distance for each
+  member of a set of points against a set of triangles. In contrast to most approaches in atom probe where the
+  distance is computed as the projected distance, this tool evaluates robustly the exact distance between
+  a point and a triangle.
+  
+  Triangles can represent for instance the facets of a triangulated surface mesh like those returned by
+  paraprobe-surfacer or any other set of triangles. Triangles do not have to be connected.
+  
+  Currently, paraprobe-distancer does not check if the respectively specified triangle sets are consistent,
+  what their topology is, or whether or not these triangles are consistently oriented.
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_ions: |
+    The total number of points, i.e. ions in the reconstruction.
+  n_tri: |
+    The total number of triangles in the set.
+type: group
+NXapm_paraprobe_distancer_results(NXobject):
+  (NXentry):
+    exists: [min, 1, max, 1]
+    definition(NX_CHAR):
+      \@version(NX_CHAR):
+      enumeration: [NXapm_paraprobe_distancer_results]
+    # tasks
+    point_to_triangle(NXapm_paraprobe_tool_results):
+      exists: [min, 1, max, 1]
+      # config
+      analysis_identifier(NX_UINT):
+      config(NXserialized):
+        type(NX_CHAR):
+        path(NX_CHAR):
+        checksum(NX_CHAR):
+        algorithm(NX_CHAR):
+      window(NXcs_filter_boolean_mask):
+        number_of_ions(NX_UINT):
+        bitdepth(NX_UINT):
+        mask(NX_UINT):
+      
+      # results
+      distance(NX_FLOAT):
+        doc: |  # absolute value?
+          The shortest analytical distance of each point to their
+          respectively closest triangle from the joint triangle set.
+        unit: NX_LENGTH
+        dim: (n_ions,)
+      triangle_identifier(NX_UINT):
+          exists: optional
+          doc: |
+            For each point the identifier of the triangle for which the
+            shortest distance was found
+          unit: NX_UNITLESS
+          dim: (n_ions,)
+      point_identifier(NX_UINT):
+        exists: optional
+        doc: |
+          A support field to enable the visualization of each point
+          by an explicit identifier on the interval [0, n_ions - 1].
+          The field can be used to visualize the points as a function
+          of their distance to the triangle set (e.g. via XDMF/Paraview).
+        unit: NX_UNITLESS
+        dim: (n_ions,)
+      sign_valid(NXcs_filter_boolean_mask):
+        exists: optional
+        doc: |  
+          A bitmask that identifies which of the distance values is
+          assumed to have a consistent sign because the closest
+          triangle had a consistent outer unit normal defined.
+          
+          For points whose bit is set to 0 the distance is correct
+          but the sign is not reliable.
+        number_of_triangles(NX_UINT):
+          doc: |
+            Number of triangles covered by the mask.
+          unit: NX_UNITLESS
+        bitdepth(NX_UINT):
+          doc: |
+            Bitdepth of the elementary datatype that is used to store
+            the information content of the mask (typically 8 bit, uint8).
+          unit: NX_UNITLESS
+        mask(NX_UINT):
+          doc: |
+            The content of the mask. Like for all masks used in the tools
+            of the paraprobe-toolbox, padding is used when number_of_objects
+            is not an integer multiple of bitdepth. If padding is used,
+            padded bits are set to 0.
+          unit: NX_UNITLESS
+          dim: (n_ions)  #  a mask for points or triangles?
+      window_triangles(NXcs_filter_boolean_mask):
+        exists: optional
+        doc: |
+          A bitmask that identifies which of the triangles in the set were
+          considered when certain triangles have been filtered out.
+        number_of_objects(NX_UINT):
+        bitdepth(NX_UINT):
+        # the following field shows a good example of base class inheritance used,
+        # the field mask of the NXcs_filter_boolean_mask is inherited that means its docstring,
+        # its unit category only the dimensions are constrained strong to match the number of objects
+        # triangles in this case
+        mask(NX_UINT):
+          dim: (n_tri,)
+    common(NXapm_paraprobe_tool_common): 
+      status(NX_CHAR):
+      programID(NXprogram):
+        exists: [min, 1, max, infty]
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+      profiling(NXcs_profiling):
+        exists: recommended
+        start_time(NX_DATE_TIME):
+        end_time(NX_DATE_TIME):
+        total_elapsed_time(NX_FLOAT):
+        current_working_directory(NX_CHAR):
+        number_of_processes(NX_POSINT):
+        number_of_threads(NX_POSINT):
+        number_of_gpus(NX_POSINT):
+      userID(NXuser):
+        exists: [min, 0, max, infty]
+        doc: |
+          If used, metadata of at least the person who performed this analysis.
+        name(NX_CHAR):
+      coordinate_system_set(NXcoordinate_system_set):
+        exists: [min, 1, max, 1]
+        paraprobe(NXcoordinate_system):
+          type(NX_CHAR):
+          handedness(NX_CHAR):
+          x(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)
+          y(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)
+          z(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)

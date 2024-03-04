@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXapm_msr" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <!--noteworthy the situation is similar to electron microscopy especially transmission electron microscopy where factually
+interpretation without simulations is pointless. The only difference is that in electron microscopy there is a large availability
+of documentation and open-source tools for performing such simulations.-->
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="p">
+            <doc>
+                 Number of pulses collected in between start_time and end_time
+                 resolved by an instance of :ref:`NXevent_data_apm`.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Base class for collecting a session with a real atom probe or field-ion microscope.
+         
+         Ideally, we would like to describe the workflow of experiments and simulations of atom probe and
+         field-evaporation simulation research in more detail and contextualize better descriptions of
+         experiments and computer simulations for atom probe research.
+         
+         The main motivation for this is the ongoing development and tighter becoming connection between atom probe
+         and other material characterization techniques foremost electron microscopy (see `T. Kelly et al. &lt;https://doi.org/10.1017/S1431927620022205&gt;`_, `C. Fleischmann et al. &lt;https://doi.org/10.1016/j.ultramic.2018.08.010&gt;`_, and `W. Windl et al. &lt;https://doi.org/10.1093/micmic/ozad067.294&gt;`_ or `C. Freysoldt et al. &lt;https://doi.org/10.1103/PhysRevLett.124.176801&gt;`_ to mention but a few). 
+         To arrive at a design of base classes and an application definition which can be used for both real and simulated atom probe experiments, it is worthwhile to recall concepts that are related to events and (molecular) ions:
+         
+         * Pulsing events which are used to trigger ion extraction events.
+         * Physical events and corresponding signal triggered by an ion hitting the detector.
+           Some of these events are not necessarily caused by or directly correlated with an identifiable pulsing event.
+         * Processed ion hits which are the result of an algorithm that took the physical and pulsing events as input
+           and qualified some of these events as to be of sufficiently high quality to call them (molecular) ions that are
+           wortwhile to be considered further and eventually included in the reconstructed volume.
+         * Calibration and signal filtering steps applied to these processed ion hits as input which results in actually
+           selected (molecular) ions based on which an instance of a reconstruction is created.
+         * Correlation of these ions with a statistics and theoretical model of mass-to-charge-state ratio values
+           and charge states of the (molecular) ions to substantiate that some of these ions are can be considered
+           as rangable ions and hence an iontype can be associated by running peak finding algorithms and labeling
+           i.e. algorithms for defining ranging definitions.
+         
+         Not only in AMETEK/Cameca's IVAS/APSuite software, which the majority of atom probers use, these concepts
+         are well distinguished. However, the algorithms used to transform correlations between pulses and physical events
+         into actual events (detector hits) ions is a proprietary one. Due to this practical inaccessibility of details,
+         virtually all atom probe studies currently use a reporting scheme where the course of the specimen evaporation
+         is documented such that quantities are a function of evaporation identifier i.e. actual event/ion, i.e. after having
+         the hits finding algorithm and correlations applied. That is evaporation_identifier values take the role of an implicit
+         time and course of the experiment given that ion extraction is a sequential physical process.
+         
+         There is a number of research groups who build own instruments and share different aspects of their technical
+         specifications and approaches how they apply data processing (e.g. `M. Monajem et al. &lt;https://doi.org/10.1017/S1431927622003397&gt;`_, `P. Stender et al. &lt;https://doi.org/10.1017/S1431927621013982&gt;`_ , or `I. Dimkou et al. &lt;https://doi.org/10.1093/micmic/ozac051&gt;`_ to name but a few).
+         Despite some of these activities embrace practices of open-source development, they use essentially the same
+         workflow that has been proposed by AMETEK/Cameca and its forerunner company Imago: A graphical user interface
+         software is used to explore and thus analyze reconstructed atom probe datasets.
+         
+         Specifically, software is used to correlate and interpret pulsing and physical events into processed ion hits.
+         Some of these ion hits are reported as (molecular) ions with ranged iontypes to yield a dataset based on which
+         scientific conclusions about the characterized material volume are made.
+         
+         By contrast, simulations of field-evaporation have the luxury to document the flight path and allow following the
+         whereabouts of each ion evaporated if needed. This level of detail is currently not characterizable in experiment.
+         Thus, there is a divide between schemas describing simulations of atom probe vs measurements of atom probe.
+         We argue that this divide can be bridged with realizing the above-mentioned context and the realization that
+         similar concepts are used in both research realms with many concepts not only being similar but exactly the same.
+         
+         A further argument to support this view is that computer simulations of atom probe usually are compared to reconstructed
+         datasets, either to the input configuration that served as the virtual specimen or to a real world atom probe experiment
+         and its reconstructions. In both cases, the recorded simulated physical events of simulated ions hitting a simulated detector
+         is not the end of the research workflow but typically the input to apply addition algorithms such as (spatial) filtering
+         and reconstruction algorithms. Only the practical need for making ranging definitions is (at least as of now) not as much needed
+         in field-evaporation simulations than it is in real world measurements because each ion has a prescribed iontype in the simulation.
+         Be it a specifically charged nuclid or a molecular ion whose flight path the simulation resolves.
+         Although, in principle simpler though, we have to consider that this is caused by many assumptions made in the simulations.
+         Indeed, the multi-scale (time and space) aspects of the challenge that is the simulating of field-evaporation are simplified
+         because of otherwise too high computing resource demands and knowledge gaps in how to deal with some complexities.
+         Molecular ion dissociation upon flight is one such complexity. Also the complexity of simulation setups is simpler e.g. the assumption of a straight flight path
+         instrument is used or details are ignored such as local electrodes or physical obstacles and electric fields (controlled or stray fields).
+         
+         To conclude, we thus propose two base classes :ref:`NXapm_msr` and :ref:`NXapm_sim` where the second one may become
+         obsolete in the future as people realize that a simulated atom probe is maybe equivalent in design and function to a
+         real atom probe if considering that the simulation is just stripped of many components.
+    </doc>
+    <group name="instrument" type="NXinstrument">
+        <doc>
+             Metadata of the atom probe or field-ion microscope instrument, henceforth called
+             microscope or instrument, and the lab in which it stands.
+        </doc>
+        <group type="NXcsg">
+            <doc>
+                 Possibility to include a detailed computational geometry description of the
+                 instrument.
+            </doc>
+        </group>
+        <field name="instrument_name" type="NX_CHAR">
+            <doc>
+                 Given name of the microscope as defined by the hosting lab. This is an alias.
+                 Examples could be LEAP6000, Raptor, Oxcart, one atom at a time, etc.
+            </doc>
+        </field>
+        <field name="location" type="NX_CHAR">
+            <doc>
+                 Location of the lab or place where the instrument is installed.
+                 Using GEOREF is preferred.
+            </doc>
+        </field>
+        <group type="NXfabrication"/>
+        <group type="NXreflectron"/>
+        <group name="decelerate_electrode" type="NXlens_em">
+            <doc>
+                 A counter electrode of the LEAP 6000 series atom probes.
+            </doc>
+        </group>
+        <!--counter_electrodes being optional WO2016171675A1
+see https://en.wikipedia.org/wiki/Einzel_lens for details double einzel lens in the invizo 6000
+according to A. Breen (UNSW)-->
+        <group name="local_electrode" type="NXlens_em">
+            <doc>
+                 A local electrode guiding the ion flight path.
+                 Also called counter or extraction electrode.
+            </doc>
+        </group>
+        <!--but the local_electrode does not really on purpose create a magnetic field,
+specific for an electro-magnetic lens is the symmetry of its field
+NEW ISSUE: for now keep that we have what is an NXlens_em
+NEW ISSUE: APEX MONITOR / LEAP distance monitoring
+NEW ISSUE: the definition of flat test data should be included and documented
+NEW ISSUE: local electrode, baking strategies, storage-->
+        <group name="ion_detector" type="NXdetector">
+            <doc>
+                 Detector for taking raw time-of-flight and ion/hit impact positions data.
+            </doc>
+        </group>
+        <!--model, serial_number, manufacturer_name all inherited from NXdetector base class-->
+        <group name="pulser" type="NXpulser_apm"/>
+        <group name="stage_lab" type="NXstage_lab"/>
+        <!--NEW ISSUE: add NXapm_energy_analyzer, a voltage grid like done in Rouen/GPM-->
+        <group name="analysis_chamber" type="NXchamber"/>
+        <group name="buffer_chamber" type="NXchamber"/>
+        <group name="load_lock_chamber" type="NXchamber"/>
+        <group name="getter_pump" type="NXpump"/>
+        <group name="roughening_pump" type="NXpump"/>
+        <group name="turbomolecular_pump" type="NXpump"/>
+        <field name="status" type="NX_CHAR">
+            <doc>
+                 A statement whether the measurement was successful or failed prematurely.
+            </doc>
+            <enumeration>
+                <item value="success"/>
+                <item value="failure"/>
+                <item value="unknown"/>
+            </enumeration>
+        </field>
+        <group type="NXevent_data_apm_set"/>
+    </group>
+</definition>
