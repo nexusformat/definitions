@@ -43,16 +43,19 @@ def generate_xsd_units_doc(
         if node_name is None:
             continue
         if "nxdl:" + node_name in members:
-            words = node.xpath("xs:annotation/xs:documentation", namespaces=ns)[0]
+            unit_docs = node.xpath("xs:annotation/xs:documentation", namespaces=ns)[0]
             examples = []
-            for example in words.iterchildren():
-                nm = example.attrib.get("name")
-                if nm is not None and nm == "example":
-                    examples.append("``" + example.text + "``")
-            a = words.text
-            if len(examples) > 0:
-                a = " ".join(a.split()) + ",\n\texample(s): " + " | ".join(examples)
-            db[node_name] = a
+            for unit_docs_child in unit_docs.iterchildren():
+                name = unit_docs_child.attrib.get("name")
+                if name == "example":
+                    units_example = unit_docs_child.attrib["fixed"]
+                    examples.append(f"``{units_example}``")
+            unit_docs = unit_docs.text
+            if examples:
+                prefix = "\texamples: " if len(examples) > 1 else "\texample: "
+                examples = " | ".join(examples)
+                unit_docs = " ".join(unit_docs.split()) + f",\n{prefix}{examples}"
+            db[node_name] = unit_docs
 
             # for item in node.xpath("xs:restriction//xs:enumeration", namespaces=ns):
             #    key = "%s" % item.get("value")
