@@ -1,10 +1,10 @@
 category: base
 doc: |
-  :ref:`NXdata_photoemission` describes the plottable data and related dimension scales in photoemission
-  experiments.
+  :ref:`NXdata_mpes_detector` describes the plottable data and related
+  dimension scales for raw detector data in photoemission experiments.
   
   It extends the NXdata class and provides a glossary of explicitly named axis names
-  which are typical for photoemission data.
+  which are typical for raw photoemission data.
   
   For now, the extension of NXdata is performed by simply copying all existing groups, fields,
   and attibute from NXdata. In the future, it is envisioned that this extension can be solved by
@@ -140,7 +140,7 @@ symbols:
 type: group
 ignoreExtraFields: true
 ignoreExtraAttributes: true
-NXdata_photoemission(NXdata):
+NXdata_mpes_detector(NXobject):
   \@auxiliary_signals:
     doc: |
       .. index:: plotting
@@ -411,14 +411,21 @@ NXdata_photoemission(NXdata):
     dimensions:
       rank: 1
       dim: [[1, nz]]
+  raw(NX_NUMBER):
+    doc: |
+      Raw data before calibration.
+  pixel_x(NX_FLOAT):
+    unit: NX_ANY
+    doc: |
+      Detector pixel in x direction.
+  pixel_y(NX_FLOAT):
+    unit: NX_ANY
+    doc: |
+      Detector pixel in y direction.
   energy(NX_NUMBER):
     unit: NX_ENERGY
     doc: |
-      Calibrated energy axis.
-      
-      In an application definition, this could be a link to either
-      /entry/process/energy_calibration/calibrated_axis or
-      /entry/process/energy_correction/calibrated_axis.
+      (Un)calibrated energy axis.
     \@type:
       type: NX_CHAR
       doc: |
@@ -427,7 +434,7 @@ NXdata_photoemission(NXdata):
         kinetic:
           doc:
           - |
-            Calibrated kinetic energy axis.
+            (Un)calibrated kinetic energy axis.
           - |
             xref:
               spec: ISO 18115-1:2023
@@ -436,7 +443,7 @@ NXdata_photoemission(NXdata):
         binding:
           doc:
           - |
-            Calibrated binding energy axis.
+            (Un)calibrated binding energy axis.
           - |
             xref:
               spec: ISO 18115-1:2023
@@ -445,8 +452,7 @@ NXdata_photoemission(NXdata):
   kN(NX_NUMBER):
     unit: NX_WAVENUMBER
     doc: |
-      One calibrated k-space coordinate. It is envisioned that the axes are named kx, ky, and kz,
-      in accordance with the calibrations defined in NXprocess_photoemission.
+      One (un)calibrated k-space coordinate. It is envisioned that the axes are named kx, ky, and kz.
       
       Typically, the vectors in momentum space are defined such that kx and ky comprise the parallel component,
       while kz is taken as the perpendicular component.
@@ -456,8 +462,7 @@ NXdata_photoemission(NXdata):
   angularN(NX_NUMBER):
     unit: NX_ANGLE
     doc: |
-      One calibrated angular coordinate. It is envisioned that the axes are name angular0, angular1, etc.,
-      in accordance with the calibrations defined in NXprocess_photoemission.
+      One (un)calibrated angular coordinate. It is envisioned that the axes are name angular0, angular1, etc.
       
       The angular axes should be named in order of decreasing speed, i.e., angular0 should be
       the fastest scan axis and angular1 should be the slow-axis angular coordinate. However,
@@ -467,38 +472,48 @@ NXdata_photoemission(NXdata):
   spatialN(NX_NUMBER):
     unit: NX_ANGLE
     doc: |
-      One calibrated spatial coordinate. It is envisioned that the axes are name spatial0, spatial1, etc.,
-      in accordance with the calibrations defined in NXprocess_photoemission.
+      One (un)calibrated spatial coordinate. It is envisioned that the axes are name spatial0, spatial1, etc.
       
       The spatial axes should be named in order of decreasing speed, i.e., spatial0 should be
       the fastest scan axis and spatial1 should be the slow-axis spatial coordinate. However,
       spatial0 may also be second slow axis if the measurement is spatially integrated and spatial1
       could also be the second fast axis in the case of simultaneous dispersion in two spatial
       dimensions.
+  
+  # exists in NXdetector base class
+  time_of_flight(NX_FLOAT):
+    unit: NX_TIME_OF_FLIGHT
+    doc: |
+      Total time of flight.
+  time_of_flight_adc(NX_FLOAT):
+    unit: NX_ANY
+    doc: |
+      Time-of-flight values, analog-to-digital converted.
   delay(NX_NUMBER):
     unit: NX_TIME
     doc: |
-      Calibrated delay time.
+      (Un)calibrated delay time.
   polarization_angle(NX_FLOAT):
     unit: NX_ANGLE
     doc: |
       Linear polarization angle of the incoming or outgoing beam.
-      
-      In an application definition, this could be a link to
-      /entry/instrument/beam/incident_polarization_angle or
-      /entry/instrument/beam/final_polarization_angle if they exist.
   ellipticity(NX_FLOAT):
     unit: NX_ANGLE
     doc: |
       Ellipticity of the incoming or outgoing beam.
+  external_AXIS(NX_NUMBER):
+    unit: NX_ANY
+    doc: |
+      Describes an axis which is coming from outside the detectors scope.
       
-      Can be any of linear polarization angle (degrees), ellipticity (arb. units).
-      In an application definition, this could be a link to
-      /entry/instrument/beam/incident_ellipticity or
-      /entry/instrument/beam/final_ellipticity if they exist.
+      Think of a detector just being triggered for readout by the rest of the experimental
+      setup - it would just know that it collected N images, which would flatten the external
+      parameters to one axis, too.
+      This can then be linked, e.g. with NXcalibration, to the appropriate fields in the instrument
+      and write it to the top-level NXdata_mpes.
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 5c41a3ea6b92bad96022fe6260ef12ccd1dd81ed177fdf8ef4345419e0e7ad62
+# 75f02d5e8f52c53a48d2d0cb777c9641f3767de5ea6f7921e3581ac52d83c6d3
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -522,7 +537,7 @@ NXdata_photoemission(NXdata):
 # #
 # # For further information, see http://www.nexusformat.org
 # -->
-# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" ignoreExtraFields="true" ignoreExtraAttributes="true" name="NXdata_photoemission" extends="NXdata" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" ignoreExtraFields="true" ignoreExtraAttributes="true" name="NXdata_mpes_detector" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
 #     <!--The ignoreExtra* attributes are used in the definition to
 # avoid warning messages that would be generated from unexpected fields or attributes.
 # Since common use of NXdata indicates field names of any value, _many_
@@ -560,11 +575,11 @@ NXdata_photoemission(NXdata):
 #         </symbol>
 #     </symbols>
 #     <doc>
-#          :ref:`NXdata_photoemission` describes the plottable data and related dimension scales in photoemission
-#          experiments.
+#          :ref:`NXdata_mpes_detector` describes the plottable data and related
+#          dimension scales for raw detector data in photoemission experiments.
 #          
 #          It extends the NXdata class and provides a glossary of explicitly named axis names
-#          which are typical for photoemission data.
+#          which are typical for raw photoemission data.
 #          
 #          For now, the extension of NXdata is performed by simply copying all existing groups, fields,
 #          and attibute from NXdata. In the future, it is envisioned that this extension can be solved by
@@ -983,13 +998,24 @@ NXdata_photoemission(NXdata):
 #             <dim index="1" value="nz"/>
 #         </dimensions>
 #     </field>
+#     <field name="raw" type="NX_NUMBER">
+#         <doc>
+#              Raw data before calibration.
+#         </doc>
+#     </field>
+#     <field name="pixel_x" type="NX_FLOAT" units="NX_ANY">
+#         <doc>
+#              Detector pixel in x direction.
+#         </doc>
+#     </field>
+#     <field name="pixel_y" type="NX_FLOAT" units="NX_ANY">
+#         <doc>
+#              Detector pixel in y direction.
+#         </doc>
+#     </field>
 #     <field name="energy" type="NX_NUMBER" units="NX_ENERGY">
 #         <doc>
-#              Calibrated energy axis.
-#              
-#              In an application definition, this could be a link to either
-#              /entry/process/energy_calibration/calibrated_axis or
-#              /entry/process/energy_correction/calibrated_axis.
+#              (Un)calibrated energy axis.
 #         </doc>
 #         <attribute name="type" type="NX_CHAR">
 #             <doc>
@@ -998,7 +1024,7 @@ NXdata_photoemission(NXdata):
 #             <enumeration>
 #                 <item value="kinetic">
 #                     <doc>
-#                          Calibrated kinetic energy axis.
+#                          (Un)calibrated kinetic energy axis.
 #                          
 #                          This concept is related to term `3.35`_ of the ISO 18115-1:2023 standard.
 #                          
@@ -1007,7 +1033,7 @@ NXdata_photoemission(NXdata):
 #                 </item>
 #                 <item value="binding">
 #                     <doc>
-#                          Calibrated binding energy axis.
+#                          (Un)calibrated binding energy axis.
 #                          
 #                          This concept is related to term `12.16`_ of the ISO 18115-1:2023 standard.
 #                          
@@ -1019,8 +1045,7 @@ NXdata_photoemission(NXdata):
 #     </field>
 #     <field name="kN" type="NX_NUMBER" units="NX_WAVENUMBER">
 #         <doc>
-#              One calibrated k-space coordinate. It is envisioned that the axes are named kx, ky, and kz,
-#              in accordance with the calibrations defined in NXprocess_photoemission.
+#              One (un)calibrated k-space coordinate. It is envisioned that the axes are named kx, ky, and kz.
 #              
 #              Typically, the vectors in momentum space are defined such that kx and ky comprise the parallel component,
 #              while kz is taken as the perpendicular component.
@@ -1031,8 +1056,7 @@ NXdata_photoemission(NXdata):
 #     </field>
 #     <field name="angularN" type="NX_NUMBER" units="NX_ANGLE">
 #         <doc>
-#              One calibrated angular coordinate. It is envisioned that the axes are name angular0, angular1, etc.,
-#              in accordance with the calibrations defined in NXprocess_photoemission.
+#              One (un)calibrated angular coordinate. It is envisioned that the axes are name angular0, angular1, etc.
 #              
 #              The angular axes should be named in order of decreasing speed, i.e., angular0 should be
 #              the fastest scan axis and angular1 should be the slow-axis angular coordinate. However,
@@ -1043,8 +1067,7 @@ NXdata_photoemission(NXdata):
 #     </field>
 #     <field name="spatialN" type="NX_NUMBER" units="NX_ANGLE">
 #         <doc>
-#              One calibrated spatial coordinate. It is envisioned that the axes are name spatial0, spatial1, etc.,
-#              in accordance with the calibrations defined in NXprocess_photoemission.
+#              One (un)calibrated spatial coordinate. It is envisioned that the axes are name spatial0, spatial1, etc.
 #              
 #              The spatial axes should be named in order of decreasing speed, i.e., spatial0 should be
 #              the fastest scan axis and spatial1 should be the slow-axis spatial coordinate. However,
@@ -1053,28 +1076,41 @@ NXdata_photoemission(NXdata):
 #              dimensions.
 #         </doc>
 #     </field>
+#     <!--exists in NXdetector base class-->
+#     <field name="time_of_flight" type="NX_FLOAT" units="NX_TIME_OF_FLIGHT">
+#         <doc>
+#              Total time of flight.
+#         </doc>
+#     </field>
+#     <field name="time_of_flight_adc" type="NX_FLOAT" units="NX_ANY">
+#         <doc>
+#              Time-of-flight values, analog-to-digital converted.
+#         </doc>
+#     </field>
 #     <field name="delay" type="NX_NUMBER" units="NX_TIME">
 #         <doc>
-#              Calibrated delay time.
+#              (Un)calibrated delay time.
 #         </doc>
 #     </field>
 #     <field name="polarization_angle" type="NX_FLOAT" units="NX_ANGLE">
 #         <doc>
 #              Linear polarization angle of the incoming or outgoing beam.
-#              
-#              In an application definition, this could be a link to
-#              /entry/instrument/beam/incident_polarization_angle or
-#              /entry/instrument/beam/final_polarization_angle if they exist.
 #         </doc>
 #     </field>
 #     <field name="ellipticity" type="NX_FLOAT" units="NX_ANGLE">
 #         <doc>
 #              Ellipticity of the incoming or outgoing beam.
+#         </doc>
+#     </field>
+#     <field name="external_AXIS" type="NX_NUMBER" units="NX_ANY">
+#         <doc>
+#              Describes an axis which is coming from outside the detectors scope.
 #              
-#              Can be any of linear polarization angle (degrees), ellipticity (arb. units).
-#              In an application definition, this could be a link to
-#              /entry/instrument/beam/incident_ellipticity or
-#              /entry/instrument/beam/final_ellipticity if they exist.
+#              Think of a detector just being triggered for readout by the rest of the experimental
+#              setup - it would just know that it collected N images, which would flatten the external
+#              parameters to one axis, too.
+#              This can then be linked, e.g. with NXcalibration, to the appropriate fields in the instrument
+#              and write it to the top-level NXdata_mpes.
 #         </doc>
 #     </field>
 # </definition>
