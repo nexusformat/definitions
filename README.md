@@ -7,16 +7,6 @@
 
 ## NeXus definition developers
 
-Note if this package was not properly installed using pip, it has to be first done by  
-
-    pip install -e  .
-
-After making a change to the NeXus class definitions there are two important checks
-to be made before commiting the change:
-
- 1. check whether the change does not violate any syntax rules
- 2. verify whether the change looks as intended in the HTML documentation
-
 First install the test and build requirements with this command (only run once)
 
     make install
