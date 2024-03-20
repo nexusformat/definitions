@@ -17,17 +17,19 @@ symbols:
     the pulse_identifier.
 type: group
 NXapm(NXobject):
-  (NXentry):
+  entryID(NXentry):
     exists: [min, 1, max, infty]
     definition(NX_CHAR):
       \@version(NX_CHAR):
+        exists: optional
       enumeration: [NXapm]
     profiling(NXcs_profiling):
+      exists: optional
       doc: |
         The configuration of the I/O writer software (e.g. `pynxtools <https://github.com/FAIRmat-NFDI/pynxtools>`_)
         which was used to generate this NeXus file instance.
       # command_line_call(NX_CHAR):
-      (NXprogram):  # understood by default as PROGRAM(NXprogram), i.e. program1, program2, ...
+      programID(NXprogram):  # understood by default as PROGRAM(NXprogram), i.e. program1, program2, ...
         exists: [min, 0, max, infty]
         doc: |
           A collection of all programs and libraries which are considered relevant
@@ -54,6 +56,7 @@ NXapm(NXobject):
       is_persistent(NX_BOOLEAN):
     run_number(NX_CHAR):
       exists: recommended
+      # cannot be made required as for simulations you do not have a run number!
       doc: |
         The identifier whereby the experiment is referred to in the control software.
         This is neither the specimen_name nor the experiment_identifier. For
@@ -110,7 +113,7 @@ NXapm(NXobject):
     (NXcite):
       exists: [min, 0, max, infty]
       doi(NX_CHAR):
-    (NXserialized):
+    serializedID(NXserialized):
       exists: [min, 0, max, infty]
       type(NX_CHAR):
       path(NX_CHAR):
@@ -159,7 +162,6 @@ NXapm(NXobject):
         used which are then arranged and documented with a description of the
         workflow so that actionable graphs become instantiatable.
       method(NX_CHAR):
-        exists: recommended
         doc: |
           A qualifier whether the sample is a real one
           or a virtual one (in a computer simulation).
@@ -235,7 +237,7 @@ NXapm(NXobject):
         unit: NX_ANY
       description(NX_CHAR):
         exists: optional
-      (NXchemical_composition):
+      chemical_composition(NXchemical_composition):
         exists: recommended
         doc: |
           The chemical composition of the sample. Typically, it is assumed that
@@ -275,13 +277,10 @@ NXapm(NXobject):
     specimen(NXsample):
       exists: recommended
       method(NX_CHAR):
-        exists: recommended
         doc: |
-          A qualifier whether the sample is a real one
-          or a virtual one (in a computer simulation).
+          A qualifier whether the specimen is a real one or a virtual one.
         enumeration: [experiment, simulation]
       alias(NX_CHAR):
-        exists: recommended
         doc: |
           Given name an alias. Better use identifier and parent_identifier instead.
           A single NXentry should be used only for the characterization of a single specimen.
@@ -349,6 +348,7 @@ NXapm(NXobject):
           Ideally measured otherwise best elaborated guess of the initial radius of the specimen.
         unit: NX_LENGTH
       shank_angle(NX_FLOAT):
+        exists: recommended
         doc: |
           Ideally measured otherwise best elaborated guess of the (initial) shank angle.
           This is a measure of the specimen taper. Define it in such a way that the base of the specimen
@@ -419,14 +419,14 @@ NXapm(NXobject):
       instrument(NXinstrument):
         instrument_name(NX_CHAR):
           exists: optional
-        (NXfabrication):
+        fabrication(NXfabrication):
           vendor(NX_CHAR):
           model(NX_CHAR):
           identifier(NX_CHAR):
             exists: recommended
         reflectron(NXreflectron):
           status(NX_CHAR):
-          (NXfabrication):
+          fabrication(NXfabrication):
             exists: recommended
             vendor(NX_CHAR):
             model(NX_CHAR):
@@ -434,25 +434,25 @@ NXapm(NXobject):
         local_electrode(NXlens_em):
           # add flat test status
           name(NX_CHAR):
-          (NXfabrication):
+          fabrication(NXfabrication):
             exists: recommended
             vendor(NX_CHAR):
             model(NX_CHAR):
         ion_detector(NXdetector):
           exists: recommended
-          (NXfabrication):
+          fabrication(NXfabrication):
             exists: recommended  # for LEAP systems they come shipped configured
             vendor(NX_CHAR):
             model(NX_CHAR):
         pulser(NXpulser_apm):
-          (NXfabrication):
+          fabrication(NXfabrication):
             exists: recommended
             vendor(NX_CHAR):
             model(NX_CHAR):
           pulse_mode(NX_CHAR):
-          (NXsource):
+          sourceID(NXsource):
             exists: [min, 0, max, 2]  # conditionally required if pulse_mode is not voltage!
-            (NXfabrication):
+            fabrication(NXfabrication):
               exists: recommended
               vendor(NX_CHAR):
               model(NX_CHAR):
@@ -460,7 +460,7 @@ NXapm(NXobject):
               doc: |
                 The wavelength of the radiation emitted by the source.
               unit: NX_WAVELENGTH
-            # use NXbeam in the future 
+            # use NXbeam in the future
         # stage_lab(NXstage_lab):
         analysis_chamber(NXchamber):
           exists: recommended
@@ -481,7 +481,7 @@ NXapm(NXobject):
         exists: optional
         # the case of allowing to not have event_data but only the above-mentioned instrument
         # details can be useful to convey details about an atom probe instrument in general
-        (NXevent_data_apm):
+        event_data_apm(NXevent_data_apm):
           exists: recommended
           # all these cannot be made required because for LEAP only stored in RHIT/HITS
           # but for M-TAP and Oxcart these pieces of information are available.
@@ -582,12 +582,12 @@ NXapm(NXobject):
         exists: recommended
         sequence_index(NX_POSINT):
           exists: recommended
-        (NXprogram):
+        programID(NXprogram):
           exists: [min, 0, max, infty]
           program(NX_CHAR):
             \@version(NX_CHAR):
         # point at least to the proprietary artifact
-        (NXserialized):
+        serialized(NXserialized):
           exists: recommended
           type(NX_CHAR):
           path(NX_CHAR):
@@ -603,12 +603,12 @@ NXapm(NXobject):
         # we can only make recommendations
         sequence_index(NX_POSINT):
           exists: recommended
-        (NXprogram):
+        programID(NXprogram):
           exists: [min, 0, max, infty]
           program(NX_CHAR):
             \@version(NX_CHAR):
         # config of the hit_finding algorithm
-        (NXserialized):
+        serialized(NXserialized):
           exists: recommended
           type(NX_CHAR):
           path(NX_CHAR):
@@ -652,11 +652,11 @@ NXapm(NXobject):
         exists: recommended
         sequence_index(NX_POSINT):
           exists: recommended
-        (NXprogram):
+        programID(NXprogram):
           exists: [min, 1, max, infty]
           program(NX_CHAR):
             \@version(NX_CHAR):
-        (NXserialized):
+        serialized(NXserialized):
           exists: optional
           type(NX_CHAR):
           path(NX_CHAR):
@@ -699,11 +699,11 @@ NXapm(NXobject):
         exists: recommended
         sequence_index(NX_POSINT):
           exists: recommended
-        (NXprogram):
+        programID(NXprogram):
           exists: [min, 1, max, infty]
           program(NX_CHAR):
             \@version(NX_CHAR):
-        (NXserialized):
+        serialized(NXserialized):
           exists: optional
           type(NX_CHAR):
           path(NX_CHAR):
@@ -725,11 +725,11 @@ NXapm(NXobject):
         exists: recommended
         sequence_index(NX_POSINT):
           exists: recommended
-        (NXprogram):
+        programID(NXprogram):
           exists: [min, 1, max, infty]
           program(NX_CHAR):
             \@version(NX_CHAR):
-        (NXserialized):
+        serialized(NXserialized):
           exists: recommended
           type(NX_CHAR):
           path(NX_CHAR):
@@ -744,7 +744,7 @@ NXapm(NXobject):
         exists: recommended
         sequence_index(NX_POSINT):
           exists: recommended
-        (NXprogram):
+        programID(NXprogram):
           exists: [min, 1, max, infty]
           program(NX_CHAR):
             \@version(NX_CHAR):
@@ -818,11 +818,11 @@ NXapm(NXobject):
         exists: recommended
         sequence_index(NX_POSINT):
           exists: recommended
-        (NXprogram):
+        programID(NXprogram):
           exists: [min, 1, max, infty]
-          program:
-            \@version:
-        (NXserialized):
+          program(NX_CHAR):
+            \@version(NX_CHAR):
+        definitions(NXserialized):
           exists: recommended
           doc: |
             The respective ranging definitions file RNG/RRNG/ENV/HDF5.
@@ -837,7 +837,7 @@ NXapm(NXobject):
           exists: recommended
           sequence_index(NX_POSINT):
             exists: recommended
-          (NXprogram):
+          programID(NXprogram):
             exists: [min, 1, max, infty]
             program(NX_CHAR):
               \@version(NX_CHAR):
@@ -860,7 +860,7 @@ NXapm(NXobject):
           exists: recommended
           sequence_index(NX_POSINT):
             exists: recommended
-          (NXprogram):
+          programID(NXprogram):
             exists: [min, 1, max, infty]
             program(NX_CHAR):
               \@version(NX_CHAR):
@@ -889,11 +889,11 @@ NXapm(NXobject):
           exists: recommended
           sequence_index(NX_POSINT):
             exists: recommended
-          (NXprogram):
+          programID(NXprogram):
             exists: [min, 1, max, infty]
             program(NX_CHAR):
               \@version(NX_CHAR):
-          (NXpeak):
+          peakID(NXpeak):
             exists: [min, 0, max, infty]
             label(NX_CHAR):
               exists: recommended
@@ -922,7 +922,7 @@ NXapm(NXobject):
           exists: recommended
           sequence_index(NX_POSINT):
             exists: recommended
-          (NXprogram):
+          programID(NXprogram):
             exists: [min, 1, max, infty]
             program(NX_CHAR):
               \@version(NX_CHAR):
