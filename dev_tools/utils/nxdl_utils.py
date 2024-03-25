@@ -3,6 +3,7 @@
 """
 
 import os
+import re
 import textwrap
 from functools import lru_cache
 from glob import glob
@@ -56,7 +57,7 @@ def get_app_defs_names():
 def get_xml_root(file_path):
     """Reducing I/O time by caching technique"""
 
-    return ET.parse(file_path).getroot()
+    return ET.parse(str(file_path)).getroot()
 
 
 def get_hdf_root(hdf_node):
@@ -90,7 +91,13 @@ def get_hdf_info_parent(hdf_info):
     """Get the hdf_info for the parent of an hdf_node in an hdf_info"""
     if "hdf_path" not in hdf_info:
         return {"hdf_node": hdf_info["hdf_node"].parent}
-    node = get_hdf_parent(hdf_info)
+    node = (
+        get_hdf_root(hdf_info["hdf_node"])
+        if "hdf_root" not in hdf_info
+        else hdf_info["hdf_root"]
+    )
+    for child_name in hdf_info["hdf_path"].split("/")[1:-1]:
+        node = node[child_name]
     return {"hdf_node": node, "hdf_path": get_parent_path(hdf_info["hdf_path"])}
 
 
@@ -102,32 +109,41 @@ def get_nx_class(nxdl_elem):
 
 
 def get_nx_namefit(hdf_name, name, name_any=False):
-    """Checks if an HDF5 node name corresponds to a child of the NXDL element
-    uppercase letters in front can be replaced by arbitrary name, but
-    uppercase to lowercase match is preferred,
-    so such match is counted as a measure of the fit"""
+    """
+    Checks if an HDF5 node name corresponds to a child of the NXDL element.
+    A group of uppercase letters anywhere can be replaced by an arbitrary name.
+
+    Args:
+        hdf_name (str): The hdf_name, containing uppercase parts.
+        name (str): The string to match against hdf_name.
+        name_any (bool, optional):
+            Accept any name and just return the matching characters.
+            Defaults to False.
+
+    Returns:
+        int:
+            -1 if no match is found or the number of matching
+            characters (case insensitive) between for all uppercase groups.
+    """
     if name == hdf_name:
         return len(name) * 2
-    # count leading capitals
-    counting = 0
-    while counting < len(name) and name[counting].isupper():
-        counting += 1
-    if (
-        name_any
-        or counting == len(name)
-        or (counting > 0 and hdf_name.endswith(name[counting:]))
-    ):  # if potential fit
-        # count the matching chars
-        fit = 0
-        for i in range(min(counting, len(hdf_name))):
-            if hdf_name[i].upper() == name[i]:
+
+    uppercase_parts = re.findall("[A-Z]+(?:_[A-Z]+)*", name)
+
+    for up in uppercase_parts:
+        name = name.replace(up, r"([a-zA-Z0-9_]+)")
+
+    name_match = re.search(rf"^{name}$", hdf_name)
+    if name_match is None:
+        return 0 if name_any else -1
+
+    fit = 0
+    for up, low in zip(uppercase_parts, name_match.groups()):
+        for i in range(min(len(up), len(low))):
+            if up[i].lower() == low[i]:
                 fit += 1
-            else:
-                break
-        if fit == min(counting, len(hdf_name)):  # accept only full fits as better fits
-            return fit
-        return 0
-    return -1  # no fit
+
+    return fit
 
 
 def get_nx_classes():
@@ -819,6 +835,9 @@ def get_node_at_nxdl_path(
     we are looking for or the root elem from a previously loaded NXDL file
     and finds the corresponding XML element with the needed attributes."""
     try:
+        if nxdl_path.count("/") == 1 and not nxdl_path.upper().startswith("/ENTRY"):
+            elem = None
+            nx_name = "NXroot"
         (class_path, nxdlpath, elist) = get_inherited_nodes(nxdl_path, nx_name, elem)
     except ValueError as value_error:
         if exc:
