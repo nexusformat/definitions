@@ -59,7 +59,7 @@ def get_app_defs_names():
 def get_xml_root(file_path):
     """Reducing I/O time by caching technique"""
 
-    return ET.parse(str(file_path)).getroot()
+    return ET.parse(file_path).getroot()
 
 
 def get_hdf_root(hdf_node):
