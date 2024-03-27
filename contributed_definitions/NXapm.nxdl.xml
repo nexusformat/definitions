@@ -47,7 +47,7 @@
     <doc>
          Application definition for atom probe and field ion microscopy experiments.
     </doc>
-    <group name="entryID" type="NXentry" minOccurs="1" maxOccurs="unbounded">
+    <group type="NXentry" minOccurs="1" maxOccurs="unbounded">
         <field name="definition" type="NX_CHAR">
             <attribute name="version" type="NX_CHAR" optional="true"/>
             <enumeration>
@@ -56,7 +56,7 @@
         </field>
         <group name="profiling" type="NXcs_profiling" optional="true">
             <doc>
-                 The configuration of the I/O writer software (e.g. `pynxtools &lt;https://github.com/FAIRmat-NFDI/pynxtools&gt;`_)
+                 The configuration of the I/O writer software (e.g. `pynxtools &lt;https://github.com/FAIRmat-NFDI/pynxtools&gt;`_ or its plugins)
                  which was used to generate this NeXus file instance.
             </doc>
             <!--command_line_call(NX_CHAR):-->
@@ -114,9 +114,26 @@ cannot be made required as for simulations you do not have a run number!
                  should be stored as individual :ref:`NXentry` instances in one NeXus file.
             </doc>
         </field>
-        <!--alias experiment_alias
-experiment_description(NX_CHAR):
-optional quantities do not need to be mentioned in an appdef because they can always be added
+        <field name="experiment_alias" type="NX_CHAR">
+            <doc>
+                 Either an identifier or an alias that is human-friendly so that scientists find that experiment again.
+                 For experiments usually this is the run_number but for simulation typically no run_numbers are issued.
+            </doc>
+        </field>
+        <field name="experiment_description" type="NX_CHAR" optional="true">
+            <doc>
+                 Free-text description about the experiment.
+                 
+                 Users are strongly advised to parameterize the description of their experiment
+                 by using respective groups and fields and base classes instead of writing prose
+                 into this field.
+                 
+                 The reason is that such free-text field is difficult to machine-interpret.
+                 The motivation behind keeping this field for now is to learn in how far the
+                 current base classes need extension based on user feedback.
+            </doc>
+        </field>
+        <!--optional quantities do not need to be mentioned in an appdef because they can always be added
 if NXapm inherits from NXapm_base having this optional field does not need to be
 mentioned because optional nodes can always be added to a NeXus file instance without
 making it thereby non-compliant to the application definition
@@ -173,6 +190,8 @@ the appdef definition here is nothing else then the documentation of this for a 
                    to LEAP systems (see `S. Katnagallu et al. &lt;https://doi.org/10.1017/S1431927621012381&gt;`_).
                  * other should be used in combination with the user specifying details
                    in the experiment_documentation field.
+                 
+                 If NXapm is used for storing details about a simulation use other for now.
             </doc>
             <enumeration>
                 <item value="apt"/>
@@ -338,7 +357,7 @@ schema for heat treatment
                 </group>
             </group>
         </group>
-        <group name="specimen" type="NXsample" recommended="true">
+        <group name="specimen" type="NXsample">
             <field name="method" type="NX_CHAR">
                 <doc>
                      A qualifier whether the specimen is a real one or a virtual one.
@@ -348,7 +367,7 @@ schema for heat treatment
                     <item value="simulation"/>
                 </enumeration>
             </field>
-            <field name="alias" type="NX_CHAR">
+            <field name="alias" type="NX_CHAR" recommended="true">
                 <doc>
                      Given name an alias. Better use identifier and parent_identifier instead.
                      A single NXentry should be used only for the characterization of a single specimen.
@@ -435,7 +454,7 @@ schema for heat treatment
             </field>
         </group>
         <!--describing the geometry of the specimen-->
-        <group name="coordinate_system_set" type="NXcoordinate_system_set" recommended="true">
+        <group name="coordinate_system_set" type="NXcoordinate_system_set">
             <doc>
                  Set to hold different coordinate systems conventions.
                  Inspect the description of the :ref:`NXcoordinate_system_set`
@@ -1061,7 +1080,7 @@ in an e.g. work of A. London et al.-->
                         <field name="charge_state" type="NX_INT"/>
                         <group name="charge_state_analysis" type="NXapm_charge_state_analysis" optional="true">
                             <!--config-->
-                            <field name="element" type="NX_UINT"/>
+                            <field name="nuclides" type="NX_UINT"/>
                             <field name="mass_to_charge_range" type="NX_FLOAT"/>
                             <field name="min_half_life" type="NX_FLOAT"/>
                             <field name="min_abundance" type="NX_FLOAT"/>

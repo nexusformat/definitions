@@ -17,7 +17,7 @@ symbols:
     the pulse_identifier.
 type: group
 NXapm(NXobject):
-  entryID(NXentry):
+  (NXentry):  # entryID
     exists: [min, 1, max, infty]
     definition(NX_CHAR):
       \@version(NX_CHAR):
@@ -26,7 +26,7 @@ NXapm(NXobject):
     profiling(NXcs_profiling):
       exists: optional
       doc: |
-        The configuration of the I/O writer software (e.g. `pynxtools <https://github.com/FAIRmat-NFDI/pynxtools>`_)
+        The configuration of the I/O writer software (e.g. `pynxtools <https://github.com/FAIRmat-NFDI/pynxtools>`_ or its plugins)
         which was used to generate this NeXus file instance.
       # command_line_call(NX_CHAR):
       programID(NXprogram):  # understood by default as PROGRAM(NXprogram), i.e. program1, program2, ...
@@ -77,8 +77,22 @@ NXapm(NXobject):
         needs to be distinguished with different run numbers.
         We follow this habit of most atom probe groups. Such interrupted runs
         should be stored as individual :ref:`NXentry` instances in one NeXus file.
-    # alias experiment_alias
-    # experiment_description(NX_CHAR): 
+    experiment_alias(NX_CHAR):
+      doc: |
+        Either an identifier or an alias that is human-friendly so that scientists find that experiment again.
+        For experiments usually this is the run_number but for simulation typically no run_numbers are issued.
+    experiment_description(NX_CHAR):
+      exists: optional
+      doc: |
+        Free-text description about the experiment.
+        
+        Users are strongly advised to parameterize the description of their experiment
+        by using respective groups and fields and base classes instead of writing prose
+        into this field.
+        
+        The reason is that such free-text field is difficult to machine-interpret.
+        The motivation behind keeping this field for now is to learn in how far the
+        current base classes need extension based on user feedback.
     # optional quantities do not need to be mentioned in an appdef because they can always be added
     # if NXapm inherits from NXapm_base having this optional field does not need to be
     # mentioned because optional nodes can always be added to a NeXus file instance without
@@ -133,6 +147,8 @@ NXapm(NXobject):
           to LEAP systems (see `S. Katnagallu et al. <https://doi.org/10.1017/S1431927621012381>`_).
         * other should be used in combination with the user specifying details
           in the experiment_documentation field.
+        
+        If NXapm is used for storing details about a simulation use other for now.
       enumeration: [apt, fim, apt_fim, other]
     (NXuser):
       exists: recommended
@@ -275,12 +291,12 @@ NXapm(NXobject):
               Magnitude of the standard deviation of the composition (value).
             unit: NX_DIMENSIONLESS 
     specimen(NXsample):
-      exists: recommended
       method(NX_CHAR):
         doc: |
           A qualifier whether the specimen is a real one or a virtual one.
         enumeration: [experiment, simulation]
       alias(NX_CHAR):
+        exists: recommended
         doc: |
           Given name an alias. Better use identifier and parent_identifier instead.
           A single NXentry should be used only for the characterization of a single specimen.
@@ -357,7 +373,6 @@ NXapm(NXobject):
         unit: NX_ANGLE
       # describing the geometry of the specimen
     coordinate_system_set(NXcoordinate_system_set):
-      exists: recommended
       doc: |
         Set to hold different coordinate systems conventions.
         Inspect the description of the :ref:`NXcoordinate_system_set`
@@ -933,7 +948,7 @@ NXapm(NXobject):
             charge_state_analysis(NXapm_charge_state_analysis):
               exists: optional
               # config
-              element(NX_UINT):
+              nuclides(NX_UINT):
               mass_to_charge_range(NX_FLOAT):
               min_half_life(NX_FLOAT):
               min_abundance(NX_FLOAT):
