@@ -176,9 +176,6 @@ not only for stencil-based methods:
         is smoothened in a controlled manner (typically using kernel methods).
 
     :ref:`NXsimilarity_grouping`:
-        A base class defining an alias for NXclustering.
-
-    :ref:`NXclustering`:
         A base class to describe clustering of objects (such as atoms or features).
 
     :ref:`NXrotation_set`:

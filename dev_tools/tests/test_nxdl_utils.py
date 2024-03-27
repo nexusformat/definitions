@@ -96,7 +96,7 @@ def test_get_node_at_nxdl_path():
     )
     assert node.attrib["type"] == "NX_NUMBER"
 
-    node = nexus.get_node_at_nxdl_path("/ENTRY/COORDINATE_SYSTEM_SET", elem=elem)
+    node = nexus.get_node_at_nxdl_path("/ENTRY/coordinate_system_set", elem=elem)
     assert node.attrib["type"] == "NXcoordinate_system_set"
 
     nxdl_file_path = os.path.join(
