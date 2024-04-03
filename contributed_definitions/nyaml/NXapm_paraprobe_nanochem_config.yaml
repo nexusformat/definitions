@@ -598,20 +598,35 @@ NXapm_paraprobe_nanochem_config(NXobject):
     oned_profile(NXapm_paraprobe_tool_config):
       exists: [min, 0, max, 1]
       doc: |
-        Analysis of one-dimensional profiles in ROIs placed in the dataset. Such analyses are useful for quantifying
-        interfacial excess or classical composition analyses. The tool will test for each ROIs if it is completely embedded
-        in the dataset. Specifically, in each such test the tool evaluates if the ROI cuts at least one triangle of the triangulated surface mesh refered to by surface. If this is the case the ROI is close to the surface and not analyzed further.
-        Otherwise, the ROI is processed further.
+        Analysis of one-dimensional profiles in ROIs placed in the dataset.
+        Such analyses are useful for quantifying interfacial excess or for
+        performing classical composition analyses.
         
-        Users should be aware that the latter intersection analysis is not a volumetric intersection analysis as such one
-        is much more computationally involved because the edge model can be a closed non-convex polyhedron
-        in which case one would have to test robustly if the cylinder pierces or is laying completely inside the polyhedron.
-        For this the polyhedron has to be tessellated first into convex polyhedra, as test for volumetric intersection using
-        the Gilbert-Johnson-Keerthi algorithm (GJK) are applicable only to convex polyhedra.
+        The tool will test for each ROIs if it is completely embedded in the dataset.
+        Specifically, each such test evaluates if the ROI cuts at least one triangle
+        of the triangulated surface mesh that is referred to by surface.
+        If this is the case the ROI is marked as one close to the surface
+        and not analyzed further. Otherwise, the ROI is marked as one far
+        from the surface and processed further.
         
-        For each ROI the tool computes atomically decomposed profiles. This means, molecular ions are split into
-        nuclides with respective multiplicity. For each processed ROI a set of a sorted list of signed distance values
-        is returned to enable classical Krakauer/Seidman-style interfacial excess analyses.
+        For each ROI the tool computes atomically decomposed profiles.
+        This means, molecular ions are splitted into nuclides as many times as
+        their respective multiplicity. For each processed ROI the tool stores
+        a sorted list of signed distance values to enable post-processing with
+        other software like e.g. reporter to perform classical
+        Krakauer/Seidman-style interfacial excess analyses.
+        
+        Users should be aware that the latter intersection analysis is not
+        a volumetric intersection analysis. Given that the triangulated mesh
+        referred to in surface is not required to mesh neither a watertight
+        nor convex polyhedron a rigorous testing of volumetric intersection
+        is much more involved. If the mesh is watertight one could use split
+        the task in first tessellating the mesh into convex polyhedra (e.g.
+        tetrahedra and apply a volumetric intersection method like the
+        Gilbert-Johnson-Keerthi algorithm (GJK). In cases when the mesh is not
+        even watertight distance-based segmentation in combination with again
+        intersection of triangles and convex polyhedra is a robust but currently
+        not implemented method to quantify intersections.
       (NXidentifier):
         exists: optional
       analysis_identifier(NX_UINT):
@@ -663,7 +678,9 @@ NXapm_paraprobe_nanochem_config(NXobject):
       feature(NXserialized):
         doc: |
           A precomputed triangulated mesh of the feature representing a model of the
-          interface at which to place ROIs to profile.
+          interface at which to place ROIs to profile. This can be the mesh of an
+          interface as returned e.g. by a previous interface_meshing task or the
+          mesh of an iso-surface from a previous delocalization task.
         type(NX_CHAR):
         path(NX_CHAR):
         checksum(NX_CHAR):
@@ -693,6 +710,10 @@ NXapm_paraprobe_nanochem_config(NXobject):
           match(NX_NUMBER):
       feature_distance(NXserialized):
         exists: recommended
+        doc: |
+          To enable an additional filtration of specific parts of the feature
+          mesh it is recommended to feed precomputed distances of each ion to
+          the triangles of the feature mesh.
         type(NX_CHAR):
         path(NX_CHAR):
         checksum(NX_CHAR):
@@ -750,37 +771,45 @@ NXapm_paraprobe_nanochem_config(NXobject):
         method(NX_CHAR):
         match(NX_NUMBER):
       # config
+      user_defined_roi(NXobject):
+        exists: optional
+        doc: |
+          As an alternative mode the tool can be instructed to place ROIs
+          at specific locations into the dataset. This is the programmatic
+          equivalent to the classical approach in atom probe to place ROIs
+          for composition analyses via positioning and rotating them via
+          a graphical user interface (such as in IVAS / AP Suite).
+        cylinder_set(NXcg_cylinder_set):
+          # dimensionality(NX_POSINT):
+          # cardinality(NX_POSINT):
+          identifier_offset(NX_INT):
+          center(NX_NUMBER):
+            dim: (n_rois, 3)
+          height(NX_NUMBER):
+            dim: (n_rois, 3)
+          radii(NX_NUMBER):
+            dim: (n_rois,)
+        # could add other shapes in the future if necessary
+        # but cylinders are most frequently used
       distancing_model(NX_CHAR):
         doc: |
           Which type of distance should be reported for the profile.
         enumeration: [project_to_triangle_plane]  # ion_to_feature
       roi_orientation(NX_CHAR):
         doc: |
-          In which directions should the tool probe for each ROI.
+          For each ROI, along which direction should the cylindrical ROI
+          be oriented if ROIs are placed at triangles of the feature mesh.
         enumeration: [triangle_outer_unit_normal]  # angularly_geodesic_sphere
-      roi_cylinder_center(NX_FLOAT):
-        doc: |
-          Explicit x, y, z coordinates (in the paraprobe coordinate system) where ROIs should be placed if feature is absent.
-        unit: NX_LENGTH
-        dim: (n_rois, 3)
-      roi_cylinder_orientation(NX_FLOAT):
-        doc: |
-          Explicit outer unit normal which explains into which direction each cylinder ROI is oriented.
-        unit: NX_LENGTH
-        dim: (n_rois, 3)
       roi_cylinder_height(NX_FLOAT):
         doc: |
-          For each ROI, how high (projected on the cylinder axis) should the cylindrical ROI be.
-          
-          If roi_cylinder_center and roi_cylinder_orientation have been defined, roi_cylinder_height
-          and roi_cylinder_radius can be defined as arrays of size (n_rois,) to instruct the tool to
-          place a collection of ROIs with different size.
-          Otherwise, roi_cylinder_height and roi_cylinder_radius have to be a scalars.
-        # not yet implemented the case to have ROIs of different size for each triangle of the feature mesh
+          For each ROI, how high (projected onto the cylinder axis) should
+          the cylindrical ROI be if ROIs are placed at triangles
+          of the feature mesh.
         unit: NX_LENGTH
       roi_cylinder_radius(NX_FLOAT):
         doc: |
-          For each ROI, how wide (radius) should the cylindrical ROI be.
+          For each ROI, how wide (in radius) should the cylindrical ROI
+          be if ROIs are placed at triangles of the feature mesh.
         unit: NX_LENGTH
 
     common(NXapm_paraprobe_tool_common): 
