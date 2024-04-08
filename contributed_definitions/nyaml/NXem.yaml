@@ -2,140 +2,310 @@ category: application
 doc: |
   Application definition for normalized representation of electron microscopy research.
   
-  In line with the idea of NeXus application definitions, this schema is a
-  specialized version of NXem_base in that fields and groups are specifically
-  constrained. This has the effect that some quantities are required, so
-  that a research data management system (RDMS) can rely on the existence of
-  these pieces of information without demanding that RDMS to implement further
-  verification in its own source code or further harmonization or normalization
-  what each piece of information means conceptually.
+  This application definition is a comprehensive example for a general description
+  with which to normalize specific pieces of information and data collected within
+  electron microscopy research.
   
-  This application definition is thus an example of a general description
-  with which to normalize specific pieces of information and data collected
-  within electron microscopy research.
-  
-  This application definition is also a blueprint which shows how users
-  can build specific application definitions by reusing - instead of completely
-  reimplementing the wheel from scratch - em-specific base classes - and thus
-  represent electron-microscopy-specific content.
-  
-  The constraints of all these application definitions might be different
-  than for the here exemplified application definition NXem.
-  
-  Nevertheless, the key benefit remains: Many pieces of information are still
-  conceptually the same, named in the same way and found in the same place
-  in the hierarchy. This supports interoperability of electron microscopy data
-  and is advantageous compared to having everybody using own formatting and
-  conceptually not harmonized terms for describing their electron microscopy
-  research.
-  
-  For the detailed rationale and explanation of the concept behind the
-  NeXus electron microscopy class definitions please consult the preamble
-  of the NXem_base base class.
+  NXem is designed to be used for documentation of experiments or computer simulations
+  of controlled electron beams which are used for studying electron-beam matter interaction
+  to explore physical mechanisms and phenomena, or to characterize materials with
+  electron microscopy.
 type: group
-NXem(NXem_base):
-  # composing from NXem_base should work because NXem_base is composed from NXroot
-  # just list what is required or recommended or optional
-  # overwrite which known building blocks should get a different meaning
-  # and add specific fields for which there is not yet a base class
-  # this also strenghtens that people write base classes instead of
-  # highly customized and deeply overwriting application definitions
-  # other than for base classes the default existentiality constraint is
-  # exists: required therefore spelling this out is omitted for convenience
-  # a releasing of this default constraint is possible with writing exists:
-  \@NX_class:
-  \@file_time(NX_DATE_TIME):
-  \@file_name(NX_CHAR):
-  \@file_update_time(NX_DATE_TIME):
-  \@NeXus_version(NX_CHAR):
-  \@HDF5_Version(NX_CHAR):
-  \@h5py_version(NX_CHAR):
-  \@default(NX_CHAR):
-  (NXprogram):  # understood by default as PROGRAM(NXprogram), i.e. program1, program2, ...
-    doc: |
-      A collection of all programs and libraries which are considered relevant
-      to understand with which software tools this NeXus file instance was
-      generated. Ideally, to enable a binary recreation from the input data.
-      
-      Examples include the name and version of the libraries used to write the
-      instance. Ideally, the software which writes these NXprogram instances
-      also includes the version of the set of NeXus classes i.e. the specific
-      set of base classes, application definitions, and  contributed definitions
-      with which the here described concepts can be resolved.
-      
-      For the `pynxtools library <https://github.com/FAIRmat-NFDI/pynxtools>`_
-      which is used by the `NOMAD <https://nomad-lab.eu/nomad-lab>`_
-      research data management system, it makes sense to store e.g. the GitHub
-      repository commit and respective submodule references used.
-    exists: [min, 0, max, infty]
-  # each NeXus file instance should have a default plot
-  # however as there are cases when this cannot be assured we cannot
-  # make the default required, one example is e.g. a NeXus instance
-  # where scientists just store conventions without a default plot
-  cs_profiling(NXcs_profiling):
-    doc: |
-      The configuration of the I/O writer software (e.g. `pynxtools <https://github.com/FAIRmat-NFDI/pynxtools>`_)
-      which was used to generate this NeXus file instance.
-    command_line_call:
+NXem(NXobject):
+  # \@NX_class:
+  # \@file_time(NX_DATE_TIME):
+  # \@file_name(NX_CHAR):
+  # \@file_update_time(NX_DATE_TIME):
+  # \@NeXus_version(NX_CHAR):
+  # \@HDF5_Version(NX_CHAR):
+  # \@h5py_version(NX_CHAR):
+  # \@default(NX_CHAR):
   (NXentry):  # means ENTRY(NXentry)
     exists: [min, 1, max, infty]
-    \@version(NX_CHAR):
     definition(NX_CHAR):
+      \@version(NX_CHAR):
+        exists: optional
       enumeration: [NXem]
+    # each NeXus file instance should have a default plot
+    # however as there are cases when this cannot be assured we cannot
+    # make the default required, one example is e.g. a NeXus instance
+    # where scientists just store conventions without a default plot
+    profiling(NXcs_profiling):
+      exists: optional
+      doc: |
+        The configuration of the I/O writer software (e.g. `pynxtools <https://github.com/FAIRmat-NFDI/pynxtools>`_ or its plugins)
+        which was used to generate this NeXus file instance.
+      # command_line_call(NX_CHAR):
+      (NXprogram):  # understood by default as PROGRAM(NXprogram), i.e. program1, program2, ...
+        doc: |
+          A collection of all programs and libraries which are considered relevant
+          to understand with which software tools this NeXus file instance was
+          generated. Ideally, to enable a binary recreation from the input data.
+          
+          Examples include the name and version of the libraries used to write the
+          instance. Ideally, the software which writes these NXprogram instances
+          also includes the version of the set of NeXus classes i.e. the specific
+          set of base classes, application definitions, and  contributed definitions
+          with which the here described concepts can be resolved.
+          
+          For the `pynxtools library <https://github.com/FAIRmat-NFDI/pynxtools>`_
+          which is used by the `NOMAD <https://nomad-lab.eu/nomad-lab>`_
+          research data management system, it makes sense to store e.g. the GitHub
+          repository commit and respective submodule references used.
+        exists: [min, 0, max, infty]
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+          # \@url:
     experiment_identifier(NXidentifier):
       exists: recommended
+      doc: |
+        Ideally, a (globally) unique persistent identifier for referring to this experiment.
+        
+        An experiment should be understood in that this can be an experiment
+        in reality or a computer simulation because also the latter is an experiment
+        (see the Cambridge Dictionary experiment: *a test done in order to find out
+        something, eg if an idea is correct*).
+        
+        The identifier is usually issued by the facility, laboratory, or the principle investigator.
+        The identifier enables to link experiments/simulations to e.g. proposals.
       service(NX_CHAR):
       identifier(NX_CHAR):
       is_persistent(NX_BOOLEAN):
     experiment_alias(NX_CHAR):
       doc: |
-        Either an identifier or an alias that is human-friendly so that
-        scientist find that experiment again
+        Either an identifier or an alias that is human-friendly so that scientists find that experiment again.
     experiment_description(NX_CHAR):
+      exists: optional
+      doc: |
+        Free-text description about the experiment.
+        
+        Users are strongly advised to parameterize the description of their experiment
+        by using respective groups and fields and base classes instead of writing prose
+        into this field.
+        
+        The reason is that such free-text field is difficult to machine-interpret.
+        The motivation behind keeping this field for now is to learn in how far the
+        current base classes need extension based on user feedback.
     start_time(NX_DATE_TIME):
+      doc: |
+        ISO 8601 time code with local time zone offset to UTC information included
+        when the microscope session started. If the application demands that time
+        codes in this section of the application definition should only be used
+        for specifying when the experiment was performed - and the exact
+        duration is not relevant - this start_time field should be used.
+        
+        Often though it is useful to specify a time interval via setting both a start_time
+        and an end_time because this enables software tools and users to collect a
+        more detailed bookkeeping of the experiment.
+        
+        Users should be aware though that even with having both time instances
+        specified, it may not be possible to infer how long the experiment took or
+        for how long data were acquired.
+        
+        More detailed timing data over the course of the experiment have
+        to be collected to compute this. These computations can take
+        advantage of individual time stamps start_time and end_time
+        in :ref:`NXevent_data_em` instances.
     end_time(NX_DATE_TIME):
       exists: recommended
+      doc: |
+        ISO 8601 time code with local time zone offset to UTC included when
+        the microscope session ended. See docstring of the start_time field
+        to see how the start_time and end_time should be used together.
     (NXcite):
       exists: [min, 0, max, infty]
-    (NXprogram):  # no docstring overwritten means accepting it as it is defined in NXem_base
-      exists: [min, 1, max, infty]
-      program(NX_CHAR):
-        \@version(NX_CHAR):
-        # \@url:
     (NXserialized):
       exists: [min, 0, max, infty]
+      doc: |
+        Possibility to store a collection of serialized resources that are associated
+        with the experiment. An example how to use this set could be to document
+        from which files, which have been e.g. generated by software of technology
+        partners, the information in an instance of NXem was filled with.
+        
+        If resources from technology partners would also be documented with semantic
+        technology there would not even be a necessity to copy over specific information
+        into other files as one could write inference and information/fact/knowledge retrieval
+        algorithm(s) whereby a specific piece of information that is related to an experiment
+        or simulation is read directly from the respective file of the technology partner.
+        
+        The reason why currently this works convincingly in hardly any research data
+        management system (RDMS) is the strong heterogeneity of the information contained
+        in such files and the fact that often context and documentation, specifically
+        rich semantic documentation, and contextualization is missing.
+      # using NXserialized here instead of NXnote as the former is more specific
       type(NX_CHAR):
       path(NX_CHAR):
       checksum(NX_CHAR):
-      algoritm(NX_CHAR):
+      algorithm(NX_CHAR):
     (NXuser):
-      exists: [min, 1, max, infty]
+      exists: [min, 0, max, infty]
+      doc: |
+        Contact information and eventually details of at least one person
+        who performed or was involved in the microscope session or simulation run.
+        This can be the principle investigator who performed this experiment or the
+        student who performed the simulation. Adding multiple users if relevant
+        is recommended.
       name(NX_CHAR):
+        exists: optional
+        doc: |
+          Given (first) name and surname of the user.
+      affiliation(NX_CHAR):
+        exists: optional
+        doc: |
+          Name of the affiliation of the user at the point in time
+          when the experiment was performed.
+      address(NX_CHAR):
+        exists: optional
+        doc: |
+          Postal address of the affiliation.
+      email(NX_CHAR):
+        exists: optional
+        doc: |
+          Email address of the user at the point in time when the experiment
+          was performed. Writing the most permanently used email is recommended.
+      telephone_number(NX_CHAR):
+        doc: |
+          (Business) (tele)phone number of the user at the point
+          in time when the experiment was performed.
+      role(NX_CHAR):
+        doc: |
+          Which role does the user have in the place and at the point
+          in time when the experiment was performed? Technician operating
+          the microscope, student, postdoc, principle investigator, or guest
+          are common examples.
       identifier(NXidentifier):
         exists: recommended
+        doc: |
+          Service as another mean of identification of a user other than by its name.
+          Examples could be an ORCID or social media account of the user.
         service(NX_CHAR):
         identifier(NX_CHAR):
         is_persistent(NX_BOOLEAN):
-      # all other fields are optional but clearly defined in NXem_base
     sample(NXsample):
+      # NEW ISSUE: inject the conclusion from the discussion with Andrea
+      # according to SAMPLE.yaml 0f8df14 2022/06/15
+      # ID: -> maps to name
+      # name: -> short_title
+      # user: -> not matched right now
+      # citation: doi ->why relevant, should be solved by RDMS
+      doc: |
+        A description of the material characterized in the experiment.
+        Sample and specimen are threaded as de facto synonyms.
+        Samples can be real specimens or virtual (see method).
       method(NX_CHAR):
+        doc: |
+          A qualifier whether the sample is a real one or a
+          virtual one (in a computer simulation)
+        enumeration: [experiment, simulation]
       identifier(NXidentifier):
         exists: recommended
+        doc: |
+          Ideally, (globally) unique persistent identifier which distinguishes the sample from all others
+          and especially the predecessor/origin from where that sample was cut.  The terms sample
+          and specimen are here considered as exact synonyms.
+          
+          This field must not be used for an alias! Instead, use name.
+          
+          In cases where multiple specimens were loaded into the microscope, the identifier has to resolve
+          the specific sample, whose results are stored by this :ref:`NXentry` instance because a single
+          NXentry should be used for the characterization of a single specimen.
+          
+          Details about the specimen preparation should be stored in resources referring to parent_identifier.
         service(NX_CHAR):
         identifier(NX_CHAR):
         is_persistent(NX_BOOLEAN):
       parent_identifier(NXidentifier):
         exists: recommended
+        doc: |
+          Identifier of the sample from which the sample was cut or the string *None*.
+          
+          The purpose of this field is to support functionalities for tracking
+          sample provenance in a research data management system.
         service(NX_CHAR):
         identifier(NX_CHAR):
         is_persistent(NX_BOOLEAN):
       preparation_date(NX_DATE_TIME):
-      name:
+        doc: |
+          ISO 8601 time code with local time zone offset to UTC information
+          when the specimen was prepared.
+          
+          Ideally, report the end of the preparation, i.e. the last known timestamp when
+          the measured specimen surface was actively prepared. Ideally, this matches
+          the last timestamp that is mentioned in the digital resource pointed to by
+          parent_identifier.
+          
+          Knowing when the specimen was exposed to e.g. specific atmosphere is especially
+          required for environmentally sensitive material such as specimen charged with hydrogen
+          or experiments including tracers that have a short halflife. Additional time stamps
+          prior to preparation_date should better be placed in resources which describe but
+          which do not pollute the description here with prose. Resolving these connected
+          pieces of information is considered the responsibility of the
+          research data management system not of a NeXus file.
+      name(NX_CHAR):
         exists: recommended
+        doc: |
+          An alias used to refer to the specimen to please readability for humans.
       atom_types(NX_CHAR):
-      # again all other fields are optional
-    (NXcoordinate_system_set):
+        doc: |
+          List of comma-separated elements from the periodic table that are contained in the sample.
+          If the sample substance has multiple components, all elements from each component
+          must be included in atom_types.
+          
+          The purpose of the field is to offer research data management systems an opportunity
+          to parse the relevant elements without having to interpret these from the resources
+          pointed to by parent_identifier or walk through eventually deeply nested groups in
+          individual data instances.
+      thickness(NX_NUMBER):
+        exists: optional
+        doc: |
+          (Measured) sample thickness.
+          
+          The information is recorded to qualify if the beam used was likely
+          able to shine through the specimen. For scanning electron microscopy,
+          in many cases the specimen is typically thicker than what is
+          illuminatable by the electron beam.
+          
+          In this case the value should be set to the actual thickness of
+          the specimen viewed for an illumination situation where the nominal
+          surface normal of the specimen is parallel to the optical axis.
+        unit: NX_LENGTH
+      # \@units: nm
+      # NEW ISSUE: error estimates of the thickness and origin, i.e. how the value was obtained would be useful
+      # NEW ISSUE: error model
+      # NEW ISSUE: the KIT/SCC SEM, TEM schemata further qualify samples whether they are conductive e/ibeam sensitive
+      # etc. The problem with this is that beam sensitivity is too vague but spatiotemporal electron dose integral dependent
+      # KIT/SCC distinguish further conductivity and magnetic properties. While the motivation is clear, making
+      # it thus simple is likely problematic when the data entered in such fields remaining qualitative.
+      # what are good or bad properties, it would make sense though to quantify these values
+      # this includes the description of eventual plasma cleaning steps,
+      # just knowing that a sample was plasma cleaned is insufficient, maybe it was not cleaned long enough
+      # if plasma cleaning is done outside the EM than its certainly history, if it happens inside the EM
+      # are the ibeam description capabilities not sufficient enough?
+      density(NX_NUMBER):
+        exists: optional
+        doc: |
+          (Measured) density of the specimen.
+          
+          For multi-layered specimens this field should only be used to describe
+          the density of the excited volume. For scanning electron microscopy
+          the usage of this field is discouraged and instead an instance of an 
+          :ref:`NXinteraction_vol_em` within individual :ref:`NXevent_data_em`
+          instances can provide a cleaner description of the relevant details
+          why one may wish to store the density of the specimen.
+        unit: NX_ANY
+      description(NX_CHAR):
+        exists: optional
+        doc: |
+          Discouraged free-text field to provide further detail although adding
+          parent_identifier and having a working research data management system
+          should provide this contextualization.
+    coordinate_system_set(NXcoordinate_system_set):
       exists: [min, 1, max, 1]
+      doc: |
+        Set to hold different coordinate systems conventions.
+        Inspect the description of the :ref:`NXcoordinate_system_set`
+        and :ref:`NXcoordinate_system` base classes how to define
+        coordinate systems in NeXus.
       (NXcoordinate_system):
         exists: [min, 1, max, infty]
         origin(NX_CHAR):
@@ -147,8 +317,7 @@ NXem(NXem_base):
         z_direction(NX_CHAR):
         # the description can be so lean because we do not need
         # to overwrite here s.th. as everything is defined already
-        # in NXem_base and we also do not wish to overwrite the datatype
-        # of fields, we just say hey we need the above-mentioned fields
+        # we just say hey we need the above-mentioned fields
         # in the way they are defined in the respective composed base classes
         # and they have to be defined
         # we also should not need to specify the value type like R, NX_POSINT
@@ -162,9 +331,17 @@ NXem(NXem_base):
           exists: recommended
         location(NX_CHAR):
           exists: recommended
+        control_program(NXprogram):
+          exists: recommended
+          doc: |
+            Details about the control program used for operating the microscope.
+          program(NX_CHAR):
+            \@version(NX_CHAR):
         (NXfabrication):
           vendor(NX_CHAR):
           model(NX_CHAR):
+          identifier(NX_CHAR):
+            exists: recommended
         (NXdetector):
           exists: [min, 0, max, infty]
           (NXfabrication):
@@ -174,15 +351,17 @@ NXem(NXem_base):
           electron_source(NXsource):
             emitter_type(NX_CHAR):
             probe(NX_CHAR):
+            # voltage like all other dynamic quantities should better be placed in instances of NXevent_data_em
         (NXibeam_column):
-          exists: optional
+          exists: [min, 0, max, 1]
+          # there are tri-beam SEMs but they typically use a laser for which we should have an own base class
           ion_source(NXsource):
             probe(NXion):
-            # voltage(NX_NUMBER): 
+            # voltage(NX_NUMBER): also this better in instances of NXevent_data_em
             # does not have to be written out unless that field should be required!
             # like all other sub-graphs in the NXibeam_column base class and all
             # the fields they can be used
-      (NXevent_data_em_set):
+      event_data_em_set(NXevent_data_em_set):
         exists: [min, 0, max, 1]
         # an instance must not have an NXevent_data_em_set but if it has one it must not be more than 1 !
         (NXevent_data_em):
@@ -201,16 +380,79 @@ NXem(NXem_base):
                 checksum(NX_CHAR):
                 algorithm(NX_CHAR):
               detector_identifier(NX_CHAR):
-            stack(NXdata):
+            image_oned(NXdata):
               exists: optional
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
+              title(NX_CHAR):
+              intensity(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_x(NX_NUMBER):
+                \@long_name(NX_CHAR):
+            image_twod(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_INT):
+              title(NX_CHAR):
+              intensity(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_y(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_x(NX_NUMBER):
+                \@long_name(NX_CHAR):
+            image_threed(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_INT):
+              title(NX_CHAR):
+              intensity(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_z(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_y(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_x(NX_NUMBER):
+                \@long_name(NX_CHAR):
+            stack_oned(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_INT):
               title(NX_CHAR):
               intensity(NX_NUMBER):
                 \@long_name(NX_CHAR):
               axis_image_identifier(NX_INT):
+                \@long_name(NX_CHAR):
+              axis_x(NX_NUMBER):
+                \@long_name(NX_CHAR):
+            stack_twod(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_INT):
+              title(NX_CHAR):
+              intensity(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_image_identifier(NX_INT):
+                \@long_name(NX_CHAR):
+              axis_y(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_x(NX_NUMBER):
+                \@long_name(NX_CHAR):
+            stack_threed(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_INT):
+              title(NX_CHAR):
+              intensity(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_image_identifier(NX_INT):
+                \@long_name(NX_CHAR):
+              axis_z(NX_NUMBER):
                 \@long_name(NX_CHAR):
               axis_y(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -226,12 +468,67 @@ NXem(NXem_base):
                 checksum(NX_CHAR):
                 algorithm(NX_CHAR):
               detector_identifier(NX_CHAR):
-            stack(NXdata):
+            image_oned(NXdata):
               exists: optional
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_CHAR):
-              \@long_name(NX_CHAR):
+              title:
+              real(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              imag(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_i(NX_NUMBER):
+                \@long_name(NX_CHAR):
+            image_twod(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_CHAR):
+              title:
+              real(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              imag(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_j(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_i(NX_NUMBER):
+                \@long_name(NX_CHAR):
+            image_threed(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_CHAR):
+              title:
+              real(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              imag(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_k(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_j(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_i(NX_NUMBER):
+                \@long_name(NX_CHAR):
+            stack_oned(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_CHAR):
+              title:
+              real(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              imag(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_image_identifier(NX_INT):
+                \@long_name(NX_CHAR):
+              axis_i(NX_NUMBER):
+                \@long_name(NX_CHAR):
+            stack_twod(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_CHAR):
               title:
               real(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -243,12 +540,11 @@ NXem(NXem_base):
                 \@long_name(NX_CHAR):
               axis_i(NX_NUMBER):
                 \@long_name(NX_CHAR):
-            hyperstack(NXdata):
+            stack_threed(NXdata):
               exists: optional
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_CHAR):
-              \@long_name(NX_CHAR):
               title:
               real(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -272,12 +568,33 @@ NXem(NXem_base):
                 checksum(NX_CHAR):
                 algorithm(NX_CHAR):
               detector_identifier(NX_CHAR):
-            stack(NXdata):
+            spectrum_zerod(NXdata):
               exists: optional
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
+              title(NX_CHAR):
+              intensity(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_energy(NX_NUMBER):
+                \@long_name(NX_CHAR):
+            spectrum_oned(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_INT):
+              title(NX_CHAR):
+              intensity(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_x(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_energy(NX_NUMBER):
+                \@long_name(NX_CHAR):
+            spectrum_twod(NXdata):
+              exists: optional
+              \@signal(NX_CHAR):
+              \@axes(NX_CHAR):
+              \@AXISNAME_indices(NX_INT):
               title(NX_CHAR):
               intensity(NX_NUMBER):
                 \@long_name(NX_CHAR):
@@ -287,17 +604,27 @@ NXem(NXem_base):
                 \@long_name(NX_CHAR):
               axis_energy(NX_NUMBER):
                 \@long_name(NX_CHAR):
-            summary(NXdata):
-              exists: recommended
+            spectrum_threed(NXdata):
+              exists: optional
               \@signal(NX_CHAR):
               \@axes(NX_CHAR):
               \@AXISNAME_indices(NX_INT):
-              \@long_name(NX_CHAR):
               title(NX_CHAR):
+              intensity(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_z(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_y(NX_NUMBER):
+                \@long_name(NX_CHAR):
+              axis_x(NX_NUMBER):
+                \@long_name(NX_CHAR):
               axis_energy(NX_NUMBER):
                 \@long_name(NX_CHAR):
+              # collection(NXdata):
           em_lab(NXinstrument):
+            exists: recommended
             (NXebeam_column):
+              operation_mode(NX_CHAR):
               electron_source(NXsource):
                 voltage(NX_NUMBER):
             (NXibeam_column):
@@ -305,6 +632,29 @@ NXem(NXem_base):
               ion_source(NXsource):
                 probe(NXion):
                 voltage(NX_NUMBER):
+            (NXscanbox_em):
+              exists: optional
+              scan_schema(NX_CHAR):
+              dwell_time(NX_NUMBER):
+            (NXstage_lab):
+              exists: optional
+            (NXdetector):
+              exists: optional
+              mode(NX_CHAR):
+            heater(NXobject):  # (NXactuator):
+              exists: optional
+              current(NX_NUMBER):
+                doc: |
+                  Nominal current of the heater.
+                unit: NX_CURRENT
+              voltage(NX_NUMBER):
+                doc: |
+                  Nominal voltage of the heater.
+                unit: NX_VOLTAGE
+              power(NX_NUMBER):
+                doc: |
+                  Nominal power of the heater.
+                unit: NX_POWER
       # why at all do we need to add here (NXinstrument) ?
       # nyaml2nxdl could query the NXem_msr base class definition
       # and check if an identifier named em_lab exists in this case
@@ -318,9 +668,8 @@ NXem(NXem_base):
     (NXroi):
       exists: [min, 0, max, infty]
       doc: |
-        A region-of-interest analyzed either during or after the session.
-        For which specific processed data of the measured or simulated
-        data are available.
+        A region-of-interest analyzed either during or after the session for which
+        specific processed data are available.
       # as soon as one entry is here constrained further
       # an RDM can be sure to find specific pieces of information in a
       # specific way but then every user of this application definition
@@ -342,7 +691,6 @@ NXem(NXem_base):
         # remains to be discussed based on examples
       eels(NXem_eels):
         exists: optional
-        # remains to be discussed based on examples
       # cl(NXem_cl):
       #   exists: optional
       correlation(NXem_correlation):
@@ -376,7 +724,7 @@ NXem(NXem_base):
 # Magnification -> use NXoptical_system_em
 # Image width -> implicit in roi/NXdata instances
 # Image size -> see image width
-# Acquisition mode (too vague) -> map on more expressive fields of NXem_base
+# Acquisition mode (too vague) -> map on more expressive fields of NXem
 # Storage tilt (what is this) for tilt see NXstage_lab
 # Measurement date (how is it different from Date?
 # Comments -> any of the description fields, in both cases not fair

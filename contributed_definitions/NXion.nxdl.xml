@@ -26,7 +26,7 @@
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
-        <symbol name="n_ivecmax">
+        <symbol name="n_ivec_max">
             <doc>
                  Maximum number of atoms/isotopes allowed per (molecular) ion (fragment).
             </doc>
@@ -38,7 +38,7 @@
         </symbol>
     </symbols>
     <doc>
-         Set of atoms of a molecular ion or fragment in e.g. ToF mass spectrometry.
+         Base class for documenting the set of atoms of a (molecular) ion.
     </doc>
     <field name="identifier" type="NX_CHAR">
         <doc>
@@ -61,57 +61,51 @@
              The identifier zero is reserved for the special unknown ion type.
         </doc>
     </field>
-    <field name="isotope_vector" type="NX_UINT" units="NX_UNITLESS">
+    <field name="nuclide_hash" type="NX_UINT" units="NX_UNITLESS">
         <doc>
-             A vector of isotope hash values. These values have to be stored in an array,
-             sorted in decreasing order. The array is filled with zero hash values
-             indicating unused places. The individual hash values are built with the
-             following hash function:
+             Vector of nuclide hash values.
              
-             The hash value :math:`H` is :math:`H = Z + N*256` with :math:`Z`
-             the number of protons and :math:`N` the number of neutrons
-             of each isotope respectively.
+             Individual hash values :math:`H` is :math:`H = Z + N*256` with :math:`Z`
+             encode the number of protons :math:`Z` and the number of neutrons :math:`N`
+             of each nuclide respectively. :math:`Z` and :math:`N` have to be 8-bit unsigned integers.
              
-             Z and N have to be 8-bit unsigned integers.
-             For the rationale behind this `M. Kühbach et al. (2021) &lt;https://doi.org/10.1017/S1431927621012241&gt;`_
+             The array is sorted in decreasing order. For the rationale behind this see `M. Kühbach et al. (2021) &lt;https://doi.org/10.1017/S1431927621012241&gt;`_
         </doc>
-        <dimensions rank="2">
-            <dim index="1" value="1"/>
-            <dim index="2" value="n_ivecmax"/>
+        <dimensions rank="1">
+            <dim index="1" value="n_ivec_max"/>
         </dimensions>
     </field>
-    <field name="nuclid_list" type="NX_UINT" units="NX_UNITLESS">
+    <field name="nuclide_list" type="NX_UINT" units="NX_UNITLESS">
         <doc>
-             A supplementary row vector which decodes the isotope_vector into
-             a human-readable matrix of nuclids with the following formatting:
+             Table which decodes the entries in nuclide_hash into a human-readable matrix of instances.
+             The first column specifies the nuclide mass number, i.e. using the hashvalues
+             from the isotope_vector this is :math:`Z + N` or 0. The value 0 documents that no
+             isotope-specific information about the element encoded is relevant.
+             The second row specifies the number of protons :math:`Z` or 0.
+             The value 0 in this case documents a placeholder or that no element-specific
+             information is relevant.
+             Taking a carbon-14 nuclide as an example the mass number is 14.
+             That is encoded as a value pair (14, 6) as one row of the table.
              
-             The first row specifies the isotope mass number, i.e. using the hashvalues
-             from the isotope_vector this is :math:`Z + N`. As an example for a
-             carbon-14 isotope the number is 14.
-             The second row specifies the number of protons :math:`Z`, e.g. 6 for the
-             carbon-14 example. This row matrix is thus mapping the notation of
-             using superscribed isotope mass and subscripted number of protons
-             to identify isotopes.
-             Unused places filling up to n_ivecmax need to be filled with zero.
+             Therefore, this notation is the typical superscribed nuclide mass number
+             and subscripted number of protons element notation e.g. :math:`^{14}C`.
+             The array is stored matching the order of nuclide_hash.
         </doc>
         <dimensions rank="2">
-            <dim index="1" value="2"/>
-            <dim index="2" value="n_ivecmax"/>
+            <dim index="1" value="n_ivecmax"/>
+            <dim index="2" value="2"/>
         </dimensions>
     </field>
-    <field name="color" type="NX_CHAR">
-        <doc>
-             Color code used for visualizing such ions.
-        </doc>
-    </field>
+    <!--color(NX_CHAR):
+  doc: |
+    Color code used for visualizing such ions.-->
     <field name="volume" type="NX_NUMBER" units="NX_VOLUME">
         <doc>
              Assumed volume of the ion.
              
              In atom probe microscopy this field can be used to store the reconstructed
-             volume per ion (average) which is typically stored in range files and will
-             be used when building a tomographic reconstruction of an atom probe
-             dataset.
+             volume per ion (average) which is typically stored alongside ranging
+             definitions.
         </doc>
     </field>
     <field name="charge" type="NX_NUMBER" units="NX_CHARGE">
@@ -123,21 +117,18 @@
         <doc>
              Signed charge state of the ion in multiples of electron charge.
              
-             Only positive values will be measured in atom probe microscopy as the
-             ions are accelerated by a negatively signed bias electric field.
-             In the case that the charge state is not explicitly recoverable,
-             the value should be set to zero.
+             In the example of atom probe microscopy, only positive values will be measured
+             as the ions are accelerated by a negatively signed bias electric field.
+             In the case that the charge state is not explicitly recoverable, the value should
+             be set to zero.
              
              In atom probe microscopy this is for example the case when using
-             classical range file formats like RNG, RRNG for atom probe data.
-             These file formats do not document the charge state explicitly.
-             They report the number of atoms of each element per molecular ion
+             classical ranging definition files in formats like RNG, RRNG.
+             These file formats do not document the charge state explicitly
+             but the number of atoms of each element per molecular ion
              surplus the mass-to-charge-state-ratio interval.
-             With this information it is possible to recover the charge state only
-             for specific molecular ions as the accumulated mass of the molecular ion
-             is defined by the isotopes, which without knowing the charge, leads
-             to an underconstrained problem.
-             Details on ranging can be found in the literature: `M. K. Miller &lt;https://doi.org/10.1002/sia.1719&gt;`_
+             Details on ranging definition files can be found in the literature:
+             `M. K. Miller &lt;https://doi.org/10.1002/sia.1719&gt;`_
         </doc>
     </field>
     <field name="name" type="NX_CHAR">
@@ -147,7 +138,7 @@
              notation to specify the isotopes, ions, and charge state.
              Examples are 12C + or Al +++.
              
-             To ease automated parsing isotope_vector should be the
+             To ease automated parsing, isotope_vector should be the
              preferred machine-readable information used.
         </doc>
     </field>
@@ -156,8 +147,8 @@
              Associated lower (mqmin) and upper (mqmax) bounds of the
              mass-to-charge-state ratio interval(s) [mqmin, mqmax]
              (boundaries inclusive). This field is primarily of interest
-             for documenting :ref:`NXprocess` steps of indexing a ToF/mass-to-charge
-             state histogram.
+             for documenting :ref:`NXprocess` steps of indexing a
+             ToF/mass-to-charge state histogram.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="n_ranges"/>

@@ -4,17 +4,9 @@ doc: |
   
   This is an initial draft application definition for the common NFDI-MatWerk,
   FAIRmat infrastructure use case IUC09 how to improve the organization and
-  results storage of the composition space tool and make these data at the same
-  time directly understandable for NOMAD.
-  
-  This draft does no contain yet the annotations for how to also store
-  in the HDF5 file a default visualization whereby the composition grid
-  could directly be explored using H5Web. I am happy to add this ones the
-  data have been mapped on this schema, i.e. more discussion needed.
-  
-  Also iso-surfaces can be described, for paraprobe, this is a solved problem,
-  check the respective group in the NXapm_paraprobe_results_nanochem data
-  schema/application definition.
+  results storage of the composition space tool and make these data at the
+  same time directly understandable for research data management systems
+  like NOMAD Oasis.
 symbols:
   doc: |
     The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -30,30 +22,23 @@ symbols:
     Number of terms in the position clustering dictionary
 type: group
 NXapm_composition_space_results(NXobject):
-  
-  # by default for appdefs the value of the exists keyword is required
-  # unless it is explicitly specified differently
+  # by default for appdefs the value of the exists keyword is required unless it is explicitly specified differently
   (NXentry):
-    exists: ['min', '1', 'max', '1']
-    \@version:
-      doc: |
-        Version specifier of this application definition.
-    definition:
-      doc: |
-        Official NeXus NXDL schema with which this file was written.
+    exists: [min, 1, max, 1]
+    definition(NX_CHAR):
+      \@version(NX_CHAR):
       enumeration: [NXapm_composition_space_results]
-    
     # can be used for the name of the tool and version but also
     # for if desired all the dependencies and libraries
     (NXprogram):
-      exists: ['min', '1', 'max', 'unbounded']
-      program:
-        \@version:
-    job_pyiron_identifier:
+      exists: [min, 1, max, infty]
+      program(NX_CHAR):
+        \@version(NX_CHAR):
+    job_pyiron_identifier(NX_CHAR):
       exists: recommended
       doc: |
-        TBD, maybe how to link between pyiron state tracking and app state tracking
-    description:
+        TBD, maybe how to link between pyiron state tracking and app state tracking.
+    description(NX_CHAR):
       exists: optional
       doc: |
         Disencouraged place for free-text for e.g. comments.
@@ -67,45 +52,44 @@ NXapm_composition_space_results(NXobject):
         ISO 8601 formatted time code with local time zone offset to UTC
         information included when the analysis behind this results file
         were completed and composition space tool exited as a process.
-    config_filename:
+    # config
+    config(NXserialized):
       doc: |
-        The path and name of the config file for this analysis.
+        The path and name of the config file that was used for this analysis.
         TBD, this can be e.g. Alaukik's YAML file for composition space.
-      
-      # one could also wrap the entire triple of NXprocess (voxelization, gmm, real space)
-      # by a parent NXprocess whereby one could store the results of multiple analyses
-      # runs of the tool in the same individually documented way for as many parameter
-      # runs as desired...
-      \@version:
-        doc: |
-          At least SHA256 strong hash of the specific config_file for
-          tracking provenance.
-    dataset(NXapm_input_reconstruction):
-      filename:
-        doc: |
-          The path and name of the file (technology partner or community format)
-          from which reconstructed ion positions were loaded.
-        \@version:
-    iontypes(NXapm_input_ranging):
-      filename:
-        doc: |
-          The path and name of the file (technology partner or community format
-          from which ranging definitions, i.e. how to map mass-to-
-          charge-state ratios on iontypes were loaded.
-        \@version:
-    results_path:
+      type(NX_CHAR):
+      path(NX_CHAR):
+      algorithm(NX_CHAR):
+      checksum(NX_CHAR):
+    reconstruction(NXserialized):
+      doc: |
+        Details about the file (technology partner or community format)
+        from which reconstructed ion positions were loaded.
+      type(NX_CHAR):
+      path(NX_CHAR):
+      algorithm(NX_CHAR):
+      checksum(NX_CHAR):
+    ranging(NXserialized):
+      doc: |
+        Details about the file (technology partner or community format)
+        from which ranging definitions were loaded which detail how to
+        map mass-to-charge-state ratios on iontypes.
+      type(NX_CHAR):
+      path(NX_CHAR):
+      algorithm(NX_CHAR):
+      checksum(NX_CHAR):
+    # results
+    results_path(NX_CHAR):
       exists: optional
       doc: |
         Path to the directory where the tool should store NeXus/HDF5 results
         of this analysis. If not specified results will be stored in the
         current working directory.
-    status:
+    status(NX_CHAR):
       doc: |
         A statement whether the executable managed to process the analysis
-        or failed prematurely.
-        
-        This status is written to the results file after the end_time
-        at which point the executable must not compute any analysis.
+        or failed prematurely. This status is written to the results file after the
+        end_time at which point the executable must not compute any analysis.
         Only when this status message is present and shows `success`, the
         user should consider the results. In all other cases it might be
         that the executable has terminated prematurely or another error
@@ -116,49 +100,41 @@ NXapm_composition_space_results(NXobject):
       doc: |
         If used, contact information and eventually details
         of at least the person who performed this analysis.
-      name:
-      affiliation:
+      name(NX_CHAR):
         exists: recommended
-      address:
+      affiliation(NX_CHAR):
         exists: optional
-      email:
-        exists: recommended
-      orcid:
-        exists: recommended
-      orcid_platform:
-        exists: recommended
-      telephone_number:
+      (NXidentifier):
         exists: optional
-      role:
-        exists: recommended
-      social_media_name:
-        exists: optional
-      social_media_platform:
+      role(NX_CHAR):
         exists: optional
     (NXcoordinate_system_set):
-      exists: optional
       doc: |
-        Details about the coordinate system conventions used.
+        Details about coordinate systems (reference frames) used. In atom probe several coordinate
+        systems have to be distinguished. Names of instances of such :ref:`NXcoordinate_system`
+        should be documented explicitly and doing so by picking from the
+        following controlled set of names:
+        
+        * composition_space
+        * lab
+        * specimen
+        * laser
+        * instrument
+        * detector
+        * recon
+        
+        The aim of this convention is to support users with contextualizing which reference
+        frame each instance (coordinate system) is. If needed, instances of :ref:`NXtransformations`
+        are used to detail the explicit affine transformations whereby one can convert
+        representations between different reference frames.
+        Inspect :ref:`NXtransformations` for further details.
+    (NXcoordinate_system):
       (NXtransformations):
-        exists: ['min', '1', 'max', 'unbounded']
-        doc: |
-          The individual coordinate systems which should be used.
-          Some suggestions follow, e.g. that field names should be prefixed
-          with the following controlled terms indicating which individual
-          coordinate system is described:
-          
-          * world
-          * composition_space
-          * lab
-          * specimen
-          * laser
-          * leap
-          * detector
-          * recon
+    # add further fields coming from using the charge state recovery
+    # workflow from the ifes_apt_tc_data_modeling library
     voxelization(NXprocess):
       sequence_index(NX_POSINT):
         enumeration: [1]
-      
       # specify the grid your using and for each ion in which cell i.e. voxel it is
       # one could also have a more sophisticated data model where there is some
       # fuzziness i.e. if an ML/AI model returns multiple values or a probability

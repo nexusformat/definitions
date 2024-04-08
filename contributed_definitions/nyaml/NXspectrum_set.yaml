@@ -1,9 +1,16 @@
 category: base
 doc: |
   Base class container for reporting a set of spectra.
+  
+  The mostly commonly used scanning methods are supported.
+  That is one-, two-, three-dimensional regularly sampled ROIs.
+  
+  For randomly or dissimilarly spaced scan points use collection instead.
 symbols:
   n_p: |
     Number of scan points.
+  n_z: |
+    Number of pixel in the slowest direction.
   n_y: |
     Number of pixel in the slow direction.
   n_x: |
@@ -33,13 +40,59 @@ NXspectrum_set(NXobject):
     (NXprogram):
   ##MK::feel free to contact us when you would like to include
   # lik omega/q mapping more complicated scan pattern than rectangular ones.
-  stack(NXdata):
+  spectrum_zerod(NXdata):
     doc: |
-      Collected spectra for all pixels of a rectangular region-of-interest.
-      
-      This representation supports rectangular scan pattern with equidistant
-      energy bins. For randomly or dissimilarly spaced scan points
-      use collection instead.
+      One spectrum for one pixel in a ROI aka spot measurement.
+    intensity(NX_NUMBER):
+      doc: |
+        Counts
+      unit: NX_UNITLESS
+      dim: (n_x, n_energy)
+      \@long_name(NX_CHAR):
+        doc: |
+          Counts
+    axis_energy(NX_NUMBER):
+      doc: |
+        Energy axis
+      unit: NX_ENERGY
+      dim: (n_energy,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Energy
+
+  spectrum_oned(NXdata):
+    doc: |
+      One spectrum for each pixel of an equidistantly
+      sampled one-dimensional ROI.
+    intensity(NX_NUMBER):
+      doc: |
+        Counts
+      unit: NX_UNITLESS
+      dim: (n_x, n_energy)
+      \@long_name(NX_CHAR):
+        doc: |
+          Counts
+    axis_x(NX_NUMBER):
+      doc: |
+        Coordinate along x direction.
+      unit: NX_LENGTH
+      dim: (n_x,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Pixel coordinate along x direction
+    axis_energy(NX_NUMBER):
+      doc: |
+        Energy axis
+      unit: NX_ENERGY
+      dim: (n_energy,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Energy
+
+  spectrum_twod(NXdata):
+    doc: |
+      One spectrum for each pixel of an equidistantly
+      sampled two-dimensional ROI.
     intensity(NX_NUMBER):
       doc: |
         Counts
@@ -48,11 +101,6 @@ NXspectrum_set(NXobject):
       \@long_name(NX_CHAR):
         doc: |
           Counts
-    # \@signal: counts
-    # \@axes: [ypos, xpos, energy]
-    # \@ypos_indices: 0
-    # \@xpos_indices: 1
-    # \@energy_indices: 2
     axis_y(NX_NUMBER):
       doc: |
         Coordinate along y direction.
@@ -77,27 +125,43 @@ NXspectrum_set(NXobject):
       \@long_name(NX_CHAR):
         doc: |
           Energy
-  
-  # in the majority of cases rectangular or line scans are performed
-  # if there is interest to support arbitrary scan pattern one should use
-  # scan points and contact us to generalize this base class and related
-  # base classes
-  summary(NXdata):
+
+  spectrum_threed(NXdata):
     doc: |
-      Accumulated counts over all pixels of the region-of-interest.
-      This representation supports a rectangular scan pattern with
-      equidistant energy bins.
+      One spectrum for each voxel of an equidistantly
+      sampled three-dimensional ROI.
     intensity(NX_NUMBER):
       doc: |
-        Accumulated counts
+        Counts
       unit: NX_UNITLESS
-      dim: (n_energy,)
+      dim: (n_z, n_y, n_x, n_energy)
       \@long_name(NX_CHAR):
         doc: |
           Counts
-    # \@signal: counts
-    # \@axes: [energy]
-    # \@energy_indices: 0
+    axis_z(NX_NUMBER):
+      doc: |
+        Coordinate along z direction.
+      unit: NX_LENGTH
+      dim: (n_z,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Pixel coordinate along z direction
+    axis_y(NX_NUMBER):
+      doc: |
+        Coordinate along y direction.
+      unit: NX_LENGTH
+      dim: (n_y,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Pixel coordinate along y direction
+    axis_x(NX_NUMBER):
+      doc: |
+        Coordinate along x direction.
+      unit: NX_LENGTH
+      dim: (n_x,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Pixel coordinate along x direction
     axis_energy(NX_NUMBER):
       doc: |
         Energy axis
@@ -106,13 +170,15 @@ NXspectrum_set(NXobject):
       \@long_name(NX_CHAR):
         doc: |
           Energy
-
+  # in the majority of cases rectangular or line scans are performed
+  # if there is interest to support arbitrary scan pattern one should use
+  # scan points and contact us to generalize this base class and related
+  # base classes
   collection(NXdata):
     doc: |
-      Collected spectra for each scan point.
-      
-      This representation supports equidistant energy bins.
-      For rectangular sampling use stack and summary instead.
+      One spectrum for each scan point. This representation supports
+      equidistant energy bins. For rectangular sampling use respective
+      one-, two-, and three-dimensional variants instead.
     intensity(NX_NUMBER):
       doc: |
         Counts
@@ -121,10 +187,6 @@ NXspectrum_set(NXobject):
       \@long_name(NX_CHAR):
         doc: |
           Counts
-    # \@signal: counts
-    # \@axes: [scan_point_id, energy]
-    # \@scan_point_indices: 1
-    # \@energy_indices: 0
     axis_scan_point_id(NX_INT):
       doc: |
         Scan point identifier

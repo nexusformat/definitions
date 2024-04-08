@@ -1,8 +1,8 @@
 .. _Ellipsometry-Structure-Fairmat:
 
-========================
-B4: Optical spectroscopy
-========================
+====================
+Optical spectroscopy
+====================
 
 .. index::
    Ellipsometry1

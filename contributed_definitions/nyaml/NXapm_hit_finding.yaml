@@ -1,0 +1,80 @@
+category: base
+doc: |
+  Base class for the configuration and results from a hit finding algorithm.
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_dld: |
+    Number of delay-line wires of the detector.
+  n_ht: |
+    Number of hit qualities (hit types) distinguished.
+  p: |
+    Number of pulses collected in between start_time and end_time
+    resolved by an instance of :ref:`NXevent_data_apm`. If this is not defined,
+    p is the number of ions included in the reconstructed volume if an application
+    definition is used to store results of already reconstructed datasets.
+type: group
+NXapm_hit_finding(NXprocess):  # when evolving these ideas further inherit from NXapm_method instead
+  (NXprogram):
+  (NXserialized):
+  # config/input
+  number_of_dld_wires(NX_UINT):
+    doc: |
+      The number of wires in the detector.
+    unit: NX_UNITLESS
+    enumeration: [1, 2, 3]
+  dld_wire_names(NX_CHAR):
+    doc: |
+      Alias tuple (begin, end) of each DLD wire of the detector.
+      Order follows arrival_time_pairs.
+    dim: (n_dld, 2)
+  arrival_time_pairs(NX_NUMBER):
+    doc: |
+      Raw readings from the analog-to-digital-converter
+      timing circuits of the detector wires.
+    unit: NX_TIME
+    dim: (p, n_dld, 2)
+  # results of the hit_finding algorithm
+  hit_positions(NX_NUMBER):
+    doc: |
+      Evaluated ion impact coordinates on the detector.
+      Use the depends_on field to spec
+    unit: NX_LENGTH
+    dim: (p, 2)
+    \@depends_on(NX_CHAR):
+      doc: |
+        The instance of :ref:`NXcoordinate_system` in which the positions are defined.
+  hit_quality_types(NX_CHAR):
+    doc: |
+      Name of the hit_qualities distinguished.
+      AMETEK/Cameca uses e.g. golden, multiple, partial,
+      irrecoverable, and multi-first and multi-late.
+    dim: (n_ht,)
+  hit_quality_identifier(NX_UINT):
+    doc: |
+      Identifier used for each hit_quality type.
+      Following the order of hit_quality_types.
+  hit_quality(NX_UINT):
+    doc: |
+      Hit quality identifier for each pulse.
+      Identifier have to be within hit_quality_identifier.
+    unit: NX_UNITLESS
+    dim: (p,)
+  hit_multiplicity(NX_UINT):
+    doc: |
+      This processing yields for each ion with how many others it evaporated
+      if these were collected on the same pulse. Extraction of multiple ions
+      on one pulse on different or even the same pixel of the detector are possible.
+      
+      Multiplicity must not be confused with how many atoms of the same element
+      a molecular ion contains (which is instead encoded with the
+      isotope_vector field of each :ref:`NXion` instance).
+    unit: NX_UNITLESS
+    dim: (p,)
+    # the following two quantities are relicts from ePOS files used to give some
+    # insight into the results of the hit_finding algorithm of IVAS/APSuite but typically
+    # used only in the context to learn about the multiplicity of an ion.
+    # pulses_since_last_ion(NX_UINT):
+    #   dim: (n,)
+    # pulse_identifier(NX_INT):
+    #   dim: (n,)

@@ -1,0 +1,214 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--
+i be careful n_comb can vary for every instance of (NXion) !-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_transcoder_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_ions">
+            <doc>
+                 The total number of ions in the reconstruction.
+            </doc>
+        </symbol>
+        <symbol name="n_ivec_max">
+            <doc>
+                 Maximum number of allowed atoms per (molecular) ion (fragment).
+                 Needs to match maximum_number_of_atoms_per_molecular_ion.
+            </doc>
+        </symbol>
+        <symbol name="n_topology">
+            <doc>
+                 Total number of integers in the supplementary XDMF topology array.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for results files of the paraprobe-transcoder tool.
+         
+         This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
+         The purpose and need of the paraprobe-transcoder tool is to create a standardized representation
+         of reconstructed position and mass-to-charge-state-ratio values surplus other pieces of information
+         to enable working with atom probe data in reconstruction space in the paraprobe-toolbox.
+         This includes ranging definitions which map mass-to-charge-state ratio values onto iontypes.
+         
+         So far the atom probe community has not yet agreed upon a comprehensive standardization on how to
+         exchange information especially when it comes to the communication of configurations and results
+         from analyses of atom probe data. Instead, different simplistic file formats are used, such as POS, ePOS,
+         APT, or RNG and RRNG. None of these formats, though, are self-descriptive, standardize, or document
+         their origin and thus the sequence in which the file was generated during an analysis.
+         
+         Paraprobe-transcoder solves this limitation by interpreting the information content in such files
+         and standardize the representation prior injection into the scientific data analysis tools of the toolbox.
+         Therefore, the here proposed set of NeXus base classes and application definitions can be a useful
+         starting point for the atom probe community to take advantage of standardized information
+         exchange and improve the here proposed classes and concepts to become more inclusive.
+         
+         Paraprobe-transcoder uses a Python library developed based on efforts by members of the
+         global atom probe community `International Field Emission Society (IFES) Atom Probe Technical Committee (APT TC) &lt;https://www.github.com/atomprobe-tc/ifes_apt_tc_data_modeling&gt;`_. This library offers the
+         actual low-level I/O operations and respective information interpretation of above-mentioned file formats.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_paraprobe_transcoder_results"/>
+            </enumeration>
+        </field>
+        <!--tasks-->
+        <group name="atom_probe" type="NXapm_paraprobe_tool_results">
+            <!--this group mirrors the NXapm application definition
+config-->
+            <field name="analysis_identifier" type="NX_UINT"/>
+            <group name="config" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+            </group>
+            <group name="window" type="NXcs_filter_boolean_mask" optional="true">
+                <doc>
+                     By default the entire reconstructed volume is processed.
+                     In this case, using window is also equivalent to an
+                     NXspatial_filter that specified a window *entire_dataset*.
+                </doc>
+                <field name="number_of_ions" type="NX_UINT"/>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <!--results-->
+            <group name="mass_to_charge_conversion" type="NXprocess">
+                <field name="mass_to_charge" type="NX_FLOAT" units="NX_ANY">
+                    <doc>
+                         Mass-to-charge-state-ratio values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="reconstruction" type="NXprocess">
+                <field name="reconstructed_positions" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Three-dimensional reconstructed positions of the ions.
+                         Interleaved array of x, y, z positions in the specimen space.
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="n_ions"/>
+                        <dim index="2" value="3"/>
+                    </dimensions>
+                    <attribute name="depends_on" type="NX_CHAR">
+                        <doc>
+                             Point to the coordinate system in which these positions are defined.
+                        </doc>
+                    </attribute>
+                </field>
+                <group name="visualization" type="NXprocess" recommended="true">
+                    <field name="xdmf_topology" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             An array of triplets of integers which can serve as a supplementary
+                             array for Paraview to display the reconstruction. The XDMF datatype
+                             is here 1, the number of primitives 1 per triplet, the last integer
+                             in each triplet is the identifier of each point starting from zero.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_topology"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+            <group name="ranging" type="NXprocess">
+                <group name="peak_identification" type="NXprocess">
+                    <doc>
+                         Details about how peaks are interpreted as ion types or not.
+                    </doc>
+                    <group type="NXion" minOccurs="1" maxOccurs="256">
+                        <field name="nuclide_hash" type="NX_UINT"/>
+                        <field name="nuclide_list" type="NX_UINT" recommended="true"/>
+                        <field name="charge_state" type="NX_INT"/>
+                        <field name="mass_to_charge_range" type="NX_FLOAT" units="NX_ANY">
+                            <dimensions rank="2">
+                                <dim index="1" value="i"/>
+                                <dim index="2" value="2"/>
+                            </dimensions>
+                        </field>
+                    </group>
+                </group>
+            </group>
+        </group>
+        <!--(NXapm_charge_state_analysis):-->
+        <group name="common" type="NXapm_paraprobe_tool_common">
+            <field name="status" type="NX_CHAR"/>
+            <field name="analysis_identifier" type="NX_UINT"/>
+            <group name="config" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+            </group>
+            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <field name="program" type="NX_CHAR">
+                    <attribute name="version" type="NX_CHAR"/>
+                </field>
+            </group>
+            <group name="profiling" type="NXcs_profiling" recommended="true">
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="total_elapsed_time" type="NX_FLOAT"/>
+                <field name="current_working_directory" type="NX_CHAR"/>
+                <field name="number_of_processes" type="NX_POSINT"/>
+                <field name="number_of_threads" type="NX_POSINT"/>
+                <field name="number_of_gpus" type="NX_POSINT"/>
+            </group>
+            <group name="userID" type="NXuser" minOccurs="0" maxOccurs="unbounded">
+                <doc>
+                     If used, metadata of at least the person who performed this analysis.
+                </doc>
+                <field name="name" type="NX_CHAR"/>
+            </group>
+            <group name="coordinate_system_set" type="NXcoordinate_system_set" minOccurs="1" maxOccurs="1">
+                <group name="paraprobe" type="NXcoordinate_system">
+                    <field name="type" type="NX_CHAR"/>
+                    <field name="handedness" type="NX_CHAR"/>
+                    <field name="x" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="y" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="z" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+        </group>
+    </group>
+</definition>

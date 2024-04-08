@@ -1,7 +1,7 @@
 .. _Transport-Structure-Fairmat:
 
 ===================
-Transport Phenomena
+Transport phenomena
 ===================
 
 Work of scientists within FAIRmat how to handshake between instrument control software like EPICS and CAMELS using NeXus resulted in an application definition for exemplar temperature dependent IV curve measurements.

@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXapm_reconstruction" extends="NXprocess" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n">
+            <doc>
+                 Number of ions spatially filtered from results of the hit_finding algorithm
+                 :ref:`NXapm_hit_finding` from which an instance of a reconstructed volume
+                 has been generated. These ions get new identifier assigned in the process -
+                 the so-called evaporation_identifier, which must not be confused with
+                 the pulse_identifier!
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Base class for the configuration and results of a (static) reconstruction algorithm.
+         
+         Generating a tomographic reconstruction of the specimen uses selected and
+         calibrated ion hit positions, the evaporation sequence, and voltage curve data.
+         Very often scientists use own software scripts according to published procedures,
+         so-called reconstruction protocols.
+    </doc>
+    <!--when evolving these ideas further inherit from NXapm_method instead-->
+    <group type="NXprogram"/>
+    <group type="NXserialized"/>
+    <!--config/input-->
+    <field name="parameter" type="NX_CHAR">
+        <doc>
+             Different reconstruction protocols exist. Although these approaches
+             are qualitatively similar, each protocol uses different parameters
+             (and interprets these differently). The source code to IVAS/APSuite
+             is not open. For now users should store reconstruction parameter
+             in this free-text field to guide how to parameterize this better in the
+             future. For LEAP systems and reconstructions performed with IVAS/APSuite
+             see `T. Blum et al. &lt;https://doi.org/10.1002/9781119227250.ch18&gt;`_ (page 371).
+        </doc>
+    </field>
+    <field name="protocol_name" type="NX_CHAR">
+        <doc>
+             Qualitative statement about which reconstruction protocol was used.
+        </doc>
+        <enumeration>
+            <item value="bas"/>
+            <item value="geiser"/>
+            <item value="gault"/>
+            <item value="cameca"/>
+            <item value="other"/>
+        </enumeration>
+    </field>
+    <field name="crystallographic_calibration" type="NX_CHAR">
+        <doc>
+             Different strategies for crystallographic calibration of the
+             reconstruction are possible. Therefore, we collect first such
+             feedback before parameterizing this further.
+             
+             If no crystallographic calibration was performed, the field
+             should be filled with the n/a, meaning not applied.
+        </doc>
+    </field>
+    <!--results-->
+    <field name="field_of_view" type="NX_FLOAT" units="NX_LENGTH">
+        <!--
+typically in nm reconstruction space not detector coordinates
+-->
+        <doc>
+             The nominal diameter of the specimen ROI which is measured in the
+             experiment. The physical specimen cannot be measured completely
+             because ions may launch but hit in locations other than the detector.
+        </doc>
+    </field>
+    <field name="reconstructed_positions" type="NX_FLOAT" units="NX_LENGTH">
+        <doc>
+             Three-dimensional reconstructed positions of the ions.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n"/>
+            <dim index="2" value="3"/>
+        </dimensions>
+        <attribute name="depends_on" type="NX_CHAR">
+            <doc>
+                 The instance of :ref:`NXcoordinate_system`
+                 in which the positions are defined.
+            </doc>
+        </attribute>
+    </field>
+    <group name="naive_discretization" type="NXprocess">
+        <group type="NXprogram"/>
+        <!--config/input
+results-->
+        <group type="NXdata">
+            <doc>
+                 To get a first visual overview of the reconstructed dataset,
+                 here a 3d histogram of the ion is stored. Ion counts are characterized
+                 using one nanometer cubic bins without applying position smoothening
+                 algorithms during the histogram computation.
+            </doc>
+        </group>
+    </group>
+</definition>

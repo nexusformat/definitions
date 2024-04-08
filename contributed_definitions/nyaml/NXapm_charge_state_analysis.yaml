@@ -1,0 +1,105 @@
+category: base
+doc: |
+  Base class to document an algorithm for recovering charge state and nuclide composition of a (molecular) ion.
+  
+  Currently ranging definitions in the research field of atom probe face have limitations:
+  
+  1. A ranging definition maps all signal within a mass-to-charge-state-ratio value interval
+     on one iontype. Facing limited mass-resolving-power, there are mass-to-charge-state-ratio
+     values, though, for which not only multiple (molecular) ions are indistinguishable but
+     also for which the current practice of documenting classical ranging definitions is incomplete.
+  2. Indeed, ranging definitions often report only (for each interval) the
+     mass-to-charge-state-ratio intervals surplus the composition of elements
+     that build the (molecular) ion.
+  3. Therefore, classical ranging definitions demand a post-processing with an algorithm
+     which can identify nuclides from which the (molecular) ion is constructed
+     and a charge state possibly recovered. Combinatorial algorithms are used for this purpose.
+  
+  This base class documents the configuration and results of such an algorithm.
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_cand: |
+    The number of also possible but different (molecular) ions.
+  n_ivec_max: |
+    Maximum number of allowed atoms per (molecular) ion (fragment).
+type: group
+NXapm_charge_state_analysis(NXprocess):
+  # Details and results of the combinatorial analyses of a ranging definition
+  # to clarify (if possible) the charge_state of an ion and its (not necessarily)
+  # unique combination of nuclides contained including their multiplicity.
+  # input/config
+  nuclides(NX_UINT):
+    doc: |
+      Input constraint, list of nuclide_hash for typically elements used for the
+      ranging definition of the ion whose charge state the analyses covered.
+      The list contains each hash as many times as its multiplicity.
+      Nuclides are encoded using the hashing rule that is defined in :ref:`NXion`.
+      
+      As an example, a ranging definition H:2 O:1 is configured by setting nuclides to
+      a list with entries :math:`1 + 256 * 0`, :math:`1 + 256 * 0`, :math:`8 + 256 * 0`.
+      An empty list does not release the constraint. Instead, a list with all elements
+      in the periodic table (encoded as nuclide_hash values) should be used, i.e.
+      :math:`1 + 256 * 0`, :math:`2 + 256 * 0`, and so on and so forth.
+      
+      Keep in mind that with a weakly constrained parameter space the combinatorial
+      analysis may become very time consuming!
+    unit: NX_UNITLESS
+    dim: (i,)
+  mass_to_charge_range(NX_FLOAT):
+    doc: |
+      Input constraint, interval within which (molecular) ions need to have the
+      mass-to-charge-state-ratio such that an ion qualifies as a candidate.
+    unit: NX_ANY  # u
+    dim: (1, 2)
+  min_half_life(NX_FLOAT):
+    doc: |
+      Input constraint, minimum half life for how long each nuclide of each
+      (molecular) ion needs to be stable such that the ion qualifies as a candidate.
+    unit: NX_TIME
+  min_abundance(NX_FLOAT):
+    doc: |
+      Input constraint, minimum natural abundance of each nuclide of each
+      (molecular) ion such that the ion qualifies as a candidate.
+    unit: NX_DIMENSIONLESS
+  sacrifice_isotopic_uniqueness(NX_BOOLEAN):
+    doc: |
+      If the value is false, it means that non-unique solutions are accepted.
+      These are solutions where multiple candidates have been built from
+      different nuclide instances but the charge_state of all the ions is the same.
+  # min_abundance_product(NX_FLOAT):
+  #   doc: |
+  #     For each candidate TO BE DEFINED.
+  #   unit: NX_DIMENSIONLESS
+  #   dim: (n_cand,)
+
+  # output/results
+  # the n_cand can be 1 in which case all quantities below are scalar
+  charge_state(NX_INT):
+    doc: |
+      Signed charge, i.e. integer multiple of the elementary
+      charge of each candidate.
+    unit: NX_UNITLESS
+    dim: (n_cand,)
+  nuclide_hash(NX_UINT):
+    doc: |
+      Table of nuclide instances of which each candidate is composed.
+      Each row vector is sorted in descending order. Unused values are nullified.
+    unit: NX_UNITLESS
+    dim: (n_cand, n_ivec_max)
+  mass(NX_FLOAT):
+    doc: |
+      Accumulated mass of the nuclides in each candidate.
+      Not corrected for quantum effects.
+    unit: NX_MASS
+    dim: (n_cand,)
+  natural_abundance_product(NX_FLOAT):
+    doc: |
+      The product of the natural abundances of the nuclides for each candidate.
+    unit: NX_DIMENSIONLESS
+    dim: (n_cand,)
+  shortest_half_life(NX_FLOAT):
+    doc: |
+      For each candidate the half life of that nuclide which has the shortest half life.
+    unit: NX_TIME
+    dim: (n_cand,)

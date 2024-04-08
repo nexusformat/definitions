@@ -79,24 +79,24 @@ def test_get_node_at_nxdl_path():
     assert node.attrib["type"] == "NXem_msr"
 
     node = nexus.get_node_at_nxdl_path(
-        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_C_SET/hyperstack",
+        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_C_SET/image_threed",
         elem=elem,
     )
     assert node.attrib["type"] == "NXdata"
 
     node = nexus.get_node_at_nxdl_path(
-        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_C_SET/hyperstack/AXISNAME_indices",
+        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_C_SET/image_threed/AXISNAME_indices",
         elem=elem,
     )
     assert node.attrib["name"] == "AXISNAME_indices"
 
     node = nexus.get_node_at_nxdl_path(
-        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_C_SET/stack/axis_j",
+        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_C_SET/image_threed/axis_j",
         elem=elem,
     )
     assert node.attrib["type"] == "NX_NUMBER"
 
-    node = nexus.get_node_at_nxdl_path("/ENTRY/COORDINATE_SYSTEM_SET", elem=elem)
+    node = nexus.get_node_at_nxdl_path("/ENTRY/coordinate_system_set", elem=elem)
     assert node.attrib["type"] == "NXcoordinate_system_set"
 
     nxdl_file_path = os.path.join(

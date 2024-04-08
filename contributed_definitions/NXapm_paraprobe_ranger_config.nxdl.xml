@@ -1,0 +1,245 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_ranger_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_nuclids">
+            <doc>
+                 The number of isotopes to consider as building blocks for searching molecular
+                 ions.
+            </doc>
+        </symbol>
+        <symbol name="n_composition">
+            <doc>
+                 The number of compositions to consider for molecular ion search tasks.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for a configuration file of the paraprobe-ranger tool.
+         
+         This tool is part of the paraprobe-toolbox. Inspect :ref:`NXapm_paraprobe_tool_config` for details.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_paraprobe_ranger_config"/>
+            </enumeration>
+        </field>
+        <!--tool-specific-->
+        <group name="range" type="NXapm_paraprobe_tool_config" minOccurs="1" maxOccurs="1">
+            <group type="NXidentifier" optional="true"/>
+            <field name="analysis_identifier" type="NX_UINT" recommended="true"/>
+            <group name="reconstruction" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="position" type="NX_CHAR"/>
+                <field name="mass_to_charge" type="NX_CHAR"/>
+            </group>
+            <group name="ranging" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="ranging_definitions" type="NX_CHAR"/>
+            </group>
+            <!--filter-->
+            <group name="spatial_filter" type="NXspatial_filter">
+                <field name="windowing_method" type="NX_CHAR"/>
+                <group name="hexahedron_set" type="NXcg_hexahedron_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <group name="hexahedra" type="NXcg_face_list_data_structure">
+                        <field name="vertices" type="NX_UINT"/>
+                    </group>
+                </group>
+                <group name="cylinder_set" type="NXcg_cylinder_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="height" type="NX_NUMBER"/>
+                    <field name="radii" type="NX_NUMBER"/>
+                </group>
+                <group name="ellipsoid_set" type="NXcg_ellipsoid_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="half_axes_radii" type="NX_NUMBER"/>
+                    <field name="orientation" type="NX_NUMBER"/>
+                </group>
+                <group name="polyhedron_set" type="NXcg_polyhedron_set" optional="true"/>
+                <!--TODO-->
+                <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
+                    <field name="number_of_objects" type="NX_UINT"/>
+                    <field name="bitdepth" type="NX_UINT"/>
+                    <field name="mask" type="NX_UINT"/>
+                    <!--leave open if scalar or matrix
+  dim: (i,)-->
+                    <field name="identifier" type="NX_UINT"/>
+                </group>
+            </group>
+            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
+                <field name="min_incr_max" type="NX_INT"/>
+            </group>
+            <group name="iontype_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+        </group>
+        <!--tool-specific parameter
+molecular_ion_search(NXapm_paraprobe_tool_config):
+exists: ['min', '0', 'max', 'unbounded']
+# extent if needed
+assumed_composition_isotopes(NX_UINT):
+exists: optional
+doc: |
+A list of pairs of number of protons and either the value 0 (per row)
+or the mass number for all those isotopes which are assumed present
+in a virtual specimen.
+The purpose of this field is to compute also composition-weighted
+products to yield a simple estimation which could potentially help
+scientists to judge if certain molecular ions are to be expected.
+The corresponding setting store_composition_weighted_product should be
+activated.
+unit: NX_UNITLESS
+dim: (n_composition, 2)
+assumed_composition_value(NX_FLOAT):
+doc: |
+A list of atomic (at.-%) ! percent values for the composition of each
+isotope in the virtual specimen following the sequence of
+assumed_composition_isotopes.
+unit: NX_DIMENSIONLESS
+dim: (n_compositions,)
+isotope_whitelist(NX_UINT):
+doc: |
+A list of pairs of number of protons and mass number for all isotopes
+to consider that can be composed into (molecular) ions, during the
+recursive molecular_ion_search.
+unit: NX_UNITLESS
+dim: (n_nuclids, 2)
+mass_to_charge_interval(NX_FLOAT):
+doc: |
+The mass-to-charge-state ratio interval in which
+all molecular ions are searched.
+unit: NX_ANY  # u
+dim: (2,)
+maximum_charge(NX_UINT):
+doc: |
+The maximum charge that a molecular ion should have.
+unit: NX_UNITLESS
+maximum_number_of_isotopes(NX_UINT):
+doc: |
+The maximum number of isotopes of which the molecular ion
+should be composed. Currently this must not be larger than 32.-->
+        <!--Users should be warned that the larger the maximum_charge and
+especially the larger the maximum_number_of_isotopes is chosen,
+the eventually orders of magnitude more costly the search becomes.-->
+        <!--This is because paraprobe-ranger computes really all (at least)
+theoretically possible combinations that would have likely a
+mass-to-charge-state ratio in the specified mass_to_charge_interval.
+It is the challenge in atom probe to judge which of these (molecular)
+ions are feasible and also practically possible. This tool does not
+answer this question.-->
+        <!--Namely, which specific molecular ion will evaporate, remain stable
+during flight and becomes detected is a complicated and in many cases
+not yet in detail understood phenomenon. The ab-initio conditions
+before and during launch, the local environment, arrangement and field
+as well as the flight phase in an evacuated but not analysis chamber
+with a complex electrical field, eventual laser pulsing in place,
+temperature and remaining atoms or molecules all can have an effect
+which iontypes are really physically evaporating and detected.
+unit: NX_UNITLESS
+store_atomic_mass_sum(NX_BOOLEAN):
+doc: |
+Report the accumulated atomic mass from each isotope building the ion.
+Accounts for each identified ion. Relatistic effects are not accounted for.
+store_natural_abundance_product(NX_BOOLEAN):
+doc: |
+Report the product of the natural abundances from each isotope building
+the ion. Accounts for each identified ion.-->
+        <!--The value zero indicates it is not possible to build such molecular ion
+from nuclids which are all observationally stable.
+Very small values can give an idea/about how likely such a molecular ion
+is expected to form assuming equal probabilities.-->
+        <!--However in atom probe experiments this product has to be modified
+by the (spatially-correlated) local composition in the region from
+which the ions launch because the formation of a molecular ion depends
+as summarized under maximum_number_of_isotopes on the specific
+quantum-mechanical configuration and field state upon launch
+or/and (early state) of flight respectively.
+We are aware that this modified product can have a substantially
+different value than the natural_abundance_product.-->
+        <!--Natural abundancies folded with the estimated compositions of the
+specimen can differ by orders of magnitude.
+# add assumed composition of the specimen
+store_composition_weighted_product(NX_BOOLEAN):
+doc: |
+Report the product of the composition from each isotope building the
+ion. This sets strong constraints on the molecular ions which are
+expected to have at all a noteworthy product value.
+It should not be forgotten though the computation relies on assumptions:-->
+        <!--* The composition is homogeneous within the virtual specimen.
+* It is a priori known which nuclids the specimen is build of.-->
+        <!--store_charge_state(NX_BOOLEAN):
+doc: |
+Report the charge state of the ions.
+store_disjoint_isotopes(NX_BOOLEAN):
+doc: |
+Report if identified ions should be characterized wrt to their number of disjoint isotopes.
+check_existent_ranging(NXapm_paraprobe_tool_config):
+exists: ['min', '0', 'max', '1']
+ranging(NXserialized):
+type(NX_CHAR):
+path(NX_CHAR):
+checksum(NX_CHAR):
+algorithm(NX_CHAR):
+ranging_definitions(NX_CHAR):-->
+        <group name="common" type="NXapm_paraprobe_tool_common">
+            <field name="status" type="NX_CHAR"/>
+            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <field name="program" type="NX_CHAR">
+                    <attribute name="version" type="NX_CHAR"/>
+                </field>
+            </group>
+            <group name="profiling" type="NXcs_profiling" recommended="true">
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="total_elapsed_time" type="NX_FLOAT"/>
+                <field name="current_working_directory" type="NX_CHAR"/>
+            </group>
+        </group>
+    </group>
+</definition>

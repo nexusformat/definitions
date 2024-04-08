@@ -1,0 +1,907 @@
+category: application
+doc: |
+  Application definition for results files of the paraprobe-nanochem tool.
+  
+  This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_ions: |
+    The total number of ions in the reconstruction.
+  n_atomic: |
+    The total number of atoms in the atomic_decomposition match filter.
+  n_isotopic: |
+    The total number of isotopes in the isotopic_decomposition match filter.
+  d: |
+    The dimensionality of the delocalization grid.
+  c: |
+    The cardinality/total number of cells/grid points in the delocalization grid.
+  # c_tri_soup: |
+  # The cardinality/total number of triangles in the triangle soup.
+  n_f_tri: |
+    The total number of faces of triangles.
+  n_f_tri_xdmf: |
+    The total number of XDMF values to represent all faces of triangles via XDMF.
+  n_feature_dict: |
+    The total number of entries in a feature dictionary.
+  n_v_feat: |
+    The total number of volumetric features.
+  n_speci: |
+    The total number of member distinguished when reporting composition.
+type: group
+NXapm_paraprobe_nanochem_results(NXobject):
+  (NXentry):
+    exists: [min, 1, max, 1]
+    definition(NX_CHAR):
+      \@version(NX_CHAR):
+      enumeration: [NXapm_paraprobe_nanochem_results]
+    # tasks
+    delocalizationID(NXdelocalization):
+      exists: [min, 0, max, infty]
+      window(NXcs_filter_boolean_mask):
+        number_of_ions(NX_UINT):
+        bitdepth(NX_UINT):
+        mask(NX_UINT):
+      # results
+      weighting_model(NXmatch_filter):
+        weighting_method(NX_CHAR):
+        method(NX_CHAR):
+        match(NX_UINT):
+      normalization(NX_CHAR):
+        doc: |
+          How were results of the kernel-density estimation normalized:
+          * total, the total number (intensity) of ions or elements.
+          * candidates, the total number (intensity) of ions matching weighting_model
+          * composition, the value for candidates divided by the value for total,
+          * concentration, the value for candidates divided by the volume of the cell.
+        enumeration: [total, candidates, composition, concentration]
+      grid(NXcg_grid):
+        doc: |
+          The discretized domain/grid on which the delocalization is applied.
+        dimensionality(NX_POSINT):
+          enumeration: [1, 2, 3]
+          unit: NX_UNITLESS
+        cardinality(NX_POSINT):
+          doc: |
+            The total number of cells/voxels of the grid.
+          unit: NX_UNITLESS
+        origin(NX_NUMBER):
+          dim: (d,)
+        symmetry(NX_CHAR):
+          doc: |
+            The symmetry of the lattice defining the shape of the unit cell.
+          enumeration: [cubic]
+        cell_dimensions(NX_NUMBER):
+          doc: |
+            The unit cell dimensions according to the coordinate system defined under coordinate_system.
+          unit: NX_LENGTH
+          dim: (d,)
+        extent(NX_POSINT):
+          doc: |
+            Number of unit cells along each of the d-dimensional base vectors.
+            The total number of cells, or grid points has to be the cardinality.
+            If the grid has an irregular number of grid positions in each direction,
+            as it could be for instance the case of a grid where all grid points
+            outside some masking primitive are removed, this extent field should
+            not be used. Instead use the coordinate field.
+          dim: (d,)
+        # coordinate_system implicit
+        identifier_offset(NX_INT):
+          doc: |
+            Integer which specifies the first index to be used for distinguishing identifiers for cells.
+            Identifiers are defined either implicitly or explicitly. For implicit indexing the identifiers are
+            defined on the interval [identifier_offset, identifier_offset+c-1].
+            For explicit indexing the identifier array has to be defined.
+          unit: NX_UNITLESS
+        kernel_size(NX_POSINT):
+          doc: |
+            Halfwidth of the kernel about the central voxel.
+            The shape of the kernel is that of a cuboid
+            of extent 2*kernel_extent[i] + 1 in each dimension i.
+          unit: NX_DIMENSIONLESS
+          dim: (3,)
+        kernel_type(NX_CHAR):
+          doc: |
+            Functional form of the kernel (Ansatz function).
+          enumeration: [gaussian]
+        kernel_sigma(NX_FLOAT):
+          doc: |
+            Standard deviation :math:`\sigma_i` of the kernel in each dimension
+            in the paraprobe coordinate_system with i = 0 is x, i = 1 is y, i = 2 is z.
+          unit: NX_LENGTH
+          dim: (3,)
+        kernel_mu(NX_FLOAT):
+          doc: |
+            Expectation value :math:`\mu_i` of the kernel in each dimension
+            in the paraprobe coordinate_system with i = 0 is x, i = 1 is y, i = 2 is z.
+          unit: NX_LENGTH
+          dim: (3,)
+
+        bounding_box(NXcg_hexahedron_set):
+          doc: |
+            A tight axis-aligned bounding box about the grid.
+          is_axis_aligned(NX_BOOLEAN):
+            doc: |
+              For atom probe should be set to true.
+          identifier_offset(NX_INT):
+            doc: |
+              Integer which specifies the first index to be used for distinguishing
+              hexahedra. Identifiers are defined either implicitly or explicitly.
+              For implicit indexing the identifiers are defined on the interval
+              [identifier_offset, identifier_offset+c-1].
+              For explicit indexing the identifier array has to be defined.
+            unit: NX_UNITLESS
+          hexahedron(NXcg_face_list_data_structure):
+            vertex_identifier_offset(NX_INT):
+              doc: |
+                Integer which specifies the first index to be used for distinguishing
+                identifiers for vertices. Identifiers are defined either implicitly or explicitly.
+                For implicit indexing the identifiers are defined on the interval 
+                [identifier_offset, identifier_offset+c-1]. For explicit indexing the identifier array
+                has to be defined.
+              unit: NX_UNITLESS
+            face_identifier_offset(NX_INT):
+              doc: |
+                Integer which specifies the first index to be used for distinguishing
+                identifiers for faces. Identifiers are defined either implicitly or explicitly.
+                For implicit indexing the identifiers are defined on the interval
+                [identifier_offset, identifier_offset+c-1]. For explicit indexing the identifier array
+                has to be defined.
+              unit: NX_UNITLESS
+            vertices(NX_NUMBER):
+              doc: |
+                Positions of the vertices.
+                Users are encouraged to reduce the vertices to unique set of positions
+                and vertices as this supports a more efficient storage of the geometry data.
+                It is also possible though to store the vertex positions naively in which
+                case vertices_are_unique is likely False.
+                Naively here means that one for example stores each vertex of a triangle
+                mesh even though many vertices are shared between triangles and thus
+                the positions of these vertices do not have to be duplicated.
+              unit: NX_LENGTH
+              dim:  (8, 3)
+            faces(NX_NUMBER):
+              doc: |
+                Array of identifiers from vertices which describe each face.
+                
+                The first entry is the identifier of the start vertex of the first face,
+                followed by the second vertex of the first face, until the last vertex
+                of the first face. Thereafter, the start vertex of the second face, the
+                second vertex of the second face, and so on and so forth.
+                
+                Therefore, summating over the number_of_vertices, allows to extract
+                the vertex identifiers for the i-th face on the following index interval
+                of the faces array: :math:`[\sum_{i = 0}^{i = n-1}, \sum_{i=0}^{i = n}]`.
+              unit: NX_UNITLESS
+              dim: (6, 4)
+            xdmf_topology(NX_UINT):
+              doc: |
+                Six equally formatted sextets chained together. For each sextett the first entry is an
+                XDMF primitive topology key (here 5 for polygon), the second entry the XDMF
+                primitive count value (here 4 because each face is a quad).
+                The remaining four values are the vertex indices.
+              unit: NX_UNITLESS
+              dim: (36,)
+            number_of_boundaries(NX_POSINT):
+              exists: optional
+              doc: |
+                How many distinct boundaries are distinguished?
+                Most grids discretize a cubic or cuboidal region. In this case
+                six sides can be distinguished, each making an own boundary.
+              unit: NX_UNITLESS
+            boundaries(NX_CHAR):
+              exists: optional
+              doc: |
+                Name of the boundaries. E.g. left, right, front, back, bottom, top,
+                The field must have as many entries as there are number_of_boundaries.
+              dim: (6,)
+            boundary_conditions(NX_INT):
+              exists: optional
+              doc: |
+                The boundary conditions for each boundary:
+                
+                0 - undefined
+                1 - open
+                2 - periodic
+                3 - mirror
+                4 - von Neumann
+                5 - Dirichlet
+              unit: NX_UNITLESS
+              dim: (6,)
+            ##MK::how to avoid storing it for once in NeXus for H5Web and for XDMF in ParaView ?
+        scalar_field_magn_SUFFIX(NXdata):
+          exists: [min, 0, max, infty]
+          doc: |
+            The result of the delocalization :math:`\Phi = f(x, y, z)` based on which subsequent iso-surfaces
+            will be computed. In commercial software so far there is no possibility to export this information.
+            
+            If the intensity for all matches of the weighting_model are summarized name this NXdata instance
+            scalar_field_magn_total.
+            
+            If the intensity is reported for each iontype one can avoid many subsequent
+            computations as individual intensities can be reinterpreted using a different weighting_model in
+            down-stream usage of the here reported values (e.g. with Python scripting).
+            In this case name the individual NXdata instances scalar_field_magn_ionID using the ID of the ion as
+            per the configuration of the ranging definitions used.
+          \@signal(NX_CHAR):
+          \@axes(NX_CHAR):
+          \@xpos_indices(NX_UINT):
+          \@ypos_indices(NX_UINT):
+          \@zpos_indices(NX_UINT):
+          title(NX_CHAR):
+          intensity(NX_FLOAT):
+            doc: |
+              The actual delocalized intensity values.
+            unit: NX_ANY
+            dim: (n_z, n_y, n_x)
+          xpos(NX_FLOAT):
+            doc: |
+              Cell center of mass positions along x.
+            unit: NX_LENGTH
+            dim: (n_x,)
+          ypos(NX_FLOAT):
+            doc: |
+              Cell center of mass positions along y.
+            unit: NX_LENGTH
+            dim: (n_y,)
+          zpos(NX_FLOAT):
+            doc: |
+              Cell center of mass positions along z.
+            unit: NX_LENGTH
+            dim: (n_z,)
+          xdmf_intensity(NX_FLOAT):
+            exists: optional
+            doc: |
+              Intensity of the field at given point
+            unit: NX_ANY
+            dim: (n_xyz,)
+          xdmf_xyz(NX_FLOAT):
+            exists: optional
+            doc: |
+              Center of mass positions of each voxel for rendering the scalar field
+              via XDMF in e.g. Paraview.
+            unit: NX_UNITLESS
+            dim: (n_xyz, 3)
+          xdmf_topology(NX_NUMBER):
+            exists: optional
+            doc: |
+              XDMF topology for rendering in combination with xdmf_xyz the scalar field
+              via XDMF in e.g. Paraview.
+            unit: NX_UNITLESS
+            dim: (i,)  # 3*n_xyz
+        scalar_field_grad_SUFFIX(NXdata):
+          exists: [min, 0, max, infty]
+          doc: |
+            The three-dimensional gradient :math:`\nabla \Phi`.
+            Follow the naming convention of scalar_field_magn_SUFFIX to report parallel structures.
+          \@signal(NX_CHAR):
+          \@axes(NX_CHAR):
+          \@xpos_indices(NX_CHAR):
+          \@ypos_indices(NX_CHAR):
+          \@zpos_indices(NX_CHAR):
+          title(NX_CHAR):
+          intensity(NX_FLOAT):
+            doc: |
+              The actual point-wise component values.
+            unit: NX_ANY
+            dim: (n_z, n_y, n_x, 3)
+          xpos(NX_FLOAT):
+            doc: |
+              Cell center of mass positions along x.
+            unit: NX_LENGTH
+            dim: (n_x,)
+          ypos(NX_FLOAT):
+            doc: |
+              Cell center of mass positions along y.
+            unit: NX_LENGTH
+            dim: (n_y,)
+          zpos(NX_FLOAT):
+            doc: |
+              Cell center of mass positions along z.
+            unit: NX_LENGTH
+            dim: (n_z,)
+          xdmf_gradient(NX_FLOAT):
+            exists: optional
+            doc: |
+                The gradient vector formatted for direct visualization via XDMF in e.g. Paraview.
+            unit: NX_ANY
+            dim: (n_xyz, 3)
+          xdmf_xyz(NX_FLOAT):
+            exists: optional
+            doc: |
+              Center of mass positions of each voxel for rendering the scalar field gradient
+              via XDMF in e.g. Paraview.
+            unit: NX_LENGTH
+            dim: (n_xyz, 3)
+          xdmf_topology(NX_NUMBER):
+            exists: optional
+            doc: |
+              XDMF topology for rendering in combination with xdmf_xyz the scalar field
+              via XDFM in e.g. Paraview.
+            unit: NX_UNITLESS
+            dim: (i,)  # 3*n_xyz
+          ##MK::
+        iso_surfaceID(NXisocontour):
+          exists: [min, 0, max, infty]
+          doc: |
+            An iso-surface is the boundary between two regions across which the magnitude of a
+            scalar field falls below/exceeds a threshold magnitude :math:`\varphi`.
+            
+            For applications in atom probe microscopy, the location and shape of such a boundary (set)
+            is typically approximated by discretization - triangulation to be specific.
+            
+            This yields a complex of not necessarily connected geometric primitives.
+            Paraprobe-nanochem approximates this complex with a soup of triangles.
+          dimensionality(NX_POSINT):
+          isovalue(NX_NUMBER):
+            doc: |
+              The threshold or iso-contour value :math:`\varphi`.
+            unit: NX_ANY
+          marching_cubes(NXcg_marching_cubes):
+            doc: |
+              Details about the specific marching cubes algorithm that was used for computing the iso-surface.
+            implementation(NX_CHAR):
+              doc: |
+                Reference to the specific implementation of marching cubes used.
+                The value placed here should be a DOI. If there are no specific
+                DOI or details write not_further_specified, or give at least a
+                free-text description. The program and version used is the
+                specific paraprobe-nanochem.
+          triangle_soup(NXcg_triangle_set):
+            exists: optional
+            doc: |
+              The resulting triangle soup computed via marching cubes.
+            dimensionality(NX_POSINT):
+              unit: NX_UNITLESS
+            cardinality(NX_POSINT):
+              unit: NX_UNITLESS
+            identifier_offset(NX_INT):
+              doc: |
+                Integer which specifies the first index to be used for distinguishing triangles.
+                Identifiers are defined either implicitly or explicitly. For implicit indexing the
+                identifiers are defined on the interval [identifier_offset, identifier_offset+c-1].
+              unit: NX_UNITLESS
+            triangles(NXcg_face_list_data_structure):
+              number_of_vertices(NX_POSINT):
+              number_of_faces(NX_POSINT):
+              vertex_identifier_offset(NX_INT):
+              face_identifier_offset(NX_INT):
+              vertices(NX_NUMBER):
+                doc: |
+                  Positions of the vertices.
+                  
+                  Users are encouraged to reduce the vertices to a unique set as this may
+                  result in a more efficient storage of the geometry data.
+                  It is also possible though to store the vertex positions naively in which
+                  case vertices_are_unique is likely False. Naively here means that each
+                  vertex is stored even though many share the same positions.
+                unit: NX_LENGTH
+                dim: (i, 3)
+              faces(NX_INT):
+                doc: |
+                  Array of identifiers from vertices which describe each face.
+                  
+                  The first entry is the identifier of the start vertex of the first face,
+                  followed by the second vertex of the first face, until the last vertex
+                  of the first face. Thereafter, the start vertex of the second face, the
+                  second vertex of the second face, and so on and so forth.
+                  
+                  Therefore, summating over the number_of_vertices, allows to extract
+                  the vertex identifiers for the i-th face on the following index interval
+                  of the faces array: :math:`[\sum_{i = 0}^{i = n-1}, \sum_{i=0}^{i = n}]`.
+                unit: NX_UNITLESS
+                dim: (j,)
+              xdmf_topology(NX_UINT):
+                doc: |
+                  A list of as many tuples of XDMF topology key, XDMF number
+                  of vertices and a triple of vertex indices specifying each
+                  triangle. The total number of entries is n_f_tri * (1+1+3).
+                unit: NX_UNITLESS
+                dim: (n_f_tri_xdmf,)
+              vertex_normal(NXcg_unit_normal_set):
+                exists: optional
+                normals(NX_FLOAT):
+                  doc: |
+                    Direction of each normal.
+                  unit: NX_DIMENSIONLESS
+                  dim: (j, 3)
+                orientation(NX_UINT):
+                  exists: optional
+                  doc: |
+                    Qualifier how which specifically oriented normal to its
+                    primitive each normal represents.
+                    
+                    * 0 - undefined
+                    * 1 - outer
+                    * 2 - inner
+                  unit: NX_UNITLESS
+                  dim: (j,)
+              # edge_normal(NXcg_unit_normal_set):
+              #   exists: optional
+              face_normal(NXcg_unit_normal_set):
+                exists: optional
+                normals(NX_FLOAT):
+                  doc: |
+                    Direction of each normal.
+                  unit: NX_DIMENSIONLESS
+                  dim: (k, 3)
+                orientation(NX_UINT):
+                  exists: optional
+                  doc: |
+                    Qualifier how which specifically oriented normal to its
+                    primitive each normal represents.
+                    
+                    * 0 - undefined
+                    * 1 - outer
+                    * 2 - inner
+                  unit: NX_UNITLESS
+                  dim: (k,)
+                gradient_guide_magnitude(NX_FLOAT):
+                  doc: |
+                    Triangle normals are oriented in the direction of the
+                    gradient vector of the local delocalized scalar field.
+                    :math:`\sum_{x, y, z} {\nabla{c}_i}^2`.
+                  unit: NX_ANY
+                  dim: (k,)
+                # gradient_guide_quality(NX_FLOAT):
+                #   doc: |
+                #     Triangle normals are oriented in the direction of the
+                #     gradient vector of the local delocalized scalar field.
+                #     Sum of squared values of cross product of triangle normal
+                #     construction.
+                #   unit: NX_ANY
+                #   dim: (k,)
+                gradient_guide_projection(NX_FLOAT):
+                  doc: |
+                    Triangle normals are oriented in the direction of the
+                    gradient vector of the local delocalized scalar field.
+                    The projection variable here describes the cosine of the
+                    angle between the gradient direction and the normal
+                    direction vector.
+                    This is a descriptor of how parallel the projection is
+                    that is especially useful to document those triangles
+                    for whose the projection is almost perpendicular.
+                  unit: NX_ANY
+                  dim: (k,)
+              area(NX_NUMBER):
+                exists: optional
+                unit: NX_AREA
+                dim: (j,)
+              edge_length(NX_NUMBER):
+                exists: optional
+                doc: |
+                  Array of edge length values. For each triangle the edge length
+                  is reported for the edges traversed according to the sequence
+                  in which vertices are indexed in triangles.
+                unit: NX_LENGTH
+                dim: (k, 3)
+              interior_angle(NX_NUMBER):
+                exists: optional
+                doc: |
+                  Array of interior angle values. For each triangle the angle
+                  is reported for the angle opposite to the edges which are
+                  traversed according to the sequence in which vertices
+                  are indexed in triangles.
+                unit: NX_ANGLE
+                dim: (j, 4)
+              center(NX_NUMBER):
+                exists: optional
+                doc: |
+                  The center of mass of each triangle.
+                unit: NX_LENGTH
+                dim: (j, 3)
+ 
+              volumetric_features(NXprocess):
+                exists: [min, 0, max, 1]
+                doc: |
+                  Iso-surfaces of arbitrary scalar three-dimensional fields can show a complicated topology.
+                  Paraprobe-nanochem can run a DBScan-like clustering algorithm which performs a
+                  connectivity analysis on the triangle soup representation of such iso-surface.
+                  This may yield a set of connected features whose individual surfaces are discretized
+                  by a triangulated mesh each.  Such volumetric features can be processed further using
+                  paraprobe-nanochem using a workflow with at most two steps.
+                  
+                  In the first step, the tool distinguishes three types of (v) i.e. volumetric features:
+                  
+                  1. So-called objects, i.e. necessarily watertight features represented by polyhedra.
+                      These objects were already watertight within the triangulated iso-surface.
+                  2. So-called proxies, i.e. features that were not necessarily watertight within the triangulated
+                      iso-surface but were subsequently replaced by a watertight mesh using polyhedral mesh
+                      processing operations (hole filling, refinement, fairing operations).
+                  3. Remaining triangle surface meshes or parts of these of arbitrary shape and cardinality
+                      that are not transformable into proxies or for which no transformation into proxies was
+                      instructed.
+                  
+                  These features can be interpreted as microstructural features. Some of them may be precipitates,
+                  some of them may be poles, some of them may be segments of dislocation lines or other
+                  crystal defects which are decorated (or not) with solutes.
+                  
+                  In the second step, the tool can be used to analyze the proximity of these objects to a
+                  model of the surface (edge) of the dataset.
+                triangle_cluster_identifier(NX_UINT):
+                  doc: |
+                    The identifier which the triangle_soup connectivity analysis
+                    returned, which constitutes the first step of the
+                    volumetric_feature identification process.
+                  unit: NX_UNITLESS
+                  dim: (n_v_feat,)
+                feature_type_dict_keyword(NX_UINT):
+                  exists: optional
+                  doc: |
+                    The array of keywords of feature_type dictionary.
+                  unit: NX_UNITLESS
+                  dim: (n_feature_dict,)
+                feature_type_dict_value:
+                  exists: optional
+                  doc: |
+                    The array of values for each keyword of the
+                    feature_type dictionary.
+                  dim: (n_feature_dict,)
+                feature_type(NX_UINT):
+                  doc: |
+                    The array of controlled keywords, need to be from
+                    feature_type_dict_keyword, which specify which type
+                    each feature triangle cluster belongs to.
+                    Keep in mind that not each feature is an object or proxy.
+                  unit: NX_UNITLESS
+                  dim: (n_v_feat,)
+                feature_identifier(NX_UINT):
+                  doc: |
+                    The explicit identifier of features.
+                  unit: NX_UNITLESS
+                  dim: (n_v_feat,)
+                FEATURE(NXprocess):
+                  exists: [min, 0, max, 6]  # because there are at most six different categories of features, see below
+                  doc: |
+                    In all situations instances of the parent NXprocess group are returned with a very similar
+                    information structuring and thus we here replace the template name FEATURE
+                    with one of the following types feature-specific group names:
+                    
+                    * objects, objects, irrespective their distance to the surface
+                    * objects_close_to_edge, sub-set of v_feature_object close surface
+                    * objects_far_from_edge, sub-set of v_feature_object not close to the surface
+                    * proxies, proxies, irrespective their distance to the surface
+                    * proxies_close_to_edge, sub-set of v_feature_proxies, close to surface
+                    * proxies_far_from_edge, sub-set of v_feature_proxies, not close to surface
+                    
+                  feature_identifier(NX_UINT):
+                    doc: |
+                      Explicit identifier of the feature a sub-set of the feature_identifier in the parent group.
+                    unit: NX_UNITLESS
+                    dim: (i,)
+                  volume(NX_FLOAT):
+                    doc: |
+                      Volume of the feature. NaN for non-watertight objects.
+                    unit: NX_VOLUME
+                    dim: (i,)
+                  obb(NXcg_hexahedron_set):
+                    exists: optional
+                    doc: |
+                      An oriented bounding box (OBB) to each object.
+                    size(NX_FLOAT):
+                      exists: optional
+                      doc: |
+                        Edge length of the oriented bounding box from largest to smallest value.
+                      unit: NX_LENGTH
+                      dim: (i, 3)
+                    aspect(NX_FLOAT):
+                      exists: optional
+                      doc: |
+                        Oriented bounding box aspect ratio.
+                        YX versus ZY or second-largest over largest and smallest over second largest.
+                      unit: NX_DIMENSIONLESS
+                      dim: (i, 2)
+                    center(NX_NUMBER):
+                      exists: optional
+                      doc: |
+                        Position of the geometric center, which often is but
+                        not necessarily has to be the center_of_mass of the
+                        hexahedrally-shaped sample/sample part.
+                      unit: NX_LENGTH
+                      dim: (i, 3)
+                    hexahedra(NXcg_face_list_data_structure):
+                      exists: optional
+                      doc: |
+                        A simple approach to describe the entire set of hexahedra when the main intention
+                        is to store the shape of the hexahedra for visualization.
+                      vertices(NX_NUMBER):
+                        unit: NX_LENGTH
+                        dim: (k, 3)
+                      ##MK::again we have no effective way to pinpoint the n_rows
+                      ##MK::namely k != i each OBB has eight vertices
+                      xdmf_topology(NX_UINT):
+                        unit: NX_UNITLESS
+                        dim: (k,)
+                      xdmf_feature_identifier(NX_UINT):
+                        unit: NX_UNITLESS
+                        dim: (k,)
+                  objectID(NXcg_polyhedron_set):
+                    exists: [min, 0, max, infty]  # not infty but at most n_v_feat
+                    polyhedron(NXcg_face_list_data_structure):
+                      # number_of_vertices(NX_POSINT):
+                      # number_of_faces(NX_POSINT):
+                      # vertex_identifier_offset(NX_UINT):
+                      # face_identifier_offset(NX_UINT):
+                      vertices(NX_FLOAT):
+                        unit: NX_LENGTH
+                        dim: (n_v, 3)
+                      faces(NX_UINT):
+                        unit: NX_UNITLESS
+                        dim: (n_f, 3)
+                      face_normals(NX_FLOAT):
+                        unit: NX_LENGTH
+                        dim: (n_f, 3)
+                      xdmf_topology(NX_UINT):
+                        exists: recommended
+                        unit: NX_UNITLESS
+                        dim: (k,)
+                      xdmf_feature_identifier(NX_UINT):
+                          exists: recommended
+                          unit: NX_UNITLESS
+                          dim: (k,)
+                      ion_identifier(NX_UINT):
+                        exists: optional
+                        doc: |
+                          Array of evaporation_identifier / ion_identifier which details which ions
+                          lie inside or on the surface of the feature.
+                        unit: NX_UNITLESS
+                        dim: (m,)
+                  composition(NXchemical_composition):
+                    exists: optional
+                    total(NX_NUMBER):
+                      doc: |
+                        Total (count) of ions inside or on the surface of the feature relevant for normalization.
+                        NaN for non watertight objects.
+                      unit: NX_UNITLESS
+                      dim: (i,)
+                    ionID(NXion):
+                      exists: [min, 0, max, infty]
+                      charge_state(NX_INT):
+                      # check these two ?
+                      nuclide_hash(NX_UINT):
+                      nuclide_list(NX_UINT):
+                      count(NX_NUMBER):
+                        doc: |
+                          Count or weight which, when divided by total, yields the composition of this element,
+                          nuclide, or (molecular) ion within the volume of the feature/object.
+                        unit: NX_UNITLESS
+                        dim: (i,)
+
+    interface_meshing(NXapm_paraprobe_tool_results):
+      exists: [min, 0, max, 1]
+      window(NXcs_filter_boolean_mask):
+        number_of_ions(NX_UINT):
+        bitdepth(NX_UINT):
+        mask(NX_UINT):
+      # results
+      ion_multiplicity(NX_UINT):
+        exists: optional
+        unit: NX_UNITLESS
+        doc: |
+          The multiplicity whereby the ion position is accounted for
+          irrespective whether the ion is considered as a decorator
+          of the interface or not.
+          As an example, with atom probe it is typically not possible
+          to resolve the positions of the atoms which arrive at the detector
+          as molecular ions. Therefore, an exemplar molecular ion of two carbon
+          atoms can be considered to have a multiplicity of two to account that
+          this molecular ion contributes two carbon atoms at the reconstructed
+          location considering that the spatial resolution of atom probe
+          experiments is limited.
+        dim: (n_ions,)
+      decorator_multiplicity(NX_UINT):
+        exists: optional
+        unit: NX_UNITLESS
+        doc: |
+          The multiplicity whereby the ion position is accounted for when
+          the ion is considered one which is a decorator of the interface.
+        dim: (n_ions,)
+      initial_interface(NXprocess):
+        exists: optional
+        doc: |
+          The equation of the plane that is fitted initially.
+        point_normal_form(NX_FLOAT):
+          unit: NX_LENGTH
+          doc: |
+            The four parameter :math:`ax + by + cz + d = 0` which define the plane.
+          dim: (4,)
+      mesh_stateID(NXcg_triangle_set):
+        exists: [min, 0, max, infty]  # as many as DCOM steps * 2 because one for pre and one for post
+        doc: |
+          The triangle surface mesh representing the interface model.
+          Exported at state before or after the next DCOM step.
+        state(NX_CHAR):
+          doc: |
+            Was this state exported before or after the next DCOM step.
+          enumeration: [before, after]
+        dimensionality(NX_POSINT):
+          unit: NX_UNITLESS
+        cardinality(NX_POSINT):
+          unit: NX_UNITLESS
+        identifier_offset(NX_INT):
+          unit: NX_UNITLESS
+        triangles(NXcg_face_list_data_structure):
+          dimensionality(NX_POSINT):
+            unit: NX_UNITLESS
+          number_of_vertices(NX_POSINT):
+            unit: NX_UNITLESS
+          number_of_faces(NX_POSINT):
+            unit: NX_UNITLESS
+          vertex_identifier_offset(NX_INT):
+            unit: NX_UNITLESS
+          edge_identifier_offset(NX_INT):
+            unit: NX_UNITLESS
+          face_identifier_offset(NX_INT):
+            unit: NX_UNITLESS
+          face_identifier(NX_UINT):
+            unit: NX_UNITLESS
+            dim: (j,)
+          vertices(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (i, 3)
+          vertex_normal(NX_FLOAT):
+            unit: NX_LENGTH
+            doc: |
+              Direction of each vertex normal.
+            dim: (i, 3)
+          vertex_normal_orientation(NX_UINT):
+            unit: NX_UNITLESS
+            doc: |
+              Qualifier which details how specifically oriented the
+              face normal is with respect to its primitive (triangle):
+              
+              * 0 - undefined
+              * 1 - outer
+              * 2 - inner
+              
+            dim: (i,)
+          faces(NX_UINT):
+            unit: NX_UNITLESS
+            dim: (j, 3)
+          face_normal(NX_FLOAT):
+            doc: |
+              Direction of each face normal.
+            unit: NX_LENGTH
+            dim: (j, 3)
+          face_normal_orientation(NX_UINT):
+            unit: NX_UNITLESS
+            doc: |
+              Qualifier which details how specifically oriented the
+              face normal is with respect to its primitive (triangle):
+              
+              * 0 - undefined
+              * 1 - outer
+              * 2 - inner
+              
+            dim: (j,)
+          xdmf_topology(NX_UINT):
+            unit: NX_UNITLESS
+            dim: (k,)
+        area(NX_NUMBER):
+          unit: NX_AREA
+          dim: (c,)
+        edge_length(NX_NUMBER):
+          unit: NX_LENGTH
+          doc: |
+            Array of edge length values. For each triangle the edge length is
+            reported for the edges traversed according to the sequence
+            in which vertices are indexed in triangles.
+          dim: (c, 3)
+        interior_angle(NX_NUMBER):
+          unit: NX_ANGLE
+          doc: |
+            Array of interior angle values. For each triangle the angle is
+            reported for the angle opposite to the edges which are traversed
+            according to the sequence in which vertices are indexed in triangles.
+          dim: (c, 4)
+
+    oned_profile(NXapm_paraprobe_tool_results):
+      exists: [min, 0, max, 1]
+      window(NXcs_filter_boolean_mask):
+        number_of_ions(NX_UINT):
+        bitdepth(NX_UINT):
+        mask(NX_UINT):
+      # results
+      xdmf_cylinder(NXcg_polyhedron_set):
+        doc: |
+          The ROIs are defined as cylinders for the computations. To visualize these we discretize
+          them into regular n-gons. Using for instance 360-gons, i.e. a regular n-gon with 360 edges, 
+          resolves the lateral surface of each cylinder such that their renditions are smooth in
+          visualization software like Paraview.
+        dimensionality(NX_POSINT):
+          unit: NX_UNITLESS
+        cardinality(NX_POSINT):
+          unit: NX_UNITLESS
+        center(NX_NUMBER):
+          doc: |
+            Position of the geometric center, which often is but not
+            necessarily has to be the center_of_mass of the polyhedra.
+          unit: NX_LENGTH
+          dim: (i, 3)
+        roi_identifier(NX_UINT):
+          doc: |
+            Integer which specifies the first index to be used for distinguishing
+            ROI cylinder explicitly.
+          unit: NX_UNITLESS
+          dim: (i,)
+        polyhedra(NXcg_face_list_data_structure):
+          exists: [min, 0, max, 1]
+          edge_contact(NX_UINT):
+            exists: optional
+            unit: NX_UNITLESS
+            dim: (i,)
+          number_of_atoms(NX_UINT):
+            exists: optional
+            doc: |
+              The number of atoms in each ROI.
+            unit: NX_UNITLESS
+            dim: (i,)
+          number_of_ions(NX_UINT):
+            exists: optional
+            doc: |
+              The number of ions in each ROI.
+            unit: NX_UNITLESS
+            dim: (i,)
+          orientation(NX_FLOAT):
+            exists: optional
+            doc: |
+              The orientation of the ROI defined via a vector which points along
+              the cylinder axis and whose length is the height of the cylinder.
+            unit: NX_LENGTH
+            dim: (i, 3)
+          roiID(NXobject):
+            exists: [min, 0, max, infty]  # no max is := i
+            doc: |
+              EXPLAIN HOW FIELDS SIGNED_DISTANCE AND NUCLIDE
+              ARE COMPUTED/CONSTRUCTED.
+            signed_distance(NX_FLOAT):
+              doc: |
+                In the direction of the ROI.
+              unit: NX_LENGTH
+              dim: (k,)
+            nuclide(NX_UINT):
+              doc: |
+                Hashvalue using the following hashing rule :math:`H = Z + 256 * N`.
+              unit: NX_UNITLESS
+              dim: (k,)
+
+    common(NXapm_paraprobe_tool_common): 
+      status(NX_CHAR):
+      analysis_identifier(NX_UINT):
+      config(NXserialized):
+        type(NX_CHAR):
+        path(NX_CHAR):
+        checksum(NX_CHAR):
+        algorithm(NX_CHAR):
+      programID(NXprogram):
+        exists: [min, 1, max, infty]
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+      profiling(NXcs_profiling):
+        exists: recommended
+        start_time(NX_DATE_TIME):
+        end_time(NX_DATE_TIME):
+        total_elapsed_time(NX_FLOAT):
+        current_working_directory(NX_CHAR):
+        number_of_processes(NX_POSINT):
+        number_of_threads(NX_POSINT):
+        number_of_gpus(NX_POSINT):
+      userID(NXuser):
+        exists: [min, 0, max, infty]
+        doc: |
+          If used, metadata of at least the person who performed this analysis.
+        name(NX_CHAR):
+      coordinate_system_set(NXcoordinate_system_set):
+        exists: [min, 1, max, 1]
+        paraprobe(NXcoordinate_system):
+          type(NX_CHAR):
+          handedness(NX_CHAR):
+          x(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)
+          y(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)
+          z(NX_NUMBER):
+            unit: NX_LENGTH
+            dim: (3,)

@@ -1,0 +1,193 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--
+n_bins_knn: |
+ The total number of bins in the histogram for the k-th nearest neighbor-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_spatstat_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_ions">
+            <doc>
+                 The total number of ions in the reconstruction.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for results files of the paraprobe-spatstat tool.
+         
+         This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_paraprobe_spatstat_results"/>
+            </enumeration>
+        </field>
+        <!--tasks-->
+        <group name="spatial_statisticsID" type="NXapm_paraprobe_tool_results" minOccurs="0" maxOccurs="unbounded">
+            <group name="window" type="NXcs_filter_boolean_mask">
+                <field name="number_of_ions" type="NX_UINT"/>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <!--results-->
+            <field name="iontypes_randomized" type="NX_UINT" units="NX_UNITLESS">
+                <doc>
+                     The iontype ID for each ion that was assigned to each ion during
+                     the randomization of the ionlabels. Iontype labels are just permuted
+                     but the total number of values for each iontype remain the same.
+                     
+                     The order matches the iontypes array from a given ranging results
+                     as it is specified in the configuration settings inside the specific
+                     config_filename that was used for this paraprobe-spatstat analysis.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_ions"/>
+                </dimensions>
+            </field>
+            <group name="knn" type="NXprocess" optional="true">
+                <doc>
+                     K-nearest neighbor statistics.
+                </doc>
+                <field name="distance" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Right boundary of the binning.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="i"/>
+                    </dimensions>
+                </field>
+                <field name="probability_mass" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                    <dimensions rank="1">
+                        <dim index="1" value="i"/>
+                    </dimensions>
+                </field>
+                <field name="cumulated" type="NX_FLOAT" units="NX_UNITLESS">
+                    <doc>
+                         Cumulated not normalized by total counts.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="i"/>
+                    </dimensions>
+                </field>
+                <field name="cumulated_normalized" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                    <doc>
+                         Cumulated and normalized by total counts.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="i"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="rdf" type="NXprocess" optional="true">
+                <doc>
+                     Radial distribution statistics.
+                </doc>
+                <field name="distance" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Right boundary of the binning.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+                <field name="probability_mass" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+                <field name="cumulated" type="NX_FLOAT" units="NX_UNITLESS">
+                    <doc>
+                         Cumulated not normalized by total counts.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+                <field name="cumulated_normalized" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                    <doc>
+                         Cumulated and normalized by total counts.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+            </group>
+        </group>
+        <group name="common" type="NXapm_paraprobe_tool_common">
+            <field name="status" type="NX_CHAR"/>
+            <field name="analysis_identifier" type="NX_UINT"/>
+            <group name="config" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+            </group>
+            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <field name="program" type="NX_CHAR">
+                    <attribute name="version" type="NX_CHAR"/>
+                </field>
+            </group>
+            <group name="profiling" type="NXcs_profiling" recommended="true">
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="total_elapsed_time" type="NX_FLOAT"/>
+                <field name="current_working_directory" type="NX_CHAR"/>
+                <field name="number_of_processes" type="NX_POSINT"/>
+                <field name="number_of_threads" type="NX_POSINT"/>
+                <field name="number_of_gpus" type="NX_POSINT"/>
+            </group>
+            <group name="userID" type="NXuser" minOccurs="0" maxOccurs="unbounded">
+                <doc>
+                     If used, metadata of at least the person who performed this analysis.
+                </doc>
+                <field name="name" type="NX_CHAR"/>
+            </group>
+            <group name="coordinate_system_set" type="NXcoordinate_system_set" minOccurs="1" maxOccurs="1">
+                <group name="paraprobe" type="NXcoordinate_system">
+                    <field name="type" type="NX_CHAR"/>
+                    <field name="handedness" type="NX_CHAR"/>
+                    <field name="x" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="y" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="z" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+        </group>
+    </group>
+</definition>

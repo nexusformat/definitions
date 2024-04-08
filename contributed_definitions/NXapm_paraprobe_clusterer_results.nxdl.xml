@@ -1,0 +1,299 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_clusterer_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_ions">
+            <doc>
+                 The total number of ions in the reconstruction.
+            </doc>
+        </symbol>
+        <symbol name="n_feat">
+            <doc>
+                 Number of clusters found.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for results files of the paraprobe-spatstat tool.
+         
+         This tool is part of the paraprobe-toolbox. Inspect the base class :ref:`NXapm_paraprobe_tool_results`.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_paraprobe_clusterer_results"/>
+            </enumeration>
+        </field>
+        <!--tasks-->
+        <group name="cameca_to_nexus" type="NXapm_paraprobe_tool_results" optional="true"/>
+        <group name="cluster_analysisID" type="NXapm_paraprobe_tool_results" minOccurs="0" maxOccurs="unbounded">
+            <field name="analysis_identifier" type="NX_UINT"/>
+            <group name="config" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+            </group>
+            <group name="window" type="NXcs_filter_boolean_mask">
+                <field name="number_of_ions" type="NX_UINT"/>
+                <field name="bitdepth" type="NX_UINT"/>
+                <field name="mask" type="NX_UINT"/>
+            </group>
+            <!--results-->
+            <group name="dbscanID" type="NXsimilarity_grouping" minOccurs="0" maxOccurs="unbounded">
+                <doc>
+                     Results of a DBScan clustering analysis.
+                </doc>
+                <field name="eps" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         The epsilon (eps) parameter used.
+                    </doc>
+                </field>
+                <field name="min_pts" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         The minimum points (min_pts) parameter used.
+                    </doc>
+                </field>
+                <field name="cardinality" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Number of members in the set which is partitioned into features.
+                         Specifically, this is the total number of targets filtered from the
+                         dataset, i.e. typically the number of clusters which is usually not and
+                         for sure not necessarily the total number of ions in the dataset.
+                    </doc>
+                </field>
+                <field name="identifier_offset" type="NX_INT">
+                    <doc>
+                         Which identifier is the first to be used to label a cluster.
+                         
+                         The value should be chosen in such a way that special values can be resolved:
+                         * identifier_offset - 1 indicates an object belongs to no cluster.
+                         * identifier_offset - 2 indicates an object belongs to the noise category.
+                         
+                         Setting for instance identifier_offset to 1 recovers the commonly used
+                         case that objects of the noise category get the value of -1 and points of the
+                         unassigned category get the value 0.
+                    </doc>
+                </field>
+                <field name="targets" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         The evaporation (sequence) identifier (aka evaporation_id) to figure out
+                         which ions from the reconstruction were considered targets. The length
+                         of this array is not necessarily n_ions.
+                         Instead, it is the value of cardinality.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="i"/>
+                    </dimensions>
+                </field>
+                <!--quantities for debugging purposes-->
+                <field name="number_of_solutions" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         The number of solutions found for each target. Typically,
+                         this value is 1 in which case the field can be omitted.
+                         Otherwise, this array is the concatenated set of values of solution
+                         tuples for each target that can be used to decode model_labels,
+                         core_sample_indices, and weight.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="i"/>
+                    </dimensions>
+                </field>
+                <field name="model_labels" type="NX_INT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         The raw labels from the DBScan clustering backend process.
+                         The length of this array is not necessarily n_ions.
+                         Instead, it is typically the value of cardinality provided that each
+                         target has only one associated cluster. If targets are assigned to
+                         multiple cluster this array is as long as the total number of solutions
+                         found and
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="k"/>
+                    </dimensions>
+                </field>
+                <field name="core_sample_indices" type="NX_INT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         The raw array of core sample indices which specify which of the
+                         targets are core points.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="k"/>
+                    </dimensions>
+                </field>
+                <field name="numerical_labels" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Numerical label for each target (member in the set) aka cluster identifier.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="k"/>
+                    </dimensions>
+                </field>
+                <field name="categorical_labels" type="NX_CHAR" optional="true">
+                    <doc>
+                         Categorical label(s) for each target (member in the set) aka cluster name(s).
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="k"/>
+                    </dimensions>
+                </field>
+                <field name="weights" type="NX_NUMBER" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         Weights for each target that specifies how probable the target is assigned to
+                         a specific cluster.
+                         
+                         For the DBScan algorithm and atom probe tomography this value is the
+                         multiplicity of each ion with respect to the cluster. That is how many times
+                         should the position of the ion be accounted for because the ion is e.g. a
+                         molecular ion with several elements or nuclides of requested type.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="k"/>
+                    </dimensions>
+                </field>
+                <!--
+number_of_objects(NX_UINT):
+ bitdepth(NX_UINT):
+ mask(NX_UINT):
+-->
+                <field name="is_noise" type="NX_BOOLEAN" optional="true">
+                    <doc>
+                         Are targets assigned to the noise category or not.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="k"/>
+                    </dimensions>
+                </field>
+                <!--
+number_of_objects(NX_UINT):
+ bitdepth(NX_UINT):
+ mask(NX_UINT):
+-->
+                <field name="is_core" type="NX_BOOLEAN" optional="true">
+                    <doc>
+                         Are targets assumed a core point.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="k"/>
+                    </dimensions>
+                </field>
+                <group name="statistics" type="NXprocess" recommended="true">
+                    <doc>
+                         In addition to the detailed storage which members were grouped to which
+                         feature here summary statistics are stored that communicate e.g. how many
+                         cluster were found.
+                    </doc>
+                    <!--at the level of the set of targets-->
+                    <field name="number_of_targets" type="NX_UINT">
+                        <doc>
+                             Total number of targets in the set, i.e. ions that were filtered
+                             and considered in this cluster analysis.
+                        </doc>
+                    </field>
+                    <field name="number_of_noise" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Total number of members in the set which are categorized as noise.
+                        </doc>
+                    </field>
+                    <field name="number_of_core" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Total number of members in the set which are categorized as a core point.
+                        </doc>
+                    </field>
+                    <field name="number_of_features" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Total number of clusters (excluding noise and unassigned).
+                        </doc>
+                    </field>
+                    <!--at the level of the feature set-->
+                    <field name="feature_identifier" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Numerical identifier of each feature aka cluster_identifier.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_feat"/>
+                        </dimensions>
+                    </field>
+                    <field name="feature_member_count" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Number of members for each feature.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_feat"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+        </group>
+        <!--ADD FURTHER RESULTS along the same pattern for e.g. OPTICS and HDBSCAN-->
+        <group name="common" type="NXapm_paraprobe_tool_common">
+            <field name="status" type="NX_CHAR"/>
+            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <field name="program" type="NX_CHAR">
+                    <attribute name="version" type="NX_CHAR"/>
+                </field>
+            </group>
+            <group name="profiling" type="NXcs_profiling" recommended="true">
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="total_elapsed_time" type="NX_FLOAT"/>
+                <field name="current_working_directory" type="NX_CHAR"/>
+                <field name="number_of_processes" type="NX_POSINT"/>
+                <field name="number_of_threads" type="NX_POSINT"/>
+                <field name="number_of_gpus" type="NX_POSINT"/>
+            </group>
+            <group name="userID" type="NXuser" minOccurs="0" maxOccurs="unbounded">
+                <doc>
+                     If used, metadata of at least the person who performed this analysis.
+                </doc>
+                <field name="name" type="NX_CHAR"/>
+            </group>
+            <group name="coordinate_system_set" type="NXcoordinate_system_set" minOccurs="1" maxOccurs="1">
+                <group name="paraprobe" type="NXcoordinate_system">
+                    <field name="type" type="NX_CHAR"/>
+                    <field name="handedness" type="NX_CHAR"/>
+                    <field name="x" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="y" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="z" type="NX_NUMBER" units="NX_LENGTH">
+                        <dimensions rank="1">
+                            <dim index="1" value="3"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+        </group>
+    </group>
+</definition>

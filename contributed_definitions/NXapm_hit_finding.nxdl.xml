@@ -1,0 +1,147 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXapm_hit_finding" extends="NXprocess" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_dld">
+            <doc>
+                 Number of delay-line wires of the detector.
+            </doc>
+        </symbol>
+        <symbol name="n_ht">
+            <doc>
+                 Number of hit qualities (hit types) distinguished.
+            </doc>
+        </symbol>
+        <symbol name="p">
+            <doc>
+                 Number of pulses collected in between start_time and end_time
+                 resolved by an instance of :ref:`NXevent_data_apm`. If this is not defined,
+                 p is the number of ions included in the reconstructed volume if an application
+                 definition is used to store results of already reconstructed datasets.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Base class for the configuration and results from a hit finding algorithm.
+    </doc>
+    <group type="NXprogram"/>
+    <group type="NXserialized"/>
+    <!--config/input-->
+    <field name="number_of_dld_wires" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             The number of wires in the detector.
+        </doc>
+        <enumeration>
+            <item value="1"/>
+            <item value="2"/>
+            <item value="3"/>
+        </enumeration>
+    </field>
+    <field name="dld_wire_names" type="NX_CHAR">
+        <doc>
+             Alias tuple (begin, end) of each DLD wire of the detector.
+             Order follows arrival_time_pairs.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n_dld"/>
+            <dim index="2" value="2"/>
+        </dimensions>
+    </field>
+    <field name="arrival_time_pairs" type="NX_NUMBER" units="NX_TIME">
+        <doc>
+             Raw readings from the analog-to-digital-converter
+             timing circuits of the detector wires.
+        </doc>
+        <dimensions rank="3">
+            <dim index="1" value="p"/>
+            <dim index="2" value="n_dld"/>
+            <dim index="3" value="2"/>
+        </dimensions>
+    </field>
+    <!--results of the hit_finding algorithm-->
+    <field name="hit_positions" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Evaluated ion impact coordinates on the detector.
+             Use the depends_on field to spec
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="p"/>
+            <dim index="2" value="2"/>
+        </dimensions>
+        <attribute name="depends_on" type="NX_CHAR">
+            <doc>
+                 The instance of :ref:`NXcoordinate_system` in which the positions are defined.
+            </doc>
+        </attribute>
+    </field>
+    <field name="hit_quality_types" type="NX_CHAR">
+        <doc>
+             Name of the hit_qualities distinguished.
+             AMETEK/Cameca uses e.g. golden, multiple, partial,
+             irrecoverable, and multi-first and multi-late.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_ht"/>
+        </dimensions>
+    </field>
+    <field name="hit_quality_identifier" type="NX_UINT">
+        <doc>
+             Identifier used for each hit_quality type.
+             Following the order of hit_quality_types.
+        </doc>
+    </field>
+    <field name="hit_quality" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Hit quality identifier for each pulse.
+             Identifier have to be within hit_quality_identifier.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="p"/>
+        </dimensions>
+    </field>
+    <field name="hit_multiplicity" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             This processing yields for each ion with how many others it evaporated
+             if these were collected on the same pulse. Extraction of multiple ions
+             on one pulse on different or even the same pixel of the detector are possible.
+             
+             Multiplicity must not be confused with how many atoms of the same element
+             a molecular ion contains (which is instead encoded with the
+             isotope_vector field of each :ref:`NXion` instance).
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="p"/>
+        </dimensions>
+    </field>
+    <!--the following two quantities are relicts from ePOS files used to give some
+insight into the results of the hit_finding algorithm of IVAS/APSuite but typically
+used only in the context to learn about the multiplicity of an ion.
+pulses_since_last_ion(NX_UINT):
+  dim: (n,)
+pulse_identifier(NX_INT):
+  dim: (n,)-->
+</definition>

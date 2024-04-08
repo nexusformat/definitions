@@ -1,33 +1,31 @@
 category: base
 doc: |
-  Computer science base class for packing and unpacking booleans.
+  Base class for packing and unpacking booleans.
   
   This base class bookkeeps metadata to inform software about necessary modulo
   operations to decode e.g. set membership of objects in sets which are encoded
   as a packed array of boolean values.
   
-  One use case is processing of object sets (point cloud data). When one applies
-  e.g. a spatial filter to a set of points to define which points are analyzed
-  and which not, one can store this information in a compact manner using an array
-  of boolean values. If the value is True the point is taken, otherwise the point
-  is not taken.
-  
-  The resulting boolean array will be filled with True and False in a manner
-  that is often arbitrary and in general case-dependent.
+  One use case is processing of object sets (e.g. point cloud data). If e.g. a
+  spatial filter has been applied to a set of points we may wish to store
+  document efficiently which points were analyzed. Array of boolean values
+  is one option to achieve this. A value is true if the point is included.
+  The resulting boolean array will be filled with true and false values
+  in a manner that is often arbitrary and in general case-dependent.
   
   Especially when the number of points is large, for instance several thousands
-  or more, some situations can be more efficiently stored if one would not store
-  the boolean array but just list the identifiers of the points taken.
+  or more, some situations can be more efficiently stored if one does not store
+  the boolean array but just lists the identifiers of the points taken.
   
-  For example, if within a set of 1000 points only one point is taken, it would
+  For example, if within a set of 1000 points only one point is included, it would
   take (naively) 4000 bits to store the array but only 32 bits to store e.g. the
   ID of the single point that is taken. Of course the 4000 bit field is so
   sparse that it could be compressed resulting also in a substantial reduction
   of the storage demands. Therefore, boolean masks are useful in that
   they store compact representation of set memberships.
   
-  The number of encoded pieces of information is not necessarily
-  an integer multiple of the bit depth.
+  This base class can deal with the situation when the number of objects
+  is not an integer multiple of the bit depth used for storing the states.
 symbols:
   doc: |
     The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -45,26 +43,28 @@ NXcs_filter_boolean_mask(NXobject):
       
       If depends_on is not provided, it is assumed that the mask
       applies to its direct parent.
-  number_of_objects(NX_INT):
+  number_of_objects(NX_UINT):
     doc: |
       Number of objects represented by the mask.
     unit: NX_UNITLESS
-  bitdepth(NX_INT):
+  bitdepth(NX_UINT):
     doc: |
       Number of bits assumed matching on a default datatype.
       (e.g. 8 bits for a C-style uint8). 
     unit: NX_UNITLESS
   mask(NX_UINT):
     doc: |
-      The content of the mask. If padding is used, padding bits have to be set to 0.
-    dim: (n_total,)
+      The content of the mask. If padding is used, 
+      padding bits have to be set to 0.
     unit: NX_UNITLESS
+    dim: (n_total,)
   identifier(NX_INT):
     doc: |
       Link to/or array of identifiers for the objects. The decoded mask is
       interpreted consecutively, i.e. the first bit in the mask matches
       to the first identifier, the second bit in the mask to the second
       identifier and so on and so forth. Resolving of identifier follows
-      the conventions made for depends_on, so consult the also its description.
+      the conventions made for depends_on, so consult also the description
+      of th content to which depends_on refers.
     unit: NX_UNITLESS
     dim: (n_object,)
