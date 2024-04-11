@@ -10,6 +10,7 @@ Atom-probe tomography
    ApmBC
    StatusQuoApm
    ApmParaprobeAppDef
+   ApmGermanNfdi
 
 .. _IntroductionApm:
 
@@ -265,3 +266,19 @@ tool one such pair is proposed:
         Analyze volumetric intersections and proximity of 3D objects discretized as triangulated surface meshes
         in continuum space to study the effect the parameterization of surface extraction algorithms on the resulting shape,
         spatial arrangement, and colocation of 3D objects via graph-based techniques.
+
+.. _ApmGermanNfdi:
+
+Joint work German NFDI consortia NFDI-MatWerk and FAIRmat
+#######################################################################
+
+Members of the NFDI-MatWerk and the FAIRmat consortium of the German National Research Data Infrastructure
+are working together within the Infrastructure Use Case IUC09 of the NFDI-MatWerk project to work on examples
+how software tools in both consortia become better documented and interoperable to use. Within this project,
+we have also added the `CompositionSpace tool that has been developed at the Max-Planck-Institut für Eisenforschung
+GmbH in Düsseldorf <https://github.com/eisenforschung/CompositionSpace>`_ by A. Saxena et al.
+
+Specifically, within the IUC09 we refactored the code base behind the publication `A. Saxena et al. <https://dx.doi.org/10.1093/micmic/ozad086>`_ to better document its configuration, here as an example implemented like for  the above-mentioned paraprobe-toolbox using NeXus:
+ 
+    :ref:`NXapm_compositionspace_config`, :ref:`NXapm_compositionspace_results`:
+        Configuration and the results respectively of the CompositionSpace tool.
