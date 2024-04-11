@@ -26,11 +26,6 @@
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
-        <symbol name="n_voxel">
-            <doc>
-                 Number of voxel of discretized domain for analyzed part of the dataset.
-            </doc>
-        </symbol>
         <symbol name="d">
             <doc>
                  The dimensionality of the grid.
@@ -39,16 +34,6 @@
         <symbol name="c">
             <doc>
                  The cardinality or total number of cells/grid points.
-            </doc>
-        </symbol>
-        <symbol name="n_clst_dict">
-            <doc>
-                 Number of terms in the composition clustering dictionary
-            </doc>
-        </symbol>
-        <symbol name="n_spat_dict">
-            <doc>
-                 Number of terms in the position clustering dictionary
             </doc>
         </symbol>
     </symbols>
@@ -71,7 +56,7 @@
         </field>
         <!--can be used for the name of the tool and version but also
 for if desired all the dependencies and libraries-->
-        <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+        <group name="program" type="NXprogram" minOccurs="1" maxOccurs="1">
             <field name="program" type="NX_CHAR">
                 <attribute name="version" type="NX_CHAR"/>
             </field>
@@ -86,14 +71,14 @@ for if desired all the dependencies and libraries-->
                  Disencouraged place for free-text for e.g. comments.
             </doc>
         </field>
-        <field name="start_time" type="NX_DATE_TIME">
+        <field name="start_time" type="NX_DATE_TIME" recommended="true">
             <doc>
                  ISO 8601 formatted time code with local time zone offset to UTC
                  information included when the analysis behind this results file
                  was started, i.e. when composition space tool was started as a process.
             </doc>
         </field>
-        <field name="end_time" type="NX_DATE_TIME">
+        <field name="end_time" type="NX_DATE_TIME" recommended="true">
             <doc>
                  ISO 8601 formatted time code with local time zone offset to UTC
                  information included when the analysis behind this results file
@@ -111,61 +96,9 @@ for if desired all the dependencies and libraries-->
             <field name="algorithm" type="NX_CHAR"/>
             <field name="checksum" type="NX_CHAR"/>
         </group>
-        <group name="reconstruction" type="NXserialized">
-            <doc>
-                 Details about the file (technology partner or community format)
-                 from which reconstructed ion positions were loaded.
-            </doc>
-            <field name="type" type="NX_CHAR"/>
-            <field name="path" type="NX_CHAR"/>
-            <field name="algorithm" type="NX_CHAR"/>
-            <field name="checksum" type="NX_CHAR"/>
-        </group>
-        <group name="ranging" type="NXserialized">
-            <doc>
-                 Details about the file (technology partner or community format)
-                 from which ranging definitions were loaded which detail how to
-                 map mass-to-charge-state ratios on iontypes.
-            </doc>
-            <field name="type" type="NX_CHAR"/>
-            <field name="path" type="NX_CHAR"/>
-            <field name="algorithm" type="NX_CHAR"/>
-            <field name="checksum" type="NX_CHAR"/>
-        </group>
         <!--results-->
-        <field name="results_path" type="NX_CHAR" optional="true">
-            <doc>
-                 Path to the directory where the tool should store NeXus/HDF5 results
-                 of this analysis. If not specified results will be stored in the
-                 current working directory.
-            </doc>
-        </field>
-        <field name="status" type="NX_CHAR">
-            <doc>
-                 A statement whether the executable managed to process the analysis
-                 or failed prematurely. This status is written to the results file after the
-                 end_time at which point the executable must not compute any analysis.
-                 Only when this status message is present and shows `success`, the
-                 user should consider the results. In all other cases it might be
-                 that the executable has terminated prematurely or another error
-                 occurred.
-            </doc>
-            <enumeration>
-                <item value="success"/>
-                <item value="failure"/>
-            </enumeration>
-        </field>
-        <group type="NXuser" recommended="true">
-            <doc>
-                 If used, contact information and eventually details
-                 of at least the person who performed this analysis.
-            </doc>
-            <field name="name" type="NX_CHAR" recommended="true"/>
-            <field name="affiliation" type="NX_CHAR" optional="true"/>
-            <group type="NXidentifier" optional="true"/>
-            <field name="role" type="NX_CHAR" optional="true"/>
-        </group>
-        <group type="NXcoordinate_system_set">
+        <group type="NXuser" optional="true"/>
+        <group name="coordinate_system_set" type="NXcoordinate_system_set" minOccurs="1" maxOccurs="1">
             <doc>
                  Details about coordinate systems (reference frames) used. In atom probe several coordinate
                  systems have to be distinguished. Names of instances of such :ref:`NXcoordinate_system`
@@ -186,13 +119,38 @@ for if desired all the dependencies and libraries-->
                  representations between different reference frames.
                  Inspect :ref:`NXtransformations` for further details.
             </doc>
+            <group name="compositionspace" type="NXcoordinate_system">
+                <field name="type" type="NX_CHAR"/>
+                <field name="handedness" type="NX_CHAR"/>
+                <field name="x" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
+                <field name="y" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
+                <field name="z" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
+            </group>
         </group>
-        <group type="NXcoordinate_system">
-            <group type="NXtransformations"/>
-        </group>
-        <!--add further fields coming from using the charge state recovery
-workflow from the ifes_apt_tc_data_modeling library-->
         <group name="voxelization" type="NXprocess">
+            <doc>
+                 Voxelization is the first step of the algorithmic chain that the 
+                 CompositionSpace tool implements. In this step all ion positions are
+                 discretized using a rectangular transfer function to identify the number
+                 of ions/atoms in the dataset of each iontype.
+                 
+                 Using a discretization grid that is larger than the average distance
+                 between reconstructed ion position reduces the computational costs.
+                 This is the key idea of the CompositionSpace tool over other methods
+                 traditionally used in atom probe (e.g. isosurfaces).
+            </doc>
             <field name="sequence_index" type="NX_POSINT">
                 <enumeration>
                     <item value="1"/>
@@ -206,8 +164,6 @@ inspect the example of the NXem_ebsd application definition-->
             <group type="NXcg_grid">
                 <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
                     <enumeration>
-                        <item value="1"/>
-                        <item value="2"/>
                         <item value="3"/>
                     </enumeration>
                 </field>
@@ -270,204 +226,150 @@ if one coordinate system is defined the origin is defined in this cs-->
                     </dimensions>
                 </field>
             </group>
-            <group type="NXion" minOccurs="0" maxOccurs="unbounded">
+            <group name="ionID" type="NXion" minOccurs="0" maxOccurs="unbounded">
                 <field name="name"/>
-                <field name="composition" type="NX_FLOAT">
+                <field name="weight" type="NX_FLOAT" units="NX_UNITLESS">
+                    <doc>
+                         TODO
+                    </doc>
                     <dimensions rank="1">
-                        <dim index="1" value="n_voxel"/>
+                        <dim index="1" value="c"/>
                     </dimensions>
                 </field>
             </group>
+            <field name="total" type="NX_FLOAT" units="NX_UNITLESS">
+                <doc>
+                     TODO
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="c"/>
+                </dimensions>
+            </field>
         </group>
-        <group name="clustering_composition_space" type="NXprocess">
+        <group name="segmentation" type="NXprocess" minOccurs="1" maxOccurs="1">
             <doc>
-                 In Alaukik's tool the GMM step.
+                 Segmentation is the second step of the algorithmic chain that the 
+                 CompositionSpace tool implements. In this step a machine learning model
+                 is used to identify how voxels cluster in composition space to identify
+                 which chemically disjoint phases exists in the atom probe dataset.
             </doc>
-            <field name="sequence_index" type="NX_POSINT">
-                <enumeration>
-                    <item value="2"/>
-                </enumeration>
-            </field>
-            <field name="cluster_dict_keyword">
+            <group name="pca" type="NXprocess">
                 <doc>
-                     The keywords of the dictionary of distinguished compositionally-
-                     defined cluster, e.g. the phases. Examples for keywords could be
-                     phase1, phase2, and so one and so forth.
+                     PCA in the parameter space of iontypes/phases of different chemical nature.
                 </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_clst_dict"/>
-                </dimensions>
-            </field>
-            <field name="cluster_dict_value" type="NX_UINT" units="NX_UNITLESS">
+                <field name="sequence_index" type="NX_POSINT">
+                    <enumeration>
+                        <item value="2"/>
+                    </enumeration>
+                </field>
+                <group name="results" type="NXdata">
+                    <attribute name="signal" type="NX_CHAR"/>
+                    <attribute name="axes" type="NX_CHAR"/>
+                    <attribute name="AXISNAME" type="NX_CHAR"/>
+                    <field name="axis_explained_variance" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                        <doc>
+                             TODO
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="i"/>
+                        </dimensions>
+                    </field>
+                    <field name="axis_pca_dimension" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             TODO
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="i"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+            <group name="ic_opt" type="NXprocess">
                 <doc>
-                     Resolves for each keyword in cluster_dict which integer is used to
-                     label something that it belongs or is assumed to represent this
-                     cluster.
+                     Information criterion minimization.
                 </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_clst_dict"/>
-                </dimensions>
-            </field>
-            <!--again for fuzzy or probabilistic multi solution approaches see NXem_ebsd-->
-            <field name="cluster_identifier" type="NX_UINT" units="NX_UNITLESS">
-                <doc>
-                     For example if the voxel grid is used to report that there
-                     are voxels which are assumed to represent volume of either phase1
-                     or phase2, the cluster_dict_keyword would be a list with two names
-                     phase1 and phase2, respectively. The cluster_dict_value would be a
-                     list of e.g. integers 1 and 2. These could be used to build an
-                     array with as many entries as there are voxel and store in this array
-                     the respective value to encode which phase is assumed for each voxel.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_voxel"/>
-                </dimensions>
-            </field>
+                <field name="sequence_index" type="NX_POSINT">
+                    <enumeration>
+                        <item value="3"/>
+                    </enumeration>
+                </field>
+                <group name="cluster_analysisID" type="NXobject">
+                    <doc>
+                         TODO
+                    </doc>
+                    <field name="n_cluster" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             TODO
+                        </doc>
+                    </field>
+                    <field name="y_pred" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             TODO
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="c"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
         </group>
-        <!--use the fact that with e.g. XDMF one can on-the-fly reinterpret
-a 1d array to represent an explicit 3d grid
-default plots would be nice could directly be integrated in the results file-->
-        <group name="clustering_real_space" type="NXprocess">
+        <group name="clustering" type="NXprocess" minOccurs="1" maxOccurs="1">
             <doc>
-                 In Alaukik's tool the DBScan step after the GMM step.
+                 Clustering is the third step of the algorithmic chain that the CompositionSpace
+                 tool implements. In this step the different voxelized regions in the dataset with
+                 eventually different chemical nature are analyzed if they are distributed in
+                 connected groups of voxels with the same chemical nature.
+                 Using the discretization grid from the first step as the support, this enables
+                 to prepare for the fourth step. In the fourth step the interfaces between
+                 identified groups of different chemical nature are triangulated.
+                 
+                 These triangulated network of interfaces between regions of different chemical
+                 nature is the final data structure that the CompositionSpace tool yields.
+                 Subsequently, this mesh can be post-processed, similarly like meshes that are
+                 obtained from isosurface-based approaches, to perform line profile analyses.
             </doc>
             <field name="sequence_index" type="NX_POSINT">
                 <enumeration>
                     <item value="3"/>
                 </enumeration>
             </field>
-            <field name="cluster_dict_keyword">
-                <doc>
-                     The keywords of the dictionary of distinguished spatially-contiguous
-                     clusters. Examples for keywords could be precipitate1, precipitate2,
-                     and so one and so forth.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_spat_dict"/>
-                </dimensions>
-            </field>
-            <field name="cluster_dict_value" type="NX_UINT" units="NX_UNITLESS">
-                <doc>
-                     Resolves for each keyword in cluster_dict which integer is used to
-                     label something that it belongs or is assumed to represent this
-                     cluster.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_spat_dict"/>
-                </dimensions>
-            </field>
-            <!--again for fuzzy or probabilistic multi solution approaches see NXem_ebsd-->
-            <field name="cluster_identifier" type="NX_UINT" units="NX_UNITLESS">
-                <doc>
-                     For example if the voxel grid is used to report that there
-                     are voxels which are assumed to represent volume of certain precipitates,
-                     say we found ten precipitates and consider the rest as matrix.
-                     We could make a list of say matrix, precipitate1, precipitate2, ...,
-                     precipitate10. With cluster_dict_value then running from 0 to 10,
-                     i.e. matrix is flagged special as 0 and the remaining particles
-                     are indexed conveniently as 1, 2, ..., 10 like end users expect.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_voxel"/>
-                </dimensions>
-            </field>
+            <group name="cluster_analysisID" type="NXobject" minOccurs="0" maxOccurs="unbounded">
+                <field name="epsilon" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         TODO
+                    </doc>
+                </field>
+                <field name="min_samples" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         TODO
+                    </doc>
+                </field>
+                <field name="target" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         TODO total number of (phases) distinguished.
+                    </doc>
+                </field>
+                <field name="labels" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         TODO raw labels output of the DBScan clustering algorithm. Length of array varies depending on how
+                         many voxels of the grid were identified of the targetted
+                         phase/chemical nature.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="k"/>
+                    </dimensions>
+                </field>
+            </group>
         </group>
-        <!--use the fact that with e.g. XDMF one can on-the-fly reinterpret
-a 1d array to represent an explicit 3d grid
-then the entire visualization just needs a smart XDMF file with
-one section with the coordinates of the voxel center of masses
-one section with the voxel identifier
-one section with the "phase" identifier referring to the clustering_composition_space NXprocess group
-one section with the "precipitate" identifier referring to the clustering_real_space NXprocess group
-technically one should get rid of the unnecessary chunks
-instead define an (nx, ny, nz) C-style array which whose data space
-is reserved by the h5py library upon first call and then (if desired)
-filled incrementally
-the array should be chunked not with an auto-chunking but with a nx, ny, >=1 chunking
-which will make visualization of nx, ny slices naturally fast, making the z-dimension
-chunking as fast as large as possible (needs compromise to remain within chunk cache size)
-will also make the orthogonal section a good compromise fast
-data should be gzip, level 1 compressed and all the redundant parts of the current
-output will collapse substantially-->
-        <group name="performance" type="NXcs_profiling">
-            <field name="current_working_directory"/>
-            <field name="command_line_call" optional="true"/>
+        <!-- the section above needs refactoring by MatWerk colleagues-->
+        <group name="profiling" type="NXcs_profiling" optional="true">
+            <field name="current_working_directory" type="NX_CHAR" recommended="true"/>
             <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
             <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
             <field name="total_elapsed_time" type="NX_NUMBER"/>
-            <field name="number_of_processes" type="NX_POSINT"/>
-            <field name="number_of_threads" type="NX_POSINT"/>
-            <field name="number_of_gpus" type="NX_POSINT"/>
-            <group type="NXcs_computer" recommended="true">
-                <field name="name" recommended="true"/>
-                <field name="operating_system">
-                    <attribute name="version"/>
-                </field>
-                <field name="uuid" optional="true"/>
-                <group type="NXcs_cpu" minOccurs="0" maxOccurs="unbounded">
-                    <field name="name" optional="true"/>
-                    <group type="NXfabrication" recommended="true">
-                        <field name="identifier" optional="true"/>
-                        <field name="capabilities" optional="true"/>
-                    </group>
-                </group>
-                <group type="NXcs_gpu" minOccurs="0" maxOccurs="unbounded">
-                    <field name="name" optional="true"/>
-                    <group type="NXfabrication" recommended="true">
-                        <field name="identifier" optional="true"/>
-                        <field name="capabilities" optional="true"/>
-                    </group>
-                </group>
-                <group type="NXcs_mm_sys" minOccurs="0" maxOccurs="1">
-                    <field name="total_physical_memory" type="NX_NUMBER"/>
-                </group>
-                <group type="NXcs_io_sys" minOccurs="0" maxOccurs="1">
-                    <group type="NXcs_io_obj" minOccurs="1" maxOccurs="unbounded">
-                        <field name="technology"/>
-                        <field name="max_physical_capacity" type="NX_NUMBER"/>
-                        <field name="name" optional="true"/>
-                        <group type="NXfabrication" recommended="true">
-                            <field name="identifier" optional="true"/>
-                            <field name="capabilities" optional="true"/>
-                        </group>
-                    </group>
-                </group>
-                <group type="NXcs_profiling_event">
-                    <field name="start_time" type="NX_DATE_TIME" optional="true"/>
-                    <field name="end_time" type="NX_DATE_TIME" optional="true"/>
-                    <field name="description"/>
-                    <field name="elapsed_time" type="NX_NUMBER"/>
-                    <field name="number_of_processes" type="NX_POSINT">
-                        <!--
-exists: recommended
--->
-                        <doc>
-                             Specify if it was different from the number_of_processes
-                             in the NXcs_profiling super class.
-                        </doc>
-                    </field>
-                    <field name="number_of_threads" type="NX_POSINT">
-                        <!--
-exists: recommended
--->
-                        <doc>
-                             Specify if it was different from the number_of_threads
-                             in the NXcs_profiling super class.
-                        </doc>
-                    </field>
-                    <field name="number_of_gpus" type="NX_POSINT">
-                        <!--
-exists: recommended
--->
-                        <doc>
-                             Specify if it was different from the number_of_threads
-                             in the NXcs_profiling super class.
-                        </doc>
-                    </field>
-                    <field name="max_virtual_memory_snapshot" type="NX_NUMBER" recommended="true"/>
-                    <field name="max_resident_memory_snapshot" type="NX_NUMBER" recommended="true"/>
-                </group>
-            </group>
         </group>
     </group>
+    <!--number_of_processes(NX_POSINT):
+number_of_threads(NX_POSINT):
+number_of_gpus(NX_POSINT):-->
 </definition>
