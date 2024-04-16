@@ -759,20 +759,35 @@ identifier(NX_UINT):-->
         </group>
         <group name="oned_profile" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="1">
             <doc>
-                 Analysis of one-dimensional profiles in ROIs placed in the dataset. Such analyses are useful for quantifying
-                 interfacial excess or classical composition analyses. The tool will test for each ROIs if it is completely embedded
-                 in the dataset. Specifically, in each such test the tool evaluates if the ROI cuts at least one triangle of the triangulated surface mesh refered to by surface. If this is the case the ROI is close to the surface and not analyzed further.
-                 Otherwise, the ROI is processed further.
+                 Analysis of one-dimensional profiles in ROIs placed in the dataset.
+                 Such analyses are useful for quantifying interfacial excess or for
+                 performing classical composition analyses.
                  
-                 Users should be aware that the latter intersection analysis is not a volumetric intersection analysis as such one
-                 is much more computationally involved because the edge model can be a closed non-convex polyhedron
-                 in which case one would have to test robustly if the cylinder pierces or is laying completely inside the polyhedron.
-                 For this the polyhedron has to be tessellated first into convex polyhedra, as test for volumetric intersection using
-                 the Gilbert-Johnson-Keerthi algorithm (GJK) are applicable only to convex polyhedra.
+                 The tool will test for each ROIs if it is completely embedded in the dataset.
+                 Specifically, each such test evaluates if the ROI cuts at least one triangle
+                 of the triangulated surface mesh that is referred to by surface.
+                 If this is the case the ROI is marked as one close to the surface
+                 and not analyzed further. Otherwise, the ROI is marked as one far
+                 from the surface and processed further.
                  
-                 For each ROI the tool computes atomically decomposed profiles. This means, molecular ions are split into
-                 nuclides with respective multiplicity. For each processed ROI a set of a sorted list of signed distance values
-                 is returned to enable classical Krakauer/Seidman-style interfacial excess analyses.
+                 For each ROI the tool computes atomically decomposed profiles.
+                 This means, molecular ions are splitted into nuclides as many times as
+                 their respective multiplicity. For each processed ROI the tool stores
+                 a sorted list of signed distance values to enable post-processing with
+                 other software like e.g. reporter to perform classical
+                 Krakauer/Seidman-style interfacial excess analyses.
+                 
+                 Users should be aware that the latter intersection analysis is not
+                 a volumetric intersection analysis. Given that the triangulated mesh
+                 referred to in surface is not required to mesh neither a watertight
+                 nor convex polyhedron a rigorous testing of volumetric intersection
+                 is much more involved. If the mesh is watertight one could use split
+                 the task in first tessellating the mesh into convex polyhedra (e.g.
+                 tetrahedra and apply a volumetric intersection method like the
+                 Gilbert-Johnson-Keerthi algorithm (GJK). In cases when the mesh is not
+                 even watertight distance-based segmentation in combination with again
+                 intersection of triangles and convex polyhedra is a robust but currently
+                 not implemented method to quantify intersections.
             </doc>
             <group type="NXidentifier" optional="true"/>
             <field name="analysis_identifier" type="NX_UINT" recommended="true"/>
@@ -830,10 +845,12 @@ identifier(NX_UINT):-->
                     </doc>
                 </field>
             </group>
-            <group name="feature" type="NXserialized">
+            <group name="feature" type="NXserialized" optional="true">
                 <doc>
                      A precomputed triangulated mesh of the feature representing a model of the
-                     interface at which to place ROIs to profile.
+                     interface at which to place ROIs to profile. This can be the mesh of an
+                     interface as returned e.g. by a previous interface_meshing task or the
+                     mesh of an iso-surface from a previous delocalization task.
                 </doc>
                 <field name="type" type="NX_CHAR"/>
                 <field name="path" type="NX_CHAR"/>
@@ -874,7 +891,12 @@ from normals of neighboring facets, type of weighting schemes can affect results
                     <field name="match" type="NX_NUMBER"/>
                 </group>
             </group>
-            <group name="feature_distance" type="NXserialized" recommended="true">
+            <group name="feature_distance" type="NXserialized" optional="true">
+                <doc>
+                     To enable an additional filtration of specific parts of the feature
+                     mesh it is recommended to feed precomputed distances of each ion to
+                     the triangles of the feature mesh.
+                </doc>
                 <field name="type" type="NX_CHAR"/>
                 <field name="path" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
@@ -936,6 +958,39 @@ identifier(NX_UINT):-->
                 <field name="match" type="NX_NUMBER"/>
             </group>
             <!--config-->
+            <group name="user_defined_roi" type="NXobject" optional="true">
+                <doc>
+                     As an alternative mode the tool can be instructed to place ROIs
+                     at specific locations into the dataset. This is the programmatic
+                     equivalent to the classical approach in atom probe to place ROIs
+                     for composition analyses via positioning and rotating them via
+                     a graphical user interface (such as in IVAS / AP Suite).
+                </doc>
+                <group name="cylinder_set" type="NXcg_cylinder_set">
+                    <!--dimensionality(NX_POSINT):
+cardinality(NX_POSINT):-->
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER">
+                        <dimensions rank="2">
+                            <dim index="1" value="n_rois"/>
+                            <dim index="2" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="height" type="NX_NUMBER">
+                        <dimensions rank="2">
+                            <dim index="1" value="n_rois"/>
+                            <dim index="2" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="radii" type="NX_NUMBER">
+                        <dimensions rank="1">
+                            <dim index="1" value="n_rois"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+            <!--could add other shapes in the future if necessary
+but cylinders are most frequently used-->
             <field name="distancing_model" type="NX_CHAR">
                 <doc>
                      Which type of distance should be reported for the profile.
@@ -946,49 +1001,24 @@ identifier(NX_UINT):-->
             </field>
             <field name="roi_orientation" type="NX_CHAR">
                 <doc>
-                     In which directions should the tool probe for each ROI.
+                     For each ROI, along which direction should the cylindrical ROI
+                     be oriented if ROIs are placed at triangles of the feature mesh.
                 </doc>
                 <enumeration>
                     <item value="triangle_outer_unit_normal"/>
                 </enumeration>
             </field>
-            <field name="roi_cylinder_center" type="NX_FLOAT" units="NX_LENGTH">
-                <doc>
-                     Explicit x, y, z coordinates (in the paraprobe coordinate system) where ROIs
-                     should be placed if feature is absent.
-                </doc>
-                <dimensions rank="2">
-                    <dim index="1" value="n_rois"/>
-                    <dim index="2" value="3"/>
-                </dimensions>
-            </field>
-            <field name="roi_cylinder_orientation" type="NX_FLOAT" units="NX_LENGTH">
-                <doc>
-                     Explicit outer unit normal which explains into which direction each cylinder ROI
-                     is oriented.
-                </doc>
-                <dimensions rank="2">
-                    <dim index="1" value="n_rois"/>
-                    <dim index="2" value="3"/>
-                </dimensions>
-            </field>
-            <!--
-not yet implemented the case to have ROIs of different size for each triangle of
-the feature mesh
--->
             <field name="roi_cylinder_height" type="NX_FLOAT" units="NX_LENGTH">
                 <doc>
-                     For each ROI, how high (projected on the cylinder axis) should the cylindrical ROI be.
-                     
-                     If roi_cylinder_center and roi_cylinder_orientation have been defined, roi_cylinder_height
-                     and roi_cylinder_radius can be defined as arrays of size (n_rois,) to instruct the tool to
-                     place a collection of ROIs with different size.
-                     Otherwise, roi_cylinder_height and roi_cylinder_radius have to be a scalars.
+                     For each ROI, how high (projected onto the cylinder axis) should
+                     the cylindrical ROI be if ROIs are placed at triangles
+                     of the feature mesh.
                 </doc>
             </field>
             <field name="roi_cylinder_radius" type="NX_FLOAT" units="NX_LENGTH">
                 <doc>
-                     For each ROI, how wide (radius) should the cylindrical ROI be.
+                     For each ROI, how wide (in radius) should the cylindrical ROI
+                     be if ROIs are placed at triangles of the feature mesh.
                 </doc>
             </field>
         </group>

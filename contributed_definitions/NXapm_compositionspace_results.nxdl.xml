@@ -1,0 +1,375 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_compositionspace_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="d">
+            <doc>
+                 The dimensionality of the grid.
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 The cardinality or total number of cells/grid points.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Results of a run with Alaukik Saxena's composition space tool.
+         
+         This is an initial draft application definition for the common NFDI-MatWerk,
+         FAIRmat infrastructure use case IUC09 how to improve the organization and
+         results storage of the composition space tool and make these data at the
+         same time directly understandable for research data management systems
+         like NOMAD Oasis.
+    </doc>
+    <!--by default for appdefs the value of the exists keyword is required unless it is explicitly specified differently-->
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_compositionspace_results"/>
+            </enumeration>
+        </field>
+        <!--can be used for the name of the tool and version but also
+for if desired all the dependencies and libraries-->
+        <group name="program" type="NXprogram" minOccurs="1" maxOccurs="1">
+            <field name="program" type="NX_CHAR">
+                <attribute name="version" type="NX_CHAR"/>
+            </field>
+        </group>
+        <field name="job_pyiron_identifier" type="NX_CHAR" recommended="true">
+            <doc>
+                 TBD, maybe how to link between pyiron state tracking and app state tracking.
+            </doc>
+        </field>
+        <field name="description" type="NX_CHAR" optional="true">
+            <doc>
+                 Disencouraged place for free-text for e.g. comments.
+            </doc>
+        </field>
+        <field name="start_time" type="NX_DATE_TIME" recommended="true">
+            <doc>
+                 ISO 8601 formatted time code with local time zone offset to UTC
+                 information included when the analysis behind this results file
+                 was started, i.e. when composition space tool was started as a process.
+            </doc>
+        </field>
+        <field name="end_time" type="NX_DATE_TIME" recommended="true">
+            <doc>
+                 ISO 8601 formatted time code with local time zone offset to UTC
+                 information included when the analysis behind this results file
+                 were completed and composition space tool exited as a process.
+            </doc>
+        </field>
+        <!--config-->
+        <group name="config" type="NXserialized">
+            <doc>
+                 The path and name of the config file that was used for this analysis.
+                 TBD, this can be e.g. Alaukik's YAML file for composition space.
+            </doc>
+            <field name="type" type="NX_CHAR"/>
+            <field name="path" type="NX_CHAR"/>
+            <field name="algorithm" type="NX_CHAR"/>
+            <field name="checksum" type="NX_CHAR"/>
+        </group>
+        <!--results-->
+        <group type="NXuser" optional="true"/>
+        <group name="coordinate_system_set" type="NXcoordinate_system_set" minOccurs="1" maxOccurs="1">
+            <doc>
+                 Details about coordinate systems (reference frames) used. In atom probe several coordinate
+                 systems have to be distinguished. Names of instances of such :ref:`NXcoordinate_system`
+                 should be documented explicitly and doing so by picking from the
+                 following controlled set of names:
+                 
+                 * composition_space
+                 * lab
+                 * specimen
+                 * laser
+                 * instrument
+                 * detector
+                 * recon
+                 
+                 The aim of this convention is to support users with contextualizing which reference
+                 frame each instance (coordinate system) is. If needed, instances of :ref:`NXtransformations`
+                 are used to detail the explicit affine transformations whereby one can convert
+                 representations between different reference frames.
+                 Inspect :ref:`NXtransformations` for further details.
+            </doc>
+            <group name="compositionspace" type="NXcoordinate_system">
+                <field name="type" type="NX_CHAR"/>
+                <field name="handedness" type="NX_CHAR"/>
+                <field name="x" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
+                <field name="y" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
+                <field name="z" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
+            </group>
+        </group>
+        <group name="voxelization" type="NXprocess">
+            <doc>
+                 Voxelization is the first step of the algorithmic chain that the 
+                 CompositionSpace tool implements. In this step all ion positions are
+                 discretized using a rectangular transfer function to identify the number
+                 of ions/atoms in the dataset of each iontype.
+                 
+                 Using a discretization grid that is larger than the average distance
+                 between reconstructed ion position reduces the computational costs.
+                 This is the key idea of the CompositionSpace tool over other methods
+                 traditionally used in atom probe (e.g. isosurfaces).
+            </doc>
+            <field name="sequence_index" type="NX_POSINT">
+                <enumeration>
+                    <item value="1"/>
+                </enumeration>
+            </field>
+            <!--specify the grid your using and for each ion in which cell i.e. voxel it is
+one could also have a more sophisticated data model where there is some
+fuzziness i.e. if an ML/AI model returns multiple values or a probability
+how likely an ion is in which voxel, for this
+inspect the example of the NXem_ebsd application definition-->
+            <group type="NXcg_grid">
+                <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
+                    <enumeration>
+                        <item value="3"/>
+                    </enumeration>
+                </field>
+                <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
+                <!--default behaviour, if no coordinate system defined, unclear
+if one coordinate system is defined the origin is defined in this cs-->
+                <field name="origin" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="d"/>
+                    </dimensions>
+                </field>
+                <field name="symmetry">
+                    <enumeration>
+                        <item value="cubic"/>
+                    </enumeration>
+                </field>
+                <field name="cell_dimensions" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="d"/>
+                    </dimensions>
+                </field>
+                <field name="extent" type="NX_POSINT" units="NX_UNITLESS">
+                    <dimensions rank="1">
+                        <dim index="1" value="d"/>
+                    </dimensions>
+                </field>
+                <group type="NXtransformations" recommended="true">
+                    <doc>
+                         Reference to or definition of a coordinate system with
+                         which the positions and directions are interpretable.
+                    </doc>
+                </group>
+                <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
+                    <doc>
+                         
+                    </doc>
+                </field>
+                <field name="position" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                         Position of each cell in Euclidean space.
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="c"/>
+                        <dim index="2" value="d"/>
+                    </dimensions>
+                </field>
+                <field name="coordinate" type="NX_INT" optional="true" units="NX_DIMENSIONLESS">
+                    <dimensions rank="2">
+                        <dim index="1" value="c"/>
+                        <dim index="2" value="d"/>
+                    </dimensions>
+                </field>
+                <!--bounding box if needed-->
+                <field name="voxel_identifier" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         For each ion, the identifier of the voxel in which the ion is located.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_ions"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="ionID" type="NXion" minOccurs="0" maxOccurs="unbounded">
+                <field name="name" type="NX_CHAR"/>
+                <field name="weight" type="NX_FLOAT" units="NX_UNITLESS">
+                    <doc>
+                         TODO
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="c"/>
+                    </dimensions>
+                </field>
+            </group>
+            <field name="total" type="NX_FLOAT" units="NX_UNITLESS">
+                <doc>
+                     TODO
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="c"/>
+                </dimensions>
+            </field>
+        </group>
+        <group name="segmentation" type="NXprocess" minOccurs="1" maxOccurs="1">
+            <doc>
+                 Segmentation is the second step of the algorithmic chain that the 
+                 CompositionSpace tool implements. In this step a machine learning model
+                 is used to identify how voxels cluster in composition space to identify
+                 which chemically disjoint phases exists in the atom probe dataset.
+            </doc>
+            <group name="pca" type="NXprocess">
+                <doc>
+                     PCA in the parameter space of iontypes/phases of different chemical nature.
+                </doc>
+                <field name="sequence_index" type="NX_POSINT">
+                    <enumeration>
+                        <item value="2"/>
+                    </enumeration>
+                </field>
+                <group name="results" type="NXdata">
+                    <attribute name="signal" type="NX_CHAR"/>
+                    <attribute name="axes" type="NX_CHAR"/>
+                    <attribute name="AXISNAME" type="NX_CHAR"/>
+                    <field name="axis_explained_variance" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                        <doc>
+                             TODO
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="i"/>
+                        </dimensions>
+                    </field>
+                    <field name="axis_pca_dimension" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             TODO
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="i"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+            <group name="ic_opt" type="NXprocess">
+                <doc>
+                     Information criterion minimization.
+                </doc>
+                <field name="sequence_index" type="NX_POSINT">
+                    <enumeration>
+                        <item value="3"/>
+                    </enumeration>
+                </field>
+                <group name="cluster_analysisID" type="NXobject">
+                    <doc>
+                         TODO
+                    </doc>
+                    <field name="n_ic_cluster" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             TODO
+                        </doc>
+                    </field>
+                    <field name="y_pred" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             TODO
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="c"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+        </group>
+        <group name="clustering" type="NXprocess" minOccurs="1" maxOccurs="1">
+            <doc>
+                 Clustering is the third step of the algorithmic chain that the CompositionSpace
+                 tool implements. In this step the different voxelized regions in the dataset with
+                 eventually different chemical nature are analyzed if they are distributed in
+                 connected groups of voxels with the same chemical nature.
+                 Using the discretization grid from the first step as the support, this enables
+                 to prepare for the fourth step. In the fourth step the interfaces between
+                 identified groups of different chemical nature are triangulated.
+                 
+                 These triangulated network of interfaces between regions of different chemical
+                 nature is the final data structure that the CompositionSpace tool yields.
+                 Subsequently, this mesh can be post-processed, similarly like meshes that are
+                 obtained from isosurface-based approaches, to perform line profile analyses.
+            </doc>
+            <field name="sequence_index" type="NX_POSINT">
+                <enumeration>
+                    <item value="3"/>
+                </enumeration>
+            </field>
+            <group name="cluster_analysisID" type="NXobject" minOccurs="0" maxOccurs="unbounded">
+                <field name="epsilon" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         TODO
+                    </doc>
+                </field>
+                <field name="min_samples" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         TODO
+                    </doc>
+                </field>
+                <field name="target" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         TODO total number of (phases) distinguished.
+                    </doc>
+                </field>
+                <field name="labels" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         TODO raw labels output of the DBScan clustering algorithm. Length of array varies depending on how
+                         many voxels of the grid were identified of the targetted
+                         phase/chemical nature.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="k"/>
+                    </dimensions>
+                </field>
+            </group>
+        </group>
+        <!-- the section above needs refactoring by MatWerk colleagues-->
+        <group name="profiling" type="NXcs_profiling" optional="true">
+            <field name="current_working_directory" type="NX_CHAR" recommended="true"/>
+            <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
+            <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+            <field name="total_elapsed_time" type="NX_NUMBER"/>
+        </group>
+    </group>
+    <!--number_of_processes(NX_POSINT):
+number_of_threads(NX_POSINT):
+number_of_gpus(NX_POSINT):-->
+</definition>
