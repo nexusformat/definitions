@@ -46,8 +46,8 @@ def get_app_defs_names():
         Path(nexus_def_path) / "contributed_definitions" / "*.nxdl.xml"
     )
 
-    files = sorted(glob(app_def_path_glob))
-    for nexus_file in sorted(contrib_def_path_glob):
+    files = sorted(glob(str(app_def_path_glob)))
+    for nexus_file in sorted(glob(str(contrib_def_path_glob))):
         root = get_xml_root(nexus_file)
         if root.attrib["category"] == "application":
             files.append(nexus_file)
