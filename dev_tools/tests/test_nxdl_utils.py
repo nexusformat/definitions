@@ -1,6 +1,4 @@
-"""This is a code that performs several tests on nexus tool
-
-"""
+"""This is a code that performs several tests on nexus tool"""
 
 #
 # Copyright The NOMAD Authors.
@@ -23,6 +21,7 @@
 import os
 
 import lxml.etree as ET
+import pytest
 
 from ..utils import nxdl_utils as nexus
 
@@ -136,3 +135,60 @@ def test_get_inherited_nodes():
         nx_name="NXiv_temp",
     )
     assert len(elist) == 4
+
+
+@pytest.mark.parametrize(
+    "hdf_name,concept_name,should_fit",
+    [
+        ("source_pump", "sourceType", False),
+        ("source_pump", "sourceTYPE", True),
+        ("source pump", "sourceTYPE", False),
+        ("source", "sourceTYPE", False),
+        ("source123", "SOURCE", True),
+        ("1source", "SOURCE", True),
+        ("_source", "SOURCE", True),
+        ("same_name", "same_name", True),
+        ("angular_energy_resolution", "angularNresolution", True),
+        ("angularresolution", "angularNresolution", False),
+        ("Name with some whitespaces in it", "ENTRY", False),
+        ("simple_name", "TEST", True),
+        (".test", "TEST", False),
+    ],
+)
+def test_namefitting(hdf_name, concept_name, should_fit):
+    """Test namefitting of nexus concept names"""
+    if should_fit:
+        assert nexus.get_nx_namefit(hdf_name, concept_name) > -1
+    else:
+        assert nexus.get_nx_namefit(hdf_name, concept_name) == -1
+
+
+@pytest.mark.parametrize(
+    "hdf_name,concept_name, score",
+    [
+        ("test_name", "TEST_name", 9),
+        ("te_name", "TEST_name", 7),
+        ("my_other_name", "TEST_name", 5),
+        ("test_name", "test_name", 18),
+        ("test_other", "test_name", -1),
+        ("my_fancy_yet_long_name", "my_SOME_name", 8),
+    ],
+)
+def test_namefitting_scores(hdf_name, concept_name, score):
+    """Test namefitting of nexus concept names"""
+    assert nexus.get_nx_namefit(hdf_name, concept_name) == score
+
+
+@pytest.mark.parametrize(
+    "better_fit,better_ref,worse_fit,worse_ref",
+    [
+        ("sourcetype", "sourceTYPE", "source_pump", "sourceTYPE"),
+        ("source_pump", "sourceTYPE", "source_pump", "TEST"),
+    ],
+)
+def test_namefitting_precedence(better_fit, better_ref, worse_fit, worse_ref):
+    """Test if namefitting follows proper precedence rules"""
+
+    assert nexus.get_nx_namefit(better_fit, better_ref) > nexus.get_nx_namefit(
+        worse_fit, worse_ref
+    )
