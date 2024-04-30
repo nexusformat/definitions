@@ -445,7 +445,7 @@ def get_required_string(nxdl_elem):
 def write_doc_string(logger, doc, attr):
     """Simple function that prints a line in the logger if doc exists"""
     if doc:
-        logger.debug("@%s [NX_CHAR]", attr)
+        logger.debug(f"@{attr} [NX_CHAR]")
     return logger, doc, attr
 
 
