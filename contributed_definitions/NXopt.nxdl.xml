@@ -24,7 +24,19 @@
 <!--
 04/2024
 Extension of the Draft Version (05/2023) of a NeXus application definition which
-serves as a template for various optical spectroscopy experiments-->
+serves as a template for various optical spectroscopy experiments
+
+TODO:
+- Merge reference_frames with angle_reference_frame
+- Rework instrument_calibration_DEVICE - use NXcalibration?
+- Beam polarizations: Own Polarization concept with angle or from NXbeam via beam coordinates? (solve reference frame problem first)
+- Describe angle_of_detection by NXtransformations
+- remove NXmonchromator? as it is already in NXinstrument
+- Add NXlens_opt and NXwaveplate to NXinstrument?
+- Make sample stage_stage(NXmanipulator)/reference_frame via NXtransformations
+- Add properties from NXlens_opt from NXopt to NXlens_opt base class
+- Make polfilter_TYPE(NXbeam_device) own base class -\-> rework NXpolarizer_opt. and add them to NXinstrument.
+- Make spectralfilter_TYPE(NXbeam_device) own base class -\-> extend NXfilter?  and add them to NXinstrument.-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXopt" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
@@ -109,9 +121,9 @@ serves as a template for various optical spectroscopy experiments-->
                  principal investigator.
                  (ii) The identifier enables to link experiments to e.g. proposals.
             </doc>
-            <field name="service" type="NX_CHAR"/>
-            <field name="identifier" type="NX_CHAR"/>
-            <field name="is_persistent" type="NX_BOOLEAN"/>
+            <field name="service" type="NX_CHAR" optional="true"/>
+            <field name="identifier" type="NX_CHAR" recommended="true"/>
+            <field name="is_persistent" type="NX_BOOLEAN" optional="true"/>
         </group>
         <field name="experiment_description" optional="true">
             <doc>
@@ -130,7 +142,7 @@ serves as a template for various optical spectroscopy experiments-->
             <doc>
                  Specify the type of the optical experiment.
                  
-                 Chose other if non of these methods are suitable. You may specify
+                 Chose other if none of these methods are suitable. You may specify
                  fundamental characteristics or properties in the experimental sub-type.
             </doc>
             <enumeration>
@@ -142,7 +154,7 @@ serves as a template for various optical spectroscopy experiments-->
                 <item value="other"/>
             </enumeration>
         </field>
-        <field name="experiment_sub_type">
+        <field name="experiment_sub_type" optional="true">
             <doc>
                  Specify a special property or characteristic of the experiment, which specifies
                  the generic experiment type.
@@ -158,71 +170,35 @@ serves as a template for various optical spectroscopy experiments-->
 experimental technique -\-> pump-probe, parameters seperated (i.e. time, space)?
 The above listed things are related to beam properties? This is different
 compared to temperature or pressure. Is this a useful distinction?-->
-        <field name="experiment_type_other">
+        <field name="experiment_type_other" optional="true">
             <doc>
-                 If "other" was selected in "experiment_type", specify the experiment here
-                 with a free text name, which is knwon in the respective community of interest.
+                 If "other" was selected in "experiment_type" and/or in "experiment_sub_type",
+                 specify the experiment here with a free text name, which is knwon in the
+                 respective community of interest.
             </doc>
         </field>
+        <!--
+This should be extended later and hopefully replace angle_reference_frame
+and sample_normal_direction.
+Required reference frames:
+Sample normal, beam_z_axis, sample_stage
+-->
+        <group name="reference_frames" type="NXcoordinate_system_set" optional="true">
+            <doc>
+                 Description of one or more coordinate systems that are specific to the
+                 experiment.
+            </doc>
+        </group>
         <group type="NXuser" minOccurs="0" maxOccurs="unbounded">
             <doc>
                  Contact information and eventually details of at persons who
                  performed the measurements. This can be for example the principal
-                 investigator or student.
+                 investigator or student. Examples are: name, affiliation, address, telephone
+                 number, email, role as well as identifiers such as orcid or similar. 
                  It is recommended to add multiple users if relevant.
                  
                  Due to data privacy concerns, there is no minimum requirement.
             </doc>
-            <field name="name" type="NX_CHAR" recommended="true">
-                <doc>
-                     Given (first) name and surname of the user.
-                </doc>
-            </field>
-            <field name="affiliation" type="NX_CHAR" optional="true">
-                <doc>
-                     Name of the affiliation of the user at the point in time
-                     when the experiment was performed.
-                </doc>
-            </field>
-            <field name="address" type="NX_CHAR" optional="true">
-                <doc>
-                     Postal address of the user's affiliation.
-                </doc>
-            </field>
-            <field name="email" type="NX_CHAR" optional="true">
-                <doc>
-                     Email address of the user at the point in time when the experiment
-                     was performed. Writing the most permanently used email is recommended.
-                </doc>
-            </field>
-            <field name="orcid" type="NX_CHAR" recommended="true">
-                <doc>
-                     Author ID defined by https://orcid.org/.
-                </doc>
-            </field>
-            <field name="telephone_number" type="NX_CHAR" optional="true">
-                <doc>
-                     (Business) (tele)phone number of the user at the point
-                     in time when the experiment was performed.
-                </doc>
-            </field>
-            <field name="role" type="NX_CHAR" optional="true">
-                <doc>
-                     Which role does the user have in the place and at the point
-                     in time when the experiment was performed? Technician operating
-                     the setup, student, PhD-student, postdoc, principle investigator, or guest
-                     are common examples.
-                </doc>
-            </field>
-            <group name="identifier" type="NXidentifier" recommended="true">
-                <doc>
-                     Service as another mean of identification of a user other than by its name.
-                     Examples could be an ORCID or social media account of the user.
-                </doc>
-                <field name="service" type="NX_CHAR"/>
-                <field name="identifier" type="NX_CHAR"/>
-                <field name="is_persistent" type="NX_BOOLEAN"/>
-            </group>
         </group>
         <group type="NXinstrument">
             <doc>
@@ -249,14 +225,7 @@ compared to temperature or pressure. Is this a useful distinction?-->
                 <field name="vendor" recommended="true"/>
                 <field name="model" recommended="true"/>
                 <field name="identifier" recommended="true"/>
-                <field name="construction_year" type="NX_DATE_TIME" recommended="true">
-                    <doc>
-                         Datetime of setup's initial construction. This refers to the date of
-                         first measurement after new construction  or relocation of the setup.
-                         Should be a ISO8601 date/time stamp. It is recommended to add an explicit time zone,
-                         otherwise the local time zone is assumed per ISO8601.
-                    </doc>
-                </field>
+                <field name="construction_year" type="NX_DATE_TIME" optional="true"/>
             </group>
             <group name="software_TYPE" type="NXprogram" recommended="true">
                 <field name="program">
@@ -267,7 +236,7 @@ compared to temperature or pressure. Is this a useful distinction?-->
                          "software_detector" or "software_stage" to specify the respective
                          program or software components.
                     </doc>
-                    <attribute name="version">
+                    <attribute name="version" recommended="true">
                         <doc>
                              Either version with build number, commit hash, or description of a
                              (online) repository where the source code of the program and build
@@ -284,19 +253,9 @@ compared to temperature or pressure. Is this a useful distinction?-->
                     </attribute>
                 </field>
             </group>
-            <!--general properties and reference frames-->
-            <!--
-This should be extended later and hopefully replace angle_reference_frame
-and sample_normal_direction.
-Required reference frames:
-Sample normal, beam_z_axis, sample_stage
--->
-            <group name="reference_frames" type="NXcoordinate_system_set" optional="true">
-                <doc>
-                     Description of one or more coordinate systems that are specific to the
-                     experiment.
-                </doc>
-            </group>
+            <!--The angle_reference_frame will be connected later to general reference frames
+For this this solution enables the description of the beam relations for
+different optical spectroscopy methods in the reference frame they are used to-->
             <field name="angle_reference_frame">
                 <doc>
                      Defines the reference frame which is used to describe the sample orientation
@@ -354,7 +313,9 @@ geographic north pole: harder to determine? (What about GPS?), but constant with
             <group name="instrument_calibration_DEVICE" type="NXsubentry" recommended="true">
                 <doc>
                      Pre-calibration of an arbitrary device of the instrumental setup, which
-                     has the name DEVICE. You can specify here at which point
+                     has the name DEVICE. You can specify here how, at which time by which method
+                     the calibration was done. As well the accuracy and a link to the calibration
+                     dataset.
                 </doc>
                 <field name="device_path" recommended="true">
                     <doc>
@@ -419,27 +380,29 @@ This information may be as well stored in an incident and detection beam-->
                 <doc>
                      Beam characteristics between two beam_devices.
                      
-                     It is recommended, to at least define one incident and one detection beam.
-                     If this beam is directly connected to an source, chose here the same
+                     It is recommended to at least define one incident and one detection beam.
+                     If this beam is directly connected to a source, chose here the same
                      name appendix as for the NXsource (e.g. TYPE=532nm)
                 </doc>
-                <field name="incident_wavelength" type="NX_FLOAT" units="NX_WAVELENGTH"/>
-                <field name="incident_wavelength_spread" type="NX_NUMBER" recommended="true" units="NX_WAVELENGTH"/>
-                <field name="incident_polarization" type="NX_NUMBER" recommended="true" units="NX_ANY"/>
+                <field name="incident_wavelength" type="NX_NUMBER" recommended="true"/>
+                <field name="incident_wavelength_spread" type="NX_NUMBER" recommended="true"/>
+                <field name="incident_polarization" type="NX_NUMBER" recommended="true"/>
                 <field name="extent" type="NX_FLOAT" recommended="true"/>
-                <field name="associated_source" type="NX_CHAR" recommended="true">
+                <field name="associated_source" type="NX_CHAR" optional="true">
                     <doc>
-                         The path to a the source, which emitted this beam.
-                         Should be named with the same appendix as the source, e.g.,
-                         for TYPE=532nmlaser, there should as well be
-                         a NXsource named "source_532nmlaser" aside of this Beam
-                         instance named "beam_532nmlaser"
+                         The path to the source which emitted this beam.
+                         
+                         Is recommended, if the previous optical element is a photon source.
+                         In this way, the properties of the laser or light souce can be described
+                         and associated.
+                         The beam should be named with the same appendix as the source, e.g.,
+                         for TYPE=532nmlaser, there should be both a NXsource named
+                         "source_532nmlaser" and a NXbeam named "beam_532nmlaser".
                          
                          Example: /entry/instrument/source_532nmlaser
                     </doc>
                 </field>
-                <!--The two polarization descriptions may be completely replaced by
-incident_polarization-->
+                <!--The two polarization descriptions may be completely replaced by polarization-->
                 <field name="beam_polarization_type" optional="true">
                     <enumeration>
                         <item value="linear"/>
@@ -464,12 +427,8 @@ incident_polarization-->
                     </doc>
                 </field>
             </group>
-            <!--Discussion with florian:
-The user wants to use simple parameters, which they are used to.
-Though, via NXtransformations in principle maximum flexibility can be provided,
-even for unusual and complex experimental setups.
-The solution from mpes was: simple "front end" by only stating one angle
-with the "backend" to be customizable via NXtransformations.
+            <!--The given angles may be extended similar to NXmpes, to allow a simple
+as well as an arbitrary description via NXtransformations
 
 fundamental orientation of incident and detection beam-->
             <!--
@@ -540,6 +499,9 @@ this might require a different reference frame.
                         <item value="dye-laser"/>
                         <item value="broadband tunable light source"/>
                         <item value="X-ray Source"/>
+                        <item value="arc lamp"/>
+                        <item value="halogen lamp"/>
+                        <item value="LED"/>
                         <item value="other"/>
                     </enumeration>
                 </field>
@@ -549,18 +511,6 @@ this might require a different reference frame.
                     </doc>
                 </field>
                 <field name="name" recommended="true"/>
-                <field name="source_polarization" recommended="true">
-                    <doc>
-                         The type of light polarization produced by the source.
-                    </doc>
-                    <enumeration>
-                        <item value="linear"/>
-                        <item value="unpolarized"/>
-                        <item value="circular"/>
-                        <item value="elliptically"/>
-                        <item value="other"/>
-                    </enumeration>
-                </field>
                 <group name="device_information" type="NXfabrication">
                     <doc>
                          Details about the device information.
@@ -571,13 +521,19 @@ this might require a different reference frame.
                          The path to a beam emitted by this source.
                          Should be named with the same appendix, e.g.,
                          for TYPE=532nmlaser, there should as well be
-                         a NXbeam named "beam_532nmlaser" aside of this source
+                         a NXbeam named "beam_532nmlaser" together with this source
                          instance named "source_532nmlaser"
                          
                          Example: /entry/instrument/beam_532nmlaser
                     </doc>
                 </field>
-                <group name="device_characteristics" type="NXdata"/>
+                <group name="device_characteristics" type="NXdata" optional="true">
+                    <doc>
+                         You may add here data which characterises the source in more detail,
+                         such as spectral power density, power dependency on line width, line-shape
+                         of the laser line, etc.
+                    </doc>
+                </group>
             </group>
             <group name="detector_TYPE" type="NXdetector" minOccurs="1" maxOccurs="unbounded">
                 <field name="detector_channel_type" recommended="true">
@@ -598,9 +554,20 @@ this might require a different reference frame.
                         <item value="Bolometer"/>
                         <item value="Golay Detectors"/>
                         <item value="Pyroelectric Detector"/>
+                        <item value="other"/>
                     </enumeration>
                 </field>
-                <group name="device_characteristics" type="NXdata"/>
+                <field name="detector_type_other" optional="true">
+                    <doc>
+                         Type of detector, if "other" was selected in "detector_type".
+                    </doc>
+                </field>
+                <group name="device_characteristics" type="NXdata" optional="true">
+                    <doc>
+                         You may add here data which characterizes the detector, such as quantum
+                         efficiency as function of wavelength or angular dependency of intenty.
+                    </doc>
+                </group>
                 <group name="device_information" type="NXfabrication" recommended="true">
                     <field name="vendor" recommended="true"/>
                     <field name="model" recommended="true"/>
@@ -653,99 +620,54 @@ this might require a different reference frame.
                 </group>
             </group>
             <group type="NXmonochromator" optional="true">
-                <group name="device_characteristics" type="NXdata"/>
+                <group name="device_characteristics" type="NXdata" optional="true">
+                    <doc>
+                         Characteristics of the monochromator as diffraction efficiency as 
+                         wavelength and polarization dependence
+                    </doc>
+                </group>
+                <group name="device_information" type="NXfabrication" recommended="true">
+                    <field name="vendor" recommended="true"/>
+                    <field name="model" recommended="true"/>
+                    <field name="identifier" recommended="true"/>
+                </group>
             </group>
             <group type="NXlens_opt" optional="true">
+                <doc>
+                     This is the optical element used to focus or collect light. This may
+                     be a genereic lens or microcope objectives which are used for the
+                     Raman scattering process.
+                </doc>
+                <field name="type">
+                    <enumeration>
+                        <item value="objective"/>
+                        <item value="lens"/>
+                        <item value="glass fiber"/>
+                        <item value="none"/>
+                        <item value="other"/>
+                    </enumeration>
+                </field>
+                <field name="numerical_aperture" type="NX_NUMBER">
+                    <doc>
+                         The numerical aperture of the used incident light optics.
+                    </doc>
+                </field>
+                <field name="magnification" type="NX_FLOAT">
+                    <doc>
+                         Magnification of the lens.
+                    </doc>
+                </field>
+                <group name="device_information" type="NXfabrication" recommended="true">
+                    <doc>
+                         Details about the optical component, if available.
+                    </doc>
+                </group>
                 <group name="device_characteristics" type="NXdata"/>
             </group>
             <group type="NXwaveplate" optional="true">
                 <group name="device_characteristics" type="NXdata"/>
             </group>
-            <group name="WINDOW" type="NXaperture" optional="true">
-                <doc>
-                     For environmental measurements, the environment (liquid, vapor
-                     etc.) is enclosed in a cell, which has windows both in the
-                     direction of the source (entry window) and the detector (exit
-                     window) (looking from the sample). In case that the entry and exit
-                     windows are not the same type and do not have the same properties,
-                     use a second 'WINDOW(MXaperture)' field.
-                     
-                     The windows also add a phase shift to the light altering the
-                     measured signal. This shift has to be corrected based on measuring
-                     a known sample (reference sample) or the actual sample of interest
-                     in the environmental cell. State if a window correction has been
-                     performed in 'window_effects_corrected'. Reference data should be
-                     considered as a separate experiment, and a link to the NeXus file
-                     should be added in reference_data_link in measured_data.
-                     
-                     The window is considered to be a part of the sample stage but also
-                     beam path. Hence, its position within the beam path should be
-                     defined by the 'depends_on' field.
-                </doc>
-                <field name="window_effects_corrected" type="NX_BOOLEAN">
-                    <doc>
-                         Was a window correction performed? If 'True' describe the window
-                         correction procedure in 'window_correction/procedure'.
-                    </doc>
-                </field>
-                <group name="window_correction" type="NXprocess" optional="true">
-                    <doc>
-                         Was a window correction performed? If 'True' describe the
-                         window correction procedure in ''
-                    </doc>
-                    <field name="procedure">
-                        <doc>
-                             Describe when (before or after the main measurement + time
-                             stamp in 'date') and how the window effects have been
-                             corrected, i.e. either mathematically or by performing a
-                             reference measurement. In the latter case, provide the link to
-                             to the reference data in 'reference_data_link'.
-                        </doc>
-                    </field>
-                    <field name="reference_data_link" optional="true">
-                        <doc>
-                             Link to the NeXus file which describes the reference data if a
-                             reference measurement for window correction was performed.
-                             Ideally, the reference measurement was performed on a reference
-                             sample and on the same sample, and using the same conditions as
-                             for the actual measurement with and without windows. It should
-                             have been conducted as close in time to the actual measurement
-                             as possible.
-                        </doc>
-                    </field>
-                </group>
-                <field name="material" type="NX_CHAR">
-                    <doc>
-                         The material of the window.
-                    </doc>
-                    <enumeration>
-                        <item value="quartz"/>
-                        <item value="diamond"/>
-                        <item value="calcium fluoride"/>
-                        <item value="zinc selenide"/>
-                        <item value="thallium bromoiodide"/>
-                        <item value="alkali halide compound"/>
-                        <item value="Mylar"/>
-                        <item value="other"/>
-                    </enumeration>
-                </field>
-                <field name="material_other" type="NX_CHAR" optional="true">
-                    <doc>
-                         If you specified 'other' as material, decsribe here what it is.
-                    </doc>
-                </field>
-                <field name="thickness" type="NX_FLOAT" units="NX_LENGTH">
-                    <doc>
-                         Thickness of the window.
-                    </doc>
-                </field>
-                <field name="orientation_angle" type="NX_FLOAT" units="NX_ANGLE">
-                    <doc>
-                         Angle of the window normal (outer) vs. the substrate normal
-                         (similar to the angle of incidence).
-                    </doc>
-                </field>
-            </group>
+            <group type="NXopt_window"/>
             <field name="sample_medium_refractive_indices" type="NX_FLOAT" optional="true" units="NX_UNITLESS">
                 <doc>
                      Array of pairs of complex refractive indices n + ik of the medium
@@ -758,6 +680,90 @@ this might require a different reference frame.
                     <dim index="2" value="N_spectrum"/>
                 </dimensions>
             </field>
+            <group name="polfilter_TYPE" type="NXbeam_device" optional="true">
+                <doc>
+                     polarization filter to prepare light to be measured or to be incident 
+                     on the sample.
+                     Genereric polarization filter porperties may be implemented via NXfilter_pol
+                     at a later stage.
+                </doc>
+                <field name="filter_mechanism" type="NX_CHAR" optional="true">
+                    <doc>
+                         Physical principle of the polarization filter used to create a
+                         defined incident or scattered light state.
+                    </doc>
+                    <enumeration>
+                        <item value="Polarization by Fresnel reflection"/>
+                        <item value="Birefringent polarizers"/>
+                        <item value="Thin film polarizers"/>
+                        <item value="Wire-grid polarizers"/>
+                        <item value="other"/>
+                    </enumeration>
+                </field>
+                <field name="specific_polarization_filter_type" type="NX_CHAR" optional="true">
+                    <doc>
+                         Specific name or type of the polarizer used.
+                         
+                         Free text, for example: Glan-Thompson, Glan-Taylor, Rochon Prism, Wollaston
+                         Polarizer...
+                    </doc>
+                </field>
+                <group name="device_information" type="NXfabrication"/>
+            </group>
+            <group name="spectralfilter_TYPE" type="NXbeam_device" optional="true">
+                <doc>
+                     Spectral filter used to modify properties of the scattered or incident light.
+                     Genereric spectral filter porperties may be implemented via NXfilter_spec
+                     at a later stage.
+                </doc>
+                <field name="filter_type" optional="true">
+                    <doc>
+                         Type of laserline filter used to supress the laser, if measurements
+                         close to the laserline are performed.
+                    </doc>
+                    <enumeration>
+                        <item value="long-pass filter"/>
+                        <item value="short-pass filter"/>
+                        <item value="Notch filter"/>
+                        <item value="reflection filter"/>
+                        <item value="neutral density filter"/>
+                        <item value="other"/>
+                    </enumeration>
+                </field>
+                <field name="intended_use" optional="true">
+                    <doc>
+                         Type of laserline filter used to supress the laser, if measurements
+                         close to the laserline are performed.
+                    </doc>
+                    <enumeration>
+                        <item value="laser line cleanup"/>
+                        <item value="raylight line removal"/>
+                        <item value="spectral filtering"/>
+                        <item value="intensity manipulation"/>
+                        <item value="other"/>
+                    </enumeration>
+                </field>
+                <group name="filter_characteristics" type="NXdata" optional="true">
+                    <doc>
+                         Properties of the spectral filter such as wavelength dependent Transmission
+                         or reflectivity.
+                    </doc>
+                    <attribute name="characteristics_type" optional="true">
+                        <doc>
+                             Which property is used to form the spectral properties of light,
+                             i.e. transmission or reflection properties.
+                        </doc>
+                        <enumeration>
+                            <item value="transmission"/>
+                            <item value="reflection"/>
+                        </enumeration>
+                    </attribute>
+                </group>
+                <group name="device_information" type="NXfabrication"/>
+            </group>
+            <!--In the following - Auxillary NXbeam_devices are defined, to enable a
+beam path description of the setup, while using the up now available
+Nexus definitions for source, detector, monochromator, ...-->
             <!--beam devices for beam path description-->
             <group type="NXbeam_device" minOccurs="0" maxOccurs="unbounded">
                 <doc>
@@ -815,6 +821,7 @@ this might require a different reference frame.
                          of the stage type.
                     </doc>
                 </field>
+                <!--This is for now a placeholder and should be specified with NXtransformation-->
                 <field name="reference_frame" optional="true">
                     <doc>
                          This is a placeholder, to describe the relation between the samples
@@ -854,38 +861,15 @@ this might require a different reference frame.
                         <item value="temperature"/>
                     </enumeration>
                 </field>
-                <field name="cryo_or_heater" recommended="true">
+                <field name="cooler_or_heater" recommended="true">
                     <enumeration>
-                        <item value="cryostat"/>
+                        <item value="cooler"/>
                         <item value="heater"/>
                     </enumeration>
                 </field>
                 <field name="type" optional="true">
                     <doc>
                          Hardware used for actuation, i.e. laser, gas lamp, filament, resistive
-                    </doc>
-                </field>
-                <group type="NXpid">
-                    <field name="setpoint" type="NX_FLOAT" recommended="true"/>
-                </group>
-                <group name="device_information" type="NXfabrication"/>
-            </group>
-            <group name="PARAMETER_SENSOR" type="NXsensor" recommended="true">
-                <field name="name" recommended="true"/>
-                <field name="measurement"/>
-                <field name="type" optional="true"/>
-                <field name="value" type="NX_FLOAT"/>
-                <group name="device_information" type="NXfabrication"/>
-            </group>
-            <group name="PARAMETER_ACTUATOR" type="NXactuator" optional="true">
-                <doc>
-                     Control of arbitrary parameter - compare to temperature above.
-                </doc>
-                <field name="name" recommended="true"/>
-                <field name="physical_quantity"/>
-                <field name="type" optional="true">
-                    <doc>
-                         Hardware used for actuation
                     </doc>
                 </field>
                 <group type="NXpid">
@@ -909,7 +893,7 @@ this might require a different reference frame.
             </field>
             <field name="sample_id" recommended="true">
                 <doc>
-                     Uniquely identifying name of the sample.
+                     Uniquely identifying ID of the sample.
                 </doc>
             </field>
             <field name="physical_form" recommended="true">
@@ -923,18 +907,6 @@ this might require a different reference frame.
                 <doc>
                      Free text description of the sample.
                 </doc>
-            </field>
-            <field name="situation" recommended="true">
-                <enumeration>
-                    <item value="air"/>
-                    <item value="vacuum"/>
-                    <item value="inert atmosphere"/>
-                    <item value="oxidising atmosphere"/>
-                    <item value="reducing atmosphere"/>
-                    <item value="sealed can"/>
-                    <item value="water"/>
-                    <item value="other"/>
-                </enumeration>
             </field>
             <field name="chemical_formula" recommended="true">
                 <doc>
@@ -968,14 +940,6 @@ this might require a different reference frame.
                 <doc>
                      A set of activities that occurred to the sample prior to/during the experiment.
                 </doc>
-                <group name="history_id" type="NXidentifier">
-                    <doc>
-                         A reference to the location or a unique (globally
-                         persistent) identifier (e.g.) of e.g. another file which gives
-                         as many as possible details of the material, its microstructure,
-                         and its thermo-chemo-mechanical processing/preparation history.
-                    </doc>
-                </group>
             </group>
             <group name="temperature" type="NXenvironment" recommended="true">
                 <doc>
@@ -993,9 +957,9 @@ this might require a different reference frame.
                          This should be a link to /entry/instrument/manipulator/sample_heater.
                     </doc>
                 </group>
-                <group name="cryostat" type="NXactuator" optional="true">
+                <group name="sample_cooler" type="NXactuator" optional="true">
                     <doc>
-                         Cryostat for cooling the sample.
+                         Device for cooling the sample (Cryostat, Airflow cooler, etc.).
                          This should be a link to /entry/instrument/manipulator/cryostat.
                     </doc>
                 </group>
@@ -1006,8 +970,18 @@ this might require a different reference frame.
                      and controlled by a device. Examples are pressure, voltage, magnetic field etc.
                      Similar to the temperautre description of the sample.
                 </doc>
-                <group type="NXsensor" optional="true"/>
-                <group type="NXactuator" optional="true"/>
+                <field name="sample_medium" recommended="true">
+                    <enumeration>
+                        <item value="air"/>
+                        <item value="vacuum"/>
+                        <item value="inert atmosphere"/>
+                        <item value="oxidising atmosphere"/>
+                        <item value="reducing atmosphere"/>
+                        <item value="sealed can"/>
+                        <item value="water"/>
+                        <item value="other"/>
+                    </enumeration>
+                </field>
             </group>
             <field name="thickness" type="NX_NUMBER" optional="true" units="NX_LENGTH">
                 <doc>

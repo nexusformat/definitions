@@ -28,6 +28,18 @@ symbols:
 # 04/2024
 # Extension of the Draft Version (05/2023) of a NeXus application definition which
 # serves as a template for various optical spectroscopy experiments
+#
+# TODO:
+# - Merge reference_frames with angle_reference_frame
+# - Rework instrument_calibration_DEVICE - use NXcalibration?
+# - Beam polarizations: Own Polarization concept with angle or from NXbeam via beam coordinates? (solve reference frame problem first)
+# - Describe angle_of_detection by NXtransformations
+# - remove NXmonchromator? as it is already in NXinstrument
+# - Add NXlens_opt and NXwaveplate to NXinstrument?
+# - Make sample stage_stage(NXmanipulator)/reference_frame via NXtransformations
+# - Add properties from NXlens_opt from NXopt to NXlens_opt base class
+# - Make polfilter_TYPE(NXbeam_device) own base class --> rework NXpolarizer_opt. and add them to NXinstrument.
+# - Make spectralfilter_TYPE(NXbeam_device) own base class --> extend NXfilter?  and add them to NXinstrument.
 type: group
 NXopt(NXobject):
   (NXentry):
@@ -63,8 +75,11 @@ NXopt(NXobject):
         principal investigator.
         (ii) The identifier enables to link experiments to e.g. proposals.
       service(NX_CHAR):
+        exists: optional
       identifier(NX_CHAR):
+        exists: recommended
       is_persistent(NX_BOOLEAN):
+        exists: optional
     experiment_description:
       exists: optional
       doc: |
@@ -81,10 +96,11 @@ NXopt(NXobject):
       doc: |
         Specify the type of the optical experiment.
         
-        Chose other if non of these methods are suitable. You may specify
+        Chose other if none of these methods are suitable. You may specify
         fundamental characteristics or properties in the experimental sub-type.
       enumeration: [ellipsometry, Raman spectroscopy, photoluminescence, transmission spectroscopy, reflection spectroscopy, other]
     experiment_sub_type:
+      exists: optional
       doc: |
         Specify a special property or characteristic of the experiment, which specifies
         the generic experiment type.
@@ -94,60 +110,30 @@ NXopt(NXobject):
     # The above listed things are related to beam properties? This is different
     # compared to temperature or pressure. Is this a useful distinction?
     experiment_type_other:
+      exists: optional
       doc: |
-        If "other" was selected in "experiment_type", specify the experiment here
-        with a free text name, which is knwon in the respective community of interest.
+        If "other" was selected in "experiment_type" and/or in "experiment_sub_type",
+        specify the experiment here with a free text name, which is knwon in the
+        respective community of interest.
+    reference_frames(NXcoordinate_system_set):
+      # This should be extended later and hopefully replace angle_reference_frame
+      # and sample_normal_direction.
+      # Required reference frames:
+      # Sample normal, beam_z_axis, sample_stage
+      exists: optional
+      doc: |
+        Description of one or more coordinate systems that are specific to the
+        experiment.
     (NXuser):
       exists: [min, 0, max, infty]
       doc: |
         Contact information and eventually details of at persons who
         performed the measurements. This can be for example the principal
-        investigator or student.
+        investigator or student. Examples are: name, affiliation, address, telephone
+        number, email, role as well as identifiers such as orcid or similar. 
         It is recommended to add multiple users if relevant.
 
         Due to data privacy concerns, there is no minimum requirement.
-      name(NX_CHAR):
-        exists: recommended
-        doc: |
-          Given (first) name and surname of the user.
-      affiliation(NX_CHAR):
-        exists: optional
-        doc: |
-          Name of the affiliation of the user at the point in time
-          when the experiment was performed.
-      address(NX_CHAR):
-        exists: optional
-        doc: |
-          Postal address of the user's affiliation.
-      email(NX_CHAR):
-        exists: optional
-        doc: |
-          Email address of the user at the point in time when the experiment
-          was performed. Writing the most permanently used email is recommended.
-      orcid(NX_CHAR):
-        exists: recommended
-        doc: |
-          Author ID defined by https://orcid.org/.
-      telephone_number(NX_CHAR):
-        exists: optional
-        doc: |
-          (Business) (tele)phone number of the user at the point
-          in time when the experiment was performed.
-      role(NX_CHAR):
-        exists: optional
-        doc: |
-          Which role does the user have in the place and at the point
-          in time when the experiment was performed? Technician operating
-          the setup, student, PhD-student, postdoc, principle investigator, or guest
-          are common examples.
-      identifier(NXidentifier):
-        exists: recommended
-        doc: |
-          Service as another mean of identification of a user other than by its name.
-          Examples could be an ORCID or social media account of the user.
-        service(NX_CHAR):
-        identifier(NX_CHAR):
-        is_persistent(NX_BOOLEAN):
     (NXinstrument):
       doc: |
         Devices or elements of the optical spectroscopy setup described with its
@@ -176,12 +162,7 @@ NXopt(NXobject):
         identifier:
           exists: recommended
         construction_year(NX_DATE_TIME):
-          exists: recommended
-          doc: |
-            Datetime of setup's initial construction. This refers to the date of
-            first measurement after new construction  or relocation of the setup.
-            Should be a ISO8601 date/time stamp. It is recommended to add an explicit time zone,
-            otherwise the local time zone is assumed per ISO8601.
+          exists: optional
       software_TYPE(NXprogram):
         exists: recommended
         program:
@@ -192,6 +173,7 @@ NXopt(NXobject):
             "software_detector" or "software_stage" to specify the respective
             program or software components.
           \@version:
+            exists: recommended
             doc: |
               Either version with build number, commit hash, or description of a
               (online) repository where the source code of the program and build
@@ -203,16 +185,9 @@ NXopt(NXobject):
             doc: |
               Description of the software by persistent resource, where the program,
               code, script etc. can be found.
-      # general properties and reference frames
-      reference_frames(NXcoordinate_system_set):
-        # This should be extended later and hopefully replace angle_reference_frame
-        # and sample_normal_direction.
-        # Required reference frames:
-        # Sample normal, beam_z_axis, sample_stage
-        exists: optional
-        doc: |
-          Description of one or more coordinate systems that are specific to the
-          experiment.
+      # The angle_reference_frame will be connected later to general reference frames
+      # For this this solution enables the description of the beam relations for
+      # different optical spectroscopy methods in the reference frame they are used to
       angle_reference_frame:
         doc: |
           Defines the reference frame which is used to describe the sample orientation
@@ -264,7 +239,9 @@ NXopt(NXobject):
         exists: recommended
         doc: |
           Pre-calibration of an arbitrary device of the instrumental setup, which
-          has the name DEVICE. You can specify here at which point
+          has the name DEVICE. You can specify here how, at which time by which method
+          the calibration was done. As well the accuracy and a link to the calibration
+          dataset.
         device_path:
           exists: recommended
           doc: |
@@ -317,31 +294,31 @@ NXopt(NXobject):
         doc: |
           Beam characteristics between two beam_devices.
 
-          It is recommended, to at least define one incident and one detection beam.
-          If this beam is directly connected to an source, chose here the same
+          It is recommended to at least define one incident and one detection beam.
+          If this beam is directly connected to a source, chose here the same
           name appendix as for the NXsource (e.g. TYPE=532nm)
-        incident_wavelength(NX_FLOAT):
-          unit: NX_WAVELENGTH
+        incident_wavelength(NX_NUMBER):
+          exists: recommended
         incident_wavelength_spread(NX_NUMBER):
           exists: recommended
-          unit: NX_WAVELENGTH
         incident_polarization(NX_NUMBER):
           exists: recommended
-          unit: NX_ANY
         extent(NX_FLOAT):
           exists: recommended
         associated_source(NX_CHAR):
-          exists: recommended
+          exists: optional
           doc: |
-            The path to a the source, which emitted this beam.
-            Should be named with the same appendix as the source, e.g.,
-            for TYPE=532nmlaser, there should as well be
-            a NXsource named "source_532nmlaser" aside of this Beam
-            instance named "beam_532nmlaser"
+            The path to the source which emitted this beam.
+
+            Is recommended, if the previous optical element is a photon source.
+            In this way, the properties of the laser or light souce can be described
+            and associated.
+            The beam should be named with the same appendix as the source, e.g.,
+            for TYPE=532nmlaser, there should be both a NXsource named
+            "source_532nmlaser" and a NXbeam named "beam_532nmlaser".
             
             Example: /entry/instrument/source_532nmlaser
-        # The two polarization descriptions may be completely replaced by
-        # incident_polarization
+        # The two polarization descriptions may be completely replaced by polarization
         beam_polarization_type:
           exists: optional
           enumeration: [linear, circular, ellipically, unpolarized]
@@ -360,12 +337,8 @@ NXopt(NXobject):
             relation between different polarizations has to be consistent 
             (i.e. parallel polarized 0° and cross polarized 90°)
           unit: NX_ANGLE
-      # Discussion with florian:
-      # The user wants to use simple parameters, which they are used to.
-      # Though, via NXtransformations in principle maximum flexibility can be provided,
-      # even for unusual and complex experimental setups.
-      # The solution from mpes was: simple "front end" by only stating one angle
-      # with the "backend" to be customizable via NXtransformations.
+      # The given angles may be extended similar to NXmpes, to allow a simple
+      # as well as an arbitrary description via NXtransformations
       #
       # fundamental orientation of incident and detection beam
       angle_of_incidence(NX_NUMBER):
@@ -432,18 +405,13 @@ NXopt(NXobject):
         exists: [min, 1, max, infty]
         type:
           exists: recommended
-          enumeration: [laser, dye-laser, broadband tunable light source, X-ray Source, other]
+          enumeration: [laser, dye-laser, broadband tunable light source, X-ray Source, arc lamp, halogen lamp, LED, other]
         type_other:
           exists: optional
           doc: |
             Specification of type, may also go to name.
         name:
           exists: recommended
-        source_polarization:
-          exists: recommended
-          doc: |
-            The type of light polarization produced by the source.
-          enumeration: [linear, unpolarized, circular, elliptically, other]
         device_information(NXfabrication):
           doc: |
             Details about the device information.
@@ -452,11 +420,16 @@ NXopt(NXobject):
             The path to a beam emitted by this source.
             Should be named with the same appendix, e.g.,
             for TYPE=532nmlaser, there should as well be
-            a NXbeam named "beam_532nmlaser" aside of this source
+            a NXbeam named "beam_532nmlaser" together with this source
             instance named "source_532nmlaser"
             
             Example: /entry/instrument/beam_532nmlaser
         device_characteristics(NXdata):
+          exists: optional
+          doc: |
+            You may add here data which characterises the source in more detail,
+            such as spectral power density, power dependency on line width, line-shape
+            of the laser line, etc.
       detector_TYPE(NXdetector):
         exists: [min, 1, max, infty]
         detector_channel_type:
@@ -466,8 +439,17 @@ NXopt(NXobject):
           exists: recommended
           doc: |
             Description of the detector type.
-          enumeration: [CCD, Photomultiplier, Photodiode, Avalanche-Photodiode, Bolometer, Golay Detectors, Pyroelectric Detector]
+          enumeration: [CCD, Photomultiplier, Photodiode, Avalanche-Photodiode, Bolometer, Golay Detectors, Pyroelectric Detector, other]
+        detector_type_other:
+          exists: optional
+          doc: |
+            Type of detector, if "other" was selected in "detector_type".
         device_characteristics(NXdata):
+          exists: optional
+          doc: |
+            You may add here data which characterizes the detector, such as quantum
+            efficiency as function of wavelength or angular dependency of intenty.
+
         device_information(NXfabrication):
           exists: recommended
           vendor:
@@ -519,76 +501,42 @@ NXopt(NXobject):
       (NXmonochromator):
         exists: optional
         device_characteristics(NXdata):
+          exists: optional
+          doc: |
+            Characteristics of the monochromator as diffraction efficiency as 
+            wavelength and polarization dependence
+        device_information(NXfabrication):
+          exists: recommended
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
+          identifier:
+            exists: recommended
       (NXlens_opt):
         exists: optional
+        doc: |
+          This is the optical element used to focus or collect light. This may
+          be a genereic lens or microcope objectives which are used for the
+          Raman scattering process.
+        type:
+          enumeration: [objective, lens, glass fiber, none, other]
+        numerical_aperture(NX_NUMBER):
+          doc: |
+            The numerical aperture of the used incident light optics.
+        magnification(NX_FLOAT):
+          doc: |
+            Magnification of the lens.
+        device_information(NXfabrication):
+          exists: recommended
+          doc: |
+            Details about the optical component, if available. 
         device_characteristics(NXdata):
       (NXwaveplate):
         exists: optional
         device_characteristics(NXdata):
-      WINDOW(NXaperture):
-        exists: optional
-        doc: |
-          For environmental measurements, the environment (liquid, vapor
-          etc.) is enclosed in a cell, which has windows both in the
-          direction of the source (entry window) and the detector (exit
-          window) (looking from the sample). In case that the entry and exit
-          windows are not the same type and do not have the same properties,
-          use a second 'WINDOW(MXaperture)' field.
-          
-          The windows also add a phase shift to the light altering the
-          measured signal. This shift has to be corrected based on measuring
-          a known sample (reference sample) or the actual sample of interest
-          in the environmental cell. State if a window correction has been
-          performed in 'window_effects_corrected'. Reference data should be
-          considered as a separate experiment, and a link to the NeXus file
-          should be added in reference_data_link in measured_data.
-          
-          The window is considered to be a part of the sample stage but also
-          beam path. Hence, its position within the beam path should be
-          defined by the 'depends_on' field.
-        window_effects_corrected(NX_BOOLEAN):
-          doc: |
-            Was a window correction performed? If 'True' describe the window
-            correction procedure in 'window_correction/procedure'.
-        window_correction(NXprocess):
-          exists: optional
-          doc: |
-            Was a window correction performed? If 'True' describe the
-            window correction procedure in ''
-          procedure:
-            doc: |
-              Describe when (before or after the main measurement + time
-              stamp in 'date') and how the window effects have been
-              corrected, i.e. either mathematically or by performing a
-              reference measurement. In the latter case, provide the link to
-              to the reference data in 'reference_data_link'.
-          reference_data_link:
-            exists: optional
-            doc: |
-              Link to the NeXus file which describes the reference data if a
-              reference measurement for window correction was performed.
-              Ideally, the reference measurement was performed on a reference
-              sample and on the same sample, and using the same conditions as
-              for the actual measurement with and without windows. It should
-              have been conducted as close in time to the actual measurement
-              as possible.
-        material(NX_CHAR):
-          doc: |
-            The material of the window.
-          enumeration: [quartz, diamond, calcium fluoride, zinc selenide, thallium bromoiodide, alkali halide compound, Mylar, other]
-        material_other(NX_CHAR):
-          exists: optional
-          doc: |
-            If you specified 'other' as material, decsribe here what it is.
-        thickness(NX_FLOAT):
-          unit: NX_LENGTH
-          doc: |
-            Thickness of the window.
-        orientation_angle(NX_FLOAT):
-          unit: NX_ANGLE
-          doc: |
-            Angle of the window normal (outer) vs. the substrate normal
-            (similar to the angle of incidence).
+      (NXopt_window):
+
       sample_medium_refractive_indices(NX_FLOAT):
         exists: optional
         unit: NX_UNITLESS
@@ -600,6 +548,66 @@ NXopt(NXobject):
         dimensions:
           rank: 2
           dim: [[1, 2], [2, N_spectrum]]
+      
+      polfilter_TYPE(NXbeam_device):
+        exists: optional
+        doc: |
+          polarization filter to prepare light to be measured or to be incident 
+          on the sample.
+          Genereric polarization filter porperties may be implemented via NXfilter_pol
+          at a later stage.
+        filter_mechanism(NX_CHAR):
+          exists: optional
+          doc: |
+            Physical principle of the polarization filter used to create a
+            defined incident or scattered light state.
+          enumeration: [Polarization by Fresnel reflection, Birefringent polarizers, Thin film polarizers, Wire-grid polarizers, other]
+        specific_polarization_filter_type(NX_CHAR):
+          exists: optional
+          doc: |
+            Specific name or type of the polarizer used.
+            
+            Free text, for example: Glan-Thompson, Glan-Taylor, Rochon Prism, Wollaston
+            Polarizer...      
+        device_information(NXfabrication):
+      spectralfilter_TYPE(NXbeam_device):
+        exists: optional
+        doc: |
+          Spectral filter used to modify properties of the scattered or incident light.
+          Genereric spectral filter porperties may be implemented via NXfilter_spec
+          at a later stage.
+        filter_type:
+          exists: optional
+          doc: |
+            Type of laserline filter used to supress the laser, if measurements
+            close to the laserline are performed.
+          enumeration: [long-pass filter, short-pass filter, Notch filter, reflection filter, neutral density filter, other]
+        intended_use:
+          exists: optional
+          doc: |
+            Type of laserline filter used to supress the laser, if measurements
+            close to the laserline are performed.
+          enumeration: [laser line cleanup, raylight line removal, spectral filtering, intensity manipulation, other]
+        filter_characteristics(NXdata):
+          exists: optional
+          doc: |
+            Properties of the spectral filter such as wavelength dependent Transmission
+            or reflectivity.
+          \@characteristics_type:
+            exists: optional
+            doc: |
+              Which property is used to form the spectral properties of light,
+              i.e. transmission or reflection properties.
+            enumeration: [transmission, reflection]
+        device_information(NXfabrication):
+
+    
+    # In the following - Auxillary NXbeam_devices are defined, to enable a 
+    # beam path description of the setup, while using the up now available
+    # Nexus definitions for source, detector, monochromator, ... 
+
+      
+      
       # beam devices for beam path description
       (NXbeam_device):
         exists: [min, 0, max, infty]
@@ -644,6 +652,7 @@ NXopt(NXobject):
           doc: |
             If "other" was chosen in stage_type, enter here a free text description
             of the stage type.
+        # This is for now a placeholder and should be specified with NXtransformation
         reference_frame:
           exists: optional
           doc: |
@@ -677,9 +686,9 @@ NXopt(NXobject):
           exists: recommended
         physical_quantity:
           enumeration: [temperature]
-        cryo_or_heater:
+        cooler_or_heater:
           exists: recommended
-          enumeration: [cryostat, heater]
+          enumeration: [cooler, heater]
         type:
           exists: optional
           doc: |
@@ -688,30 +697,6 @@ NXopt(NXobject):
           setpoint(NX_FLOAT):
             exists: recommended
         device_information(NXfabrication):    
-      PARAMETER_SENSOR(NXsensor):
-        exists: recommended
-        name:
-          exists: recommended
-        measurement:
-        type:
-          exists: optional
-        value(NX_FLOAT):
-        device_information(NXfabrication):
-      PARAMETER_ACTUATOR(NXactuator):
-        doc: 
-          Control of arbitrary parameter - compare to temperature above.
-        exists: optional
-        name:
-          exists: recommended
-        physical_quantity:
-        type:
-          exists: optional
-          doc: |
-            Hardware used for actuation
-        (NXpid):
-          setpoint(NX_FLOAT):
-            exists: recommended
-        device_information(NXfabrication):
     (NXsample):
       doc: |
         Properties of the sample, such as sample type, layer structure,
@@ -725,7 +710,7 @@ NXopt(NXobject):
       sample_id:
         exists: recommended
         doc: |
-          Uniquely identifying name of the sample.
+          Uniquely identifying ID of the sample.
       physical_form:
         exists: recommended
         doc: |
@@ -736,9 +721,6 @@ NXopt(NXobject):
         exists: optional
         doc: |
           Free text description of the sample.
-      situation:
-        exists: recommended
-        enumeration: [air, vacuum, inert atmosphere, oxidising atmosphere, reducing atmosphere, sealed can, water, other]
       chemical_formula:
         exists: recommended
         doc: |
@@ -768,12 +750,6 @@ NXopt(NXobject):
         exists: recommended
         doc: |
           A set of activities that occurred to the sample prior to/during the experiment.
-        history_id(NXidentifier):
-          doc: |
-            A reference to the location or a unique (globally
-            persistent) identifier (e.g.) of e.g. another file which gives
-            as many as possible details of the material, its microstructure,
-            and its thermo-chemo-mechanical processing/preparation history.
       temperature(NXenvironment):
         exists: recommended
         doc: |
@@ -787,10 +763,10 @@ NXopt(NXobject):
           doc: |
             Device to heat the sample.
             This should be a link to /entry/instrument/manipulator/sample_heater.
-        cryostat(NXactuator):
+        sample_cooler(NXactuator):
           exists: optional
           doc: |
-            Cryostat for cooling the sample.
+            Device for cooling the sample (Cryostat, Airflow cooler, etc.).
             This should be a link to /entry/instrument/manipulator/cryostat.
       (NXenvironment):
         exists: optional
@@ -798,10 +774,9 @@ NXopt(NXobject):
           Arbirary sample property which may be varied during the experiment
           and controlled by a device. Examples are pressure, voltage, magnetic field etc.
           Similar to the temperautre description of the sample.
-        (NXsensor):
-          exists: optional
-        (NXactuator):
-          exists: optional
+        sample_medium:
+          exists: recommended
+          enumeration: [air, vacuum, inert atmosphere, oxidising atmosphere, reducing atmosphere, sealed can, water, other]
       thickness(NX_NUMBER):
         exists: optional
         doc: |
