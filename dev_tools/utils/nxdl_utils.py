@@ -135,6 +135,8 @@ def get_nx_namefit(hdf_name: str, name: str, name_any: bool = False) -> int:
         * `get_nx_namefit("my_other_name", "TEST_name")` returns 5
         * `get_nx_namefit("test_name", "test_name")` returns 18
         * `get_nx_namefit("test_other", "test_name")` returns -1
+        * `get_nx_namefit("something", "XXXX")` returns 0
+        * `get_nx_namefit("something", "OTHER")` returns 1
 
     Args:
         hdf_name (str): The hdf_name, containing the name of the HDF5 node.
