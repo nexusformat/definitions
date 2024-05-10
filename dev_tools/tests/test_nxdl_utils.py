@@ -173,7 +173,7 @@ def test_namefitting(hdf_name, concept_name, should_fit):
         ("test_other", "test_name", -1),
         ("my_fancy_yet_long_name", "my_SOME_name", 8),
         ("something", "XXXX", 0),
-        ("something", "OTHER", 1)
+        ("something", "OTHER", 1),
     ],
 )
 def test_namefitting_scores(hdf_name, concept_name, score):
