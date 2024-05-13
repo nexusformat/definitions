@@ -345,18 +345,6 @@ def get_own_nxdl_child(
     for child in nxdl_elem:
         if not isinstance(child.tag, str):
             continue
-        if child.attrib.get("name") == name:
-            return set_nxdlpath(child, nxdl_elem)
-    for child in nxdl_elem:
-        if not isinstance(child.tag, str):
-            continue
-        if child.attrib.get("name") == name:
-            child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
-            return child
-
-    for child in nxdl_elem:
-        if not isinstance(child.tag, str):
-            continue
         result = get_own_nxdl_child_reserved_elements(child, name, nxdl_elem)
         if result is not False:
             return result
