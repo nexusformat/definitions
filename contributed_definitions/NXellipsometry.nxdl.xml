@@ -183,76 +183,97 @@ A rework of the draft version(06/2022) of a NeXus application definition for ell
                     <item value="compensator (detector side)"/>
                 </enumeration>
             </field>
-            <group type="NXbeam_path">
-                <!--light_source(NXsource):
- doc: |
-   Specify the used light source. Multiple selection possible.
- source_type:
-   enumeration: [arc lamp, halogen lamp, LED, other]-->
-                <group name="focussing_probes" type="NXlens_opt" optional="true">
+            <group name="focussing_probes" type="NXlens_opt" optional="true">
+                <doc>
+                     If focussing probes (lenses) were used, please state if the data
+                     were corrected for the window effects.
+                </doc>
+                <!--This as well can be stated in window/aperture-->
+                <field name="data_correction" type="NX_BOOLEAN">
                     <doc>
-                         If focussing probes (lenses) were used, please state if the data
-                         were corrected for the window effects.
+                         Were the recorded data corrected by the window effects of the
+                         focussing probes (lenses)?
                     </doc>
-                    <!--This as well can be stated in window/aperture-->
-                    <field name="data_correction" type="NX_BOOLEAN">
-                        <doc>
-                             Were the recorded data corrected by the window effects of the
-                             focussing probes (lenses)?
-                        </doc>
-                    </field>
-                    <field name="angular_spread" type="NX_NUMBER" recommended="true" units="NX_ANGLE">
-                        <doc>
-                             Specify the angular spread caused by the focussing probes.
-                        </doc>
-                    </field>
-                </group>
-                <group name="rotating_element" type="NXwaveplate" optional="true">
+                </field>
+                <field name="angular_spread" type="NX_NUMBER" recommended="true" units="NX_ANGLE">
                     <doc>
-                         Properties of the rotating element defined in
-                         'instrument/rotating_element_type'.
+                         Specify the angular spread caused by the focussing probes.
                     </doc>
-                    <field name="revolutions" type="NX_NUMBER" optional="true" units="NX_COUNT">
-                        <doc>
-                             Define how many revolutions of the rotating element were averaged
-                             for each measurement. If the number of revolutions was fixed to a
-                             certain value use the field 'fixed_revolutions' instead.
-                        </doc>
-                    </field>
-                    <field name="fixed_revolutions" type="NX_NUMBER" optional="true" units="NX_COUNT">
-                        <doc>
-                             Define how many revolutions of the rotating element were taken
-                             into account for each measurement (if number of revolutions was
-                             fixed to a certain value, i.e. not averaged).
-                        </doc>
-                    </field>
-                    <field name="max_revolutions" type="NX_NUMBER" optional="true" units="NX_COUNT">
-                        <doc>
-                             Specify the maximum value of revolutions of the rotating element
-                             for each measurement.
-                        </doc>
-                    </field>
-                </group>
+                </field>
+            </group>
+            <group name="rotating_element" type="NXwaveplate" optional="true">
+                <doc>
+                     Properties of the rotating element defined in
+                     'instrument/rotating_element_type'.
+                </doc>
+                <field name="revolutions" type="NX_NUMBER" optional="true" units="NX_COUNT">
+                    <doc>
+                         Define how many revolutions of the rotating element were averaged
+                         for each measurement. If the number of revolutions was fixed to a
+                         certain value use the field 'fixed_revolutions' instead.
+                    </doc>
+                </field>
+                <field name="fixed_revolutions" type="NX_NUMBER" optional="true" units="NX_COUNT">
+                    <doc>
+                         Define how many revolutions of the rotating element were taken
+                         into account for each measurement (if number of revolutions was
+                         fixed to a certain value, i.e. not averaged).
+                    </doc>
+                </field>
+                <field name="max_revolutions" type="NX_NUMBER" optional="true" units="NX_COUNT">
+                    <doc>
+                         Specify the maximum value of revolutions of the rotating element
+                         for each measurement.
+                    </doc>
+                </field>
             </group>
         </group>
         <group type="NXsample">
-            <field name="backside_roughness" type="NX_BOOLEAN" recommended="true">
+            <field name="backside_roughness" type="NX_BOOLEAN" optional="true">
                 <doc>
                      Was the backside of the sample roughened? Relevant for infrared
                      ellipsometry.
                 </doc>
             </field>
         </group>
-        <group type="NXdata">
+        <!--The following NXdata setction called data_collection, is specialization
+from the old (NXopt and NXellipsometry) for the new NXellipometry.
+The generic description of the data collection will in future be
+included in the generic NXopt, but is now keept limited to
+NXellipsometry.-->
+        <group name="data_collection" type="NXdata">
+            <doc>
+                 Measured data, data errors, and varied parameters. This may be used to describe
+                 indirectly derived data or data transformed between different descriptions,
+                 such as:
+                 Raw Data --&gt; Psi
+                 Delta Psi, Delta --&gt; N,C,S
+                 Mueller matrix --&gt; N,C,S
+                 Mueller matrix --&gt; Psi, Delta
+                 etc.
+                 
+                 Other types of data, such as temperature or sample location, may be saved
+                 in a generic (NXdata) concept from NXopt, or better directly in the
+                 location of the sample positioner or temperature sensor.
+            </doc>
+            <field name="data_identifier" type="NX_NUMBER">
+                <doc>
+                     An identifier to correlate data to the experimental conditions,
+                     if several were used in this measurement; typically an index of 0-N.
+                </doc>
+            </field>
             <field name="data_type">
                 <doc>
-                     Select which type of data was recorded, for example Psi and Delta
-                     (see: https://en.wikipedia.org/wiki/Ellipsometry#Data_acquisition).
-                     It is possible to have multiple selections. Data types may also be
-                     converted to each other, e.g. a Mueller matrix contains N,C,S data
-                     as well.
+                     Select which type of data was recorded, for example intensity,
+                     reflectivity, transmittance, Psi and Delta etc.
+                     It is possible to have multiple selections. The enumeration list
+                     depends on the type of experiment and may differ for different
+                     application definitions.
                 </doc>
                 <enumeration>
+                    <item value="intensity"/>
+                    <item value="reflectivity"/>
+                    <item value="transmittance"/>
                     <item value="Psi/Delta"/>
                     <item value="tan(Psi)/cos(Delta)"/>
                     <item value="Mueller matrix"/>
@@ -261,6 +282,111 @@ A rework of the draft version(06/2022) of a NeXus application definition for ell
                     <item value="raw data"/>
                 </enumeration>
             </field>
+            <field name="NAME_spectrum" type="NX_FLOAT" optional="true" units="NX_ANY">
+                <doc>
+                     Spectral values (e.g. wavelength or energy) used for the measurement.
+                     An array of 1 or more elements. Length defines N_spectrum. Replace
+                     'SPECTRUM' by the physical quantity that is used, e.g. wavelength.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="N_spectrum"/>
+                </dimensions>
+                <attribute name="units" optional="true">
+                    <doc>
+                         If applicable, change 'unit: NX_ANY' to the appropriate NXDL unit.
+                         If the unit of the measured data is not covered by NXDL units state
+                         here which unit was used.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="measured_data" type="NX_FLOAT" units="NX_ANY">
+                <doc>
+                     Resulting data from the measurement, described by 'data_type'.
+                     
+                     The first dimension is defined by the number of measurements taken,
+                     (N_measurements). The instructions on how to order the values
+                     contained in the parameter vectors given in the doc string of
+                     INSTRUMENT/sample_stage/environment_conditions/PARAMETER/values,
+                     define the N_measurements parameter sets. For example, if the
+                     experiment was performed at three different temperatures
+                     (T1, T2, T3), two different pressures (p1, p2) and two different
+                     angles of incidence (a1, a2), the first measurement was taken at the
+                     parameters {a1,p1,T1}, the second measurement at {a1,p1,T2} etc.
+                </doc>
+                <dimensions rank="3">
+                    <dim index="1" value="N_measurements"/>
+                    <dim index="2" value="N_observables"/>
+                    <dim index="3" value="N_spectrum"/>
+                </dimensions>
+                <attribute name="units" optional="true">
+                    <doc>
+                         If applicable, change 'unit: NX_ANY' to the appropriate NXDL unit.
+                         If the unit of the measured data is not covered by NXDL units state
+                         here which unit was used.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="measured_data_errors" type="NX_FLOAT" optional="true" units="NX_ANY">
+                <doc>
+                     Specified uncertainties (errors) of the data described by 'data_type'
+                     and provided in 'measured_data'.
+                </doc>
+                <dimensions rank="3">
+                    <dim index="1" value="N_measurements"/>
+                    <dim index="2" value="N_observables"/>
+                    <dim index="3" value="N_spectrum"/>
+                </dimensions>
+                <attribute name="units" optional="true">
+                    <doc>
+                         If applicable, change 'unit: NX_ANY' to the appropriate NXDL unit.
+                         If the unit of the measured data is not covered by NXDL units state
+                         here which unit was used.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="varied_parameter_link" optional="true">
+                <doc>
+                     List of links to the values of the sensors. Add a link for each
+                     varied parameter (i.e. for each sensor).
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="N_sensors"/>
+                </dimensions>
+            </field>
+            <field name="reference_data_link" optional="true">
+                <doc>
+                     Link to the NeXus file which describes the reference data if a
+                     reference measurement was performed. Ideally, the reference
+                     measurement was performed using the same conditions as the actual
+                     measurement and should be as close in time to the actual measurement
+                     as possible.
+                </doc>
+            </field>
+            <group name="data_software" type="NXprogram" optional="true">
+                <field name="program">
+                    <doc>
+                         Commercial or otherwise defined given name of the program that was
+                         used to generate the result file(s) with measured data and/or
+                         metadata (in most cases, this is the same as INSTRUMENT/software).
+                         If home written, one can provide the actual steps in the NOTE
+                         subfield here.
+                    </doc>
+                </field>
+                <field name="version">
+                    <doc>
+                         Either version with build number, commit hash, or description of a
+                         (online) repository where the source code of the program and build
+                         instructions can be found so that the program can be configured in
+                         such a way that result files can be created ideally in a
+                         deterministic manner.
+                    </doc>
+                </field>
+                <attribute name="url" optional="true">
+                    <doc>
+                         Website of the software.
+                    </doc>
+                </attribute>
+            </group>
         </group>
     </group>
 </definition>
