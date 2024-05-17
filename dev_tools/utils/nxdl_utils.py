@@ -345,18 +345,6 @@ def get_own_nxdl_child(
     for child in nxdl_elem:
         if not isinstance(child.tag, str):
             continue
-        if child.attrib.get("name") == name:
-            return set_nxdlpath(child, nxdl_elem)
-    for child in nxdl_elem:
-        if not isinstance(child.tag, str):
-            continue
-        if child.attrib.get("name") == name:
-            child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
-            return child
-
-    for child in nxdl_elem:
-        if not isinstance(child.tag, str):
-            continue
         result = get_own_nxdl_child_reserved_elements(child, name, nxdl_elem)
         if result is not False:
             return result
@@ -443,7 +431,7 @@ def get_required_string(nxdl_elem):
 def write_doc_string(logger, doc, attr):
     """Simple function that prints a line in the logger if doc exists"""
     if doc:
-        logger.debug("@%s [NX_CHAR]", attr)
+        logger.debug(f"@{attr} [NX_CHAR]")
     return logger, doc, attr
 
 
