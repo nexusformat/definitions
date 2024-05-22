@@ -148,13 +148,14 @@ NXmpes(NXobject):
             exists: recommended
           identifier:
             exists: recommended
-        associated_beam(NXbeam):
+        associated_beam(NX_CHAR):
           doc: |
-            The beam emitted by this source.
+            A reference to a beam emitted by this source.
             Should be named with the same appendix, e.g.,
             for `source_probe` it should refer to `beam_probe`.
-            Refers to the same concept as /NXentry/NXinstrument/beamTYPE
-            and may be linked.
+            
+            Example:
+              * /entry/instrument/source_probe = /entry/instrument/beam_probe
       beamTYPE(NXbeam):
         doc: |
           Properties of the photon beam at a given location.
@@ -178,15 +179,16 @@ NXmpes(NXobject):
           unit: NX_ANY
         extent(NX_FLOAT):
           exists: recommended
-        associated_source(NXsource):
+        associated_source(NX_CHAR):
           exists: recommended
           doc: |
             The source that emitted this beam.
             Should be named with the same appendix, e.g.,
             for `beam_probe` it should refer to `source_probe`.
-            Refers to the same concept as /NXentry/NXinstrument/sourceTYPE
-            and may be linked.
-            Should be specified if an associated source exists.
+            This should be specified if an associated source exists.
+            
+            Example:
+              * /entry/instrument/beam_probe = /entry/instrument/source_probe
       (NXelectronanalyser):
         device_information(NXfabrication):
           exists: recommended
@@ -310,7 +312,7 @@ NXmpes(NXobject):
               exists: recommended
             identifier:
               exists: recommended
-          raw_data(NXdata_mpes_detector):
+          raw_data(NXdata):
             exists: recommended
             doc: |
               Contains the raw data collected by the detector before calibration.
@@ -319,8 +321,7 @@ NXmpes(NXobject):
               This field ideally collects the data with the lowest level of processing
               possible.
               
-              The naming of fields should follow the convention defined in the
-              :ref:`NXdata_mpes_detector` base class:
+              Fields should be named according to new following convention:
               
               - **pixel_x**: Detector pixel in x direction.
               - **pixel_y**: Detector pixel in y direction.
@@ -424,6 +425,7 @@ NXmpes(NXobject):
           model:
             exists: recommended
           identifier:
+            exists: recommended
       pressure_gauge(NXsensor):
         exists: recommended
         doc: |
@@ -517,10 +519,13 @@ NXmpes(NXobject):
           exists: recommended
         reference_peak:
         binding_energy(NX_FLOAT):
+          unit: NX_ENERGY
           exists: recommended
         offset(NX_FLOAT):
+          unit: NX_ENERGY
           exists: recommended
         calibrated_axis(NX_FLOAT):
+          unit: NX_ENERGY
           exists: recommended
       transmission_correction(NXcalibration):
         exists: optional
@@ -649,17 +654,16 @@ NXmpes(NXobject):
             Flood gun creating a current of low-energy electrons.
             
             This should be a link to /entry/instrument/flood_gun.
-    data(NXdata_mpes):
+    data(NXdata):
       doc: |
         The default NXdata field containing a view on the measured data.
         This NXdata field contains a collection of the main relevant fields (axes).
         If you want to provide additional views on your data, you can additionally use
         the generic NXdata group of NXentry.
         
-        In NXmpes, it is required to provide an energy axis.
-                
-        The naming of fields should follow the convention defined in the
-        :ref:`NXdata_mpes` base class:
+        In NXmpes, it is recommended to provide an energy axis.
+        
+        Fields should be named according to the following convention:
         
         - **energy**: Calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
         - **kx**: Calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
@@ -693,7 +697,14 @@ NXmpes(NXobject):
           delay, spin index, temperature, etc. The axes traces should be linked to the
           actual encoder position in NXinstrument or calibrated axes in NXprocess.
       energy(NX_NUMBER):
+        unit: NX_ENERGY
         exists: recommended
+        doc: |
+          Calibrated energy axis.
+          
+          This could be a link to either
+          /entry/process/energy_calibration/calibrated_axis or
+          /entry/process/energy_correction/calibrated_axis.
         \@type:
           exists: recommended
       \@energy_depends:
@@ -707,7 +718,7 @@ NXmpes(NXobject):
             @energy_depends: 'entry/process/energy_calibration'
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# f0c42cd7a99b56711a1a70d6fb23d4d88d3127506389681d53d317f45f06dbb5
+# 7f45ab08c78a105a15e2c6f5ddbcdcab4002929bf8d19e8ec2987bd507525680
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -905,15 +916,16 @@ NXmpes(NXobject):
 #                     <field name="model" recommended="true"/>
 #                     <field name="identifier" recommended="true"/>
 #                 </group>
-#                 <group name="associated_beam" type="NXbeam">
+#                 <field name="associated_beam" type="NX_CHAR">
 #                     <doc>
-#                          The beam emitted by this source.
+#                          A reference to a beam emitted by this source.
 #                          Should be named with the same appendix, e.g.,
 #                          for `source_probe` it should refer to `beam_probe`.
-#                          Refers to the same concept as /NXentry/NXinstrument/beamTYPE
-#                          and may be linked.
+#                          
+#                          Example:
+#                            * /entry/instrument/source_probe = /entry/instrument/beam_probe
 #                     </doc>
-#                 </group>
+#                 </field>
 #             </group>
 #             <group name="beamTYPE" type="NXbeam">
 #                 <doc>
@@ -933,16 +945,17 @@ NXmpes(NXobject):
 #                 <field name="incident_energy_spread" type="NX_NUMBER" recommended="true" units="NX_ENERGY"/>
 #                 <field name="incident_polarization" type="NX_NUMBER" recommended="true" units="NX_ANY"/>
 #                 <field name="extent" type="NX_FLOAT" recommended="true"/>
-#                 <group name="associated_source" type="NXsource" recommended="true">
+#                 <field name="associated_source" type="NX_CHAR" recommended="true">
 #                     <doc>
 #                          The source that emitted this beam.
 #                          Should be named with the same appendix, e.g.,
 #                          for `beam_probe` it should refer to `source_probe`.
-#                          Refers to the same concept as /NXentry/NXinstrument/sourceTYPE
-#                          and may be linked.
-#                          Should be specified if an associated source exists.
+#                          This should be specified if an associated source exists.
+#                          
+#                          Example:
+#                            * /entry/instrument/beam_probe = /entry/instrument/source_probe
 #                     </doc>
-#                 </group>
+#                 </field>
 #             </group>
 #             <group type="NXelectronanalyser">
 #                 <group name="device_information" type="NXfabrication" recommended="true">
@@ -1080,7 +1093,7 @@ NXmpes(NXobject):
 #                         <field name="model" recommended="true"/>
 #                         <field name="identifier" recommended="true"/>
 #                     </group>
-#                     <group name="raw_data" type="NXdata_mpes_detector" recommended="true">
+#                     <group name="raw_data" type="NXdata" recommended="true">
 #                         <doc>
 #                              Contains the raw data collected by the detector before calibration.
 #                              The data which is considered raw might change from experiment to experiment
@@ -1088,8 +1101,7 @@ NXmpes(NXobject):
 #                              This field ideally collects the data with the lowest level of processing
 #                              possible.
 #                              
-#                              The naming of fields should follow the convention defined in the
-#                              :ref:`NXdata_mpes_detector` base class:
+#                              Fields should be named according to new following convention:
 #                              
 #                              - **pixel_x**: Detector pixel in x direction.
 #                              - **pixel_y**: Detector pixel in y direction.
@@ -1202,7 +1214,7 @@ NXmpes(NXobject):
 #                 <group name="device_information" type="NXfabrication" recommended="true">
 #                     <field name="vendor" recommended="true"/>
 #                     <field name="model" recommended="true"/>
-#                     <field name="identifier"/>
+#                     <field name="identifier" recommended="true"/>
 #                 </group>
 #             </group>
 #             <group name="pressure_gauge" type="NXsensor" recommended="true">
@@ -1297,9 +1309,9 @@ NXmpes(NXobject):
 #             <group name="energy_referencing" type="NXcalibration" optional="true">
 #                 <group name="level" type="NXelectron_level" recommended="true"/>
 #                 <field name="reference_peak"/>
-#                 <field name="binding_energy" type="NX_FLOAT" recommended="true"/>
-#                 <field name="offset" type="NX_FLOAT" recommended="true"/>
-#                 <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
+#                 <field name="binding_energy" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
+#                 <field name="offset" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
+#                 <field name="calibrated_axis" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
 #             </group>
 #             <group name="transmission_correction" type="NXcalibration" optional="true">
 #                 <group name="transmission_function" type="NXdata" recommended="true">
@@ -1457,17 +1469,16 @@ NXmpes(NXobject):
 #                 </group>
 #             </group>
 #         </group>
-#         <group name="data" type="NXdata_mpes">
+#         <group name="data" type="NXdata">
 #             <doc>
 #                  The default NXdata field containing a view on the measured data.
 #                  This NXdata field contains a collection of the main relevant fields (axes).
 #                  If you want to provide additional views on your data, you can additionally use
 #                  the generic NXdata group of NXentry.
 #                  
-#                  In NXmpes, it is required to provide an energy axis.
-#                          
-#                  The naming of fields should follow the convention defined in the
-#                  :ref:`NXdata_mpes` base class:
+#                  In NXmpes, it is recommended to provide an energy axis.
+#                  
+#                  Fields should be named according to the following convention:
 #                  
 #                  - **energy**: Calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
 #                  - **kx**: Calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
@@ -1505,7 +1516,14 @@ NXmpes(NXobject):
 #                      actual encoder position in NXinstrument or calibrated axes in NXprocess.
 #                 </doc>
 #             </field>
-#             <field name="energy" type="NX_NUMBER" recommended="true">
+#             <field name="energy" type="NX_NUMBER" units="NX_ENERGY" recommended="true">
+#                 <doc>
+#                      Calibrated energy axis.
+#                      
+#                      This could be a link to either
+#                      /entry/process/energy_calibration/calibrated_axis or
+#                      /entry/process/energy_correction/calibrated_axis.
+#                 </doc>
 #                 <attribute name="type" recommended="true"/>
 #             </field>
 #             <attribute name="energy_depends" type="NX_CHAR" optional="true">

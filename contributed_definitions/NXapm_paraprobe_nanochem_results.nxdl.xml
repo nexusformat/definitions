@@ -78,6 +78,11 @@ The cardinality/total number of triangles in the triangle soup.-->
                  The total number of member distinguished when reporting composition.
             </doc>
         </symbol>
+        <symbol name="n_rois">
+            <doc>
+                 The total number of ROIs placed in an oned_profile task.
+            </doc>
+        </symbol>
     </symbols>
     <doc>
          Application definition for results files of the paraprobe-nanochem tool.
@@ -175,7 +180,7 @@ The cardinality/total number of triangles in the triangle soup.-->
                     <doc>
                          Integer which specifies the first index to be used for distinguishing identifiers for cells.
                          Identifiers are defined either implicitly or explicitly. For implicit indexing the identifiers are
-                         defined on the interval [identifier_offset, identifier_offset+c-1].
+                         defined on the interval :math:`[identifier\_offset, identifier\_offset + c - 1]`.
                          For explicit indexing the identifier array has to be defined.
                     </doc>
                 </field>
@@ -229,7 +234,7 @@ The cardinality/total number of triangles in the triangle soup.-->
                              Integer which specifies the first index to be used for distinguishing
                              hexahedra. Identifiers are defined either implicitly or explicitly.
                              For implicit indexing the identifiers are defined on the interval
-                             [identifier_offset, identifier_offset+c-1].
+                             :math:`[identifier\_offset, identifier\_offset + c - 1]`.
                              For explicit indexing the identifier array has to be defined.
                         </doc>
                     </field>
@@ -239,7 +244,7 @@ The cardinality/total number of triangles in the triangle soup.-->
                                  Integer which specifies the first index to be used for distinguishing
                                  identifiers for vertices. Identifiers are defined either implicitly or explicitly.
                                  For implicit indexing the identifiers are defined on the interval 
-                                 [identifier_offset, identifier_offset+c-1]. For explicit indexing the identifier array
+                                 :math:`[identifier\_offset, identifier\_offset + c - 1]`. For explicit indexing the identifier array
                                  has to be defined.
                             </doc>
                         </field>
@@ -248,7 +253,7 @@ The cardinality/total number of triangles in the triangle soup.-->
                                  Integer which specifies the first index to be used for distinguishing
                                  identifiers for faces. Identifiers are defined either implicitly or explicitly.
                                  For implicit indexing the identifiers are defined on the interval
-                                 [identifier_offset, identifier_offset+c-1]. For explicit indexing the identifier array
+                                 :math:`[identifier\_offset, identifier\_offset + c - 1]`. For explicit indexing the identifier array
                                  has to be defined.
                             </doc>
                         </field>
@@ -532,7 +537,7 @@ The cardinality/total number of triangles in the triangle soup.-->
                             <doc>
                                  Integer which specifies the first index to be used for distinguishing triangles.
                                  Identifiers are defined either implicitly or explicitly. For implicit indexing the
-                                 identifiers are defined on the interval [identifier_offset, identifier_offset+c-1].
+                                 identifiers are defined on the interval :math:`[identifier\_offset, identifier\_offset + c - 1]`.
                             </doc>
                         </field>
                         <group name="triangles" type="NXcg_face_list_data_structure">
@@ -1109,7 +1114,7 @@ face_identifier_offset(NX_UINT):-->
             </group>
         </group>
         <group name="oned_profile" type="NXapm_paraprobe_tool_results" minOccurs="0" maxOccurs="1">
-            <group name="window" type="NXcs_filter_boolean_mask">
+            <group name="window" type="NXcs_filter_boolean_mask" optional="true">
                 <field name="number_of_ions" type="NX_UINT"/>
                 <field name="bitdepth" type="NX_UINT"/>
                 <field name="mask" type="NX_UINT"/>
@@ -1134,63 +1139,75 @@ face_identifier_offset(NX_UINT):-->
                         <dim index="2" value="3"/>
                     </dimensions>
                 </field>
-                <field name="roi_identifier" type="NX_UINT" units="NX_UNITLESS">
+                <field name="orientation" type="NX_FLOAT" units="NX_LENGTH">
                     <doc>
-                         Integer which specifies the first index to be used for distinguishing
-                         ROI cylinder explicitly.
+                         The orientation of the ROI defined via a vector which points along
+                         the cylinder axis and whose length is the height of the cylinder.
                     </doc>
-                    <dimensions rank="1">
+                    <dimensions rank="2">
                         <dim index="1" value="i"/>
+                        <dim index="2" value="3"/>
                     </dimensions>
                 </field>
-                <group name="polyhedra" type="NXcg_face_list_data_structure" minOccurs="0" maxOccurs="1">
-                    <field name="edge_contact" type="NX_UINT" optional="true" units="NX_UNITLESS">
-                        <dimensions rank="1">
-                            <dim index="1" value="i"/>
-                        </dimensions>
-                    </field>
-                    <field name="number_of_atoms" type="NX_UINT" optional="true" units="NX_UNITLESS">
-                        <doc>
-                             The number of atoms in each ROI.
-                        </doc>
-                        <dimensions rank="1">
-                            <dim index="1" value="i"/>
-                        </dimensions>
-                    </field>
-                    <field name="number_of_ions" type="NX_UINT" optional="true" units="NX_UNITLESS">
-                        <doc>
-                             The number of ions in each ROI.
-                        </doc>
-                        <dimensions rank="1">
-                            <dim index="1" value="i"/>
-                        </dimensions>
-                    </field>
-                    <field name="orientation" type="NX_FLOAT" optional="true" units="NX_LENGTH">
-                        <doc>
-                             The orientation of the ROI defined via a vector which points along
-                             the cylinder axis and whose length is the height of the cylinder.
-                        </doc>
-                        <dimensions rank="2">
-                            <dim index="1" value="i"/>
-                            <dim index="2" value="3"/>
-                        </dimensions>
-                    </field>
+                <!--XDMF support-->
+                <field name="identifier" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         XDMF support to enable colouring each ROI by its identifier.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+                <field name="edge_contact" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         XDMF support to enable colouring each ROI whether it has edge contact or not.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+                <field name="number_of_atoms" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         XDMF support to enable colouring each ROI by its number of atoms.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+                <field name="number_of_ions" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         XDMF support to enable colouring each ROI by its number of ions.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+                <group name="rois_far_from_edge" type="NXprocess">
+                    <doc>
+                         Distance and iontype-specific processed data for each ROI.
+                         Arrays signed_distance and nuclide_hash are sorted by increasing
+                         distance.
+                         Array nuclide_hash reports one hash for each atom of each isotope.
+                         Effectively, this can yield to groups of values on signed_distance
+                         with the same distance value as molecular ions are reported decomposed
+                         into their atoms.
+                         Therefore, the XDMF support fields number_of_atoms and number_of_ions
+                         are only expected to display pairwise the same values respectively,
+                         if all ions are built from a single atom only.
+                    </doc>
                     <group name="roiID" type="NXobject" minOccurs="0" maxOccurs="unbounded">
-                        <doc>
-                             EXPLAIN HOW FIELDS SIGNED_DISTANCE AND NUCLIDE
-                             ARE COMPUTED/CONSTRUCTED.
-                        </doc>
                         <field name="signed_distance" type="NX_FLOAT" units="NX_LENGTH">
                             <doc>
-                                 In the direction of the ROI.
+                                 Sorted in increasing order projected along the positive direction
+                                 of the ROI as defined by orientation in the parent group.
                             </doc>
                             <dimensions rank="1">
                                 <dim index="1" value="k"/>
                             </dimensions>
                         </field>
-                        <field name="nuclide" type="NX_UINT" units="NX_UNITLESS">
+                        <field name="nuclide_hash" type="NX_UINT" units="NX_UNITLESS">
                             <doc>
-                                 Hashvalue using the following hashing rule :math:`H = Z + 256 * N`.
+                                 Hashvalue as defined in :ref:`NXion`.
                             </doc>
                             <dimensions rank="1">
                                 <dim index="1" value="k"/>

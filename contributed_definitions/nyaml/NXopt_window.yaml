@@ -1,0 +1,69 @@
+category: base
+doc: |
+  A window of a cryostat, heater, vacuum chamber or a simple glass slide.
+
+  This first verion originates from NXopt to describe cryostate windows
+  and possible influences for ellipsometry measurements.
+
+  For environmental measurements, the environment (liquid, vapor
+  etc.) is enclosed in a cell, which has windows both in the
+  direction of the source (entry window) and the detector (exit
+  window) (looking from the sample). In case that the entry and exit
+  windows are not the same type and do not have the same properties,
+  use a second 'WINDOW(NXaperture)' field.
+  
+  The windows also add a phase shift to the light altering the
+  measured signal. This shift has to be corrected based on measuring
+  a known sample (reference sample) or the actual sample of interest
+  in the environmental cell. State if a window correction has been
+  performed in 'window_effects_corrected'. Reference data should be
+  considered as a separate experiment, and a link to the NeXus file
+  should be added in reference_data_link in measured_data.
+  
+  The window is considered to be a part of the sample stage but also
+  beam path. Hence, its position within the beam path should be
+  defined by the 'depends_on' field.
+# A draft of a new base class to describe a window in a optical setup or device
+type: group
+NXopt_window(NXaperture):
+  (NXentry):
+    window_effects_corrected(NX_BOOLEAN):
+      doc: |
+        Was a window correction performed? If 'True' describe the window
+        correction procedure in 'window_correction/procedure'.
+    window_correction(NXprocess):
+      doc: |
+        Was a window correction performed? If 'True' describe the
+        window correction procedure in ''
+      procedure:
+        doc: |
+          Describe when (before or after the main measurement + time
+          stamp in 'date') and how the window effects have been
+          corrected, i.e. either mathematically or by performing a
+          reference measurement. In the latter case, provide the link to
+          to the reference data in 'reference_data_link'.
+      reference_data_link:
+        doc: |
+          Link to the NeXus file which describes the reference data if a
+          reference measurement for window correction was performed.
+          Ideally, the reference measurement was performed on a reference
+          sample and on the same sample, and using the same conditions as
+          for the actual measurement with and without windows. It should
+          have been conducted as close in time to the actual measurement
+          as possible.
+    material(NX_CHAR):
+      doc: |
+        The material of the window.
+      enumeration: [quartz, diamond, calcium fluoride, zinc selenide, thallium bromoiodide, alkali halide compound, Mylar, other]
+    material_other(NX_CHAR):
+      doc: |
+        If you specified 'other' as material, decsribe here what it is.
+    thickness(NX_FLOAT):
+      unit: NX_LENGTH
+      doc: |
+        Thickness of the window.
+    orientation_angle(NX_FLOAT):
+      unit: NX_ANGLE
+      doc: |
+        Angle of the window normal (outer) vs. the substrate normal
+        (similar to the angle of incidence).

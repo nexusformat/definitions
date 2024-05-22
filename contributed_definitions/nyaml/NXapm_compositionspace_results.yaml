@@ -1,0 +1,275 @@
+category: application
+doc: |
+  Results of a run with Alaukik Saxena's composition space tool.
+  
+  This is an initial draft application definition for the common NFDI-MatWerk,
+  FAIRmat infrastructure use case IUC09 how to improve the organization and
+  results storage of the composition space tool and make these data at the
+  same time directly understandable for research data management systems
+  like NOMAD Oasis.
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+  d: |
+    The dimensionality of the grid.
+  c: |
+    The cardinality or total number of cells/grid points.
+type: group
+NXapm_compositionspace_results(NXobject):
+  # by default for appdefs the value of the exists keyword is required unless it is explicitly specified differently
+  (NXentry):
+    exists: [min, 1, max, 1]
+    definition(NX_CHAR):
+      \@version(NX_CHAR):
+      enumeration: [NXapm_compositionspace_results]
+    # can be used for the name of the tool and version but also
+    # for if desired all the dependencies and libraries
+    program(NXprogram):
+      exists: [min, 1, max, 1]
+      program(NX_CHAR):
+        \@version(NX_CHAR):
+    job_pyiron_identifier(NX_CHAR):
+      exists: recommended
+      doc: |
+        TBD, maybe how to link between pyiron state tracking and app state tracking.
+    description(NX_CHAR):
+      exists: optional
+      doc: |
+        Disencouraged place for free-text for e.g. comments.
+    start_time(NX_DATE_TIME):
+      exists: recommended
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when the analysis behind this results file
+        was started, i.e. when composition space tool was started as a process.
+    end_time(NX_DATE_TIME):
+      exists: recommended
+      doc: |
+        ISO 8601 formatted time code with local time zone offset to UTC
+        information included when the analysis behind this results file
+        were completed and composition space tool exited as a process.
+    # config
+    config(NXserialized):
+      doc: |
+        The path and name of the config file that was used for this analysis.
+        TBD, this can be e.g. Alaukik's YAML file for composition space.
+      type(NX_CHAR):
+      path(NX_CHAR):
+      algorithm(NX_CHAR):
+      checksum(NX_CHAR):
+    # results
+    (NXuser):
+      exists: optional
+    coordinate_system_set(NXcoordinate_system_set):
+      exists: [min, 1, max, 1]
+      doc: |
+        Details about coordinate systems (reference frames) used. In atom probe several coordinate
+        systems have to be distinguished. Names of instances of such :ref:`NXcoordinate_system`
+        should be documented explicitly and doing so by picking from the
+        following controlled set of names:
+        
+        * composition_space
+        * lab
+        * specimen
+        * laser
+        * instrument
+        * detector
+        * recon
+        
+        The aim of this convention is to support users with contextualizing which reference
+        frame each instance (coordinate system) is. If needed, instances of :ref:`NXtransformations`
+        are used to detail the explicit affine transformations whereby one can convert
+        representations between different reference frames.
+        Inspect :ref:`NXtransformations` for further details.
+      compositionspace(NXcoordinate_system):
+        type(NX_CHAR):
+        handedness(NX_CHAR):
+        x(NX_NUMBER):
+          unit: NX_LENGTH
+          dim: (3,)
+        y(NX_NUMBER):
+          unit: NX_LENGTH
+          dim: (3,)
+        z(NX_NUMBER):
+          unit: NX_LENGTH
+          dim: (3,)
+    voxelization(NXprocess):
+      doc: |
+        Voxelization is the first step of the algorithmic chain that the 
+        CompositionSpace tool implements. In this step all ion positions are
+        discretized using a rectangular transfer function to identify the number
+        of ions/atoms in the dataset of each iontype.
+        
+        Using a discretization grid that is larger than the average distance
+        between reconstructed ion position reduces the computational costs.
+        This is the key idea of the CompositionSpace tool over other methods
+        traditionally used in atom probe (e.g. isosurfaces).
+      sequence_index(NX_POSINT):
+        enumeration: [1]
+      # specify the grid your using and for each ion in which cell i.e. voxel it is
+      # one could also have a more sophisticated data model where there is some
+      # fuzziness i.e. if an ML/AI model returns multiple values or a probability
+      # how likely an ion is in which voxel, for this
+      # inspect the example of the NXem_ebsd application definition
+      (NXcg_grid):
+        dimensionality(NX_POSINT):
+          unit: NX_UNITLESS
+          enumeration: [3]
+        cardinality(NX_POSINT):
+          unit: NX_UNITLESS
+        # default behaviour, if no coordinate system defined, unclear
+        # if one coordinate system is defined the origin is defined in this cs
+        origin(NX_NUMBER):
+          unit: NX_LENGTH
+          dimensions:
+            rank: 1
+            dim: [[1, d]]
+        symmetry:
+          enumeration: [cubic]
+        cell_dimensions(NX_NUMBER):
+          unit: NX_LENGTH
+          dimensions:
+            rank: 1
+            dim: [[1, d]]
+        extent(NX_POSINT):
+          unit: NX_UNITLESS
+          dimensions:
+            rank: 1
+            dim: [[1, d]]
+        (NXtransformations):
+          exists: recommended
+          doc: |
+            Reference to or definition of a coordinate system with
+            which the positions and directions are interpretable.
+        identifier_offset(NX_INT):
+          unit: NX_UNITLESS
+          doc: |
+            
+        position(NX_NUMBER):
+          unit: NX_LENGTH
+          doc: |
+            Position of each cell in Euclidean space.
+          dimensions:
+            rank: 2
+            dim: [[1, c], [2, d]]
+        coordinate(NX_INT):
+          exists: optional
+          unit: NX_DIMENSIONLESS
+          dimensions:
+            rank: 2
+            dim: [[1, c], [2, d]]
+        # bounding box if needed
+        voxel_identifier(NX_UINT):
+          unit: NX_UNITLESS
+          doc: |
+            For each ion, the identifier of the voxel in which the ion is located.
+          dimensions:
+            rank: 1
+            dim: [[1, n_ions]]
+      ionID(NXion):
+        exists: [min, 0, max, infty]
+        name(NX_CHAR):
+        weight(NX_FLOAT):
+          doc: |
+            TODO
+          dim: (c,)
+          unit: NX_UNITLESS
+      total(NX_FLOAT):
+        doc: |
+          TODO
+        dim: (c,)
+        unit: NX_UNITLESS
+    segmentation(NXprocess):
+      exists: [min, 1, max, 1]
+      doc: |
+        Segmentation is the second step of the algorithmic chain that the 
+        CompositionSpace tool implements. In this step a machine learning model
+        is used to identify how voxels cluster in composition space to identify
+        which chemically disjoint phases exists in the atom probe dataset.
+      pca(NXprocess):
+        doc: |
+          PCA in the parameter space of iontypes/phases of different chemical nature.
+        sequence_index(NX_POSINT):
+          enumeration: [2]
+        results(NXdata):
+          \@signal(NX_CHAR):
+          \@axes(NX_CHAR):
+          \@AXISNAME(NX_CHAR):
+          axis_explained_variance(NX_FLOAT):
+            doc: |
+              TODO
+            unit: NX_DIMENSIONLESS
+            dim: (i,)
+          axis_pca_dimension(NX_UINT):
+            doc: |
+              TODO
+            unit: NX_UNITLESS
+            dim: (i,)
+      ic_opt(NXprocess):
+        doc: |
+          Information criterion minimization.
+        sequence_index(NX_POSINT):
+          enumeration: [3]
+        cluster_analysisID(NXobject):
+          doc: |
+            TODO
+          n_ic_cluster(NX_UINT):
+            doc: |
+              TODO
+            unit: NX_UNITLESS
+          y_pred(NX_UINT):
+            doc: |
+              TODO
+            unit: NX_UNITLESS
+            dim: (c,)
+    clustering(NXprocess):
+      exists: [min, 1, max, 1]
+      doc: |
+        Clustering is the third step of the algorithmic chain that the CompositionSpace
+        tool implements. In this step the different voxelized regions in the dataset with
+        eventually different chemical nature are analyzed if they are distributed in
+        connected groups of voxels with the same chemical nature.
+        Using the discretization grid from the first step as the support, this enables
+        to prepare for the fourth step. In the fourth step the interfaces between
+        identified groups of different chemical nature are triangulated.
+        
+        These triangulated network of interfaces between regions of different chemical
+        nature is the final data structure that the CompositionSpace tool yields.
+        Subsequently, this mesh can be post-processed, similarly like meshes that are
+        obtained from isosurface-based approaches, to perform line profile analyses.
+      sequence_index(NX_POSINT):
+        enumeration: [3]
+      cluster_analysisID(NXobject):
+        exists: [min, 0, max, infty]
+        epsilon(NX_FLOAT):
+          doc: |
+            TODO
+          unit: NX_LENGTH
+        min_samples(NX_UINT):
+          doc: |
+            TODO
+          unit: NX_UNITLESS
+        target(NX_UINT):
+          doc: |
+            TODO total number of (phases) distinguished.
+          unit: NX_UNITLESS
+        labels(NX_UINT):
+          doc: |
+            TODO raw labels output of the DBScan clustering algorithm. Length of array varies depending on how
+            many voxels of the grid were identified of the targetted
+            phase/chemical nature.
+          dim: (k,)
+          unit: NX_UNITLESS
+    #  the section above needs refactoring by MatWerk colleagues
+    profiling(NXcs_profiling):
+      exists: optional
+      current_working_directory(NX_CHAR):
+        exists: recommended
+      start_time(NX_DATE_TIME):
+        exists: recommended
+      end_time(NX_DATE_TIME):
+        exists: recommended
+      total_elapsed_time(NX_NUMBER):
+      # number_of_processes(NX_POSINT):
+      # number_of_threads(NX_POSINT):
+      # number_of_gpus(NX_POSINT):

@@ -28,6 +28,8 @@ symbols:
     The total number of volumetric features.
   n_speci: |
     The total number of member distinguished when reporting composition.
+  n_rois: |
+    The total number of ROIs placed in an oned_profile task.
 type: group
 NXapm_paraprobe_nanochem_results(NXobject):
   (NXentry):
@@ -90,7 +92,7 @@ NXapm_paraprobe_nanochem_results(NXobject):
           doc: |
             Integer which specifies the first index to be used for distinguishing identifiers for cells.
             Identifiers are defined either implicitly or explicitly. For implicit indexing the identifiers are
-            defined on the interval [identifier_offset, identifier_offset+c-1].
+            defined on the interval :math:`[identifier\_offset, identifier\_offset + c - 1]`.
             For explicit indexing the identifier array has to be defined.
           unit: NX_UNITLESS
         kernel_size(NX_POSINT):
@@ -128,7 +130,7 @@ NXapm_paraprobe_nanochem_results(NXobject):
               Integer which specifies the first index to be used for distinguishing
               hexahedra. Identifiers are defined either implicitly or explicitly.
               For implicit indexing the identifiers are defined on the interval
-              [identifier_offset, identifier_offset+c-1].
+              :math:`[identifier\_offset, identifier\_offset + c - 1]`.
               For explicit indexing the identifier array has to be defined.
             unit: NX_UNITLESS
           hexahedron(NXcg_face_list_data_structure):
@@ -137,7 +139,7 @@ NXapm_paraprobe_nanochem_results(NXobject):
                 Integer which specifies the first index to be used for distinguishing
                 identifiers for vertices. Identifiers are defined either implicitly or explicitly.
                 For implicit indexing the identifiers are defined on the interval 
-                [identifier_offset, identifier_offset+c-1]. For explicit indexing the identifier array
+                :math:`[identifier\_offset, identifier\_offset + c - 1]`. For explicit indexing the identifier array
                 has to be defined.
               unit: NX_UNITLESS
             face_identifier_offset(NX_INT):
@@ -145,7 +147,7 @@ NXapm_paraprobe_nanochem_results(NXobject):
                 Integer which specifies the first index to be used for distinguishing
                 identifiers for faces. Identifiers are defined either implicitly or explicitly.
                 For implicit indexing the identifiers are defined on the interval
-                [identifier_offset, identifier_offset+c-1]. For explicit indexing the identifier array
+                :math:`[identifier\_offset, identifier\_offset + c - 1]`. For explicit indexing the identifier array
                 has to be defined.
               unit: NX_UNITLESS
             vertices(NX_NUMBER):
@@ -359,7 +361,7 @@ NXapm_paraprobe_nanochem_results(NXobject):
               doc: |
                 Integer which specifies the first index to be used for distinguishing triangles.
                 Identifiers are defined either implicitly or explicitly. For implicit indexing the
-                identifiers are defined on the interval [identifier_offset, identifier_offset+c-1].
+                identifiers are defined on the interval :math:`[identifier\_offset, identifier\_offset + c - 1]`.
               unit: NX_UNITLESS
             triangles(NXcg_face_list_data_structure):
               number_of_vertices(NX_POSINT):
@@ -798,6 +800,7 @@ NXapm_paraprobe_nanochem_results(NXobject):
     oned_profile(NXapm_paraprobe_tool_results):
       exists: [min, 0, max, 1]
       window(NXcs_filter_boolean_mask):
+        exists: optional
         number_of_ions(NX_UINT):
         bitdepth(NX_UINT):
         mask(NX_UINT):
@@ -818,50 +821,60 @@ NXapm_paraprobe_nanochem_results(NXobject):
             necessarily has to be the center_of_mass of the polyhedra.
           unit: NX_LENGTH
           dim: (i, 3)
-        roi_identifier(NX_UINT):
+        orientation(NX_FLOAT):
           doc: |
-            Integer which specifies the first index to be used for distinguishing
-            ROI cylinder explicitly.
+            The orientation of the ROI defined via a vector which points along
+            the cylinder axis and whose length is the height of the cylinder.
+          unit: NX_LENGTH
+          dim: (i, 3)
+        # XDMF support
+        identifier(NX_UINT):
+          exists: optional
+          doc: |
+            XDMF support to enable colouring each ROI by its identifier.
           unit: NX_UNITLESS
-          dim: (i,)
-        polyhedra(NXcg_face_list_data_structure):
-          exists: [min, 0, max, 1]
-          edge_contact(NX_UINT):
-            exists: optional
-            unit: NX_UNITLESS
-            dim: (i,)
-          number_of_atoms(NX_UINT):
-            exists: optional
-            doc: |
-              The number of atoms in each ROI.
-            unit: NX_UNITLESS
-            dim: (i,)
-          number_of_ions(NX_UINT):
-            exists: optional
-            doc: |
-              The number of ions in each ROI.
-            unit: NX_UNITLESS
-            dim: (i,)
-          orientation(NX_FLOAT):
-            exists: optional
-            doc: |
-              The orientation of the ROI defined via a vector which points along
-              the cylinder axis and whose length is the height of the cylinder.
-            unit: NX_LENGTH
-            dim: (i, 3)
+          dim: (j,)
+        edge_contact(NX_UINT):
+          exists: optional
+          doc: |
+            XDMF support to enable colouring each ROI whether it has edge contact or not.
+          unit: NX_UNITLESS
+          dim: (j,)
+        number_of_atoms(NX_UINT):
+          exists: optional
+          doc: |
+            XDMF support to enable colouring each ROI by its number of atoms.
+          unit: NX_UNITLESS
+          dim: (j,)
+        number_of_ions(NX_UINT):
+          exists: optional
+          doc: |
+            XDMF support to enable colouring each ROI by its number of ions.
+          unit: NX_UNITLESS
+          dim: (j,)
+        rois_far_from_edge(NXprocess):
+          doc: |
+            Distance and iontype-specific processed data for each ROI.
+            Arrays signed_distance and nuclide_hash are sorted by increasing
+            distance.
+            Array nuclide_hash reports one hash for each atom of each isotope.
+            Effectively, this can yield to groups of values on signed_distance
+            with the same distance value as molecular ions are reported decomposed
+            into their atoms.
+            Therefore, the XDMF support fields number_of_atoms and number_of_ions
+            are only expected to display pairwise the same values respectively,
+            if all ions are built from a single atom only.
           roiID(NXobject):
             exists: [min, 0, max, infty]  # no max is := i
-            doc: |
-              EXPLAIN HOW FIELDS SIGNED_DISTANCE AND NUCLIDE
-              ARE COMPUTED/CONSTRUCTED.
             signed_distance(NX_FLOAT):
               doc: |
-                In the direction of the ROI.
+                Sorted in increasing order projected along the positive direction
+                of the ROI as defined by orientation in the parent group.
               unit: NX_LENGTH
               dim: (k,)
-            nuclide(NX_UINT):
+            nuclide_hash(NX_UINT):
               doc: |
-                Hashvalue using the following hashing rule :math:`H = Z + 256 * N`.
+                Hashvalue as defined in :ref:`NXion`.
               unit: NX_UNITLESS
               dim: (k,)
 

@@ -1,6 +1,5 @@
 # pylint: disable=too-many-lines
-"""Parse NeXus definition files
-"""
+"""Parse NeXus definition files"""
 
 import os
 import re
@@ -8,6 +7,8 @@ import textwrap
 from functools import lru_cache
 from glob import glob
 from pathlib import Path
+from typing import List
+from typing import Optional
 
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
@@ -44,8 +45,8 @@ def get_app_defs_names():
 
     contrib_def_path_glob = Path(nexus_def_path) / "contributed_definitions" / "*.nxdl*"
 
-    files = sorted(glob(app_def_path_glob))
-    for nexus_file in sorted(contrib_def_path_glob):
+    files = sorted(glob(str(app_def_path_glob)))
+    for nexus_file in sorted(glob(str(contrib_def_path_glob))):
         root = get_xml_root(nexus_file)
         if root.attrib["category"] == "application":
             files.append(nexus_file)
@@ -108,42 +109,69 @@ def get_nx_class(nxdl_elem):
     return nxdl_elem.attrib.get("type", "NX_CHAR")
 
 
-def get_nx_namefit(hdf_name, name, name_any=False):
+def get_nx_namefit(hdf_name: str, name: str, name_any: bool = False) -> int:
     """
     Checks if an HDF5 node name corresponds to a child of the NXDL element.
-    A group of uppercase letters anywhere can be replaced by an arbitrary name.
+    A group of uppercase letters anywhere in the name is treated as freely choosable
+    part of this name.
+    If a match is found this function returns twice the length for an exact match,
+    otherwise the number of matching characters (case insensitive) or zero, if
+    `name_any` is set to True, is returned.
+    All uppercase groups are considered independently.
+    Lowercase matches are independent of uppercase group lengths, e.g.,
+    an hdf_name `get_nx_namefit("my_fancy_yet_long_name", "my_SOME_name")` would
+    return a score of 8 for the lowercase matches `my_..._name`.
+    All characters in `[a-zA-Z0-9_.]` are considered for matching to an uppercase letter.
+    If you use any other letter in the name, it will not match and return -1.
+    Periods at the beginning or end of the hdf_name are not allowed, only exact
+    matches will be considered.
+
+    Examples:
+
+        * `get_nx_namefit("test_name", "TEST_name")` returns 9
+        * `get_nx_namefit("te_name", "TEST_name")` returns 7
+        * `get_nx_namefit("my_other_name", "TEST_name")` returns 5
+        * `get_nx_namefit("test_name", "test_name")` returns 18
+        * `get_nx_namefit("test_other", "test_name")` returns -1
 
     Args:
-        hdf_name (str): The hdf_name, containing uppercase parts.
-        name (str): The string to match against hdf_name.
+        hdf_name (str): The hdf_name, containing the name of the HDF5 node.
+        name (str): The concept name to match against.
         name_any (bool, optional):
-            Accept any name and just return the matching characters.
+            Accept any name and return either 0 (match) or -1 (no match).
             Defaults to False.
 
     Returns:
-        int:
-            -1 if no match is found or the number of matching
-            characters (case insensitive) between for all uppercase groups.
+        int: -1 if no match is found or the number of matching
+             characters (case insensitive).
     """
+    path_regex = r"([a-zA-Z0-9_.]+)"
+
     if name == hdf_name:
         return len(name) * 2
+    if hdf_name.startswith(".") or hdf_name.endswith("."):
+        # Don't match anything with a dot at the beginning or end
+        return -1
 
-    uppercase_parts = re.findall("[A-Z]+(?:_[A-Z]+)*", name)
+    uppercase_parts = re.findall(r"[A-Z]+(?:_[A-Z]+)*", name)
 
+    regex_name = name
+    uppercase_count = 0
     for up in uppercase_parts:
-        name = name.replace(up, r"([a-zA-Z0-9_]+)")
+        uppercase_count += len(up)
+        regex_name = regex_name.replace(up, path_regex)
 
-    name_match = re.search(rf"^{name}$", hdf_name)
+    name_match = re.search(rf"^{regex_name}$", hdf_name)
     if name_match is None:
         return 0 if name_any else -1
 
-    fit = 0
-    for up, low in zip(uppercase_parts, name_match.groups()):
-        for i in range(min(len(up), len(low))):
-            if up[i].lower() == low[i]:
-                fit += 1
+    match_count = 0
+    for uppercase, match in zip(uppercase_parts, name_match.groups()):
+        for s1, s2 in zip(uppercase.upper(), match.upper()):
+            if s1 == s2:
+                match_count += 1
 
-    return fit
+    return len(name) + match_count - uppercase_count
 
 
 def get_nx_classes():
@@ -317,18 +345,6 @@ def get_own_nxdl_child(
     for child in nxdl_elem:
         if not isinstance(child.tag, str):
             continue
-        if child.attrib.get("name") == name:
-            return set_nxdlpath(child, nxdl_elem)
-    for child in nxdl_elem:
-        if not isinstance(child.tag, str):
-            continue
-        if child.attrib.get("name") == name:
-            child.set("nxdlbase", nxdl_elem.get("nxdlbase"))
-            return child
-
-    for child in nxdl_elem:
-        if not isinstance(child.tag, str):
-            continue
         result = get_own_nxdl_child_reserved_elements(child, name, nxdl_elem)
         if result is not False:
             return result
@@ -415,7 +431,7 @@ def get_required_string(nxdl_elem):
 def write_doc_string(logger, doc, attr):
     """Simple function that prints a line in the logger if doc exists"""
     if doc:
-        logger.debug("@%s [NX_CHAR]", attr)
+        logger.debug(f"@{attr} [NX_CHAR]")
     return logger, doc, attr
 
 
@@ -567,13 +583,15 @@ def get_doc(node, ntype, nxhtml, nxpath):
     doc_field = node.find("doc")
     if doc_field is not None:
         doc = doc_field.text
-    (index, enums) = get_enums(node)  # enums
-    if index:
+    enums = get_enums(node)  # enums
+    if enums is not None:
         enum_str = (
             "\n "
-            + ("Possible values:" if enums.count(",") else "Obligatory value:")
+            + ("Possible values:" if len(enums) > 1 else "Obligatory value:")
             + "\n   "
-            + enums
+            + "["
+            + ",".join(enums)
+            + "]"
             + "\n"
         )
     else:
@@ -603,20 +621,26 @@ def get_namespace(element):
     return element.tag[element.tag.index("{") : element.tag.rindex("}") + 1]
 
 
-def get_enums(node):
-    """Makes list of enumerations, if node contains any.
-    Returns comma separated STRING of enumeration values, if there are enum tag,
-    otherwise empty string."""
-    # collect item values from enumeration tag, if any
+def get_enums(node: ET._Element) -> Optional[List[str]]:
+    """
+    Makes list of enumerations, if node contains any.
+
+    Args:
+        node (ET._Element): The node to check for enumerations.
+
+    Returns:
+        Optional[List[str]]:
+            Returns a list of the enumeration values if an enumeration was found.
+            If no enumeration was found it returns None.
+    """
     namespace = get_namespace(node)
     enums = []
     for enumeration in node.findall(f"{namespace}enumeration"):
         for item in enumeration.findall(f"{namespace}item"):
             enums.append(item.attrib["value"])
-        enums = ",".join(enums)
-        if enums != "":
-            return (True, "[" + enums + "]")
-    return (False, "")  # if there is no enumeration tag, returns empty string
+        if enums:
+            return enums
+    return None
 
 
 def add_base_classes(elist, nx_name=None, elem: ET.Element = None):
