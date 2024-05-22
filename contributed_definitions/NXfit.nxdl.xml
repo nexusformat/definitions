@@ -26,15 +26,10 @@
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
-        <symbol name="n_points">
+        <symbol name="dimRank">
             <doc>
-                 Number of discretization points inside the fitting region.
-            </doc>
-        </symbol>
-        <symbol name="n_dependent">
-            <doc>
-                 Number of dependent variables to be fitted (for multidimensional/multivariate
-                 fit.)
+                 Rank of the dependent and independent data arrays (for
+                 multidimensional/multivariate fit.)
             </doc>
         </symbol>
     </symbols>
@@ -52,45 +47,64 @@
         </doc>
         <field name="input_dependent" type="NX_NUMBER" units="NX_ANY">
             <doc>
-                 Dependent axis for this fit procedure.
+                 Position values along one or more data dimensions (to hold the
+                 values for the independent variable for this fit procedure).
             </doc>
-            <dimensions>
-                <dim index="1" value="n_points"/>
+            <dimensions rank="dimRank">
+                <doc>
+                     The ``input_dependent`` field must have the same rank (``dimRank``)
+                     as the ``input_independent`` field. Each individual dimension of ``input_dependent``
+                     must have the same number of points as the corresponding dimension in
+                     the ``input_independent`` field.
+                </doc>
             </dimensions>
         </field>
         <field name="input_independent" type="NX_NUMBER" units="NX_ANY">
             <doc>
-                 Independent axis for this fit procedure.
+                 Independent input axis for this fit procedure.
             </doc>
-            <dimensions rank="2">
-                <dim index="1" value="n_points"/>
-                <dim index="2" value="n_dependent"/>
+            <dimensions rank="dimRank">
+                <doc>
+                     The ``input_independent`` field must have the same rank (``dimRank``)
+                     as the ``input_dependent`` field. Each individual dimension of ``input_independent``
+                     must have the same number of points as the corresponding dimension in
+                     the ``input_dependent`` field.
+                </doc>
             </dimensions>
         </field>
         <field name="envelope" type="NX_NUMBER" units="NX_ANY">
             <doc>
-                 Resulting envelope of all NXpeak instances.
-                 Should have the same dimension as the `position` axes of the individual peaks.
+                 Resulting envelope of applying the `global_fit_function` with its parameter to the data stored
+                 in `input_independent`.
             </doc>
-            <dimensions rank="2">
-                <dim index="1" value="n_points"/>
-                <dim index="2" value="n_dependent"/>
+            <dimensions rank="dimRank">
+                <doc>
+                     The ``envelope`` field must have the same rank (``dimRank``)
+                     as the ``input_independent`` field. Each individual dimension of ``envelope``
+                     must have the same number of points as the corresponding dimension in
+                     the ``input_independent`` field.
+                </doc>
             </dimensions>
         </field>
         <field name="residual" type="NX_NUMBER" units="NX_ANY">
             <doc>
-                 Difference between the envelope and the data to be fitted.
+                 Difference between the envelope and the `input_independent` data to be fitted.
             </doc>
-            <dimensions rank="2">
-                <dim index="1" value="n_points"/>
-                <dim index="2" value="n_dependent"/>
+            <dimensions rank="dimRank">
+                <doc>
+                     The ``residual`` field must have the same rank (``dimRank``)
+                     as the ``input_independent`` field. Each individual dimension of ``residual``
+                     must have the same number of points as the corresponding dimension in
+                     the ``input_independent`` field.
+                </doc>
             </dimensions>
         </field>
     </group>
     <group name="peakPEAK" type="NXpeak">
         <doc>
-             One spectral peak of the peak model.
-             It is envisioned that peaks are labeled as peak_0, peak_1, and so on.
+             One peak of the peak model.
+             If there is no characteristic name for each peak component, is envisioned that peaks 
+             are labeled as peak_0, peak_1, and so on.
         </doc>
         <field name="total_area" type="NX_NUMBER" units="NX_ANY">
             <doc>
@@ -114,18 +128,32 @@
                  The relative area can simply be derived by dividing the total_area by the
                  total area of all peaks or by a more complicated method (e.g., by
                  additionally dividing by the relative sensitivity factors). Details shall
-                 be given in fitting_method.
+                 be given in `global_fit_function`.
             </doc>
         </field>
     </group>
     <group name="backgroundBACKGROUND" type="NXfit_background">
         <doc>
-             One fitted background (functional, position, and intensities) of the peak fit.
-             It is envisioned that peaks are labeled as background_0, background_1, and
-             so on.
+             One fitted background (functional form, position, and intensities) of the peak fit.
+             If there is no characteristic name for each peak component, it is envisioned that backgrounds are labeled
+             as background_0, background_1, and so on.
         </doc>
     </group>
-    <group name="fit_function" type="NXfit_function">
+    <group name="global_fit_function" type="NXfit_function">
+        <doc>
+             Function used to describe the overall fit to the data, taking into account the parameters of the
+             individual `NXpeak` and `NXfit_background` components.
+        </doc>
+        <field name="formula">
+            <doc>
+                 Oftentimes, if the peaks and fit backgrounds are defined independently (i.e, with their own
+                 parameter sets), the resulting global fit is a of the form 
+                 :math:`model = peak_1(p_1) + peak2(p_2) + backgr(p_3).`, where each :math:`p_x` describes the 
+                 set of parameters for one peak/background.
+            </doc>
+        </field>
+    </group>
+    <group name="error_function" type="NXfit_function">
         <doc>
              Function used to optimize the parameters during peak fitting.
         </doc>
@@ -138,6 +166,17 @@
                  - Levenberg-Marquardt algorithm (damped least-squares)
                  - linear regression
                  - Bayesian linear regression
+            </doc>
+        </field>
+        <field name="formula">
+            <doc>
+                 For the optimization, the formula is any optimization process on the `global_fit_function` given above.
+                 As an example, for a linear least squared algorithm on independent components, the formula of the error_function 
+                 would be :math:`LLS(peak_1(p_1) + peak2(p_2) + backgr(p_3))`, where each :math:`p_x` describes the set 
+                 of parameters for one peak/background.
+                 
+                 It is however also possible to supply more involved formulas. For example, in the case of constrained fits, the derivatives
+                 of parameters.
             </doc>
         </field>
     </group>
