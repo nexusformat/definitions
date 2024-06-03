@@ -28,3 +28,6 @@ Here's a list of application definitions related to photoemission spectroscopy:
 
     :ref:`NXmpes`:
        A universal application definition with minimal metadata requirements for describing all photoemission experiments.
+
+    :ref:`NXmpes_arpes`:
+       An appdef for angle-resolved photoemission spectroscopy (ARPES) experiments.
