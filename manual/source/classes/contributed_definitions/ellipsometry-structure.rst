@@ -24,7 +24,7 @@ In the application definition we provide a minimum set of description elements a
 Application Definitions
 -----------------------
 
-    :ref:`NXopt`:
+    :ref:`NXoptical_spectroscopy`:
        A generic application definition for optial spectorscopy measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
 
     :ref:`NXellipsometry`:
