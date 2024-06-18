@@ -27,17 +27,12 @@ Extension of the Draft Version (05/2023) of a NeXus application definition which
 serves as a template for various optical spectroscopy experiments
 
 TODO:
-- Merge reference_frames with angle_reference_frame
-- Rework instrument_calibration_DEVICE - use NXcalibration?
-- Beam polarizations: Own Polarization concept with angle or from NXbeam via beam coordinates? (solve reference frame problem first)
-- Describe angle_of_detection by NXtransformations
-- remove NXmonchromator? as it is already in NXinstrument
 - Add NXlens_opt and NXwaveplate to NXinstrument?
-- Make sample stage_stage(NXmanipulator)/reference_frame via NXtransformations
-- Add properties from NXlens_opt from NXopt to NXlens_opt base class
 - Make polfilter_TYPE(NXbeam_device) own base class -\-> rework NXpolarizer_opt. and add them to NXinstrument.
-- Make spectralfilter_TYPE(NXbeam_device) own base class -\-> extend NXfilter?  and add them to NXinstrument.-->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXopt" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+- Make spectralfilter_TYPE(NXbeam_device) own base class -\-> extend NXfilter?  and add them to NXinstrument.
+- Make offset angles for polar and azimutal?
+- Can angle_reference_frame be replaced later by only using reference_frames and generic angle description?-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXoptical_spectroscopy" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              Variables used throughout the document, e.g. dimensions or parameters.
@@ -56,17 +51,6 @@ TODO:
                  N_measurements = 2*3 = 6.
             </doc>
         </symbol>
-        <symbol name="N_detection_angles">
-            <doc>
-                 Number of detection angles of the beam reflected or scattered off the
-                 sample.
-            </doc>
-        </symbol>
-        <symbol name="N_incident_angles">
-            <doc>
-                 Number of angles of incidence of the incident beam.
-            </doc>
-        </symbol>
     </symbols>
     <doc>
          A general application definition of optical spectroscopy elements, which may 
@@ -77,6 +61,9 @@ TODO:
          
          A general optical experiment consists of (i) a light/photon source, (ii) a sample,
          (iii) a detector.
+         
+         For any free text descriptions, it is recommended to enter data in english
+         language, as this is the most FAIR representation.
     </doc>
     <group type="NXentry">
         <field name="definition">
@@ -96,15 +83,17 @@ TODO:
                 </doc>
             </attribute>
             <enumeration>
-                <item value="NXopt"/>
+                <item value="NXoptical_spectroscopy"/>
             </enumeration>
         </field>
-        <field name="title"/>
-        <field name="start_time" type="NX_DATE_TIME">
+        <field name="title" recommended="true"/>
+        <field name="start_time" type="NX_DATE_TIME" recommended="true">
             <doc>
                  Datetime of the start of the measurement.
                  Should be a ISO8601 date/time stamp. It is recommended to add an explicit time zone,
                  otherwise, the local time zone is assumed per ISO8601.
+                 
+                 It is required to enter at least one of both measurement times, either "start_time" or "end_time".
             </doc>
         </field>
         <field name="end_time" type="NX_DATE_TIME" recommended="true">
@@ -112,6 +101,8 @@ TODO:
                  Datetime of the end of the measurement.
                  Should be a ISO8601 date/time stamp. It is recommended to add an explicit time zone,
                  otherwise the local time zone is assumed per ISO8601.
+                 
+                 It is required to enter at least one of both measurement times, either "start_time" or "end_time".
             </doc>
         </field>
         <group name="experiment_identifier" type="NXidentifier" recommended="true">
@@ -123,6 +114,18 @@ TODO:
             </doc>
             <field name="service" type="NX_CHAR" optional="true"/>
             <field name="identifier" type="NX_CHAR" recommended="true"/>
+            <field name="identifier_type" recommended="true">
+                <doc>
+                     Select the range of validity of this identier.
+                     Local: Setup#1 at Institute building #2 in Room #3
+                     Global: Unique identification of with by unique location and unique
+                     globally persistent time stamp.
+                </doc>
+                <enumeration>
+                    <item value="local"/>
+                    <item value="global"/>
+                </enumeration>
+            </field>
             <field name="is_persistent" type="NX_BOOLEAN" optional="true"/>
         </group>
         <field name="experiment_description" optional="true">
@@ -144,10 +147,11 @@ TODO:
                  
                  Chose other if none of these methods are suitable. You may specify
                  fundamental characteristics or properties in the experimental sub-type.
+                 
+                 For Raman spectroscopy or ellipsometry use the respective specializations
+                 of NXoptical_spectroscopy.
             </doc>
             <enumeration>
-                <item value="ellipsometry"/>
-                <item value="Raman spectroscopy"/>
                 <item value="photoluminescence"/>
                 <item value="transmission spectroscopy"/>
                 <item value="reflection spectroscopy"/>
@@ -166,10 +170,6 @@ TODO:
                 <item value="other"/>
             </enumeration>
         </field>
-        <!--Replace maybe sub_type with exp_technique?
-experimental technique -\-> pump-probe, parameters seperated (i.e. time, space)?
-The above listed things are related to beam properties? This is different
-compared to temperature or pressure. Is this a useful distinction?-->
         <field name="experiment_type_other" optional="true">
             <doc>
                  If "other" was selected in "experiment_type" and/or in "experiment_sub_type",
@@ -177,17 +177,45 @@ compared to temperature or pressure. Is this a useful distinction?-->
                  respective community of interest.
             </doc>
         </field>
-        <!--
-This should be extended later and hopefully replace angle_reference_frame
-and sample_normal_direction.
-Required reference frames:
-Sample normal, beam_z_axis, sample_stage
--->
         <group name="reference_frames" type="NXcoordinate_system_set" optional="true">
             <doc>
                  Description of one or more coordinate systems that are specific to the
-                 experiment.
+                 experiment. Examples are beam centered, sample-normal centered,
+                 laboratory-system centered, sample-stage centered, crystal-symmetry centered.
             </doc>
+            <group name="beam_ref_frame" type="NXcoordinate_system" optional="true">
+                <field name="depends_on" type="NX_CHAR">
+                    <doc>
+                         This refers to the coordinate system along the beam path. The origin and
+                         base is defined at z=0, where the incident beam hits the sample at the surface.
+                    </doc>
+                </field>
+                <group type="NXtransformations">
+                    <doc>
+                         This is the default NeXus coordinate system (McStas), if the transformation
+                         does not change the coordinate system at all - i.e. it is unity.
+                         Otherwise, by this a respective transformation of the beam
+                         reference frame to the default reference frame could be made. i.e.
+                         exchange of x and z coordinate, rotation of respective coordinates
+                         towards each other.
+                    </doc>
+                </group>
+            </group>
+            <group name="sample_normal_ref_frame" type="NXcoordinate_system" optional="true">
+                <field name="depends_on" type="NX_CHAR">
+                    <doc>
+                         Link to transformations defining the sample-normal base coordinate system,
+                         which is defined such that the positive z-axis is parallel to the sample normal,
+                         and the x-y-plane lies inside the sample surface.
+                    </doc>
+                </field>
+                <group type="NXtransformations">
+                    <doc>
+                         Set of transformations, describing the orientation of the sample-normal coordinate system
+                         with respect to the beam coordinate system (.).
+                    </doc>
+                </group>
+            </group>
         </group>
         <group type="NXuser" minOccurs="0" maxOccurs="unbounded">
             <doc>
@@ -198,6 +226,8 @@ Sample normal, beam_z_axis, sample_stage
                  It is recommended to add multiple users if relevant.
                  
                  Due to data privacy concerns, there is no minimum requirement.
+                 If no user with specific name is allowed to be given, it is required to
+                 assign at least an affiliation
             </doc>
         </group>
         <group type="NXinstrument">
@@ -216,183 +246,38 @@ Sample normal, beam_z_axis, sample_stage
                  - Stages(NXmanipulator)
                  - Sensors and actuators to control or measure sample or beam properties
             </doc>
-            <group name="device_information" type="NXfabrication" recommended="true">
+            <group name="beam_TYPE" type="NXbeam" minOccurs="1" maxOccurs="unbounded">
                 <doc>
-                     General device information of the optical spectroscopy setup, if
-                     suitable (e.g. for a tabletop spectrometer or other non-custom build setups).
-                     For custom build setups, this may be limited to the construction year.
-                </doc>
-                <field name="vendor" recommended="true"/>
-                <field name="model" recommended="true"/>
-                <field name="identifier" recommended="true"/>
-                <field name="construction_year" type="NX_DATE_TIME" optional="true"/>
-            </group>
-            <group name="software_TYPE" type="NXprogram" recommended="true">
-                <field name="program">
-                    <doc>
-                         Commercial or otherwise defined given name of the program that was
-                         used to control any parts of the optical spectroscopy setup.
-                         The uppercase TYPE should be replaced by a specification name, i.e.
-                         "software_detector" or "software_stage" to specify the respective
-                         program or software components.
-                    </doc>
-                    <attribute name="version" recommended="true">
-                        <doc>
-                             Either version with build number, commit hash, or description of a
-                             (online) repository where the source code of the program and build
-                             instructions can be found so that the program can be configured in
-                             such a way that result files can be created ideally in a
-                             deterministic manner.
-                        </doc>
-                    </attribute>
-                    <attribute name="url" optional="true">
-                        <doc>
-                             Description of the software by persistent resource, where the program,
-                             code, script etc. can be found.
-                        </doc>
-                    </attribute>
-                </field>
-            </group>
-            <!--The angle_reference_frame will be connected later to general reference frames
-For this this solution enables the description of the beam relations for
-different optical spectroscopy methods in the reference frame they are used to-->
-            <field name="angle_reference_frame">
-                <doc>
-                     Defines the reference frame which is used to describe the sample orientation
-                     with respect to the beam directions.
+                     This can be used to describe properties of a photon beam.
+                     A beam is always defined between two beam_devices, via
+                     "previous_device" and "next_device".
                      
-                     A beam centered description is the default and uses 4 angles(similar to XRD):
-                       - Omega (angle between sample surface and incident beam)
-                       - 2Theta (angle between the transmitted beam and the detection beam)
-                       - Chi (sample tilt angle, angle between plane#1 and the surface normal,
-                             plane#1 = spanned by incidence beam and detection
-                             and detection. If Chi=0°, then plane#1 is the plane of
-                             incidence in reflection setups)
-                       - Phi (inplane rotation of sample, rotation axis is the samples 
-                             surface normal)
-                     
-                     
-                     A sample normal centered description is as well possible(similar to XX):
-                       - angle of incidence (angle between incident beam and sample surface)
-                       - angle of detection (angle between detection beam and sample surface)
-                       - angle of incident and detection beam (angle between the incident and scattering beam)
-                       - angle of in-plane sample rotation (direction along the sample's surface normal)
+                     It is required to define at least one incident beam which is incident
+                     to the sample. You may specify if this beam parameters are acutally measured
+                     or just nominal.
+                     If this beam is the output of a source, chose the same
+                     name appendix as for the NXsource instance (e.g. TYPE=532nm)
                 </doc>
-                <!--For the sample centered approach, it has to be avoided, that the detection beam,
-incident beam or surface normal beam are parallel to each other
-(Is this a problem for Raman backscattering?)
-For beam centered approach (as done for beamlines), the grativation and beam direction are used to define
-the coordinate system. As beamlines are usually built flat - there is no case
-in which these two vectors can be parallel to each other
-This is different with the surface normal. Aside of the surface normal,
-at least one further additional natural direction is required.
-This could be the magnetic/geographic north pole
-magnetic north pole: easy to determine, but time depenent (long term)
-geographic north pole: harder to determine? (What about GPS?), but constant with time-->
-                <enumeration>
-                    <item value="beam centered"/>
-                    <item value="sample normal centered"/>
-                </enumeration>
-            </field>
-            <group name="wavelength_resolution" type="NXresolution" optional="true">
-                <doc>
-                     The overall resolution of the optical instrument.
-                </doc>
-                <field name="physical_quantity">
-                    <enumeration>
-                        <item value="wavelength"/>
-                    </enumeration>
-                </field>
-                <field name="type" recommended="true"/>
-                <field name="resolution" type="NX_FLOAT" units="NX_WAVELENGTH">
+                <field name="parameter_reliability" optional="false">
                     <doc>
-                         Minimum distinguishable wavelength separation of peaks in spectra.
-                    </doc>
-                </field>
-            </group>
-            <group name="instrument_calibration_DEVICE" type="NXsubentry" recommended="true">
-                <doc>
-                     Pre-calibration of an arbitrary device of the instrumental setup, which
-                     has the name DEVICE. You can specify here how, at which time by which method
-                     the calibration was done. As well the accuracy and a link to the calibration
-                     dataset.
-                </doc>
-                <field name="device_path" recommended="true">
-                    <doc>
-                         Path to the device, which was calibrated.
-                         Example: entry/instrument/DEVICE
-                    </doc>
-                </field>
-                <field name="calibration_method" optional="true">
-                    <doc>
-                         Describe here the approach or method, used to perform the calibration, by a free
-                         text.
-                    </doc>
-                </field>
-                <group name="calibration_accuracy" type="NXdata" optional="true">
-                    <doc>
-                         Provide data about the determined accuracy of the device, this may
-                         may be a single value or a dataset like wavelength error vs. wavelength etc.
-                    </doc>
-                </group>
-                <field name="calibration_status" type="NX_CHAR" recommended="true">
-                    <doc>
-                         Was a calibration performed? If yes, when was it done? If the
-                         calibration time is provided, it should be specified in
-                         ENTRY/INSTRUMENT/calibration/calibration_time.
+                         Select the reliability of the respective beam characteristics. Either,
+                         the parameters are measured via another device or method or just given
+                         nominally via the properties of a light source properties (532nm, 100mW).
                     </doc>
                     <enumeration>
-                        <item value="calibration time provided"/>
-                        <item value="no calibration"/>
-                        <item value="within 1 hour"/>
-                        <item value="within 1 day"/>
-                        <item value="within 1 week"/>
+                        <item value="measured"/>
+                        <item value="nominal"/>
                     </enumeration>
                 </field>
-                <field name="calibration_time" type="NX_DATE_TIME" optional="true">
-                    <doc>
-                         If calibtration status is 'calibration time provided', specify the
-                         ISO8601 date when calibration was last performed before this
-                         measurement. UTC offset should be specified.
-                    </doc>
-                </field>
-                <group name="calibration_data_link" type="NXidentifier" recommended="true">
-                    <doc>
-                         Link to the NeXus file containing the calibration data and metadata.
-                    </doc>
-                </group>
-            </group>
-            <!--Discussion
-##########
-The basic idea was: You have always an incident source and a detector.
-Therefore, you always have an incident beam and a "detection beam".
-These beams can be assigned clear incident and detection angles.
-
-This information is always of relevance for ellipsometry,
-but for Raman experiments, the state of polarization is as well of relevance
-Additonally, this is limited for incident, detection and sample normal
-to be in one plane. This does not have to be the case for Raman scattering
-experiments. Therefore, this is not general enough and may be moved to
-NXellipsometry.
-This information may be as well stored in an incident and detection beam-->
-            <!--beam properties-->
-            <group name="beam_TYPE" type="NXbeam" minOccurs="0" maxOccurs="unbounded">
-                <doc>
-                     Beam characteristics between two beam_devices.
-                     
-                     It is recommended to at least define one incident and one detection beam.
-                     If this beam is directly connected to a source, chose here the same
-                     name appendix as for the NXsource (e.g. TYPE=532nm)
-                </doc>
                 <field name="incident_wavelength" type="NX_NUMBER" recommended="true"/>
                 <field name="incident_wavelength_spread" type="NX_NUMBER" recommended="true"/>
                 <field name="incident_polarization" type="NX_NUMBER" recommended="true"/>
                 <field name="extent" type="NX_FLOAT" recommended="true"/>
                 <field name="associated_source" type="NX_CHAR" optional="true">
                     <doc>
-                         The path to the source which emitted this beam.
+                         The path to the device which emitted this beam (light source or frequency doubler).
                          
-                         Is recommended, if the previous optical element is a photon source.
+                         This parameter is recommended, if the previous optical element is a photon source.
                          In this way, the properties of the laser or light souce can be described
                          and associated.
                          The beam should be named with the same appendix as the source, e.g.,
@@ -413,130 +298,15 @@ This information may be as well stored in an incident and detection beam-->
                 </field>
                 <field name="linear_beam_sample_polarization" type="NX_NUMBER" optional="true" units="NX_ANGLE">
                     <doc>
-                         Description of the light polarization of the respective beam and the beam-sample-normal.
-                         This is only well defined, if the beam direclty hits the sample (either indicent
-                         beam or detection beam) and if the samples needs to have a clearly
-                         defined sample surface. The beam-sample-normal plane is spanned by
-                         the beam and the samples surface normal.
-                         
-                         If the electric field in in this plane, this value is 0° (P-pol)
-                         If the electric field is perpendicular to this plane, this value is 90° (S-pol)
-                         If the surface normal is parallel to the beam direction, then only the
-                         relation between different polarizations has to be consistent 
-                         (i.e. parallel polarized 0° and cross polarized 90°)
+                         Angle of the linear polarized light, with respect to a fixed arbitrary
+                         defined 0° position. This can be used if no definition of respective
+                         cooridnate systems for beam and sample normal is done. If coordinate systems
+                         are
                     </doc>
                 </field>
-            </group>
-            <!--The given angles may be extended similar to NXmpes, to allow a simple
-as well as an arbitrary description via NXtransformations
-
-fundamental orientation of incident and detection beam-->
-            <!--
-relation beam directions (incident and detection) with sample orientation
-these angles are quite simple. They might be extended similar to
-NXmpes_liquid with leaf_normal to allow arbitrary description.
-this might require a different reference frame.
--->
-            <field name="angle_of_incidence" type="NX_NUMBER" optional="true" units="NX_ANGLE">
-                <doc>
-                     Angle(s) of the incident beam vs. the normal of the bottom reflective
-                     (substrate) surface in the sample. These two directions span the plane
-                     of incidence.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="N_incident_angles"/>
-                </dimensions>
-                <attribute name="units"/>
-            </field>
-            <field name="angle_of_detection" type="NX_NUMBER" optional="true" units="NX_ANGLE">
-                <doc>
-                     Detection angle(s) of the beam reflected or scattered off the sample
-                     vs. the normal of the bottom reflective (substrate) surface in the
-                     sample if not equal to the angle(s) of incidence.
-                     These two directions span the plane of detection.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="N_detection_angles"/>
-                </dimensions>
-            </field>
-            <field name="angle_of_incident_and_detection_beam" type="NX_NUMBER" optional="true" units="NX_ANGLE">
-                <doc>
-                     Angle between the incident and detection beam.
-                     If angle_of_detection + angle_of_incidence = angle_of_incident_and_detection_beam,
-                     then the setup is a reflection setup.
-                     If angle_of_detection + angle_of_incidence != angle_of_incident_and_detection_beam
-                     then the setup may be a light scattering setup.
-                     (i.e. 90° + 90° != 90°, i.e. incident and detection beam in the sample surface, but
-                     the angle source-sample-detector is 90°)
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="XX"/>
-                </dimensions>
-                <attribute name="units"/>
-            </field>
-            <field name="angle_of_in_plane_sample_rotation" type="NX_NUMBER" optional="true" units="NX_ANGLE">
-                <doc>
-                     Angle of the inplane orientation of the sample. This might be an arbitrary,
-                     angle without specific relation to the sample symmetry,
-                     of the angle to a specific sample property (i.e. crystallographic axis or sample
-                     shape such as wafer flat)
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="XX"/>
-                </dimensions>
-            </field>
-            <field name="lateral_focal_point_offset" type="NX_NUMBER" optional="true" units="NX_LENGTH">
-                <doc>
-                     Specify if there is a lateral offset on the sample surface, between the focal 
-                     points of the incident beam and the detection beam.
-                </doc>
-            </field>
-            <!--beam path elements-->
-            <group name="source_TYPE" type="NXsource" minOccurs="1" maxOccurs="unbounded">
-                <field name="type" recommended="true">
-                    <enumeration>
-                        <item value="laser"/>
-                        <item value="dye-laser"/>
-                        <item value="broadband tunable light source"/>
-                        <item value="X-ray Source"/>
-                        <item value="arc lamp"/>
-                        <item value="halogen lamp"/>
-                        <item value="LED"/>
-                        <item value="other"/>
-                    </enumeration>
-                </field>
-                <field name="type_other" optional="true">
-                    <doc>
-                         Specification of type, may also go to name.
-                    </doc>
-                </field>
-                <field name="name" recommended="true"/>
-                <group name="device_information" type="NXfabrication">
-                    <doc>
-                         Details about the device information.
-                    </doc>
-                </group>
-                <field name="associated_beam" type="NX_CHAR">
-                    <doc>
-                         The path to a beam emitted by this source.
-                         Should be named with the same appendix, e.g.,
-                         for TYPE=532nmlaser, there should as well be
-                         a NXbeam named "beam_532nmlaser" together with this source
-                         instance named "source_532nmlaser"
-                         
-                         Example: /entry/instrument/beam_532nmlaser
-                    </doc>
-                </field>
-                <group name="device_characteristics" type="NXdata" optional="true">
-                    <doc>
-                         You may add here data which characterises the source in more detail,
-                         such as spectral power density, power dependency on line width, line-shape
-                         of the laser line, etc.
-                    </doc>
-                </group>
             </group>
             <group name="detector_TYPE" type="NXdetector" minOccurs="1" maxOccurs="unbounded">
-                <field name="detector_channel_type" recommended="true">
+                <field name="detector_channel_type">
                     <enumeration>
                         <item value="single-channel"/>
                         <item value="multichannel"/>
@@ -551,9 +321,11 @@ this might require a different reference frame.
                         <item value="Photomultiplier"/>
                         <item value="Photodiode"/>
                         <item value="Avalanche-Photodiode"/>
+                        <item value="Streak Camera"/>
                         <item value="Bolometer"/>
                         <item value="Golay Detectors"/>
                         <item value="Pyroelectric Detector"/>
+                        <item value="Deuterated Triglycine Sulphate"/>
                         <item value="other"/>
                     </enumeration>
                 </field>
@@ -562,17 +334,6 @@ this might require a different reference frame.
                          Type of detector, if "other" was selected in "detector_type".
                     </doc>
                 </field>
-                <group name="device_characteristics" type="NXdata" optional="true">
-                    <doc>
-                         You may add here data which characterizes the detector, such as quantum
-                         efficiency as function of wavelength or angular dependency of intenty.
-                    </doc>
-                </group>
-                <group name="device_information" type="NXfabrication" recommended="true">
-                    <field name="vendor" recommended="true"/>
-                    <field name="model" recommended="true"/>
-                    <field name="identifier" recommended="true"/>
-                </group>
                 <group name="raw_data" type="NXdata" recommended="true">
                     <doc>
                          Contains the raw data collected by the detector before calibration.
@@ -581,7 +342,7 @@ this might require a different reference frame.
                          This field ideally collects the data with the lowest level of processing
                          possible.
                     </doc>
-                    <!--Define a similar convention for NXopt? Or only for NXraman, NXellipsometry and NXphotoluminescence?
+                    <!--Define a similar convention for NXoptical_spectroscopy? Or only for NXraman, NXellipsometry and NXphotoluminescence?
  Fields should be named according to new following convention:
 
  - **pixel_x**: Detector pixel in x direction.
@@ -618,19 +379,255 @@ this might require a different reference frame.
                         </doc>
                     </field>
                 </group>
-            </group>
-            <group type="NXmonochromator" optional="true">
-                <group name="device_characteristics" type="NXdata" optional="true">
+                <field name="additional_detector_hardware">
                     <doc>
-                         Characteristics of the monochromator as diffraction efficiency as 
-                         wavelength and polarization dependence
+                         Specify respective hardware which was used to for the detector. For 
+                         example special electronics required for time-correlated single photon
+                         counting (TCSPC).
+                    </doc>
+                </field>
+                <group name="device_information" type="NXfabrication" recommended="true"/>
+            </group>
+            <group name="source_TYPE" type="NXsource" recommended="true">
+                <field name="type" recommended="true">
+                    <enumeration>
+                        <item value="laser"/>
+                        <item value="dye-laser"/>
+                        <item value="broadband tunable light source"/>
+                        <item value="X-ray Source"/>
+                        <item value="arc lamp"/>
+                        <item value="halogen lamp"/>
+                        <item value="LED"/>
+                        <item value="mercury cadmium telluride"/>
+                        <item value="other"/>
+                    </enumeration>
+                </field>
+                <field name="type_other" optional="true">
+                    <doc>
+                         Specification of type, may also go to name.
+                    </doc>
+                </field>
+                <field name="name" recommended="true"/>
+                <field name="standard" optional="true">
+                    <doc>
+                         If available, name/ID/norm of the light source standard.
+                    </doc>
+                </field>
+                <group name="device_information" type="NXfabrication" recommended="true">
+                    <doc>
+                         Details about the device information.
                     </doc>
                 </group>
-                <group name="device_information" type="NXfabrication" recommended="true">
-                    <field name="vendor" recommended="true"/>
-                    <field name="model" recommended="true"/>
-                    <field name="identifier" recommended="true"/>
-                </group>
+                <field name="associated_beam" type="NX_CHAR">
+                    <doc>
+                         The path to a beam emitted by this source.
+                         Should be named with the same appendix, e.g.,
+                         for TYPE=532nmlaser, there should as well be
+                         a NXbeam named "beam_532nmlaser" together with this source
+                         instance named "source_532nmlaser"
+                         
+                         Example: /entry/instrument/beam_532nmlaser
+                    </doc>
+                </field>
+            </group>
+            <group type="NXmonochromator" recommended="true">
+                <group name="device_information" type="NXfabrication" recommended="true"/>
+            </group>
+            <field name="angle_reference_frame" recommended="true">
+                <doc>
+                     Defines the reference frame which is used to describe the sample orientation
+                     with respect to the beam directions.
+                     
+                     A beam centered description is the default and uses 4 angles(similar to XRD):
+                       - Omega (angle between sample surface and incident beam)
+                       - 2Theta (angle between the transmitted beam and the detection beam)
+                       - Chi (sample tilt angle, angle between plane#1 and the surface normal,
+                             plane#1 = spanned by incidence beam and detection
+                             and detection. If Chi=0°, then plane#1 is the plane of
+                             incidence in reflection setups)
+                       - Phi (inplane rotation of sample, rotation axis is the samples 
+                             surface normal)
+                     
+                     
+                     A sample normal centered description is as well possible:
+                       - angle of incidence (angle between incident beam and sample surface)
+                       - angle of detection (angle between detection beam and sample surface)
+                       - angle of incident and detection beam
+                       - angle of in-plane sample rotation (direction along the sample's surface normal)
+                     
+                     An arbitrary reference frame can be defined by "reference_frames"
+                     and used via "instrument/angle_sample_and_beam_TYPE"
+                </doc>
+                <enumeration>
+                    <item value="beam centered"/>
+                    <item value="sample-normal centered"/>
+                </enumeration>
+            </field>
+            <field name="omega" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                <doc>
+                     Angle between sample incident beam and sample surface.
+                </doc>
+            </field>
+            <field name="twotheta" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                <doc>
+                     Angle between incident and detection beam
+                </doc>
+            </field>
+            <field name="chi" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                <doc>
+                     Sample tilt between sample normal, and the plane spanned by detection and
+                     incident beam.
+                </doc>
+            </field>
+            <field name="phi" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                <doc>
+                     Inplane rotation of the sample, with rotation axis along sample normal.
+                </doc>
+            </field>
+            <field name="angle_of_incidence" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                <doc>
+                     Angle(s) of the incident beam vs. the normal of the bottom reflective
+                     (substrate) surface in the sample. These two directions span the plane
+                     of incidence.
+                </doc>
+            </field>
+            <field name="angle_of_detection" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                <doc>
+                     Detection angle(s) of the beam reflected or scattered off the sample
+                     vs. the normal of the bottom reflective (substrate) surface in the
+                     sample if not equal to the angle(s) of incidence.
+                     These two directions span the plane of detection.
+                </doc>
+            </field>
+            <field name="angle_of_incident_and_detection_beam" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                <doc>
+                     Angle between the incident and detection beam.
+                     If angle_of_detection + angle_of_incidence = angle_of_incident_and_detection_beam,
+                     then the setup is a reflection setup.
+                     If angle_of_detection + angle_of_incidence != angle_of_incident_and_detection_beam
+                     then the setup may be a light scattering setup.
+                     (i.e. 90° + 90° != 90°, i.e. incident and detection beam in the sample surface, but
+                     the angle source-sample-detector is 90°)
+                </doc>
+            </field>
+            <field name="angle_of_in_plane_sample_rotation" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                <doc>
+                     Angle of the inplane orientation of the sample. This might be an arbitrary,
+                     angle without specific relation to the sample symmetry,
+                     of the angle to a specific sample property (i.e. crystallographic axis or sample
+                     shape such as wafer flat)
+                </doc>
+            </field>
+            <group name="generic_beam_sample_angle_TYPE" type="NXtransformations" recommended="true">
+                <doc>
+                     Set of transformations, describing the relative orientation of different
+                     parts of the experiment (beams or sample). You may select one of the specified
+                     angles for incident and detection beam or sample, and then use polar and azimuthal
+                     angles to define the direction via sperical coordinates.
+                     This allows consistent defintion between different coordinate system.
+                     You may refer to self defined coordinate system as well.
+                     
+                     
+                     If "angle_reference_frame = beam centered", then this coordinate system is used:
+                     McStas system (NeXus default)
+                     (https://manual.nexusformat.org/design.html#mcstas-and-nxgeometry-system)
+                     
+                     i.e. the z-coordinate math:`[0,0,1]` is along the incident beam direction and
+                     the x-coordinate math:`[1,0,0]` is in the horizontal plane. Hence, usually math:`[0,1,0]`
+                     is vertically oriented.
+                     
+                     If "angle_reference_frame = sample-normal centered", then this coordinate
+                     system is used
+                     z - math:`[0,0,1]` along sample surface normal
+                     x - math:`[1,0,0]` defined by sample surface projected incident beam.
+                     y - math:`[0,1,0]` in the sample surface, orthogonal to z and x.
+                     For this case, x may be ill defined, if the incident beam is perpendicular
+                     to the sample surface. In this case, use the beam centered description.
+                </doc>
+                <field name="type">
+                    <enumeration>
+                        <item value="incident beam"/>
+                        <item value="detection beam"/>
+                        <item value="sample"/>
+                    </enumeration>
+                </field>
+                <field name="polar" type="NX_NUMBER" units="NX_ANGLE">
+                    <doc>
+                         R
+                    </doc>
+                    <attribute name="transformation_type">
+                        <enumeration>
+                            <item value="rotation"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="vector">
+                        <enumeration>
+                            <item value="[0, 1, 0]"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="depends_on">
+                        <doc>
+                             Path to a transformation that places the sample surface
+                             into the origin of the arpes_geometry coordinate system.
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="azimuth" type="NX_NUMBER" units="NX_ANGLE">
+                    <doc>
+                         Rotation about the z axis (azimuthal rotation within the sample plane).
+                    </doc>
+                    <attribute name="transformation_type">
+                        <enumeration>
+                            <item value="rotation"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="vector">
+                        <enumeration>
+                            <item value="[0, 0, 1]"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="depends_on">
+                        <enumeration>
+                            <item value="offset_tilt"/>
+                        </enumeration>
+                    </attribute>
+                </field>
+            </group>
+            <field name="lateral_focal_point_offset" type="NX_NUMBER" optional="true" units="NX_LENGTH">
+                <doc>
+                     Specify if there is a lateral offset on the sample surface, between the focal 
+                     points of the incident beam and the detection beam.
+                </doc>
+            </field>
+            <group type="NXbeam_device" minOccurs="0" maxOccurs="unbounded">
+                <doc>
+                     Describes the order of respective beam devices in the optical beam
+                     path.
+                     
+                     Everything object which interacts or modifies optical beam properties,
+                     may be an beam device, e.g. Filter, Window, Beamsplitter, Photon Source,
+                     Detector, etc,
+                     
+                     It is intended, to include this functionality later to "older" beam
+                     components, such as NXsource, NXdetector, NXlens, etc.
+                     Until this is possbible, auxillary beam devices have to be created,
+                     for each "older" beam component instead, to allow a beam path description.
+                     To link the auxillary beam device to the real device properties, the
+                     attribute \@device should be used.
+                </doc>
+                <attribute name="device" recommended="true">
+                    <doc>
+                         Reference to beam device, which is described by a NeXus concept
+                         (e.g. for NXsource, entry/instrument/source_TYPE).
+                    </doc>
+                </attribute>
+                <field name="previous_device" recommended="true">
+                    <doc>
+                         Reference to the previous beam device, from which the photon beam came
+                         to reach this beam device. A photon source is related as origin by ".".
+                         This enables a logical order description of the optical setup.
+                    </doc>
+                </field>
             </group>
             <group type="NXlens_opt" optional="true">
                 <doc>
@@ -647,39 +644,10 @@ this might require a different reference frame.
                         <item value="other"/>
                     </enumeration>
                 </field>
-                <field name="numerical_aperture" type="NX_NUMBER">
-                    <doc>
-                         The numerical aperture of the used incident light optics.
-                    </doc>
-                </field>
-                <field name="magnification" type="NX_FLOAT">
-                    <doc>
-                         Magnification of the lens.
-                    </doc>
-                </field>
-                <group name="device_information" type="NXfabrication" recommended="true">
-                    <doc>
-                         Details about the optical component, if available.
-                    </doc>
-                </group>
-                <group name="device_characteristics" type="NXdata"/>
+                <group name="device_information" type="NXfabrication" optional="true"/>
             </group>
-            <group type="NXwaveplate" optional="true">
-                <group name="device_characteristics" type="NXdata"/>
-            </group>
-            <group type="NXopt_window"/>
-            <field name="sample_medium_refractive_indices" type="NX_FLOAT" optional="true" units="NX_UNITLESS">
-                <doc>
-                     Array of pairs of complex refractive indices n + ik of the medium
-                     for every measured spectral point/wavelength/energy.
-                     Only necessary if the measurement was performed not in air, or
-                     something very well known, e.g. high purity water.
-                </doc>
-                <dimensions rank="2">
-                    <dim index="1" value="2"/>
-                    <dim index="2" value="N_spectrum"/>
-                </dimensions>
-            </field>
+            <group type="NXwaveplate" optional="true"/>
+            <group type="NXopt_window" optional="true"/>
             <group name="polfilter_TYPE" type="NXbeam_device" optional="true">
                 <doc>
                      polarization filter to prepare light to be measured or to be incident 
@@ -708,7 +676,7 @@ this might require a different reference frame.
                          Polarizer...
                     </doc>
                 </field>
-                <group name="device_information" type="NXfabrication"/>
+                <group name="device_information" type="NXfabrication" optional="true"/>
             </group>
             <group name="spectralfilter_TYPE" type="NXbeam_device" optional="true">
                 <doc>
@@ -759,43 +727,9 @@ this might require a different reference frame.
                         </enumeration>
                     </attribute>
                 </group>
-                <group name="device_information" type="NXfabrication"/>
+                <group name="device_information" type="NXfabrication" optional="true"/>
             </group>
-            <!--In the following - Auxillary NXbeam_devices are defined, to enable a
-beam path description of the setup, while using the up now available
-Nexus definitions for source, detector, monochromator, ...-->
-            <!--beam devices for beam path description-->
-            <group type="NXbeam_device" minOccurs="0" maxOccurs="unbounded">
-                <doc>
-                     Describes the order of respective beam devices in the optical beam
-                     path.
-                     
-                     Everything object which interacts or modifies optical beam properties,
-                     may be an beam device, e.g. Filter, Window, Beamsplitter, Photon Source,
-                     Detector, etc,
-                     
-                     It is intended, to include this functionality later to "older" beam
-                     components, such as NXsource, NXdetector, NXlens, etc.
-                     Until this is possbible, auxillary beam devices have to be created,
-                     for each "older" beam component instead, to allow a beam path description.
-                     To link the auxillary beam device to the real device properties, the
-                     attribute \@device should be used.
-                </doc>
-                <attribute name="device" recommended="true">
-                    <doc>
-                         Reference to beam device, which is described by a NeXus concept
-                         (e.g. for NXsource, entry/instrument/source_TYPE).
-                    </doc>
-                </attribute>
-                <field name="previous_device" recommended="true">
-                    <doc>
-                         Reference to the previous beam device, from which the photon beam came
-                         to reach this beam device. A photon source is related as origin by ".".
-                         This enables a logical order description of the optical setup.
-                    </doc>
-                </field>
-            </group>
-            <!--non-beam path elements-->
+            <group type="NXbeam_transfer_matrix_table"/>
             <group name="sample_stage" type="NXmanipulator" optional="true">
                 <doc>
                      Sample stage (or manipulator) for positioning of the sample. This should
@@ -821,23 +755,23 @@ Nexus definitions for source, detector, monochromator, ...-->
                          of the stage type.
                     </doc>
                 </field>
-                <!--This is for now a placeholder and should be specified with NXtransformation-->
-                <field name="reference_frame" optional="true">
+                <group name="transformations" type="NXtransformations" optional="true">
                     <doc>
-                         This is a placeholder, to describe the relation between the samples
-                         coordinate system, laboratory coordinate system and the stage coordinate
-                         system. Up to now, use the "beam_sample_relation" to give supporting
-                         information.
+                         This allows a description of the stages relation or orientation and
+                         position with respect to the sample or beam, if an laboratory or 
+                         an stage coordinate system is defined.
                     </doc>
-                </field>
+                </group>
                 <field name="beam_sample_relation" optional="true">
                     <doc>
                          Description of relation of the beam with the sample. How dit the
                          sample hit the beam, e.g. 'center of sample, long edge parallel
                          to the plane of incidence'.
+                         Is redundent, if a full orientation description is done via the 
+                         stages "transformations" entry.
                     </doc>
                 </field>
-                <group name="device_information" type="NXfabrication"/>
+                <group name="device_information" type="NXfabrication" optional="true"/>
             </group>
             <group name="temperature_sensor" type="NXsensor" recommended="true">
                 <field name="name" recommended="true"/>
@@ -848,7 +782,7 @@ Nexus definitions for source, detector, monochromator, ...-->
                 </field>
                 <field name="type" optional="true"/>
                 <field name="value" type="NX_FLOAT"/>
-                <group name="device_information" type="NXfabrication"/>
+                <group name="device_information" type="NXfabrication" optional="true"/>
             </group>
             <group name="temp_control_TYPE" type="NXactuator" optional="true">
                 <doc>
@@ -872,11 +806,123 @@ Nexus definitions for source, detector, monochromator, ...-->
                          Hardware used for actuation, i.e. laser, gas lamp, filament, resistive
                     </doc>
                 </field>
-                <group type="NXpid">
+                <group type="NXpid" recommended="true">
                     <field name="setpoint" type="NX_FLOAT" recommended="true"/>
                 </group>
-                <group name="device_information" type="NXfabrication"/>
+                <group name="device_information" type="NXfabrication" optional="true"/>
             </group>
+            <group name="device_information" type="NXfabrication" recommended="true">
+                <doc>
+                     General device information of the optical spectroscopy setup, if
+                     suitable (e.g. for a tabletop spectrometer or other non-custom build setups).
+                     For custom build setups, this may be limited to the construction year.
+                </doc>
+                <field name="vendor" recommended="true"/>
+                <field name="model" recommended="true"/>
+                <field name="identifier" recommended="true"/>
+                <field name="construction_year" type="NX_DATE_TIME" optional="true"/>
+            </group>
+            <group name="software_TYPE" type="NXprogram" recommended="true">
+                <field name="program">
+                    <doc>
+                         Commercial or otherwise defined given name of the program that was
+                         used to control any parts of the optical spectroscopy setup.
+                         The uppercase TYPE should be replaced by a specification name, i.e.
+                         "software_detector" or "software_stage" to specify the respective
+                         program or software components.
+                    </doc>
+                    <attribute name="version" recommended="true">
+                        <doc>
+                             Either version with build number, commit hash, or description of a
+                             (online) repository where the source code of the program and build
+                             instructions can be found so that the program can be configured in
+                             such a way that result files can be created ideally in a
+                             deterministic manner.
+                        </doc>
+                    </attribute>
+                    <attribute name="url" optional="true">
+                        <doc>
+                             Description of the software by persistent resource, where the program,
+                             code, script etc. can be found.
+                        </doc>
+                    </attribute>
+                </field>
+            </group>
+            <group name="instrument_calibration_DEVICE" type="NXcalibration" recommended="true">
+                <doc>
+                     Pre-calibration of an arbitrary device of the instrumental setup, which
+                     has the name DEVICE. You can specify here how, at which time by which method
+                     the calibration was done. As well the accuracy and a link to the calibration
+                     dataset.
+                </doc>
+                <field name="device_path" recommended="true">
+                    <doc>
+                         Path to the device, which was calibrated.
+                         Example: entry/instrument/DEVICE
+                    </doc>
+                </field>
+                <group name="calibration_accuracy" type="NXdata" optional="true">
+                    <doc>
+                         Provide data about the determined accuracy of the device, this may
+                         may be a single value or a dataset like wavelength error vs. wavelength etc.
+                    </doc>
+                </group>
+                <field name="calibration_status" type="NX_CHAR" recommended="true">
+                    <doc>
+                         Was a calibration performed? If yes, when was it done? If the
+                         calibration time is provided, it should be specified in
+                         ENTRY/INSTRUMENT/calibration/calibration_time.
+                    </doc>
+                    <enumeration>
+                        <item value="calibration time provided"/>
+                        <item value="no calibration"/>
+                        <item value="within 1 hour"/>
+                        <item value="within 1 day"/>
+                        <item value="within 1 week"/>
+                    </enumeration>
+                </field>
+                <field name="calibration_time" type="NX_DATE_TIME" optional="true">
+                    <doc>
+                         If calibtration status is 'calibration time provided', specify the
+                         ISO8601 date when calibration was last performed before this
+                         measurement. UTC offset should be specified.
+                    </doc>
+                </field>
+                <group type="NXdata" optional="true">
+                    <doc>
+                         Generic data which does not fit to the 'NX_FLOAT' fields in NXproces.
+                         This can be for example the instrument response function.
+                    </doc>
+                </group>
+            </group>
+            <group name="wavelength_resolution" type="NXresolution" optional="true">
+                <doc>
+                     The overall resolution of the optical instrument.
+                </doc>
+                <field name="physical_quantity">
+                    <enumeration>
+                        <item value="wavelength"/>
+                    </enumeration>
+                </field>
+                <field name="type" recommended="true"/>
+                <field name="resolution" type="NX_FLOAT" units="NX_WAVELENGTH">
+                    <doc>
+                         Minimum distinguishable wavelength separation of peaks in spectra.
+                    </doc>
+                </field>
+            </group>
+            <field name="sample_medium_refractive_indices" type="NX_FLOAT" optional="true" units="NX_UNITLESS">
+                <doc>
+                     Array of pairs of complex refractive indices n + ik of the medium
+                     for every measured spectral point/wavelength/energy.
+                     Only necessary if the measurement was performed not in air, or
+                     something very well known, e.g. high purity water.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="2"/>
+                    <dim index="2" value="N_spectrum"/>
+                </dimensions>
+            </field>
         </group>
         <group type="NXsample">
             <doc>
@@ -893,14 +939,16 @@ Nexus definitions for source, detector, monochromator, ...-->
             </field>
             <field name="sample_id" recommended="true">
                 <doc>
-                     Uniquely identifying ID of the sample.
+                     Locally unique ID of the sample, used in the reasearch institute or group.
                 </doc>
             </field>
+            <group name="sample_id_global" type="NXidentifier" optional="true"/>
             <field name="physical_form" recommended="true">
                 <doc>
                      State the form of the sample, examples are:
                      thin film, single crystal, poly crystal, amorphous, single layer,
                      multi layer, liquid, gas, pellet, powder.
+                     Generic properties of liquids or gases see NXsample properties.
                 </doc>
             </field>
             <field name="description" optional="true">
@@ -945,7 +993,25 @@ Nexus definitions for source, detector, monochromator, ...-->
                 <doc>
                      Sample temperature (either controlled or just measured).
                 </doc>
-                <group name="temperature_sensor" type="NXsensor">
+                <field name="temperature_nominal" optional="true">
+                    <doc>
+                         If no sensor was available for the determination of temperature, selected
+                         a nominal value which represents approximately the situation of sample temperature.
+                    </doc>
+                    <enumeration>
+                        <item value="room temperature"/>
+                        <item value="liquid helium temperature"/>
+                        <item value="liquid nitrogen temperature"/>
+                        <item value="other"/>
+                    </enumeration>
+                </field>
+                <field name="temperature_nominal_other" type="NX_NUMBER" optional="true" units="NX_TEMPERATURE">
+                    <doc>
+                         If temperature_nominal is "other", enter here a nominal/assumed/estimated
+                         sample temperature.
+                    </doc>
+                </field>
+                <group name="temperature_sensor" type="NXsensor" recommended="true">
                     <doc>
                          Temperature sensor measuring the sample temperature.
                          This should be a link to /entry/instrument/manipulator/temperature_sensor.
@@ -1051,7 +1117,7 @@ Maybe consider here to include NXsample_component_set.
                 </doc>
             </attribute>
         </group>
-        <group name="measurement_data_calibration" type="NXprocess">
+        <group name="measurement_data_calibration_TYPE" type="NXprocess" recommended="true">
             <group name="wavelength_calibration" type="NXcalibration" optional="true">
                 <field name="calibrated_axis" type="NX_FLOAT" recommended="true">
                     <doc>
@@ -1065,9 +1131,11 @@ NXdata. The detailed inclusion of a data collection description (i.e.
 raw data from ellipsometry as polarization values to the usually used
 psi and delta values), will be done later after the NXopt workshop.-->
         <group name="derived_parameters" type="NXprocess" optional="true">
+            <!--
+>>>This section is transfered from the first NXoptical_spectroscopy version and might
+ require a reqwork.<<<
+-->
             <doc>
-                 &gt;&gt;&gt;This section is transfered from the first NXopt version and might
-                 require a reqwork.&lt;&lt;&lt;
                  Parameters that are derived from the measured data.
             </doc>
             <field name="depolarization" type="NX_NUMBER" optional="true" units="NX_UNITLESS">
