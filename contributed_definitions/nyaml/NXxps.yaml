@@ -1,0 +1,464 @@
+category: application
+doc: |
+  This is the application definition for X-ray photoelectron spectroscopy.
+type: group
+NXxps(NXmpes):
+  (NXentry):
+    definition(NX_CHAR):
+      enumeration: [NXxps]
+    method:
+      doc: |
+        A name of the experimental method according to `Clause 11`_ of
+        the `ISO 18115-1:2023`_ specification.
+        
+        Examples for XPS-related experiments include:
+            * X-ray photoelectron spectroscopy (XPS)
+            * angle-resolved X-ray photoelectron spectroscopy (ARXPS)
+            * ultraviolet photoelectron spectroscopy (UPS)
+            * hard X-ray photoemission spectroscopy (HAXPES)
+            * near ambient pressure X-ray photoelectron spectroscopy (NAPXPS)
+            * electron spectroscopy for chemical analysis (ESCA)
+        
+        .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
+        .. _Clause 11: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:sec:11
+    geometries(NXcoordinate_system_set):
+      xps_coordinate_system(NXcoordinate_system):
+        exists: optional
+        doc: |
+          In traditional surface science, the coordinate system is defined such that the positive z-axis
+          points along the normal of the sample stage, and the x- and y-axes lie in the plane of the sample stage.
+          However, in NeXus, a coordinate system that is the same as `McStas`_  is used. `xps_coordinate_system`
+          gives the user the opportunity to work in the traditional base coordinate system.         .. _McStas: http://mcstas.org/
+        origin:
+          enumeration: [sample stage]
+        handedness:
+          enumeration: [right_handed]
+        z_direction:
+          enumeration: [sample stage normal]
+        depends_on(NX_CHAR):
+          doc: |
+            Link to transformations defining the XPS base coordinate system,
+            which is defined such that the positive z-axis points along the sample stage normal, and the
+            x- and y-axes lie in the plane of the sample stage.
+        (NXtransformations):
+          doc: |
+            Set of transformations, describing the orientation of the XPS coordinate system
+            with respect to the beam coordinate system (.).
+    (NXinstrument):
+      doc:
+      - |
+        Description of the XPS spectrometer and its individual parts.
+      - |
+        xref:
+          spec: ISO 18115-1:2023
+          term: 12.58
+          url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.58
+      sourceTYPE(NXsource):
+        power(NX_FLOAT):
+          unit: NX_POWER
+          exists: recommended
+        transformations(NXtransformations):
+          exists: recommended
+          source_polar_angle_of_incidence(NX_NUMBER):
+            unit: NX_ANGLE
+            doc: |
+              Incidence angle
+            \@transformation_type:
+              enumeration: [rotation]
+            \@vector:
+              enumeration: [[1, 0, 0]]
+            \@depends_on:
+              enumeration: [source_azimuth_angle]
+          source_azimuth_angle(NX_NUMBER):
+            unit: NX_ANGLE
+            doc: |
+              Azimuthal tilt of the source from the y-direction towards the operator, defined
+              by the sample stage.
+            \@transformation_type:
+              enumeration: [rotation]
+            \@vector:
+              enumeration: [[0, 0, -1]]
+            \@depends_on:
+              enumeration: [/entry/sample_stage_cs_transformations/vamas_sample_stage_coordinate_system]
+      (NXelectronanalyser):
+        work_function(NX_FLOAT):
+        transmission_function(NXdata):
+          exists: recommended
+        (NXcollectioncolumn):
+          magnification(NX_FLOAT):
+            exists: recommended
+            unit: NX_DIMENSIONLESS
+        (NXenergydispersion):
+          diameter(NX_NUMBER):
+            exists: recommended
+            unit: NX_LENGTH
+          energy_scan_mode:
+        depends_on:
+          exists: recommended
+          doc: |
+            Reference to the transformation describing the orientation of the analyzer
+            relative to a defined coordinate system.
+        transformations(NXtransformations):
+          exists: recommended
+          analyser_take_off_polar_angle(NX_NUMBER):
+            unit: NX_ANGLE
+            doc: |
+              Polar tilt of the analyser with respect to the upward z-direction, defined by
+              the sample stage.
+            \@transformation_type:
+              enumeration: [rotation]
+            \@vector:
+              enumeration: [[1, 0, 0]]
+            \@depends_on:
+              enumeration: [analyser_take_off_azimuth_angle]
+          analyser_take_off_azimuth_angle(NX_NUMBER):
+            unit: NX_ANGLE
+            doc: |
+              Azimuthal tilt of the analyser from the y-direction towards the operator,
+              defined by the sample stage.
+            \@transformation_type:
+              enumeration: [rotation]
+            \@vector:
+              enumeration: [[0, 0, -1]]
+            \@depends_on:
+              enumeration: [/entry/sample_stage_cs_transformations/vamas_sample_stage_coordinate_system]
+    (NXprocess_mpes):
+      energy_referencing(NXcalibration):
+        exists: recommended
+      transmission_correction(NXcalibration):
+        exists: recommended
+    (NXsample):
+      depends_on:
+        exists: recommended
+        doc: |
+          Reference to the transformation describing the orientation of the sample
+          relative to a defined coordinate system.
+      transformations(NXtransformations):
+        exists: recommended
+        sample_rotation_angle(NX_NUMBER):
+          unit: NX_ANGLE
+          doc: |
+            Clockwise rotation about the sample normal.
+          \@transformation_type:
+            enumeration: [rotation]
+          \@vector:
+            enumeration: [[0, 0, -1]]
+          \@depends_on:
+            enumeration: [sample_normal_polar_angle]
+        sample_normal_polar_angle_of_tilt(NX_NUMBER):
+          unit: NX_ANGLE
+          doc: |
+            Polar tilt of the sample with respect to the upward z-direction, defined by the
+            sample stage.
+          \@transformation_type:
+            enumeration: [rotation]
+          \@vector:
+            enumeration: [[1, 0, 0]]
+          \@depends_on:
+            enumeration: [sample_normal_tilt_azimuth_angle]
+        sample_normal_tilt_azimuth_angle(NX_NUMBER):
+          unit: NX_ANGLE
+          doc: |
+            Azimuthal tilt of the sample from the y-direction towards the operator, defined
+            by the sample stage.
+          \@transformation_type:
+            enumeration: [rotation]
+          \@vector:
+            enumeration: [[0, 0, -1]]
+          \@depends_on:
+            enumeration: [/entry/sample_stage_cs_transformations/vamas_sample_stage_coordinate_system]
+    data(NXdata):
+      energy(NX_NUMBER):
+      \@energy_indices:
+      \@energy_depends:
+        exists: recommended
+
+# ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
+# 1c1892972d1967576919cfdd52a0bc1d58a36fce48b57adf4913839e68fd3d77
+# <?xml version='1.0' encoding='UTF-8'?>
+# <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+# <!--
+# # NeXus - Neutron and X-ray Common Data Format
+# #
+# # Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# #
+# # This library is free software; you can redistribute it and/or
+# # modify it under the terms of the GNU Lesser General Public
+# # License as published by the Free Software Foundation; either
+# # version 3 of the License, or (at your option) any later version.
+# #
+# # This library is distributed in the hope that it will be useful,
+# # but WITHOUT ANY WARRANTY; without even the implied warranty of
+# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# # Lesser General Public License for more details.
+# #
+# # You should have received a copy of the GNU Lesser General Public
+# # License along with this library; if not, write to the Free Software
+# # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# #
+# # For further information, see http://www.nexusformat.org
+# -->
+# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXxps" extends="NXmpes" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+#     <doc>
+#          This is the application definition for X-ray photoelectron spectroscopy.
+#     </doc>
+#     <group type="NXentry">
+#         <field name="definition" type="NX_CHAR">
+#             <enumeration>
+#                 <item value="NXxps"/>
+#             </enumeration>
+#         </field>
+#         <field name="method">
+#             <doc>
+#                  A name of the experimental method according to `Clause 11`_ of
+#                  the `ISO 18115-1:2023`_ specification.
+#                  
+#                  Examples for XPS-related experiments include:
+#                      * X-ray photoelectron spectroscopy (XPS)
+#                      * angle-resolved X-ray photoelectron spectroscopy (ARXPS)
+#                      * ultraviolet photoelectron spectroscopy (UPS)
+#                      * hard X-ray photoemission spectroscopy (HAXPES)
+#                      * near ambient pressure X-ray photoelectron spectroscopy (NAPXPS)
+#                      * electron spectroscopy for chemical analysis (ESCA)
+#                  
+#                  .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
+#                  .. _Clause 11: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:sec:11
+#             </doc>
+#         </field>
+#         <group name="geometries" type="NXcoordinate_system_set">
+#             <group name="xps_coordinate_system" type="NXcoordinate_system" optional="true">
+#                 <doc>
+#                      In traditional surface science, the coordinate system is defined such that the positive z-axis
+#                      points along the normal of the sample stage, and the x- and y-axes lie in the plane of the sample stage.
+#                      However, in NeXus, a coordinate system that is the same as `McStas`_  is used. `xps_coordinate_system`
+#                      gives the user the opportunity to work in the traditional base coordinate system.         .. _McStas: http://mcstas.org/
+#                 </doc>
+#                 <field name="origin">
+#                     <enumeration>
+#                         <item value="sample stage"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="handedness">
+#                     <enumeration>
+#                         <item value="right_handed"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="z_direction">
+#                     <enumeration>
+#                         <item value="sample stage normal"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="depends_on" type="NX_CHAR">
+#                     <doc>
+#                          Link to transformations defining the XPS base coordinate system,
+#                          which is defined such that the positive z-axis points along the sample stage normal, and the
+#                          x- and y-axes lie in the plane of the sample stage.
+#                     </doc>
+#                 </field>
+#                 <group type="NXtransformations">
+#                     <doc>
+#                          Set of transformations, describing the orientation of the XPS coordinate system
+#                          with respect to the beam coordinate system (.).
+#                     </doc>
+#                 </group>
+#             </group>
+#         </group>
+#         <group type="NXinstrument">
+#             <doc>
+#                  Description of the XPS spectrometer and its individual parts.
+#                  
+#                  This concept is related to term `12.58`_ of the ISO 18115-1:2023 standard.
+#                  
+#                  .. _12.58: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.58
+#             </doc>
+#             <group name="sourceTYPE" type="NXsource">
+#                 <field name="power" type="NX_FLOAT" units="NX_POWER" recommended="true"/>
+#                 <group name="transformations" type="NXtransformations" recommended="true">
+#                     <field name="source_polar_angle_of_incidence" type="NX_NUMBER" units="NX_ANGLE">
+#                         <doc>
+#                              Incidence angle
+#                         </doc>
+#                         <attribute name="transformation_type">
+#                             <enumeration>
+#                                 <item value="rotation"/>
+#                             </enumeration>
+#                         </attribute>
+#                         <attribute name="vector">
+#                             <enumeration>
+#                                 <item value="[1, 0, 0]"/>
+#                             </enumeration>
+#                         </attribute>
+#                         <attribute name="depends_on">
+#                             <enumeration>
+#                                 <item value="source_azimuth_angle"/>
+#                             </enumeration>
+#                         </attribute>
+#                     </field>
+#                     <field name="source_azimuth_angle" type="NX_NUMBER" units="NX_ANGLE">
+#                         <doc>
+#                              Azimuthal tilt of the source from the y-direction towards the operator, defined
+#                              by the sample stage.
+#                         </doc>
+#                         <attribute name="transformation_type">
+#                             <enumeration>
+#                                 <item value="rotation"/>
+#                             </enumeration>
+#                         </attribute>
+#                         <attribute name="vector">
+#                             <enumeration>
+#                                 <item value="[0, 0, -1]"/>
+#                             </enumeration>
+#                         </attribute>
+#                         <attribute name="depends_on">
+#                             <enumeration>
+#                                 <item value="/entry/sample_stage_cs_transformations/vamas_sample_stage_coordinate_system"/>
+#                             </enumeration>
+#                         </attribute>
+#                     </field>
+#                 </group>
+#             </group>
+#             <group type="NXelectronanalyser">
+#                 <field name="work_function" type="NX_FLOAT"/>
+#                 <group name="transmission_function" type="NXdata" recommended="true"/>
+#                 <group type="NXcollectioncolumn">
+#                     <field name="magnification" type="NX_FLOAT" recommended="true" units="NX_DIMENSIONLESS"/>
+#                 </group>
+#                 <group type="NXenergydispersion">
+#                     <field name="diameter" type="NX_NUMBER" recommended="true" units="NX_LENGTH"/>
+#                     <field name="energy_scan_mode"/>
+#                 </group>
+#                 <field name="depends_on" recommended="true">
+#                     <doc>
+#                          Reference to the transformation describing the orientation of the analyzer
+#                          relative to a defined coordinate system.
+#                     </doc>
+#                 </field>
+#                 <group name="transformations" type="NXtransformations" recommended="true">
+#                     <field name="analyser_take_off_polar_angle" type="NX_NUMBER" units="NX_ANGLE">
+#                         <doc>
+#                              Polar tilt of the analyser with respect to the upward z-direction, defined by
+#                              the sample stage.
+#                         </doc>
+#                         <attribute name="transformation_type">
+#                             <enumeration>
+#                                 <item value="rotation"/>
+#                             </enumeration>
+#                         </attribute>
+#                         <attribute name="vector">
+#                             <enumeration>
+#                                 <item value="[1, 0, 0]"/>
+#                             </enumeration>
+#                         </attribute>
+#                         <attribute name="depends_on">
+#                             <enumeration>
+#                                 <item value="analyser_take_off_azimuth_angle"/>
+#                             </enumeration>
+#                         </attribute>
+#                     </field>
+#                     <field name="analyser_take_off_azimuth_angle" type="NX_NUMBER" units="NX_ANGLE">
+#                         <doc>
+#                              Azimuthal tilt of the analyser from the y-direction towards the operator,
+#                              defined by the sample stage.
+#                         </doc>
+#                         <attribute name="transformation_type">
+#                             <enumeration>
+#                                 <item value="rotation"/>
+#                             </enumeration>
+#                         </attribute>
+#                         <attribute name="vector">
+#                             <enumeration>
+#                                 <item value="[0, 0, -1]"/>
+#                             </enumeration>
+#                         </attribute>
+#                         <attribute name="depends_on">
+#                             <enumeration>
+#                                 <item value="/entry/sample_stage_cs_transformations/vamas_sample_stage_coordinate_system"/>
+#                             </enumeration>
+#                         </attribute>
+#                     </field>
+#                 </group>
+#             </group>
+#         </group>
+#         <group type="NXprocess_mpes">
+#             <group name="energy_referencing" type="NXcalibration" recommended="true"/>
+#             <group name="transmission_correction" type="NXcalibration" recommended="true"/>
+#         </group>
+#         <group type="NXsample">
+#             <field name="depends_on" recommended="true">
+#                 <doc>
+#                      Reference to the transformation describing the orientation of the sample
+#                      relative to a defined coordinate system.
+#                 </doc>
+#             </field>
+#             <group name="transformations" type="NXtransformations" recommended="true">
+#                 <field name="sample_rotation_angle" type="NX_NUMBER" units="NX_ANGLE">
+#                     <doc>
+#                          Clockwise rotation about the sample normal.
+#                     </doc>
+#                     <attribute name="transformation_type">
+#                         <enumeration>
+#                             <item value="rotation"/>
+#                         </enumeration>
+#                     </attribute>
+#                     <attribute name="vector">
+#                         <enumeration>
+#                             <item value="[0, 0, -1]"/>
+#                         </enumeration>
+#                     </attribute>
+#                     <attribute name="depends_on">
+#                         <enumeration>
+#                             <item value="sample_normal_polar_angle"/>
+#                         </enumeration>
+#                     </attribute>
+#                 </field>
+#                 <field name="sample_normal_polar_angle_of_tilt" type="NX_NUMBER" units="NX_ANGLE">
+#                     <doc>
+#                          Polar tilt of the sample with respect to the upward z-direction, defined by the
+#                          sample stage.
+#                     </doc>
+#                     <attribute name="transformation_type">
+#                         <enumeration>
+#                             <item value="rotation"/>
+#                         </enumeration>
+#                     </attribute>
+#                     <attribute name="vector">
+#                         <enumeration>
+#                             <item value="[1, 0, 0]"/>
+#                         </enumeration>
+#                     </attribute>
+#                     <attribute name="depends_on">
+#                         <enumeration>
+#                             <item value="sample_normal_tilt_azimuth_angle"/>
+#                         </enumeration>
+#                     </attribute>
+#                 </field>
+#                 <field name="sample_normal_tilt_azimuth_angle" type="NX_NUMBER" units="NX_ANGLE">
+#                     <doc>
+#                          Azimuthal tilt of the sample from the y-direction towards the operator, defined
+#                          by the sample stage.
+#                     </doc>
+#                     <attribute name="transformation_type">
+#                         <enumeration>
+#                             <item value="rotation"/>
+#                         </enumeration>
+#                     </attribute>
+#                     <attribute name="vector">
+#                         <enumeration>
+#                             <item value="[0, 0, -1]"/>
+#                         </enumeration>
+#                     </attribute>
+#                     <attribute name="depends_on">
+#                         <enumeration>
+#                             <item value="/entry/sample_stage_cs_transformations/vamas_sample_stage_coordinate_system"/>
+#                         </enumeration>
+#                     </attribute>
+#                 </field>
+#             </group>
+#         </group>
+#         <group name="data" type="NXdata">
+#             <field name="energy" type="NX_NUMBER"/>
+#             <attribute name="energy_indices"/>
+#             <attribute name="energy_depends" recommended="true"/>
+#         </group>
+#     </group>
+# </definition>
