@@ -27,10 +27,6 @@
 2023.19.7 This Nexus file is currently only for STS data, it will be updated to handle the-->
 <!--
 2023.19.7 This Nexus file is currently only for STS data, it will be updated to handle the-->
-<!--
-2023.19.7 This Nexus file is currently only for STS data, it will be updated to handle the-->
-<!--
-2023.19.7 This Nexus file is currently only for STS data, it will be updated to handle the-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXsts" extends="NXsensor_scan" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
          Application definition for temperature-dependent IV curve measurements
@@ -135,15 +131,6 @@ crosstalk_compensation: Current amplifier> Capacitive cross-talk compensation: Y
                          Status of Lock-in device whether while performing the experiment
                     </doc>
                 </field>
-                <field name="run" optional="true">
-                    <doc>
-                         Select whether to set the Lock-In to run during the measurement. When using this
-                         feature, make sure the Lock-In is configured correctly and settling times are
-                         set to twice the Lock-In period at least. This option is ignored when Lock-In is
-                         already running. This option is disabled if the Sweep Mode is MLS and the flag
-                         to configure the Lock-In per segment in the Multiline segment editor is set.
-                    </doc>
-                </field>
                 <!--amplifier_status: -> amplifier/active_channels
 Lock-in Amplifier>Yes/No
 doc:  Lock-in Amplifier>Yes/No # If a lock-in amplifier employed to filter or obtain
@@ -217,7 +204,14 @@ bias), set bias back to initial value, switch on Z-Controller.  (e.g. TRUE)
 record_final_z:
 doc: Select whether to record the Z position during Z averaging time at the end of the
 sweep (after Z control time) and store the average value in the header of the file
-when saving. Using this option increases the sweep time by Z averaging time. (e.g. FALSE)-->
+when saving. Using this option increases the sweep time by Z averaging time. (e.g. FALSE)
+run:
+doc: Bias Spectroscopy>Lock-In run FALSE # Select whether to set the Lock-In to run
+during the measurement. When using this feature, make sure the Lock-In is configured
+correctly and settling times are set to twice the Lock-In period at least. This
+option is ignored when Lock-In is already running. This option is disabled if the
+Sweep Mode is MLS and the flag to configure the Lock-In per segment in the Multiline
+segment editor is set.-->
             <group name="sample_bias" type="NXiv_bias">
                 <doc>
                      Bias voltage applied to the sample.
@@ -341,13 +335,14 @@ doc: The rate at which the one of the signal changes when ramping to the startin
                              in the constant height mode means the real tunnelling current between tip and sample).
                         </doc>
                     </field>
-                    <field name="current_calibration" type="NX_NUMBER" units="NX_ANY">
+                    <field name="current_calibration" type="NX_NUMBER" units="NX_CURRENT">
                         <doc>
-                             Value of calibration that comes as A/V.
+                             Value of calibration that comes as A/V. The value for this concept can be read
+                             as current per unit voltage.
                         </doc>
                     </field>
                     <field name="current_offset" type="NX_NUMBER" units="NX_CURRENT"/>
-                    <field name="current_gain" type="NX_NUMBER" units="NX_UNITLESS" optional="true"/>
+                    <field name="current_gain" type="NX_NUMBER" units="NX_UNITLESS"/>
                     <field name="calibration_time" type="NX_DATE_TIME" optional="true"/>
                     <field name="value" type="NX_NUMBER" optional="true"/>
                 </group>
@@ -480,7 +475,37 @@ parameters for a measurement at a single location during the scan-->
                 </group>
                 <!--parameters how to change the location from measurement to measurement during the scan-->
                 <group name="scan_control" type="NXcollection" optional="true">
-                    <group name="roi" type="NXtransformations" optional="true">
+                    <field name="scan_range" type="NX_NUMBER" units="NX_LENGTH" optional="true">
+                        <doc>
+                             In STM experiment, the scan range is the coordinate (x,y) along the X and Y axis from the origin (scan_offset) of 
+                             the scan area (e.g. 5.000000E-9 5.000000E-9).
+                        </doc>
+                    </field>
+                    <field name="scan_offset" type="NX_NUMBER" units="NX_LENGTH" optional="true">
+                        <doc>
+                             In STM experiment, the scan offset is the position of the tip at the starting point of scan area.
+                             (e.g. -2.354637E-7 1.267476E-)
+                        </doc>
+                    </field>
+                    <field name="scan_direction" optional="true">
+                        <doc>
+                             In STM experiment, the scan direction is the direction from which side of the
+                             sample the tip starts scanning.
+                        </doc>
+                        <enumeration>
+                            <item value="down"/>
+                            <item value="up"/>
+                            <item value="top"/>
+                            <item value="bottom"/>
+                        </enumeration>
+                    </field>
+                    <field name="scan_angle" type="NX_NUMBER" units="NX_ANGLE" optional="true">
+                        <doc>
+                             The angle of scan with the bottom or top side (depends on the scan_direction
+                             field) of the sample. (e.g. 0.000E+0).
+                        </doc>
+                    </field>
+                    <group name="roi" type="NXtransformations">
                         <field name="frame">
                             <doc>
                                  Also clarify the frame for the ROI of the scan in lab frame, the middle of the lab
@@ -488,7 +513,7 @@ parameters for a measurement at a single location during the scan-->
                             </doc>
                         </field>
                     </group>
-                    <group name="circuit" type="NXcollection" optional="true">
+                    <group name="circuit" type="NXcollection">
                         <field name="channels_current">
                             <doc>
                                  The scan channels are selected by users. (e.g. (A);Bias (V);Z (m);LI Demod 2 X
@@ -497,10 +522,11 @@ parameters for a measurement at a single location during the scan-->
                         </field>
                     </group>
                     <group name="positioner" type="NXcollection">
-                        <field name="scanfield" type="NX_NUMBER">
+                        <field name="scanfield" type="NX_NUMBER" optional="true">
                             <doc>
                                  Configure the scan frame like x position; y position; width; height. (e.g.
-                                 3.11737E-9;29.1583E-9;15E-9;15E-9;0E+0)
+                                 3.11737E-9;29.1583E-9;15E-9;15E-9;0E+0). If the 'scanfield' is not considered, use
+                                 the 'scan_range' and 'scan_offset' from 'scan_control' group
                             </doc>
                         </field>
                         <field name="pixels_line" type="NX_NUMBER">
@@ -876,13 +902,12 @@ is switched off, it doesn't switch off immediately but continues to run for the 
         </group>
         <group name="sample" type="NXsample" optional="true">
             <doc>
-                 To describe the sample and other constraints that are applied to that sample
-                 before scanning.
+                 This describes the sample and its properties, as well as constraints that are
+                 applied to the sample before scanning.
             </doc>
-            <field name="sample_prep_descripton" optional="true">
+            <field name="sample_prep_descripton">
                 <doc>
-                     At this moment no base class is available that can track entire sample
-                     preparation.
+                     At this moment no base class available that can track entire sample preparation.
                 </doc>
             </field>
         </group>
