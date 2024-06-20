@@ -231,6 +231,8 @@ the following table lists the suffixes reserved by NeXus.
     reserved suffixes; mask
     reserved suffixes; set
     reserved suffixes; weights
+    reserved suffixes; scaling_factor
+    reserved suffixes; offset
 
 ==================  =========================================  =================================
 suffix              reference                                  meaning
@@ -242,10 +244,13 @@ suffix              reference                                  meaning
 ``_mask``           ..                                         Field containing a signal mask, where 0 means the pixel is not masked. If required, bit masks are defined in :ref:`NXdetector` ``pixel_mask``.
 ``_set``            :ref:`target values <target_value>`        Target value of ``DATASET``
 ``_weights``        ..                                         divide ``DATASET`` by these weights [#]_
+``_scaling_factor`` :ref:`NXdata`                              Multiply ``DATASET`` by this factor [#]_
+``_offset``         :ref:`NXdata`                              Add this factor to ``DATASET`` [#]_
 ==================  =========================================  =================================
 
 .. [#] If ``DATASET_weights`` exists and has the same shape as the field,
-   you are supposed to divide ``DATASET`` by the weights.
+   you are supposed to divide ``DATASET`` by the weights. Similarly, if `DATASET_scaling_factor` and/or
+   `DATASET_offset` exist, apply this equation: (``DATASET`` + ``DATASET_offset``) * ``DATASET_scaling_factor``
 
 .. Note that the following line might be added to the above table pending discussion:
 
