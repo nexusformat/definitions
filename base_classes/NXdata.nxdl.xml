@@ -86,7 +86,7 @@
 		.. index:: coordinates
 
 		The :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields contain the axis coordinates associated with the data values.
-		The names of all :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields are listed in the
+		The names of :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields to be used in the plot are listed in the
 		:ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute.
 
 		`Rank`
@@ -99,7 +99,7 @@
 
 			data:NXdata
 			  @signal = "data"
-			  @axes = ["x", "y"]  --> the order matters
+			  @axes = ["x", "y"]
 			  data: float[10,20]
 			  x: float[10]        --> coordinates along the first dimension
 			  y: float[20]        --> coordinates along the second dimension
@@ -115,7 +115,7 @@
 
 			data:NXdata
 			  @signal = "data"
-			  @axes = ["x", "y"]  --> the order does NOT matter
+			  @axes = ["x", "y"]
 			  @x_indices = [0, 1]
 			  @y_indices = [0, 1]
 			  data: float[10,20]
@@ -142,7 +142,7 @@
 
 			data:NXdata
 			  @signal = "data"
-			  @axes = ["x", ".", "z"]  --> the order matters
+			  @axes = ["x", ".", "z"]
 			  data: float[10,20,30]
 			  x: float[10]             --> coordinates along the first dimension
 			  z: float[30]             --> coordinates along the third dimension
@@ -153,7 +153,7 @@
 
 			data:NXdata
 			  @signal = "data"
-			  @axes = ["x", "z"]       --> the order does NOT matter
+			  @axes = ["x", ".", "z"]
 			  data: float[10,20,30]
 			  @x_indices = 0
 			  @z_indices = 2
@@ -170,17 +170,18 @@
 
 		The first is an example where data dimensions have alternative axis coordinates. The NXdata group represents
 		a stack of images collected at different energies. The ``wavelength`` is an alternative axis of ``energy``
-		for the last dimension (or vice versa).
+		for the last dimension (or vice versa) thus specifying its ``wavelength_indices`` attribute would indicate that
+		it is a potential choice for dimensions listed
 
 		.. code-block::
 
 			data:NXdata
 			  @signal = "data"
-			  @axes = ["x", "y", "energy", "wavelength"]  --> the order does NOT matter
+			  @axes = ["x", "y", "energy"]
 			  @x_indices = 0
 			  @y_indices = 1
 			  @energy_indices = 2
-			  @wavelength_indices = 2
+			  @wavelength_indices = 2   --> alternative for the third dimension
 			  data: float[10,20,30]
 			  x: float[10]              --> coordinates along the first dimension
 			  y: float[20]              --> coordinates along the second dimension
@@ -195,7 +196,7 @@
 
 			data:NXdata
 			  @signal = "data"
-			  @axes = ["x", "y", "energy"]  --> the order does NOT matter
+			  @axes = ["x", "y", "energy"]
 			  @x_indices = [0, 1, 2]
 			  @y_indices = [0, 1, 2]
 			  @energy_indices = 2
@@ -217,7 +218,7 @@
 			data:NXdata
 			  @signal = "data1"
 			  @auxiliary_signals = ["data2", "data3"]
-			  @axes = ["x", "z"]
+			  @axes = ["x", ".", "z"]
 			  @x_indices = 0
 			  @z_indices = 2
 			  data1: float[10,20,30]
@@ -322,6 +323,9 @@
 			When the ``AXISNAME_indices`` attribute is missing for an :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field, its value becomes the index
 			(or indices) of the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` name in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute.
 
+			Futhermore, specifying ``AXISNAME_indices`` attributes for ``AXISNAME`` fields not listed in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute
+			provides choice of alternate axes that can be selected for the plot.
+
 			.. note::  When ``AXISNAME_indices`` contains multiple integers, it must be saved as an actual array
 				of integers and not a comma separated string.
 		</doc>
@@ -330,12 +334,16 @@
 		<doc>
 			.. index:: plotting
 			
-			The ``axes`` attribute is a list of strings which are the names of the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields
-			that contain the values of the coordinates along the :ref:`data &lt;/NXdata/DATA-field&gt;` dimensions.
+			The ``axes`` attribute is a list of strings which are the names of the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields used
+			by default as axis coordinates in the plot of the signal data. This list must have a single entry for each of the dimensions in the
+			signal where dimensions without a default axis should be denoted by a "." in those positions.
 
 			.. note::  When ``axes`` contains multiple strings, it must be saved as an actual array
 				of strings and not a single comma separated string.
 		</doc>
+		<dimensions rank="1">
+			<dim index="1" value="dataRank"/>
+		</dimensions>
 	</attribute>
 	
 	<!-- Data and coordinate fields -->
