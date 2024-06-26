@@ -8,7 +8,7 @@ doc: |
   
   NXem is designed to be used for documenting experiments or computer simulations in which
   controlled electron beams are used for studying electron-beam matter interaction to explore
-  physical mechanisms and phenomena, or to characterize materials.
+  physical mechanisms and phenomena, or to characterize materials with an electron microscope.
 type: group
 NXem(NXobject):
   # \@NX_class:
@@ -19,28 +19,29 @@ NXem(NXobject):
   # \@HDF5_Version(NX_CHAR):
   # \@h5py_version(NX_CHAR):
   # \@default(NX_CHAR):
+  # starting to reorganize the docstrings, as a list of blocks:
+  # -| req: first part, concept definition, human-readable but such that one could take as is to define an concept in OWL
+  # -| opt: second part, comment, i.e. information that in an ideal world would be ideal if represented strongly semantic
+  #    but for practical purposes currently is interpretable only by human to provide them further contextualization
+  # -| recommended: xref part (ideally also as a list of triple (spec, term, url to uri)
   (NXentry):  # means ENTRY(NXentry)
     exists: [min, 1, max, infty]
     definition(NX_CHAR):
       \@version(NX_CHAR):
         exists: optional
       enumeration: [NXem]
-    # each NeXus file instance should have a default plot
-    # however as there are cases when this cannot be assured we cannot
-    # make the default required, one example is e.g. a NeXus instance
-    # where scientists just store conventions without a default plot
     profiling(NXcs_profiling):
       exists: optional
       doc: |
         The configuration of the I/O writer software (e.g. `pynxtools <https://github.com/FAIRmat-NFDI/pynxtools>`_ or its plugins)
         which was used to generate this NeXus file instance.
-      # command_line_call(NX_CHAR):
-      (NXprogram):  # understood by default as PROGRAM(NXprogram), i.e. program1, program2, ...
-        doc: |
-          A collection of all programs and libraries which are considered relevant
+      programID(NXprogram):  # program1, program2
+        doc:
+        - |
+          A collection of all programs and libraries that are considered as relevant
           to understand with which software tools this NeXus file instance was
           generated. Ideally, to enable a binary recreation from the input data.
-          
+        - |
           Examples include the name and version of the libraries used to write the
           instance. Ideally, the software which writes these NXprogram instances
           also includes the version of the set of NeXus classes i.e. the specific
@@ -54,45 +55,46 @@ NXem(NXobject):
         exists: [min, 0, max, infty]
         program(NX_CHAR):
           \@version(NX_CHAR):
-          # \@url:
     experiment_identifier(NXidentifier):
       exists: recommended
-      doc: |
+      doc:
+      - |
         Ideally, a (globally) unique persistent identifier for referring to this experiment.
         
         An experiment should be understood in that this can be an experiment
         in reality or a computer simulation because also the latter is an experiment
-        (see the Cambridge Dictionary experiment: *a test done in order to find out
+        (see the Cambridge Dictionary experiment *a test done in order to find out
         something, eg if an idea is correct*).
-        
+      - |
         The identifier is usually issued by the facility, laboratory, or the principle investigator.
         The identifier enables to link experiments/simulations to e.g. proposals.
       service(NX_CHAR):
       identifier(NX_CHAR):
       is_persistent(NX_BOOLEAN):
     experiment_alias(NX_CHAR):
-      doc: |
-        Either an identifier or an alias that is human-friendly so that scientists find that experiment again.
+      doc:
+      - |
+        Alias which scientists can easier identify this experiment by.
     experiment_description(NX_CHAR):
       exists: optional
-      doc: |
+      doc:
+      - |
         Free-text description about the experiment.
-        
+      - |
         Users are strongly advised to parameterize the description of their experiment
         by using respective groups and fields and base classes instead of writing prose
-        into this field.
-        
-        The reason is that such free-text field is difficult to machine-interpret.
+        into the field. The reason is that such free-text field is difficult to machine-interpret.
         The motivation behind keeping this field for now is to learn in how far the
         current base classes need extension based on user feedback.
     start_time(NX_DATE_TIME):
-      doc: |
+      doc:
+      - |
         ISO 8601 time code with local time zone offset to UTC information included
         when the microscope session started. If the application demands that time
         codes in this section of the application definition should only be used
         for specifying when the experiment was performed - and the exact
-        duration is not relevant - this start_time field should be used.
-        
+        duration is not relevant use this start_time field.
+      - |
         Often though it is useful to specify a time interval via setting both a start_time
         and an end_time because this enables software tools and users to collect a
         more detailed bookkeeping of the experiment.
@@ -107,19 +109,24 @@ NXem(NXobject):
         in :ref:`NXevent_data_em` instances.
     end_time(NX_DATE_TIME):
       exists: recommended
-      doc: |
+      doc:
+      - |
         ISO 8601 time code with local time zone offset to UTC included when
-        the microscope session ended. See docstring of the start_time field
-        to see how the start_time and end_time should be used together.
+        the microscope session ended.
+      - |
+        See docstring of the start_time field to see how to use the
+        start_time and end_time together.
     (NXcite):
       exists: [min, 0, max, infty]
     (NXserialized):
       exists: [min, 0, max, infty]
-      doc: |
-        Possibility to store a collection of serialized resources that are associated
-        with the experiment. An example how to use this set could be to document
-        from which files, which have been e.g. generated by software of technology
-        partners, the information in an instance of NXem was filled with.
+      doc:
+      - |
+        Possibility to store a collection of serialized resources associated with the experiment.
+      - |
+        An example how to use this set could be to document from which files, which have been
+        e.g. generated by software of technology partners, the information in an instance of
+        NXem was filled with during parsing or transcoding between different formats.
         
         If resources from technology partners would also be documented with semantic
         technology there would not even be a necessity to copy over specific information
@@ -127,80 +134,79 @@ NXem(NXobject):
         algorithm(s) whereby a specific piece of information that is related to an experiment
         or simulation is read directly from the respective file of the technology partner.
         
-        The reason why currently this works convincingly in hardly any research data
-        management system (RDMS) is the strong heterogeneity of the information contained
-        in such files and the fact that often context and documentation, specifically
-        rich semantic documentation, and contextualization is missing.
-      # using NXserialized here instead of NXnote as the former is more specific
+        The reason why currently this works convincingly in hardly any research data management system
+        (RDMS) is the strong heterogeneity of the information contained in such files and the fact
+        that often context and documentation, specifically rich and strongly expressive semantic
+        documentation or contextualization is underdeveloped.
       type(NX_CHAR):
       path(NX_CHAR):
       checksum(NX_CHAR):
       algorithm(NX_CHAR):
     (NXuser):
       exists: [min, 0, max, infty]
-      doc: |
-        Contact information and eventually details of at least one person
-        who performed or was involved in the microscope session or simulation run.
-        This can be the principle investigator who performed this experiment or the
-        student who performed the simulation. Adding multiple users if relevant
-        is recommended.
+      doc:
+      - |
+        Information about persons who performed or were involved in the microscope session or simulation run.
+      - |
+        This can be the principle investigator who performed this experiment or the student who performed simulations.
+        Adding multiple users if relevant is recommended.
       name(NX_CHAR):
         exists: optional
-        doc: |
-          Given (first) name and surname of the user.
+        doc:
+        - |
+          Given (first) name and surname.
       affiliation(NX_CHAR):
         exists: optional
-        doc: |
-          Name of the affiliation of the user at the point in time
-          when the experiment was performed.
+        doc:
+        - |
+          Name of the affiliation at the point in time when the experiment was performed.
       address(NX_CHAR):
         exists: optional
-        doc: |
+        doc:
+        - |
           Postal address of the affiliation.
       email(NX_CHAR):
         exists: optional
-        doc: |
-          Email address of the user at the point in time when the experiment
-          was performed. Writing the most permanently used email is recommended.
+        doc:
+        - |
+          Email address at the point in time when the experiment was performed.
+        - |
+          Writing the most permanently used email is recommended.
       telephone_number(NX_CHAR):
-        doc: |
-          (Business) (tele)phone number of the user at the point
-          in time when the experiment was performed.
+        doc: 
+        - |
+          Telephone number at the point in time when the experiment was performed.
       role(NX_CHAR):
-        doc: |
-          Which role does the user have in the place and at the point
-          in time when the experiment was performed? Technician operating
-          the microscope, student, postdoc, principle investigator, or guest
-          are common examples.
+        doc:
+        - |
+          User role at the point in time when the experiment was performed.
+        - |
+          Examples are technician operating the microscope, student, postdoc,
+          principle investigator, or guest.
       identifier(NXidentifier):
         exists: recommended
-        doc: |
-          Service as another mean of identification of a user other than by its name.
+        doc:
+        - |
+          Identifier offered by a service to report the user other than by using its name.
+        - |
           Examples could be an ORCID or social media account of the user.
         service(NX_CHAR):
         identifier(NX_CHAR):
         is_persistent(NX_BOOLEAN):
     sample(NXsample):
-      # NEW ISSUE: inject the conclusion from the discussion with Andrea
-      # according to SAMPLE.yaml 0f8df14 2022/06/15
-      # ID: -> maps to name
-      # name: -> short_title
-      # user: -> not matched right now
-      # citation: doi ->why relevant, should be solved by RDMS
       doc:
       - |
-        A description of the material characterized in the experiment.
-        Sample and specimen are threaded as de facto synonyms.
-        Samples can be real specimens or virtual (see method).
+        A physical entity which contains material intended to be investigated.
+        Sample and specimen are threaded as de facto synonyms. Samples can be real or virtual ones.
       - |
         xref:
           spec: EMglossary
           term: Specimen
           url: https://purls.helmholtz-metadaten.de/emg/EMG_00000046
       method(NX_CHAR):
-        doc: |
-          A qualifier whether the sample is a real one or a
-          virtual one (in a computer simulation)
+        doc:
+        - |
+          Qualifier whether the sample is a real or a virtual one.
         enumeration: [experiment, simulation]
       identifier(NXidentifier):
         exists: recommended
@@ -306,11 +312,12 @@ NXem(NXobject):
           should provide this contextualization.
     coordinate_system_set(NXcoordinate_system_set):
       exists: [min, 1, max, 1]
-      doc: |
+      doc:
+      - |
         Set to hold different coordinate systems conventions.
-        Inspect the description of the :ref:`NXcoordinate_system_set`
-        and :ref:`NXcoordinate_system` base classes how to define
-        coordinate systems in NeXus.
+      - |
+        Inspect the description of the :ref:`NXcoordinate_system_set` and :ref:`NXcoordinate_system` base classes
+        how to define coordinate systems in NeXus.
       (NXcoordinate_system):
         exists: [min, 1, max, infty]
         origin(NX_CHAR):
@@ -320,39 +327,28 @@ NXem(NXobject):
         x_direction(NX_CHAR):
         y_direction(NX_CHAR):
         z_direction(NX_CHAR):
-        # the description can be so lean because we do not need
-        # to overwrite here s.th. as everything is defined already
-        # we just say hey we need the above-mentioned fields
-        # in the way they are defined in the respective composed base classes
-        # and they have to be defined
-        # we also should not need to specify the value type like R, NX_POSINT
-        # because anyway within a group all field names have to be unique
-        # so there must not be any name conflict and this we can take to our
-        # advantage
+        # the description can be so lean because we do not need to overwrite here s.th. as everything is defined already
+        # we just say we compose using the base class NXcoordinate_system
     measurement(NXem_msr):
       exists: optional
       em_lab(NXinstrument):
         instrument_name(NX_CHAR):
           exists: recommended
-        location(NX_CHAR):
-          exists: recommended
-        control_program(NXprogram):
-          exists: recommended
-          doc: |
-            Details about the control program used for operating the microscope.
-          program(NX_CHAR):
-            \@version(NX_CHAR):
-        (NXfabrication):
+        fabrication(NXfabrication):
           vendor(NX_CHAR):
           model(NX_CHAR):
           identifier(NX_CHAR):
             exists: recommended
-        (NXdetector):
-          exists: [min, 0, max, infty]
-          (NXfabrication):
-            vendor(NX_CHAR):
-            model(NX_CHAR):
-        (NXebeam_column):
+        location(NX_CHAR):
+          exists: recommended
+        control_programID(NXprogram):
+          exists: [min, 1, max, infty]
+          doc:
+          - |
+            Details about the control program used for operating the microscope.
+          program(NX_CHAR):
+            \@version(NX_CHAR):
+        ebeam_column(NXebeam_column):
           electron_source(NXsource):
             doc:
             - |
@@ -363,15 +359,110 @@ NXem(NXobject):
             emitter_type(NX_CHAR):
             probe(NX_CHAR):
             # voltage like all other dynamic quantities should better be placed in instances of NXevent_data_em
-        (NXibeam_column):
+            fabrication(NXfabrication):
+              exists: optional
+              vendor(NX_CHAR):
+              model(NX_CHAR):
+              identifier(NX_CHAR):
+                exists: recommended
+            # fabrication is an example which shows when one needs to specify in the appdef if some of the
+            # inherited objects from NXebeam_column have to be specified that is when one wishes to document
+            # e.g. a combination of cardinality constraints or concept symbol constraints
+            # i.e. use NXfabrication from NXsource but demand it to be labelled with the symbol fabrication
+            # likewise if you provide fabrication details you need to provide vendor and model but not necessarily identifier
+          lens_emID(NXlens_em):
+            exists: [min, 0, max, infty]
+            fabrication(NXfabrication):
+              exists: optional
+              vendor(NX_CHAR):
+              model(NX_CHAR):
+              identifier(NX_CHAR):
+                exists: recommended
+          aperture_emID(NXaperture_em):
+            exists: [min, 0, max, infty]
+            fabrication(NXfabrication):
+              exists: optional
+              vendor(NX_CHAR):
+              model(NX_CHAR):
+              identifier(NX_CHAR):
+                exists: recommended
+          monochromator_emID(NXmonochromator_em):
+            exists: [min, 0, max, infty]
+            applied(NX_BOOLEAN):
+            fabrication(NXfabrication):
+              exists: optional
+              vendor(NX_CHAR):
+              model(NX_CHAR):
+              identifier(NX_CHAR):
+                exists: recommended
+            type(NX_CHAR):
+            dispersion(NX_NUMBER):
+              exists: recommended
+          corrector_cs(NXcorrector_cs):
+            exists: [min, 0, max, infty]
+            applied(NX_BOOLEAN):
+          corrector_ax(NXcorrector_ax):
+            exists: [min, 0, max, infty]
+            applied(NX_BOOLEAN):
+          # biprism_em
+          # phase_plate_em
+        ibeam_column(NXibeam_column):
           exists: [min, 0, max, 1]
           # there are tri-beam SEMs but they typically use a laser for which we should have an own base class
           ion_source(NXsource):
             probe(NXion):
-            # voltage(NX_NUMBER): also this better in instances of NXevent_data_em
-            # does not have to be written out unless that field should be required!
-            # like all other sub-graphs in the NXibeam_column base class and all
-            # the fields they can be used
+          lens_emID(NXlens_em):
+            exists: [min, 0, max, infty]
+            fabrication(NXfabrication):
+              exists: optional
+              vendor(NX_CHAR):
+              model(NX_CHAR):
+              identifier(NX_CHAR):
+                exists: recommended
+          aperture_emID(NXaperture_em):
+            exists: [min, 0, max, infty]
+            fabrication(NXfabrication):
+              exists: optional
+              vendor(NX_CHAR):
+              model(NX_CHAR):
+              identifier(NX_CHAR):
+                exists: recommended
+          monochromator_emID(NXmonochromator_em):
+            exists: [min, 0, max, infty]
+            applied(NX_BOOLEAN):
+            fabrication(NXfabrication):
+              exists: optional
+              vendor(NX_CHAR):
+              model(NX_CHAR):
+              identifier(NX_CHAR):
+                exists: recommended
+            type(NX_CHAR):
+            dispersion(NX_NUMBER):
+              exists: recommended
+          # corrector_ax(NXcorrector_ax):
+          #   exists: [min, 0, max, infty]
+          #   applied(NX_BOOLEAN):
+        detectorID(NXdetector):
+          exists: [min, 0, max, infty]
+          fabrication(NXfabrication):
+            vendor(NX_CHAR):
+            model(NX_CHAR):
+        scan_controller(NXscanbox_em):
+          exists: optional
+          fabrication(NXfabrication):
+            exists: optional
+            vendor(NX_CHAR):
+            model(NX_CHAR):
+            identifier(NX_CHAR):
+              exists: recommended
+        (NXstage_lab):
+          exists: [min, 0, max, infty]
+          fabrication(NXfabrication):
+            exists: optional
+            vendor(NX_CHAR):
+            model(NX_CHAR):
+            identifier(NX_CHAR):
+              exists: recommended
       event_data_em_set(NXevent_data_em_set):
         exists: [min, 0, max, 1]
         # an instance must not have an NXevent_data_em_set but if it has one it must not be more than 1 !
@@ -634,7 +725,7 @@ NXem(NXobject):
               # collection(NXdata):
           em_lab(NXinstrument):
             exists: recommended
-            (NXebeam_column):
+            ebeam_column(NXebeam_column):
               operation_mode(NX_CHAR):
               electron_source(NXsource):
                 doc:
@@ -685,38 +776,72 @@ NXem(NXobject):
                       term: Filament Current
                       url: https://purls.helmholtz-metadaten.de/emg/EMG_00000027
                   unit: NX_CURRENT
-            (NXibeam_column):
-              exists: optional
+              lens_emID(NXlens_em):
+                exists: [min, 0, max, infty]
+              aperture_emID(NXaperture_em):
+                exists: [min, 0, max, infty]
+              monochromator_emID(NXmonochromator_em):
+                exists: [min, 0, max, infty]
+                applied(NX_BOOLEAN):
+              corrector_cs(NXcorrector_cs):
+                exists: [min, 0, max, infty]
+                applied(NX_BOOLEAN):
+                ZEMLIN_TABLEAU(NXprocess):
+                  exists: recommended
+                  (NXprocess):
+                    ceos(NXaberration_model_ceos):
+                      exists: optional
+                    nion(NXaberration_model_nion):
+                      exists: optional
+                    # we could write down how to store the aberrations
+                    # basically optional use of NXaberration therein at least some value required
+              corrector_ax(NXcorrector_ax):
+                exists: [min, 0, max, infty]
+                applied(NX_BOOLEAN):
+                value_x(NX_NUMBER):
+                value_y(NX_NUMBER):
+              # biprism_em
+              # phase_plate_em
+            ibeam_column(NXibeam_column):
+              exists: [min, 0, max, 1]
               ion_source(NXsource):
                 probe(NXion):
                 voltage(NX_NUMBER):
-            (NXscanbox_em):
+              lens_emID(NXlens_em):
+                exists: [min, 0, max, infty]
+              aperture_emID(NXaperture_em):
+                exists: [min, 0, max, infty]
+              monochromator_emID(NXmonochromator_em):
+                exists: [min, 0, max, infty]
+                applied(NX_BOOLEAN):
+            scan_controller(NXscanbox_em):
               exists: optional
               scan_schema(NX_CHAR):
               dwell_time(NX_NUMBER):
-            (NXstage_lab):
-              exists: optional
-            (NXdetector):
-              exists: optional
+            detectorID(NXdetector):
+              exists: [min, 0, max, infty]
               mode(NX_CHAR):
             heater(NXobject):  # (NXactuator):
               exists: optional
               current(NX_NUMBER):
-                doc: |
+                doc:
+                - |
                   Nominal current of the heater.
                 unit: NX_CURRENT
               voltage(NX_NUMBER):
-                doc: |
+                doc:
+                - |
                   Nominal voltage of the heater.
                 unit: NX_VOLTAGE
               power(NX_NUMBER):
-                doc: |
+                doc:
+                - |
                   Nominal power of the heater.
                 unit: NX_POWER
-      # why at all do we need to add here (NXinstrument) ?
-      # nyaml2nxdl could query the NXem_msr base class definition
-      # and check if an identifier named em_lab exists in this case
-      # it assumes it is em_lab(NXinstrument) and continues.
+            (NXstage_lab):
+              exists: [min, 0, max, infty]
+              design(NX_CHAR):
+                exists: recommended
     simulation(NXem_sim):
       exists: optional
       # remains to be discussed based on examples
@@ -761,36 +886,5 @@ NXem(NXobject):
         exists: optional
         # remains to be discussed based on examples
 
-# finally an example how to map e.g. a simple flat schema to NXem:
-# https://www.zenodo.org/record/6513745, source path mapped on (->) target path
-# for all source paths /SEM/ is the src path prefix
-# for all target paths /entry1/ is the trg path prefix
-# ID -> experiment_identifier
-# External/alias ID -> none
-# User -> map on NXuser instances
-# Date -> use start_time and end_time respectively
-# Affiliation -> map on NXuser instances
-# DOIs -> none, map on NXcite instances
-# Temperature (of what?) -> be more specific and add as property of group of relevance
-# Relative humidity (of what? likely lab like temperature) -> NXsample
-# Environmental gas -> NXsample
-# Operator -> map on NXuser with specific role
-# Instrument ID -> map on best matching field from NXfabrication in em_lab
-# Sample ID -> NXsample/identifier
-# Parent sample ID -> NXsample/sample_history
-# Any dataset to be linked with this experiment (too vague for the I in FAIR) -> none
-# Environmental protection during sample processing -> NXsample
-# Pre-treatment -> own appdef and connect to NXsample/sample_history
-# Measurement position (the example is totally unclear) -> NXstage_lab, coordinate system etc.
-# Detector IDs -> NXdetector/identifier
-# Accelerating voltage -> electron_source/voltage
-# Current -> much more possibilities electron_source and NXoptical_system_em
-# Magnification -> use NXoptical_system_em
-# Image width -> implicit in roi/NXdata instances
-# Image size -> see image width
-# Acquisition mode (too vague) -> map on more expressive fields of NXem
-# Storage tilt (what is this) for tilt see NXstage_lab
-# Measurement date (how is it different from Date?
-# Comments -> any of the description fields, in both cases not fair
-# the respective TEM group has pixel coordinates, which is all much cleaner
-# described using NXem_conventions, NXcoordinate_system, etc...
+# see an example how to map e.g. the following flat schema https://www.zenodo.org/record/6513745 to NXem
+# in https://github.com/FAIRmat-NFDI/nexus_definitions/commit/0b928c4352bc5636f673b5fb25ce990f1af8a099

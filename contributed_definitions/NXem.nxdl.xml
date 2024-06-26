@@ -31,7 +31,7 @@
          
          NXem is designed to be used for documenting experiments or computer simulations in which
          controlled electron beams are used for studying electron-beam matter interaction to explore
-         physical mechanisms and phenomena, or to characterize materials.
+         physical mechanisms and phenomena, or to characterize materials with an electron microscope.
     </doc>
     <!--\@NX_class:
 \@file_time(NX_DATE_TIME):
@@ -40,7 +40,12 @@
 \@NeXus_version(NX_CHAR):
 \@HDF5_Version(NX_CHAR):
 \@h5py_version(NX_CHAR):
-\@default(NX_CHAR):-->
+\@default(NX_CHAR):
+starting to reorganize the docstrings, as a list of blocks:
+-| req: first part, concept definition, human-readable but such that one could take as is to define an concept in OWL
+-| opt: second part, comment, i.e. information that in an ideal world would be ideal if represented strongly semantic
+   but for practical purposes currently is interpretable only by human to provide them further contextualization
+-| recommended: xref part (ideally also as a list of triple (spec, term, url to uri)-->
     <group type="NXentry" minOccurs="1" maxOccurs="unbounded">
         <field name="definition" type="NX_CHAR">
             <attribute name="version" type="NX_CHAR" optional="true"/>
@@ -48,19 +53,14 @@
                 <item value="NXem"/>
             </enumeration>
         </field>
-        <!--each NeXus file instance should have a default plot
-however as there are cases when this cannot be assured we cannot
-make the default required, one example is e.g. a NeXus instance
-where scientists just store conventions without a default plot-->
         <group name="profiling" type="NXcs_profiling" optional="true">
             <doc>
                  The configuration of the I/O writer software (e.g. `pynxtools &lt;https://github.com/FAIRmat-NFDI/pynxtools&gt;`_ or its plugins)
                  which was used to generate this NeXus file instance.
             </doc>
-            <!--command_line_call(NX_CHAR):-->
-            <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+            <group name="programID" type="NXprogram" minOccurs="0" maxOccurs="unbounded">
                 <doc>
-                     A collection of all programs and libraries which are considered relevant
+                     A collection of all programs and libraries that are considered as relevant
                      to understand with which software tools this NeXus file instance was
                      generated. Ideally, to enable a binary recreation from the input data.
                      
@@ -80,14 +80,13 @@ where scientists just store conventions without a default plot-->
                 </field>
             </group>
         </group>
-        <!--\@url:-->
         <group name="experiment_identifier" type="NXidentifier" recommended="true">
             <doc>
                  Ideally, a (globally) unique persistent identifier for referring to this experiment.
                  
                  An experiment should be understood in that this can be an experiment
                  in reality or a computer simulation because also the latter is an experiment
-                 (see the Cambridge Dictionary experiment: *a test done in order to find out
+                 (see the Cambridge Dictionary experiment *a test done in order to find out
                  something, eg if an idea is correct*).
                  
                  The identifier is usually issued by the facility, laboratory, or the principle investigator.
@@ -99,8 +98,7 @@ where scientists just store conventions without a default plot-->
         </group>
         <field name="experiment_alias" type="NX_CHAR">
             <doc>
-                 Either an identifier or an alias that is human-friendly so that scientists find
-                 that experiment again.
+                 Alias which scientists can easier identify this experiment by.
             </doc>
         </field>
         <field name="experiment_description" type="NX_CHAR" optional="true">
@@ -109,9 +107,7 @@ where scientists just store conventions without a default plot-->
                  
                  Users are strongly advised to parameterize the description of their experiment
                  by using respective groups and fields and base classes instead of writing prose
-                 into this field.
-                 
-                 The reason is that such free-text field is difficult to machine-interpret.
+                 into the field. The reason is that such free-text field is difficult to machine-interpret.
                  The motivation behind keeping this field for now is to learn in how far the
                  current base classes need extension based on user feedback.
             </doc>
@@ -122,7 +118,7 @@ where scientists just store conventions without a default plot-->
                  when the microscope session started. If the application demands that time
                  codes in this section of the application definition should only be used
                  for specifying when the experiment was performed - and the exact
-                 duration is not relevant - this start_time field should be used.
+                 duration is not relevant use this start_time field.
                  
                  Often though it is useful to specify a time interval via setting both a start_time
                  and an end_time because this enables software tools and users to collect a
@@ -141,17 +137,21 @@ where scientists just store conventions without a default plot-->
         <field name="end_time" type="NX_DATE_TIME" recommended="true">
             <doc>
                  ISO 8601 time code with local time zone offset to UTC included when
-                 the microscope session ended. See docstring of the start_time field
-                 to see how the start_time and end_time should be used together.
+                 the microscope session ended.
+                 
+                 See docstring of the start_time field to see how to use the
+                 start_time and end_time together.
             </doc>
         </field>
         <group type="NXcite" minOccurs="0" maxOccurs="unbounded"/>
         <group type="NXserialized" minOccurs="0" maxOccurs="unbounded">
             <doc>
-                 Possibility to store a collection of serialized resources that are associated
-                 with the experiment. An example how to use this set could be to document
-                 from which files, which have been e.g. generated by software of technology
-                 partners, the information in an instance of NXem was filled with.
+                 Possibility to store a collection of serialized resources associated with the
+                 experiment.
+                 
+                 An example how to use this set could be to document from which files, which have been
+                 e.g. generated by software of technology partners, the information in an instance of
+                 NXem was filled with during parsing or transcoding between different formats.
                  
                  If resources from technology partners would also be documented with semantic
                  technology there would not even be a necessity to copy over specific information
@@ -159,12 +159,11 @@ where scientists just store conventions without a default plot-->
                  algorithm(s) whereby a specific piece of information that is related to an experiment
                  or simulation is read directly from the respective file of the technology partner.
                  
-                 The reason why currently this works convincingly in hardly any research data
-                 management system (RDMS) is the strong heterogeneity of the information contained
-                 in such files and the fact that often context and documentation, specifically
-                 rich semantic documentation, and contextualization is missing.
+                 The reason why currently this works convincingly in hardly any research data management system
+                 (RDMS) is the strong heterogeneity of the information contained in such files and the fact
+                 that often context and documentation, specifically rich and strongly expressive semantic
+                 documentation or contextualization is underdeveloped.
             </doc>
-            <!--using NXserialized here instead of NXnote as the former is more specific-->
             <field name="type" type="NX_CHAR"/>
             <field name="path" type="NX_CHAR"/>
             <field name="checksum" type="NX_CHAR"/>
@@ -172,21 +171,20 @@ where scientists just store conventions without a default plot-->
         </group>
         <group type="NXuser" minOccurs="0" maxOccurs="unbounded">
             <doc>
-                 Contact information and eventually details of at least one person
-                 who performed or was involved in the microscope session or simulation run.
-                 This can be the principle investigator who performed this experiment or the
-                 student who performed the simulation. Adding multiple users if relevant
-                 is recommended.
+                 Information about persons who performed or were involved in the microscope
+                 session or simulation run.
+                 
+                 This can be the principle investigator who performed this experiment or the student who performed simulations.
+                 Adding multiple users if relevant is recommended.
             </doc>
             <field name="name" type="NX_CHAR" optional="true">
                 <doc>
-                     Given (first) name and surname of the user.
+                     Given (first) name and surname.
                 </doc>
             </field>
             <field name="affiliation" type="NX_CHAR" optional="true">
                 <doc>
-                     Name of the affiliation of the user at the point in time
-                     when the experiment was performed.
+                     Name of the affiliation at the point in time when the experiment was performed.
                 </doc>
             </field>
             <field name="address" type="NX_CHAR" optional="true">
@@ -196,27 +194,28 @@ where scientists just store conventions without a default plot-->
             </field>
             <field name="email" type="NX_CHAR" optional="true">
                 <doc>
-                     Email address of the user at the point in time when the experiment
-                     was performed. Writing the most permanently used email is recommended.
+                     Email address at the point in time when the experiment was performed.
+                     
+                     Writing the most permanently used email is recommended.
                 </doc>
             </field>
             <field name="telephone_number" type="NX_CHAR">
                 <doc>
-                     (Business) (tele)phone number of the user at the point
-                     in time when the experiment was performed.
+                     Telephone number at the point in time when the experiment was performed.
                 </doc>
             </field>
             <field name="role" type="NX_CHAR">
                 <doc>
-                     Which role does the user have in the place and at the point
-                     in time when the experiment was performed? Technician operating
-                     the microscope, student, postdoc, principle investigator, or guest
-                     are common examples.
+                     User role at the point in time when the experiment was performed.
+                     
+                     Examples are technician operating the microscope, student, postdoc,
+                     principle investigator, or guest.
                 </doc>
             </field>
             <group name="identifier" type="NXidentifier" recommended="true">
                 <doc>
-                     Service as another mean of identification of a user other than by its name.
+                     Identifier offered by a service to report the user other than by using its name.
+                     
                      Examples could be an ORCID or social media account of the user.
                 </doc>
                 <field name="service" type="NX_CHAR"/>
@@ -225,18 +224,9 @@ where scientists just store conventions without a default plot-->
             </group>
         </group>
         <group name="sample" type="NXsample">
-            <!--
-NEW ISSUE: inject the conclusion from the discussion with Andrea
-according to SAMPLE.yaml 0f8df14 2022/06/15
-ID: -> maps to name
-name: -> short_title
-user: -> not matched right now
-citation: doi ->why relevant, should be solved by RDMS
--->
             <doc>
-                 A description of the material characterized in the experiment.
-                 Sample and specimen are threaded as de facto synonyms.
-                 Samples can be real specimens or virtual (see method).
+                 A physical entity which contains material intended to be investigated.
+                 Sample and specimen are threaded as de facto synonyms. Samples can be real or virtual ones.
                  
                  This concept is related to term `Specimen`_ of the EMglossary standard.
                  
@@ -244,8 +234,7 @@ citation: doi ->why relevant, should be solved by RDMS
             </doc>
             <field name="method" type="NX_CHAR">
                 <doc>
-                     A qualifier whether the sample is a real one or a
-                     virtual one (in a computer simulation)
+                     Qualifier whether the sample is a real or a virtual one.
                 </doc>
                 <enumeration>
                     <item value="experiment"/>
@@ -366,9 +355,9 @@ are the ibeam description capabilities not sufficient enough?-->
         <group name="coordinate_system_set" type="NXcoordinate_system_set" minOccurs="1" maxOccurs="1">
             <doc>
                  Set to hold different coordinate systems conventions.
-                 Inspect the description of the :ref:`NXcoordinate_system_set`
-                 and :ref:`NXcoordinate_system` base classes how to define
-                 coordinate systems in NeXus.
+                 
+                 Inspect the description of the :ref:`NXcoordinate_system_set` and :ref:`NXcoordinate_system` base classes
+                 how to define coordinate systems in NeXus.
             </doc>
             <group type="NXcoordinate_system" minOccurs="1" maxOccurs="unbounded">
                 <field name="origin" type="NX_CHAR"/>
@@ -380,20 +369,18 @@ are the ibeam description capabilities not sufficient enough?-->
                 <field name="z_direction" type="NX_CHAR"/>
             </group>
         </group>
-        <!--the description can be so lean because we do not need
-to overwrite here s.th. as everything is defined already
-we just say hey we need the above-mentioned fields
-in the way they are defined in the respective composed base classes
-and they have to be defined
-we also should not need to specify the value type like R, NX_POSINT
-because anyway within a group all field names have to be unique
-so there must not be any name conflict and this we can take to our
-advantage-->
+        <!--the description can be so lean because we do not need to overwrite here s.th. as everything is defined already
+we just say we compose using the base class NXcoordinate_system-->
         <group name="measurement" type="NXem_msr" optional="true">
             <group name="em_lab" type="NXinstrument">
                 <field name="instrument_name" type="NX_CHAR" recommended="true"/>
+                <group name="fabrication" type="NXfabrication">
+                    <field name="vendor" type="NX_CHAR"/>
+                    <field name="model" type="NX_CHAR"/>
+                    <field name="identifier" type="NX_CHAR" recommended="true"/>
+                </group>
                 <field name="location" type="NX_CHAR" recommended="true"/>
-                <group name="control_program" type="NXprogram" recommended="true">
+                <group name="control_programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
                     <doc>
                          Details about the control program used for operating the microscope.
                     </doc>
@@ -401,18 +388,7 @@ advantage-->
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
-                <group type="NXfabrication">
-                    <field name="vendor" type="NX_CHAR"/>
-                    <field name="model" type="NX_CHAR"/>
-                    <field name="identifier" type="NX_CHAR" recommended="true"/>
-                </group>
-                <group type="NXdetector" minOccurs="0" maxOccurs="unbounded">
-                    <group type="NXfabrication">
-                        <field name="vendor" type="NX_CHAR"/>
-                        <field name="model" type="NX_CHAR"/>
-                    </group>
-                </group>
-                <group type="NXebeam_column">
+                <group name="ebeam_column" type="NXebeam_column">
                     <group name="electron_source" type="NXsource">
                         <doc>
                              This concept is related to term `Source`_ of the EMglossary standard.
@@ -421,20 +397,105 @@ advantage-->
                         </doc>
                         <field name="emitter_type" type="NX_CHAR"/>
                         <field name="probe" type="NX_CHAR"/>
+                        <!--voltage like all other dynamic quantities should better be placed in instances of NXevent_data_em-->
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="identifier" type="NX_CHAR" recommended="true"/>
+                        </group>
+                    </group>
+                    <!--fabrication is an example which shows when one needs to specify in the appdef if some of the
+inherited objects from NXebeam_column have to be specified that is when one wishes to document
+e.g. a combination of cardinality constraints or concept symbol constraints
+i.e. use NXfabrication from NXsource but demand it to be labelled with the symbol fabrication
+likewise if you provide fabrication details you need to provide vendor and model but not necessarily identifier-->
+                    <group name="lens_emID" type="NXlens_em" minOccurs="0" maxOccurs="unbounded">
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="identifier" type="NX_CHAR" recommended="true"/>
+                        </group>
+                    </group>
+                    <group name="aperture_emID" type="NXaperture_em" minOccurs="0" maxOccurs="unbounded">
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="identifier" type="NX_CHAR" recommended="true"/>
+                        </group>
+                    </group>
+                    <group name="monochromator_emID" type="NXmonochromator_em" minOccurs="0" maxOccurs="unbounded">
+                        <field name="applied" type="NX_BOOLEAN"/>
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="identifier" type="NX_CHAR" recommended="true"/>
+                        </group>
+                        <field name="type" type="NX_CHAR"/>
+                        <field name="dispersion" type="NX_NUMBER" recommended="true"/>
+                    </group>
+                    <group name="corrector_cs" type="NXcorrector_cs" minOccurs="0" maxOccurs="unbounded">
+                        <field name="applied" type="NX_BOOLEAN"/>
+                    </group>
+                    <group name="corrector_ax" type="NXcorrector_ax" minOccurs="0" maxOccurs="unbounded">
+                        <field name="applied" type="NX_BOOLEAN"/>
                     </group>
                 </group>
-                <!--voltage like all other dynamic quantities should better be placed in instances of NXevent_data_em-->
-                <group type="NXibeam_column" minOccurs="0" maxOccurs="1">
+                <!--biprism_em
+phase_plate_em-->
+                <group name="ibeam_column" type="NXibeam_column" minOccurs="0" maxOccurs="1">
                     <!--there are tri-beam SEMs but they typically use a laser for which we should have an own base class-->
                     <group name="ion_source" type="NXsource">
                         <group name="probe" type="NXion"/>
                     </group>
+                    <group name="lens_emID" type="NXlens_em" minOccurs="0" maxOccurs="unbounded">
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="identifier" type="NX_CHAR" recommended="true"/>
+                        </group>
+                    </group>
+                    <group name="aperture_emID" type="NXaperture_em" minOccurs="0" maxOccurs="unbounded">
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="identifier" type="NX_CHAR" recommended="true"/>
+                        </group>
+                    </group>
+                    <group name="monochromator_emID" type="NXmonochromator_em" minOccurs="0" maxOccurs="unbounded">
+                        <field name="applied" type="NX_BOOLEAN"/>
+                        <group name="fabrication" type="NXfabrication" optional="true">
+                            <field name="vendor" type="NX_CHAR"/>
+                            <field name="model" type="NX_CHAR"/>
+                            <field name="identifier" type="NX_CHAR" recommended="true"/>
+                        </group>
+                        <field name="type" type="NX_CHAR"/>
+                        <field name="dispersion" type="NX_NUMBER" recommended="true"/>
+                    </group>
+                </group>
+                <!--corrector_ax(NXcorrector_ax):
+  exists: [min, 0, max, infty]
+  applied(NX_BOOLEAN):-->
+                <group name="detectorID" type="NXdetector" minOccurs="0" maxOccurs="unbounded">
+                    <group name="fabrication" type="NXfabrication">
+                        <field name="vendor" type="NX_CHAR"/>
+                        <field name="model" type="NX_CHAR"/>
+                    </group>
+                </group>
+                <group name="scan_controller" type="NXscanbox_em" optional="true">
+                    <group name="fabrication" type="NXfabrication" optional="true">
+                        <field name="vendor" type="NX_CHAR"/>
+                        <field name="model" type="NX_CHAR"/>
+                        <field name="identifier" type="NX_CHAR" recommended="true"/>
+                    </group>
+                </group>
+                <group type="NXstage_lab" minOccurs="0" maxOccurs="unbounded">
+                    <group name="fabrication" type="NXfabrication" optional="true">
+                        <field name="vendor" type="NX_CHAR"/>
+                        <field name="model" type="NX_CHAR"/>
+                        <field name="identifier" type="NX_CHAR" recommended="true"/>
+                    </group>
                 </group>
             </group>
-            <!--voltage(NX_NUMBER): also this better in instances of NXevent_data_em
-does not have to be written out unless that field should be required!
-like all other sub-graphs in the NXibeam_column base class and all
-the fields they can be used-->
             <group name="event_data_em_set" type="NXevent_data_em_set" minOccurs="0" maxOccurs="1">
                 <!--an instance must not have an NXevent_data_em_set but if it has one it must not be more than 1 !-->
                 <group type="NXevent_data_em" minOccurs="0" maxOccurs="unbounded">
@@ -757,7 +818,7 @@ the fields they can be used-->
                     </group>
                     <!--collection(NXdata):-->
                     <group name="em_lab" type="NXinstrument" recommended="true">
-                        <group type="NXebeam_column">
+                        <group name="ebeam_column" type="NXebeam_column">
                             <field name="operation_mode" type="NX_CHAR"/>
                             <group name="electron_source" type="NXsource">
                                 <doc>
@@ -803,19 +864,46 @@ the fields they can be used-->
                                     </doc>
                                 </field>
                             </group>
+                            <group name="lens_emID" type="NXlens_em" minOccurs="0" maxOccurs="unbounded"/>
+                            <group name="aperture_emID" type="NXaperture_em" minOccurs="0" maxOccurs="unbounded"/>
+                            <group name="monochromator_emID" type="NXmonochromator_em" minOccurs="0" maxOccurs="unbounded">
+                                <field name="applied" type="NX_BOOLEAN"/>
+                            </group>
+                            <group name="corrector_cs" type="NXcorrector_cs" minOccurs="0" maxOccurs="unbounded">
+                                <field name="applied" type="NX_BOOLEAN"/>
+                                <group name="ZEMLIN_TABLEAU" type="NXprocess" recommended="true">
+                                    <group type="NXprocess">
+                                        <group name="ceos" type="NXaberration_model_ceos" optional="true"/>
+                                        <group name="nion" type="NXaberration_model_nion" optional="true"/>
+                                    </group>
+                                </group>
+                            </group>
+                            <!--we could write down how to store the aberrations
+basically optional use of NXaberration therein at least some value required-->
+                            <group name="corrector_ax" type="NXcorrector_ax" minOccurs="0" maxOccurs="unbounded">
+                                <field name="applied" type="NX_BOOLEAN"/>
+                                <field name="value_x" type="NX_NUMBER"/>
+                                <field name="value_y" type="NX_NUMBER"/>
+                            </group>
                         </group>
-                        <group type="NXibeam_column" optional="true">
+                        <!--biprism_em
+phase_plate_em-->
+                        <group name="ibeam_column" type="NXibeam_column" minOccurs="0" maxOccurs="1">
                             <group name="ion_source" type="NXsource">
                                 <group name="probe" type="NXion"/>
                                 <field name="voltage" type="NX_NUMBER"/>
                             </group>
+                            <group name="lens_emID" type="NXlens_em" minOccurs="0" maxOccurs="unbounded"/>
+                            <group name="aperture_emID" type="NXaperture_em" minOccurs="0" maxOccurs="unbounded"/>
+                            <group name="monochromator_emID" type="NXmonochromator_em" minOccurs="0" maxOccurs="unbounded">
+                                <field name="applied" type="NX_BOOLEAN"/>
+                            </group>
                         </group>
-                        <group type="NXscanbox_em" optional="true">
+                        <group name="scan_controller" type="NXscanbox_em" optional="true">
                             <field name="scan_schema" type="NX_CHAR"/>
                             <field name="dwell_time" type="NX_NUMBER"/>
                         </group>
-                        <group type="NXstage_lab" optional="true"/>
-                        <group type="NXdetector" optional="true">
+                        <group name="detectorID" type="NXdetector" minOccurs="0" maxOccurs="unbounded">
                             <field name="mode" type="NX_CHAR"/>
                         </group>
                         <group name="heater" type="NXobject" optional="true">
@@ -835,14 +923,13 @@ the fields they can be used-->
                                 </doc>
                             </field>
                         </group>
+                        <group type="NXstage_lab" minOccurs="0" maxOccurs="unbounded">
+                            <field name="design" type="NX_CHAR" recommended="true"/>
+                        </group>
                     </group>
                 </group>
             </group>
         </group>
-        <!--why at all do we need to add here (NXinstrument) ?
-nyaml2nxdl could query the NXem_msr base class definition
-and check if an identifier named em_lab exists in this case
-it assumes it is em_lab(NXinstrument) and continues.-->
         <group name="simulation" type="NXem_sim" optional="true"/>
         <!--remains to be discussed based on examples
 relevant research result post-processed for specific community methods
@@ -878,37 +965,6 @@ is required to provide such information in this way!-->
         </group>
     </group>
     <!--remains to be discussed based on examples-->
-    <!--finally an example how to map e.g. a simple flat schema to NXem:
-https://www.zenodo.org/record/6513745, source path mapped on (->) target path
-for all source paths /SEM/ is the src path prefix
-for all target paths /entry1/ is the trg path prefix
-ID -> experiment_identifier
-External/alias ID -> none
-User -> map on NXuser instances
-Date -> use start_time and end_time respectively
-Affiliation -> map on NXuser instances
-DOIs -> none, map on NXcite instances
-Temperature (of what?) -> be more specific and add as property of group of relevance
-Relative humidity (of what? likely lab like temperature) -> NXsample
-Environmental gas -> NXsample
-Operator -> map on NXuser with specific role
-Instrument ID -> map on best matching field from NXfabrication in em_lab
-Sample ID -> NXsample/identifier
-Parent sample ID -> NXsample/sample_history
-Any dataset to be linked with this experiment (too vague for the I in FAIR) -> none
-Environmental protection during sample processing -> NXsample
-Pre-treatment -> own appdef and connect to NXsample/sample_history
-Measurement position (the example is totally unclear) -> NXstage_lab, coordinate system etc.
-Detector IDs -> NXdetector/identifier
-Accelerating voltage -> electron_source/voltage
-Current -> much more possibilities electron_source and NXoptical_system_em
-Magnification -> use NXoptical_system_em
-Image width -> implicit in roi/NXdata instances
-Image size -> see image width
-Acquisition mode (too vague) -> map on more expressive fields of NXem
-Storage tilt (what is this) for tilt see NXstage_lab
-Measurement date (how is it different from Date?
-Comments -> any of the description fields, in both cases not fair
-the respective TEM group has pixel coordinates, which is all much cleaner
-described using NXem_conventions, NXcoordinate_system, etc...-->
+    <!--see an example how to map e.g. the following flat schema https://www.zenodo.org/record/6513745 to NXem
+in https://github.com/FAIRmat-NFDI/nexus_definitions/commit/0b928c4352bc5636f673b5fb25ce990f1af8a099-->
 </definition>
