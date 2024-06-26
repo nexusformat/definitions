@@ -114,7 +114,7 @@ class AnchorRegistry:
             return
         contents = dict(
             _metadata=dict(
-                datetime=datetime.datetime.utcnow().isoformat(),
+                datetime=datetime.datetime.now(datetime.UTC).isoformat(),
                 title="NeXus NXDL vocabulary.",
                 subtitle="Anchors for all NeXus fields, groups, "
                 "attributes, and links.",
