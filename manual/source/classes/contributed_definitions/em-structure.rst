@@ -91,7 +91,7 @@ The following base classes are proposed to support modularizing the storage of p
         Base classes to describe different coordinate systems used and/or to be harmonized
         or transformed into one another and respective transformations.
         
-    :ref:`NXaberration_model`, :ref:`NXaberration_model_ceos`, :ref:`NXaberration_model_nion`, :ref:`NXaberration`:
+    :ref:`NXaberration_model`, :ref:`NXaberration`:
         Base classes to describe procedures and values for the calibration of aberrations based on
         conventions of different companies active in the field of aberration correction.
 
