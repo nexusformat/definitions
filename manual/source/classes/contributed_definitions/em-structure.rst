@@ -90,28 +90,15 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXcoordinate_system_set`, :ref:`NXcoordinate_system`, :ref:`NXtransformations`:
         Base classes to describe different coordinate systems used and/or to be harmonized
         or transformed into one another and respective transformations.
+        
+    :ref:`NXaberration_model`, :ref:`NXaberration_model_ceos`, :ref:`NXaberration_model_nion`, :ref:`NXaberration`:
+        Base classes to describe procedures and values for the calibration of aberrations based on
+        conventions of different companies active in the field of aberration correction.
 
     :ref:`NXcorrector_cs`:
         A base class to describe details about corrective lens or compound lens devices
         which reduce the (spherical) aberrations of an electron beam.
-        
-    :ref:`NXaberration_model`, :ref:`NXaberration_model_ceos`, :ref:`NXaberration_model_nion`, :ref:`NXaberration`, :ref:`NXcorrector_cs`, :ref:`NXcorrector_ax`:
-        Base classes to describe procedures and values for the calibration of aberrations based on
-        conventions of different companies active in the field of aberration correction.
-
-    :ref:`NXcorrector_ax`:
-        A base class to describe details about corrective lens or compound lens devices
-        which reduce the axial astigmatism aberrations of an electron beam.
  
-    :ref:`NXmonochromator_em`:
-        A base class to describe details about an energy filtering device.
-        
-    :ref:`NXphase_plate_em`, :ref:`NXbiprism_em`, :ref:`NXammeter`:
-        Base classes to group pieces of information about devices that are specific additions
-        to an electron microscope to perform special methods, like exploring quantum mechanics
-        or modulating the phase or an electron beam, perform electron holography, or measuring
-        EBIC current.   
-
     :ref:`NXscanbox_em`:
         A base class to represent the component of an electron microscope which realizes a controlled deflection
         (and eventually shift, blanking, and/or descanning) of the electron beam to illuminate the specimen in a controlled manner
