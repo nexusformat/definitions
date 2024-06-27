@@ -65,14 +65,11 @@ The following base classes are proposed to support modularizing the storage of p
         A base class serving the possibility to group the components relevant for generating
         and shaping an ion beam of an instrument to offer focused-ion beam (milling) capabilities.
 
-    :ref:`NXcomponent_em`:
-        A base class to describe a hardware component for e.g. building a microscope.
+    :ref:`NXcomponent`:
+        A base class to describe components aka devices to building an instrument like a microscope irrespective whether that is a real one or a simulated one.
 
     :ref:`NXlens_em`:
         A base class to detail an electro-magnetic lens. In practice, an electron microscope has many such lenses. It is possible to specify as many lenses as necessary to represent eventually each single lens of the microscope and thus describe how the lenses are affecting the electron beam. This can offer opportunities for developers of software tools which strive to model the instrument e.g. to create digital twins of the instrument. We understand there is still a way to go with this to arrive there though. Consequently, we suggest to focus first on which details should be collected for a lens as a component so that developers of application definitions can take immediate advantage of this work.
-
-    :ref:`NXaperture_em`:
-        A base class to describe an aperture.
 
     :ref:`NXdeflector`:
         A base class to describe a component to deflect a beam of charged particles.
@@ -98,7 +95,7 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXcorrector_cs`:
         A base class to describe details about corrective lens or compound lens devices
         which reduce the (spherical) aberrations of an electron beam.
- 
+
     :ref:`NXscanbox_em`:
         A base class to represent the component of an electron microscope which realizes a controlled deflection
         (and eventually shift, blanking, and/or descanning) of the electron beam to illuminate the specimen in a controlled manner
