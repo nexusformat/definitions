@@ -114,8 +114,11 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXevent_data_em_set`:
         A base class to group all :ref:`NXevent_data_em` instances.
 
-    :ref:`NXimage_set`, :ref:`NXimage_r_set`, :ref:`NXimage_c_set`, :ref:`NXimage_r_set_diff`:
+    :ref:`NXimage_set`:
         Base classes for storing acquisition details for individual images or stacks of images.
+
+    :ref:`NXspectrum_set`:
+        A base class and specializations comparable to :ref:`NXimage_set` but for storing spectra.
 
     :ref:`NXinteraction_vol_em`:
         A base class to describe details about e.g. the assumed or simulated volume of interaction of the electrons with the specimen.
@@ -133,9 +136,6 @@ The following base classes are proposed to support modularizing the storage of p
 
     :ref:`NXcircuit`, :ref:`NXcircuit_board`, :ref:`NXadc`, :ref: `NXdac`:
         Base classes to describe integrated circuits (ICs). Further consolidation of these base classes is planned.
-
-    :ref:`NXspectrum_set`:
-        A base class and specializations comparable to :ref:`NXimage_set` but for storing spectra.
 
 
 .. _EmAnalysisClasses:

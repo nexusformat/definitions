@@ -1,38 +1,367 @@
 category: base
-doc: |
-  Base class for reporting a set of images.
+doc:
+- |
+  Base class for reporting a set of images in real or reciprocal space.
+- |
+  For images in reciprocal space in practice, complex numbers are encoded via some
+  formatted pair of real values. Typically, fast Algorithms for computing Fourier Transformations
+  (FFT) are used to encode images in reciprocal (frequency) space. FFT libraries are used
+  for implementing the key functionalities of these mathematical operations.
   
-  This class provides a base vocabulary to be used for specialized :ref:`NXimage_set`
-  base classes like :ref:`NXimage_r_set` and :ref:`NXimage_c_set`.
+  Different libraries use different representations and encoding of the image computed.
+  Details can be found in the respective sections of the typical FFT libraries
+  
+  * `FFTW by M. Frigo and S. G. Johnson <https://www.fftw.org/fftw3_doc/Tutorial.html#Tutorial>`_
+  * `Intel MKL by the Intel Co. <https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2023-0/fourier-transform-functions.html>`_
+  * `cuFFT by the NVidia Co. <https://docs.nvidia.com/cuda/cufft/index.html>`_
+  
+  Users are strongly advised to inspect carefully which specific conventions
+  their library uses to be able to store and modify the implementation of their
+  code such that the serialized representations, as it is detailed here for NeXus,
+  matches.
+  
+  It is frequently the case that several images are combined using processing. In this case,
+  the number of images which are combined in a collection is not necessarily the same
+  for each collection. The NXimage_set base class addresses this logical distinction through
+  the notation of image_identifier and group_identifier.
+  That is image identifier are always counting from offset in increments of one. Each image
+  is an own entity. A group may contain no, or several such images.
+# for details about NXimage_r_set_diff see
+# https://github.com/FAIRmat-NFDI/nexus_definitions/commit/0682943baaef54d4a6386b5433f9721af6d3d81b
+# and here contributed_definitions/NXimage_r_set_diff.nxdl.xml
 symbols:
-  n_images: |
-    Number of images in the stack.
-  n_y: |
-    Number of pixel per image in the slow direction.
-  n_x: |
-    Number of pixel per image in the fast direction.
+  n_img: |
+    Number of images in the stack, for stacks the slowest direction.
+  n_k: |
+    Number of pixels per image in the slow direction (k equivalent to z).
+  n_j: |
+    Number of pixels per image in the fast direction (j equivalent to y).
+  n_i: |
+    Number of pixels per image in the fastest direction (i equivalent to x).
 type: group
 NXimage_set(NXobject):
   (NXprocess):
     doc: |
-      Details how NXdata instance inside instance of (specialized)
-      :ref:`NXimage_set` were processed from the detector readings/raw data.
+      Details how NXdata instance were processed from detector readings/raw data.
     source(NXserialized):
-      doc: |
-        Resolvable data artifact (e.g. filename) from which the all values in
-        the :ref:`NXdata` instances in this :ref:`NXimage_set` were loaded
-        during parsing.
-        
-        Possibility to document from which specific other serialized resource
-        as the source pieces of information where processed when NeXus is used
-        as a semantic file format to serialize that information differently.
+      doc: 
+      - |
+        Resolvable data artifact (e.g. filename) from which all values in the :ref:`NXdata`
+        instances in this :ref:`NXimage_set` were loaded during parsing.
+      - |
+        Possibility to document from which specific other serialized resource as the source
+        pieces of information were processed when using NeXus as a semantic file format
+        to serialize that information differently.
         
         The group in combination with an added field *absolute_path* therein adds context.
-    mode(NX_CHAR):
-      doc: |
-        Imaging (data collection) mode of the instrument during acquisition
-        of the data in this :ref:`NXimage_set` instance.
+      absolute_path(NX_CHAR):
+        doc:
+        - |
+          Reference to a location inside the artifact that points to the specific group of values
+          that were processed if the artifacts contains several groups of values and thus
+          further resolving of ambiguities is required.
+    # mode(NX_CHAR):
+    #   doc: |
+    #    Imaging (data collection) mode of the instrument during acquisition.
     detector_identifier(NX_CHAR):
       doc: |
         Link or name of an :ref:`NXdetector` instance with which the data were collected.
     (NXprogram):
+      doc: |
+        Program used for processing.
+  space(NX_CHAR):
+    doc:
+    - |
+      The reference space in which the image set is defined.
+    enumeration: [real, reciprocal]
+
+  image_oned(NXdata):
+    doc: |
+      One-dimensional image.
+    real(NX_NUMBER):
+      doc: |
+        Real part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_i,)
+    imag(NX_NUMBER):
+      doc: |
+        Imaginary part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_i,)
+    intensity(NX_COMPLEX):
+      doc: |
+        Image intensity as a complex number as an alternative
+        to real and imag fields if values are stored as interleaved
+        complex numbers.
+      unit: NX_UNITLESS
+      dim: (n_i,)
+    magnitude(NX_NUMBER):
+      doc: |
+        Magnitude of the image intensity.
+      unit: NX_UNITLESS
+      dim: (n_i,)
+    axis_i(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along fastest direction.
+      unit: NX_LENGTH
+      dim: (n_i,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along fastest direction.
+
+  image_twod(NXdata):
+    doc: |
+      Two-dimensional image.
+    real(NX_NUMBER):
+      doc: |
+        Real part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_j, n_i)
+    imag(NX_NUMBER):
+      doc: |
+        Imaginary part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_j, n_i)
+    magnitude(NX_NUMBER):
+      doc: |
+        Magnitude of the image intensity.
+      unit: NX_UNITLESS
+      dim: (n_j, n_i)
+    intensity(NX_COMPLEX):
+      doc: |
+        Image intensity as a complex number as an alternative
+        to real and imag fields if values are stored as interleaved
+        complex numbers.
+      unit: NX_UNITLESS
+      dim: (n_j, n_i)
+    axis_j(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along fast direction.
+      unit: NX_LENGTH
+      dim: (n_j,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along fast direction.
+    axis_i(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along fastest direction.
+      unit: NX_LENGTH
+      dim: (n_i,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along fastest direction.
+
+  image_threed(NXdata):
+    doc: |
+      Three-dimensional image.
+    real(NX_NUMBER):
+      doc: |
+        Real part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_k, n_j, n_i)
+    imag(NX_NUMBER):
+      doc: |
+        Imaginary part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_k, n_j, n_i)
+    magnitude(NX_NUMBER):
+      doc: |
+        Magnitude of the image intensity.
+      unit: NX_UNITLESS
+      dim: (n_k, n_j, n_i)
+    intensity(NX_COMPLEX):
+      doc: |
+        Image intensity as a complex number as an alternative
+        to real and imag fields if values are stored as interleaved
+        complex numbers.
+      unit: NX_UNITLESS
+      dim: (n_k, n_j, n_i)
+    axis_k(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along slow direction.
+      unit: NX_LENGTH
+      dim: (n_k,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along slow direction.
+    axis_j(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along fast direction.
+      unit: NX_LENGTH
+      dim: (n_j,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along fast direction.
+    axis_i(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along fastest direction.
+      unit: NX_LENGTH
+      dim: (n_i,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along fastest direction.
+
+  stack_oned(NXdata):
+    doc: |
+      Collection of one-dimensional images.
+    real(NX_NUMBER):
+      doc: |
+        Real part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_img, n_i)
+    imag(NX_NUMBER):
+      doc: |
+        Imaginary part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_img, n_i)
+    magnitude(NX_NUMBER):
+      doc: |
+        Magnitude of the image intensity.
+      unit: NX_UNITLESS
+      dim: (n_img, n_i)
+    intensity(NX_COMPLEX):
+      doc: |
+        Image intensity as a complex number as an alternative
+        to real and imag fields if values are stored as interleaved
+        complex numbers.
+      unit: NX_UNITLESS
+      dim: (n_img, n_i)
+    group_identifier(NX_INT):
+      doc: |
+        Group identifier for each image.
+      unit: NX_UNITLESS
+      dim: (n_img,)
+    image_identifier(NX_INT):
+      doc: |
+        Image identifier
+      unit: NX_UNITLESS
+      dim: (n_img,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Image identifier.
+    axis_i(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along fastest direction.
+      unit: NX_LENGTH
+      dim: (n_i,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along fastest direction.
+
+  stack_twod(NXdata):
+    doc: |
+      Collection of two-dimensional images.
+    real(NX_NUMBER):
+      doc: |
+        Real part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_img, n_j, n_i)
+    imag(NX_NUMBER):
+      doc: |
+        Imaginary part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_img, n_j, n_i)
+    magnitude(NX_NUMBER):
+      doc: |
+        Magnitude of the image intensity.
+      unit: NX_UNITLESS
+      dim: (n_img, n_j, n_i)
+    intensity(NX_COMPLEX):
+      doc: |
+        Image intensity as a complex number as an alternative
+        to real and imag fields if values are stored as interleaved
+        complex numbers.
+      unit: NX_UNITLESS
+      dim: (n_img, n_j, n_i)
+    group_identifier(NX_INT):
+      doc: |
+        Group identifier for each image.
+      unit: NX_UNITLESS
+      dim: (n_img,)
+    image_identifier(NX_INT):
+      doc: |
+        Image identifier
+      unit: NX_UNITLESS
+      dim: (n_img,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Image identifier.
+    axis_y(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along fast direction.
+      unit: NX_LENGTH
+      dim: (n_j,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along fast direction.
+    axis_i(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along fastest direction.
+      unit: NX_LENGTH
+      dim: (n_i,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along fastest direction.
+
+  stack_threed(NXdata):
+    doc: |
+      Collection of three-dimensional images.
+    real(NX_NUMBER):
+      doc: |
+        Real part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_img, n_k, n_j, n_i)
+    imag(NX_NUMBER):
+      doc: |
+        Imaginary part of the image intensity per pixel.
+      unit: NX_UNITLESS
+      dim: (n_img, n_k, n_j, n_i)
+    magnitude(NX_NUMBER):
+      doc: |
+        Magnitude of the image intensity.
+      unit: NX_UNITLESS
+      dim: (n_img, n_k, n_j, n_i)
+    intensity(NX_COMPLEX):
+      doc: |
+        Image intensity as a complex number as an alternative
+        to real and imag fields if values are stored as interleaved
+        complex numbers.
+      unit: NX_UNITLESS
+      dim: (n_img, n_k, n_j, n_i)
+    group_identifier(NX_INT):
+      doc: |
+        Group identifier for each image.
+      unit: NX_UNITLESS
+      dim: (n_img,)
+    image_identifier(NX_INT):
+      doc: |
+        Image identifier
+      unit: NX_UNITLESS
+      dim: (n_img,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Image identifier.
+    axis_k(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along slow direction.
+      unit: NX_LENGTH
+      dim: (n_k,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along slow direction.
+    axis_j(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along fast direction.
+      unit: NX_LENGTH
+      dim: (n_j,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along fast direction.
+    axis_i(NX_NUMBER):
+      doc: |
+        Pixel coordinate center along fastest direction.
+      unit: NX_LENGTH
+      dim: (n_i,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Coordinate along fastest direction.
