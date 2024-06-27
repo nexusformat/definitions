@@ -57,45 +57,65 @@ The following base classes are proposed to support modularizing the storage of p
         documented especially when one does not store all relevant information using NeXus but one would like to refer to a specific other resource
         where these pieces of information are stored.
 
-    :ref:`NXaberration_model`, :ref:`NXaberration_model_ceos`, :ref:`NXaberration_model_nion`, :ref:`NXaberration`, :ref:`NXcorrector_cs`:
-        Base classes to describe procedures and values for the calibration of aberrations based on
-        conventions of different companies active in the field of aberration correction.
+    :ref:`NXebeam_column`:
+        A base class serving the possibility to group the components relevant for generating
+        and shaping the electron beam.
+
+    :ref:`NXibeam_column`:
+        A base class serving the possibility to group the components relevant for generating
+        and shaping an ion beam of an instrument to offer focused-ion beam (milling) capabilities.
 
     :ref:`NXcomponent_em`:
         A base class to describe a hardware component for e.g. building a microscope.
 
+    :ref:`NXlens_em`:
+        A base class to detail an electro-magnetic lens. In practice, an electron microscope has many such lenses. It is possible to specify as many lenses as necessary to represent eventually each single lens of the microscope and thus describe how the lenses are affecting the electron beam. This can offer opportunities for developers of software tools which strive to model the instrument e.g. to create digital twins of the instrument. We understand there is still a way to go with this to arrive there though. Consequently, we suggest to focus first on which details should be collected for a lens as a component so that developers of application definitions can take immediate advantage of this work.
+
     :ref:`NXaperture_em`:
         A base class to describe an aperture.
+
+    :ref:`NXdeflector`:
+        A base class to describe a component to deflect a beam of charged particles.
 
     :ref:`NXchamber`:
         A base class to describe the chamber as a part of the microscope or storage unit
         for transferring specimens in between or within an instrument.
 
+    :ref:`NXpump`:
+        A base class to describe details about pump(s) as components of an electron microscope.
+
+    :ref:`NXfabrication`:
+        A base class to bundle manufacturer/technology-partner-specific details about a component or device of an instrument.
+
     :ref:`NXcoordinate_system_set`, :ref:`NXcoordinate_system`, :ref:`NXtransformations`:
         Base classes to describe different coordinate systems used and/or to be harmonized
         or transformed into one another and respective transformations.
+        
+    :ref:`NXaberration_model`, :ref:`NXaberration_model_ceos`, :ref:`NXaberration_model_nion`, :ref:`NXaberration`:
+        Base classes to describe procedures and values for the calibration of aberrations based on
+        conventions of different companies active in the field of aberration correction.
 
     :ref:`NXcorrector_cs`:
         A base class to describe details about corrective lens or compound lens devices
-        which reduce the aberration of an electron beam.
+        which reduce the (spherical) aberrations of an electron beam.
+ 
+    :ref:`NXscanbox_em`:
+        A base class to represent the component of an electron microscope which realizes a controlled deflection
+        (and eventually shift, blanking, and/or descanning) of the electron beam to illuminate the specimen in a controlled manner
+        This base class can be used to document the scan pattern. The base class focuses mostly on the concept idea that there
+        is a component in a microscope which controls eventually multiple other components such as beam deflectors to achieve deflection
+        and thus a controlled scanning of the beam over the sample/specimen surface.
 
-    :ref:`NXdeflector`:
-        A base class to describe a component to deflect a beam of charged particles.
+    :ref:`NXstage_lab`:
+        A base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities
+        which modern stages of electron microscopes typically offer.
 
-    :ref:`NXebeam_column`:
-        A base class serving the possibility to group the components relevant for generating
-        and shaping the electron beam.
-    
     :ref:`NXevent_data_em`:
         A base class representing a container to hold time-stamped and microscope-state-annotated
         data during a session at an electron microscope.
 
     :ref:`NXevent_data_em_set`:
         A base class to group all :ref:`NXevent_data_em` instances.
-
-    :ref:`NXibeam_column`:
-        A base class serving the possibility to group the components relevant for generating
-        and shaping an ion beam of an instrument to offer focused-ion beam (milling) capabilities.
 
     :ref:`NXimage_set`, :ref:`NXimage_r_set`, :ref:`NXimage_c_set`, :ref:`NXimage_r_set_diff`:
         Base classes for storing acquisition details for individual images or stacks of images.
@@ -106,12 +126,6 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXion`:
         A base class to describe molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion is 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with which all possible isotopes can be described.
 
-    :ref:`NXlens_em`:
-        A base class to detail an electro-magnetic lens. In practice, an electron microscope has many such lenses. It is possible to specify as many lenses as necessary to represent eventually each single lens of the microscope and thus describe how the lenses are affecting the electron beam. This can offer opportunities for developers of software tools which strive to model the instrument e.g. to create digital twins of the instrument. We understand there is still a way to go with this to arrive there though. Consequently, we suggest to focus first on which details should be collected for a lens as a component so that developers of application definitions can take immediate advantage of this work.
-
-    :ref:`NXfabrication`:
-        A base class to bundle manufacturer/technology-partner-specific details about a component or device of an instrument.
-
     :ref:`NXoptical_system_em`:
         A base class to store for now qualitative and quantitative values of frequent interest
         which are affected by the interplay of the components and state of an electron microscope.
@@ -120,25 +134,11 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXpeak`:
         A base class to describe peaks mathematically.
 
-    :ref:`NXpump`:
-        A base class to describe details about pump(s) as components of an electron microscope.
-
-    :ref:`NXscanbox_em`:
-        A base class to represent the component of an electron microscope which realizes a controlled deflection
-        (and eventually shift, blanking, and/or descanning) of the electron beam to illuminate the specimen in a controlled manner
-        This base class can be used to document the scan pattern. The base class focuses mostly on the concept idea that there
-        is a component in a microscope which controls eventually multiple other components such as beam deflectors to achieve deflection
-        and thus a controlled scanning of the beam over the sample/specimen surface.
-
     :ref:`NXcircuit`, :ref:`NXcircuit_board`, :ref:`NXadc`, :ref: `NXdac`:
         Base classes to describe integrated circuits (ICs). Further consolidation of these base classes is planned.
 
     :ref:`NXspectrum_set`:
         A base class and specializations comparable to :ref:`NXimage_set` but for storing spectra.
-
-    :ref:`NXstage_lab`:
-        A base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities
-        which modern stages of electron microscopes typically offer.
 
 
 .. _EmAnalysisClasses:
