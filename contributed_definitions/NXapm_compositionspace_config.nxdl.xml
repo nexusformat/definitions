@@ -22,44 +22,12 @@
 # For further information, see http://www.nexusformat.org
 -->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_compositionspace_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
-    <symbols>
-        <doc>
-             The symbols used in the schema to specify e.g. dimensions of arrays.
-        </doc>
-        <symbol name="n_voxel">
-            <doc>
-                 Number of voxel of discretized domain for analyzed part of the dataset.
-            </doc>
-        </symbol>
-        <symbol name="d">
-            <doc>
-                 The dimensionality of the grid.
-            </doc>
-        </symbol>
-        <symbol name="c">
-            <doc>
-                 The cardinality or total number of cells/grid points.
-            </doc>
-        </symbol>
-        <symbol name="n_clst_dict">
-            <doc>
-                 Number of terms in the composition clustering dictionary
-            </doc>
-        </symbol>
-        <symbol name="n_spat_dict">
-            <doc>
-                 Number of terms in the position clustering dictionary
-            </doc>
-        </symbol>
-    </symbols>
     <doc>
-         Config for a run with Alaukik Saxena's composition space tool.
+         Application definition for a configuration file of CompositionSpace tool.
          
-         This is an initial draft application definition for the common NFDI-MatWerk,
-         FAIRmat infrastructure use case IUC09 how to improve the organization and
-         results storage of the composition space tool and make these data at the
-         same time directly understandable for research data management systems
-         like NOMAD Oasis.
+         This is a draft application definition for the common NFDI-MatWerk/FAIRmat infrastructure
+         use case IUC09 that explores how to improve the organization and results storage of the
+         CompositionSpace tool.
     </doc>
     <!--by default for appdefs the value of the exists keyword is required unless it is explicitly specified differently-->
     <group type="NXentry" minOccurs="1" maxOccurs="1">
@@ -73,79 +41,143 @@
             <group type="NXidentifier" optional="true"/>
             <field name="analysis_identifier" type="NX_UINT" recommended="true"/>
             <group name="reconstruction" type="NXserialized">
+                <doc>
+                     Specification of the tomographic reconstruction used for this analysis.
+                     Typically, reconstructions in the field of atom probe tomography are communicated
+                     via files which store at least reconstructed ion positions and mass-to-charge-state-ratio
+                     values. Container files like HDF5 though can store multiple reconstructions.
+                     Therefore, the position and mass_to_charge concepts point to specific instances
+                     to use for this analysis.
+                </doc>
                 <field name="type" type="NX_CHAR"/>
                 <field name="path" type="NX_CHAR"/>
                 <field name="checksum" type="NX_CHAR"/>
                 <field name="algorithm" type="NX_CHAR"/>
-                <field name="position" type="NX_CHAR"/>
-                <field name="mass_to_charge" type="NX_CHAR"/>
-            </group>
-            <group name="ranging" type="NXserialized">
-                <field name="type" type="NX_CHAR"/>
-                <field name="path" type="NX_CHAR"/>
-                <field name="checksum" type="NX_CHAR"/>
-                <field name="algorithm" type="NX_CHAR"/>
-                <field name="ranging_definitions" type="NX_CHAR"/>
-            </group>
-            <field name="edge_length" type="NX_FLOAT" units="NX_LENGTH">
-                <doc>
-                     Edge length of the cubic voxels that is used for discretizing the point cloud in
-                     the voxelization step.
-                </doc>
-            </field>
-            <field name="bics_clusters" type="NX_UINT" units="NX_UNITLESS">
-                <doc>
-                     The maximum number of components configured for the segmentation of the voxel
-                     set into a mixture of voxels with that many different chemical compositions.
-                </doc>
-            </field>
-            <group name="ml_models" type="NXobject">
-                <doc>
-                     The configuration of the machine learning model used in the segmentation step.
-                </doc>
-                <!--name(NX_CHAR):
-  doc: |
-    Name of the model to be used.-->
-                <group name="gaussian_mixture" type="NXobject">
+                <field name="position" type="NX_CHAR">
                     <doc>
-                         Configuration for the Gaussian mixture model that is used in the segmentation
-                         step.
+                         Name of the node which resolves the reconstructed ion position values to use for
+                         this analysis.
+                    </doc>
+                </field>
+            </group>
+            <!--mass_to_charge(NX_CHAR):-->
+            <group name="ranging" type="NXserialized">
+                <doc>
+                     Specification of the ranging definitions used for this analysis.
+                     
+                     Indices start from 1. The value 0 is reserved for the null model of unranged positions
+                     whose iontype is unknown_type. The value 0 is alsoreserved for voxel outside the dataset.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="ranging_definitions" type="NX_CHAR">
+                    <doc>
+                         Name of the (parent) node directly below which the ranging definitions for
+                         (molecular) ions are stored.
+                    </doc>
+                </field>
+            </group>
+            <group name="voxelization" type="NXprocess">
+                <doc>
+                     Step during which the point cloud is discretized using a rectangular transfer function to compute
+                     scalar element-specific composition fields. During processing, iontypes are atomically decomposed
+                     to correctly account for the multiplicity of each element contributed by each ion.
+                </doc>
+                <field name="edge_length" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                         Edge length of cubic voxels for 3D grid that is used for discretizing the point
+                         cloud.
+                    </doc>
+                </field>
+            </group>
+            <group name="autophase" type="NXprocess">
+                <doc>
+                     Optional step during which the subsequent segmentation step is prepared to
+                     improve the segmentation.
+                </doc>
+                <field name="use" type="NX_BOOLEAN">
+                    <doc>
+                         Was the automated phase assignment used?
+                         This algorithm achieves a supervised reduction of the dimensionality of the chemical space
+                         through an analysis of the (Gini) feature importance of each element for the subsequent
+                         segmentation step.
+                    </doc>
+                </field>
+                <field name="initial_guess" type="NX_POSINT" units="NX_UNITLESS">
+                    <doc>
+                         Estimated guess for which a Gaussian mixture model is evaluted to preprocess a result that
+                         is subsequenty post-processed with a random_forest_classifier to lower the number of
+                         dimensions in the chemical space to the subset of trunc_species many elements with the
+                         highest feature importance.
+                    </doc>
+                </field>
+                <field name="trunc_species" type="NX_POSINT" units="NX_UNITLESS">
+                    <doc>
+                         The number of elements to use for reducing the dimensionality.
+                    </doc>
+                </field>
+                <group name="random_forest_classifier" type="NXprocess">
+                    <doc>
+                         Configuration for the random forest classification model.
                     </doc>
                 </group>
-                <!--random_forest(NXobject):
-  doc: |
-    Configuration for the random forest model.-->
+            </group>
+            <group name="segmentation" type="NXprocess">
+                <doc>
+                     Step during which the voxel set is segmented into voxel sets with different
+                     chemical composition.
+                </doc>
+                <group name="pca" type="NXprocess">
+                    <doc>
+                         A principal component analysis of the chemical space to guide a decision into how many
+                         sets of voxels with different chemical composition the machine learning algorithm suggests
+                         that the dataset should be analyzed as.
+                    </doc>
+                </group>
+                <group name="ic_opt" type="NXprocess">
+                    <doc>
+                         The decision is guided through the evalution of the information criterion
+                         minimization.
+                    </doc>
+                    <field name="n_max_ic_cluster" type="NX_POSINT" units="NX_UNITLESS">
+                        <doc>
+                             The maximum number of chemical classes to probe with the Gaussian mixture model
+                             with which the voxel set is segmented into a mixture of voxels with that many different
+                             chemical compositions.
+                        </doc>
+                    </field>
+                    <group name="gaussian_mixture" type="NXprocess">
+                        <doc>
+                             Configuration for the Gaussian mixture model that is used in the segmentation
+                             step.
+                        </doc>
+                    </group>
+                </group>
+            </group>
+            <group name="clustering" type="NXprocess">
+                <doc>
+                     Step during which the chemically segmented voxel sets are analyzed for their
+                     spatial organization.
+                </doc>
                 <group name="dbscan" type="NXobject">
                     <doc>
                          Configuration for the DBScan algorithm that is used in the clustering step.
                     </doc>
                     <field name="eps" type="NX_FLOAT" units="NX_LENGTH">
                         <doc>
-                             The maximum distance between two samples for one to
-                             be considered as in the neighborhood of the other.
+                             The maximum distance between voxel pairs in a neighborhood to be considered
+                             connected.
                         </doc>
                     </field>
                     <field name="min_samples" type="NX_UINT" units="NX_UNITLESS">
                         <doc>
-                             The number of samples (or total weight) in a neighborhood
-                             for a point to be considered as a core point.
+                             The number of voxels in a neighborhood for a voxel to be considered as a core
+                             point.
                         </doc>
                     </field>
                 </group>
-            </group>
-        </group>
-        <group name="common" type="NXobject">
-            <field name="status" type="NX_CHAR"/>
-            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
-                <field name="program" type="NX_CHAR">
-                    <attribute name="version" type="NX_CHAR"/>
-                </field>
-            </group>
-            <group name="profiling" type="NXcs_profiling" recommended="true">
-                <field name="start_time" type="NX_DATE_TIME"/>
-                <field name="end_time" type="NX_DATE_TIME"/>
-                <field name="total_elapsed_time" type="NX_FLOAT"/>
-                <field name="current_working_directory" type="NX_CHAR"/>
             </group>
         </group>
     </group>

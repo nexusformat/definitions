@@ -1,25 +1,10 @@
 category: application
 doc: |
-  Config for a run with Alaukik Saxena's composition space tool.
+  Application definition for a configuration file of CompositionSpace tool.
   
-  This is an initial draft application definition for the common NFDI-MatWerk,
-  FAIRmat infrastructure use case IUC09 how to improve the organization and
-  results storage of the composition space tool and make these data at the
-  same time directly understandable for research data management systems
-  like NOMAD Oasis.
-symbols:
-  doc: |
-    The symbols used in the schema to specify e.g. dimensions of arrays.
-  n_voxel: |
-    Number of voxel of discretized domain for analyzed part of the dataset.
-  d: |
-    The dimensionality of the grid.
-  c: |
-    The cardinality or total number of cells/grid points.
-  n_clst_dict: |
-    Number of terms in the composition clustering dictionary
-  n_spat_dict: |
-    Number of terms in the position clustering dictionary
+  This is a draft application definition for the common NFDI-MatWerk/FAIRmat infrastructure
+  use case IUC09 that explores how to improve the organization and results storage of the
+  CompositionSpace tool.
 type: group
 NXapm_compositionspace_config(NXobject):
   # by default for appdefs the value of the exists keyword is required unless it is explicitly specified differently
@@ -34,61 +19,97 @@ NXapm_compositionspace_config(NXobject):
       analysis_identifier(NX_UINT):
         exists: recommended
       reconstruction(NXserialized):
+        doc: |
+          Specification of the tomographic reconstruction used for this analysis.
+          Typically, reconstructions in the field of atom probe tomography are communicated
+          via files which store at least reconstructed ion positions and mass-to-charge-state-ratio
+          values. Container files like HDF5 though can store multiple reconstructions.
+          Therefore, the position and mass_to_charge concepts point to specific instances
+          to use for this analysis.
         type(NX_CHAR):
         path(NX_CHAR):
         checksum(NX_CHAR):
         algorithm(NX_CHAR):
         position(NX_CHAR):
-        mass_to_charge(NX_CHAR):
+          doc: |
+            Name of the node which resolves the reconstructed ion position values to use for this analysis.
+        # mass_to_charge(NX_CHAR):
       ranging(NXserialized):
+        doc: |
+          Specification of the ranging definitions used for this analysis.
+          
+          Indices start from 1. The value 0 is reserved for the null model of unranged positions
+          whose iontype is unknown_type. The value 0 is alsoreserved for voxel outside the dataset.
         type(NX_CHAR):
         path(NX_CHAR):
         checksum(NX_CHAR):
         algorithm(NX_CHAR):
         ranging_definitions(NX_CHAR):
-      edge_length(NX_FLOAT):
-        doc: |
-          Edge length of the cubic voxels that is used for discretizing the point cloud in the voxelization step.
-        unit: NX_LENGTH
-      bics_clusters(NX_UINT):
-        doc: |
-          The maximum number of components configured for the segmentation of the voxel
-          set into a mixture of voxels with that many different chemical compositions.
-        unit: NX_UNITLESS
-      ml_models(NXobject):
-        doc: |
-          The configuration of the machine learning model used in the segmentation step.
-        # name(NX_CHAR):
-        #   doc: |
-        #     Name of the model to be used.
-        gaussian_mixture(NXobject):
           doc: |
-             Configuration for the Gaussian mixture model that is used in the segmentation step.
-        # random_forest(NXobject):
-        #   doc: |
-        #     Configuration for the random forest model.
+            Name of the (parent) node directly below which the ranging definitions for (molecular) ions are stored.
+      voxelization(NXprocess):
+        doc: |
+          Step during which the point cloud is discretized using a rectangular transfer function to compute
+          scalar element-specific composition fields. During processing, iontypes are atomically decomposed
+          to correctly account for the multiplicity of each element contributed by each ion.
+        edge_length(NX_NUMBER):
+          doc: |
+            Edge length of cubic voxels for 3D grid that is used for discretizing the point cloud.
+          unit: NX_LENGTH
+      autophase(NXprocess):
+        doc: |
+          Optional step during which the subsequent segmentation step is prepared to improve the segmentation.
+        use(NX_BOOLEAN):
+          doc: |
+            Was the automated phase assignment used?
+            This algorithm achieves a supervised reduction of the dimensionality of the chemical space
+            through an analysis of the (Gini) feature importance of each element for the subsequent
+            segmentation step.
+        initial_guess(NX_POSINT):
+          doc: |
+            Estimated guess for which a Gaussian mixture model is evaluted to preprocess a result that
+            is subsequenty post-processed with a random_forest_classifier to lower the number of
+            dimensions in the chemical space to the subset of trunc_species many elements with the
+            highest feature importance.
+          unit: NX_UNITLESS
+        trunc_species(NX_POSINT):
+          doc: |
+            The number of elements to use for reducing the dimensionality.
+          unit: NX_UNITLESS
+        random_forest_classifier(NXprocess):
+          doc: |
+            Configuration for the random forest classification model.
+      segmentation(NXprocess):
+        doc: |
+          Step during which the voxel set is segmented into voxel sets with different chemical composition.
+        pca(NXprocess):
+          doc: |
+            A principal component analysis of the chemical space to guide a decision into how many
+            sets of voxels with different chemical composition the machine learning algorithm suggests
+            that the dataset should be analyzed as.
+        ic_opt(NXprocess):
+          doc: |
+            The decision is guided through the evalution of the information criterion minimization.
+          n_max_ic_cluster(NX_POSINT):
+            doc: |
+              The maximum number of chemical classes to probe with the Gaussian mixture model
+              with which the voxel set is segmented into a mixture of voxels with that many different
+              chemical compositions.
+            unit: NX_UNITLESS
+          gaussian_mixture(NXprocess):
+            doc: |
+              Configuration for the Gaussian mixture model that is used in the segmentation step.
+      clustering(NXprocess):
+        doc: |
+          Step during which the chemically segmented voxel sets are analyzed for their spatial organization.
         dbscan(NXobject):
           doc: |
             Configuration for the DBScan algorithm that is used in the clustering step.
           eps(NX_FLOAT):
             doc: |
-              The maximum distance between two samples for one to
-              be considered as in the neighborhood of the other.
+              The maximum distance between voxel pairs in a neighborhood to be considered connected.
             unit: NX_LENGTH
           min_samples(NX_UINT):
             doc: |
-              The number of samples (or total weight) in a neighborhood
-              for a point to be considered as a core point.
+              The number of voxels in a neighborhood for a voxel to be considered as a core point.
             unit: NX_UNITLESS
-    common(NXobject): 
-      status(NX_CHAR):
-      programID(NXprogram):
-        exists: [min, 1, max, infty]
-        program(NX_CHAR):
-          \@version(NX_CHAR):
-      profiling(NXcs_profiling):
-        exists: recommended
-        start_time(NX_DATE_TIME):
-        end_time(NX_DATE_TIME):
-        total_elapsed_time(NX_FLOAT):
-        current_working_directory(NX_CHAR):
