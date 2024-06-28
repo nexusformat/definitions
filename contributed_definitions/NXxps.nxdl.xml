@@ -102,6 +102,29 @@
                     <doc>
                          Set of transformations, describing the orientation of the XPS coordinate system
                          with respect to the beam coordinate system (.).
+                         
+                         The transformations in `coordinate_system_transformations` depend on the actual instrument geometry.
+                         If the z-axis is pointing in the direction of gravity (i.e., if the sample is mounted horizontally),
+                         the following transformations can be used:
+                         
+                         xps_coordinate_system:NXcoordinate_system
+                           depends_on=entry/geometries/xps_coordinate_system/coordinate_transformations/z_rotation
+                           coordinate_system_transformations:NXtransformations
+                             z_rotation=beam_azimuth_angle
+                               @depends_on=y_flip
+                               @transformation_type=rotation
+                               @vector=[0, 0, 1]
+                               @units=degree
+                             y_flip=180
+                               @depends_on=y_rotation
+                               @transformation_type=rotation
+                               @vector=[0, 1, 0]
+                               @units=degree
+                             y_rotation=beam_polar_angle_of_incidence
+                               @depends_on=.
+                               @transformation_type=rotation
+                               @vector=[0, -1, 0]
+                               @units=degree
                     </doc>
                 </group>
             </group>
@@ -191,6 +214,12 @@
                         <doc>
                              Polar tilt of the analyser with respect to the upward z-direction, defined by
                              the sample stage.
+                             
+                             The angle between the incoming beam and the analyser is given by 
+                             beam_analyzer_angle = beam_polar_angle_of_incidence + analyser_take_off_polar_angle.
+                             In practice, the analyser axis is often set as the z axis (analyser_take_off_polar_angle = 0),
+                             so that beam_analyzer_angle = beam_polar_angle_of_incidence. For magic angle configurations,
+                             this angle is 54.5°.
                         </doc>
                         <attribute name="transformation_type">
                             <enumeration>
