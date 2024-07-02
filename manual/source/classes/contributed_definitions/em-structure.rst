@@ -130,8 +130,8 @@ The following base classes are proposed to support modularizing the storage of p
         is a component in a microscope which controls eventually multiple other components such as beam deflectors to achieve deflection
         and thus a controlled scanning of the beam over the sample/specimen surface.
 
-    :ref:`NXcircuit`, :ref:`NXcircuit_board`, :ref:`NXadc`, :ref: `NXdac`:
-        Base classes to describe integrated circuits (ICs). Further consolidation of these base classes is planned.
+    :ref:`NXcircuit`:
+        Base class to describe logical unit of at least one integrated circuit.
 
     :ref:`NXspectrum_set`:
         A base class and specializations comparable to :ref:`NXimage_set` but for storing spectra.
