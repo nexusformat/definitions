@@ -134,8 +134,8 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXpeak`:
         A base class to describe peaks mathematically.
 
-    :ref:`NXcircuit`, :ref:`NXcircuit_board`, :ref:`NXadc`, :ref: `NXdac`:
-        Base classes to describe integrated circuits (ICs). Further consolidation of these base classes is planned.
+    :ref:`NXcircuit`:
+        A base class to describe a logical unit of at least one integrated circuit.
 
 
 .. _EmAnalysisClasses:
