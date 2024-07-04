@@ -65,14 +65,11 @@ The following base classes are proposed to support modularizing the storage of p
         A base class serving the possibility to group the components relevant for generating
         and shaping an ion beam of an instrument to offer focused-ion beam (milling) capabilities.
 
-    :ref:`NXcomponent_em`:
-        A base class to describe a hardware component for e.g. building a microscope.
+    :ref:`NXcomponent`:
+        A base class to describe components aka devices to building an instrument like a microscope irrespective whether that is a real one or a simulated one.
 
     :ref:`NXlens_em`:
         A base class to detail an electro-magnetic lens. In practice, an electron microscope has many such lenses. It is possible to specify as many lenses as necessary to represent eventually each single lens of the microscope and thus describe how the lenses are affecting the electron beam. This can offer opportunities for developers of software tools which strive to model the instrument e.g. to create digital twins of the instrument. We understand there is still a way to go with this to arrive there though. Consequently, we suggest to focus first on which details should be collected for a lens as a component so that developers of application definitions can take immediate advantage of this work.
-
-    :ref:`NXaperture_em`:
-        A base class to describe an aperture.
 
     :ref:`NXdeflector`:
         A base class to describe a component to deflect a beam of charged particles.
@@ -91,14 +88,14 @@ The following base classes are proposed to support modularizing the storage of p
         Base classes to describe different coordinate systems used and/or to be harmonized
         or transformed into one another and respective transformations.
         
-    :ref:`NXaberration_model`, :ref:`NXaberration_model_ceos`, :ref:`NXaberration_model_nion`, :ref:`NXaberration`:
+    :ref:`NXaberration_model`, :ref:`NXaberration`:
         Base classes to describe procedures and values for the calibration of aberrations based on
         conventions of different companies active in the field of aberration correction.
 
     :ref:`NXcorrector_cs`:
         A base class to describe details about corrective lens or compound lens devices
         which reduce the (spherical) aberrations of an electron beam.
- 
+
     :ref:`NXscanbox_em`:
         A base class to represent the component of an electron microscope which realizes a controlled deflection
         (and eventually shift, blanking, and/or descanning) of the electron beam to illuminate the specimen in a controlled manner
@@ -117,8 +114,11 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXevent_data_em_set`:
         A base class to group all :ref:`NXevent_data_em` instances.
 
-    :ref:`NXimage_set`, :ref:`NXimage_r_set`, :ref:`NXimage_c_set`, :ref:`NXimage_r_set_diff`:
+    :ref:`NXimage_set`:
         Base classes for storing acquisition details for individual images or stacks of images.
+
+    :ref:`NXspectrum_set`:
+        A base class and specializations comparable to :ref:`NXimage_set` but for storing spectra.
 
     :ref:`NXinteraction_vol_em`:
         A base class to describe details about e.g. the assumed or simulated volume of interaction of the electrons with the specimen.
@@ -136,9 +136,6 @@ The following base classes are proposed to support modularizing the storage of p
 
     :ref:`NXcircuit`, :ref:`NXcircuit_board`, :ref:`NXadc`, :ref: `NXdac`:
         Base classes to describe integrated circuits (ICs). Further consolidation of these base classes is planned.
-
-    :ref:`NXspectrum_set`:
-        A base class and specializations comparable to :ref:`NXimage_set` but for storing spectra.
 
 
 .. _EmAnalysisClasses:
