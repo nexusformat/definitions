@@ -2,17 +2,17 @@ category: application
 doc: |
   Application definition for results of the CompositionSpace tool used in atom probe.
   
-  * `A. Saxena et al. <https://www.github.com/eisenforschung/CompositionSpacetool.git>`_
+  * `A. Saxena et al. <https://www.github.com/eisenforschung/CompositionSpace.git>`_
   
-  This is a draft application definition for the common NFDI-MatWerk/FAIRmat infrastructure
+  This is an application definition for the common NFDI-MatWerk/FAIRmat infrastructure
   use case IUC09 that explores how to improve the organization and results storage of the
-  CompositionSpace tool.
+  CompositionSpace software using NeXus.
 symbols:
   doc: |
     The symbols used in the schema to specify e.g. dimensions of arrays.
-  d: |
+  grid_dim: |
     The dimensionality of the grid.
-  c: |
+  n_voxels: |
     Total number of voxels.
   n_ions: |
     Total number of ions in the reconstructed dataset.
@@ -23,14 +23,16 @@ NXapm_compositionspace_results(NXobject):
     exists: [min, 1, max, 1]
     definition(NX_CHAR):
       \@version(NX_CHAR):
+        exists: optional
       enumeration: [NXapm_compositionspace_results]
     # can be used for the name of the tool and version but also
     # for if desired all the dependencies and libraries
-    program(NXprogram):
-      exists: [min, 1, max, 1]
+    programID(NXprogram):
+      exists: [min, 1, max, infty]
       program(NX_CHAR):
         \@version(NX_CHAR):
         \@url(NX_CHAR):
+          exists: optional
     (NXidentifier):
       exists: optional
     analysis_identifier(NX_UINT):
@@ -40,22 +42,25 @@ NXapm_compositionspace_results(NXobject):
       doc: |
         Configuration file that was used in this analysis.
       type(NX_CHAR):
+        exists: optional
       path(NX_CHAR):
       algorithm(NX_CHAR):
+        exists: recommended
       checksum(NX_CHAR):
+        exists: recommended
     # results
     (NXuser):
       exists: optional
     voxelization(NXprocess):
-      exists: [min, 1, max, 1]
+      exists: [min, 0, max, 1]
       doc: |
         Step during which the point cloud is discretized to compute element-specific composition fields.
         Iontypes are atomically decomposed to correctly account for the multiplicity of each element that
         was ranged for each ion.
         
         Using a discretization grid that is larger than the average distance between reconstructed ion positions
-        reduces computational costs. This is the key idea of the CompositionSpace tool compared to other
-        methods for characterizing microstructural features.
+        reduces computational costs. This is the key idea of the CompositionSpace tool compared to other methods
+        used in atom probe for characterizing microstructural features using the ion position data directly.
       sequence_index(NX_POSINT):
         enumeration: [1]
       cg_grid(NXcg_grid):
@@ -66,27 +71,27 @@ NXapm_compositionspace_results(NXobject):
           unit: NX_UNITLESS
         origin(NX_NUMBER):
           unit: NX_LENGTH
-          dim: (d,)
+          dim: (grid_dim,)
         symmetry:
           enumeration: [cubic]
         cell_dimensions(NX_NUMBER):
           unit: NX_LENGTH
-          dim: (d,)
+          dim: (grid_dim,)
         extent(NX_POSINT):
           unit: NX_UNITLESS
-          dim: (d,)
+          dim: (grid_dim,)
         identifier_offset(NX_INT):
           unit: NX_UNITLESS
         position(NX_NUMBER):
           doc: |
             Position of each cell in Euclidean space.
           unit: NX_LENGTH
-          dim: (c, d)
+          dim: (n_voxels, grid_dim)
         coordinate(NX_INT):
           doc: |
             Discrete coordinate of each voxel.
           unit: NX_DIMENSIONLESS
-          dim: (c, d)
+          dim: (n_voxels, grid_dim)
         # bounding box if needed
         voxel_identifier(NX_UINT):
           doc: |
@@ -95,9 +100,10 @@ NXapm_compositionspace_results(NXobject):
           dim: (n_ions)
       weight(NX_NUMBER):
         doc: |
-          Total number of weight (counts for discretization with a rectangular transfer function) in each voxel.
+          Total number of weight (counts for discretization with a rectangular transfer function)
+          for the occupancy of each voxel with atoms.
         unit: NX_UNITLESS
-        dim: (c,)
+        dim: (n_voxels,)
       elementID(NXion):
         exists: [min, 1, max, infty]
         name(NX_CHAR):
@@ -105,12 +111,12 @@ NXapm_compositionspace_results(NXobject):
             Chemical symbol of the element from the periodic table.
         weight(NX_NUMBER):
           doc: |
-            Element-specific weight (counts for discretization with a rectangular transfer function) in each voxel.
+            Element-specific weight (counts for discretization with a rectangular transfer function)
+            for the occupancy of each voxel with atoms of this element.
           unit: NX_UNITLESS
-          dim: (c,)
-
+          dim: (n_voxels,)
     autophase(NXprocess):
-      exists: [min, 1, max, 1]
+      exists: [min, 0, max, 1]
       doc: |
         Optional step during which the subsequent segmentation step is prepared to improve the segmentation.
       sequence_index(NX_POSINT):
@@ -118,7 +124,9 @@ NXapm_compositionspace_results(NXobject):
       result(NXdata):
         \@signal(NX_CHAR):
         \@axes(NX_CHAR):
-        \@AXISNAME(NX_CHAR):
+        \@AXISNAME_indices(NX_CHAR):
+        title(NX_CHAR):
+          exists: recommended
         axis_feature_identifier(NX_UINT):
           doc: |
             Element identifier stored sorted in descending order of feature importance.
@@ -136,10 +144,11 @@ NXapm_compositionspace_results(NXobject):
             doc: |
               Axis caption
     segmentation(NXprocess):
-      exists: [min, 1, max, 1]
+      exists: [min, 0, max, 1]
       doc: |
         Step during which the voxel set is segmented into voxel sets with different chemical composition.
       pca(NXprocess):
+        exists: [min, 1, max, 1]
         doc: |
           PCA in the chemical space (essentially composition correlation analyses).
         sequence_index(NX_POSINT):
@@ -147,8 +156,9 @@ NXapm_compositionspace_results(NXobject):
         result(NXdata):
           \@signal(NX_CHAR):
           \@axes(NX_CHAR):
-          \@AXISNAME(NX_CHAR):
-          # title(NX_CHAR) inherited from NXdata
+          \@AXISNAME_indices(NX_CHAR):
+          title(NX_CHAR):
+            exists: recommended
           axis_explained_variance(NX_FLOAT):
             doc: |
               Explained variance values
@@ -156,7 +166,7 @@ NXapm_compositionspace_results(NXobject):
             dim: (i,)
           axis_pca_dimension(NX_UINT):
             doc: |
-              Elements as the principal component analysis
+              Elements identifier matching those from ENTRY/voxelization/elementID as the principal component analysis.
             unit: NX_UNITLESS
             dim: (i,)
       ic_opt(NXprocess):
@@ -175,14 +185,17 @@ NXapm_compositionspace_results(NXobject):
             doc: |
               y_pred return values of the computation.
             unit: NX_UNITLESS
-            dim: (c,)
+            dim: (n_voxels,)
         result(NXdata):
           doc: |
             Information criterion as a function of number of n_ic_cluster aka dimensions.
           \@signal(NX_CHAR):
           \@axes(NX_CHAR):
-          \@AXISNAME(NX_CHAR):
+          \@AXISNAME_indices(NX_CHAR):
+          title(NX_CHAR):
+            exists: recommended
           axis_aic(NX_FLOAT):
+            exists: recommended
             doc: |
               Akaike information criterion values
             unit: NX_ANY
@@ -198,15 +211,16 @@ NXapm_compositionspace_results(NXobject):
             unit: NX_UNITLESS
             dim: (i,)
     clustering(NXprocess):
-      exists: [min, 1, max, 1]
+      exists: [min, 0, max, 1]
       doc: |
-        Step during which the chemically segmented voxel sets are analyzed for their spatial organization.
+        Step during which the chemically segmented voxel sets are analyzed for their spatial organization
+        into different spatial clusters of voxels in the same chemical set but representing individual object
+        not-necessarily watertight or topologically closed objects built from individual voxels.
       sequence_index(NX_POSINT):
         enumeration: [4, 5]
       ic_opt(NXobject):
         doc: |
           Respective DBScan clustering result for each segmentation/ic_opt case.
-        exists: recommended
         cluster_analysisID(NXprocess):
           exists: [min, 0, max, infty]
           dbscanID(NXprocess):
@@ -221,14 +235,17 @@ NXapm_compositionspace_results(NXobject):
               unit: NX_UNITLESS
             label(NX_INT):
               doc: |
-                Raw labels return values
+                Raw label return values
               unit: NX_UNITLESS
               dim: (k,)
             voxel(NX_UINT):
               doc: |
-                Identified DBScan cluster identifier for each voxel.
+                Voxel identifier
+                
+                Using these identifiers correlated element-wise with the values in the label array
+                specifies for which voxel in the grid clusters from this process were found.
               unit: NX_UNITLESS
-              dim: (c,)
+              dim: (n_voxels,)
     profiling(NXcs_profiling):
       exists: optional
       current_working_directory(NX_CHAR):
