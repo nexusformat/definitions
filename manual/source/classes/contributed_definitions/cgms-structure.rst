@@ -220,16 +220,4 @@ input parameters and to summarize its performance statistics:
         A base class for documenting profiling/benchmark for an algorithm or computational step.
 
     :ref:`NXcs_computer`:
-        A base class for documenting a computer.
-
-    :ref:`NXcs_cpu_sys`, :ref:`NXcs_cpu_obj`, :ref:`NXcs_cpu`:
-        Base classes for documenting a central processing unit.
-
-    :ref:`NXcs_gpu_sys`, :ref:`NXcs_gpu_obj`, :ref:`NXcs_gpu`:
-        Base classes for documenting a graphical processing unit / accelerator.
-
-    :ref:`NXcs_mm_sys`, :ref:`NXcs_mm_obj`:
-        Base classes for documenting the (main) memory (sub-)system.
-
-    :ref:`NXcs_io_sys`, :ref:`NXcs_io_obj`:
-        Base classes for documenting the input/output system.
+        Base class for describing a computer and its components.
