@@ -32,5 +32,5 @@ Here's a list of application definitions related to photoemission spectroscopy:
     :ref:`NXmpes_arpes`:
        An appdef for angle-resolved photoemission spectroscopy (ARPES) experiments.
 
-      :ref:`NXxps`:
+    :ref:`NXxps`:
        An application definition for XPS/UPS measurements.
