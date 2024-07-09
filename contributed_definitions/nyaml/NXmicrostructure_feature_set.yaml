@@ -12,23 +12,23 @@ symbols:
     Number of types in the dictionary of human-readable types of features.
   n_parent_ids: |
     Total number of parent identifier.
-# NXms_feature_set can be used e.g. as groups inside instances of NXms_snapshot
+# NXmicrostructure_feature_set can be used e.g. as groups inside instances of NXmicrostructure_snapshot
 # for an MD simulation each timestep is such snapshot all snapshot for a set
-# which is the parent group that has all these NXms_snapshot instances as childs
+# which is the parent group that has all these NXmicrostructure_snapshot instances as childs
 # time_stamp: # simulated, physical
 # Thea, Joseph, Lauri, Dinga (TJLD) just for comparison for each group and field to what this would map in their model for the MDTutorial 2
 type: group
-NXms_feature_set(NXobject):
+NXmicrostructure_feature_set(NXobject):
   # TJLD: this class represents a generalization of AtomGroups
-  # TJLD: one such for atoms(NXms_feature_set)
-  # TJLD: one such for atom_groups(NXms_feature_set)
+  # TJLD: one such for atoms(NXmicrostructure_feature_set)
+  # TJLD: one such for atom_groups(NXmicrostructure_feature_set)
   # TJLD: but not one for every molecule, i.e. all molecules and how their atoms with ids are related to atoms ids is concatenated
-  # TJLD: clearly there are two possibilities: either concatenate or make one NXms_feature_set for each molecule or component in the topology hierarchy
+  # TJLD: clearly there are two possibilities: either concatenate or make one NXmicrostructure_feature_set for each molecule or component in the topology hierarchy
   # TJLD: however the here proposed design generalizes the arbitrary (microstructural) features and computational geometry based coarse-grained representations
   \@depends_on(NX_CHAR):
     # TJLD: not required it is currently assumed that features are always build from atoms and this relation is shown using their ids, integers on [0, n_atoms-1]
     doc: |
-      Name (or link?) to another NXms_feature_set which defines features what are
+      Name (or link?) to another NXmicrostructure_feature_set which defines features what are
       assumed as the parents/super_features of all members in this feature set.
       If depends_on is set to "." or this attribute is not defined in an instance
       of this application definition, assume that this feature_set instance
@@ -40,11 +40,11 @@ NXms_feature_set(NXobject):
   # more efficient as in the current design each molecule would again be a group
   # and having millions of groups comes with e.g. HDF5 with substantial overlap
   # I faced this when storing grains from micro-scale continuum crystal growth simulations
-  # TJLD: is_molecule(NX_BOOLEAN): not used, could however be added in an appdef which uses instances of NXms_feature_set
-  # TJLD: the key point we can use NXms_feature_set in the same way as currently TJLD use atoms and atoms/atom_groups/molecule0, */molecule1, ...
+  # TJLD: is_molecule(NX_BOOLEAN): not used, could however be added in an appdef which uses instances of NXmicrostructure_feature_set
+  # TJLD: the key point we can use NXmicrostructure_feature_set in the same way as currently TJLD use atoms and atoms/atom_groups/molecule0, */molecule1, ...
   # but with the additional benefit of a much richer geometrical description and the details about the uncertainty of these descriptions
-  # I can also imagine that materials engineers e.g. can reuse NXms_feature_set in an application definition by just then naming
-  # their group e.g. grains(NXms_feature_set) and use in the application definition either only the (material point), interface network, or volumetric description
+  # I can also imagine that materials engineers e.g. can reuse NXmicrostructure_feature_set in an application definition by just then naming
+  # their group e.g. grains(NXmicrostructure_feature_set) and use in the application definition either only the (material point), interface network, or volumetric description
   dimensionality(NX_POSINT):
     # TJLD: not needed because they assume everything is 3d
     doc: |
@@ -58,8 +58,8 @@ NXms_feature_set(NXobject):
   type_dict_keyword(NX_CHAR):
     # TJLD: equivalent to the controlled vocabulary term monomer or molecule, i.e. label
     # TJLD: but with the difference that in this NeXus design here different features can take different roles
-    # TJLD: and do not conceptually have to be atoms, alternatively one could also create an NXms_interface_set which
-    # TJLD: inherits from NXms_feature_set but would need to have no dimensionality
+    # TJLD: and do not conceptually have to be atoms, alternatively one could also create an NXmicrostructure_interface_set which
+    # TJLD: inherits from NXmicrostructure_feature_set but would need to have no dimensionality
     doc: |
       The keywords of the dictionary of human-readable types of features.
       Using terms from a community-agreed upon controlled vocabulary, e.g.
@@ -119,9 +119,9 @@ NXms_feature_set(NXobject):
     # TJLD: this design here is different, TJLD give atom positions only (at least as of now) for the root of an object
     # TJLD: while all higher-order features that are connected through their assumed topology just refer to the atoms in the root
     # TJLD: via their IDs, TJLD design is ideal for systems build from atoms but would create unnecessary copies for higher-dimensional-type features
-    # TJLD: in fact initially I also thought it is useful to create an NXms_dislocation_set, and an NXms_atom_set but overall these are just
-    # specializations of NXms_feature_set. Instead I like the key approach in TJLD which is to nest instances of the same class in TJLD's case AtomGroups
-    # but here NXms_feature_set instances
+    # TJLD: in fact initially I also thought it is useful to create an NXmicrostructure_dislocation_set, and an NXmicrostructure_atom_set but overall these are just
+    # specializations of NXmicrostructure_feature_set. Instead I like the key approach in TJLD which is to nest instances of the same class in TJLD's case AtomGroups
+    # but here NXmicrostructure_feature_set instances
     doc: |
       Assumptions and parameter to arrive at geometric primitives
       to locate zero-dimensional/point-(like) features which are
@@ -170,32 +170,32 @@ NXms_feature_set(NXobject):
   
   # how to map results from MD simulations was already sketched by the comments from TJLD
   # but ones more here stating it explicitly
-  # atoms(NXms_feature_set):
+  # atoms(NXmicrostructure_feature_set):
   # no \@depends_on: as everything is build spatiotemporally coarse-grained from the sampled atom positions and/or their trajectories
-  # dislocations(NXms_feature_set):
+  # dislocations(NXmicrostructure_feature_set):
   # \@depends_on: <<path_to>>/atoms
   # is trivially the same case as was described already for the DDD simulation
   
-  # how to map from DREAM.3D to NXms_feature_set
-  # material_points(NXms_feature_set):  # material points can be voxels of a grid (which should be specified with an instance of NXcg_grid) or real material points
+  # how to map from DREAM.3D to NXmicrostructure_feature_set
+  # material_points(NXmicrostructure_feature_set):  # material points can be voxels of a grid (which should be specified with an instance of NXcg_grid) or real material points
   # no \@depends_on: "." required or value can be "." as material_points are considered the root
-  # grains(NXms_feature_set):
+  # grains(NXmicrostructure_feature_set):
   # \@depends_on: <<path_to>>/material_points
-  # boundaries(NXms_feature_set):
+  # boundaries(NXmicrostructure_feature_set):
   # \@depends_on: <<path_to>>/grains
-  # triple_lines(NXms_feature_set):
+  # triple_lines(NXmicrostructure_feature_set):
   # \@depends_on: <<path_to>>/boundaries
-  # quadruple_junctions(NXms_feature_set):
+  # quadruple_junctions(NXmicrostructure_feature_set):
   # \@depends_on: <<path_to>>/triple_lines
   
-  # how to map from e.g. DDD codes like ParaDis to NXms_feature_set
-  # dislocations(NXms_feature_set):
-  # either all types of dislocations are specified via the type_dict dictionary or by making several named instances of NXms_feature_set classes, i.e. groups
-  # multi_junctions(NXms_feature_set):
+  # how to map from e.g. DDD codes like ParaDis to NXmicrostructure_feature_set
+  # dislocations(NXmicrostructure_feature_set):
+  # either all types of dislocations are specified via the type_dict dictionary or by making several named instances of NXmicrostructure_feature_set classes, i.e. groups
+  # multi_junctions(NXmicrostructure_feature_set):
   # \@depends_on: <<path_to>>/dislocations
   
   # how to describe e.g. 3D cracks
-  # cracks(NXms_feature_set):
+  # cracks(NXmicrostructure_feature_set):
   # you can use volumes and interfaces to describe explicitly the 3D geometry
   # alternatively you can
   
@@ -220,9 +220,9 @@ NXms_feature_set(NXobject):
   # phaseId, is it a triple point between homophases or heterophases
   # V, list of x, y coordinates for the triple points
   # angles, trivial nextVertexId to triplePoint vertex angles
-  # grains(NXms_feature_set):
-  # boundaries(NXms_feature_set):
-  # alternatively one NXms_feature_set for homophase boundaries
+  # grains(NXmicrostructure_feature_set):
+  # boundaries(NXmicrostructure_feature_set):
+  # alternatively one NXmicrostructure_feature_set for homophase boundaries
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
 # 15f205ec24e25536f17046f9540798e889bf21046d3e1e2a63ab9434e3f6ffa9
@@ -249,12 +249,12 @@ NXms_feature_set(NXobject):
 # #
 # # For further information, see http://www.nexusformat.org
 # -->
-# <!--NXms_feature_set can be used e.g. as groups inside instances of NXms_snapshot
+# <!--NXmicrostructure_feature_set can be used e.g. as groups inside instances of NXmicrostructure_snapshot
 # for an MD simulation each timestep is such snapshot all snapshot for a set
-# which is the parent group that has all these NXms_snapshot instances as childs
+# which is the parent group that has all these NXmicrostructure_snapshot instances as childs
 #   time_stamp: # simulated, physical-->
 # <!--Thea, Joseph, Lauri, Dinga (TJLD) just for comparison for each group and field to what this would map in their model for the MDTutorial 2-->
-# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXms_feature_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXmicrostructure_feature_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
 #     <symbols>
 #         <doc>
 #              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -284,15 +284,15 @@ NXms_feature_set(NXobject):
 #          Set of topological/spatial features in materials build from other features.
 #     </doc>
 #     <!--TJLD: this class represents a generalization of AtomGroups
-# TJLD: one such for atoms(NXms_feature_set)
-# TJLD: one such for atom_groups(NXms_feature_set)
+# TJLD: one such for atoms(NXmicrostructure_feature_set)
+# TJLD: one such for atom_groups(NXmicrostructure_feature_set)
 # TJLD: but not one for every molecule, i.e. all molecules and how their atoms with ids are related to atoms ids is concatenated
-# TJLD: clearly there are two possibilities: either concatenate or make one NXms_feature_set for each molecule or component in the topology hierarchy
+# TJLD: clearly there are two possibilities: either concatenate or make one NXmicrostructure_feature_set for each molecule or component in the topology hierarchy
 # TJLD: however the here proposed design generalizes the arbitrary (microstructural) features and computational geometry based coarse-grained representations-->
 #     <attribute name="depends_on">
 #         <!--TJLD: not required it is currently assumed that features are always build from atoms and this relation is shown using their ids, integers on [0, n_atoms-1]-->
 #         <doc>
-#              Name (or link?) to another NXms_feature_set which defines features what are
+#              Name (or link?) to another NXmicrostructure_feature_set which defines features what are
 #              assumed as the parents/super_features of all members in this feature set.
 #              If depends_on is set to &quot;.&quot; or this attribute is not defined in an instance
 #              of this application definition, assume that this feature_set instance
@@ -306,11 +306,11 @@ NXms_feature_set(NXobject):
 # more efficient as in the current design each molecule would again be a group
 # and having millions of groups comes with e.g. HDF5 with substantial overlap
 # I faced this when storing grains from micro-scale continuum crystal growth simulations
-# TJLD: is_molecule(NX_BOOLEAN): not used, could however be added in an appdef which uses instances of NXms_feature_set
-# TJLD: the key point we can use NXms_feature_set in the same way as currently TJLD use atoms and atoms/atom_groups/molecule0, */molecule1, ...
+# TJLD: is_molecule(NX_BOOLEAN): not used, could however be added in an appdef which uses instances of NXmicrostructure_feature_set
+# TJLD: the key point we can use NXmicrostructure_feature_set in the same way as currently TJLD use atoms and atoms/atom_groups/molecule0, */molecule1, ...
 # but with the additional benefit of a much richer geometrical description and the details about the uncertainty of these descriptions
-# I can also imagine that materials engineers e.g. can reuse NXms_feature_set in an application definition by just then naming
-# their group e.g. grains(NXms_feature_set) and use in the application definition either only the (material point), interface network, or volumetric description-->
+# I can also imagine that materials engineers e.g. can reuse NXmicrostructure_feature_set in an application definition by just then naming
+# their group e.g. grains(NXmicrostructure_feature_set) and use in the application definition either only the (material point), interface network, or volumetric description-->
 #     <field name="dimensionality" type="NX_UINT">
 #         <!--TJLD: not needed because they assume everything is 3d-->
 #         <doc>
@@ -332,8 +332,8 @@ NXms_feature_set(NXobject):
 #     <field name="type_dict_keyword">
 #         <!--TJLD: equivalent to the controlled vocabulary term monomer or molecule, i.e. label
 # TJLD: but with the difference that in this NeXus design here different features can take different roles
-# TJLD: and do not conceptually have to be atoms, alternatively one could also create an NXms_interface_set which
-# TJLD: inherits from NXms_feature_set but would need to have no dimensionality-->
+# TJLD: and do not conceptually have to be atoms, alternatively one could also create an NXmicrostructure_interface_set which
+# TJLD: inherits from NXmicrostructure_feature_set but would need to have no dimensionality-->
 #         <doc>
 #              The keywords of the dictionary of human-readable types of features.
 #              Using terms from a community-agreed upon controlled vocabulary, e.g.
@@ -410,9 +410,9 @@ NXms_feature_set(NXobject):
 #         <!--TJLD: this design here is different, TJLD give atom positions only (at least as of now) for the root of an object
 # TJLD: while all higher-order features that are connected through their assumed topology just refer to the atoms in the root
 # TJLD: via their IDs, TJLD design is ideal for systems build from atoms but would create unnecessary copies for higher-dimensional-type features
-# TJLD: in fact initially I also thought it is useful to create an NXms_dislocation_set, and an NXms_atom_set but overall these are just
-# specializations of NXms_feature_set. Instead I like the key approach in TJLD which is to nest instances of the same class in TJLD's case AtomGroups
-# but here NXms_feature_set instances-->
+# TJLD: in fact initially I also thought it is useful to create an NXmicrostructure_dislocation_set, and an NXmicrostructure_atom_set but overall these are just
+# specializations of NXmicrostructure_feature_set. Instead I like the key approach in TJLD which is to nest instances of the same class in TJLD's case AtomGroups
+# but here NXmicrostructure_feature_set instances-->
 #         <doc>
 #              Assumptions and parameter to arrive at geometric primitives
 #              to locate zero-dimensional/point-(like) features which are
@@ -476,29 +476,29 @@ NXms_feature_set(NXobject):
 # Sandor suggested it can be useful to also describe how one could transform system-specific atom positions from the system-focused coordinate system to a molecule- or atom-focused local coordinate system-->
 #     <!--how to map results from MD simulations was already sketched by the comments from TJLD
 # but ones more here stating it explicitly
-# atoms(NXms_feature_set):
+# atoms(NXmicrostructure_feature_set):
 #   # no \@depends_on: as everything is build spatiotemporally coarse-grained from the sampled atom positions and/or their trajectories
-# dislocations(NXms_feature_set):
+# dislocations(NXmicrostructure_feature_set):
 #   # \@depends_on: <<path_to>>/atoms
 #   # is trivially the same case as was described already for the DDD simulation-->
-#     <!--how to map from DREAM.3D to NXms_feature_set
-# material_points(NXms_feature_set):  # material points can be voxels of a grid (which should be specified with an instance of NXcg_grid) or real material points
+#     <!--how to map from DREAM.3D to NXmicrostructure_feature_set
+# material_points(NXmicrostructure_feature_set):  # material points can be voxels of a grid (which should be specified with an instance of NXcg_grid) or real material points
 #   # no \@depends_on: "." required or value can be "." as material_points are considered the root
-# grains(NXms_feature_set):
+# grains(NXmicrostructure_feature_set):
 #   \@depends_on: <<path_to>>/material_points
-# boundaries(NXms_feature_set):
+# boundaries(NXmicrostructure_feature_set):
 #   \@depends_on: <<path_to>>/grains
-# triple_lines(NXms_feature_set):
+# triple_lines(NXmicrostructure_feature_set):
 #   \@depends_on: <<path_to>>/boundaries
-# quadruple_junctions(NXms_feature_set):
+# quadruple_junctions(NXmicrostructure_feature_set):
 #   \@depends_on: <<path_to>>/triple_lines-->
-#     <!--how to map from e.g. DDD codes like ParaDis to NXms_feature_set
-# dislocations(NXms_feature_set):
-# either all types of dislocations are specified via the type_dict dictionary or by making several named instances of NXms_feature_set classes, i.e. groups
-# multi_junctions(NXms_feature_set):
+#     <!--how to map from e.g. DDD codes like ParaDis to NXmicrostructure_feature_set
+# dislocations(NXmicrostructure_feature_set):
+# either all types of dislocations are specified via the type_dict dictionary or by making several named instances of NXmicrostructure_feature_set classes, i.e. groups
+# multi_junctions(NXmicrostructure_feature_set):
 #   \@depends_on: <<path_to>>/dislocations-->
 #     <!--how to describe e.g. 3D cracks
-# cracks(NXms_feature_set):
+# cracks(NXmicrostructure_feature_set):
 #   # you can use volumes and interfaces to describe explicitly the 3D geometry
 #   # alternatively you can-->
 #     <!--how to map from an MTex v5.8.2 @grain2d object
@@ -522,7 +522,7 @@ NXms_feature_set(NXobject):
 #     phaseId, is it a triple point between homophases or heterophases
 #     V, list of x, y coordinates for the triple points
 #     angles, trivial nextVertexId to triplePoint vertex angles
-# grains(NXms_feature_set):
-# boundaries(NXms_feature_set):
-# # alternatively one NXms_feature_set for homophase boundaries-->
+# grains(NXmicrostructure_feature_set):
+# boundaries(NXmicrostructure_feature_set):
+# # alternatively one NXmicrostructure_feature_set for homophase boundaries-->
 # </definition>
