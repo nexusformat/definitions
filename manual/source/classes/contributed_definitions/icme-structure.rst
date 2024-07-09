@@ -24,10 +24,7 @@ materials-engineering-specific data schemas can connect to or be mapped on
 concepts which are equally modellable with NeXus:
 
     :ref:`NXmicrostructure`:
-        An application definition for arbitrary spatiotemporally resolved simulations.
-
-    :ref:`NXmicrostructure_recon`:
-        A base class for documenting results of reconstructed microstructures.
+        A base class for documenting a snapshot of a reconstructed microstructures.
 
     :ref:`NXmicrostructure_score_config`, :ref:`NXmicrostructure_score_results`:
         A specific example of an application definition for documenting the
