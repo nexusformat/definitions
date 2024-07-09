@@ -1,0 +1,92 @@
+category: application
+doc: |
+  Application definition for the IMM structure generator.
+  
+  The tool can be used to instantiate specific configurations for computer simulations modelling the evolution of the a microstructure upon annealing. The structure is assumed
+  to be a homophase material that is composed of crystals, so-called (parent) grains which are tessellated into so-called sub-grains. Grains can be modelled as elongated objects to mimic fundamental geometrical constraints of the interface network in deformed material.
+# symbols:
+# type: group
+NXms_imm_config(NXobject):
+  (NXentry):
+    definition(NX_CHAR):
+      enumeration: [NXms_imm_config]
+      \@version(NX_CHAR):
+
+    roi(NXroi):
+      dimensionality(NX_UINT):
+        doc: |
+          Two-dimensional or three-dimensional simulation.
+        enumeration: [2, 3]
+      discretization(NX_UINT):  # <NumberOfPointsPerSubGrain>15</NumberOfPointsPerSubGrains># simulation ID via command line <SimulationID>10</SimulationID>
+      crystal_symmetry(NX_CHAR):
+        doc: |
+          Assumed space group of the material.
+        enumeration: [fcc, bcc, hcp]
+        # <AdditionalFilename>PreferenceOrientations.txt</AdditionalFilename>
+        # <CrystalStructure>1</CrystalStructure> # 0, E_HCP, 1 E_FCC, 2 E_BCC, 3 E_DEFAULT_STRUCTURE
+      number_of_grains(NX_UINT):  # <NumberOfGrains>8</NumberOfGrains>
+        doc: |
+          Domain will be square or cubic respectively ROI (axis-aligned) regularly tessellated with either squares or cubes about so-called material points.
+          
+          Actual domain size and grid depends on discretization, number_of_grains, and shape of these grains
+      number_of_subgrains(NX_UINT):  # <NumberOfSubgrains>1000</NumberOfSubgrains>
+      # <MicroGenMode>0</MicroGenMode> is there another one if not remove
+      # <TextureGEN>1</TextureGEN> always one 
+      # <!--<UseOrientationSpace>1</UseOrientationSpace>-->
+      # <GrainShape>1</GrainShape>
+      grain_shape(NX_FLOAT):
+        exists: optional
+        doc: |
+          If available used to define the sequence of relative extent of grains along the y (first value) and z-axis (second value) assuming the relative shape along the x-axis is 1.
+          
+          If absent, structure will be globulitic i.e. the extent of the grains on average is 1 along each axis.
+        unit: NX_DIMENSIONLESS
+        dim: (2,)
+      # <!-- USAGE: 0, E_GLOBULITIC, 1, E_FLAT
+      # <DefGrainRelDimensionY>0.05</DefGrainRelDimensionY>
+      # <DefGrainRelDimensionZ>1.0</DefGrainRelDimensionZ>
+      # remove 0 all the time <RandomnessX>0.00</RandomnessX>
+      # remove 0 all the time <RandomnessY>0.00</RandomnessY>
+      # <!-- in the case of MicroGenMode 0 (E_VORONOI) this sets dimensions of the average 0.1/0.2cdeformed grain relative to its dimensions in x which is 1.0, randomness controls how the seed points are misplaced -->
+
+    dislocation_density_distribution_model(NXprocess):
+      doc: |
+        The model according to which dislocation density is distributed across the grains and sub-grains.
+      type(NX_CHAR):
+        doc: |
+          Distribution type according to which values are distributed.
+        enumeration: [rayleigh]
+      min_max(NX_FLOAT):
+        doc: |
+          The minimum and the maximum value to distribute across sub-grains.
+        unit: NX_ANY  # 1/m^2
+        dim: (2,)
+        # <StoredElasticEnergyMax>10.8e14</StoredElasticEnergyMax># <StoredElasticEnergyMin>10.8e14</StoredElasticEnergyMi
+      variance??_grain(NX_FLOAT):  # <StoredElasticScatterGrain>4.0e14</StoredElasticScatterGrain>
+      # <!-- truncating to lower values at 1.0e12-->
+        doc: |
+        unit: NX_ANY  # 1/m^2
+      variance??_subgrain(NX_FLOAT):  # <StoredElasticScatterSubgrain>0.8e14</StoredElasticScatter>
+        doc: |
+        unit: NX_ANY  # 1/m^2
+    orientation_distribution_model(NXprocess):  # <ReadFromFilename>CR70FeSi.Rogge.MTEX.vpsc.odf.5000.txt</ReadFromFilename>
+      doc: |
+        Orientations of the grains are sampled from a set of Bunge-Euler angle triplets.
+        Orientations of the sub-grains are sampled by scattering the orientation of the (parent) grain.
+      input(NXserialized):
+        type(NX_CHAR):
+        path(NX_CHAR):
+        checksum(NX_CHAR):
+        algorithm(NX_CHAR):
+      variance_subgrain(NX_FLOAT):  # <SubgrainOriScatter>5.0</SubgrainOriScatter>
+        doc: |
+        unit: NX_ANGLE
+      # what is with preference orientations?
+
+# <ExecuteInParallel>1</ExecuteInParallel> # via OpenMP
+# <PlotIPF2DSection>1</PlotIPF2DSection>
+# <PlotWindowXMin>0.00</PlotWindowXMin>
+# <PlotWindowXMax>1.00</PlotWindowXMax>
+# <PlotWindowYMin>0.00</PlotWindowYMin>
+# <PlotWindowYMax>1.00</PlotWindowYMax>
+# <!--IPF plotting renders a plane-parallel section in the NXNY coordinates
