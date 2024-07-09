@@ -21,26 +21,31 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<!--
-position would need another depends_on the specific coordinate system used, currently we assume McStas
-roi1/ebsd/microstructure1-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXmicrostructure_recon" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
-        <!--in so-called linear intercept analysis we observe
-one-dimensional sections of either projections (see below)
-or true one-dimensional cuts across a volume of material
-n_icept: |
-  The number of linear intercepts defined.
-n_c_one: |
-  The number of crystal projections segmented by crossing (projected or real) interfaces
-n_i_one: |
-  The number of crossings
-two-dimensional projections of characterized in reality three-dimensional objects
-using E. E. Underwood notation
-crystals/grains are projections that are delineated by projections of interface, i.e. interface lines which meet at projections of triple lines i.e. triple "points"-->
+        <!--one-dimensional observations and so-called linear intercept analysis we observe
+one-dimensional sections of either projections (see below) or true one-dimensional cuts across a volume of material-->
+        <symbol name="n_icept">
+            <doc>
+                 The number of linear intercepts defined.
+            </doc>
+        </symbol>
+        <symbol name="n_c_one">
+            <doc>
+                 The number of crystal projections segmented by crossing (projected or real)
+                 interfaces.
+            </doc>
+        </symbol>
+        <symbol name="n_i_one">
+            <doc>
+                 The number of crossings
+            </doc>
+        </symbol>
+        <!--two-dimensional projections of three-dimensional objects using E. E. Underwood notation
+crystals/grains are projections that are delineated by projections of interface, i.e. interface lines which meet at projections of triple lines aka triple points-->
         <symbol name="n_c_two">
             <doc>
                  The number of crystal projections.
@@ -53,24 +58,25 @@ crystals/grains are projections that are delineated by projections of interface,
         </symbol>
         <symbol name="n_t_two">
             <doc>
-                 The number of assumed triple junction projections aka triple points.
+                 The number of assumed triple line projections aka triple points.
             </doc>
         </symbol>
         <!--three-dimensional real objects, volumetrically characterized
 crystals are delineated by interfaces that are delineated by triple lines that meet at quad junctions-->
         <symbol name="n_c">
             <doc>
-                 The number of crystals.
+                 The number of crystals. Grain and sub-grain are synonyms for crystal.
             </doc>
         </symbol>
         <symbol name="n_i">
             <doc>
-                 The number of interfaces
+                 The number of interfaces. Grain boundary and phase boundary are subclasses of
+                 interface.
             </doc>
         </symbol>
         <symbol name="n_t">
             <doc>
-                 The number of triple lines
+                 The number of triple lines.
             </doc>
         </symbol>
         <symbol name="n_q">
@@ -80,33 +86,54 @@ crystals are delineated by interfaces that are delineated by triple lines that m
         </symbol>
     </symbols>
     <doc>
-         Base class to describe discretized (micro)structural features of a material.
+         Base class to describe structural aspects and associated descriptors of (micro)structural features.
          
-         One instance of this base class can be used to describe the current configuration
-         the base class does not include time-dependent descriptions for the sake of
-         clarity and because of the fact that virtually all simulations or experiments
-         probe time by sampling. Therefore, time-dependent state descriptions should
-         be realized with creating a set of :ref:`NXmicrostructure_snapshot_set` with instances of
-         :ref:`NXmicrostructure_snapshot` using e.g. :ref:`NXmicrostructure_recon` base class instances.
+         The continuum or atomic scale description of materials is inherently a model of reality. Such models
+         are useful as they enable a coarse graining and categorization of measured or simulated materials
+         specifically how their structural features lead to properties i.e. descriptor values.
+         Mind that most specimens are thermo-chemo-mechanically treated before they are characterized.
+         Therefore, the characterized microstructure may not have probed the same structure as of
+         the untreated sample or often bulk material from which the region-of-interest or specimen was probed.
+         
+         A simulation or experiment can only sample the true structure of the material.
+         Fields time and increment enable a quantification of the temporal evolution of a material
+         when using multiple instances of NXmicrostructure_recon.
+         
+         Taking inspiration from `E. E. Underwood &lt;https://doi.org/10.1111/j.1365-2818.1972.tb03709.x&gt;`_
+         and E. E. Underwood's book on Quantitative stereology that was published in 1970.
+         
+         Identifiers can be defined either implicitly or explicitly. For implicit indexing identifiers are defined
+         on the interval :math:`[identifier\_offset, identifier\_offset + cardinality - 1]`.
     </doc>
-    <!--as e.g. a result of one grain reconstruction with MTex or othe
-grain reconstruction software in commercial tools
-the idea is we may wish to run as many grain reconstructions as we want...
-add details about the processing-->
+    <!--as e.g. a result of one grain reconstruction with an algorithm with MTex or the grain/phase i.e. interface network reconstruction software in commercial tools
+the idea is we may wish to run as many grain reconstructions as we want and add details about the processing used for each of them if needed-->
+    <field name="comment" type="NX_CHAR">
+        <doc>
+             Discouraged free text field for leaving comments.
+        </doc>
+    </field>
+    <field name="time" type="NX_NUMBER" units="NX_TIME">
+        <doc>
+             Measured or simulated physical time stamp for this snapshot.
+             Not to be confused with wall-clock timing or profiling data.
+        </doc>
+    </field>
+    <field name="iteration" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Iteration or increment counter.
+        </doc>
+    </field>
     <group name="configuration" type="NXprocess">
         <doc>
              The configuration and parameterization of the reconstruction algorithm
              whereby the microstructural features were identified.
         </doc>
-        <!--maybe a depends_on what was the input however if the group is injected
-in an roi1/ebsd instance isnt this information implicit?-->
         <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
             <doc>
-                 Dimensionality of the analysis.
+                 Dimensionality of Euclidean space in which the analysis is conducted.
                  
-                 This field can be used e.g. by a research data management system
-                 to identify if the described feature set specifies a
-                 one-, two-, or three-dimensional feature set.
+                 This field can be used e.g. by a research data management system to identify
+                 if the description specifies one-, two-, or three-dimensional representations.
             </doc>
             <enumeration>
                 <item value="1"/>
@@ -116,7 +143,7 @@ in an roi1/ebsd instance isnt this information implicit?-->
         </field>
         <field name="algorithm" type="NX_CHAR">
             <doc>
-                 Which algorithm is used to reconstruct the features.
+                 Algorithm is used to reconstruct the features.
             </doc>
             <enumeration>
                 <item value="unknown"/>
@@ -134,74 +161,58 @@ in an roi1/ebsd instance isnt this information implicit?-->
             </doc>
         </field>
     </group>
-    <!--the result of running one grain reconstruction
-ms_feature_set1
-we could also enumerate instances ms_feature_setID here because configuration
-may specify a range of different parameter resulting in multiple ms_feature_sets
-dimensionality(N) composed from NXmicrostructure_feature_set base:
-controlled vocabulary of base class instances to be used to inform about the
-discretization of these features instances to discretize the features
-wherever possible the computational geometry specific instances whose
-purpose is only to support/represent the discretization of the features should
-be separated out from the materials engineering interpretation of what these
-features are, i.e. a grain that is measured with a 2d section ends up
-modelled as an projection of that real 3d grain object
-the model is discretized usign a polyline which models the location of the
-interface at the required here coarse-grained continuum picture-->
-    <group name="points" type="NXcg_point_set"/>
-    <group name="lines" type="NXcg_polyline_set"/>
-    <group name="surfaces" type="NXcg_triangle_set"/>
-    <group name="volumes" type="NXcg_polyhedron_set"/>
-    <!--domain-specific, i.e. microstructural features
-ONE DIMENSIONAL FEATURES-->
-    <!--TWO DIMENSIONAL FEATURES-->
-    <group name="crystal_projections" type="NXmicrostructure_feature_set">
+    <!--use controlled vocabulary terms point, line, surface, volume, use singular term-->
+    <group type="NXcg_point_set"/>
+    <group type="NXcg_polyline_set"/>
+    <group type="NXcg_triangle_set"/>
+    <group type="NXcg_polyhedron_set"/>
+    <group type="NXcsg"/>
+    <!--domain-specific, i.e. microstructural features-->
+    <group name="crystal" type="NXobject">
         <doc>
-             Projections of crystals on the sample surface as typically
-             characterized with optical or electron microscopy.
+             One- or two-dimensional projections, or three-dimensional representation of crystals.
+             
+             Crystals can be grains of different phases, precipitates, dispersoids, there are many
+             terms used in specifically the materials engineering community.
+             
+             Typically, as observed e.g. on the surface of a sample using with optical or electron microscopy
+             or as simulated as a set of pixel or evolving polygons and their polyline boundaries.
         </doc>
-        <attribute name="discretization" type="NX_CHAR">
+        <!--maybe some enum what this is-->
+        <field name="representation" type="NX_CHAR">
             <doc>
-                 Reference to lines(NXcg_polyline_set) which supports the
-                 discretized shape of each cross-sectioned crystal.
+                 Reference to an instance of:
+                 
+                 * :ref:`NXcg_point_set` for a one-dimensional representation as only a projection is available
+                 * :ref:`NXcg_polyline_set` or :ref`NXcg_polygon_set` for a two-dimensional representation as only a projection is available
+                 * :ref:`NXcg_polyhedron_set` for a three-dimensional representation
+                 * :ref:`NXcg_grid` for regularly pixelated or voxelated representation
                  
                  Most microscopy techniques support to generate only a two-dimensional
                  representation (projection) of the characterized material.
-                 
-                 For true volumetric techniques use the specifically
-                 specialized crystals :ref:`NXmicrostructure_feature_set` instead.
-                 See stereology literature for more details e.g.
-                 E.E. Underwood's book entitled Quantitative Stereology
             </doc>
-        </attribute>
+        </field>
         <field name="number_of_crystals" type="NX_UINT" units="NX_UNITLESS">
             <doc>
                  Number of crystals.
             </doc>
-        </field>
-        <field name="crystal_identifier_offset" type="NX_INT" units="NX_UNITLESS">
-            <doc>
-                 Integer offset whereby the identifier of the first member
-                 of the set differs from zero.
-                 
-                 Identifiers can be defined either implicitly or explicitly.
-                 For implicit indexing identifiers are defined on the interval
-                 :math:`[identifier\_offset, identifier\_offset + c - 1]`.
-            </doc>
-        </field>
-        <field name="crystal_identifier" type="NX_INT" units="NX_UNITLESS">
-            <doc>
-                 Identifier used for crystals for explicit indexing.
-            </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_c_two"/>
-            </dimensions>
         </field>
         <field name="number_of_phases" type="NX_UINT" units="NX_UNITLESS">
             <doc>
                  How many phases are distinguished
             </doc>
         </field>
+        <field name="crystal_identifier_offset" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Integer offset whereby to distinguish crystals.
+            </doc>
+        </field>
+        <field name="crystal_identifier" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Identifier used for crystals for explicit indexing.
+            </doc>
+        </field>
+        <!--n_c_one, n_c_two, n_c-->
         <field name="phase_identifier_offset" type="NX_INT" units="NX_UNITLESS">
             <doc>
                  Integer offset whereby the identifier of the first member
@@ -209,246 +220,198 @@ ONE DIMENSIONAL FEATURES-->
             </doc>
         </field>
         <field name="phase_identifier" type="NX_INT" units="NX_UNITLESS">
-            <!--
-\@depends_on(NX_CHAR):
--->
             <doc>
                  Identifier used for phase for explicit indexing.
             </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_c_two"/>
-            </dimensions>
         </field>
-        <!--properties of crystal_projections aka grain properties-->
+        <!--n_c_one, n_c_two, n_c
+properties
+DESCRIPTOR VALUES, SUMMARY STATISTICS-->
         <field name="boundary_contact" type="NX_BOOLEAN">
             <doc>
-                 True, if the crystal makes contact with the edge of the ROI,
-                 false otherwise.
+                 True, if the crystal makes contact with the edge of the ROI false otherwise.
             </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_c_two"/>
-            </dimensions>
         </field>
+        <!--n_c_one, n_c_two, n_c-->
         <field name="orientation_spread" type="NX_NUMBER" units="NX_ANGLE">
             <doc>
                  Average disorientation angle between individual orientation of the
                  crystal at probed positions (weighted by area of that position) versus
                  the average disorientation of the crystal.
             </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_c_two"/>
-            </dimensions>
         </field>
+        <!--n_c_one, n_c_two, n_c-->
         <group type="NXrotation_set"/>
-        <field name="area" type="NX_NUMBER" units="NX_AREA">
-            <doc>
-                 Calibrated area of surrounded by the polyline about each crystal.
-            </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_c_two"/>
-            </dimensions>
-        </field>
-    </group>
-    <group name="interface_projections" type="NXmicrostructure_feature_set">
-        <!--
-grain boundaries have a network of line-like defects, its explicit description
-often generates unnecessary information duplication and cluttering,
-therefore here a compact and suggestion how to store such data
--->
-        <doc>
-             Projections of grain or phase boundaries as typically sectioned
-             with optical or electron microscopy characterization.
-        </doc>
-        <attribute name="discretization" type="NX_CHAR">
-            <doc>
-                 Reference to lines(NXcg_polyline_set) which supports the
-                 discretized shape of each cross-sectioned crystal.
-                 
-                 Set of tuples of polyline segments which build the interface.
-            </doc>
-        </attribute>
-        <!--topology
-i) Set of pair of crystals sharing an interface-->
-        <field name="crystals" type="NX_INT" units="NX_UNITLESS">
-            <doc>
-                 Set of pairs of crystal_identifier resolved via depends_on which
-                 are adjacent to each interface.
-            </doc>
-            <dimensions rank="2">
-                <dim index="1" value="n_i_two"/>
-                <dim index="2" value="2"/>
-            </dimensions>
-            <attribute name="depends_on" type="NX_CHAR">
-                <doc>
-                     The specific crystal_projections(NXmicrostructure_feature_set) instance
-                     to resolve crystal identifier.
-                </doc>
-            </attribute>
-        </field>
-        <!--ii) Set of pair of topologically connected triple points-->
-        <field name="triple_points" type="NX_INT" units="NX_UNITLESS">
-            <doc>
-                 Set of pairs of triple_point_identifier which the interface connects.
-                 For 2D projections of 3D microstructural features a triple point is
-                 physically only the projection of a triple line.
-            </doc>
-            <dimensions rank="2">
-                <dim index="1" value="n_i_two"/>
-                <dim index="2" value="2"/>
-            </dimensions>
-            <attribute name="depends_on" type="NX_CHAR">
-                <doc>
-                     The specific triple_line_projections(NXmicrostructure_feature_set) instance
-                     whereby to resolve triple_point identifier.
-                </doc>
-            </attribute>
-        </field>
-        <!--alternatively which polyline of adjoining interfaces
-properties, descriptors-->
         <field name="length" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 The length of the interface. 
+                 Length of each crystal
+            </doc>
+        </field>
+        <field name="area" type="NX_NUMBER" units="NX_AREA">
+            <doc>
+                 Area of each crystal.
+            </doc>
+        </field>
+        <field name="volume" type="NX_NUMBER" units="NX_VOLUME">
+            <doc>
+                 Volume of each crystal
+            </doc>
+        </field>
+    </group>
+    <group name="interface" type="NXobject">
+        <doc>
+             One- or two-dimensional projections, or three-dimensional representation of interfaces between crystals
+             as topological entities to dual_junctions.
+             
+             Most relevant interfaces are grain and phase boundaries but factually interfaces can also be between
+             the environment and crystals exposed at the surface of the specimen.
+        </doc>
+        <field name="representation" type="NX_CHAR">
+            <doc>
+                 Reference to an instance of:
+                 
+                 * :ref:`NXcg_point_set` for a one-dimensional representation as only a projection is available
+                 * :ref:`NXcg_polyline_set` for a two-dimensional representation as only a projection is available
+                 * :ref:`NXcg_grid` for regularly pixelated or voxelated representation using (boolean) masks
+                 
+                 Most microscopy techniques support to generate only a two-dimensional
+                 representation (projection) of the characterized material.
+            </doc>
+        </field>
+        <field name="number_of_interfaces" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 Number of interfaces.
+            </doc>
+        </field>
+        <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Integer which specifies the first index to be used for distinguishing
+                 interfaces.
+            </doc>
+        </field>
+        <field name="identifier" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Integer used to distinguish features for explicit indexing.
+            </doc>
+        </field>
+        <!--n_i_one, n_i_two, n_i
+topological view, interface specification through the the pair of crystals sharing an interface-->
+        <field name="crystal" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Set of pairs of crystal_identifier.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="i"/>
+                <dim index="2" value="2"/>
+            </dimensions>
+            <attribute name="use_these" type="NX_CHAR">
+                <doc>
+                     The specific identifier instance to resolve ambiguities.
+                </doc>
+            </attribute>
+        </field>
+        <!--topological view, interface specification through the pair of triple line projections (i.e. triple points) adjoining the interface-->
+        <field name="triple_junction" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Set of pairs of triple_junction_identifier.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="j"/>
+                <dim index="2" value="2"/>
+            </dimensions>
+            <attribute name="use_these" type="NX_CHAR">
+                <doc>
+                     The specific identifier instance to resolve ambiguities.
+                </doc>
+            </attribute>
+        </field>
+        <!--DESCRIPTOR VALUES-->
+        <field name="length" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 The length of the interface.
                  
                  This is not necessarily the same as the length of the individual
                  polyline segments whereby the interface is discretized.
-                 
-                 The actual coordinate system whereby the geometry is calibrated
-                 with real physical dimensions is typically documented by the
-                 depends_on attribute of the respective NXcg_primitive_set.
-                 This depends_on attribute should point explicitly to an
-                 instance of a :ref:`NXcoordinate_system` to support users as
-                 much as possible with interpreting how and where the lines are
-                 located in the reference frame.
-            </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_i_two"/>
-            </dimensions>
-        </field>
-        <field name="interface_identifier_offset" type="NX_INT" units="NX_UNITLESS">
-            <doc>
-                 Integer offset whereby the identifier of the first member
-                 of the set differs from zero.
-                 
-                 Identifiers can be defined either implicitly or explicitly.
-                 For implicit indexing identifiers are defined on the interval
-                 :math:`[identifier\_offset, identifier\_offset + c - 1]`.
             </doc>
         </field>
-        <field name="interface_identifier" type="NX_INT" units="NX_UNITLESS">
+        <!--n_i_one, n_i_two, n_i-->
+        <field name="area" type="NX_NUMBER" units="NX_AREA">
             <doc>
-                 Identifier for each interface using explicit indexing.
+                 Surface area
             </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_i_two"/>
-            </dimensions>
         </field>
     </group>
-    <group name="triple_line_projections" type="NXmicrostructure_feature_set">
-        <!--
-only for 2D, quad junction is the equivalent for 3D is not a triple_line
-four alternative descriptors with different strength to specify spatial
-or logical information about the triple junction feature set.
-the explicit description often generating unnecessary information duplication
--->
+    <group name="triple_junction" type="NXobject">
         <doc>
-             Projections of triple lines as typically characterized with optical
-             or electron microscopy.
+             Projections of or representations of junctions at which interfaces between.
              
-             Mind that most specimens are thermo-chemo-mechanically treated before
-             they are characterized. Therefore, the projected crystal defects are
-             have physically no longer the same structure as in the bulk.
-             
-             Examples are manifest as effects such as thermal grooving, or relaxation
-             effects of an intersection between a triple line that is cut
-             by the specimen surface as these defects are then exposed typically
-             to a different atmosphere and hence have different thermodynamic boundary
-             conditions than of their true volumetric defects in the bulk.
+             Junctions can be triple lines, triple points as their projections, junctions observed
+             between crystals at the specimen and its surface (including wetting phenomena)
         </doc>
-        <attribute name="discretization" type="NX_CHAR">
+        <field name="representation" type="NX_CHAR">
             <doc>
-                 Reference to points(NXcg_point_set) which supports the
-                 locations of these triple points.
+                 Reference to an instance of:
+                 
+                 * :ref:`NXcg_point_set` for a one-dimensional representation as only a projection is available
+                 * :ref:`NXcg_polyline_set` for a two-dimensional representation as only a projection is available
+                 * :ref:`NXcg_grid` for regularly pixelated or voxelated representation using (boolean) masks
             </doc>
-        </attribute>
+        </field>
         <!--another view to describe a triple junction is via its topology/connection expressed either via
 i) triplet of interface identifier-->
-        <field name="number_of_triple_points" type="NX_UINT" units="NX_UNITLESS">
+        <field name="number_of_junctions" type="NX_UINT" units="NX_UNITLESS">
             <doc>
-                 Number of triple points.
+                 Number of triple junctions.
             </doc>
         </field>
-        <field name="triple_point_identifier_offset" type="NX_INT" units="NX_UNITLESS">
+        <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
             <doc>
-                 Integer offset whereby the identifier of the first member
-                 of the set differs from zero.
-                 
-                 Identifiers can be defined either implicitly or explicitly.
-                 For implicit indexing identifiers are defined on the interval
-                 :math:`[identifier\_offset, identifier\_offset + c - 1]`.
+                 Integer offset where to start counting instances of the set of junctions.
             </doc>
         </field>
-        <field name="triple_point_identifier" type="NX_INT" units="NX_UNITLESS">
+        <field name="identifier" type="NX_INT" units="NX_UNITLESS">
             <doc>
-                 Identifier for each triple point using explicit indexing.
+                 Identifier used for specifiying all members of the set of junctions.
             </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_t_two"/>
-            </dimensions>
         </field>
-        <field name="location" type="NX_INT" units="NX_UNITLESS">
+        <!--n_t_one, n_t_two, n_t
+example i) triple point locations explicitly-->
+        <field name="position" type="NX_INT" units="NX_UNITLESS">
             <doc>
-                 Set of triple point identifiers.
+                 Set of identifier for positions whereby to identify the location of each
+                 junction.
             </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n_t_two"/>
-            </dimensions>
-            <attribute name="depends_on" type="NX_CHAR">
+            <attribute name="use_these" type="NX_CHAR">
                 <doc>
-                     The relevant points(NXcg_point_set) instance whereby to
-                     resolve interface identifiers.
+                     The specific identifier whereby to resolve ambiguities.
                 </doc>
             </attribute>
         </field>
-        <field name="interfaces" type="NX_INT" units="NX_UNITLESS">
+        <!--example ii) three interface projections or interface segments adjoin a triple line and point-->
+        <field name="interface" type="NX_INT" units="NX_UNITLESS">
             <doc>
-                 Set of triplets of identifier of line-like features.
-                 Each triplet resolves which three interface projections
-                 the triple point connects.
+                 Set of tuples of identifier of features connected to the junction.
             </doc>
-            <dimensions rank="2">
-                <dim index="1" value="n_t_two"/>
-                <dim index="2" value="3"/>
-            </dimensions>
-            <attribute name="depends_on" type="NX_CHAR">
+            <attribute name="use_these" type="NX_CHAR">
                 <doc>
-                     The specific interface_projections(NXmicrostructure_feature_set)
-                     instance whereby to resolve interface identifiers.
+                     The specific identifier to instances of interface identifiers whereby to resolve
+                     ambiguities.
                 </doc>
             </attribute>
         </field>
-        <!--ii) a triplet of line segment identifier whereby the point-like features
-is assumed discretized via three polylines representing interfaces-->
-        <field name="polylines" type="NX_INT" units="NX_UNITLESS">
+        <!--example iii) e.g. three polyline segments enter a triple point-->
+        <field name="polyline" type="NX_INT" units="NX_UNITLESS">
             <doc>
-                 Triplet of identifier of polyline segments. Each triplet resolves
-                 which three segments of polyline segments the triple junction connects.
+                 Set of tuples of identifier for representation of discretized features connected
+                 to the junction.
             </doc>
-            <dimensions rank="2">
-                <dim index="1" value="n_t_two"/>
-                <dim index="2" value="3"/>
-            </dimensions>
-            <attribute name="depends_on" type="NX_CHAR">
+            <attribute name="use_these" type="NX_CHAR">
                 <doc>
-                     The specific lines(NXcg_polyline_set) instance to resolve
-                     polyline segments.
+                     The specific identifier to instances of NXcg primitives whereby to resolve
+                     ambiguities.
                 </doc>
             </attribute>
         </field>
     </group>
-    <!--the difference in the interpretation of interfaces and polylines
-is that the interface resolves interface (e.g. phase boundary names)
-while polylines resolves segments within the set of named geometric primitive
-instances!
-add all sort of other qualitative or quantitive descriptors (triple junction
-energy, volume etc), i.e properties of that triple point-->
+    <!--DESCRIPTOR VALUES-->
 </definition>
