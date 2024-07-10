@@ -26,6 +26,12 @@ concepts which are equally modellable with NeXus:
     :ref:`NXmicrostructure`:
         A base class for documenting a snapshot of a reconstructed microstructures.
 
+    :ref:`NXmicrostructure_imm_config`, :ref:`NXmicrostructure_imm_results`:
+        A specific example of an application definition for documenting the
+        configuration and results respectively of a computer simulation with
+        the legacy microstructure synthesizer developed at the Institut für
+        Metallkunde und Metallphysik in Aachen.
+
     :ref:`NXmicrostructure_score_config`, :ref:`NXmicrostructure_score_results`:
         A specific example of an application definition for documenting the
         configuration and results respectively of a computer simulation with
@@ -35,10 +41,3 @@ concepts which are equally modellable with NeXus:
         A specific example of an application definition for documenting the
         configuration and results respectively of a computer simulation with
         the grain growth level-set-based model GraGLeS.
-
-    :ref:`NXmicrostructure_imm_config`, :ref:`NXmicrostructure_imm_results`:
-        A specific example of an application definition for documenting the
-        configuration and results respectively of a computer simulation with
-        the legacy microstructure synthesizer developed at the Institut für
-        Metallkunde und Metallphysik in Aachen.
-
