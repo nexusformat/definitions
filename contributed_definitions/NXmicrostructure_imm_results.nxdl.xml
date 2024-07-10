@@ -21,12 +21,26 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<!--
-symbols:-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXmicrostructure_imm_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="n_edge">
+            <doc>
+                 Number of material points along the edge of the square- or cube-shaped domain.
+            </doc>
+        </symbol>
+    </symbols>
     <doc>
-         Application definition for documenting results obtained with the IMM structure
-         generator.
+         Application definition for the results of the legacy (micro)structure generator developed
+         by the Institut für Metallkunde und Metallphysik at RWTH Aachen University.
+         
+         * `N. Leuning et al. &lt;https://doi.org/10.3390/ma14216588&gt;`_
+         * `C. Mießen &lt;https://doi.org/10.18154/RWTH-2017-10148&gt;`_
+         * `M. Kühbach &lt;https://doi.org/10.18154/RWTH-2018-00294&gt;`_
+         * `M. Kühbach et al. &lt;https://github.com/mkuehbach/GraGLeS&gt;`_
+         
+         The tool can be used to instantiate specific configurations for two- and three-dimensional discretized microstructures.
+         Specifically, single-phase material that is composed of crystals, so-called (parent) grains which are tessellated into so-called sub-grains.
+         Grains are modelled as elongated crystals to mimic fundamental geometrical constraints of the interface network in deformed material.
     </doc>
     <group type="NXentry">
         <field name="definition" type="NX_CHAR">
@@ -34,7 +48,112 @@ symbols:-->
                 <item value="NXmicrostructure_imm_results"/>
             </enumeration>
         </field>
+        <group name="microstructureID" type="NXmicrostructure">
+            <group name="grid" type="NXcg_grid">
+                <field name="extent" type="NX_UINT"/>
+                <field name="cell_dimensions" type="NX_NUMBER"/>
+                <group name="structure" type="NXdata">
+                    <doc>
+                         Default plot showing the grid.
+                    </doc>
+                    <attribute name="signal" type="NX_CHAR"/>
+                    <attribute name="axes" type="NX_CHAR"/>
+                    <attribute name="AXISNAME_indices" type="NX_CHAR"/>
+                    <field name="title" type="NX_CHAR"/>
+                    <field name="crystal_identifier" type="NX_NUMBER" units="NX_UNITLESS">
+                        <doc>
+                             Crystal identifier that was assigned to each material point.
+                        </doc>
+                    </field>
+                    <!--either (n_edge, n_edge) or (n_edge, n_edge, n_edge)-->
+                    <field name="z" type="NX_NUMBER" optional="true" units="NX_LENGTH">
+                        <doc>
+                             Material point barycentre coordinate along z direction.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_edge"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR">
+                            <doc>
+                                 Coordinate along z direction.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <field name="y" type="NX_NUMBER" units="NX_LENGTH">
+                        <doc>
+                             Material point barycentre coordinate along y direction.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_edge"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR">
+                            <doc>
+                                 Coordinate along y direction.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <field name="x" type="NX_NUMBER" units="NX_LENGTH">
+                        <doc>
+                             Material point barycentre coordinate along x direction.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_edge"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR">
+                            <doc>
+                                 Coordinate along x direction.
+                            </doc>
+                        </attribute>
+                    </field>
+                </group>
+            </group>
+            <group name="crystal" type="NXobject">
+                <field name="reference" type="NX_CHAR"/>
+                <field name="number_of_crystals" type="NX_UINT"/>
+                <field name="crystal_identifier" type="NX_INT">
+                    <dimensions rank="1">
+                        <dim index="1" value="c"/>
+                    </dimensions>
+                </field>
+                <field name="area" type="NX_NUMBER" recommended="true">
+                    <dimensions rank="1">
+                        <dim index="1" value="c"/>
+                    </dimensions>
+                </field>
+                <field name="volume" type="NX_NUMBER" recommended="true">
+                    <dimensions rank="1">
+                        <dim index="1" value="c"/>
+                    </dimensions>
+                </field>
+                <field name="is_subgrain" type="NX_BOOLEAN" recommended="true">
+                    <doc>
+                         True if the crystal is considered a sub-grain.
+                         False if the crystal is considered a grain.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="c"/>
+                    </dimensions>
+                </field>
+                <field name="bunge_euler" type="NX_FLOAT" units="NX_ANGLE">
+                    <doc>
+                         Bunge-Euler angle orientation of each crystal.
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="c"/>
+                        <dim index="2" value="3"/>
+                    </dimensions>
+                </field>
+                <field name="dislocation_density" type="NX_FLOAT" units="NX_ANY">
+                    <doc>
+                         Mean-field dislocation density as a measure of the stored elastic energy
+                         content that is stored in the dislocation network of this grain and related
+                         defects within each crystal.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="c"/>
+                    </dimensions>
+                </field>
+            </group>
+        </group>
     </group>
-    <!--\@version(NX_CHAR):
-TODO: populate further based on appdefs NXmicrostructure_score_results and NXmicrostructure_gragles_results-->
 </definition>
