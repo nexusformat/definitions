@@ -3,8 +3,8 @@ name: GH pages fairmat proposal
 on:
   push:
     branches: [fairmat]
-  pull_request:
-    branches: [fairmat]
+  # pull_request:
+  #   branches: [fairmat]
 
 jobs:
   pages:
@@ -31,24 +31,40 @@ jobs:
       run: make html
     - name: Remove build artifacts
       run: rm -rf build/manual/build/html/.doctrees
-    - name: Deploy
+    - name: Checkout fairmat-docs branch
+      run: |
+        git fetch origin fairmat-docs
+        git checkout fairmat-docs || git checkout --orphan fairmat-docs
+    
+    - name: Move default branch build into fairmat-docs
       if: steps.branch-name.outputs.is_default == 'true'
+      run: |
+        mkdir -p docs
+        mv -r build/manual/build/html/* docs
+    - name: Move PR build into fairmat-docs
+      if: steps.branch-name.outputs.is_default == 'false'
+      run: |
+        mkdir -p docs/${{ steps.branch-name.outputs.current_branch }}
+        mv -f build/manual/build/html/* docs/${{ steps.branch-name.outputs.current_branch }} 
+    - name: Deploy
+      #if: steps.branch-name.outputs.is_default == 'true'
       uses: peaceiris/actions-gh-pages@v3
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: build/manual/build/html
+        publish_dir: docs
         publish_branch: fairmat-docs
         destination_dir: docs
         force_orphan: true
-    - name: Deploy PR
-      if: steps.branch-name.outputs.is_default == 'false'
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: build/manual/build/html
-        publish_branch: fairmat-docs
-        destination_dir: docs/${{ steps.branch-name.outputs.current_branch }}
-        force_orphan: true
+
+    # - name: Deploy PR
+    #   if: steps.branch-name.outputs.is_default == 'false'
+    #   uses: peaceiris/actions-gh-pages@v3
+    #   with:
+    #     github_token: ${{ secrets.GITHUB_TOKEN }}
+    #     publish_dir: docs
+    #     publish_branch: fairmat-docs
+    #     destination_dir: docs
+    #     force_orphan: true
 
 
       
