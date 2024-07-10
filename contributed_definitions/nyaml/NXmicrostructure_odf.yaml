@@ -1,13 +1,17 @@
 category: base
 doc: |
   Base class to store an orientation distribution function (ODF).
+  
+  An orientation distribution function is a probability distribution that details how
+  much volume of material has a specific orientation. An ODF is computed from
+  pole figure data in a computational process called `pole figure inversion <https://doi.org/10.1107/S0021889808030112>`_.
 symbols:
   n_varphi_one: |
     Number of pixel per varphi section plot along the :math:`\varphi_1` fastest direction.
   n_capital_phi: |
-    Number of pixel per varphi section plot along the :math:`\Phi` slow direction.
+    Number of pixel per varphi section plot along the :math:`\Phi` fast direction.
   n_varphi_two: |
-    Number of pixel per varphi section plot along the :math:`\varphi_2` slowest direction.
+    Number of pixel per varphi section plot along the :math:`\varphi_2` slow direction.
   k: |
     Number of local maxima evaluated in the component analysis.
 type: group
@@ -17,12 +21,12 @@ NXmicrostructure_odf(NXprocess):
       Details about the algorithm used for computing the ODF.
     crystal_symmetry_point_group(NX_CHAR):
       doc: |
-        Point group of the crystal structure (International Table of Crystallography)
-        of the phase for which the here documented phase-dependent ODF was computed.
+        Point group of the crystal structure of the phase for which the here documented phase-
+        dependent ODF was computed.(following the notation of the International Table of Crystallography).
     specimen_symmetry_point_group(NX_CHAR):
       doc: |
-        Point group assumed for processing-induced *sample symmetries*.
-        (according to International Table of Crystallography).
+        Point group assumed for additionally considered sample symmetries
+        following the notation of the International Table of Crystallography).
     kernel_halfwidth(NX_NUMBER):
       doc: |
         Halfwidth of the kernel.
@@ -34,42 +38,66 @@ NXmicrostructure_odf(NXprocess):
       doc: |
         Resolution of the kernel.
       unit: NX_ANGLE
+  # specific values and typical results
   kth_extrema(NXobject):
     doc: |
-      Group to store descriptors and summary statistics
+      Group to store descriptors and summary statistics for extrema of the ODF.
+    extrema(NX_CHAR):
+      doc: |
+        Minima or maxima, if extrema is set to minima values for location and volume_fraction
+        are sorted in increasing order. If extrema is set to maxima values for location and
+        volume_fraction are sorted in descreasing order. Therefore, the global extremum is
+        always the first entry in location and volume_fraction.
+      enumeration: [minima, maxima]
     kth(NX_UINT):
       doc: |
-        Number of local maxima evaluated
+        Number of local extrema evaluated
       unit: NX_UNITLESS
       # value of kth should be k
+    theta(NX_NUMBER):
+      doc: |
+        Disorientation threshold within which intensity of the ODF
+        is integrated for the component analysis.
+      unit: NX_ANGLE
     location(NX_NUMBER):
       doc: |
         Euler angle representation :math:`\varphi_1`, :math:`\Phi`, :math:`\varphi_2` of the kth-most
         maxima in decreasing order of the intensity maximum.
       unit: NX_ANGLE
       dim: (k, 3)
-    theta(NX_NUMBER):
-      doc: |
-        Disorientation threshold within which intensity of the ODF
-        is integrated for the component analysis.
-      unit: NX_ANGLE
     volume_fraction(NX_NUMBER):
       doc: |
-        Integrated ODF intensity within a theta angular region of SO3 about
-        each location (obeying symmetries) as specified for each location
-        in the order and stored in the order of location.
+        Integrated ODF intensity within a theta angular region of the orientation space (SO3)
+        about each location (obeying symmetries) as specified for each location.
       unit: NX_ANY
       dim: (k,)
+  sampling(NXobject):
+    doc: |
+      The ODF intensity values (weights) as sampled with a software
+    resolution(NX_NUMBER):
+      doc: |
+        Sampling resolution
+      unit: NX_ANGLE
+    euler(NX_NUMBER):
+      doc: |
+        Bunge-Euler (i.e. ZXZ convention) locations of each position
+        in orientation space for which a weight was sampled.
+      unit: NX_ANGLE
+      dim: (i, 3)
+    weight(NX_NUMBER):
+      doc: |
+        Weight at each sampled position following the order in euler.
+      unit: NX_DIMENSIONLESS   # intensity of ODF at euler / intensity of random ODF at euler
+      dim: (i,)
   phi_two_plot(NXdata):
     doc: |
-      Visualization of the ODF intensity as discretized orthogonal sections
-      through Euler space.
+      Visualization of the ODF intensity as discretized orthogonal sections through
+      orientation space parameterized using Bunge-Euler angles.
       
-      This is one example of typical default plots used in the texture
-      community in materials engineering.
+      This is one example of typical default plots used in the texture community in materials engineering.
       
-      Mind that the Euler space is a distorted space. Therefore, equivalent orientations
-      show intensity contributions in eventually multiple locations.
+      Mind that when parameterized using Euler angles the orientation space is a distorted space.
+      Therefore, equivalent orientations show intensity contributions in eventually multiple locations.
     # \@signal: intensity
     # \@axes: [varphi_two, capital_phi, varphi_one]
     # \@varphi_one_indices: 0
@@ -77,7 +105,7 @@ NXmicrostructure_odf(NXprocess):
     # \@varphi_two_indices: 2
     intensity(NX_NUMBER):
       doc: |
-        ODF intensity at probed locations relative to the intensity of the null model of a completely random texture.
+        ODF intensity at probed locations relative to the intensity of the null model of a random texture.
       unit: NX_DIMENSIONLESS
       dim: (n_varphi_two, n_capital_phi, n_varphi_one)
     varphi_one(NX_NUMBER):

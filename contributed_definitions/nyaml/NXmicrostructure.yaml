@@ -1,84 +1,90 @@
 category: base
 doc: |
-  Base class to describe a structural aspects, associated descriptors of a set of (micro)structural features.
+  Base class to describe a microstructure, its structural aspects, associated descriptors, properties.
   
-  The continuum or atomic scale description of materials is a model of reality. Such models are useful as
-  they enable a coarse graining and categorizing of properties and aspects of the representation of
-  measured or simulated materials specifically in regards to how their structural features lead to properties
-  i.e. descriptor values.
+  Whether one uses a continuum or atomic scale description of materials, these are always a model
+  the true internal structure of a material. Such models are useful as they enable a coarse graining and
+  categorizing of properties and representational aspects from which measured or simulated descriptions
+  can be correlated with properties i.e. descriptor values.
   
-  Keep in mind that most specimens are thermo-chemo-mechanically processed prior characterization.
-  Therefore, the characterized microstructure may not have probed the same structure as of the untreated
-  sample or the bulk material from which region-of-interests on the specimen were probed.
+  Keep in mind that most specimens are thermo-chemo-mechanically processed prior their characterization.
+  Therefore, the characterized microstructure may not have probe the same structure as of the untreated
+  sample from which the region-of-interests on the specimen were probed.
   
-  A simulation or experiment cannot sample the true structure of the material. Fields such as time and increment
-  enable a quantification of the spatiotemporal evolution of a materials structure by using multiple instances
-  of NXmicrostructure.
+  Fields such as time and increment enable a quantification of the spatiotemporal evolution of a materials
+  structure by using multiple instances of NXmicrostructure. Both measurements and simulation virtually
+  always sample this evolution. Most microscopy techniques support to generate only a two-dimensional
+  representation (projection) of the characterized material, often materials are characterized only for
+  specific states with much history or via sampling coarsely in time relative to the timescale at which the
+  physical phenomena take place because of technical and practical limitations.
   
-  A key challenge with the description the representation and properties of microstructural features is that
+  The term microstructural feature covers here crystals and all sorts of crystal defects within the material. 
+  A key challenge with the description representations and properties of microstructural features is that
   features with different dimensionality exist and combinations of features of different dimensionality are
-  frequently expected to be documented with a low barrier and intuitive naming convention matching terms
-  used in the community.
+  frequently expected to be documented with intuitive naming conventions using flat property lists.
+  For these key-value dictionaries often folksonomies are used often relying on ad hoc documentation
+  of such dictionaries in the literature and the metadata section of public data repositories.
   
-  Most microscopy techniques support to generate only a two-dimensional representation (projection)
-  of the characterized material.
+  NXmicrostructure is an attempt to standardize these descriptions stronger.
   
-  A crystal, an interface, a junction is an object in three-dimensional Euclidean space although that crystal may
-  be formed just by a monolayer of atoms. Despite being a three-dimensional object, though, a crystal can often
-  not be observed technically three-dimensionally but using projections only. Likewise, interfaces bounding the
-  volume of a crystal can often be characterized only as projections of the surface patches.
-  The descriptive variety is large especially for junctions. Junctions are assumed, like crystals and interfaces
-  to represent groups of atoms that have specific descriptor values which are different to other features.
-  As an example a triple junction is thus a three-dimensional defect as the atoms arrange in three-dimensional
-  spaced but the characteristics of that defect can often be reduced to a lower-dimensional description such as
-  a triple point or a triple line. While this affects which base classes can be used to represent a discretization of
-  their structure topologically it holds for the example of a triple junction at least three lower dimensional features meet.
-  Most importantly these are the adjoining interfaces. However, assuming that dislocation lines in practice interact
-  with triple junctions not only more than three two-dimensional features meet but also one-dimensional features.
+  The descriptive variety is large especially for junctions. Like crystals and interfaces junctions are features in
+  three-dimensional Euclidean space even if they are formed maybe only through a monolayer or pearl chain of atoms.
+  Either way the local atomic and electronic environment is different compared to the situation of an ideal crystal
+  which gives rise to a plethora of useful configurations of which some cause that materials have useful properties.
+  
+  Junctions are assumed, like crystals and interfaces to represent groups of atoms that have specific descriptor values
+  which are different to other features. As an example a triple junction is practically a three-dimensional defect as its atoms
+  are arrange in three-dimensional space but the characteristics of that defect can often be reduced to a lower-dimensional
+  description such as a triple point or a triple line. Therefore, different representations can be used to describe the location,
+  shape, and structure of the defect. As different types of crystal defects can interact there is a substantial number of
+  in principle characterizable and representable objects. Take a triple line as an example. It is a tubular feature built from three
+  adjoining interfaces. However, dislocations as line defects can interact with triple lines. Therefore, one can also argue that
+  along a triple line there can be dislocation-line-triple-line junctions, likewise dislocations form own junctions.
+  
+  It is not the aim of this base class to cover all these cases, rather this base class currently provides examples how the
+  typically most relevant types of features can be represented using a combination of base classes in NeXus. Currently,
+  these are crystals, interfaces, triple lines, quadruple junctions.
   
   The description attempt here took inspiration from `E. E. Underwood <https://doi.org/10.1111/j.1365-2818.1972.tb03709.x>`_
   and E. E. Underwood's book on Quantitative Stereology published 1970 to categorize features based on their dimensionality.
   
   Identifiers can be defined either implicitly or explicitly. Identifiers for implicit indexing are defined
   on the interval :math:`[identifier\_offset, identifier\_offset + cardinality - 1]`.
+# , and Volterra line defects (dislocation, disconnection, disclination).
 symbols:
   doc: |
     The symbols used in the schema to specify e.g. dimensions of arrays.
-  n_c: |
-    The number of crystals.
-  n_i: |
-    The number of interfaces.
-  n_t: |
-    The number of triple junctions.
-  n_q: |
-    The number of quadruple_junctions.
   # one-dimensional sections of either projections (see below) or true one-dimensional cuts across a volume of material
   n_c_one: |
     The number of one-dimensional crystal projections
   n_i_one: |
     The number of one-dimensional interface projections
-  # n_t_one: |
-  #   The number of one-dimensional triple line projections
+  # n_<line defect>_one, n_<point defect>_one are hypothetical scenarios such as line defect hitting right into a point
   # two-dimensional projections of three-dimensional objects using E. E. Underwood notation
   # crystals/grains are projections that are delineated by projections of interface, i.e. interface lines which meet at projections of triple lines aka triple points
   n_c_two: |
     The number of two-dimensional crystal projections
   n_i_two: |
     The number of two-dimensional interface projections
-  n_t_two: |
+  n_tj_two: |
     The number of two-dimensional triple line projections
-  # n_q_two: |
-  #   The number of two-dimensional quadruple junction projections
+  n_ld_two: |
+    The number of two-dimensional line defect projections
+  # n_<point defect>_two is the hypothetical scenario when a point defect lies right in the projection plane
   # three-dimensional real objects, volumetrically characterized
   # crystals are delineated by interfaces that are delineated by triple lines that meet at quad junctions
   n_c_three: |
     The number of crystals (grain and sub-grain are exact synonyms for crystal).
   n_i_three: |
     The number of interfaces (grain boundary and phase boundary are subclasses of interfaces).
-  n_t_three: |
+  n_tj_three: |
     The number of triple junctions (triple line is a exact synonym for triple junction, triple point is projection of a triple junction).
-  n_q_three: |
+  n_qj_three: |
     The number of quadruple junctions.
+#   n_ld_three:
+#     The number of line defects.
+  d: |
+    The dimensionality of the representation that needs to match the value for configuration/dimensionality
 type: group
 NXmicrostructure(NXobject):
   # as e.g. a result of one grain reconstruction with an algorithm with MTex or the grain/phase i.e. interface network reconstruction software in commercial tools
@@ -86,6 +92,9 @@ NXmicrostructure(NXobject):
   comment(NX_CHAR):
     doc: |
       Discouraged free-text field for leaving comments.
+  date(NX_DATE_TIME):
+    doc: |
+      ISO8601 with offset to local time zone included when a timestamp is required.
   time(NX_NUMBER):
     doc: |
       Measured or simulated physical time stamp for this microstructure snapshot.
@@ -97,29 +106,30 @@ NXmicrostructure(NXobject):
     unit: NX_UNITLESS
   configuration(NXprocess):
     doc: |
-      Group where to store details about the configuration and parameterization of eventually used algorithms
-      whereby microstructural features were identified.
+      Group where to store details about the configuration and parameterization of algorithms
+      used whereby microstructural features were identified.
     dimensionality(NX_POSINT):
       doc: |
         Dimensionality of Euclidean space in which the analysis is performed.
         
         This field can be used e.g. by a research data management system to identify
-        if the description specifies one-, two-, or three-dimensional representations.
+        if the description specifies one-, two-, or three-dimensional microstructural representations.
       unit: NX_UNITLESS
       enumeration: [1, 2, 3]
     algorithm(NX_CHAR):
       doc: |
-        Algorithm whereby microstructural features were reconstructed.
+        Algorithm whereby interfaces between crystals were reconstructed.
         
         * Disorientation clustering groups nearby material points based on their crystallographic disorientation
         * Fast multiscale clustering based on `D. Kushnir et al. <https://doi.org/10.1016/j.patcog.2006.04.007>`_
         * Markov chain clustering `F. Niessen et al. <https://doi.org/10.1107/S1600576721011560>`_
         
+      # could also be used to specify algorithms for precipitate detection
       enumeration: [unknown, disorientation_clustering, fast_multiscale_clustering, markov_chain_clustering]
     disorientation_threshold(NX_NUMBER):
       doc: |
         Threshold to define at which disorientation angle to assume two crystalline regions have a significant
-        orientation difference that warrants to argue that there is an interface between the two regions.
+        orientation difference that warrants to assume that there exists an interface between the two regions.
       unit: NX_ANGLE
   # use controlled vocabulary terms point, line, surface, volume, use singular term when instantiating
   (NXcg_point_set):
@@ -127,37 +137,42 @@ NXmicrostructure(NXobject):
   (NXcg_triangle_set):
   (NXcg_polyhedron_set):
   # constructive solid geometry to describe curved features
-  (NXcsg):
+  # (NXcsg):
   # (NXcontinuous_function):
   # examples for specific frequently discussed microstructural features
   crystal(NXobject):
     doc: |
-      One- or two-dimensional projections, or three-dimensional representation of crystals.
+      One- or two-dimensional projections, or three-dimensional representations of crystals.
       
-      Crystals can be grains of different phases, precipitates, dispersoids, there are many
-      terms used in specifically the materials engineering community.
+      An example for a volume bounded by other crystal defects. Crystals can be grains of
+      different phases, precipitates, dispersoids; there are many terms used specifically in
+      the materials engineering community.
       
-      Typically, as observed e.g. on the surface of a sample using with optical or electron microscopy
-      or as simulated as a set of pixel or evolving polygons and their polyline boundaries.
+      Typically, crystals are measured on the surface of a sample using with optical or electron microscopy
+      represented or simulated as a set of pixel, voxel, or polygons and their polyline boundaries.
+      Using X-ray diffraction methods crystals can be observed in bulk specimens.
     # maybe some enum what this is
     representation(NX_CHAR):
       doc: |
         Reference to an instance of:
         
-        * :ref:`NXcg_point_set` for a one-dimensional representation as only a projection is available
-        * :ref:`NXcg_polyline_set` or :ref`NXcg_polygon_set` for a two-dimensional representation as only a projection is available
-        * :ref:`NXcg_polyhedron_set` for a three-dimensional representation
-        * :ref:`NXcg_grid` for regularly pixelated or voxelated representation in one, two, or three dimensions
+        * :ref:`NXcg_polyline_set` for a one-dimensional representation as only a projection is available (like in linear intercept analysis)
+        * :ref`NXcg_polygon_set` for a two-dimensional representation as only a projection is available (like in most experiments)
+        * :ref:`NXcg_polyhedron_set` or :ref:`NXcg_grid` for regularly pixelated or voxelated representation in one, two, or three dimensions
+          (like in computer simulations or 3D experiments)
+        
+        which represent the geometrical entities of the discretization.
     number_of_crystals(NX_UINT):
       doc: |
         How many crystals are distinguished.
         
-        Crystals are listed irrespective of the (thermodynamic)
-        phase to which these crystals are assigned.
+        Crystals are listed irrespective of the phase to which these are assigned.
       unit: NX_UNITLESS
     number_of_phases(NX_UINT):
       doc: |
         How many phases are distinguished.
+        
+        Phases are typically distinguished based on statistical thermodynamics argument and crystal structure.
       unit: NX_UNITLESS
     crystal_identifier_offset(NX_INT):
       doc: |
@@ -167,7 +182,7 @@ NXmicrostructure(NXobject):
       doc: |
         Identifier whereby to identify each crystal explicitly.
       unit: NX_UNITLESS
-      # dim: n_c_one, n_c_two, n_c
+      dim: (i,)  # with i = n_c_one or n_c_two or n_c_three
     phase_identifier_offset(NX_INT):
       doc: |
         First identifier whereby to identify phases implicitly.
@@ -176,49 +191,52 @@ NXmicrostructure(NXobject):
       doc: |
         Identifier whereby to identify phase for each crystal explicitly.
       unit: NX_UNITLESS
-      # dim: n_c_one, n_c_two, n_c_three
-    # DESCRIPTOR VALUES, SUMMARY STATISTICS
+      dim: (i,)  # with i = n_c_one or n_c_two or n_c_three for all use of i in of fields of group crystal
+    # EXAMPLES FOR DESCRIPTOR VALUES, SUMMARY STATISTICS
     boundary_contact(NX_BOOLEAN):
       doc: |
-        True, for each crystal that makes contact with the edge of the ROI false for all others.
-      # n_c_one, n_c_two, n_c_three
-    # DESCRIPTOR VALUES
+        True or false value, one for each crystal, to communicate whether that feature makes contact with the edge of the ROI.
+      dim: (i,)
     orientation_spread(NX_NUMBER):
       doc: |
         Average disorientation angle for each crystal between individual orientations
         of that crystal evaluated as a summary statistic for all probed positions vs the
         average disorientation of that crystal.
       unit: NX_ANGLE
-      # n_c_one, n_c_two, n_c_three
-    (NXrotation_set):
+      dim: (i,)
     length(NX_NUMBER):
       doc: |
         Length of each crystal
       unit: NX_LENGTH  # m
+      dim: (i,)
     area(NX_NUMBER):
       doc: |
         Area of each crystal.
       unit: NX_AREA  # m^2
+      dim: (i,)
     volume(NX_NUMBER):
       doc: |
         Volume of each crystal
       unit: NX_VOLUME  # m^3
+      dim: (i,)
   interface(NXobject):
     doc: |
       One- or two-dimensional projections or three-dimensional representation of interfaces
       between crystals as topological entities equivalent to dual_junctions.
       
-      Most important are interfaces such as grain and phase boundaries but factually
-      interfaces can also exist between the environment and crystals exposed at the
-      surface of the specimen.
+      An example for a surface defect. Most important are interfaces such as grain and phase boundaries
+      but factually interfaces also exist between the environment and crystals exposed at the
+      surface of the specimen or internal surfaces like between crystals, cracks and pores.
     representation(NX_CHAR):
       doc: |
         Reference to an instance of:
         
-        * :ref:`NXcg_point_set` for a one-dimensional representation as only a projection is available
-        * :ref:`NXcg_polyline_set` or :ref:`NXcg_polygon_set` for a two-dimensional representation as only a projection is available
+        * :ref:`NXcg_point_set` for a one-dimensional representation as only a projection is available (as in linear intercept analyses)
+        * :ref:`NXcg_polyline_set` or :ref:`NXcg_polygon_set` for a two-dimensional representation as only a projection is available (like in most experiments)
         * :ref:`NXcg_grid` for regularly pixelated or voxelated representation in one, two, or three dimensions using (boolean) masks
+          (like in computer simulations or 3D experiments)
         
+        which represent the geometrical entities of the discretization.
     number_of_interfaces(NX_UINT):
       doc: |
         How many interfaces are distinguished.
@@ -231,62 +249,80 @@ NXmicrostructure(NXobject):
       doc: |
         Identifier whereby to identify each interface explicitly.
       unit: NX_UNITLESS
-      # n_i_one, n_i_two, n_i
+      dim: (i,)  # with i == n_i_one or n_i_two or n_i_three for all fields of group interface
     # topological view, interface specification through the the pair of crystals sharing an interface
     crystal_identifier(NX_INT):
       doc: |
         Set of pairs of crystal_identifier for each interface.
       unit: NX_UNITLESS
-      dim: (i, 2)  #  with i == n_i_one, n_i_two, n_i_three
+      dim: (i, 2)
       \@use_these(NX_CHAR):
         doc: |
-          The specific identifier instance to resolve ambiguities.
+          The specific identifiers whereby to resolve ambiguities.
     phase_identifier(NX_INT):
       doc: |
         Set of pairs of phase_identifier for each interface.
       unit: NX_UNITLESS
-      dim: (i, 2)  #  with i == n_i_one, n_i_two, n_i_three
+      dim: (i, 2)
       \@use_these(NX_CHAR):
         doc: |
-          The specific identifier instance to resolve ambiguities.
+          The specific identifiers whereby to resolve ambiguities.
     # topological view, interface specification through the pair of triple line projections (i.e. triple points) adjoining the interface
     triple_junction_identifier(NX_INT):
       doc: |
         Set of pairs of triple_junction_identifier for each interface.
       unit: NX_UNITLESS
-      dim: (j, 2)  # with j == n_i_two but junctions can be points or lines!
+      dim: (i, 2)  # with i == n_i_two but junctions can be points or lines!
       \@use_these(NX_CHAR):
         doc: |
-          The specific identifier instance to resolve ambiguities.
-    # DESCRIPTOR VALUES
+          The specific identifiers whereby to resolve ambiguities.
+    # EXAMPLES FOR DESCRIPTOR VALUES
+    boundary_contact(NX_BOOLEAN):
+      doc: |
+        True or false value, one for each crystal, to communicate whether that feature makes contact with the edge of the ROI.
+      dim: (i,)
+    surface_energy(NX_NUMBER):
+      doc: |
+        Gibbs free surface energy for each interface.
+      unit: NX_ANY  # J/m^2
+      dim: (i,)
+    mobility(NX_NUMBER):
+      doc: |
+        Non-intrinsic mobility of each interface.
+      unit: NX_ANY  # m^4/Js
+      dim: (i,)
     length(NX_NUMBER):
       doc: |
-        The length of each interface.
+        The length of each interface if only projections are available.
         
         This is not necessarily the same as the length of the individual
         polyline segments whereby the interface is discretized.
       unit: NX_LENGTH
-      # dim: n_i_one, n_i_two, n_i_three
+      dim: (i,)
     area(NX_NUMBER):
       doc: |
-        The surface area of each interface.
+        The surface area of all interfaces.
       unit: NX_AREA
+      dim: (i,)
   triple_junction(NXobject):
     doc: |
       Projections of or representations of junctions at which three interfaces meet.
       
-      Triple junctions can be junctions such as triple lines, triple points as their projections,
+      An example for a line defect. Triple junctions are characterized as triple lines or triple points as their projections,
       or junctions observed between crystals (at the specimen surface exposed to an environment)
       (including wetting phenomena) or inside the specimen (crack, pores).
     representation(NX_CHAR):
       doc: |
         Reference to an instance of:
         
-        * :ref:`NXcg_point_set` for a one-dimensional representation as only a projection is available
+        * :ref:`NXcg_point_set` for a one-dimensional representation as only a projection is available (like in most experiments)
         * :ref:`NXcg_polyline_set` for a two-dimensional representation as only a projection is available
         * :ref:`NXcg_polygon_set` for a two-dimensional representation in the (seldom) case of sufficient spatial resolution
+          and the line in the projection plane or cases where triple junction locations are approximated e.g. using a set of triangles
+        * :ref:`NXcg_polyhedron_set` for a three-dimensional representation via e.g. a representation of Voronoi cells about atoms
         * :ref:`NXcg_grid` for regularly pixelated or voxelated representation in one, two, or three dimensions using (boolean) masks
         
+        which represent the geometrical entities of the discretization.
     number_of_junctions(NX_UINT):
       doc: |
         Number of triple junctions.
@@ -299,49 +335,61 @@ NXmicrostructure(NXobject):
       doc: |
         Identifier to identify each triple junction explicitly.
       unit: NX_UNITLESS
-      # dim: n_t_one, n_t_two, n_t_three
-    # example i) triple point have locations
-    position(NX_INT):
+      dim: (i,)  # with i == n_tj_one, n_tj_two, n_tj_three for all fields in group triple_junction
+    # various strategies are used to talk about aspects of triple junctions, some examples follow
+    # example i) triple points as projections of triple lines have locations
+    location(NX_INT):
       doc: |
         Set of identifier for positions whereby to identify the location of each junction.
       unit: NX_UNITLESS
+      dim: (i,)
       \@use_these(NX_CHAR):
         doc: |
-          The specific identifier whereby to resolve ambiguities.
+          The specific identifiers whereby to resolve ambiguities.
+    position(NX_INT):
+      doc: |
+        Explicit positions.
+      unit: NX_LENGTH
+      dim: (i, d)
     crystal_identifier(NX_INT):
       doc: |
         Set of tuples of identifier of crystals connected to the junction for each triple junction.
       unit: NX_UNITLESS
-      dim: (n_t, 3)
+      dim: (i, 3)
     # example ii) three interfaces (maybe projections of them) meet at a triple junction
     interface_identifier(NX_INT):
       doc: |
         Set of tuples of identifier of interfaces connected to the junction for each triple junction.
       unit: NX_UNITLESS
-      dim: (n_t, 3)
+      dim: (i, 3)
       \@use_these(NX_CHAR):
         doc: |
-          The specific identifier to instances of interface identifiers whereby to resolve ambiguities.
+          The specific interface identifiers whereby to resolve ambiguities.
     # example iii) three polyline segments meet at a triple junction, polyline segments of discretized interface segments
     polyline_identifier(NX_INT):
       doc: |
         Set of tuples of identifier for polyline segments connected to the junction for each triple junction.
       unit: NX_UNITLESS
+      dim: (i, 3)
       \@use_these(NX_CHAR):
         doc: |
-          The specific identifier to instances of NXcg primitives whereby to resolve ambiguities.
+          The specific polyline identifiers whereby to resolve ambiguities.
     # example iv) e.g. crystals of three different phases meet at a triple junction
-    # DESCRIPTOR VALUES
-    specific_line_energy(NX_NUMBER):
+    # EXAMPLES FOR DESCRIPTOR VALUES
+    boundary_contact(NX_BOOLEAN):
+      doc: |
+        True or false value, one for each crystal, to communicate whether that feature makes contact with the edge of the ROI.
+      dim: (i,)
+    line_energy(NX_NUMBER):
       doc: |
         Specific line energy of each triple junction
       unit: NX_ANY
-      dim: (n_t,)
+      dim: (i,)
     mobility(NX_NUMBER):
       doc: |
         Non-intrinsic mobility of each triple junction.
       unit: NX_ANY
-      dim: (n_t,)
+      dim: (i,)
     length(NX_NUMBER):
       doc: |
         The length of each triple junction.
@@ -349,15 +397,17 @@ NXmicrostructure(NXobject):
         This is not necessarily the same as the length of the individual
         polyline segments whereby the junction is discretized.
       unit: NX_LENGTH
+      dim: (i,)
     volume(NX_NUMBER):
       doc: |
         The volume of the each triple junction
       unit: NX_VOLUME
-      dim: (n_t,)
-    
+      dim: (i,)
   quadruple_junction(NXobject):
     doc: |
-      Quadruple junctions as a region where four crystals  meet.
+      Quadruple junctions as a region where four crystals meet.
+      
+      An example for a point defect.
     representation(NX_CHAR):
       doc: |
         Reference to an instance of:
@@ -377,22 +427,36 @@ NXmicrostructure(NXobject):
       doc: |
         Identifier to identify each quadruple junction explicitly.
       unit: NX_UNITLESS
-      dim: (n_q,)
+      dim: (i,)  # with i == n_qj_three or n_qj_two
+    # different scenarios can be envised how quadruple_junctions are discussed
     # example i) quadruple point locations explicitly
-    position(NX_INT):
+    location(NX_INT):
       doc: |
         Set of identifier for positions whereby to identify the location of each junction.
       unit: NX_UNITLESS
-      dim: (n_q,)
+      dim: (i,)
       \@use_these(NX_CHAR):
         doc: |
-          The specific identifier whereby to resolve ambiguities.
+          The specific point identifier whereby to resolve ambiguities.
+    position(NX_INT):
+      doc: |
+        Explicit positions.
+      unit: NX_LENGTH
+      dim: (i, 3)
     # example ii) four crystals meet at a quadruple junction
     crystal_identifier(NX_INT):
       doc: |
         Set of tuples of identifier of crystals connected to the junction for each junction.
       unit: NX_UNITLESS
-      dim: (n_q, 4)
+      dim: (i, 4)
+      \@use_these(NX_CHAR):
+        doc: |
+          The specific identifier to instances of crystal identifiers whereby to resolve ambiguities.
+    interface_identifier(NX_INT):
+      doc: |
+        Set of tuples of identifier of interfaces connected to the junction for each junction.
+      unit: NX_UNITLESS
+      dim: (i, 4)
       \@use_these(NX_CHAR):
         doc: |
           The specific identifier to instances of interface identifiers whereby to resolve ambiguities.
@@ -401,7 +465,7 @@ NXmicrostructure(NXobject):
       doc: |
         Set of tuples of identifier for triple junctions connected to the junction for each quadruple junction.
       unit: NX_UNITLESS
-      dim: (n_q, 3)
+      dim: (i, 3)
       \@use_these(NX_CHAR):
         doc: |
           The specific identifier to instances of triple junction identifiers whereby to resolve ambiguities.
@@ -410,18 +474,22 @@ NXmicrostructure(NXobject):
       doc: |
         Set of tuples of identifier for phases of crystals connected to the junction for each quadruple junction.
       unit: NX_UNITLESS
-      dim: (n_q, 4)
+      dim: (i, 4)
       \@use_these(NX_CHAR):
         doc: |
           The specific identifier to instances of phase identifier whereby to resolve ambiguities.
-    # DESCRIPTOR VALUES
+    # EXAMPLES FOR DESCRIPTOR VALUES
+    boundary_contact(NX_BOOLEAN):
+      doc: |
+        True or false value, one for each crystal, to communicate whether that feature makes contact with the edge of the ROI.
+      dim: (i,)
     energy(NX_NUMBER):
       doc: |
         Energy of the quadruple_junction as a defect.
       unit: NX_ANY
-      dim: (n_q,)
+      dim: (i,)
     mobility(NX_NUMBER):
       doc: |
         Non-intrinsic mobility of each quadruple_junction.
       unit: NX_ANY
-      dim: (n_q,)
+      dim: (i,)
