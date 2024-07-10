@@ -32,6 +32,11 @@ concepts which are equally modellable with NeXus:
         the legacy microstructure synthesizer developed at the Institut für
         Metallkunde und Metallphysik in Aachen.
 
+    :ref:`NXmicrostructure_kanapy_results`:
+        A specific example of an application definition for documenting the results
+        of a computer simulation with the kanapy microstructure synthesizer
+        developed at the ICAMS in Bochum.
+
     :ref:`NXmicrostructure_score_config`, :ref:`NXmicrostructure_score_results`:
         A specific example of an application definition for documenting the
         configuration and results respectively of a computer simulation with

@@ -22,6 +22,28 @@
 # For further information, see http://www.nexusformat.org
 -->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXmicrostructure_kanapy_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="n_z">
+            <doc>
+                 Number of material points along the z axis of the domain.
+            </doc>
+        </symbol>
+        <symbol name="n_y">
+            <doc>
+                 Number of material points along the y axis of the domain.
+            </doc>
+        </symbol>
+        <symbol name="n_x">
+            <doc>
+                 Number of material points along the x axis of the domain.
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 Number of crystals.
+            </doc>
+        </symbol>
+    </symbols>
     <doc>
          Application definition for the microstructure generator kanapy from ICAMS Bochum.
          
@@ -71,19 +93,101 @@
         </group>
         <!--no units instead labelled-property graph concepts with units-->
         <group name="microstructureID" type="NXmicrostructure" minOccurs="1" maxOccurs="unbounded">
-            <group type="NXcg_grid" optional="true">
+            <group name="grid" type="NXcg_grid">
+                <field name="extent" type="NX_UINT"/>
                 <field name="cell_dimensions" type="NX_NUMBER"/>
-                <field name="extent" type="NX_INT"/>
                 <field name="origin" type="NX_NUMBER"/>
                 <field name="symmetry" type="NX_CHAR"/>
-                <field name="position" type="NX_NUMBER" recommended="true"/>
-                <field name="coordinate" type="NX_INT" recommended="true"/>
-                <group name="bounding_box" type="NXcg_polyhedron_set" recommended="true"/>
-                <field name="number_of_boundaries" type="NX_INT" recommended="true"/>
-                <field name="boundaries" type="NX_CHAR" recommended="true"/>
-                <field name="boundary_conditions" type="NX_INT" recommended="true"/>
+                <group name="structure" type="NXdata">
+                    <doc>
+                         Default plot showing the grid.
+                    </doc>
+                    <attribute name="signal" type="NX_CHAR"/>
+                    <attribute name="axes" type="NX_CHAR"/>
+                    <attribute name="AXISNAME_indices" type="NX_CHAR"/>
+                    <field name="title" type="NX_CHAR"/>
+                    <field name="crystal_identifier" type="NX_NUMBER" units="NX_UNITLESS">
+                        <doc>
+                             Crystal identifier that was assigned to each material point.
+                        </doc>
+                    </field>
+                    <!--either (n_y, n_x) or (n_z, n_y, n_x)-->
+                    <field name="z" type="NX_NUMBER" optional="true" units="NX_LENGTH">
+                        <doc>
+                             Material point barycentre coordinate along z direction.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_y"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR">
+                            <doc>
+                                 Coordinate along z direction.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <field name="y" type="NX_NUMBER" units="NX_LENGTH">
+                        <doc>
+                             Material point barycentre coordinate along y direction.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_y"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR">
+                            <doc>
+                                 Coordinate along y direction.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <field name="x" type="NX_NUMBER" units="NX_LENGTH">
+                        <doc>
+                             Material point barycentre coordinate along x direction.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_x"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR">
+                            <doc>
+                                 Coordinate along x direction.
+                            </doc>
+                        </attribute>
+                    </field>
+                </group>
+            </group>
+            <!--add nodal positions as suggested in NXmicrostructure-->
+            <group name="crystal" type="NXobject">
+                <field name="reference" type="NX_CHAR"/>
+                <field name="number_of_crystals" type="NX_UINT"/>
+                <field name="number_of_phases" type="NX_UINT"/>
+                <field name="crystal_identifier" type="NX_INT">
+                    <dimensions rank="1">
+                        <dim index="1" value="c"/>
+                    </dimensions>
+                </field>
+                <field name="phase_identifier" type="NX_INT">
+                    <dimensions rank="1">
+                        <dim index="1" value="c"/>
+                    </dimensions>
+                </field>
+                <field name="area" type="NX_NUMBER" recommended="true">
+                    <dimensions rank="1">
+                        <dim index="1" value="c"/>
+                    </dimensions>
+                </field>
+                <field name="volume" type="NX_NUMBER" recommended="true">
+                    <dimensions rank="1">
+                        <dim index="1" value="c"/>
+                    </dimensions>
+                </field>
+                <field name="bunge_euler" type="NX_FLOAT" units="NX_ANGLE">
+                    <doc>
+                         Bunge-Euler angle orientation of each crystal.
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="c"/>
+                        <dim index="2" value="3"/>
+                    </dimensions>
+                </field>
             </group>
         </group>
     </group>
-    <!--TODO: populate further based on appdefs NXmicrostructure_score_results-->
 </definition>

@@ -7,6 +7,15 @@ doc: |
   A draft application definition to support discussion within the infrastructure use case IUC07 of the
   NFDI-MatWerk consortium of the German NFDI working on a data model for documenting simulations
   of spatiotemporal microstructure evolution with scientific software from this community.
+symbols:
+  n_z: |
+    Number of material points along the z axis of the domain.
+  n_y: |
+    Number of material points along the y axis of the domain.
+  n_x: |
+    Number of material points along the x axis of the domain.
+  c: |
+    Number of crystals.
 type: group
 NXmicrostructure_kanapy_results(NXobject):
   (NXentry):
@@ -44,22 +53,65 @@ NXmicrostructure_kanapy_results(NXobject):
     # no units instead labelled-property graph concepts with units
     microstructureID(NXmicrostructure):
       exists: [min, 1, max, infty]
-      (NXcg_grid):  # size but much more capable
-        exists: optional
+      grid(NXcg_grid):  # size but much more capable
+        extent(NX_UINT):
         cell_dimensions(NX_NUMBER):
-        extent(NX_INT):
         origin(NX_NUMBER):
         symmetry(NX_CHAR):
-        position(NX_NUMBER):
+        structure(NXdata):
+          doc: |
+            Default plot showing the grid.
+          \@signal(NX_CHAR):
+          \@axes(NX_CHAR):
+          \@AXISNAME_indices(NX_CHAR):
+          title(NX_CHAR):
+          crystal_identifier(NX_NUMBER):
+            doc: |
+              Crystal identifier that was assigned to each material point.
+            unit: NX_UNITLESS
+            # either (n_y, n_x) or (n_z, n_y, n_x)
+          z(NX_NUMBER):
+            exists: optional   # to cater for the 2D case
+            doc: |
+              Material point barycentre coordinate along z direction.
+            unit: NX_LENGTH
+            dim: (n_y,)
+            \@long_name(NX_CHAR):
+              doc: |
+                Coordinate along z direction.
+          y(NX_NUMBER):
+            doc: |
+              Material point barycentre coordinate along y direction.
+            unit: NX_LENGTH
+            dim: (n_y,)
+            \@long_name(NX_CHAR):
+              doc: |
+                Coordinate along y direction.
+          x(NX_NUMBER):
+            doc: |
+              Material point barycentre coordinate along x direction.
+            unit: NX_LENGTH
+            dim: (n_x,)
+            \@long_name(NX_CHAR):
+              doc: |
+                Coordinate along x direction.
+      # add nodal positions as suggested in NXmicrostructure
+      crystal(NXobject):
+        reference(NX_CHAR):  # e.g. /entry1/microstructure1/grid/structure
+        number_of_crystals(NX_UINT):
+        number_of_phases(NX_UINT):
+        crystal_identifier(NX_INT):
+          dim: (c,)
+        phase_identifier(NX_INT):
+          dim: (c,)
+        area(NX_NUMBER):
           exists: recommended
-        coordinate(NX_INT):
+          dim: (c,)
+        volume(NX_NUMBER):
           exists: recommended
-        bounding_box(NXcg_polyhedron_set):
-          exists: recommended
-        number_of_boundaries(NX_INT):
-          exists: recommended
-        boundaries(NX_CHAR):
-          exists: recommended
-        boundary_conditions(NX_INT):
-          exists: recommended
-      # TODO: populate further based on appdefs NXmicrostructure_score_results
+          dim: (c,)
+        bunge_euler(NX_FLOAT):
+          doc: |
+            Bunge-Euler angle orientation of each crystal.
+          unit: NX_ANGLE
+          dim: (c, 3)
