@@ -3,39 +3,56 @@ doc: |
   Application definition for configuring GraGLeS.
   
   GraGLeS is a continuum-scale model for shared-memory-parallelized simulations
-  of the isothermal evolution of 2D and 3D grain boundary networks via a
-  level-set approach. CPU parallelization is achieved with OpenMP.
+  of the isothermal evolution of 2D and 3D grain boundary networks with a level-set approach.
+  CPU parallelization is achieved with OpenMP. 
   
   The code has been implemented by C. Mießen in the group of G. Gottstein
   at the Institute für Metallkunde und Metallphysik, RWTH Aachen University.
   
-  Details of the model are summarized in C. Mießen `<https://publications.rwth-aachen.de/record/709678>`_.
+  Details of the model are summarized in `C. Mießen <https://publications.rwth-aachen.de/record/709678>`_.
 # symbols:
 # type: group
 NXmicrostructure_gragles_config(NXobject):
   (NXentry):
     definition(NX_CHAR):
       enumeration: [NXmicrostructure_gragles_config]
-    starting_configuration(NX_CHAR):
+    simulation_identifier(NX_UINT):
       doc: |
-        Which starting configuration to take.
-      enumeration: [read_from_file]  # poisson_voronoi_tessellation
-    # 0, E_READ_FROM_FILE, 1, E_GENERATE_WITH_VORONOY, 2, E_READ_VERTEX, // The edges need to be ordered 3, E_GENERATE_TESTCASE, 4, E_READ_VOXELIZED_MICROSTRUCTURE
-    # read the next three from input file
-    # <ReadFromFilename>Microstructure.SimID.10.GrainIDs.2D.1188.raw</ReadFromFilename> all in config file
-    # <AdditionalFilename>Microstructure.SimID.10.uds</AdditionalFilename>
-    # <LatticeType>0</LatticeType> 0, E_CUBIC, 1, E_HEXAGONAL fish from config file
-
-    roi(NXroi):
+        Simulation ID as an alias to refer to this simulation.
+    description(NX_CHAR):
       doc: |
-        Scaling the (representative) volume element to the research question.
-      # either or
-      (NXcg_polygon_set):
-      # (NXcg_hexahedron_set):
+        Discouraged free-text field to add further details to the computation.
+    start_time(NX_DATE_TIME):
+    end_time(NX_DATE_TIME):
+      exists: recommended
+    profiling(NXcs_profiling):
+      exists: optional
+    (NXuser):
+      exists: [min, 0, max, infty]
+    program1(NXprogram):
+      program_name:
+        \@version:
+        \@url:
+          exists: recommended
+    environment(NXobject):
+    discretization(NXmicrostructure):
+      # [read_from_file]  # poisson_voronoi_tessellation
+      # 0, E_READ_FROM_FILE, 1, E_GENERATE_WITH_VORONOY, 2, E_READ_VERTEX, // The edges need to be ordered 3, E_GENERATE_TESTCASE, 4, E_READ_VOXELIZED_MICROSTRUCTURE
+      # read the next three from input file
+      # <ReadFromFilename>Microstructure.SimID.10.GrainIDs.2D.1188.raw</ReadFromFilename> all in config file
+      # <AdditionalFilename>Microstructure.SimID.10.uds</AdditionalFilename>
+      # <LatticeType>0</LatticeType> 0, E_CUBIC, 1, E_HEXAGONAL fish from config file
+      grid(NXserialized):  #  take generated structure as input as code refactoring removed microstructure synthesis related parts
+        doc: |
+          From which file should the microstructure be instantiated.
+        type:
+        path:
+        algorithm:
+        checksum:
       edge_length(NX_FLOAT): # <Physical_Domain_Size>4.2037e-3</Physical_Domain_Size>  <!--unit: meter 1px equals 0.1e-6 meter-->
         doc: |
-          The formulation of mean curvature flow whereby GraGLeS models grain growth
-          is scale invariant. This parameter configures the assumed physical length
+          The formulation of mean curvature flow in the GraGLeS model is scale invariant.
+          Therefore, the discretization has to be scaled to the actual physical length
           of the simulation domain (ve, ROI).
           For GraGLeS the discretization is always a square or cubic axis-aligned
           bounding box with a regular tiling into material points
@@ -44,10 +61,13 @@ NXmicrostructure_gragles_config(NXobject):
           Edge_length is the length of the entire domain along its edge not
           the length of the Wigner-Seitz cell about each material point!
         unit: NX_LENGTH
-
-    snapshot_sampling(NXprocess):
+    sampling(NXobject):
       doc: |
         Configuration when snapshots of the system should be taken.
+        
+        Keep in mind that essentially geometry snapshot data store the
+        polylines and polyhedra of all grains which can take substantial disk
+        space.
       system(NX_UINT):  # <AnalysisTimestep>1</AnalysisTimestep>
         doc: |
           Generate a snapshot of the properties of the grains to follow
@@ -56,16 +76,15 @@ NXmicrostructure_gragles_config(NXobject):
         unit: NX_UNITLESS
       geometry(NX_UINT):  # <PlotInterval>100</PlotInterval>
         doc: |
-          Generate a snapshot of the geometry of the entire
-          grain boundary network every :math:`n`-th iteration.
-          Setting zero causes that no geometry snapshots are taken.
+          Generate a snapshot of the geometry of the entire grain boundary network
+          every :math:`n`-th iteration. Setting zero instructs to store no geometry data.
         unit: NX_UNITLESS
       # <DiscreteSamplingRate>31</DiscreteSamplingRate> no more sampling <!-- MODF number of bins-->
       # <NeighbourTracking>1</NeighbourTracking>
 
-    simulation_control(NXprocess):
+    simulation_control(NXobject):
       doc: |
-        Configuration when the simulation should stopped in a controlled manner.
+        Configuration when the simulation should be stopped in a controlled manner.
         Whichever criterion is fulfilled first triggers the controlled stop of
         and termination of GraGLeS.
       number_of_grains(NX_UINT):  # <BreakupNumber>1000</BreakupNumber>
@@ -75,13 +94,11 @@ NXmicrostructure_gragles_config(NXobject):
         unit: NX_UNITLESS
       number_of_iterations(NX_UINT):  # <NumberOfTimesteps>1000000</NumberOfTimesteps>
         doc: |
-          The simulation stops if more iterations than this criterion
-          have been computed.
+          The simulation stops if more iterations than this criterion have been computed.
         unit: NX_UNITLESS
-
-    numerics(NXprocess):
+    numerics(NXobject):
       doc: |
-        Configuration of fundamental numerical details of the solver.
+        Configuration of numerical details of the solver.
       # use proper environment variable number_of_threads(NX_UINT):  # obsolete set 0<ExecuteInParallel>1</ExecuteInParallel> 16</MaximumNumberOfThreads>
       convolution_mode(NX_CHAR):
         doc: |
@@ -106,8 +123,7 @@ NXmicrostructure_gragles_config(NXobject):
       # <GrainScheduler>1</GrainScheduler>  # 0, E_ITERATIVE, 1, E_SQUARES
       # <BoxDefaultStoredElasticEnergy>0.0</BoxDefaultStoredElasticEnergy>
       # <!-- USAGE: set to 0.0 unless mode is DecoupleGrains and make studies of isolated circular grains under capillary and stored elastic energy evolution-->
-
-    grid_coarsement(NXprocess):
+    grid_coarsement(NXobject):
       doc: |
         Configuration of the grid coarsement algorithm whereby the representation
         of the system is continuously rediscretized such that on average grains
@@ -137,16 +153,14 @@ NXmicrostructure_gragles_config(NXobject):
       # <ConstantSectorRadius>3</ConstantSectorRadius>
       # <InterpolatingSectorRadius>2</InterpolatingSectorRadius>
       # <DecoupleGrains>0</DecoupleGrains>  # 0, DEFAULT, 1 skips comparison and let grains shring isolated
-
-    grain_boundary_mobility_model(NXprocess):
+    grain_boundary_mobility(NXobject):
       doc: |
         Physically-based model of the assumed mobility of the grain boundaries.
         
-        Grain boundary mobility is not an intrinsic property of a grain boundary
-        but system-dependent especially as grain boundaries in reality are decorated
-        with defects as a consequence of which the actual mobility is a combination
-        of the mobility of the individual defects and the attached boundary
-        patches. Grain boundaries have different degrees of microscopic freedom.
+        Grain boundary mobility is not an intrinsic property of a grain boundary but system-dependent
+        especially as grain boundaries in reality are decorated with defects as a consequence of which
+        the actual mobility is a combination of the mobility of the individual defects and the attached
+        boundary patches. Grain boundaries have different degrees of microscopic freedom.
         Therefore, their mobility follows a distribution.
       # <IsIsotropicNetwork>0</IsIsotropicNetwork>
       # <IdentifyTwins>0</IdentifyTwins>  # <!-- USAGE: Input is 0 or 1 as a boolean. For 1 a Sigma 3 GB are identified and considered as lowest angle GB. -->
@@ -174,14 +188,14 @@ NXmicrostructure_gragles_config(NXobject):
         doc: |
           Mobility scaling factor :math:`c_3`. Typically 9.
         unit: NX_UNITLESS
-
-    grain_boundary_energy_model(NXprocess):
+    grain_boundary_energy(NXobject):
       doc: |
-        Grain boundary surface energy. Like for the grain boundary mobility,
-        defects cause a distribution of energies for the patches of which
-        the boundary is composed resulting in currently in practical cases
-        a too complicated dependency of the energy and mobility model as a function
-        of the type and chemical decoration of the defects.
+        Physically-based model of the assumed grain boundary surface energy.
+        
+        Like for the grain boundary mobility, defects cause a distribution of energies for the
+        patches of which the boundary is composed. In practice a too complicated dependency
+        of the energy and mobility model is observed as a function of the type and chemical
+        decoration of the defects. Therefore, simplifying assumptions are typically made.
       type(NX_CHAR):
         doc: |
           Fundamental type of assumption if energies are considered isotropic or not.
@@ -203,21 +217,19 @@ NXmicrostructure_gragles_config(NXobject):
       # <EnergyModelScalingB>0.01</EnergyModelScalingB>
       # <!-- INFORMATION: Scaling A is the disorientation angle cutoff in degrees, B the value assigned when nan-s occurred
       # these Scaling parameter are not read as well but utilized in the ReadShockley enery model-->
-
-    curvature_driving_force_model(NXprocess):
+    curvature_driving_force(NXobject):
       doc: |
         A continuum-scale curvature of an interface causes the interface to
         migrate towards the center of the curvature radius.
       is_active(NX_BOOLEAN):
         doc: |
           If true the curvature_driving_force is considered, otherwise it is not.
-
-    dislocation_driving_force_model(NXprocess):
+    stored_elastic_energy(NXobject):
       doc: |
         A continuum-scale difference of the stored elastic energy in dislocation
         configurations across a grain boundary can exert a driving force on the
-        grain boundary such that it migrates into the volume with the higher
-        stored elastic energy.
+        grain boundary such that the boundary migrates into the volume with the
+        higher stored elastic energy.
       is_active(NX_BOOLEAN):  #    <UseStoredElasticEnergy>1</UseStoredElasticEnergy>
         doc: |
           If true the dislocation_driving_force is considered, otherwise it is not.
@@ -226,19 +238,17 @@ NXmicrostructure_gragles_config(NXobject):
           Prefactor :math:`0.5Gb^2` that factorizes the average
           tored elastic energy per length dislocation line.
         unit: NX_ANY  # J/m
-
-    magnetic_driving_force_model(NXprocess):
+    magnetic_field(NXobject):
       doc: |
         In case of an applied magnetic field, a difference of the magnetic
         susceptibility can exert a driving force on the grain boundary such that
-        it migrates into the volume with the higher magnetic energy.
+        the boundary migrates into the volume with the higher magnetic energy.
       is_active(NX_BOOLEAN):  # <UseMagneticField>0</UseMagneticField>
         doc: |
           If true the magnetic_driving_force is considered, otherwise it is not.
     # <MagneticParams> MagneticField.xml </MagneticParams>
     # https://github.com/GraGLeS/GraGLeS2D/blob/master/params/MagneticField.xml
-
-    triple_line_mobility_model(NXprocess):
+    triple_line_mobility(NXobject):
       doc: |
         A triple line mediates the atomic arrangement differences between three
         interface patches. Therefore, the triple line is a defect that may not

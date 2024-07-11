@@ -200,16 +200,25 @@ NXmicrostructure_score_config(NXobject):
       rollett_holm(NXobject):
         doc: |
           Parameter of the Rollett-Holm migration model.
-        lagb_to_hagb_cut(NX_FLOAT):
-          unit: NX_ANY
-        lagb_to_hagb_transition(NX_FLOAT):
-          unit: NX_ANY
-        lagb_to_hagb_exponent(NX_FLOAT):
-          unit: NX_ANY
-        hagb_pre_factor(NX_FLOAT):
-          unit: NX_ANY
-        hagb_enthalpy(NX_FLOAT):
-          unit: NX_ANY
+          
+          For rollett_holm :math:`m(\Theta) = m_0 \cdot (1 - c_1 * exp(-c_2 \cdot \frac{\Theta}{15}^{c_3}))`.
+        m_null(NX_FLOAT):
+          doc: |
+            The assumed mobility :math:`m_0` of the fastest grain boundary in the system at the assumed
+            temperature. GraGLeS was developed for modelling isothermal annealing.
+          unit: NX_ANY  # m^4/Js
+        c_one(NX_FLOAT):
+          doc: |
+            Mobility scaling factor :math:`c_1`. Typically 0.99 or higher but not one.
+          unit: NX_DIMENSIONLESS
+        c_two(NX_FLOAT):
+          doc: |
+            Mobility scaling factor :math:`c_2`. Typically 5.
+          unit: NX_UNITLESS
+        c_three(NX_FLOAT):
+          doc: |
+            Mobility scaling factor :math:`c_3`. Typically 9.
+          unit: NX_UNITLESS
     stored_energy_recovery(NXobject):
       doc: |
         Time-dependent reduction of the stored (elastic) energy to account for recovery.
@@ -261,7 +270,7 @@ NXmicrostructure_score_config(NXobject):
           Support point of the linearized curve of the temperature.
         unit: NX_TEMPERATURE
         dim: (n_temp,)
-    stop_criteria(NXobject):
+    simulation_control(NXobject):
       doc: |
         Criteria which enable to stop the simulation in a controlled manner.
         Whichever criterion is fulfilled first stops the simulation.
@@ -309,10 +318,21 @@ NXmicrostructure_score_config(NXobject):
           will be defragmented on-the-fly.
         unit: NX_DIMENSIONLESS
         dim: (n_defrag,)
-      snapshot_x(NX_FLOAT):
+    sampling(NXobject):
+      x(NX_FLOAT):
         doc: |
           List of recrystallized volume target values at which a
-          snapshot of the CA state should be exported for.
+          snapshot of the CA state should be stored.
+          
+          The code documents summary statistics like recrystallized volume fraction
+          for each iteration. However, snapshots of the microstructure can take much
+          space as SCORE is able to evolve automata with up to :math:`1600^3` cells.
+          Snapshot data document the current microstructure which includes the grain
+          assigned to each of these cells plus the state of the recrystallization front.
+          
+          Despite these front data make up for approximately one order of magnitude
+          less cells than represented in the domain, more numerical data have to be
+          collected each cell in the front than just a grain identifier.
         unit: NX_DIMENSIONLESS
         dim: (n_snapshot,)
     solitary_unit(NXobject):
