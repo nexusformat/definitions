@@ -88,138 +88,259 @@ doc: |
   always guide the user for each group and field which of the coordinate system
   one refers to.
 type: group
+# express conventions explicitly and understandable
+# appdefs each instance of NXentry should have its own set of conventions
+# method-specific additional conventions on top of the ones formulated here
+# should go to method-specific base classes like NXcoordinate_system_em_ebsd
+# use depends_on field - not attribute - to point to conventions which in specific cases
 NXcoordinate_system_set(NXobject):
+  rotation_handedness(NX_CHAR):
+    doc: |
+      Convention how a positive rotation angle is defined when viewing
+      from the end of the rotation unit vector towards its origin,
+      i.e. in accordance with convention 2 of
+      DOI: 10.1088/0965-0393/23/8/083501.
+      Counter_clockwise is equivalent to a right-handed choice.
+      Clockwise is equivalent to a left-handed choice.
+    enumeration: [undefined, counter_clockwise, clockwise]
+  rotation_convention(NX_CHAR):
+    doc: |
+      How are rotations interpreted into an orientation
+      according to convention 3 of
+      DOI: 10.1088/0965-0393/23/8/083501.
+    enumeration: [undefined, passive, active]
+  euler_angle_convention(NX_CHAR):
+    doc: |
+      How are Euler angles interpreted given that there are several
+      choices (e.g. ZXZ, XYZ, etc.) according to convention 4 of
+      DOI: 10.1088/0965-0393/23/8/083501.
+      The most frequently used convention is ZXZ which is based on
+      the work of H.-J. Bunge but other conventions are possible.
+    enumeration: [undefined, zxz]
+  axis_angle_convention(NX_CHAR):
+    doc: |
+      To which angular range is the rotation angle argument of an
+      axis-angle pair parameterization constrained according to
+      convention 5 of DOI: 10.1088/0965-0393/23/8/083501.
+    enumeration: [undefined, rotation_angle_on_interval_zero_to_pi]
+  sign_convention(NX_CHAR):
+    doc: |
+      Which sign convention is followed when converting orientations
+      between different parameterizations/representations according
+      to convention 6 of DOI: 10.1088/0965-0393/23/8/083501.
+    enumeration: [undefined, p_plus_one, p_minus_one]
+  # possibility to add further coordinate systems
   (NXcoordinate_system):
-  
-  # How to interpret "depends_on" calls for NXtransformations instances which live
-  # within an instance of NXcoordinate_system(_set)?
-  # Depends on cardinality of NXcoordinate_system_set, i.e. how many NXcoordinate_system are defined?
-  # - 0, the root of an NXtransformation chain i.e. "." means McStas
-  # - 1, the root of an NXtransformation chain i.e. "." means "that specific CS" i.e. the one defined by the single instance of NXcoordinate_system in the set
-  # - > 1, "." becomes ambiguous. My suggestion, spell out the name of the specific NXcoordinate_system instance to be used, using "."
-  # despite all these, a warning should be raised, like a logic warning (and McStas kick in) or an error (i.e. be forbidden) be raised
-
-# ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 2c012af7dc8e09a7f7df9408a0d04886f58bc74feff6fc207658954ad8682422
-# <?xml version='1.0' encoding='UTF-8'?>
-# <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
-# <!--
-# # NeXus - Neutron and X-ray Common Data Format
-# #
-# # Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
-# #
-# # This library is free software; you can redistribute it and/or
-# # modify it under the terms of the GNU Lesser General Public
-# # License as published by the Free Software Foundation; either
-# # version 3 of the License, or (at your option) any later version.
-# #
-# # This library is distributed in the hope that it will be useful,
-# # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# # Lesser General Public License for more details.
-# #
-# # You should have received a copy of the GNU Lesser General Public
-# # License along with this library; if not, write to the Free Software
-# # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-# #
-# # For further information, see http://www.nexusformat.org
-# -->
-# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcoordinate_system_set" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
-#     <doc>
-#          Base class to hold different coordinate systems and representation conversions.
-#          
-#          How many nodes of type :ref:`NXcoordinate_system_set` should be used in an application definition?
-#          
-#          * 0; if there is no instance of :ref:`NXcoordinate_system_set` and therein or elsewhere across
-#            the application definition, an instance of NXcoordinate_system is defined,
-#            the default NeXus `McStas &lt;https://mailman2.mcstas.org/pipermail/mcstas-users/2021q2/001431.html&gt;`_
-#            coordinate system is assumed. This makes :ref:`NXcoordinate_system_set` and
-#            NXcoordinate_system base classes backwards compatible to older
-#            NeXus conventions and classes.
-#          * 1; if only one :ref:`NXcoordinate_system_set` is defined, it should be placed
-#            as high up in the node hierarchy (ideally right below an instance of NXentry)
-#            of the application definition tree as possible.
-#            This :ref:`NXcoordinate_system_set` should define at least one NXcoordinate_system
-#            instance. This shall be named such that it is clear how this coordinate system is
-#            typically referred to in a community. For the NeXus `McStas coordinate system, it is
-#            advised to call it mcstas for the sake of improved clarity.
-#            Additional NXcoordinate_system instances should be specified if possible in that same
-#            :ref:`NXcoordinate_system_set` instead of cluttering them across the tree.
-#            
-#            If this is the case, it is assumed that the NXcoordinate_system_members
-#            overwrite the NeXus default McStas coordinate system, i.e. users can thereby
-#            conveniently and explicitly specify the coordinate system(s) that
-#            they wish to use.
-#            
-#            Users are encouraged to write also explicit and clean depends_on fields in
-#            all groups that encode information about where the interpretation of coordinate
-#            systems is relevant. If these depends_on hints are not provided, it is
-#            automatically assumed that all children (to arbitrary depth)
-#            of that branch and sub-branches below the one in which that
-#            :ref:`NXcoordinate_system_set` is defined use either the only NXcoordinate_system_set
-#            instance in that set or the application definition is considered
-#            underconstrained which should at all costs be avoided and in which case
-#            again McStas is assumed.
-#          * 2 and more; as soon as more than one :ref:`NXcoordinate_system_set` is specified
-#            somewhere in the tree, different interpretations are possible as to which
-#            of these coordinate system sets and instances apply or take preference.
-#            We realize that such ambiguities should at all costs be avoided.
-#            However, the opportunity for multiple sets and their instances enables to
-#            have branch-specific coordinate system conventions which could especially
-#            be useful for deep classes where multiple scientific methods are combined or
-#            cases where having a definition of global translation and conversion tables
-#            how to convert between representations in different coordinate systems
-#            is not desired or available for now.
-#            We argue that having 2 or more :ref:`NXcoordinate_system_set` instances and respective
-#            NXcoordinate_system instances makes the interpretation eventually unnecessary
-#            complicated. Instead, developers of application definitions should always try
-#            to work for clarity and thus use only one top-level coordinate system set.
-#          
-#          For these reasons we conclude that the option with one top-level
-#          :ref:`NXcoordinate_system_set` instance is the preferred choice.
-#          
-#          McStas is used if neither an instance of :ref:`NXcoordinate_system_set` nor an instance
-#          of NXcoordinate_system is specified. However, even in this case it is better
-#          to be explicit like for every other coordinate system definition to support
-#          users with interpreting the content and logic behind every instance of the tree.
-#          
-#          How to store coordinate systems inside :ref:`NXcoordinate_system_set`?
-#          Individual coordinate systems should be specified as members of the
-#          :ref:`NXcoordinate_system_set` instance using instances of NXcoordinate_system.
-#          
-#          How many individual instances of NXcoordinate_system to allow within one
-#          instance of :ref:`NXcoordinate_system_set`?
-#          
-#          * 0; This case should be avoided for the sake of clarity but this case could
-#            mean the authors of the definition meant that McStas is used. We conclude,
-#            McStas is used in this case.
-#          * 1; Like above-mentioned this case has the advantage that it is explicit
-#            and faces no ambiguities. However, in reality typically multiple
-#            coordinate systems have to be mastered especially for complex
-#            multi-signal modality experiments.
-#          * 2 or more; If this case is realized, the best practice is that in every
-#            case where a coordinate system should be referred to the respective class
-#            has a depends_on field which resolves the possible ambiguities which specific
-#            coordinate systems is referred to. The benefit of this explicit and clear
-#            specifying of the coordinate system used in every case is that especially
-#            in combination with having coordinate systems inside deeper branches
-#            makes up for a very versatile, backwards compatible, but powerful system
-#            to express different types of coordinate systems using NeXus. In the case
-#            of two or more instances of NXcoordinate_system in one :ref:`NXcoordinate_system_set`,
-#            it is also advised to specify the relationship between the two coordinate systems by
-#            using the (NXtransformations) group within NXcoordinate_system.
-#          
-#          In effect, 1 should be the preferred choice. However, if more than one coordinate
-#          system is defined for practical purposes, explicit depends_on fields should
-#          always guide the user for each group and field which of the coordinate system
-#          one refers to.
-#     </doc>
-#     <group type="NXcoordinate_system"/>
-#     <!--How to interpret "depends_on" calls for NXtransformations instances which live
-# within an instance of NXcoordinate_system(_set)?
-# Depends on cardinality of NXcoordinate_system_set, i.e. how many NXcoordinate_system are defined?
-# - 0, the root of an NXtransformation chain i.e. "." means McStas
-# - 1, the root of an NXtransformation chain i.e. "." means "that specific CS" i.e. the one defined by the single instance of NXcoordinate_system in the set
-# - > 1, "." becomes ambiguous. My suggestion, spell out the name of the specific NXcoordinate_system instance to be used, using "."
-# despite all these, a warning should be raised, like a logic warning (and McStas kick in) or an error (i.e. be forbidden) be raised-->
-# </definition>
+  # frequently used coordinate systems with frequently relevant specializations
+  processing_reference_frame(NXcoordinate_system):
+    doc: |
+      Details about eventually relevant named directions that may
+      give reasons for anisotropies. The classical example is cold-rolling
+      where one has to specify which directions (rolling, transverse, and normal)
+      align how with the direction of the base vectors of the sample_reference_frame.
+    type(NX_CHAR):
+      doc: |
+        Type of coordinate system and reference frame according to
+        convention 1 of DOI: 10.1088/0965-0393/23/8/083501.
+      enumeration: [undefined, cartesian]
+    handedness(NX_CHAR):
+      doc: |
+        Handedness of coordinate system.
+      enumeration: [right_handed, left_handed]
+    origin(NX_CHAR):
+      doc: |
+        Location of the origin of the processing_reference_frame.
+        This specifies the location Xp = 0, Yp = 0, Zp = 0.
+        Assume regions-of-interest in this reference frame form a
+        rectangle or cuboid.
+        Edges are interpreted by inspecting the direction of their
+        outer unit normals (which point either parallel or antiparallel)
+        along respective base vector direction of the reference frame.
+      enumeration: [undefined, front_top_left, front_top_right, front_bottom_right, front_bottom_left, back_top_left, back_top_right, back_bottom_right, back_bottom_left]
+    x_alias(NX_CHAR):
+      doc: |
+        Name or alias assigned to the x-axis base vector,
+        e.g. rolling direction.
+    x_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing x-axis base vector of
+        the processing_reference_frame. We assume the configuration
+        is inspected by looking towards the sample surface from a position
+        that is located behind the detector.
+      enumeration: [undefined, north, east, south, west, in, out]
+    y_alias(NX_CHAR):
+      doc: |
+        Name or alias assigned to the y-axis base vector,
+        e.g. transverse direction.
+    y_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing y-axis base vector of
+        the processing_reference_frame. We assume the configuration
+        is inspected by looking towards the sample surface from a position
+        that is located behind the detector. For further information consult
+        also the help info for the xaxis_direction field.
+      enumeration: [undefined, north, east, south, west, in, out]
+    z_alias(NX_CHAR):
+      doc: |
+        Name or alias assigned to the z-axis base vector,
+        e.g. normal direction.
+    z_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing z-axis base vector of
+        the processing_reference frame. We assume the configuration
+        is inspected by looking towards the sample surface from a position
+        that is located behind the detector. For further information consult
+        also the help info for the xaxis_direction field.
+      enumeration: [undefined, north, east, south, west, in, out]
+  sample_reference_frame(NXcoordinate_system):
+    doc: |
+      Details about the sample/specimen reference frame.
+    type(NX_CHAR):
+      doc: |
+        Type of coordinate system and reference frame according to
+        convention 1 of DOI: 10.1088/0965-0393/23/8/083501.
+        The reference frame for the sample surface reference is used for
+        identifying positions on a (virtual) image which is formed by
+        information collected from an electron beam scanning the
+        sample surface. We assume the configuration is inspected by
+        looking towards the sample surface from a position that is
+        located behind the detector.
+        Reference DOI: 10.1016/j.matchar.2016.04.008
+        The sample surface reference frame has coordinates Xs, Ys, Zs.
+        In three dimensions these coordinates are not necessarily
+        located on the surface of the sample as there are multiple
+        faces/sides of the sample. Most frequently though the coordinate
+        system here is used to define the surface which the electron
+        beam scans.
+      enumeration: [undefined, cartesian]
+    handedness(NX_CHAR):
+      doc: |
+        Handedness of the coordinate system if it is a Cartesian.
+      enumeration: [right_handed, left_handed]
+    origin(NX_CHAR):
+      doc: |
+        Location of the origin of the sample surface reference frame.
+        This specifies the location Xs = 0, Ys = 0, Zs = 0.
+        Assume regions-of-interest in this reference frame form a
+        rectangle or cuboid.
+        Edges are interpreted by inspecting the direction of their
+        outer unit normals (which point either parallel or antiparallel)
+        along respective base vector direction of the reference frame.
+      enumeration: [undefined, front_top_left, front_top_right, front_bottom_right, front_bottom_left, back_top_left, back_top_right, back_bottom_right, back_bottom_left]
+    x_alias(NX_CHAR):
+      doc: |
+        Name or alias assigned to the x-axis base vector,
+        e.g. longest edge.
+    x_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing x-axis base vector of
+        the sample surface reference frame. We assume the configuration
+        is inspected by looking towards the sample surface from a position
+        that is located behind the detector.
+        Different tools assume that different strategies can be used
+        and are perceived as differently convenient to enter
+        details about coordinate system definitions. In this ELN users
+        have to possibility to fill in what they assume is sufficient to
+        define the coordinate system directions unambiguously.
+        Software which works with this user input needs to offer parsing
+        capabilities which detect conflicting input and warn accordingly.
+      enumeration: [undefined, north, east, south, west, in, out]
+    y_alias(NX_CHAR):
+      doc: |
+        Name or alias assigned to the y-axis base vector,
+        e.g. long edge.
+    y_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing y-axis base vector of
+        the sample surface reference frame. We assume the configuration
+        is inspected by looking towards the sample surface from a position
+        that is located behind the detector. For further information consult
+        also the help info for the xaxis_direction field.
+      enumeration: [undefined, north, east, south, west, in, out]
+    z_alias(NX_CHAR):
+      doc: |
+        Name or alias assigned to the z-axis base vector,
+        e.g. shortest edge.
+    z_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing z-axis base vector of
+        the sample surface reference frame. We assume the configuration
+        is inspected by looking towards the sample surface from a position
+        that is located behind the detector. For further information consult
+        also the help info for the xaxis_direction field.
+      enumeration: [undefined, north, east, south, west, in, out]
+  detector_reference_frameID(NXcoordinate_system):
+    doc: |
+      Details about the detector reference frame for a specific detector.
+    \@detector:
+      type: NX_CHAR
+      doc: |
+        Reference to the specifically named :ref:`NXdetector` instance
+        for which these conventions in this :ref:`NXprocess` group apply
+        (e.g. /entry1/instrument/detector1).
+    type(NX_CHAR):
+      doc: |
+        Type of coordinate system/reference frame used for
+        identifying positions in detector space Xd, Yd, Zd,
+        according to DOI: 10.1016/j.matchar.2016.04.008.
+      enumeration: [undefined, cartesian]
+    handedness(NX_CHAR):
+      doc: |
+        Handedness of the coordinate system if it is a Cartesian.
+      enumeration: [right_handed, left_handed]
+    origin(NX_CHAR):
+      doc: |
+        Where is the origin of the detector space reference
+        frame located. This is the location of Xd = 0, Yd = 0, Zd = 0.
+        Assume regions-of-interest in this reference frame form a
+        rectangle or cuboid.
+        Edges are interpreted by inspecting the direction of their
+        outer unit normals (which point either parallel or antiparallel)
+        along respective base vector direction of the reference frame.
+      enumeration: [undefined, front_top_left, front_top_right, front_bottom_right, front_bottom_left, back_top_left, back_top_right, back_bottom_right, back_bottom_left]
+    x_alias(NX_CHAR):
+      doc: |
+        Name or alias assigned to the x-axis base vector,
+        e.g. longest edge as some landmark on the detector.
+    x_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing x-axis base vector of
+        the detector space reference frame. We assume the configuration
+        is inspected by looking towards the sample surface from a
+        position that is located behind the detector.
+        Different tools assume that different strategies can be used
+        and are perceived as differently convenient to enter
+        details about coordinate system definitions. In this ELN users
+        have to possibility to fill in what they assume is sufficient to
+        define the coordinate system directions unambiguously.
+        Software which works with this user input needs to offer parsing
+        capabilities which detect conflicting input and warn accordingly.
+      enumeration: [undefined, north, east, south, west, in, out]
+    y_alias(NX_CHAR):
+      doc: |
+        Name or alias assigned to the x-axis base vector,
+        e.g. long edge as some landmark on the detector.
+    y_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing y-axis base vector of
+        the detector space reference frame. We assume the configuration
+        is inspected by looking towards the sample surface from a
+        position that is located behind the detector.
+        For further information consult also the help info for the
+        xaxis_direction field.
+      enumeration: [undefined, north, east, south, west, in, out]
+    z_alias(NX_CHAR):
+      doc: |
+        Name or alias assigned to the x-axis base vector,
+        e.g. short edge as some landmark on the detector.
+    z_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing z-axis base vector of
+        the detector space reference frame. We assume the configuration
+        is inspected by looking towards the sample surface from a
+        position that is located behind the detector.
+        For further information consult also the help info for the
+        xaxis_direction field.
+      enumeration: [undefined, north, east, south, west, in, out]
+  # conventions specific for certain methods
+  (NXcoordinate_system_em_ebsd):
