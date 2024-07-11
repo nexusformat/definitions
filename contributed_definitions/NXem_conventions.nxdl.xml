@@ -22,121 +22,81 @@
 # For further information, see http://www.nexusformat.org
 -->
 <!--
-This base class provides several sets of such assumptions and conventions.
-Further base classes should be defined when specific techniques and methods
-demand further specifications or have specialized demands. NXem_conventions_ebsd
-is an example for such method-specific base class to summarize key conventions
-for Electron Backscatter Diffraction (EBSD).-->
+symbols:-->
 <!--
-What is could be a best practice for application definition developers
-who would like to describe an electron microscopy case where multiple
-methods and/or detectors are used. In this case one should define a
-method-specific base class like the template NXem_conventions_ebsd.
-Even though this may come at a cost of some duplicated information where
-the same physical detector is used in different ways, i.e. the signal collect
-from the detector is interpreted in a different way.
-As in most cases established types of signal and thus detectors are used
-(secondary electron, backscattered electron, etc.) one could equally use
-just one NXem_conventions base class instance in an application definition
-and use detector_reference_frame as a template. For each method and detector
-one then creates one NXprocess group named detector_reference_frame1,
-detector_reference_frame2, detector_reference_frame3, and so on and so forth
-and adds inside that NXprocess and use the depends_on field.-->
-<!--
-What is considered best practice in an application definition with multiple
-NXentry instances? In this case each NXentry instance should have an own
-NXspecimen instance and thus the NXem_conventions instance should be place
-inside that NXentry. This enables to group multiple experiments on multiple
-samples together without setting a constraint that in all these instances
-the conventions have to be the same.-->
-<!--
-However, best practice is the conventions should be expressed explicitly
-and they should whenever possible be as simple as possible and as few
-as possible to support users with understanding the content of the application
-definition.-->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXem_conventions" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
-    <!--
-symbols:
--->
+express conventions explicitly and understandable
+appdefs each instance of NXentry should have its own set of conventions
+method-specific additional conventions on top of the ones formulated here
+should go to method-specific base classes like NXem_conventions_ebsd
+use depends_on field - not attribute - to point to conventions which in specific cases-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXem_conventions" extends="NXcoordinate_system_set" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
-         Conventions for rotations and coordinate systems to interpret crystal orientation
-         and other data and results collected with electron microscopy research.
-         
-         Documenting explicitly all used conventions and coordinate systems is
-         the decisive context whereby many results from electron microscopy are
-         at all interpretable.
+         Base class with mathematical conventions and materials-science-specific
+         conventions required for interpreting collection of crystal orientation data.
     </doc>
-    <!--mandatory information about used or
-assumed reference frame and rotation conventions-->
-    <group name="rotation_conventions" type="NXobject">
+    <field name="rotation_handedness" type="NX_CHAR">
         <doc>
-             Mathematical conventions and materials-science-specific conventions
-             required for interpreting every collection of orientation data.
+             Convention how a positive rotation angle is defined when viewing
+             from the end of the rotation unit vector towards its origin,
+             i.e. in accordance with convention 2 of
+             DOI: 10.1088/0965-0393/23/8/083501.
+             Counter_clockwise is equivalent to a right-handed choice.
+             Clockwise is equivalent to a left-handed choice.
         </doc>
-        <field name="rotation_handedness" type="NX_CHAR">
-            <doc>
-                 Convention how a positive rotation angle is defined when viewing
-                 from the end of the rotation unit vector towards its origin,
-                 i.e. in accordance with convention 2 of
-                 DOI: 10.1088/0965-0393/23/8/083501.
-                 Counter_clockwise is equivalent to a right-handed choice.
-                 Clockwise is equivalent to a left-handed choice.
-            </doc>
-            <enumeration>
-                <item value="undefined"/>
-                <item value="counter_clockwise"/>
-                <item value="clockwise"/>
-            </enumeration>
-        </field>
-        <field name="rotation_convention" type="NX_CHAR">
-            <doc>
-                 How are rotations interpreted into an orientation
-                 according to convention 3 of
-                 DOI: 10.1088/0965-0393/23/8/083501.
-            </doc>
-            <enumeration>
-                <item value="undefined"/>
-                <item value="passive"/>
-                <item value="active"/>
-            </enumeration>
-        </field>
-        <field name="euler_angle_convention" type="NX_CHAR">
-            <doc>
-                 How are Euler angles interpreted given that there are several
-                 choices (e.g. ZXZ, XYZ, etc.) according to convention 4 of
-                 DOI: 10.1088/0965-0393/23/8/083501.
-                 The most frequently used convention is ZXZ which is based on
-                 the work of H.-J. Bunge but other conventions are possible.
-            </doc>
-            <enumeration>
-                <item value="undefined"/>
-                <item value="zxz"/>
-            </enumeration>
-        </field>
-        <field name="axis_angle_convention" type="NX_CHAR">
-            <doc>
-                 To which angular range is the rotation angle argument of an
-                 axis-angle pair parameterization constrained according to
-                 convention 5 of DOI: 10.1088/0965-0393/23/8/083501.
-            </doc>
-            <enumeration>
-                <item value="undefined"/>
-                <item value="rotation_angle_on_interval_zero_to_pi"/>
-            </enumeration>
-        </field>
-        <field name="sign_convention" type="NX_CHAR">
-            <doc>
-                 Which sign convention is followed when converting orientations
-                 between different parameterizations/representations according
-                 to convention 6 of DOI: 10.1088/0965-0393/23/8/083501.
-            </doc>
-            <enumeration>
-                <item value="undefined"/>
-                <item value="p_plus_one"/>
-                <item value="p_minus_one"/>
-            </enumeration>
-        </field>
-    </group>
+        <enumeration>
+            <item value="undefined"/>
+            <item value="counter_clockwise"/>
+            <item value="clockwise"/>
+        </enumeration>
+    </field>
+    <field name="rotation_convention" type="NX_CHAR">
+        <doc>
+             How are rotations interpreted into an orientation
+             according to convention 3 of
+             DOI: 10.1088/0965-0393/23/8/083501.
+        </doc>
+        <enumeration>
+            <item value="undefined"/>
+            <item value="passive"/>
+            <item value="active"/>
+        </enumeration>
+    </field>
+    <field name="euler_angle_convention" type="NX_CHAR">
+        <doc>
+             How are Euler angles interpreted given that there are several
+             choices (e.g. ZXZ, XYZ, etc.) according to convention 4 of
+             DOI: 10.1088/0965-0393/23/8/083501.
+             The most frequently used convention is ZXZ which is based on
+             the work of H.-J. Bunge but other conventions are possible.
+        </doc>
+        <enumeration>
+            <item value="undefined"/>
+            <item value="zxz"/>
+        </enumeration>
+    </field>
+    <field name="axis_angle_convention" type="NX_CHAR">
+        <doc>
+             To which angular range is the rotation angle argument of an
+             axis-angle pair parameterization constrained according to
+             convention 5 of DOI: 10.1088/0965-0393/23/8/083501.
+        </doc>
+        <enumeration>
+            <item value="undefined"/>
+            <item value="rotation_angle_on_interval_zero_to_pi"/>
+        </enumeration>
+    </field>
+    <field name="sign_convention" type="NX_CHAR">
+        <doc>
+             Which sign convention is followed when converting orientations
+             between different parameterizations/representations according
+             to convention 6 of DOI: 10.1088/0965-0393/23/8/083501.
+        </doc>
+        <enumeration>
+            <item value="undefined"/>
+            <item value="p_plus_one"/>
+            <item value="p_minus_one"/>
+        </enumeration>
+    </field>
     <group name="processing_reference_frame" type="NXcoordinate_system">
         <doc>
              Details about eventually relevant named directions that may
