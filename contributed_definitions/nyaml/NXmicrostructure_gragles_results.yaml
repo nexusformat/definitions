@@ -1,10 +1,159 @@
 category: application
 doc: |
   Application definition for documenting results with GraGLeS.
-# symbols:
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_summary_stats: |
+    The total number of summary statistic log entries.
+  n_grains: |
+    Number of grains in the computer simulation.
 type: group
 NXmicrostructure_gragles_results(NXobject):
   (NXentry):
     definition(NX_CHAR):
       enumeration: [NXmicrostructure_gragles_results]
-      # TODO: populate further based on appdefs NXmicrostructure_score_results
+        # For rollett_holm :math:`m(\Theta) = m_0 \cdot (1 - c_1 * exp(-c_2 \cdot \frac{\Theta}{15}^{c_3}))`.
+    simulation_identifier(NX_UINT):
+      doc: |
+        Simulation ID as an alias to refer to this simulation.
+    description(NX_CHAR):
+      doc: |
+        Discouraged free-text field to add further details to the computation.
+    start_time(NX_DATE_TIME):
+    end_time(NX_DATE_TIME):
+      exists: recommended
+    (NXuser):
+      exists: [min, 0, max, infty]
+    program1(NXprogram):
+      program_name:
+        \@version:
+        \@url:
+          exists: recommended
+    environment(NXobject):
+      exists: optional
+      doc: |
+        Programs and libraries representing the computational environment
+      programID(NXprogram):
+        exists: [min, 1, max, infty]
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+    coordinate_system_set(NXcoordinate_system_set):
+      rotation_handedness:
+      rotation_convention:
+      euler_angle_convention:
+      axis_angle_convention:
+      sign_convention:
+      sample_reference_frame(NXcoordinate_system):
+        type:
+        handedness:
+        origin:
+        x_alias:
+        x_direction:
+        y_alias:
+        y_direction:
+        z_alias:
+        z_direction:
+    spatiotemporalID(NXobject):
+      doc: |
+        Documentation of the spatiotemporal evolution
+      # static quantities for which no change is modelled
+      # the typical lean summary statistics flattened
+      summary_statistics(NXobject):
+        doc: |
+          Summary quantities which are the result of some post-processing of the snapshot data
+          (averaging, integrating, interpolating) happening in for practical reasons though in while
+          running the simulation. Place used for storing descriptors from continuum mechanics
+          and thermodynamics at the scale of the entire ROI.
+        kinetics(NXprocess):
+          exists: optional
+          doc: |
+            Evolution of the recrystallized volume fraction over time.
+          time(NX_TIME):
+            doc: |
+              Evolution of the physical time not to be confused with wall-clock time or profiling data.
+            unit: NX_TIME
+            dim: (n_summary_stats,)
+          iteration(NX_INT):
+            doc: |
+              Iteration or increment counter.
+            unit: NX_UNITLESS
+          number_of_crystals(NX_UINT):
+            doc: |
+              How many crystals are distinguished.
+              Crystals are listed irrespective of the phase to which these are assigned.
+            unit: NX_UNITLESS
+            dim: (n_summary_stats,)
+        stress(NXprocess):
+          exists: optional
+          type:
+            doc: |
+              Which type of stress.
+            enumeration: [cauchy]
+          stress(NX_FLOAT):
+            doc: |
+              Applied external stress tensor on the ROI.
+            unit: NX_ANY
+            dim: (n_summary_stats, 3, 3)
+        strain(NXprocess):
+          exists: optional
+          type:
+            doc: |
+              Which type of strain.
+          strain(NX_FLOAT):
+            doc: |
+              Applied external strain tensor on the ROI.
+            unit: NX_ANY
+            dim: (n_summary_stats, 3, 3)
+        deformation_gradient(NXprocess):
+          exists: optional
+          type:
+            doc: |
+              Which type of deformation gradient.
+            enumeration: [piola]
+          value(NX_FLOAT):
+            doc: |
+              Applied deformation gradient tensor on the ROI.
+            unit: NX_ANY
+            dim: (n_summary_stats, 3, 3)
+        magnetic_field(NXprocess):
+          exists: optional
+          strength(NX_FLOAT):
+            doc: |
+              Applied external magnetic field on the ROI.
+            unit: NX_ANY
+            dim: (n_summary_stats, 3, 3)
+        electrical_field(NXprocess):
+          exists: optional
+          # specify type of field
+          strength(NX_FLOAT):
+            doc: |
+              Applied external electrical field on the ROI.
+            unit: NX_ANY
+            dim: (n_summary_stats, 3, 3)
+       # the typically storage-costlier snapshot data
+      microstructureID(NXmicrostructure):
+        exists: [min, 1, max, infty]  # always storing starting configuration
+        time(NX_TIME):
+        iteration(NX_INT):
+        temperature(NX_FLOAT):
+          doc: |
+            Simulated temperature for this snapshot.
+          unit: NX_TEMPERATURE
+        grid(NXcg_grid):
+          exists: optional
+        crystal(NXobject):
+          representation:
+            exists: recommended
+          number_of_crystals(NX_UINT):
+          number_of_phases(NX_UINT):
+          crystal_identifier_offset(NX_INT):
+          crystal_identifier(NX_INT):
+            dim: (n_grains,)
+          phase_identifier_offset(NX_INT):
+          phase_identifier(NX_INT):
+            dim: (n_grains,)
+          area(NX_NUMBER):
+            dim: (n_grains,)
+          volume(NX_NUMBER):
+            dim: (n_grains,)
