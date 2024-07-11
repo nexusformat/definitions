@@ -318,10 +318,10 @@ NXmpes(NXobject):
               Contains the raw data collected by the detector before calibration.
               The data which is considered raw might change from experiment to experiment
               due to hardware pre-processing of the data.
-              This field ideally collects the data with the lowest level of processing
+              This group ideally collects the data with the lowest level of processing
               possible.
               
-              Fields should be named according to new following convention:
+              Fields should be named according to the following convention:
               
               - **pixel_x**: Detector pixel in x direction.
               - **pixel_y**: Detector pixel in y direction.
@@ -346,6 +346,9 @@ NXmpes(NXobject):
               - **time_of_flight**: Total time of flight. Unit category: NX_TIME_OF_FLIGHT
               - **time_of_flight_adc**: Time-of-flight values, analog-to-digital converted.
               - **external_AXIS**: Describes an axis which is coming from outside the detectors scope.
+              
+              Note that this list is a glossary with explicitly named axis names, which is only intended to cover the most
+              common measurement axes and is therefore not complete. It is possible to add axes with other names at any time.
             \@signal:
               enumeration: [raw]
             raw(NX_NUMBER):
@@ -426,10 +429,10 @@ NXmpes(NXobject):
             exists: recommended
           identifier:
             exists: recommended
-      pressure_gauge(NXsensor):
+      pressure_gaugeID(NXsensor):
         exists: recommended
         doc: |
-          Device to measure the gas pressure around the sample.
+          Device to measure the gas pressure in some part of the instrument.
         name:
           exists: recommended
         measurement:
@@ -439,8 +442,8 @@ NXmpes(NXobject):
         value(NX_FLOAT):
           unit: NX_PRESSURE
           doc: |
-            In case of a single or averaged gas pressure measurement, this is the scalar gas pressure around
-            the sample. It can also be an 1D array of measured pressures (without time stamps).
+            In case of a single or averaged gas pressure measurement, this is the scalar gas pressure.
+            It can also be an 1D array of measured pressures (without time stamps).
         value_log(NXlog):
           exists: optional
           value(NX_NUMBER):
@@ -588,76 +591,146 @@ NXmpes(NXobject):
             doc: |
               Details about the method of sample preparation before the photoemission
               experiment.
-      temperature(NXenvironment):
+      temperature_env(NXenvironment):
         exists: recommended
         doc: |
-          Sample temperature (either controlled or just measured).
+          Sample temperature (either controlled or just measured) and actuators/sensors
+          controlling/measuring it.
         temperature_sensor(NXsensor):
+          exists: recommended
           doc: |
             Temperature sensor measuring the sample temperature.
-            This should be a link to /entry/instrument/manipulator/temperature_sensor.
+            
+            In most cases, this can be a link to /entry/instrument/manipulator/temperature_sensor
+            if a manipulator is present in the instrument.
         sample_heater(NXactuator):
           exists: optional
           doc: |
             Device to heat the sample.
-            This should be a link to /entry/instrument/manipulator/sample_heater.
+            
+            In most cases, this can be a link to /entry/instrument/manipulator/sample_heater
+            if a manipulator is present in the instrument.
         cryostat(NXactuator):
           exists: optional
           doc: |
             Cryostat for cooling the sample.
-            This should be a link to /entry/instrument/manipulator/cryostat.
-      gas_pressure(NXenvironment):
+            
+            In most cases, this can be a link to /entry/instrument/manipulator/cryostat
+            if a manipulator is present in the instrument.
+        value(NX_FLOAT):
+          exists: optional
+          unit: NX_TEMPERATURE
+          doc: |
+            This is to be used if there is no actuator/sensor that controls/measures
+            the temperature.
+            
+            An example would be a room temperature experiment where the temperature is
+            not actively measured, but rather estimated.
+            
+            Note that this method for recording the temperature is not advised, but using
+            NXsensor and NXactuator is strongly recommended instead.
+      gas_pressure_env(NXenvironment):
         exists: recommended
         doc: |
-          Gas pressure surrounding the sample.
+          Gas pressure surrounding the sample and actuators/sensors controlling/measuring
+          it.
         pressure_gauge(NXsensor):
+          exists: recommended
           doc: |
             Gauge measuring the gas pressure.
             
-            This should be a link to /entry/instrument/pressure_gauge.
-      bias(NXenvironment):
+            In most cases, this can be a link to one of the pressure gauges in
+            /entry/instrument/pressure_gaugeID (typically, the gauge in closest proximity to the
+            sample) if a pressure gauge is present in the instrument.
+        value(NX_FLOAT):
+          exists: optional
+          unit: NX_PRESSURE
+          doc: |
+            This is to be used if there is no actuator/sensor that controls/measures
+            the gas pressure around the sample. An example would be a UHV experiment where the
+            gas pressure is not monitored.
+            
+            Note that this method for recording the gas pressure is not advised, but using
+            NXsensor and NXactuator is strongly recommended instead.
+      bias_env(NXenvironment):
         exists: recommended
         doc:
         - |
-          Bias of the sample with respect to analyser ground.
+          Bias of the sample with respect to analyser ground and actuators/sensors
+          controlling/measuring it.
         - |
           xref:
             spec: ISO 18115-1:2023
             term: 8.41
             url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:8.41
         voltmeter(NXsensor):
+          exists: recommended
           doc: |
             Sensor measuring the applied voltage.
             
-            This should be a link to /entry/instrument/manipulator/sample_bias_voltmeter.
+            In most cases, this can be a link to /entry/instrument/manipulator/sample_bias_voltmeter
+            if a manipulator is present in the instrument.
         potentiostat(NXactuator):
           exists: optional
           doc: |
             Actuator applying a voltage to sample and sample holder.
             
-            This should be a link to /entry/instrument/manipulator/sample_bias_potentiostat.
-      drain_current(NXenvironment):
+            In most cases, this can be a link to /entry/instrument/manipulator/sample_bias_potentiostat
+            if a manipulator is present in the instrument.
+        value(NX_FLOAT):
+          exists: optional
+          unit: NX_VOLTAGE
+          doc: |
+            This is to be used if there is no actuator/sensor that controls/measures
+            the bias.
+            
+            Note that this method for recording the bias is not advised, but using
+            NXsensor and NXactuator is strongly recommended instead.
+      drain_current_env(NXenvironment):
         exists: optional
         doc: |
           Drain current of the sample and sample holder.
         amperemeter(NXsensor):
+          exists: recommended
           doc: |
             Amperemeter measuring the drain current of the sample and sample holder.
             
-            This should be a link to /entry/instrument/manipulator/drain_current_amperemeter.
-      flood_gun_current(NXenvironment):
+            In most cases, this can be a link to /entry/instrument/manipulator/drain_current_amperemeter
+            if a manipulator is present in the instrument.
+        value(NX_FLOAT):
+          exists: optional
+          unit: NX_CURRENT
+          doc: |
+            This is to be used if there is no actuator/sensor that controls/measures
+            the drain current.
+            
+            Note that this method for recording the drain current is not advised, but using
+            NXsensor and NXactuator is strongly recommended instead.
+      flood_gun_current_env(NXenvironment):
         exists: optional
         doc: |
-          Current of low-energy electrons to the sample for charge neutralization.
+          Current of low-energy electrons to the sample (for charge neutralization) and
+          actuators/sensors controlling/measuring it.
         flood_gun(NXactuator):
+          exists: recommended
           doc: |
             Flood gun creating a current of low-energy electrons.
             
-            This should be a link to /entry/instrument/flood_gun.
+            In most cases this can be a link to /entry/instrument/flood_gun
+            if a flood_gun is present in the instrument.
+          value(NX_FLOAT):
+            exists: optional
+            unit: NX_CURRENT
+            doc: |
+              This is to be used if there is no actuator/sensor that controls/measures
+              the drain_current.
+              
+              Note that this method for recording the flood gun current is not advised, but using
+              NXsensor and NXactuator is strongly recommended instead.
     data(NXdata):
       doc: |
-        The default NXdata field containing a view on the measured data.
-        This NXdata field contains a collection of the main relevant fields (axes).
+        The default NXdata group containing a view on the measured data.
+        This NXdata group contains a collection of the main relevant fields (axes).
         If you want to provide additional views on your data, you can additionally use
         the generic NXdata group of NXentry.
         
@@ -687,6 +760,9 @@ NXmpes(NXobject):
           Could be a link to /entry/instrument/beam/incident_ellipticity or
           /entry/instrument/beam/final_ellipticity if they exist.
           Unit category: NX_ANGLE (° or rad)
+        
+        Note that this list is a glossary with explicitly named axis names, which is only intended to cover the most
+        common measurement axes and is therefore not complete. It is possible to add axes with other names at any time.
       \@signal:
         enumeration: [data]
       data(NX_NUMBER):
@@ -718,7 +794,7 @@ NXmpes(NXobject):
             @energy_depends: 'entry/process/energy_calibration'
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 7f45ab08c78a105a15e2c6f5ddbcdcab4002929bf8d19e8ec2987bd507525680
+# 6160b91a61ca173d4edfb5387255cfa174deb259b0b7d262bf45b45c493dd669
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -1098,10 +1174,10 @@ NXmpes(NXobject):
 #                              Contains the raw data collected by the detector before calibration.
 #                              The data which is considered raw might change from experiment to experiment
 #                              due to hardware pre-processing of the data.
-#                              This field ideally collects the data with the lowest level of processing
+#                              This group ideally collects the data with the lowest level of processing
 #                              possible.
 #                              
-#                              Fields should be named according to new following convention:
+#                              Fields should be named according to the following convention:
 #                              
 #                              - **pixel_x**: Detector pixel in x direction.
 #                              - **pixel_y**: Detector pixel in y direction.
@@ -1126,6 +1202,9 @@ NXmpes(NXobject):
 #                              - **time_of_flight**: Total time of flight. Unit category: NX_TIME_OF_FLIGHT
 #                              - **time_of_flight_adc**: Time-of-flight values, analog-to-digital converted.
 #                              - **external_AXIS**: Describes an axis which is coming from outside the detectors scope.
+#                              
+#                              Note that this list is a glossary with explicitly named axis names, which is only intended to cover the most
+#                              common measurement axes and is therefore not complete. It is possible to add axes with other names at any time.
 #                         </doc>
 #                         <attribute name="signal">
 #                             <enumeration>
@@ -1217,9 +1296,9 @@ NXmpes(NXobject):
 #                     <field name="identifier" recommended="true"/>
 #                 </group>
 #             </group>
-#             <group name="pressure_gauge" type="NXsensor" recommended="true">
+#             <group name="pressure_gaugeID" type="NXsensor" recommended="true">
 #                 <doc>
-#                      Device to measure the gas pressure around the sample.
+#                      Device to measure the gas pressure in some part of the instrument.
 #                 </doc>
 #                 <field name="name" recommended="true"/>
 #                 <field name="measurement">
@@ -1230,8 +1309,8 @@ NXmpes(NXobject):
 #                 <field name="type" optional="true"/>
 #                 <field name="value" type="NX_FLOAT" units="NX_PRESSURE">
 #                     <doc>
-#                          In case of a single or averaged gas pressure measurement, this is the scalar gas pressure around
-#                          the sample. It can also be an 1D array of measured pressures (without time stamps).
+#                          In case of a single or averaged gas pressure measurement, this is the scalar gas pressure.
+#                          It can also be an 1D array of measured pressures (without time stamps).
 #                     </doc>
 #                 </field>
 #                 <group name="value_log" type="NXlog" optional="true">
@@ -1386,93 +1465,158 @@ NXmpes(NXobject):
 #                     </field>
 #                 </group>
 #             </group>
-#             <group name="temperature" type="NXenvironment" recommended="true">
+#             <group name="temperature_env" type="NXenvironment" recommended="true">
 #                 <doc>
-#                      Sample temperature (either controlled or just measured).
+#                      Sample temperature (either controlled or just measured) and actuators/sensors
+#                      controlling/measuring it.
 #                 </doc>
-#                 <group name="temperature_sensor" type="NXsensor">
+#                 <group name="temperature_sensor" type="NXsensor" recommended="true">
 #                     <doc>
 #                          Temperature sensor measuring the sample temperature.
-#                          This should be a link to /entry/instrument/manipulator/temperature_sensor.
+#                          
+#                          In most cases, this can be a link to /entry/instrument/manipulator/temperature_sensor
+#                          if a manipulator is present in the instrument.
 #                     </doc>
 #                 </group>
 #                 <group name="sample_heater" type="NXactuator" optional="true">
 #                     <doc>
 #                          Device to heat the sample.
-#                          This should be a link to /entry/instrument/manipulator/sample_heater.
+#                          
+#                          In most cases, this can be a link to /entry/instrument/manipulator/sample_heater
+#                          if a manipulator is present in the instrument.
 #                     </doc>
 #                 </group>
 #                 <group name="cryostat" type="NXactuator" optional="true">
 #                     <doc>
 #                          Cryostat for cooling the sample.
-#                          This should be a link to /entry/instrument/manipulator/cryostat.
+#                          
+#                          In most cases, this can be a link to /entry/instrument/manipulator/cryostat
+#                          if a manipulator is present in the instrument.
 #                     </doc>
 #                 </group>
+#                 <field name="value" type="NX_FLOAT" optional="true" units="NX_TEMPERATURE">
+#                     <doc>
+#                          This is to be used if there is no actuator/sensor that controls/measures
+#                          the temperature.
+#                          
+#                          An example would be a room temperature experiment where the temperature is
+#                          not actively measured, but rather estimated.
+#                          
+#                          Note that this method for recording the temperature is not advised, but using
+#                          NXsensor and NXactuator is strongly recommended instead.
+#                     </doc>
+#                 </field>
 #             </group>
-#             <group name="gas_pressure" type="NXenvironment" recommended="true">
+#             <group name="gas_pressure_env" type="NXenvironment" recommended="true">
 #                 <doc>
-#                      Gas pressure surrounding the sample.
+#                      Gas pressure surrounding the sample and actuators/sensors controlling/measuring
+#                      it.
 #                 </doc>
-#                 <group name="pressure_gauge" type="NXsensor">
+#                 <group name="pressure_gauge" type="NXsensor" recommended="true">
 #                     <doc>
 #                          Gauge measuring the gas pressure.
 #                          
-#                          This should be a link to /entry/instrument/pressure_gauge.
+#                          In most cases, this can be a link to one of the pressure gauges in
+#                          /entry/instrument/pressure_gaugeID (typically, the gauge in closest proximity to the
+#                          sample) if a pressure gauge is present in the instrument.
 #                     </doc>
 #                 </group>
+#                 <field name="value" type="NX_FLOAT" optional="true" units="NX_PRESSURE">
+#                     <doc>
+#                          This is to be used if there is no actuator/sensor that controls/measures
+#                          the gas pressure around the sample. An example would be a UHV experiment where the
+#                          gas pressure is not monitored.
+#                          
+#                          Note that this method for recording the gas pressure is not advised, but using
+#                          NXsensor and NXactuator is strongly recommended instead.
+#                     </doc>
+#                 </field>
 #             </group>
-#             <group name="bias" type="NXenvironment" recommended="true">
+#             <group name="bias_env" type="NXenvironment" recommended="true">
 #                 <doc>
-#                      Bias of the sample with respect to analyser ground.
+#                      Bias of the sample with respect to analyser ground and actuators/sensors
+#                      controlling/measuring it.
 #                      
 #                      This concept is related to term `8.41`_ of the ISO 18115-1:2023 standard.
 #                      
 #                      .. _8.41: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:8.41
 #                 </doc>
-#                 <group name="voltmeter" type="NXsensor">
+#                 <group name="voltmeter" type="NXsensor" recommended="true">
 #                     <doc>
 #                          Sensor measuring the applied voltage.
 #                          
-#                          This should be a link to /entry/instrument/manipulator/sample_bias_voltmeter.
+#                          In most cases, this can be a link to /entry/instrument/manipulator/sample_bias_voltmeter
+#                          if a manipulator is present in the instrument.
 #                     </doc>
 #                 </group>
 #                 <group name="potentiostat" type="NXactuator" optional="true">
 #                     <doc>
 #                          Actuator applying a voltage to sample and sample holder.
 #                          
-#                          This should be a link to /entry/instrument/manipulator/sample_bias_potentiostat.
+#                          In most cases, this can be a link to /entry/instrument/manipulator/sample_bias_potentiostat
+#                          if a manipulator is present in the instrument.
 #                     </doc>
 #                 </group>
+#                 <field name="value" type="NX_FLOAT" optional="true" units="NX_VOLTAGE">
+#                     <doc>
+#                          This is to be used if there is no actuator/sensor that controls/measures
+#                          the bias.
+#                          
+#                          Note that this method for recording the bias is not advised, but using
+#                          NXsensor and NXactuator is strongly recommended instead.
+#                     </doc>
+#                 </field>
 #             </group>
-#             <group name="drain_current" type="NXenvironment" optional="true">
+#             <group name="drain_current_env" type="NXenvironment" optional="true">
 #                 <doc>
 #                      Drain current of the sample and sample holder.
 #                 </doc>
-#                 <group name="amperemeter" type="NXsensor">
+#                 <group name="amperemeter" type="NXsensor" recommended="true">
 #                     <doc>
 #                          Amperemeter measuring the drain current of the sample and sample holder.
 #                          
-#                          This should be a link to /entry/instrument/manipulator/drain_current_amperemeter.
+#                          In most cases, this can be a link to /entry/instrument/manipulator/drain_current_amperemeter
+#                          if a manipulator is present in the instrument.
 #                     </doc>
 #                 </group>
+#                 <field name="value" type="NX_FLOAT" optional="true" units="NX_CURRENT">
+#                     <doc>
+#                          This is to be used if there is no actuator/sensor that controls/measures
+#                          the drain current.
+#                          
+#                          Note that this method for recording the drain current is not advised, but using
+#                          NXsensor and NXactuator is strongly recommended instead.
+#                     </doc>
+#                 </field>
 #             </group>
-#             <group name="flood_gun_current" type="NXenvironment" optional="true">
+#             <group name="flood_gun_current_env" type="NXenvironment" optional="true">
 #                 <doc>
-#                      Current of low-energy electrons to the sample for charge neutralization.
+#                      Current of low-energy electrons to the sample (for charge neutralization) and
+#                      actuators/sensors controlling/measuring it.
 #                 </doc>
-#                 <group name="flood_gun" type="NXactuator">
+#                 <group name="flood_gun" type="NXactuator" recommended="true">
 #                     <doc>
 #                          Flood gun creating a current of low-energy electrons.
 #                          
-#                          This should be a link to /entry/instrument/flood_gun.
+#                          In most cases this can be a link to /entry/instrument/flood_gun
+#                          if a flood_gun is present in the instrument.
 #                     </doc>
+#                     <field name="value" type="NX_FLOAT" optional="true" units="NX_CURRENT">
+#                         <doc>
+#                              This is to be used if there is no actuator/sensor that controls/measures
+#                              the drain_current.
+#                              
+#                              Note that this method for recording the flood gun current is not advised, but using
+#                              NXsensor and NXactuator is strongly recommended instead.
+#                         </doc>
+#                     </field>
 #                 </group>
 #             </group>
 #         </group>
 #         <group name="data" type="NXdata">
 #             <doc>
-#                  The default NXdata field containing a view on the measured data.
-#                  This NXdata field contains a collection of the main relevant fields (axes).
+#                  The default NXdata group containing a view on the measured data.
+#                  This NXdata group contains a collection of the main relevant fields (axes).
 #                  If you want to provide additional views on your data, you can additionally use
 #                  the generic NXdata group of NXentry.
 #                  
@@ -1502,6 +1646,9 @@ NXmpes(NXobject):
 #                    Could be a link to /entry/instrument/beam/incident_ellipticity or
 #                    /entry/instrument/beam/final_ellipticity if they exist.
 #                    Unit category: NX_ANGLE (° or rad)
+#                  
+#                  Note that this list is a glossary with explicitly named axis names, which is only intended to cover the most
+#                  common measurement axes and is therefore not complete. It is possible to add axes with other names at any time.
 #             </doc>
 #             <attribute name="signal">
 #                 <enumeration>
