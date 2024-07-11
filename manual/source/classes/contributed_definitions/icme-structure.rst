@@ -24,7 +24,7 @@ materials-engineering-specific data schemas can connect to or be mapped on
 concepts which are equally modellable with NeXus:
 
     :ref:`NXmicrostructure`:
-        A base class for documenting a snapshot of a reconstructed microstructures.
+        A base class for documenting a snapshot of a reconstructed microstructure.
 
     :ref:`NXmicrostructure_imm_config`, :ref:`NXmicrostructure_imm_results`:
         A specific example of an application definition for documenting the
