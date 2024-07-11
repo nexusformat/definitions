@@ -10,6 +10,14 @@ symbols:
     Number of Bunge-Euler angle triplets for deformed grains.
   n_rx_ori: |
     Number of Bunge-Euler angle triplets for recrystallization nuclei.
+  n_drag: |
+    Number of support points for the linearized drag profile.
+  n_temp: |
+    Number of suport points for the desired time-temperature profile.
+  n_defrag: |
+    Number of entries when to defragment i.e. garbage collect the memory holding state information for recrystallized cells.
+  n_snapshot: |
+    Number of entries when to collect snapshots of the evolving microstructure.
   n_su: |
     Number of solitary unit domains to export.
 type: group
@@ -17,308 +25,317 @@ NXmicrostructure_score_config(NXobject):
   (NXentry):
     definition(NX_CHAR):
       enumeration: [NXmicrostructure_score_config]
-    PROGRAM(NXprogram):
+    simulation_identifier(NX_UINT):
+      doc: |
+        Simulation ID as an alias to refer to this simulation.
+    description(NX_CHAR):
+      doc: |
+        Discouraged free-text field to add further details to the computation.
+    start_time(NX_DATE_TIME):
+    end_time(NX_DATE_TIME):
+      exists: recommended
+    profiling(NXcs_profiling):
+      exists: optional
+    (NXuser):
+      exists: [min, 0, max, infty]
+    program1(NXprogram):
       program_name:
         \@version:
-    analysis_identifier:
-      doc: |
-        Ideally, a (globally persistent) unique identifier for referring
-        to this analysis.
-    analysis_description:
+        \@url:
+          exists: recommended
+    environment(NXobject):
       exists: optional
       doc: |
-        Possibility for leaving a free-text description about this analysis.
-    results_path:
-      exists: optional
-      doc: |
-        Path to the directory where the tool should store NeXus/HDF5 results
-        of this analysis. If not specified results will be stored in the
-        current working directory.
-    time_stamp(NX_DATE_TIME):
-      doc: |
-        ISO 8601 formatted time code with local time zone offset to UTC
-        information included when this configuration file was created.
-    initial_microstructure(NXprocess):
+        Programs and libraries representing the computational environment
+      programID(NXprogram):
+        exists: [min, 1, max, infty]
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+
+    discretization(NXmicrostructure):
       doc: |
         Relevant data to instantiate a starting configuration that is typically
         a microstructure in deformed conditions where stored (elastic) energy
         is stored in the form of crystal defects, which in the SCORE model are
         is considered as mean-field dislocation content.
-      type:
+      grid(NXcg_grid):
+        extent(NX_UINT):
+          doc: |
+            Extend of each CA domain in voxel along the x, y, and z direction.
+            Deformation of sheet material is assumed.
+            The x axis is assumed pointing along the rolling direction.
+            The y axis is assumed pointing along the transverse direction.
+            The z axis is assumed pointing along the normal direction.
+        cell_dimensions(NX_NUMBER):
+    deformation(NXobject):
+      doc: |
+        Details how the deformed grains should be modelled.
+      model:
         doc: |
           Which model should be used to generate a starting microstructure.
         enumeration: [cuboidal, poisson_voronoi, ebsd, damask]
-      cell_size(NX_FLOAT):
-        unit: NX_LENGTH
+      extent(NX_FLOAT):
         doc: |
-          Edge length of the cubic cells of each CA domain.
-      domain_size(NX_UINT):
-        unit: NX_UNITLESS
-        doc: |
-          Extend of each CA domain in voxel along the x, y, and z direction.
-          Deformation of sheet material is assumed.
-          The x axis is assumed pointing along the rolling direction.
-          The y axis is assumed pointing along the transverse direction.
-          The z axis is assumed pointing along the normal direction.
-        dimensions:
-          rank: 1
-          dim: [[1, 3]]
-      grain_size(NX_FLOAT):
+          Extent of each deformed grain in voxel along the
+          x, y, and z direction when type is cuboidal.
         unit: NX_LENGTH
-        doc: |
-          Extent of each deformed grain along the x, y, and z direction when type is
-          cuboidal.
-        dimensions:
-          rank: 1
-          dim: [[1, 3]]
-      grain_diameter(NX_FLOAT):
-        unit: NX_LENGTH
+        dim: (3,)
+      diameter(NX_FLOAT):
         doc: |
           Average spherical diameter when type is poisson_voronoi.
-      grain_euler(NX_FLOAT):
-        unit: NX_ANGLE
-        doc: |
-          Set of Bunge-Euler angles to sample orientations randomly from.
-        dimensions:
-          rank: 2
-          dim: [[1, n_dg_ori], [2, 3]]
-      ebsd(NXprocess):
+        unit: NX_LENGTH
+      bunge_euler(NX_FLOAT):
         exists: optional
         doc: |
-          The EBSD dataset from which the initial microstructure is instantiated
-          if initial_microstructure/type has value ebsd.
-        filename:
-          doc: |
-            Path and name of the EBSD dataset from which to generate the starting
-            microstructure.
-          \@version:
-            doc: |
-              SHA256 checksum of the file which contains the EBSD dataset.
-        stepsize(NX_FLOAT):
-          unit: NX_LENGTH
-          doc: |
-            Size of the EBSD. The EBSD orientation mapping has to be on a
-            regular grid of square-shaped pixels.
-          dimensions:
-            rank: 1
-            dim: [[1, 2]]
-    nucleation_model(NXprocess):
-      doc: |
-        Phenomenological model according to which it nuclei are placed
-        into the domain and assumed growing.
-      spatial_distribution_model:
+          Set of Bunge-Euler angles (:math:`\varphi_1`, :math:`\Phi`, :math:`\varphi_2`) to sample orientations of deformed grains randomly from.
+        unit: NX_ANGLE
+        dim: (n_dg_ori, 3)
+      ebsd(NXserialized):
+        exists: optional
         doc: |
-          According to which model will the nuclei become distributed spatially.
-          CSR means complete spatial randomness.
-          Custom is implementation specific.
-          GB places nuclei at grain boundaries.
+          The EBSD dataset from which the initial microstructure is
+          instantiated if model is ebsd.
+        type:
+        path:
+        algorithm:
+        checksum:
+        stepsize(NX_FLOAT):
+          doc: |
+            Extent of the pixel of the EBSD orientation mapping assuming square-shaped pixels.
+          unit: NX_LENGTH
+          dim: (2,)
+    nucleation(NXobject):
+      doc: |
+        Phenomenological model according to which recrystallization nuclei
+        are placed into the domain and assumed growing.
+      spatial_distribution:
+        doc: |
+          According to which model will the nuclei become distributed spatially:
+          
+          * csr, complete spatial randomness.
+          * custom, implementation specific.
+          * gb, nuclei placed at grain boundaries
+          
         enumeration: [csr, custom, gb]
-      incubation_time_model:
+      incubation_time:
         doc: |
           According to which model will the nuclei start to grow.
         enumeration: [site_saturation]
-      orientation_model:
+      orientation:
         doc: |
           According to which model will the nuclei get their orientation assigned.
         enumeration: [sample_from_nucleus_euler]
-      nucleus_euler(NX_FLOAT):
-        unit: NX_ANGLE
+      bunge_euler(NX_FLOAT):
         doc: |
-          Set of Bunge-Euler angles to sample orientations of nuclei randomly from.
-        dimensions:
-          rank: 2
-          dim: [[1, n_rx_ori], [2, 3]]
-    material_properties(NXprocess):
+          Set of Bunge-Euler angles (:math:`\varphi_1`, :math:`\Phi`, :math:`\varphi_2`) to sample orientations of nuclei randomly from.
+        unit: NX_ANGLE
+        dim: (n_rx_ori, 3)
+    material_properties(NXobject):
       doc: |
-        (Mechanical) properties of the material which scale the amount
-        of stored (elastic) energy in the ROI/system.
+        (Mechanical) properties of the material which scale
+        the amount of stored (elastic) energy in the system and
+        thus mainly affect recrystallization kinetics.
       reference_shear_modulus(NX_FLOAT):
-        unit: NX_PRESSURE
         doc: |
           Shear modulus at zero Kelvin.
+        unit: NX_PRESSURE
       reference_burgers_magnitude(NX_FLOAT):
-        unit: NX_LENGTH
         doc: |
           Magnitude at the Burgers vector at zero Kelvin.
-      
+        unit: NX_LENGTH
       # firstOrderdG0dT
       # alloyConstantThermalExpCoeff
       # FirstOrderThermalExpCoeff
       # SecondOrderThermalExpCoeff
       melting_temperature(NX_FLOAT):
-        unit: NX_TEMPERATURE
         doc: |
           Melting temperature in degrees Celsius.
-    grain_boundary_mobility_model(NXprocess):
+        unit: NX_TEMPERATURE
+    grain_boundary_mobility(NXobject):
       doc: |
-        Model for the assumed mobility of grain boundaries with different
-        disorientation.
+        Model for the assumed mobility of grain boundaries with different disorientation
+        essentially implementing variations of Turnbull's model for
+        thermally-activated migration.
       model:
         doc: |
-          Which type of fundamental model for the grain boundary mobility:
-          For the Sebald-Gottstein model the following equation is used.
-          For the Rollett-Holm model the following equation is used.
+          Which type of fundamental model for the grain boundary mobility.
+          
+          Grain boundaries with disorientation angle smaller than 15 degree are considered
+          as low-angle grain boundaries. Other grain boundaries are high-angle boundaries.
+        # TODO: add equation for the Sebald-Gottstein model the following equation
+        # TODO: add equation for the Rollett-Holm model the following equation
         enumeration: [sebald_gottstein, rollett_holm]
-      sebald_gottstein_parameters(NXcollection):
+      sebald_gottstein(NXobject):
+        exists: optional
+        doc: |
+          Parameter of the Sebald-Gottstein migration model.
+        lagb_to_hagb_cut(NX_FLOAT):
+          doc: |
+            At which disorientation angle are grain boundary considered as high-angle grain boundaries.
+          unit: NX_ANGLE
         lagb_pre_factor(NX_FLOAT):
+          doc: |
+            Pre-exponential factor for low-angle grain boundaries.
           unit: NX_ANY
         lagb_enthalpy(NX_FLOAT):
+          doc: |
+            Migration activation enthalpy for low-angle grain boundaries.
           unit: NX_ANY
         hagb_pre_factor(NX_FLOAT):
+          doc: |
+            Pre-exponential factor for high-angle grain boundaries.
           unit: NX_ANY
         hagb_enthalpy(NX_FLOAT):
+          doc: |
+            Migration activation enthalpy for high-angle grain boundaries.
           unit: NX_ANY
         special_pre_factor(NX_FLOAT):
+          doc: |
+            Pre-exponential factor for particularly mobile boundaries.
           unit: NX_ANY
         special_enthalpy(NX_FLOAT):
+          doc: |
+            Migration activation enthalpy for particularly mobile boundaries.
           unit: NX_ANY
-      rollett_holm_parameters(NXcollection):
-        hagb_pre_factor(NX_FLOAT):
-          unit: NX_ANY
-        hagb_enthalpy(NX_FLOAT):
-          unit: NX_ANY
+      rollett_holm(NXobject):
+        doc: |
+          Parameter of the Rollett-Holm migration model.
         lagb_to_hagb_cut(NX_FLOAT):
           unit: NX_ANY
         lagb_to_hagb_transition(NX_FLOAT):
           unit: NX_ANY
         lagb_to_hagb_exponent(NX_FLOAT):
           unit: NX_ANY
-    stored_energy_recovery_model(NXprocess):
+        hagb_pre_factor(NX_FLOAT):
+          unit: NX_ANY
+        hagb_enthalpy(NX_FLOAT):
+          unit: NX_ANY
+    stored_energy_recovery(NXobject):
       doc: |
-        Simulated evolution of the dislocation density as the stored
-        (elastic) energy assumed stored in each grain.
+        Time-dependent reduction of the stored (elastic) energy to account for recovery.
       model:
         doc: |
           Which type of recovery model.
         enumeration: [none]
-    dispersoid_drag_model(NXprocess):
+    dispersoid_drag(NXobject):
       doc: |
-        Simulated reduction of the grain boundary speed due to
-        the presence of dispersoids through which the total grain boundary
-        area of the recrystallization front can be reduced.
+        Reduction of the grain boundary migration speed due to the presence of dispersoids
+        through which the total grain boundary area of the recrystallization front can be reduced.
       model:
         doc: |
           Which type of drag model.
         enumeration: [none, zener_smith]
-      zener_smith_parameter(NXcollection):
+      zener_smith(NXobject):
+        exists: optional
+        doc: |
+          Parameter of the Zener-Smith drag model.
         pre_factor(NX_FLOAT):
-        surface_energy_density(NX_FLOAT):
+          doc: |
+            Configuration-dependent constant which factorizes the drag pressure.
+        surface_energy(NX_FLOAT):
+          doc: |
+            Average surface energy of the grain-boundary-dispersoid-surface configuration
+            which factorizes the drag pressure.
         time(NX_FLOAT):
-          unit: NX_TIME
           doc: |
             Support point of the linearized curve of simulated time matching
             a specific support point of the average dispersoid radius.
-          dimensions:
-            rank: 1
-            dim: [[1, i]]
+          unit: NX_TIME
+          dim: (n_drag,)
         radius(NX_FLOAT):
-          unit: NX_LENGTH
           doc: |
             Support point of the linearized curve of the average dispersoid radius.
-          dimensions:
-            rank: 1
-            dim: [[1, i]]
-    time_temperature_history(NXprocess):
+          unit: NX_LENGTH
+          dim: (n_drag,)
+    time_temperature(NXobject):
       doc: |
-        Simulated time temperature profile
+        Desired simulated time-temperature profile
       time(NX_FLOAT):
-        unit: NX_TIME
         doc: |
           Support point of the linearized curve of simulated time matching
           a specific support point of the temperature.
-        dimensions:
-          rank: 1
-          dim: [[1, j]]
+        unit: NX_TIME
+        dim: (n_temp,)
       temperature(NX_FLOAT):
-        unit: NX_LENGTH
         doc: |
           Support point of the linearized curve of the temperature.
-        dimensions:
-          rank: 1
-          dim: [[1, j]]
-    stop_criteria(NXprocess):
+        unit: NX_TEMPERATURE
+        dim: (n_temp,)
+    stop_criteria(NXobject):
       doc: |
         Criteria which enable to stop the simulation in a controlled manner.
         Whichever criterion is fulfilled first stops the simulation.
       max_x(NX_FLOAT):
-        unit: NX_DIMENSIONLESS
         doc: |
           Maximum recrystallized volume fraction.
+        unit: NX_DIMENSIONLESS
       max_time(NX_NUMBER):
-        unit: NX_TIME
         doc: |
           Maximum simulated physical time.
+        unit: NX_TIME
       max_iteration(NX_UINT):
-        unit: NX_UNITLESS
         doc: |
           Maximum number of iteration steps.
-    numerics(NXprocess):
+        unit: NX_UNITLESS
+    numerics(NXobject):
       doc: |
         Settings relevant for stable numerical integration.
       max_delta_x(NX_FLOAT):
-        unit: NX_DIMENSIONLESS
         doc: |
           Maximum fraction equivalent to the migration of the
           fastest grain boundary in the system how much a cell
           may be consumed in a single iteration.
+        unit: NX_DIMENSIONLESS
       initial_cell_cache(NX_FLOAT):
-        unit: NX_UNITLESS
         doc: |
           Fraction of the total number of cells in the CA which
           should initially be allocated for offering cells in the
           recrystallization front.
-      realloc_cell_cache(NX_FLOAT):
         unit: NX_UNITLESS
+      realloc_cell_cache(NX_FLOAT):
         doc: |
           By how much more times should the already allocated memory
-          be is increased to offer space for storing states of cells
+          be increased to offer space for storing states of cells
           in the recrystallization front.
+        unit: NX_UNITLESS
       defragment_cell_cache(NX_BOOLEAN):
         doc: |
           Should the cache for cells in the recrystallization front
           be defragmented on-the-fly.
       defragment_x(NX_FLOAT):
-        unit: NX_DIMENSIONLESS
         doc: |
           Heuristic recrystallized volume target values at which
           the cache for cells in the recrystallization front
           will be defragmented on-the-fly.
-        dimensions:
-          rank: 1
-          dim: [[1, i]]
-      snapshot_x(NX_FLOAT):
         unit: NX_DIMENSIONLESS
+        dim: (n_defrag,)
+      snapshot_x(NX_FLOAT):
         doc: |
           List of recrystallized volume target values at which a
           snapshot of the CA state should be exported for.
-        dimensions:
-          rank: 1
-          dim: [[1, j]]
-    solitary_unit_model(NXprocess):
+        unit: NX_DIMENSIONLESS
+        dim: (n_snapshot,)
+    solitary_unit(NXobject):
       apply(NX_BOOLEAN):
         doc: |
           Perform a statistical analyses of the results as it was
           proposed by M. Kühbach (solitary unit model ensemble approach).
       number_of_domains(NX_UINT):
-        unit: NX_UNITLESS
         doc: |
           How many independent cellular automaton domains
           should be instantiated.
-      rediscretization(NX_UINT):
         unit: NX_UNITLESS
+      rediscretization(NX_UINT):
         doc: |
           Into how many time steps should the real time interval be discretized upon
           during post-processing the results with the solitary unit modeling approach.
-      domain_identifier(NX_UINT):
         unit: NX_UNITLESS
+      domain_identifier(NX_UINT):
         doc: |
           List of identifier for those domain which should be rendered.
           Identifier start from 0.
-        dimensions:
-          rank: 1
-          dim: [[1, n_su]]
-    performance(NXcs_profiling):
-      current_working_directory:
+        unit: NX_UNITLESS
+        dim: (n_su,)
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
 # 6142d3475f379790762453cd32f9330b04fd40950389a8c7322331e405008183
