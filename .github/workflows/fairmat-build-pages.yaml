@@ -29,21 +29,32 @@ jobs:
       run: make prepare
     - name: html
       run: make html
-    - name: Deploy
+    - name: Remove build artifacts
+      run: rm -rf build/manual/build/html/.doctrees build/manual/build/html/_sources
+    - name: Checkout fairmat-docs branch
+      run: |
+        git fetch origin fairmat-docs
+        git checkout fairmat-docs || git checkout --orphan fairmat-docs
+    
+    - name: Move default branch build into fairmat-docs
       if: steps.branch-name.outputs.is_default == 'true'
-      uses: JamesIves/github-pages-deploy-action@v4
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        folder: build/manual/build/html
-        branch: fairmat-docs
-        target-folder: docs
-        clean: false
-    - name: Deploy PR
+      run: |
+        mkdir -p docs
+        cp -r build/manual/build/html/* docs 
+        rm -R build/manual/build/html/*
+    - name: Move PR build into fairmat-docs
       if: steps.branch-name.outputs.is_default == 'false'
-      uses: JamesIves/github-pages-deploy-action@v4
+      run: |
+        mkdir -p docs/${{ steps.branch-name.outputs.current_branch }}
+        cp -r build/manual/build/html/* docs/${{ steps.branch-name.outputs.current_branch }}
+        rm -R build/manual/build/html/*
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        folder: build/manual/build/html
-        branch: fairmat-docs
-        target-folder: docs/${{ steps.branch-name.outputs.current_branch }}
-        clean: false
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: docs
+        publish_branch: fairmat-docs
+        destination_dir: docs
+        force_orphan: true
+
+      
