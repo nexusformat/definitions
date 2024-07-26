@@ -136,9 +136,10 @@ NXxrd_pan(NXxrd):
         unit: NX_TIME
         doc: |
           Total time of count.
-    two_theta_plot(NXdata):
+    experiment_result(NXdata):
       doc: |
-        Desired plot would be two_theta vs intensity.
+        All experiment results data such as scattering angle (2theta),
+        intensity, incident angle, scattering vector, etc will be stored here.
       intensity(NX_FLOAT):
         doc: |
           Number of scattered electrons per unit time.
@@ -146,42 +147,86 @@ NXxrd_pan(NXxrd):
           rank: 1
           dim: (nDet,)
       two_theta(NX_FLOAT):
+        unit: NX_ANGLE
         doc: |
-          Axis scale represeting the 2-theta range of the difractogram.
+          Two-theta (scattering angle) of the diffractogram.
         dimensions:
           rank: 1
           dim: (nDet,)
       omega(NX_FLOAT):
         exists: optional
+        unit: NX_ANGLE
         doc: |
-          The omega range of the difractogram.
+          Incident angle of the diffractogram.
         dimensions:
           rank: 1
           dim: (nDet,)
       phi(NX_FLOAT):
         exists: optional
+        unit: NX_ANGLE
         doc: |
-          The phi range of the difractogram
+          The phi range of the diffractogram.
         dimensions:
           rank: 1
           dim: (nDet,)
       chi(NX_FLOAT):
         exists: optional
+        unit: NX_ANGLE
         doc: |
-          The chi range of the difractogram
+          The chi range of the diffractogram
         dimensions:
           rank: 1
           dim: (nDet,)
-    q_plot(NXdata):
+      q_parallel(NX_FLOAT):
+        exists: optional
+        unit: NX_ANY
+        doc: |
+          The scattering vector component, which is parallel to the sample surface.
+      q_perpendicular(NX_FLOAT):
+        exists: optional
+        unit: NX_ANY
+        doc: |
+          The scattering vector component, which is perpendicular to the sample surface.
+      q_norm(NX_FLOAT):
+        exists: optional
+        unit: NX_ANY
+        doc: |
+          The norm value of the scattering vector, q. The scattering vector is defined as a
+          difference between the incident and scattered wave vectors.
+          For details: https://en.wikipedia.org/wiki/Powder_diffraction
+          and https://theory.labster.com/scattering-vector/
+    q_data(NXdata):
       exists: optional
       doc: |
-        Desired plot would be q_vector vs intensity.
+        The desired view for scattering vectors.
       q(NX_FLOAT):
+        exists: optional
         doc: |
-          Axis scale representing wavevector for scatter energy.
+          This concept corresponds to the norm value of the scattering vector(q).
+          The concept is the same as 'q_norm' of 'experiment_result'
+          and should be linked to /entry[ENTRY]/experiment_result/q_norm.
       intensity(NX_FLOAT):
+        exists: optional
         doc: |
-          Number of scattered electrons per unit time.
+          Number of scattered electrons per unit time at each scattering vector (q) value.
+          The concept is the same as the 'intensity' of experiment_result
+          and should be linked to /entry[ENTRY]/experiment_result/intensity.
+      q_parallel(NX_FLOAT):
+        exists: optional
+        doc: |
+          The scattering vector (q) component, which is parallel to the sample surface.
+          This component is used in the Reciprocal Space Mapping (RSM) technique of
+          X-ray diffraction method.
+          
+          The concept is the same as 'q_parallel' of experiment_result,
+          and should be linked to /entry[ENTRY]/experiment_result/q_parallel.
+      q_perpendicular(NX_FLOAT):
+        exists: optional
+        doc: |
+          The scattering vector component, which is perpendicular to the sample surface.
+          
+          The concept is the same as  'q_perpendicular' of experiment_result,
+          and should be linked to /entry[ENTRY]/experiment_result/q_perpendicular.
     (NXsample):
       exists: optional
       doc: |
@@ -198,7 +243,7 @@ NXxrd_pan(NXxrd):
           assumed name or given name.
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 26a7372651ba3ec8be938e09c1b54c9af5c6d031dc2cca78a9f4a39d3231f7ea
+# ea24fb9f19ac04432bece15f366c44f2c370632bdcbea76b916920013d4e6c11
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -224,7 +269,7 @@ NXxrd_pan(NXxrd):
 # -->
 # <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXxrd_pan" extends="NXxrd" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
 #     <doc>
-#          NXxrd_pan is a specialisation of NXxrd with extra properties 
+#          NXxrd_pan is a specialisation of NXxrd with extra properties
 #          for the PANalytical XRD data format.
 #     </doc>
 #     <group type="NXentry">
@@ -410,9 +455,10 @@ NXxrd_pan(NXxrd):
 #                 </doc>
 #             </field>
 #         </group>
-#         <group name="two_theta_plot" type="NXdata">
+#         <group name="experiment_result" type="NXdata">
 #             <doc>
-#                  Desired plot would be two_theta vs intensity.
+#                  All experiment results data such as scattering angle (2theta),
+#                  intensity, incident angle, scattering vector, etc will be stored here.
 #             </doc>
 #             <field name="intensity" type="NX_FLOAT">
 #                 <doc>
@@ -422,51 +468,91 @@ NXxrd_pan(NXxrd):
 #                     <dim index="1" value="nDet"/>
 #                 </dimensions>
 #             </field>
-#             <field name="two_theta" type="NX_FLOAT">
+#             <field name="two_theta" type="NX_FLOAT" units="NX_ANGLE">
 #                 <doc>
-#                      Axis scale represeting the 2-theta range of the difractogram.
+#                      Two-theta (scattering angle) of the diffractogram.
 #                 </doc>
 #                 <dimensions rank="1">
 #                     <dim index="1" value="nDet"/>
 #                 </dimensions>
 #             </field>
-#             <field name="omega" type="NX_FLOAT" optional="true">
+#             <field name="omega" type="NX_FLOAT" optional="true" units="NX_ANGLE">
 #                 <doc>
-#                      The omega range of the difractogram.
+#                      Incident angle of the diffractogram.
 #                 </doc>
 #                 <dimensions rank="1">
 #                     <dim index="1" value="nDet"/>
 #                 </dimensions>
 #             </field>
-#             <field name="phi" type="NX_FLOAT" optional="true">
+#             <field name="phi" type="NX_FLOAT" optional="true" units="NX_ANGLE">
 #                 <doc>
-#                      The phi range of the difractogram
+#                      The phi range of the diffractogram.
 #                 </doc>
 #                 <dimensions rank="1">
 #                     <dim index="1" value="nDet"/>
 #                 </dimensions>
 #             </field>
-#             <field name="chi" type="NX_FLOAT" optional="true">
+#             <field name="chi" type="NX_FLOAT" optional="true" units="NX_ANGLE">
 #                 <doc>
-#                      The chi range of the difractogram
+#                      The chi range of the diffractogram
 #                 </doc>
 #                 <dimensions rank="1">
 #                     <dim index="1" value="nDet"/>
 #                 </dimensions>
+#             </field>
+#             <field name="q_parallel" type="NX_FLOAT" optional="true" units="NX_ANY">
+#                 <doc>
+#                      The scattering vector component, which is parallel to the sample surface.
+#                 </doc>
+#             </field>
+#             <field name="q_perpendicular" type="NX_FLOAT" optional="true" units="NX_ANY">
+#                 <doc>
+#                      The scattering vector component, which is perpendicular to the sample surface.
+#                 </doc>
+#             </field>
+#             <field name="q_norm" type="NX_FLOAT" optional="true" units="NX_ANY">
+#                 <doc>
+#                      The norm value of the scattering vector, q. The scattering vector is defined as a
+#                      difference between the incident and scattered wave vectors.
+#                      For details: https://en.wikipedia.org/wiki/Powder_diffraction
+#                      and https://theory.labster.com/scattering-vector/
+#                 </doc>
 #             </field>
 #         </group>
-#         <group name="q_plot" type="NXdata" optional="true">
+#         <group name="q_data" type="NXdata" optional="true">
 #             <doc>
-#                  Desired plot would be q_vector vs intensity.
+#                  The desired view for scattering vectors.
 #             </doc>
-#             <field name="q" type="NX_FLOAT">
+#             <field name="q" type="NX_FLOAT" optional="true">
 #                 <doc>
-#                      Axis scale representing wavevector for scatter energy.
+#                      This concept corresponds to the norm value of the scattering vector(q).
+#                      The concept is the same as 'q_norm' of 'experiment_result'
+#                      and should be linked to /entry[ENTRY]/experiment_result/q_norm.
 #                 </doc>
 #             </field>
-#             <field name="intensity" type="NX_FLOAT">
+#             <field name="intensity" type="NX_FLOAT" optional="true">
 #                 <doc>
-#                      Number of scattered electrons per unit time.
+#                      Number of scattered electrons per unit time at each scattering vector (q) value.
+#                      The concept is the same as the 'intensity' of experiment_result
+#                      and should be linked to /entry[ENTRY]/experiment_result/intensity.
+#                 </doc>
+#             </field>
+#             <field name="q_parallel" type="NX_FLOAT" optional="true">
+#                 <doc>
+#                      The scattering vector (q) component, which is parallel to the sample surface.
+#                      This component is used in the Reciprocal Space Mapping (RSM) technique of
+#                      X-ray diffraction method.
+#                      
+#                      The concept is the same as 'q_parallel' of experiment_result,
+#                      and should be linked to /entry[ENTRY]/experiment_result/q_parallel.
+#                 </doc>
+#             </field>
+#             <field name="q_perpendicular" type="NX_FLOAT" optional="true">
+#                 <doc>
+#                      The scattering vector component, which is perpendicular to the sample surface.
+#                      
+#                      The concept is the same as  'q_perpendicular' of experiment_result,
+#                      and should be linked to /entry[ENTRY]/experiment_result/q_perpendicular.
 #                 </doc>
 #             </field>
 #         </group>
