@@ -21,6 +21,9 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
+<!--
+express conventions explicitly and understandable
+use depends_on field - not attribute - to point to conventions used-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcoordinate_system_set" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
          Base class to hold different coordinate systems and representation conversions.
@@ -111,12 +114,342 @@
          always guide the user for each group and field which of the coordinate system
          one refers to.
     </doc>
+    <field name="rotation_handedness" type="NX_CHAR">
+        <doc>
+             Convention how a positive rotation angle is defined when viewing
+             from the end of the rotation unit vector towards its origin,
+             i.e. in accordance with convention 2 of
+             DOI: 10.1088/0965-0393/23/8/083501.
+             Counter_clockwise is equivalent to a right-handed choice.
+             Clockwise is equivalent to a left-handed choice.
+        </doc>
+        <enumeration>
+            <item value="undefined"/>
+            <item value="counter_clockwise"/>
+            <item value="clockwise"/>
+        </enumeration>
+    </field>
+    <field name="rotation_convention" type="NX_CHAR">
+        <doc>
+             How are rotations interpreted into an orientation
+             according to convention 3 of
+             DOI: 10.1088/0965-0393/23/8/083501.
+        </doc>
+        <enumeration>
+            <item value="undefined"/>
+            <item value="passive"/>
+            <item value="active"/>
+        </enumeration>
+    </field>
+    <field name="euler_angle_convention" type="NX_CHAR">
+        <doc>
+             How are Euler angles interpreted given that there are several choices (e.g. zxz, xyz)
+             according to convention 4 of DOI: 10.1088/0965-0393/23/8/083501.
+             
+             The most frequently used convention is zxz, which is based on the work of H.-J. Bunge
+             but other conventions are possible. Apart from undefined, proper Euler angles
+             are distinguished from (improper) Tait-Bryan angles.
+        </doc>
+        <enumeration>
+            <item value="undefined"/>
+            <item value="zxz"/>
+            <item value="xyx"/>
+            <item value="yzy"/>
+            <item value="zyz"/>
+            <item value="xzx"/>
+            <item value="yxy"/>
+            <item value="xyz"/>
+            <item value="yzx"/>
+            <item value="zxy"/>
+            <item value="xzy"/>
+            <item value="zyx"/>
+            <item value="yxz"/>
+        </enumeration>
+    </field>
+    <field name="axis_angle_convention" type="NX_CHAR">
+        <doc>
+             To which angular range is the rotation angle argument of an
+             axis-angle pair parameterization constrained according to
+             convention 5 of DOI: 10.1088/0965-0393/23/8/083501.
+        </doc>
+        <enumeration>
+            <item value="undefined"/>
+            <item value="rotation_angle_on_interval_zero_to_pi"/>
+        </enumeration>
+    </field>
+    <field name="sign_convention" type="NX_CHAR">
+        <doc>
+             Which sign convention is followed when converting orientations
+             between different parameterizations/representations according
+             to convention 6 of DOI: 10.1088/0965-0393/23/8/083501.
+        </doc>
+        <enumeration>
+            <item value="undefined"/>
+            <item value="p_plus_one"/>
+            <item value="p_minus_one"/>
+        </enumeration>
+    </field>
+    <!--possibility to add further coordinate systems-->
     <group type="NXcoordinate_system"/>
-    <!--How to interpret "depends_on" calls for NXtransformations instances which live
-within an instance of NXcoordinate_system(_set)?
-Depends on cardinality of NXcoordinate_system_set, i.e. how many NXcoordinate_system are defined?
-- 0, the root of an NXtransformation chain i.e. "." means McStas
-- 1, the root of an NXtransformation chain i.e. "." means "that specific CS" i.e. the one defined by the single instance of NXcoordinate_system in the set
-- > 1, "." becomes ambiguous. My suggestion, spell out the name of the specific NXcoordinate_system instance to be used, using "."
-despite all these, a warning should be raised, like a logic warning (and McStas kick in) or an error (i.e. be forbidden) be raised-->
+    <!--frequently used coordinate systems with frequently relevant specializations follow
+convention 1 of DOI: 10.1088/0965-0393/23/8/083501 is implemented by inheriting type from NXcoordinate_system-->
+    <group name="processing_reference_frame" type="NXcoordinate_system">
+        <doc>
+             Details about eventually relevant named directions that may give reasons for anisotropies.
+             The classical example is mechanical processing where one has to specify which directions
+             (e.g. rolling, transverse, and normal direction) align how with the direction of the base
+             vectors of the sample_reference_frame.
+             
+             It is assumed that the configuration is inspected by looking towards the sample surface.
+             If a detector is involved, it is assumed that the configuration is inspected from a position
+             that is located behind this detector.
+             
+             If any of these assumptions is not met, the user is required to explicitly state this.
+             
+             Reference DOI: 10.1016/j.matchar.2016.04.008 suggest to label the
+             base vectors of this coordinate system as Xp, Yp, Zp.
+        </doc>
+        <field name="origin" type="NX_CHAR">
+            <doc>
+                 Location of the origin of the processing_reference_frame.
+                 
+                 It is assumed that regions-of-interest in this reference frame form a rectangle or cuboid.
+                 Edges are interpreted by inspecting the direction of their outer unit normals
+                 (which point either parallel or antiparallel) along respective base vector direction
+                 of the reference frame.
+                 
+                 If any of these assumptions is not met, the user is required to explicitly state this.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="front_top_left"/>
+                <item value="front_top_right"/>
+                <item value="front_bottom_right"/>
+                <item value="front_bottom_left"/>
+                <item value="back_top_left"/>
+                <item value="back_top_right"/>
+                <item value="back_bottom_right"/>
+                <item value="back_bottom_left"/>
+            </enumeration>
+        </field>
+        <field name="x_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing x-axis base vector of the
+                 processing_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+        <field name="y_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing y-axis base vector of the
+                 processing_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+        <field name="z_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing z-axis base vector of the
+                 processing_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+    </group>
+    <group name="sample_reference_frame" type="NXcoordinate_system">
+        <doc>
+             Details about the sample_reference_frame that is typically overlaid onto the surface of the sample.
+             
+             It is assumed that the configuration is inspected by looking towards the sample surface.
+             If a detector is involved, it is assumed that the configuration is inspected from a position
+             that is located behind this detector.
+             
+             If any of these assumptions is not met, the user is required to explicitly state this.
+             
+             Reference DOI: 10.1016/j.matchar.2016.04.008 suggest to label the
+             base vectors of this coordinate system as Xs, Ys, Zs.
+        </doc>
+        <field name="depends_on">
+            <doc>
+                 Reference to the specifically named :ref:`NXsample` instance for
+                 which these conventions apply (e.g. /entry1/sample1).
+            </doc>
+        </field>
+        <field name="origin" type="NX_CHAR">
+            <doc>
+                 Location of the origin of the sample_reference_frame.
+                 
+                 It is assumed that regions-of-interest in this reference frame form a rectangle or cuboid.
+                 Edges are interpreted by inspecting the direction of their outer unit normals
+                 (which point either parallel or antiparallel) along respective base vector direction
+                 of the reference frame.
+                 
+                 If any of these assumptions is not met, the user is required to explicitly state this.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="front_top_left"/>
+                <item value="front_top_right"/>
+                <item value="front_bottom_right"/>
+                <item value="front_bottom_left"/>
+                <item value="back_top_left"/>
+                <item value="back_top_right"/>
+                <item value="back_bottom_right"/>
+                <item value="back_bottom_left"/>
+            </enumeration>
+        </field>
+        <field name="x_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing x-axis base vector of the
+                 sample_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+        <field name="y_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing y-axis base vector of the
+                 sample_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+        <field name="z_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing z-axis base vector of the
+                 sample_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+    </group>
+    <group name="detector_reference_frameID" type="NXcoordinate_system">
+        <doc>
+             Details about the detector_reference_frame for a specific detector.
+             
+             Reference DOI: 10.1016/j.matchar.2016.04.008 suggest to label the
+             base vectors of this coordinate system as Xd, Yd, Zd.
+             
+             It is assumed that the configuration is inspected by looking towards the sample surface
+             from a position that is located behind the detector.
+             
+             If any of these assumptions is not met, the user is required to explicitly state this.
+        </doc>
+        <field name="depends_on">
+            <doc>
+                 Reference to the specifically named :ref:`NXdetector` instance for
+                 which these conventions apply (e.g. /entry1/instrument/detector1).
+            </doc>
+        </field>
+        <field name="origin" type="NX_CHAR">
+            <doc>
+                 Location of the origin of the detector_reference_frame.
+                 
+                 If the regions-of-interest forms a rectangle or cuboid, it is assumed that edges are interpreted
+                 by inspecting the direction of their outer unit normals (which point either parallel or antiparallel)
+                 along respective base vector direction of the reference frame.
+                 
+                 If any of these assumptions is not met, the user is required to explicitly state this.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="front_top_left"/>
+                <item value="front_top_right"/>
+                <item value="front_bottom_right"/>
+                <item value="front_bottom_left"/>
+                <item value="back_top_left"/>
+                <item value="back_top_right"/>
+                <item value="back_bottom_right"/>
+                <item value="back_bottom_left"/>
+            </enumeration>
+        </field>
+        <field name="x_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing x-axis base vector of the
+                 detector_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+        <field name="y_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing y-axis base vector of the
+                 detector_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+        <field name="z_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing z-axis base vector of the
+                 detector_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+    </group>
 </definition>

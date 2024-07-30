@@ -108,9 +108,83 @@ symbols:
     standardized default plot orientation mapping.
 type: group
 NXem_ebsd(NXem_method):
-  conventions(NXem_conventions):
-  # either we have simulated data or we have a set of measured data
-  # in every case data are Kikuchi diffraction pattern and their metadata
+  # (NXcoordinate_system):
+  gnomonic_reference_frame(NXcoordinate_system):
+    doc: |
+      Details about the gnomonic (projection) reference frame.
+      
+      It is assumed that the configuration is inspected by looking towards the sample surface.
+      If a detector is involved, it is assumed that the configuration is inspected from a position
+      that is located behind this detector.
+      
+      If any of these assumptions is not met, the user is required to explicitly state this.
+      
+      Reference DOI: 10.1016/j.matchar.2016.04.008 suggests to label the
+      base vectors of this coordinate system as Xg, Yg, Zg.
+    origin(NX_CHAR):
+      doc: |
+        Origin of the gnomonic_projection_reference_frame.
+        
+        Reference DOI: 10.1016/j.matchar.2016.04.008 suggests to
+        assume that this is coordinate Xg = 0, Yg = 0, Zg = 0.
+      enumeration: [undefined, in_the_pattern_centre]
+    x_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing x-axis base vector of the gnomonic_reference_frame.
+      enumeration: [undefined, north, east, south, west, in, out]
+    y_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing y-axis base vector of the gnomonic_reference_frame.
+      enumeration: [undefined, north, east, south, west, in, out]
+    z_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing z-axis base vector of the gnomonic_reference_frame.
+      enumeration: [undefined, north, east, south, west, in, out]
+  pattern_centre(NXprocess):
+    doc: |
+      Details about the definition of the pattern centre as a special point in the gnomonic_reference_frame.
+      
+      Keep in mind that the gnomonic space is in virtually all cases embedded in the detector space.
+      Specifically, the XgYg plane is defined such that it is laying inside the XdYd plane
+      (of the detector reference frame).
+      
+      When the normalization direction is the same as e.g. the detector x-axis direction one
+      effectively normalizes in fractions of the width of the detector.
+      
+      The issue with terms like width and height is that these degenerate if the detector
+      region-of-interest is square-shaped. This is why instead of referring to width and height
+      one should report as if one were to measure practically with a ruler and one is specific
+      about in which direction positive distances are measured.
+      
+      For the concepts used to specify the boundary_convention it is assumed that the
+      region-of-interest is defined by a rectangle, referring to the direction of outer-unit
+      normals to the respective edges of this rectangle.
+    x_boundary_convention(NX_CHAR):
+      doc: |
+        From which border of the EBSP (in the detector reference frame) is the pattern centre's x-position (PCx) measured.
+      enumeration: [undefined, top, right, bottom, left]
+    x_normalization_direction(NX_CHAR):
+      doc: |
+        In which direction are positive values for the x-axis coordinate value measured from the specified boundary.
+      enumeration: [undefined, north, east, south, west]
+    y_boundary_convention(NX_CHAR):
+      doc: |
+        From which border of the EBSP (in the detector reference frame) is the pattern centre's y-position (PCy) measured.
+      enumeration: [undefined, top, right, bottom, left]
+    y_normalization_direction(NX_CHAR):
+      doc: |
+        In which direction are positive values for the y-axis coordinate value measured from the specified boundary.
+      enumeration: [undefined, north, east, south, west]
+  # distance_convention:
+  # doc: |
+  # How is the third of the three pattern centre parameter values,
+  # the (distance) parameter DD, normalized. Which convention
+  # is followed. We are aware that specifying one of the options here
+  # also implicitly comes with conventions for some of the parameter
+  # requested in this ELN. For now we would rather like to ask
+  # the users though to be specific also to learn how such an ELN
+  # will be used in practice.
+  # enumeration: [undefined, Bruker, JEOL, FEI, Oxford]
   measurement(NXprocess):
     doc: |
       This group documents relevant details about the conditions and the tools
@@ -368,9 +442,10 @@ NXem_ebsd(NXem_method):
       doc: |
         Number of scan points in the original mapping.
       unit: NX_UNITLESS
-    odf(NXms_odf_set):
-    pf(NXms_pf_set):
-    microstructureID(NXms_recon):
+    odfID(NXmicrostructure_odf):
+    pID(NXmicrostructure_pf):
+    ipfID(NXmicrostructure_ipf):
+    microstructureID(NXmicrostructure):
     # overview over the entire map, rediscretized on a tight aabb
     roi(NXdata):
       doc: |

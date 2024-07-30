@@ -1,0 +1,270 @@
+category: application
+doc: |
+  Application definition for configuring GraGLeS.
+  
+  GraGLeS is a continuum-scale model for shared-memory-parallelized simulations
+  of the isothermal evolution of 2D and 3D grain boundary networks with a level-set approach.
+  CPU parallelization is achieved with OpenMP. 
+  
+  The code has been implemented by C. Mießen in the group of G. Gottstein
+  at the Institute für Metallkunde und Metallphysik, RWTH Aachen University.
+  
+  Details of the model are summarized in `C. Mießen <https://publications.rwth-aachen.de/record/709678>`_.
+# symbols:
+# type: group
+NXmicrostructure_gragles_config(NXobject):
+  (NXentry):
+    definition(NX_CHAR):
+      enumeration: [NXmicrostructure_gragles_config]
+    simulation_identifier(NX_UINT):
+      doc: |
+        Simulation ID as an alias to refer to this simulation.
+    description(NX_CHAR):
+      doc: |
+        Discouraged free-text field to add further details to the computation.
+    start_time(NX_DATE_TIME):
+    end_time(NX_DATE_TIME):
+      exists: recommended
+    profiling(NXcs_profiling):
+      exists: optional
+    (NXuser):
+      exists: [min, 0, max, infty]
+    program1(NXprogram):
+      program_name:
+        \@version:
+        \@url:
+          exists: recommended
+    environment(NXobject):
+      exists: optional
+      doc: |
+        Programs and libraries representing the computational environment
+      programID(NXprogram):
+        exists: [min, 1, max, infty]
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+    discretization(NXmicrostructure):
+      # [read_from_file]  # poisson_voronoi_tessellation
+      # 0, E_READ_FROM_FILE, 1, E_GENERATE_WITH_VORONOY, 2, E_READ_VERTEX, // The edges need to be ordered 3, E_GENERATE_TESTCASE, 4, E_READ_VOXELIZED_MICROSTRUCTURE
+      # read the next three from input file
+      # <ReadFromFilename>Microstructure.SimID.10.GrainIDs.2D.1188.raw</ReadFromFilename> all in config file
+      # <AdditionalFilename>Microstructure.SimID.10.uds</AdditionalFilename>
+      # <LatticeType>0</LatticeType> 0, E_CUBIC, 1, E_HEXAGONAL fish from config file
+      grid(NXserialized):  #  take generated structure as input as code refactoring removed microstructure synthesis related parts
+        doc: |
+          From which file should the microstructure be instantiated.
+        type:
+        path:
+        algorithm:
+        checksum:
+      edge_length(NX_FLOAT): # <Physical_Domain_Size>4.2037e-3</Physical_Domain_Size>  <!--unit: meter 1px equals 0.1e-6 meter-->
+        doc: |
+          The formulation of mean curvature flow in the GraGLeS model is scale invariant.
+          Therefore, the discretization has to be scaled to the actual physical length
+          of the simulation domain (ve, ROI).
+          For GraGLeS the discretization is always a square or cubic axis-aligned
+          bounding box with a regular tiling into material points
+          (either squares or cubes respectively).
+          
+          Edge_length is the length of the entire domain along its edge not
+          the length of the Wigner-Seitz cell about each material point!
+        unit: NX_LENGTH
+    sampling(NXobject):
+      doc: |
+        Configuration when snapshots of the system should be taken.
+        
+        Keep in mind that essentially geometry snapshot data store the
+        polylines and polyhedra of all grains which can take substantial disk
+        space.
+      system(NX_UINT):  # <AnalysisTimestep>1</AnalysisTimestep>
+        doc: |
+          Generate a snapshot of the properties of the grains to follow
+          the evolution of the microstructure every :math:`n`-th iteration.
+          Setting zero causes that no property snapshots are taken.
+        unit: NX_UNITLESS
+      geometry(NX_UINT):  # <PlotInterval>100</PlotInterval>
+        doc: |
+          Generate a snapshot of the geometry of the entire grain boundary network
+          every :math:`n`-th iteration. Setting zero instructs to store no geometry data.
+        unit: NX_UNITLESS
+      # <DiscreteSamplingRate>31</DiscreteSamplingRate> no more sampling <!-- MODF number of bins-->
+      # <NeighbourTracking>1</NeighbourTracking>
+
+    simulation_control(NXobject):
+      doc: |
+        Configuration when the simulation should be stopped in a controlled manner.
+        Whichever criterion is fulfilled first triggers the controlled stop of
+        and termination of GraGLeS.
+      number_of_grains(NX_UINT):  # <BreakupNumber>1000</BreakupNumber>
+        doc: |
+          The simulation stops if the total number of grains
+          becomes smaller than this criterion.
+        unit: NX_UNITLESS
+      number_of_iterations(NX_UINT):  # <NumberOfTimesteps>1000000</NumberOfTimesteps>
+        doc: |
+          The simulation stops if more iterations than this criterion have been computed.
+        unit: NX_UNITLESS
+    numerics(NXobject):
+      doc: |
+        Configuration of numerical details of the solver.
+      # use proper environment variable number_of_threads(NX_UINT):  # obsolete set 0<ExecuteInParallel>1</ExecuteInParallel> 16</MaximumNumberOfThreads>
+      convolution_mode(NX_CHAR):
+        doc: |
+          Which type of convolution kernel and model is used.
+        enumeration: [gaussian, laplace, laplace_ritchardson]  # <ConvolutionMode>2</ConvolutionMode>
+      time_slope(NX_FLOAT):  # <GaussianKernelUserDefTimeSlope>0.7930</GaussianKernelUserDefTimeSlope>
+        doc: |
+          Constant to calibrate the real time scaling of the simulation.
+        unit: NX_ANY   # or NX_DIMENSIONLESS ??
+      # when taking the E_GAUSSIAN convolution mode set the TimeSlopeFactor explicitly here, default Miessen, Liesenjohann was 0.8359-->
+      # <StartTime>0</StartTime>
+      # <NumberOfParticles>12991</NumberOfParticles>  # read from file
+      # discretization(NX_UINT) # <NumberOfPointsPerGrain>15</NumberOfPointsPerGrain>
+      # <UserDefNumberOfPointsPerGrain>15</UserDefNumberOfPointsPerGrain>
+      # domain_border_size(NX_UINT):  # <DomainBorderSize>7</DomainBorderSize>
+      # <!-- USAGE: 0, E_LAPLACE, 1, E_LAPLACE_RITCHARDSON, 2, E_GAUSSIAN,
+      # only guru i.e. in C++ code configurable options
+      # <ResearchMode>0</ResearchMode>
+      # 0, Energies defined by misorientation, 1, GB Energies and mobilities clambed to 1.0 but uses sectors and Triplejunction mobilities,
+      # 2, GB Energies clambed to 0.3 or 0.6 / mobilities clambed to 1.0 - use Texture == false
+      # <ResearchProject>0</ResearchProject>  # 0, E_NO_PROJECT, 1 E_TRIPLE_JUNCTION_DRAG_SINGLE (fixes outermost tj at, 2 empty)
+      # <GrainScheduler>1</GrainScheduler>  # 0, E_ITERATIVE, 1, E_SQUARES
+      # <BoxDefaultStoredElasticEnergy>0.0</BoxDefaultStoredElasticEnergy>
+      # <!-- USAGE: set to 0.0 unless mode is DecoupleGrains and make studies of isolated circular grains under capillary and stored elastic energy evolution-->
+    grid_coarsement(NXobject):
+      doc: |
+        Configuration of the grid coarsement algorithm whereby the representation
+        of the system is continuously rediscretized such that on average grains
+        are discretized with discretization many material points along each
+        direction.
+        
+        Grid coarsement can reduce the computational costs substantially although
+        it cannot be ruled out completely that the rediscretizing may have an effect
+        on the system evolution. Without grid coarsement the total number of material
+        points to consider stays the same throughout the simulation.
+      discretization(NX_UINT):
+        doc: |
+          Number of material points along each direction to discretize the
+          average grain. The larger this value is chosen the finer the curvature
+          details are that can be resolved but also the longer the simulation
+          takes.
+        unit: NX_UNITLESS
+      is_active(NX_BOOLEAN):  # <GridCoarsement>1</GridCoarsement>
+        doc: |
+          If true grid coarsement is active, otherwise it is not.
+      gradient(NX_FLOAT):  # <GridCoarsementGradient>0.98</GridCoarsementGradient>
+        doc: |
+          Fraction how strongly the number of grains has to reduce
+          to trigger a grid coarsement step in an iteration.
+        unit: NX_DIMENSIONLESS
+      # the next only guru i.e. in C++ code configurable options
+      # <ConstantSectorRadius>3</ConstantSectorRadius>
+      # <InterpolatingSectorRadius>2</InterpolatingSectorRadius>
+      # <DecoupleGrains>0</DecoupleGrains>  # 0, DEFAULT, 1 skips comparison and let grains shring isolated
+    grain_boundary_mobility(NXobject):
+      doc: |
+        Physically-based model of the assumed mobility of the grain boundaries.
+        
+        Grain boundary mobility is not an intrinsic property of a grain boundary but system-dependent
+        especially as grain boundaries in reality are decorated with defects as a consequence of which
+        the actual mobility is a combination of the mobility of the individual defects and the attached
+        boundary patches. Grain boundaries have different degrees of microscopic freedom.
+        Therefore, their mobility follows a distribution.
+      # <IsIsotropicNetwork>0</IsIsotropicNetwork>
+      # <IdentifyTwins>0</IdentifyTwins>  # <!-- USAGE: Input is 0 or 1 as a boolean. For 1 a Sigma 3 GB are identified and considered as lowest angle GB. -->
+      model(NX_CHAR):
+        doc: |
+          Fundamental model how :math:`m` is assumed a function of the disorientation angle :math:`\Theta`.
+        enumeration: [rollett_holm]
+        # For rollett_holm :math:`m(\Theta) = m_0 \cdot (1 - c_1 * exp(-c_2 \cdot \frac{\Theta}{15}^{c_3}))`.
+      m_null(NX_FLOAT):
+        doc: |
+          The assumed mobility :math:`m_0` of the fastest grain boundary in the system at the assumed
+          temperature. GraGLeS was developed for modelling isothermal annealing.
+        unit: NX_ANY  # m^4/Js
+      c_one(NX_FLOAT):
+        doc: |
+          Mobility scaling factor :math:`c_1`. Typically 0.99 or higher but not one.
+        unit: NX_DIMENSIONLESS
+      # <HAGB_Mobility>7.5e-14</HAGB_Mobility> <!--unit: m^4/Js approx exp(5.5)*exp(-289000/(8.314*(700+273.15)))-->
+      c_two(NX_FLOAT):
+        doc: |
+          Mobility scaling factor :math:`c_2`. Typically 5.
+        unit: NX_UNITLESS
+      c_three(NX_FLOAT):
+        doc: |
+          Mobility scaling factor :math:`c_3`. Typically 9.
+        unit: NX_UNITLESS
+    grain_boundary_energy(NXobject):
+      doc: |
+        Physically-based model of the assumed grain boundary surface energy.
+        
+        Like for the grain boundary mobility, defects cause a distribution of energies for the
+        patches of which the boundary is composed. In practice a too complicated dependency
+        of the energy and mobility model is observed as a function of the type and chemical
+        decoration of the defects. Therefore, simplifying assumptions are typically made.
+      type(NX_CHAR):
+        doc: |
+          Fundamental type of assumption if energies are considered isotropic or not.
+        enumeration: [isotropic, anisotropic]
+      model(NX_CHAR):
+        doc: |
+          Fundamental model how :math:`\gamma` is assumed a function of the disorientation angle :math:`\Theta`.
+        enumeration: [read_shockley]
+      gamma(NX_FLOAT):  # HAGBEnergy <!--unit: J/m^2 -->
+        doc: |
+          Mean grain boundary surface energy that is assumed a function of the
+          disorientation angle :math:`\Theta` of the adjoining grains :math:`\gamma(\Theta)`.
+          This value factorizes the curvature_driving_force model.
+        unit: NX_ANY  # J/m^2
+      # For GraGLeS :math:`\gamma(\Theta) = \{\begin{array}1 \text{for} \Theta > 1. \\ 0.01 \text{for} \Theta \leq 1.\end{array}`.
+      # <EnergyModelScalingA>1.0</EnergyModelScalingA>
+      # <EnergyModelScalingB>0.01</EnergyModelScalingB>
+      # <!-- INFORMATION: Scaling A is the disorientation angle cutoff in degrees, B the value assigned when nan-s occurred
+      # these Scaling parameter are not read as well but utilized in the ReadShockley enery model-->
+    curvature_driving_force(NXobject):
+      doc: |
+        A continuum-scale curvature of an interface causes the interface to
+        migrate towards the center of the curvature radius.
+      is_active(NX_BOOLEAN):
+        doc: |
+          If true the curvature_driving_force is considered, otherwise it is not.
+    stored_elastic_energy(NXobject):
+      doc: |
+        A continuum-scale difference of the stored elastic energy in dislocation
+        configurations across a grain boundary can exert a driving force on the
+        grain boundary such that the boundary migrates into the volume with the
+        higher stored elastic energy.
+      is_active(NX_BOOLEAN):  #    <UseStoredElasticEnergy>1</UseStoredElasticEnergy>
+        doc: |
+          If true the dislocation_driving_force is considered, otherwise it is not.
+      line_energy(NX_FLOAT):  # <DislocEnPerM>1.44e-9</DislocEnPerM> <!--1/2 Gbb - material constant here approximately bcc-iron at 700deg celsius -->
+        doc: |
+          Prefactor :math:`0.5Gb^2` that factorizes the average
+          stored elastic energy per length dislocation line.
+        unit: NX_ANY  # J/m
+    magnetic_field(NXobject):
+      doc: |
+        In case of an applied magnetic field, a difference of the magnetic
+        susceptibility can exert a driving force on the grain boundary such that
+        the boundary migrates into the volume with the higher magnetic energy.
+      is_active(NX_BOOLEAN):  # <UseMagneticField>0</UseMagneticField>
+        doc: |
+          If true the magnetic_driving_force is considered, otherwise it is not.
+    # <MagneticParams> MagneticField.xml </MagneticParams>
+    # https://github.com/GraGLeS/GraGLeS2D/blob/master/params/MagneticField.xml
+    triple_line_mobility(NXobject):
+      doc: |
+        A triple line mediates the atomic arrangement differences between three
+        interface patches. Therefore, the triple line is a defect that may not
+        have the same mobility as adjoining grain boundaries and thus it may
+        exert what can be conceptualized as a drag (resistance) to the motion
+        of the adjoining interface patches.
+      drag(NX_FLOAT):
+        doc: |
+          Assumed triple junction drag.
+        unit: NX_ANY  # or reciprocal check Gottstein, Shvindlerman but is this really a drag.
+        # <TriplePointDrag>1.0e10</TriplePointDrag> <!-- USAGE:	0.0		off Input is a number larger than 0. This number is the absolute mobility of the point. 10.000 is quite large-->
+    # isotropic, anisotropic
+    # <UseMobilityModel>1</UseMobilityModel> <!-- USAGE: input is 0 or 1 as a boolean. For 1 a mobility model is applied. -->
+    # <UseTexture>1</UseTexture> <!-- USAGE: 1, simulate fibre texture, 0 for random -> <MaxMisOrientation>25</MaxMisOrientation>
+    # <!-- USAGE: If UseTexture == 1, Orientations are sampled by randomly misorienting from a fixed ori with a maximum angle. -->

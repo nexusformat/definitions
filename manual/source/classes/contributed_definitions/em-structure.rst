@@ -159,9 +159,6 @@ More consolidation through the use of NXsubentry classes should be considered in
     :ref:`NXem_method`, :ref:`NXem_adf`, :ref:`NXem_ebsd`, :ref:`NXem_eds`, :ref:`NXem_eels`, :ref:`NXem_img`, :ref:`NXem_correlation`:
         Base classes with method-specific details especially when it comes to reporting post-processed data within electron microscopy.
 
-    :ref:`NXem_conventions`, :ref:`NXem_conventions_ebsd`:
-        A base class to store all reference frames and rotation conventions which are necessary to interpret the alignment and conventions used when working with orientation data.
-
     :ref:`NXcrystal_structure`:
         A base class to store crystalline phase/structure used for a simulation of diffraction pattern and comparison of these pattern against patterns to support indexing.
 
