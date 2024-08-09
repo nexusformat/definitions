@@ -2,21 +2,22 @@ category: base
 doc: |
   Base class container for reporting a set of spectra.
   
-  The mostly commonly used scanning methods are supported.
-  That is one-, two-, three-dimensional regularly sampled ROIs.
+  The mostly commonly used scanning methods are supported. That is one-,
+  two-, three-dimensional ROIs discretized using regular Euclidean tilings.
   
-  For randomly or dissimilarly spaced scan points use collection instead.
+  Use stack for all other tilings.
+# https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons
 symbols:
-  n_p: |
-    Number of scan points (slowest dimension).
-  n_z: |
-    Number of pixel in the slow direction.
-  n_y: |
-    Number of pixel in the fast direction.
-  n_x: |
-    Number of pixel in the fastest direction.
+  n_spc: |
+    Number of spectra in the stack, for stacks the slowest dimension.
+  n_k: |
+    Number of image points along the slower dimension (k equivalent to z).
+  n_j: |
+    Number of image points along the slow dimension (j equivalent to y).
+  n_i: |
+    Number of image points along the fast dimension (i equivalent to x).
   n_energy: |
-    Number of energy bins.
+    Number of energy bins (always the fastest dimension).
 type: group
 NXspectrum_set(NXobject):
   # for EELS we likely need a complex-valued NXspectrum_c_set to this
@@ -51,15 +52,16 @@ NXspectrum_set(NXobject):
         Link or name of an :ref:`NXdetector` instance with which the data were collected.
     (NXprogram):
   ##MK::feel free to contact us when you would like to include
-  # lik omega/q mapping more complicated scan pattern than rectangular ones.
-  spectrum_zerod(NXdata):
+  # like omega/q mapping more complicated scan pattern than rectangular ones.
+
+  spectrum_0d(NXdata):
     doc: |
-      One spectrum for one pixel in a ROI aka spot measurement.
+      One spectrum for a point of a 0d ROI. Also known as spot measurement.
     intensity(NX_NUMBER):
       doc: |
         Counts
       unit: NX_UNITLESS
-      dim: (n_x, n_energy)
+      dim: (n_energy,)
       \@long_name(NX_CHAR):
         doc: |
           Counts
@@ -72,26 +74,25 @@ NXspectrum_set(NXobject):
         doc: |
           Energy
 
-  spectrum_oned(NXdata):
+  spectrum_1d(NXdata):
     doc: |
-      One spectrum for each pixel of an equidistantly
-      sampled one-dimensional ROI.
+      One spectrum for each point of a 1d ROI.
     intensity(NX_NUMBER):
       doc: |
         Counts
       unit: NX_UNITLESS
-      dim: (n_x, n_energy)
+      dim: (n_i, n_energy)
       \@long_name(NX_CHAR):
         doc: |
           Counts
-    axis_x(NX_NUMBER):
+    axis_i(NX_NUMBER):
       doc: |
-        Coordinate along x direction.
+        Point coordinate along the fast dimension.
       unit: NX_LENGTH
-      dim: (n_x,)
+      dim: (n_i,)
       \@long_name(NX_CHAR):
         doc: |
-          Pixel coordinate along x direction
+          Point coordinate along the fast dimension
     axis_energy(NX_NUMBER):
       doc: |
         Energy axis
@@ -101,34 +102,33 @@ NXspectrum_set(NXobject):
         doc: |
           Energy
 
-  spectrum_twod(NXdata):
+  spectrum_2d(NXdata):
     doc: |
-      One spectrum for each pixel of an equidistantly
-      sampled two-dimensional ROI.
+      One spectrum for each scan point of 2d ROI.
     intensity(NX_NUMBER):
       doc: |
         Counts
       unit: NX_UNITLESS
-      dim: (n_y, n_x, n_energy)
+      dim: (n_j, n_i, n_energy)
       \@long_name(NX_CHAR):
         doc: |
           Counts
-    axis_y(NX_NUMBER):
+    axis_j(NX_NUMBER):
       doc: |
-        Coordinate along y direction.
+        Point coordinate along the slow dimension.
       unit: NX_LENGTH
-      dim: (n_y,)
+      dim: (n_j,)
       \@long_name(NX_CHAR):
         doc: |
-          Pixel coordinate along y direction
-    axis_x(NX_NUMBER):
+          Point coordinate along the slow dimension.
+    axis_i(NX_NUMBER):
       doc: |
-        Coordinate along x direction.
+        Point coordinate along the fast dimension.
       unit: NX_LENGTH
-      dim: (n_x,)
+      dim: (n_i,)
       \@long_name(NX_CHAR):
         doc: |
-          Pixel coordinate along x direction
+          Point coordinate along the fast dimension.
     axis_energy(NX_NUMBER):
       doc: |
         Energy axis
@@ -138,42 +138,41 @@ NXspectrum_set(NXobject):
         doc: |
           Energy
 
-  spectrum_threed(NXdata):
+  spectrum_3d(NXdata):
     doc: |
-      One spectrum for each voxel of an equidistantly
-      sampled three-dimensional ROI.
+      One spectrum for point of a 3d ROI.
     intensity(NX_NUMBER):
       doc: |
         Counts
       unit: NX_UNITLESS
-      dim: (n_z, n_y, n_x, n_energy)
+      dim: (n_k, n_j, n_i, n_energy)
       \@long_name(NX_CHAR):
         doc: |
           Counts
-    axis_z(NX_NUMBER):
+    axis_k(NX_NUMBER):
       doc: |
-        Coordinate along z direction.
+        Point coordinate along the slower dimension.
       unit: NX_LENGTH
-      dim: (n_z,)
+      dim: (n_k,)
       \@long_name(NX_CHAR):
         doc: |
-          Pixel coordinate along z direction
-    axis_y(NX_NUMBER):
+          Point coordinate along the slower dimension.
+    axis_j(NX_NUMBER):
       doc: |
-        Coordinate along y direction.
+        Point coordinate along the slow dimension.
       unit: NX_LENGTH
-      dim: (n_y,)
+      dim: (n_j,)
       \@long_name(NX_CHAR):
         doc: |
-          Pixel coordinate along y direction
-    axis_x(NX_NUMBER):
+          Point coordinate along the slow dimension.
+    axis_i(NX_NUMBER):
       doc: |
-        Coordinate along x direction.
+        Point coordinate along the fast dimension.
       unit: NX_LENGTH
-      dim: (n_x,)
+      dim: (n_i,)
       \@long_name(NX_CHAR):
         doc: |
-          Pixel coordinate along x direction
+          Point coordinate along the fast dimension.
     axis_energy(NX_NUMBER):
       doc: |
         Energy axis
@@ -186,27 +185,145 @@ NXspectrum_set(NXobject):
   # if there is interest to support arbitrary scan pattern one should use
   # scan points and contact us to generalize this base class and related
   # base classes
-  collection(NXdata):
+  stack_0d(NXdata):
     doc: |
-      One spectrum for each scan point. This representation supports
-      equidistant energy bins. For rectangular sampling use respective
-      one-, two-, and three-dimensional variants instead.
+      Multiple instances of spectrum_0d.
     intensity(NX_NUMBER):
       doc: |
         Counts
       unit: NX_UNITLESS
-      dim: (n_p, n_energy)
+      dim: (n_spc, n_energy)
       \@long_name(NX_CHAR):
         doc: |
           Counts
-    axis_scan_point_id(NX_INT):
+    group_identifier(NX_INT):
       doc: |
-        Scan point identifier
+        Group identifier
       unit: NX_UNITLESS
-      dim: (n_p,)
+      dim: (n_spc,)
       \@long_name(NX_CHAR):
         doc: |
-          Scan point identifier
+          Group identifier
+    spectrum_identifier(NX_INT):
+      doc: |
+        Spectrum identifier
+      unit: NX_UNITLESS
+      dim: (n_spc,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Spectrum identifier
+    axis_energy(NX_NUMBER):
+      doc: |
+        Energy axis
+      unit: NX_ENERGY
+      dim: (n_energy,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Energy
+
+  stack_2d(NXdata):
+    doc: |
+      Multiple instances of spectrum_2d.
+    intensity(NX_NUMBER):
+      doc: |
+        Counts
+      unit: NX_UNITLESS
+      dim: (n_spc, n_j, n_i, n_energy)
+      \@long_name(NX_CHAR):
+        doc: |
+          Counts
+    group_identifier(NX_INT):
+      doc: |
+        Group identifier
+      unit: NX_UNITLESS
+      dim: (n_spc,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Group identifier
+    spectrum_identifier(NX_INT):
+      doc: |
+        Spectrum identifier
+      unit: NX_UNITLESS
+      dim: (n_spc,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Spectrum identifier
+    axis_j(NX_NUMBER):
+      doc: |
+        Point coordinate along the slow dimension.
+      unit: NX_LENGTH
+      dim: (n_j,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Point coordinate along the slow dimension.
+    axis_i(NX_NUMBER):
+      doc: |
+        Point coordinate along the fast dimension.
+      unit: NX_LENGTH
+      dim: (n_i,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Point coordinate along the fast dimension.
+    axis_energy(NX_NUMBER):
+      doc: |
+        Energy axis
+      unit: NX_ENERGY
+      dim: (n_energy,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Energy
+
+  stack_3d(NXdata):
+    doc: |
+      Multiple instances of spectrum_3d.
+    intensity(NX_NUMBER):
+      doc: |
+        Counts
+      unit: NX_UNITLESS
+      dim: (n_spc, n_k, n_j, n_i, n_energy)
+      \@long_name(NX_CHAR):
+        doc: |
+          Counts
+    group_identifier(NX_INT):
+      doc: |
+        Group identifier
+      unit: NX_UNITLESS
+      dim: (n_spc,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Group identifier
+    spectrum_identifier(NX_INT):
+      doc: |
+        Spectrum identifier
+      unit: NX_UNITLESS
+      dim: (n_spc,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Spectrum identifier
+    axis_k(NX_NUMBER):
+      doc: |
+        Point coordinate along the slower dimension.
+      unit: NX_LENGTH
+      dim: (n_k,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Point coordinate along the slower dimension.
+    axis_j(NX_NUMBER):
+      doc: |
+        Point coordinate along the slow dimension.
+      unit: NX_LENGTH
+      dim: (n_j,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Point coordinate along the slow dimension.
+    axis_i(NX_NUMBER):
+      doc: |
+        Point coordinate along the fast dimension.
+      unit: NX_LENGTH
+      dim: (n_i,)
+      \@long_name(NX_CHAR):
+        doc: |
+          Point coordinate along the fast dimension.
     axis_energy(NX_NUMBER):
       doc: |
         Energy axis

@@ -1,19 +1,20 @@
 category: base
 doc:
 - |
-  Base class for reporting a set of images in real or reciprocal space.
+  Base class for reporting a set of images.
 - |
-  Typically an image is understood as a discretized representation of intensity distribution that was
-  detected or simulated for which most often equidistantly spaced sampling is used.
-  The terms pixel and voxel identify the smallest discretization unit of such a representation.
-  Under these conditions pixel and voxel are polygonal or polyhedral unit cells of the underlying
-  tessellation of the region of interest within the reference space.
+  The mostly commonly used scanning methods are supported. That is one-,
+  two-, three-dimensional ROIs discretized using regular Euclidean tilings.
   
-  If the sampling is not equispaced, the shape and size of pixel and voxel change but still their
-  reference space is tessellated. In this case the term (image) point is eventually a more appropriate
-  term to use. Therefore, all docstrings in this base class refer to points.
+  Colloquially, an image is understood as a discretized representation of intensity distribution
+  that was detected or simulated for some ROI. When discretized with regular Euclidean tilings
+  the terms pixel and voxel identify the smallest discretization unit. Pixel and voxel are polygonal
+  or polyhedral unit cells respectively of the underlying tiling of the ROI within the reference space.
+  For all other tilings e.g. non-equispaced, the shape and size of pixel and voxel differs. Using the term
+  (image) point is eventually is more appropriate for such tilings. Therefore, all docstrings in this base class
+  refer to points (including pixel and voxel i.e. regular tilings).
   
-  This base class represents images generated from equispaced or non-equispaced sampling.
+  Point coordinates identify the location of the barycentre.
   
   For images in reciprocal space in practice, complex numbers are encoded via some
   formatted pair of real values. Typically, fast algorithms for computing Fourier transformations
@@ -39,19 +40,32 @@ doc:
   That is image_identifier are always counting from offset in increments of one.
   as each image is its own entity. By contrast, a group may contain no, or several images.
   Consequently, group_identifier are not required to be contiguous.
-# for details about NXimage_r_set_diff see
+# for earlier variants see here
 # https://github.com/FAIRmat-NFDI/nexus_definitions/commit/0682943baaef54d4a6386b5433f9721af6d3d81b
-# and here contributed_definitions/NXimage_r_set_diff.nxdl.xml
+# https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons
 symbols:
   n_img: |
-    Number of images in the stack, for stacks the slowest direction.
+    Number of images in the stack, for stacks the slowest dimension.
   n_k: |
-    Number of image points along the slow direction (k equivalent to z).
+    Number of image points along the slow dimension (k equivalent to z).
   n_j: |
-    Number of image points along the fast direction (j equivalent to y).
+    Number of image points along the fast dimension (j equivalent to y).
   n_i: |
-    Number of image points along the fastest direction (i equivalent to x).
+    Number of image points along the fastest dimension (i equivalent to x).
 type: group
+# a key challenge is setting constraints, lets explain with contrasting two use cases:
+# case 1 assuming an image is nothing but a collection of point-wise information without making explicit tiling and discretization information
+# case 2 assuming that like most frequently assumed we understand an image probing Euclidean space
+# assuming that we expect that the image is represented using a pixel grid because it was captured
+# using sensors that are arranged on generator points of a regular tiling.
+# in the first case, one should not constrain the dimensions for images beyond 1d
+# because beyond 1d the question of offset and stride comes up i.e. the question which
+# tiling is used to construct the sensor array
+# in the second case, one should constrain the dimensions for all dimensions as otherwise
+# there are no instructions how to arrange the sensors or the pixels for visualizing the image
+# because the image is not just a bunch of point wise intensities
+# but if the dimensions are not constrained again images in application definitions will be represented
+# using different conventions.
 NXimage_set(NXobject):
   (NXprocess):
     doc: |
@@ -82,13 +96,12 @@ NXimage_set(NXobject):
     (NXprogram):
       doc: |
         Program used for processing.
-  space(NX_CHAR):
-    doc:
-    - |
-      The reference space in which the image set is defined.
-    enumeration: [real, reciprocal]
-
-  image_oned(NXdata):
+  # space(NX_CHAR):
+  #   doc:
+  #   - |
+  #     The reference space in which the image set is defined.
+  #   enumeration: [real, reciprocal]
+  image_1d(NXdata):
     doc: |
       One-dimensional image.
     intensity(NX_NUMBER):
@@ -115,14 +128,14 @@ NXimage_set(NXobject):
       dim: (n_i,)
     axis_i(NX_NUMBER):
       doc: |
-        Point coordinate along the fastest direction.
+        Point coordinate along the fastest dimension.
       unit: NX_LENGTH
       dim: (n_i,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the fastest direction.
+          Point coordinate along the fastest dimension.
 
-  image_twod(NXdata):
+  image_2d(NXdata):
     doc: |
       Two-dimensional image.
     intensity(NX_NUMBER):
@@ -149,22 +162,22 @@ NXimage_set(NXobject):
       dim: (n_j, n_i)
     axis_j(NX_NUMBER):
       doc: |
-        Point coordinate along the fast direction.
+        Point coordinate along the fast dimension.
       unit: NX_LENGTH
       dim: (n_j,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the fast direction.
+          Point coordinate along the fast dimension.
     axis_i(NX_NUMBER):
       doc: |
-        Point coordinate along the fastest direction.
+        Point coordinate along the fastest dimension.
       unit: NX_LENGTH
       dim: (n_i,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the fastest direction.
+          Point coordinate along the fastest dimension.
 
-  image_threed(NXdata):
+  image_3d(NXdata):
     doc: |
       Three-dimensional image.
     intensity(NX_NUMBER):
@@ -191,32 +204,32 @@ NXimage_set(NXobject):
       dim: (n_k, n_j, n_i)
     axis_k(NX_NUMBER):
       doc: |
-        Point coordinate along the slow direction.
+        Point coordinate along the slow dimension.
       unit: NX_LENGTH
       dim: (n_k,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the slow direction.
+          Point coordinate along the slow dimension.
     axis_j(NX_NUMBER):
       doc: |
-        Point coordinate along the fast direction.
+        Point coordinate along the fast dimension.
       unit: NX_LENGTH
       dim: (n_j,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the fast direction.
+          Point coordinate along the fast dimension.
     axis_i(NX_NUMBER):
       doc: |
-        Point coordinate along the fastest direction.
+        Point coordinate along the fastest dimension.
       unit: NX_LENGTH
       dim: (n_i,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the fastest direction.
+          Point coordinate along the fastest dimension.
 
-  stack_oned(NXdata):
+  stack_1d(NXdata):
     doc: |
-      Collection of one-dimensional images.
+      Collection of image_1d.
     intensity(NX_NUMBER):
       doc: |
         Intensity for real-valued images as an alternative for real.
@@ -257,14 +270,14 @@ NXimage_set(NXobject):
           Image identifier
     axis_i(NX_NUMBER):
       doc: |
-        Point coordinate along the fastest direction.
+        Point coordinate along the fastest dimension.
       unit: NX_LENGTH
       dim: (n_i,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the fastest direction.
+          Point coordinate along the fastest dimension.
 
-  stack_twod(NXdata):
+  stack_2d(NXdata):
     doc: |
       Collection of two-dimensional images.
     intensity(NX_NUMBER):
@@ -305,24 +318,24 @@ NXimage_set(NXobject):
       \@long_name(NX_CHAR):
         doc: |
           Image identifier.
-    axis_y(NX_NUMBER):
+    axis_j(NX_NUMBER):
       doc: |
-        Point coordinate along the fast direction.
+        Point coordinate along the fast dimension.
       unit: NX_LENGTH
       dim: (n_j,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the fast direction.
+          Point coordinate along the fast dimension.
     axis_i(NX_NUMBER):
       doc: |
-        Point coordinate along the fastest direction.
+        Point coordinate along the fastest dimension.
       unit: NX_LENGTH
       dim: (n_i,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the fastest direction.
+          Point coordinate along the fastest dimension.
 
-  stack_threed(NXdata):
+  stack_3d(NXdata):
     doc: |
       Collection of three-dimensional images.
     intensity(NX_NUMBER):
@@ -365,25 +378,25 @@ NXimage_set(NXobject):
           Image identifier
     axis_k(NX_NUMBER):
       doc: |
-        Point coordinate along the slow direction.
+        Point coordinate along the slow dimension.
       unit: NX_LENGTH
       dim: (n_k,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the slow direction.
+          Point coordinate along the slow dimension.
     axis_j(NX_NUMBER):
       doc: |
-        Point coordinate along the fast direction.
+        Point coordinate along the fast dimension.
       unit: NX_LENGTH
       dim: (n_j,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the fast direction.
+          Point coordinate along the fast dimension.
     axis_i(NX_NUMBER):
       doc: |
-        Point coordinate along the fastest direction.
+        Point coordinate along the fastest dimension.
       unit: NX_LENGTH
       dim: (n_i,)
       \@long_name(NX_CHAR):
         doc: |
-          Point coordinate along the fastest direction.
+          Point coordinate along the fastest dimension.

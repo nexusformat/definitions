@@ -21,46 +21,61 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
+<!--
+a key challenge is setting constraints, lets explain with contrasting two use cases:
+case 1 assuming an image is nothing but a collection of point-wise information without making explicit tiling and discretization information
+case 2 assuming that like most frequently assumed we understand an image probing Euclidean space
+assuming that we expect that the image is represented using a pixel grid because it was captured
+using sensors that are arranged on generator points of a regular tiling.
+in the first case, one should not constrain the dimensions for images beyond 1d
+because beyond 1d the question of offset and stride comes up i.e. the question which
+tiling is used to construct the sensor array
+in the second case, one should constrain the dimensions for all dimensions as otherwise
+there are no instructions how to arrange the sensors or the pixels for visualizing the image
+because the image is not just a bunch of point wise intensities
+but if the dimensions are not constrained again images in application definitions will be represented
+using different conventions.-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXimage_set" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
-    <!--for details about NXimage_r_set_diff see
+    <!--for earlier variants see here
 https://github.com/FAIRmat-NFDI/nexus_definitions/commit/0682943baaef54d4a6386b5433f9721af6d3d81b
-and here contributed_definitions/NXimage_r_set_diff.nxdl.xml-->
+https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
     <symbols>
         <symbol name="n_img">
             <doc>
-                 Number of images in the stack, for stacks the slowest direction.
+                 Number of images in the stack, for stacks the slowest dimension.
             </doc>
         </symbol>
         <symbol name="n_k">
             <doc>
-                 Number of image points along the slow direction (k equivalent to z).
+                 Number of image points along the slow dimension (k equivalent to z).
             </doc>
         </symbol>
         <symbol name="n_j">
             <doc>
-                 Number of image points along the fast direction (j equivalent to y).
+                 Number of image points along the fast dimension (j equivalent to y).
             </doc>
         </symbol>
         <symbol name="n_i">
             <doc>
-                 Number of image points along the fastest direction (i equivalent to x).
+                 Number of image points along the fastest dimension (i equivalent to x).
             </doc>
         </symbol>
     </symbols>
     <doc>
-         Base class for reporting a set of images in real or reciprocal space.
+         Base class for reporting a set of images.
          
-         Typically an image is understood as a discretized representation of intensity distribution that was
-         detected or simulated for which most often equidistantly spaced sampling is used.
-         The terms pixel and voxel identify the smallest discretization unit of such a representation.
-         Under these conditions pixel and voxel are polygonal or polyhedral unit cells of the underlying
-         tessellation of the region of interest within the reference space.
+         The mostly commonly used scanning methods are supported. That is one-,
+         two-, three-dimensional ROIs discretized using regular Euclidean tilings.
          
-         If the sampling is not equispaced, the shape and size of pixel and voxel change but still their
-         reference space is tessellated. In this case the term (image) point is eventually a more appropriate
-         term to use. Therefore, all docstrings in this base class refer to points.
+         Colloquially, an image is understood as a discretized representation of intensity distribution
+         that was detected or simulated for some ROI. When discretized with regular Euclidean tilings
+         the terms pixel and voxel identify the smallest discretization unit. Pixel and voxel are polygonal
+         or polyhedral unit cells respectively of the underlying tiling of the ROI within the reference space.
+         For all other tilings e.g. non-equispaced, the shape and size of pixel and voxel differs. Using the term
+         (image) point is eventually is more appropriate for such tilings. Therefore, all docstrings in this base class
+         refer to points (including pixel and voxel i.e. regular tilings).
          
-         This base class represents images generated from equispaced or non-equispaced sampling.
+         Point coordinates identify the location of the barycentre.
          
          For images in reciprocal space in practice, complex numbers are encoded via some
          formatted pair of real values. Typically, fast algorithms for computing Fourier transformations
@@ -125,16 +140,12 @@ and here contributed_definitions/NXimage_r_set_diff.nxdl.xml-->
             </doc>
         </group>
     </group>
-    <field name="space" type="NX_CHAR">
-        <doc>
-             The reference space in which the image set is defined.
-        </doc>
-        <enumeration>
-            <item value="real"/>
-            <item value="reciprocal"/>
-        </enumeration>
-    </field>
-    <group name="image_oned" type="NXdata">
+    <!--space(NX_CHAR):
+  doc:
+  - |
+    The reference space in which the image set is defined.
+  enumeration: [real, reciprocal]-->
+    <group name="image_1d" type="NXdata">
         <doc>
              One-dimensional image.
         </doc>
@@ -174,19 +185,19 @@ and here contributed_definitions/NXimage_r_set_diff.nxdl.xml-->
         </field>
         <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the fastest direction.
+                 Point coordinate along the fastest dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_i"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the fastest direction.
+                     Point coordinate along the fastest dimension.
                 </doc>
             </attribute>
         </field>
     </group>
-    <group name="image_twod" type="NXdata">
+    <group name="image_2d" type="NXdata">
         <doc>
              Two-dimensional image.
         </doc>
@@ -230,32 +241,32 @@ and here contributed_definitions/NXimage_r_set_diff.nxdl.xml-->
         </field>
         <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the fast direction.
+                 Point coordinate along the fast dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_j"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the fast direction.
+                     Point coordinate along the fast dimension.
                 </doc>
             </attribute>
         </field>
         <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the fastest direction.
+                 Point coordinate along the fastest dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_i"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the fastest direction.
+                     Point coordinate along the fastest dimension.
                 </doc>
             </attribute>
         </field>
     </group>
-    <group name="image_threed" type="NXdata">
+    <group name="image_3d" type="NXdata">
         <doc>
              Three-dimensional image.
         </doc>
@@ -303,47 +314,47 @@ and here contributed_definitions/NXimage_r_set_diff.nxdl.xml-->
         </field>
         <field name="axis_k" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the slow direction.
+                 Point coordinate along the slow dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_k"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the slow direction.
+                     Point coordinate along the slow dimension.
                 </doc>
             </attribute>
         </field>
         <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the fast direction.
+                 Point coordinate along the fast dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_j"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the fast direction.
+                     Point coordinate along the fast dimension.
                 </doc>
             </attribute>
         </field>
         <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the fastest direction.
+                 Point coordinate along the fastest dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_i"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the fastest direction.
+                     Point coordinate along the fastest dimension.
                 </doc>
             </attribute>
         </field>
     </group>
-    <group name="stack_oned" type="NXdata">
+    <group name="stack_1d" type="NXdata">
         <doc>
-             Collection of one-dimensional images.
+             Collection of image_1d.
         </doc>
         <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
             <doc>
@@ -411,19 +422,19 @@ and here contributed_definitions/NXimage_r_set_diff.nxdl.xml-->
         </field>
         <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the fastest direction.
+                 Point coordinate along the fastest dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_i"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the fastest direction.
+                     Point coordinate along the fastest dimension.
                 </doc>
             </attribute>
         </field>
     </group>
-    <group name="stack_twod" type="NXdata">
+    <group name="stack_2d" type="NXdata">
         <doc>
              Collection of two-dimensional images.
         </doc>
@@ -495,34 +506,34 @@ and here contributed_definitions/NXimage_r_set_diff.nxdl.xml-->
                 </doc>
             </attribute>
         </field>
-        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the fast direction.
+                 Point coordinate along the fast dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_j"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the fast direction.
+                     Point coordinate along the fast dimension.
                 </doc>
             </attribute>
         </field>
         <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the fastest direction.
+                 Point coordinate along the fastest dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_i"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the fastest direction.
+                     Point coordinate along the fastest dimension.
                 </doc>
             </attribute>
         </field>
     </group>
-    <group name="stack_threed" type="NXdata">
+    <group name="stack_3d" type="NXdata">
         <doc>
              Collection of three-dimensional images.
         </doc>
@@ -600,40 +611,40 @@ and here contributed_definitions/NXimage_r_set_diff.nxdl.xml-->
         </field>
         <field name="axis_k" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the slow direction.
+                 Point coordinate along the slow dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_k"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the slow direction.
+                     Point coordinate along the slow dimension.
                 </doc>
             </attribute>
         </field>
         <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the fast direction.
+                 Point coordinate along the fast dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_j"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the fast direction.
+                     Point coordinate along the fast dimension.
                 </doc>
             </attribute>
         </field>
         <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Point coordinate along the fastest direction.
+                 Point coordinate along the fastest dimension.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_i"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Point coordinate along the fastest direction.
+                     Point coordinate along the fastest dimension.
                 </doc>
             </attribute>
         </field>
