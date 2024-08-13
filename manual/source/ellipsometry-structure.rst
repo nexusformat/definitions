@@ -5,8 +5,35 @@ Optical spectroscopy
 ====================
 
 .. index::
+   OpticalSpec1
    Ellipsometry1
+   Raman1
    DispersiveMaterial1
+
+.. _OpticalSpec1:
+
+Optical Spectroscopy
+##############
+
+
+
+
+Application Definitions
+-----------------------
+
+We created one application definition:
+
+    :ref:`NXoptical_spectroscopy`:
+       A general application definition for optical spectroscopy measurements. This includes specifically:
+         photoluminescence
+         transmission spectroscopy
+         reflection spectroscopy
+         and general spectroscopy experiments
+
+   General spectroscopy experiments refer to experiments of the type photon-in photon-out. A detector is required to measure the "photon-out"-signal.
+   For Ellipsomertry and Raman spectroscopy are specific application definitions listed below.
+
+
 
 
 .. _Ellipsometry1:
@@ -16,7 +43,7 @@ Ellipsometry
 
 Ellipsometry is an optical characterization method to describe optical properties of interfaces and thickness of films. The measurements are based on determining how the polarization state of light changes upon transmission and reflection. Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
 
-In the application definition we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
+This application definition is an extension of :ref:`NXoptical_spectroscopy`. It provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
 
 
 Application Definitions
@@ -26,6 +53,27 @@ We created one application definition:
 
     :ref:`NXellipsometry`:
        A general application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
+
+
+.. _Raman1:
+
+Raman NXoptical_spectroscopy
+##############
+
+Raman spectroscopy is an optical characterization method by measuring elastic light scattering. In this way phonon characteristics are measured for a extreme broad range of samples: gasses, liquids, solids, glasses, crystals. 
+
+The application definition provides an extension of :ref:`NXoptical_spectroscopy` to cover required or relevant data from Raman scattering experiments.
+
+
+Application Definitions
+-----------------------
+
+We created one application definition:
+
+    :ref:`NXraman`:
+       A general application definition for Raman measurements.
+
+
 
 
 Dispersive Material
