@@ -57,7 +57,7 @@ We created one application definition:
 
 .. _Raman1:
 
-Raman NXoptical_spectroscopy
+Raman spectroscopy
 ##############
 
 Raman spectroscopy is an optical characterization method by measuring elastic light scattering. In this way phonon characteristics are measured for a extreme broad range of samples: gasses, liquids, solids, glasses, crystals. 
