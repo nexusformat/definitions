@@ -1,4 +1,4 @@
-.. _Ellipsometry-Structure-Fairmat:
+.. _Optical-Spectroscopy-Structure-Fairmat:
 
 ====================
 Optical spectroscopy
