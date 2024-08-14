@@ -1,4 +1,4 @@
-.. _Ellipsometry-Structure:
+.. _Optical-Spectroscopy-Structure:
 
 ====================
 Optical Spectroscopy
