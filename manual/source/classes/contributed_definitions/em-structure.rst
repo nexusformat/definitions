@@ -88,13 +88,11 @@ The following base classes are proposed to support modularizing the storage of p
         Base classes to describe different coordinate systems used and/or to be harmonized
         or transformed into one another and respective transformations.
         
-    :ref:`NXaberration_model`, :ref:`NXaberration`:
+    :ref:`NXcorrector_cs`, :ref:`NXaberration`:
         Base classes to describe procedures and values for the calibration of aberrations based on
-        conventions of different companies active in the field of aberration correction.
-
-    :ref:`NXcorrector_cs`:
-        A base class to describe details about corrective lens or compound lens devices
-        which reduce the (spherical) aberrations of an electron beam.
+        conventions of different companies active in the field of aberration correction including a base class
+        to describe details about corrective lens or compound lens devices which reduce
+        (spherical) aberrations of an electron beam.
 
     :ref:`NXscanbox_em`:
         A base class to represent the component of an electron microscope which realizes a controlled deflection
