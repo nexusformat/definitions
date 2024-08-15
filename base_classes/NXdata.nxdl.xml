@@ -60,222 +60,181 @@
 			does not describe how the data is to be plotted or even the dimensionality of the plot.
 			https://www.nexusformat.org/NIAC2018Minutes.html#nxdata-plottype--attribute
 
+		**Usage:**
+
+		.. admonition:: Plot data versus x axis
+
+			.. code-block::
+
+				data:NXdata
+				  @signal = "data"
+				  @axes = ["x"]
+				  data: float[100]
+				  x: float[100]
+
+		More complex cases are supported
+
+		* histogram data: ``x`` has one more value than ``data``.
+		* alternative axes: instead of a single ``x`` axis you can have several axes, one of which being the default.
+		* signals with more than one dimension: ``data`` could be 2D with axes ``x`` and ``y`` along each dimension.
+		* axes with more than one dimension: ``data`` could be 2D with axes ``x`` and ``y`` also being 2D, providing a
+		  unique ``[x, y]`` coordinate for each ``data`` point.
+
 		**Signals:**
 
 		.. index:: plotting
-		
+
+		.. admonition:: Defined by
+
+			* :ref:`DATA &lt;/NXdata/DATA-field&gt;` fields
+			* the :ref:`signal &lt;/NXdata@signal-attribute&gt;` attribute
+			* the :ref:`auxiliary_signals&lt;/NXdata@auxiliary_signals-attribute&gt;` attribute
+
 		The :ref:`DATA &lt;/NXdata/DATA-field&gt;` fields contain the signal values to be plotted. The name of the field
 		to be used as the *default plot signal* is provided by the :ref:`signal &lt;/NXdata@signal-attribute&gt;` attribute.
 		The names of the fields to be used as *secondary plot signals* are provided by the
 		:ref:`auxiliary_signals&lt;/NXdata@auxiliary_signals-attribute&gt;` attribute.
 
-		An example with three signals, one of which being the default
+		.. admonition:: An example with three signals, one of which being the default
 
-		.. code-block::
+			.. code-block::
 
-			data:NXdata
-			  @signal = "data1"
-			  @auxiliary_signals = ["data2", "data3"]
-			  data1: float[10,20,30]  --> the default signal
-			  data2: float[10,20,30]
-			  data3: float[10,20,30]
+				data:NXdata
+				  @signal = "data1"
+				  @auxiliary_signals = ["data2", "data3"]
+				  data1: float[10,20,30]  --> the default signal
+				  data2: float[10,20,30]
+				  data3: float[10,20,30]
 
 		**Axes:**
 
 		.. index:: axes (attribute)
 		.. index:: coordinates
 
-		The :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields contain the axis coordinates associated with the signal values.
+		.. admonition:: Defined by
 
-		``Default axes``
+			* :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields
+			* the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute
+			* :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes
 
-		The :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute provides the names of the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;`
-		fields to be used as the default axis for each dimension of the :ref:`DATA &lt;/NXdata/DATA-field&gt;` fields.
-		As a result the length of the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute must be equal to the rank of the :ref:`DATA &lt;/NXdata/DATA-field&gt;`
-		fields. When a particular dimension has no default axis, the string “.” is used in that position.
+		The fields and attributes are defined as follows
 
-		``Spanned dimensions``
+		1. The :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields contain the axis coordinates associated with the signal values.
 
-		The :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes describe the
-		:ref:`DATA &lt;/NXdata/DATA-field&gt;` dimensions spanned by the corresponding :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields.
+		2. The :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute provides the names of the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;`
+		   fields to be used as the `default axis` for each dimension of the :ref:`DATA &lt;/NXdata/DATA-field&gt;` fields.
 
-		When :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` is missing for a given :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field,
-		the position(s) of the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field name in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute
-		is(are) used. The shape of an :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field must be equal to the shape of the
-		:ref:`DATA &lt;/NXdata/DATA-field&gt;` dimensions it spans. This means that ``AXISNAME.shape[i] == DATA.shape[AXISNAME_indices[i]]``
-		for each ``i`` in ``[0, AXISNAME.ndim)``.
+		3. The :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes describe the :ref:`DATA &lt;/NXdata/DATA-field&gt;`
+		   dimensions spanned by the corresponding :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields.
 
-		Note that an :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field can have more than one dimension and can therefore span
-		more than one :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimension. Conversely, one :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimension
-		can be spanned by more than one :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field. As stated before, the default
-		axis name (if any) of each dimension can be found in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute.
+		Additional requirements for a complete definition
 
-		``Available axes``
+		1. The length of the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute must be equal to the rank of the :ref:`DATA &lt;/NXdata/DATA-field&gt;`
+		   fields. When a particular dimension has no default axis, the string “.” is used in that position.
 
-		With this definition of the :ref:`axes &lt;/NXdata@axes-attribute&gt;` and :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes
-		a list of all available axes is not provided directly. All strings in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute
-		(excluding the “.” string) are axis field names. In addition the prefix of an attribute ending with the string "_indices" is also
-		an axis field name.
+		2. The number of values in :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` must be equal to the rank of the corresponding
+		   :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field.
 
-		**Axes examples:**
+		3. When :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` is missing for a given
+		   :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field, the positions of the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;`
+		   field name in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute are used.
 
-		``1. Single-dimensional axes``
+		4. When :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` is the same as the indices of "AXISNAME" in the
+		   :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute, there is no need to provide
+		   :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;`.
 
-		:ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields are typically one-dimensional arrays that span a single :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimension.
+		5. The indices of "AXISNAME" in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute must be a subset of
+		   :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;`.
 
-		An example of this would be 2D data on a regular coordinate grid
+		6. The shape of an :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field must correspond to the shape of the
+		   :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimensions it spans. This means that for each dimension ``i`` in ``[0, AXISNAME.ndim)``
+		   spanned by an :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field the number of data points along this dimension
+		   ``DATA.shape[AXISNAME_indices[i]]`` must be equal to the number of axis values along this dimension ``AXISNAME.shape[i]``
+		   or the number of bin edges ``AXISNAME.shape[i]+1`` in case of histogram data.
 
-		.. code-block::
+		Highlight concequences that follow the definition
 
-			data:NXdata
-			  @signal = "data"
-			  @axes = ["x", "y"]
-			  data: float[10,20]
-			  x: float[10]        --> coordinates along the first dimension
-			  y: float[20]        --> coordinates along the second dimension
+		1. An :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field can have more than one dimension and can therefore span
+		   more than one :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimension. Conversely, one :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimension
+		   can be spanned by more than one :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field. The default axis name (if any)
+		   of each dimension can be found in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute.
 
-		In this example each data point ``data[i,j]`` has axis coordinates ``[x[i], y[j]]``.
+		2. A list of all available axes is not provided directly. All strings in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute
+		   (excluding the “.” string) are axis field names. In addition the prefix of an attribute ending with the string "_indices" is also
+		   an axis field name.
 
-		Note that ``@x_indices`` and ``@y_indices`` attributes can be omitted in this case. However it is strongly encouraged to provide them.
+		.. admonition:: The following example covers all axes features supported
 
-		``2. Data dimensions spanned by more than one axis``
+			.. code-block::
 
-		A common case is the need to specify alternative axes for the same dimension
+				data:NXdata
+				  @signal = "data"
+				  @axes = ["x_set", "y_set", "."]  --> default axes for all three dimensions
+				  @x_encoder_indices = [0, 1]
+				  @y_encoder_indices = 1  --> or [1]
+				  data: float[10,7,1024]
+				  x_encoder: float[11,7]  --> coordinates along the first and second dimensions
+				  y_encoder: float[7]     --> coordinates along the second dimension
+				  x_set: float[10]        --> coordinates along the first dimension
+				  y_set: float[7]         --> coordinates along the second dimension
 
-		.. code-block::
+		One scientific application that provided such data is 2D scanning X-Ray Fluorescence (XRF)
+		where the sample is scanned through a focussed X-ray beam in two dimensions and an XRF spectrum
+		with 1024 channels is recorded at each position. In addition the x motor is scanned
+		continuously and both motors have an encoder which records the actual motor position as
+		opposed to the requested or `set` position.
 
-			data:NXdata
-			  @signal = "data"
-			  @axes = ["eta", "q"]
-			  data: float[10,20]
-			  @eta_indices = [0]
-			  @tth_indices = [1]
-			  @q_indices = [1]
-			  eta: float[10]    --> coordinates along the first dimension
-			  tth: float[20]    --> coordinates along the second dimension (alternative)
-			  q: float[20]      --> coordinates along the second dimension (default)
+		.. image:: data/example2D_hist.png
+				:width: 100%
 
-		Note that to recognize ``tth`` as an axis, ``@tth_indices`` must be present. Readers that do
-		not make use of the :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes will
-		not understand that ``tth`` is an axis and cannot take this field into account.
+		1. ``@axes`` has three values which corresponds to the ``data`` rank of three
 
-		``3. Multi-dimensional axes``
+		2. ``x_set`` and ``y_set`` are the default axes for the first two dimensions while the third
+		   dimension does not have a default axis or any axis for that matter.
 
-		When coordinates do not form a regular grid, multi-dimensional :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields
-		can be used. Just remember that the shape of an :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field must be equal to the shape
-		of the :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimensions it spans.
+		3. ``x_set_indices`` and ``y_set_indices`` are omitted because they would be equal to
+		   the position of ``"x_set"`` and ``"y_set"`` in ``@axes``.
 
-		An example of this would be 2D scatter data where each data point has unique coordinates
+		4. The first dimension is spanned by two axes ``x_set`` and ``x_encoder``. Since
+		   the x motor is scanned continuously, the encoder records the edge of every bin
+		   on which an XRF spectrum is recorded yielding 11 values instead of 10 along the
+		   first dimension. The ``x_encoder`` spans two dimensions because the actual x edges
+		   are slightly different for every x motion at each y position.
 
-		.. code-block::
-
-			data:NXdata
-			  @signal = "data"
-			  @axes = ["x", "y"]
-			  @x_indices = [0, 1]
-			  @y_indices = [0, 1]
-			  data: float[10,20]
-			  x: float[10,20]     --> coordinates along both dimensions
-			  y: float[10,20]     --> coordinates along both dimensions
-
-		In this example each data point ``data[i,j]`` has axis coordinates ``[x[i,j], y[i,j]]`` and when
-		plotting, ``x`` is used along the first data dimension by default and `y` along the second data dimension.
-		Since ``x`` and ``y`` span both dimensions, a reader could choose to use ``y`` for the first dimension
-		and ``x`` for the second as an alternative to the default. A writer could also choose to not specify
-		any default by defining ``@axes = [".", "."]`` and leave the decision up the the reader.
-
-		Note that omitting ``@x_indices`` would result in ``@x_indices = [0]`` as derived from the position of the string ``"x"`` in ``@axes``.
-		This would be invalid since the shape ``[10,20]`` of ``x`` is not equal to the shape ``[10]`` of the spanned data dimensions.
-
-		Omitting indices for multi-dimensional axes can only be done by repeating the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;`
-		name in all positions of the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute which they span. For example
-
-		.. code-block::
-
-			data:NXdata
-			  @signal = "data"
-			  @axes = ["x", "x"]
-			  data: float[10,20]
-			  x: float[10,20]     --> coordinates along both dimensions
-
-		Note that since ``NXdata`` does not describe how the data is to be plotted or even the dimensionality of the plot,
-		a reader would probably treat this particular example as a 1D signal and plot it as such.
-
-		In the case of multi-dimensional axes, single-dimensional axes are often introduced as default axes
-		to support readers that do not make use of the :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes
-		or cannot handle multi-dimensional axes.
-
-		The 2D scatter example can be enriched as follows
-
-		.. code-block::
-
-			data:NXdata
-			  @signal = "data"
-			  @axes = ["x_set", "y_set"]
-			  @x_indices = [0, 1]
-			  @y_indices = [0, 1]
-			  @x_set_indices = 0  --> or [0]
-			  @y_set_indices = 1  --> or [1]
-			  data: float[10,20]
-			  x: float[10,20]     --> coordinates along both dimensions
-			  y: float[10,20]     --> coordinates along both dimensions
-			  x_set: float[10]    --> coordinates along the first dimension
-			  y_set: float[20]    --> coordinates along the second dimension
-
-		The first dimension is spanned by three axes: ``x``, ``y`` and ``x_set``. The second dimension is also
-		spanned by three axes: ``x``, ``y`` and ``y_set``.
-
-		Technically ``@x_set_indices`` and ``@y_set_indices`` can be omitted. However it is strongly encouraged to provide them.
-
-		``4. Axes without defaults``
-
-		Expanding on the previous example, a stack of 2D scatter data where the stack dimension
-		does not have an axis can be described as follows
-
-		.. code-block::
-
-			data:NXdata
-			  @signal = "data"
-			  @axes = [".", "x_set", "y_set"]
-			  @x_indices = [1, 2]
-			  @y_indices = [1, 2]
-			  @x_set_indices = 1
-			  @y_set_indices = 2
-			  data: float[5,10,20]
-			  x: float[10,20]     --> coordinates along the last two dimensions
-			  y: float[10,20]     --> coordinates along the last two dimensions
-			  x_set: float[10]    --> coordinates along the second dimension
-			  y_set: float[20]    --> coordinates along the third dimension
-
-		Note that the first dimension does not have a default axis but this doesn't necessarily mean
-		the first dimension is not spanned by any axis, although in this example that is the case.
+		5. The second dimension is spanned by two axes ``y_set`` and ``y_encoder``. The axes
+		   have as many values are there are data points along the second dimension. This is
+		   because the y motor moves one step after each scan of the x motor. Since the y
+		   motor does not move while scanning x, there is no need for ``y_encoder`` to span
+		   the first dimension because the value along this dimension remains constant.
 
 		**Uncertainties:**
+
+		.. admonition:: Defined by
+
+			* :ref:`FIELDNAME_errors &lt;/NXdata/FIELDNAME_errors-field&gt;` fields
 
 		Standard deviations on data values as well as coordinates can be provided by
 		:ref:`FIELDNAME_errors &lt;/NXdata/FIELDNAME_errors-field&gt;` fields where ``FIELDNAME`` is the name of a
 		:ref:`DATA &lt;/NXdata/DATA-field&gt;` field or an :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field.
 
-		An example of uncertainties on the signal, auxiliary signals and axis coordinates
+		.. admonition:: An example of uncertainties on the signal, auxiliary signals and axis coordinates
 
-		.. code-block::
+			.. code-block::
 
-			data:NXdata
-			  @signal = "data1"
-			  @auxiliary_signals = ["data2", "data3"]
-			  @axes = ["x", "z"]
-			  @x_indices = 0
-			  @z_indices = 2
-			  data1: float[10,20,30]
-			  data2: float[10,20,30]
-			  data3: float[10,20,30]
-			  x: float[10]
-			  z: float[30]
-			  data1_errors: float[10,20,30]
-			  data2_errors: float[10,20,30]
-			  data3_errors: float[10,20,30]
-			  x_errors: float[10]
-			  z_errors: float[30]
+				data:NXdata
+				  @signal = "data1"
+				  @auxiliary_signals = ["data2", "data3"]
+				  @axes = ["x", ".", "z"]
+				  data1: float[10,20,30]
+				  data2: float[10,20,30]
+				  data3: float[10,20,30]
+				  x: float[10]
+				  z: float[30]
+				  data1_errors: float[10,20,30]
+				  data2_errors: float[10,20,30]
+				  data3_errors: float[10,20,30]
+				  x_errors: float[10]
+				  z_errors: float[30]
 
 	</doc>
 
@@ -358,7 +317,9 @@
 	<attribute name="AXISNAME_indices" type="NX_INT" nameType="partial">
 		<doc>
 			The ``AXISNAME_indices`` attribute is a single integer or an array of integers that defines which :ref:`DATA &lt;/NXdata/DATA-field&gt;`
-			dimension(s) are spanned by the corresponding axis. The first dimension index is ``0`` (zero).
+			dimensions are spanned by the corresponding axis. The first dimension index is ``0`` (zero).
+
+			The number of indices must be equal to the rank of the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field.
 
 			When the ``AXISNAME_indices`` attribute is missing for a given :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field, its value becomes
 			the index (or indices) of the :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` name in the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute.
@@ -387,8 +348,12 @@
 	<!-- Data and coordinate fields -->
 	<field name="AXISNAME" type="NX_CHAR_OR_NUMBER" nameType="any">
 		<doc>
-			Coordinate values along one or more :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimensions. The shape of an ``AXISNAME`` field
-			must be equal to the shape of the :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimensions it spans.
+			Coordinate values along one or more :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimensions.
+
+			The shape of an ``AXISNAME`` field must correspond to the shape of the :ref:`DATA &lt;/NXdata/DATA-field&gt;`
+			dimensions it spans. This means that for each ``i`` in ``[0, AXISNAME.ndim)`` the number of data points
+			``DATA.shape[AXISNAME_indices[i]]`` must be equal to the number of coordinates ``AXISNAME.shape[i]`` or the
+			number of bin edges ``AXISNAME.shape[i]+1`` in case of histogram data.
 
 			As the upper case ``AXISNAME`` indicates, the names of the ``AXISNAME`` fields can be chosen :ref:`freely &lt;validItemName&gt;`.
 
@@ -424,7 +389,7 @@
 	<field name="DATA" type="NX_NUMBER" nameType="any">
 		<doc>
 			.. index:: plotting
-			
+
 			Data values to be used as the NeXus *plottable data*. As the upper case ``DATA``
 			indicates, the names of the ``DATA`` fields can be chosen :ref:`freely &lt;validItemName&gt;`. The :ref:`signal attribute &lt;/NXdata@signal-attribute&gt;`
 			and :ref:`auxiliary_signals attribute&lt;/NXdata@auxiliary_signals-attribute&gt;` can be used to find all datasets in the ``NXdata``
@@ -468,10 +433,12 @@
 		<doc>
 			"Errors" (meaning *uncertainties* or *standard deviations*)
 			associated with any field named ``FIELDNAME`` in this ``NXdata``
-			group (e.g. an axis, signal or auxiliary signal).
+			group. This can be a :ref:`DATA &lt;/NXdata/DATA-field&gt;` field
+			(signal or auxiliary signal) or a :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;`
+			field (axis).
 
 			The dimensions of the ``FIELDNAME_errors`` field must match
-			the dimensions of the ``FIELDNAME`` field.
+			the dimensions of the corresponding ``FIELDNAME`` field.
 		</doc>
 	</field>
 	<field name="errors" type="NX_NUMBER" deprecated="Use ``DATA_errors`` instead (NIAC2018)">
