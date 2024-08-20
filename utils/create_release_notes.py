@@ -95,19 +95,23 @@ def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
     logger.debug(f"repo: {repo}")
 
     # fmt: off
-    milestones = [
+    all_milestones = tuple(repo.get_milestones(state="all"))
+    matching_milestones = tuple(
         m
-        for m in repo.get_milestones(state="all")
+        for m in all_milestones
         if m.title == milestone_name
-    ]
+    )
     # fmt: on
-    if len(milestones) == 0:
-        msg = f"Could not find milestone: {milestone_name}"
+    if len(matching_milestones) == 0:
+        msg = f"Could not find milestone to match '{milestone_name}':"
+        for m in all_milestones:
+            msg += f"\n\t{m.title}"
         logger.error(msg)
         raise ValueError(msg)
-    milestone = milestones[0]
+    milestone = matching_milestones[0]
     logger.debug(f"milestone: {milestone}")
 
+    logger.debug(f"compare: {base_tag_name} -> {head_branch_name}")
     compare = repo.compare(base_tag_name, head_branch_name)
     logger.debug(f"compare: {compare}")
 
@@ -124,9 +128,10 @@ def get_release_info(token, base_tag_name, head_branch_name, milestone_name):
             #   t.commit == commit
             #   t.commit.last_modified != commit.last_modified
             commit = repo.get_commit(t.commit.sha)
-            dt = str2time(commit.last_modified)
+            dt = commit.last_modified_datetime
             earliest = min(dt, earliest or dt)
-    logger.debug(f"# tags: {len(tags)}")
+
+    logger.debug(f"# tags: {len(tags)} {earliest}")
 
     # fmt: off
     pulls = {
@@ -191,18 +196,6 @@ def parse_command_line():
     return parser.parse_args()
 
 
-def str2time(time_string):
-    """convert date/time string to datetime object
-    
-    input string example: ``Tue, 20 Dec 2016 17:35:40 GMT``
-    """
-    if time_string is None:
-        msg = f"need valid date/time string, not: {time_string}"
-        logger.error(msg)
-        raise ValueError(msg)
-    return datetime.datetime.strptime(time_string, "%a, %d %b %Y %H:%M:%S %Z")
-
-
 def report(title, repo, milestone, tags, pulls, issues, commits):
     print(f"## {title}")
     print("")
@@ -228,7 +221,7 @@ def report(title, repo, milestone, tags, pulls, issues, commits):
         print("-" * 5, " | ", "-" * 5, " | ", "-" * 5)
         for k, tag in sorted(tags.items()):
             commit = repo.get_commit(tag.commit.sha)
-            when = str2time(commit.last_modified).strftime("%Y-%m-%d")
+            when = commit.last_modified_datetime.strftime("%Y-%m-%d")
             print(f"[{tag.commit.sha[:7]}]({tag.commit.html_url}) | {when} | {k}")
     print("")
     print("### Pull Requests")
@@ -240,7 +233,7 @@ def report(title, repo, milestone, tags, pulls, issues, commits):
         print("-" * 5, " | ", "-" * 5, " | ", "-" * 5, " | ", "-" * 5)
         for k, pull in sorted(pulls.items()):
             state = {True: "merged", False: "closed"}[pull.merged]
-            when = str2time(pull.last_modified).strftime("%Y-%m-%d")
+            when = pull.closed_at.strftime("%Y-%m-%d")
             # fmt: off
             print(
                 f"[#{pull.number}]({pull.html_url})"
@@ -307,7 +300,7 @@ if __name__ == "__main__":
 
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2024 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
