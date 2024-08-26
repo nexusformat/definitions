@@ -13,7 +13,7 @@ Optical spectroscopy
 .. _OpticalSpec1:
 
 Optical Spectroscopy
-##############
+####################
 
 
 
