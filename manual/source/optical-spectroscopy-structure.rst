@@ -4,6 +4,18 @@
 Optical spectroscopy
 ====================
 
+.. index::
+   OpticalSpec1
+   Ellipsometry1
+   Raman1
+   DispersiveMaterial1
+
+.. _OpticalSpec1:
+
+Optical Spectroscopy
+##############
+
+
 
 
 Application Definitions
@@ -23,6 +35,9 @@ We created one application definition:
 
 
 
+
+.. _Ellipsometry1:
+
 Ellipsometry
 ############
 
@@ -36,9 +51,11 @@ Application Definitions
 
 We created one application definition:
 
-
+    :ref:`NXellipsometry`:
        A general application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
 
+
+.. _Raman1:
 
 Raman spectroscopy
 ##################
