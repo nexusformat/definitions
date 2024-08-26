@@ -4,18 +4,6 @@
 Optical spectroscopy
 ====================
 
-.. index::
-   OpticalSpec1
-   Ellipsometry1
-   Raman1
-   DispersiveMaterial1
-
-.. _OpticalSpec1:
-
-Optical Spectroscopy
-##############
-
-
 
 
 Application Definitions
@@ -35,11 +23,8 @@ We created one application definition:
 
 
 
-
-.. _Ellipsometry1:
-
 Ellipsometry
-##############
+############
 
 Ellipsometry is an optical characterization method to describe optical properties of interfaces and thickness of films. The measurements are based on determining how the polarization state of light changes upon transmission and reflection. Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
 
@@ -51,14 +36,12 @@ Application Definitions
 
 We created one application definition:
 
-    :ref:`NXellipsometry`:
+
        A general application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
 
 
-.. _Raman1:
-
 Raman spectroscopy
-##############
+##################
 
 Raman spectroscopy is an optical characterization method by measuring elastic light scattering. In this way phonon characteristics are measured for a extreme broad range of samples: gasses, liquids, solids, glasses, crystals. 
 
