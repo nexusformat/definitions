@@ -14,7 +14,7 @@ https://www.nexusformat.org/
     nexus-index
     em-structure
     mpes-structure
-    ellipsometry-structure
+    optical-spectroscopy-structure
     apm-structure
     transport-structure
     sts-structure

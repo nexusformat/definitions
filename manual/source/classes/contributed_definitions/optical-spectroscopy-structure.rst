@@ -1,32 +1,90 @@
-.. _Ellipsometry-Structure-Fairmat:
+.. _Optical-Spectroscopy-Structure:
 
 ====================
-Optical spectroscopy
+Optical Spectroscopy
 ====================
 
 .. index::
-   Ellipsometry1
-   DispersiveMaterial1
+   Ellipsometry
+   Raman
+   DispersiveMaterial
 
 
-.. _Ellipsometry1:
+.. _Ellipsometry:
 
 Ellipsometry
-##############
+############
 
-Ellipsometry is an optical characterization method to describe optical properties of interfaces and thickness of films. The measurements are based on determining how the polarization state of light changes upon transmission and reflection. Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
+Ellipsometry is an optical characterization method to describe optical properties of interfaces and thickness of films.
+The measurements are based on determining how the polarization state of light changes upon transmission and reflection.
+Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
 
 In the application definition we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
+
+.. _Raman:
+
+Raman
+############
+
+Raman spectroscopy is a characterization method to analyze vibrational properties for liquids, gases or solids. 
+The measurements is based on the inelastic light scattering due to the materials vibrations.
+Interpretation can be done based on peaks, which represent the phonon properties (intensity, center, width).
+
+The application provides a minimum set of description elements, which are necessary to understand for Raman spectroscopy measurements.
+
 
 
 Application Definitions
 -----------------------
 
-We created one application definition:
+    :ref:`NXoptical_spectroscopy`:
+       A generic application definition for optial spectorscopy measurements. This including specifically ellipsometry and Raman spectroscopy measurements, but as well other techniques such as photoluminescence, transmission, reflection measurements. The requirements are: (i) an incident photon beam, (ii) a detector to measure scattered/emitted photons and (iii) a sample.
 
     :ref:`NXellipsometry`:
-       A general application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
+       An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry.
 
+    :ref:`NXraman`:
+       An application definition for Raman spectroscopy measurements.
+
+
+Base Classes
+------------
+
+There is a set of base classes for describing an optical experiment.
+
+    :ref:`NXbeam_device`
+       Beam devices are used to relate a beam, which has always at least one origin
+       and at least one destination. 
+       
+       By referencing the beam devices with each other, a beam path can be
+       constructed. This can be used for vizualization or beam propery modeling
+       along the beam path.
+
+    :ref:`NXbeam`
+      Beam properties such as intensity, polarization, wavelength or direction.
+
+    :ref:`NXdetector`
+      A detector for signal detection.
+
+    :ref:`NXsource`
+      A light source such as laser, lamp or LED.
+
+    :ref:`NXmonochromator`
+      A monochromator is often used to energetically disperse the scattered or emitted light.
+
+    :ref:`NXlens_opt`
+       Description of an optical lens.
+       
+    :ref:`NXwaveplate`
+       A waveplate or retarder.
+
+    :ref:`NXsensor`
+       Specify external parameters that have influenced the sample such as
+       varied parameters e.g. temperature, pressure, pH value, beam intensity, etc.
+
+
+
+.. _DispersiveMaterial:
 
 Dispersive Material
 ###################
