@@ -154,7 +154,7 @@ storage (i.e. serialization) using NeXus.
 
 More consolidation through the use of NXsubentry classes should be considered in the future. For now we use an approach whereby base classes are combined to reuse vocabulary and a hierarchical organization of pieces of information with specific constraints which are relevant only for specific usage of such data by specific tools used by an eventually smaller circle of users.
 
-    :ref:`NXem_method`, :ref:`NXem_adf`, :ref:`NXem_ebsd`, :ref:`NXem_eds`, :ref:`NXem_eels`, :ref:`NXem_img`, :ref:`NXem_correlation`:
+    :ref:`NXem_method`, :ref:`NXem_ebsd`, :ref:`NXem_eds`, :ref:`NXem_eels`, :ref:`NXem_img`, :ref:`NXem_correlation`:
         Base classes with method-specific details especially when it comes to reporting post-processed data within electron microscopy.
 
     :ref:`NXcrystal_structure`:
