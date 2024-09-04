@@ -47,7 +47,7 @@ The following base classes are proposed to support modularizing the storage of p
         Base classes to describe different coordinate systems used and/or to be harmonized
         or transformed into one another when interpreting the dataset.
 
-    :ref:`NXion`:
+    :ref:`NXion`: (about to become replaced by :ref:`NXatom_set`)
        A base class to describe molecular ions with an adjustable number of atoms/isotopes building each ion.
        For the usage in atom probe research the maximum number of atoms supported building a molecular ion
        is currently set to a maximum of 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with
@@ -57,7 +57,7 @@ The following base classes are proposed to support modularizing the storage of p
         A base class to bundle manufacturer/technology-partner-specific details about
         a component or device of an instrument.
 
-    :ref:`NXpeak`:
+    :ref:`NXpeak`: (about to become complemented by NXpeak_fitting)
         A base class to describe peaks mathematically to detail how peaks in
         mass-to-charge-state ratio histograms (aka mass spectra) are defined and
         labelled as iontypes.
