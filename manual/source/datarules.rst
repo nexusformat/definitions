@@ -231,21 +231,26 @@ the following table lists the suffixes reserved by NeXus.
     reserved suffixes; mask
     reserved suffixes; set
     reserved suffixes; weights
+    reserved suffixes; scaling_factor
+    reserved suffixes; offset
 
-==================  =========================================  =================================
-suffix              reference                                  meaning
-==================  =========================================  =================================
-``_end``            :ref:`NXtransformations`                   end points of the motions that start with ``DATASET``
-``_errors``         :ref:`NXdata`                              uncertainties (a.k.a., errors)
-``_increment_set``  :ref:`NXtransformations`                   intended average range through which the corresponding axis moves during the exposure of a frame
-``_indices``        :ref:`NXdata`                              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
-``_mask``           ..                                         Field containing a signal mask, where 0 means the pixel is not masked. If required, bit masks are defined in :ref:`NXdetector` ``pixel_mask``.
-``_set``            :ref:`target values <target_value>`        Target value of ``DATASET``
-``_weights``        ..                                         divide ``DATASET`` by these weights [#]_
-==================  =========================================  =================================
+===================  =========================================  =================================
+suffix               reference                                  meaning
+===================  =========================================  =================================
+``_end``             :ref:`NXtransformations`                   end points of the motions that start with ``DATASET``
+``_errors``          :ref:`NXdata`                              uncertainties (a.k.a., errors)
+``_increment_set``   :ref:`NXtransformations`                   intended average range through which the corresponding axis moves during the exposure of a frame
+``_indices``         :ref:`NXdata`                              Integer array that defines the indices of the signal field which need to be used in the ``DATASET`` in order to reference the corresponding axis value
+``_mask``            ..                                         Field containing a signal mask, where 0 means the pixel is not masked. If required, bit masks are defined in :ref:`NXdetector` ``pixel_mask``.
+``_set``             :ref:`target values <target_value>`        Target value of ``DATASET``
+``_weights``         ..                                         divide ``DATASET`` by these weights [#suffix_note]_
+``_scaling_factor``  :ref:`NXdata`                              Multiply ``DATASET`` by this factor [#suffix_note]_
+``_offset``          :ref:`NXdata`                              Add this factor to ``DATASET`` [#suffix_note]_
+===================  =========================================  =================================
 
-.. [#] If ``DATASET_weights`` exists and has the same shape as the field,
-   you are supposed to divide ``DATASET`` by the weights.
+.. [#suffix_note] If ``DATASET_weights`` exists and has the same shape as the field,
+   you are supposed to divide ``DATASET`` by the weights. Similarly, if `DATASET_scaling_factor` and/or
+   `DATASET_offset` exist, apply this equation: (``DATASET`` + ``DATASET_offset``) * ``DATASET_scaling_factor``
 
 .. Note that the following line might be added to the above table pending discussion:
 
