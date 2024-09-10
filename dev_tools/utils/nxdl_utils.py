@@ -765,16 +765,28 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
     corresponding to the html documentation name html_name"""
     bestfit = -1
     bestchild = None
-    if (
-        "name" in nxdl_elem.attrib.keys()
-        and nxdl_elem.attrib["name"] == "NXdata"
-        and hdf_node is not None
-        and hdf_node.parent is not None
-        and hdf_node.parent.attrs.get("NX_class") == "NXdata"
-    ):
-        (fnd_child, fit) = get_best_nxdata_child(nxdl_elem, hdf_node, hdf_name)
-        if fnd_child is not None:
-            return (fnd_child, fit)
+    try:
+        if (
+            "name" in nxdl_elem.attrib.keys()
+            and nxdl_elem.attrib["name"] == "NXdata"
+            and hdf_node is not None
+            and hdf_node.parent is not None
+            and hdf_node.parent.attrs.get("NX_class").decode("UTF-8") == "NXdata"
+        ):
+            (fnd_child, fit) = get_best_nxdata_child(nxdl_elem, hdf_node, hdf_name)
+            if fnd_child is not None:
+                return (fnd_child, fit)
+    except AttributeError:
+        if (
+            "name" in nxdl_elem.attrib.keys()
+            and nxdl_elem.attrib["name"] == "NXdata"
+            and hdf_node is not None
+            and hdf_node.parent is not None
+            and hdf_node.parent.attrs.get("NX_class") == "NXdata"
+        ):
+            (fnd_child, fit) = get_best_nxdata_child(nxdl_elem, hdf_node, hdf_name)
+            if fnd_child is not None:
+                return (fnd_child, fit)
     for child in nxdl_elem:
         if not isinstance(child.tag, str):
             continue
