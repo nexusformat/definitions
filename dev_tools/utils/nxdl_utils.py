@@ -7,92 +7,10 @@ import textwrap
 from functools import lru_cache
 from glob import glob
 from pathlib import Path
-from typing import List, Optional, Union
-
-import numpy as np
+from typing import List, Optional
 
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
-
-
-def decode_string(
-    string_obj: Union[np.ndarray, bytes, str], decode: bool = True
-) -> Optional[Union[str, List[str], np.ndarray, bytes]]:
-    """
-    Decodes a numpy ndarray of byte objects to a Python string or list of strings.
-    Also handles single bytes and string objects. If `decode` is False, returns the
-    initial value without decoding.
-
-    Args:
-        string_obj: A numpy ndarray, bytes, or str that may need decoding.
-        decode: A boolean flag indicating whether to perform decoding.
-
-    Returns:
-        A decoded string, a list of decoded strings, or the initial value if `decode` is False.
-        Returns None if the input is empty or invalid.
-
-    Raises:
-        ValueError: If `string_obj` is not one of the supported types or decoding fails.
-    """
-    if not decode:
-        # Return the initial value without decoding
-        if not isinstance(string_obj, (np.ndarray, bytes, str)):
-            raise ValueError(
-                f"Unsupported type {type(string_obj)}. Expected np.ndarray, bytes, or str."
-            )
-        if isinstance(string_obj, np.ndarray):
-            return string_obj.tolist() if string_obj.size > 0 else None
-        return string_obj
-
-    if isinstance(string_obj, np.ndarray):
-        if string_obj.size == 0:
-            return None
-
-        # Handle fixed-length strings by stripping padding
-        if string_obj.dtype.kind == "S":
-            valid_entries = [
-                (
-                    entry.decode("utf-8").rstrip("\x00")
-                    if isinstance(entry, bytes)
-                    else entry
-                )
-                for entry in string_obj
-                if isinstance(entry, (str, bytes))
-            ]
-        else:
-            valid_entries = [
-                entry for entry in string_obj if isinstance(entry, (str, bytes))
-            ]
-
-        # Decode bytes to strings where necessary
-        decoded_list = []
-        for entry in valid_entries:
-            if isinstance(entry, bytes):
-                try:
-                    decoded_list.append(entry.decode("utf-8"))
-                except UnicodeDecodeError as e:
-                    raise ValueError(f"Error decoding bytes: {e}")
-            else:
-                decoded_list.append(entry)
-
-        # Return a scalar string if there's only one element, otherwise return the list
-        if len(decoded_list) == 1:
-            return decoded_list[0]
-        return decoded_list if decoded_list else None
-
-    elif isinstance(string_obj, bytes):
-        try:
-            return string_obj.decode("utf-8")
-        except UnicodeDecodeError as e:
-            raise ValueError(f"Error decoding bytes: {e}")
-
-    elif isinstance(string_obj, str):
-        return string_obj
-
-    else:
-        raise ValueError(
-            f"Unsupported type {type(string_obj)}. Expected np.ndarray, bytes, or str."
-        )
 
 
 def remove_namespace_from_tag(tag):
@@ -851,7 +769,7 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
         and nxdl_elem.attrib["name"] == "NXdata"
         and hdf_node is not None
         and hdf_node.parent is not None
-        and decode_or_not(hdf_node.parent.attrs.get("NX_class")) == "NXdata"
+        and decode_string(hdf_node.parent.attrs.get("NX_class")) == "NXdata"
     ):
         (fnd_child, fit) = get_best_nxdata_child(nxdl_elem, hdf_node, hdf_name)
         if fnd_child is not None:
