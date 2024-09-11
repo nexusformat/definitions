@@ -14,9 +14,6 @@ import numpy as np
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
 
-import numpy as np
-from typing import Union, List, Optional
-
 def decode_string(
     string_obj: Union[np.ndarray, bytes, str],
     decode: bool = True
