@@ -771,7 +771,8 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
         and nxdl_elem.attrib["name"] == "NXdata"
         and hdf_node is not None
         and hdf_node.parent is not None
-        and decode_string(hdf_node.parent.attrs.get("NX_class")) == "NXdata"
+        and decode_string(hdf_node.parent.attrs.get("NX_class"))
+        == "NXdata"  # noqa: F821
     ):
         (fnd_child, fit) = get_best_nxdata_child(nxdl_elem, hdf_node, hdf_name)
         if fnd_child is not None:
