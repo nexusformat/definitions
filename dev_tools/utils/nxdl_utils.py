@@ -14,6 +14,13 @@ import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
 
 
+def decode_or_not(elem):
+    """Decodes a byte array to string if necessary"""
+    if isinstance(elem, bytes):
+        elem = elem.decode("UTF-8")
+    return elem
+
+
 def remove_namespace_from_tag(tag):
     """Helper function to remove the namespace from an XML tag."""
 
@@ -770,7 +777,7 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
         and nxdl_elem.attrib["name"] == "NXdata"
         and hdf_node is not None
         and hdf_node.parent is not None
-        and hdf_node.parent.attrs.get("NX_class") == "NXdata"
+        and decode_or_not(hdf_node.parent.attrs.get("NX_class")) == "NXdata"
     ):
         (fnd_child, fit) = get_best_nxdata_child(nxdl_elem, hdf_node, hdf_name)
         if fnd_child is not None:
