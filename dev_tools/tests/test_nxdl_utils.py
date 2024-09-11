@@ -196,31 +196,35 @@ def test_namefitting_precedence(better_fit, better_ref, worse_fit, worse_ref):
         worse_fit, worse_ref
     )
 
+
 @pytest.mark.parametrize(
     "string_obj, decode, expected",
     [
         # Test with np.ndarray
-        (np.array([b'fixed1', b'fixed2'], dtype='S10'), True, ['fixed1', 'fixed2']),
-        (np.array([b'fixed1   ', b'fixed2   '], dtype='S10'), False, np.array([b'fixed1   ', b'fixed2   '], dtype='S10')),
-
-        (np.array([b'var1', b'var2', b'var3']), True, ['var1', 'var2', 'var3']),
-        (np.array([b'var1', b'var2', b'var3']), False, np.array([b'var1', b'var2', b'var3'])),
-
+        (np.array([b"fixed1", b"fixed2"], dtype="S10"), True, ["fixed1", "fixed2"]),
+        (
+            np.array([b"fixed1   ", b"fixed2   "], dtype="S10"),
+            False,
+            np.array([b"fixed1   ", b"fixed2   "], dtype="S10"),
+        ),
+        (np.array([b"var1", b"var2", b"var3"]), True, ["var1", "var2", "var3"]),
+        (
+            np.array([b"var1", b"var2", b"var3"]),
+            False,
+            np.array([b"var1", b"var2", b"var3"]),
+        ),
         (np.array([], dtype=object), True, None),
         (np.array([], dtype=object), False, np.array([])),
-
         # # Test with bytes
-        (b'single', True, 'single'),
-        (b'single', False, b'single'),
-
+        (b"single", True, "single"),
+        (b"single", False, b"single"),
         # Test with str
-        ('single', True, 'single'),
-        ('single', False, 'single'),
-
+        ("single", True, "single"),
+        ("single", False, "single"),
         # Test with mixed np.ndarray
-        (np.array([b'bytes', 'string'], dtype=object), True, ['bytes', 'string']),
+        (np.array([b"bytes", "string"], dtype=object), True, ["bytes", "string"]),
         # (np.array([b'bytes', 'string'], dtype=object), False, np.array([b'bytes', 'string'], dtype=object)),
-    ]
+    ],
 )
 def test_decode_string(string_obj, decode, expected):
     # Handle normal cases
@@ -228,7 +232,9 @@ def test_decode_string(string_obj, decode, expected):
     if isinstance(expected, list):
         assert list(result) == expected, f"Failed for {string_obj} with decode={decode}"
     elif isinstance(expected, np.ndarray):
-        assert (result == expected).all(), f"Failed for {string_obj} with decode={decode}"
+        assert (
+            result == expected
+        ).all(), f"Failed for {string_obj} with decode={decode}"
     else:
         assert result == expected, f"Failed for {string_obj} with decode={decode}"
 
@@ -238,7 +244,7 @@ def test_decode_string(string_obj, decode, expected):
     [
         (123, True),
         (123, False),
-    ]
+    ],
 )
 def test_decode_string_exceptions(string_obj, decode):
     with pytest.raises(ValueError):
