@@ -7,7 +7,8 @@ import textwrap
 from functools import lru_cache
 from glob import glob
 from pathlib import Path
-from typing import List, Optional
+from typing import List
+from typing import Optional
 
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
