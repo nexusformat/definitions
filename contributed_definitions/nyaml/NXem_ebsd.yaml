@@ -1,8 +1,9 @@
 category: base
-doc: |
+doc:
+- |
   Base class method-specific for Electron Backscatter Diffraction (EBSD).
   
-  The general procedure of an EBSD experiment is as follows:
+  The general procedure of an EBSD experiment is as follows.
   Users load the specimen, collect first a coarse image of the surface.
   Next, they set an approximate value for the calibrated working distance and
   tilt the stage to set the desired diffraction conditions.
@@ -86,6 +87,11 @@ doc: |
   definition contains conceptual ideas how this splitting between measurement and
   post-processing can be granularized also for such X-ray-based techniques, whether
   it be 3DXRD or HEDM.
+- |
+  xref:
+    spec: EMglossary
+    term: Electron Backscatter Diffraction
+    url: https://purls.helmholtz-metadaten.de/emg/EMG_00000019
 symbols:
   n_op: |
     Number of arguments per orientation for given parameterization.
@@ -100,11 +106,87 @@ symbols:
   n_x: |
     Number of pixel along fast changing dimension for a rediscretized i.e.
     standardized default plot orientation mapping.
+  n_solutions: |
+    Number of phase solutions
 type: group
 NXem_ebsd(NXem_method):
-  conventions(NXem_conventions):
-  # either we have simulated data or we have a set of measured data
-  # in every case data are Kikuchi diffraction pattern and their metadata
+  # (NXcoordinate_system):
+  gnomonic_reference_frame(NXcoordinate_system):
+    doc: |
+      Details about the gnomonic (projection) reference frame.
+      
+      It is assumed that the configuration is inspected by looking towards the sample surface.
+      If a detector is involved, it is assumed that the configuration is inspected from a position
+      that is located behind this detector.
+      
+      If any of these assumptions is not met, the user is required to explicitly state this.
+      
+      Reference DOI: 10.1016/j.matchar.2016.04.008 suggests to label the
+      base vectors of this coordinate system as Xg, Yg, Zg.
+    origin(NX_CHAR):
+      doc: |
+        Origin of the gnomonic_projection_reference_frame.
+        
+        Reference DOI: 10.1016/j.matchar.2016.04.008 suggests to
+        assume that this is coordinate Xg = 0, Yg = 0, Zg = 0.
+      enumeration: [undefined, in_the_pattern_centre]
+    x_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing x-axis base vector of the gnomonic_reference_frame.
+      enumeration: [undefined, north, east, south, west, in, out]
+    y_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing y-axis base vector of the gnomonic_reference_frame.
+      enumeration: [undefined, north, east, south, west, in, out]
+    z_direction(NX_CHAR):
+      doc: |
+        Direction of the positively pointing z-axis base vector of the gnomonic_reference_frame.
+      enumeration: [undefined, north, east, south, west, in, out]
+  pattern_centre(NXprocess):
+    doc: |
+      Details about the definition of the pattern centre as a special point in the gnomonic_reference_frame.
+      
+      Keep in mind that the gnomonic space is in virtually all cases embedded in the detector space.
+      Specifically, the XgYg plane is defined such that it is laying inside the XdYd plane
+      (of the detector reference frame).
+      
+      When the normalization direction is the same as e.g. the detector x-axis direction one
+      effectively normalizes in fractions of the width of the detector.
+      
+      The issue with terms like width and height is that these degenerate if the detector
+      region-of-interest is square-shaped. This is why instead of referring to width and height
+      one should report as if one were to measure practically with a ruler and one is specific
+      about in which direction positive distances are measured.
+      
+      For the concepts used to specify the boundary_convention it is assumed that the
+      region-of-interest is defined by a rectangle, referring to the direction of outer-unit
+      normals to the respective edges of this rectangle.
+    x_boundary_convention(NX_CHAR):
+      doc: |
+        From which border of the EBSP (in the detector reference frame) is the pattern centre's x-position (PCx) measured.
+      enumeration: [undefined, top, right, bottom, left]
+    x_normalization_direction(NX_CHAR):
+      doc: |
+        In which direction are positive values for the x-axis coordinate value measured from the specified boundary.
+      enumeration: [undefined, north, east, south, west]
+    y_boundary_convention(NX_CHAR):
+      doc: |
+        From which border of the EBSP (in the detector reference frame) is the pattern centre's y-position (PCy) measured.
+      enumeration: [undefined, top, right, bottom, left]
+    y_normalization_direction(NX_CHAR):
+      doc: |
+        In which direction are positive values for the y-axis coordinate value measured from the specified boundary.
+      enumeration: [undefined, north, east, south, west]
+  # distance_convention:
+  # doc: |
+  # How is the third of the three pattern centre parameter values,
+  # the (distance) parameter DD, normalized. Which convention
+  # is followed. We are aware that specifying one of the options here
+  # also implicitly comes with conventions for some of the parameter
+  # requested in this ELN. For now we would rather like to ask
+  # the users though to be specific also to learn how such an ELN
+  # will be used in practice.
+  # enumeration: [undefined, Bruker, JEOL, FEI, Oxford]
   measurement(NXprocess):
     doc: |
       This group documents relevant details about the conditions and the tools
@@ -118,13 +200,13 @@ NXem_ebsd(NXem_method):
       doc: |
         Physical time since the beginning of a timestamp that is required to be
         same for all experiments in the set. The purpose of this marker is
-        to identify how all experiments in the set have have to be arranged
+        to identify how all experiments in the set need to be arranged
         sequentially based on the time elapsed.
         The time is relevant to sort e.g. experiments of consecutive quasi
-        in-situ experiments where a measurement was e.g. taken after 0 minutes
-        of annealing, 30 minutes, 6 hours, or 24 hours of annealing.
+        in-situ experiments where a measurement was e.g. taken after 0 minutes,
+        30 minutes, 6 hours, or 24 hours of annealing.
       unit: NX_TIME
-      \@depends_on(NX_CHAR):
+      \@epoch_start(NX_CHAR):
         doc: |
           Timestamp relative to which time was counted to aid
           converting between time and timestamp.
@@ -136,10 +218,11 @@ NXem_ebsd(NXem_method):
     # pattern_available(NX_BOOLEAN):
     #   doc: |
     #     True if pattern were stored and are retrieveable via depends_on or source.
-    \@depends_on(NX_CHAR):
+    depends_on(NX_CHAR):
       doc: |
-        If available and it is stored in an instance of an application definition
-        this field gives the path of an :ref:`NXdata` where the pattern are stored.
+        If available and it is stored in an instance of an application definition this field
+        specifies the path to an instance of :ref:`NXdata` where the measured patterns
+        are stored.
     source(NXserialized):
       doc: |
         Reference (e.g. path and filename) to an existent data artifact which
@@ -161,11 +244,10 @@ NXem_ebsd(NXem_method):
       master pattern are the result of a computer simulation and thus should
       be stored using an own properly documented entry within a simulation
       group as an instance of :ref:`NXem_sim`.
-    \@depends_on(NX_CHAR):
+    depends_on(NX_CHAR):
       doc: |
-        If available and it is stored in an instance of an application definition
-        this field gives the path of an :ref:`NXimage_r_set_diff`
-        where the simulated pattern are stored.
+        If available and it is stored in an instance of an application definition this field specifies
+        the path to an instance of :ref:`NXimage_set` where the simulated patterns are stored.
     source(NXserialized):
       doc: |
         Reference (e.g. path and filename) to an existent digital resource which
@@ -209,11 +291,10 @@ NXem_ebsd(NXem_method):
       settings or write these down in a lab notebook. Otherwise, these metadata
       get lost. All these issues are a motivation and problem which
       :ref:`NXem_ebsd` solves in that all conventions can be specified explicitly.
-    \@depends_on(NX_CHAR):
+    depends_on(NX_CHAR):
       doc: |
-        If available and it is stored in an instance of an application definition
-        this field gives the path of an :ref:`NXem_msr` where the calibration is
-        stored.
+        If available and it is stored in an instance of an application definition this field specifies
+        the path to an instance of :ref:`NXem_msr` where calibration is stored.
     source(NXserialized):
       doc: |
         Reference to a digital resource where the calibration is stored.
@@ -325,7 +406,7 @@ NXem_ebsd(NXem_method):
         the 1-th scan point, the n_sc - 1 th scan point and omitting tuples
         for those scan points with no phases according to n_phases_per_scan_point
       unit: NX_UNITLESS
-      dim: (i,)
+      dim: (n_solutions,)
     phase_matching(NX_INT):
       doc: |
         One-dimensional array, pattern by pattern labelling the solutions found.
@@ -333,7 +414,7 @@ NXem_ebsd(NXem_method):
         how the phase_identifier and the phase_matching arrays have to be interpreted.
         See documentation of phase_identifier for further details.
       unit: NX_UNITLESS
-      dim: (i,)
+      dim: (n_solutions,)
     phase_matching_descriptor(NX_CHAR):
       doc: |
         Phase_matching is a descriptor for how well the solution matches or not.
@@ -363,18 +444,19 @@ NXem_ebsd(NXem_method):
       doc: |
         Number of scan points in the original mapping.
       unit: NX_UNITLESS
-    odf(NXms_odf_set):
-    pf(NXms_pf_set):
-    microstructureID(NXms_recon):
+    odfID(NXmicrostructure_odf):
+    pfID(NXmicrostructure_pf):
+    ipfID(NXmicrostructure_ipf):
+    microstructureID(NXmicrostructure):
     # overview over the entire map, rediscretized on a tight aabb
     roi(NXdata):
       doc: |
         An overview of the entire ROI.
-      descriptor:
+      descriptor(NX_CHAR):
         doc: |
           Descriptor representing the image contrast.
         # taking two examples (CTF and H5OINA choked completely of possibility to find s.th. conceptually common to plot
-        enumeration: [normalized_band_contrast, normalized_confidence_index, normalized_mean_angular_deviation]
+        enumeration: [band_contrast, confidence_index, mean_angular_deviation]
       # \@signal:  # data
       # \@axes:  # [axis_y, axis_x]
       # \@axis_x_indices: 0

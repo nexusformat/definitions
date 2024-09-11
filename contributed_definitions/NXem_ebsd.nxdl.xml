@@ -51,11 +51,16 @@
                  standardized default plot orientation mapping.
             </doc>
         </symbol>
+        <symbol name="n_solutions">
+            <doc>
+                 Number of phase solutions
+            </doc>
+        </symbol>
     </symbols>
     <doc>
          Base class method-specific for Electron Backscatter Diffraction (EBSD).
          
-         The general procedure of an EBSD experiment is as follows:
+         The general procedure of an EBSD experiment is as follows.
          Users load the specimen, collect first a coarse image of the surface.
          Next, they set an approximate value for the calibrated working distance and
          tilt the stage to set the desired diffraction conditions.
@@ -139,10 +144,166 @@
          definition contains conceptual ideas how this splitting between measurement and
          post-processing can be granularized also for such X-ray-based techniques, whether
          it be 3DXRD or HEDM.
+         
+         This concept is related to term `Electron Backscatter Diffraction`_ of the EMglossary standard.
+         
+         .. _Electron Backscatter Diffraction: https://purls.helmholtz-metadaten.de/emg/EMG_00000019
     </doc>
-    <group name="conventions" type="NXem_conventions"/>
-    <!--either we have simulated data or we have a set of measured data
-in every case data are Kikuchi diffraction pattern and their metadata-->
+    <!--(NXcoordinate_system):-->
+    <group name="gnomonic_reference_frame" type="NXcoordinate_system">
+        <doc>
+             Details about the gnomonic (projection) reference frame.
+             
+             It is assumed that the configuration is inspected by looking towards the sample surface.
+             If a detector is involved, it is assumed that the configuration is inspected from a position
+             that is located behind this detector.
+             
+             If any of these assumptions is not met, the user is required to explicitly state this.
+             
+             Reference DOI: 10.1016/j.matchar.2016.04.008 suggests to label the
+             base vectors of this coordinate system as Xg, Yg, Zg.
+        </doc>
+        <field name="origin" type="NX_CHAR">
+            <doc>
+                 Origin of the gnomonic_projection_reference_frame.
+                 
+                 Reference DOI: 10.1016/j.matchar.2016.04.008 suggests to
+                 assume that this is coordinate Xg = 0, Yg = 0, Zg = 0.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="in_the_pattern_centre"/>
+            </enumeration>
+        </field>
+        <field name="x_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing x-axis base vector of the
+                 gnomonic_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+        <field name="y_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing y-axis base vector of the
+                 gnomonic_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+        <field name="z_direction" type="NX_CHAR">
+            <doc>
+                 Direction of the positively pointing z-axis base vector of the
+                 gnomonic_reference_frame.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+                <item value="in"/>
+                <item value="out"/>
+            </enumeration>
+        </field>
+    </group>
+    <group name="pattern_centre" type="NXprocess">
+        <doc>
+             Details about the definition of the pattern centre as a special point in the gnomonic_reference_frame.
+             
+             Keep in mind that the gnomonic space is in virtually all cases embedded in the detector space.
+             Specifically, the XgYg plane is defined such that it is laying inside the XdYd plane
+             (of the detector reference frame).
+             
+             When the normalization direction is the same as e.g. the detector x-axis direction one
+             effectively normalizes in fractions of the width of the detector.
+             
+             The issue with terms like width and height is that these degenerate if the detector
+             region-of-interest is square-shaped. This is why instead of referring to width and height
+             one should report as if one were to measure practically with a ruler and one is specific
+             about in which direction positive distances are measured.
+             
+             For the concepts used to specify the boundary_convention it is assumed that the
+             region-of-interest is defined by a rectangle, referring to the direction of outer-unit
+             normals to the respective edges of this rectangle.
+        </doc>
+        <field name="x_boundary_convention" type="NX_CHAR">
+            <doc>
+                 From which border of the EBSP (in the detector reference frame) is the pattern
+                 centre's x-position (PCx) measured.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="top"/>
+                <item value="right"/>
+                <item value="bottom"/>
+                <item value="left"/>
+            </enumeration>
+        </field>
+        <field name="x_normalization_direction" type="NX_CHAR">
+            <doc>
+                 In which direction are positive values for the x-axis coordinate value measured
+                 from the specified boundary.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+            </enumeration>
+        </field>
+        <field name="y_boundary_convention" type="NX_CHAR">
+            <doc>
+                 From which border of the EBSP (in the detector reference frame) is the pattern
+                 centre's y-position (PCy) measured.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="top"/>
+                <item value="right"/>
+                <item value="bottom"/>
+                <item value="left"/>
+            </enumeration>
+        </field>
+        <field name="y_normalization_direction" type="NX_CHAR">
+            <doc>
+                 In which direction are positive values for the y-axis coordinate value measured
+                 from the specified boundary.
+            </doc>
+            <enumeration>
+                <item value="undefined"/>
+                <item value="north"/>
+                <item value="east"/>
+                <item value="south"/>
+                <item value="west"/>
+            </enumeration>
+        </field>
+    </group>
+    <!--distance_convention:
+doc: |
+How is the third of the three pattern centre parameter values,
+the (distance) parameter DD, normalized. Which convention
+is followed. We are aware that specifying one of the options here
+also implicitly comes with conventions for some of the parameter
+requested in this ELN. For now we would rather like to ask
+the users though to be specific also to learn how such an ELN
+will be used in practice.
+enumeration: [undefined, Bruker, JEOL, FEI, Oxford]-->
     <group name="measurement" type="NXprocess">
         <doc>
              This group documents relevant details about the conditions and the tools
@@ -157,13 +318,13 @@ in every case data are Kikuchi diffraction pattern and their metadata-->
             <doc>
                  Physical time since the beginning of a timestamp that is required to be
                  same for all experiments in the set. The purpose of this marker is
-                 to identify how all experiments in the set have have to be arranged
+                 to identify how all experiments in the set need to be arranged
                  sequentially based on the time elapsed.
                  The time is relevant to sort e.g. experiments of consecutive quasi
-                 in-situ experiments where a measurement was e.g. taken after 0 minutes
-                 of annealing, 30 minutes, 6 hours, or 24 hours of annealing.
+                 in-situ experiments where a measurement was e.g. taken after 0 minutes,
+                 30 minutes, 6 hours, or 24 hours of annealing.
             </doc>
-            <attribute name="depends_on" type="NX_CHAR">
+            <attribute name="epoch_start" type="NX_CHAR">
                 <doc>
                      Timestamp relative to which time was counted to aid
                      converting between time and timestamp.
@@ -178,12 +339,13 @@ in every case data are Kikuchi diffraction pattern and their metadata-->
 pattern_available(NX_BOOLEAN):
   doc: |
     True if pattern were stored and are retrieveable via depends_on or source.-->
-        <attribute name="depends_on" type="NX_CHAR">
+        <field name="depends_on" type="NX_CHAR">
             <doc>
-                 If available and it is stored in an instance of an application definition
-                 this field gives the path of an :ref:`NXdata` where the pattern are stored.
+                 If available and it is stored in an instance of an application definition this field
+                 specifies the path to an instance of :ref:`NXdata` where the measured patterns
+                 are stored.
             </doc>
-        </attribute>
+        </field>
         <group name="source" type="NXserialized">
             <doc>
                  Reference (e.g. path and filename) to an existent data artifact which
@@ -209,13 +371,12 @@ pattern_available(NX_BOOLEAN):
              be stored using an own properly documented entry within a simulation
              group as an instance of :ref:`NXem_sim`.
         </doc>
-        <attribute name="depends_on" type="NX_CHAR">
+        <field name="depends_on" type="NX_CHAR">
             <doc>
-                 If available and it is stored in an instance of an application definition
-                 this field gives the path of an :ref:`NXimage_r_set_diff`
-                 where the simulated pattern are stored.
+                 If available and it is stored in an instance of an application definition this field specifies
+                 the path to an instance of :ref:`NXimage_set` where the simulated patterns are stored.
             </doc>
-        </attribute>
+        </field>
         <group name="source" type="NXserialized">
             <doc>
                  Reference (e.g. path and filename) to an existent digital resource which
@@ -263,13 +424,12 @@ pattern_available(NX_BOOLEAN):
              get lost. All these issues are a motivation and problem which
              :ref:`NXem_ebsd` solves in that all conventions can be specified explicitly.
         </doc>
-        <attribute name="depends_on" type="NX_CHAR">
+        <field name="depends_on" type="NX_CHAR">
             <doc>
-                 If available and it is stored in an instance of an application definition
-                 this field gives the path of an :ref:`NXem_msr` where the calibration is
-                 stored.
+                 If available and it is stored in an instance of an application definition this field specifies
+                 the path to an instance of :ref:`NXem_msr` where calibration is stored.
             </doc>
-        </attribute>
+        </field>
         <group name="source" type="NXserialized">
             <doc>
                  Reference to a digital resource where the calibration is stored.
@@ -410,7 +570,7 @@ pattern_available(NX_BOOLEAN):
                  for those scan points with no phases according to n_phases_per_scan_point
             </doc>
             <dimensions rank="1">
-                <dim index="1" value="i"/>
+                <dim index="1" value="n_solutions"/>
             </dimensions>
         </field>
         <field name="phase_matching" type="NX_INT" units="NX_UNITLESS">
@@ -421,7 +581,7 @@ pattern_available(NX_BOOLEAN):
                  See documentation of phase_identifier for further details.
             </doc>
             <dimensions rank="1">
-                <dim index="1" value="i"/>
+                <dim index="1" value="n_solutions"/>
             </dimensions>
         </field>
         <field name="phase_matching_descriptor" type="NX_CHAR">
@@ -471,23 +631,24 @@ to sample_reference_frame
                  Number of scan points in the original mapping.
             </doc>
         </field>
-        <group name="odf" type="NXms_odf_set"/>
-        <group name="pf" type="NXms_pf_set"/>
-        <group name="microstructureID" type="NXms_recon"/>
+        <group name="odfID" type="NXmicrostructure_odf"/>
+        <group name="pfID" type="NXmicrostructure_pf"/>
+        <group name="ipfID" type="NXmicrostructure_ipf"/>
+        <group name="microstructureID" type="NXmicrostructure"/>
         <!--overview over the entire map, rediscretized on a tight aabb-->
         <group name="roi" type="NXdata">
             <doc>
                  An overview of the entire ROI.
             </doc>
-            <field name="descriptor">
+            <field name="descriptor" type="NX_CHAR">
                 <doc>
                      Descriptor representing the image contrast.
                 </doc>
                 <!--taking two examples (CTF and H5OINA choked completely of possibility to find s.th. conceptually common to plot-->
                 <enumeration>
-                    <item value="normalized_band_contrast"/>
-                    <item value="normalized_confidence_index"/>
-                    <item value="normalized_mean_angular_deviation"/>
+                    <item value="band_contrast"/>
+                    <item value="confidence_index"/>
+                    <item value="mean_angular_deviation"/>
                 </enumeration>
             </field>
             <!--\@signal:  # data

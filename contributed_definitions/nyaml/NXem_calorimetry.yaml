@@ -1,0 +1,213 @@
+category: application
+doc: |
+  Application definition for minimal example in-situ calorimetry.
+  
+  What is the technique about.
+  
+  General context.
+  
+  Literature references.
+symbols:
+  doc: |
+    The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_p: |
+    Number of diffraction pattern.
+  n_f: |
+    Number of radial integration bins.
+  n_i: |
+    Number of coordinates along i axis.
+  n_j: |
+    Number of coordinates along j axis.
+# intentionally axes are not named x, y, z to
+# i) assure indices can be used for real and complex,
+# ii) that people think hard about how their base vectors are aligned with what and how to name things
+  n_p: |
+    Number of pattern
+  n_f: |
+    Number of azimuthal integration bins
+type: group
+# for a proper instance of a NeXus file also root level attributes should be set
+# NeXus version, h5py version, again can be done later, we have tons of examples
+NXem_calorimetry(NXobject):
+  # by default for appdefs the value of the exists keyword is required unless it is explicitly specified differently
+  (NXentry):
+    exists: [min, 1, max, 1]
+    definition(NX_CHAR):
+      \@version(NX_CHAR):
+        exists: optional
+      enumeration: [NXem_calorimetry]
+    # take here inspiration from the dozens of example appdefs
+    # e.g. NXem, NXapm_paraprobe_* which shows how to add context
+    identifier(NXidentifier):
+      exists: optional
+      # a place whereby you can refer to your simulation run, etc
+    (NXuser):
+      exists: optional
+      # a place where you can give details about people who did it
+    (NXsample):
+      exists: optional
+      # a place where you can tell e.g. based on which sample you build this simulation
+    (NXcite):
+      exists: [min, 0, max, infty]
+      # a place where to add citations for your work ...
+    (NXcoordinate_system_set):
+      diffraction_space(NXcoordinate_system):
+      (NXcoordinate_system):
+        exists: [min, 0, max, infty]
+        # a place where you can describe your coordinate system conventions
+    # hook-in NXem, alternatively inherit from NXem and just add
+    # add an actuator(NXactuator):
+    #          doc: |
+    #            DENSsolution heating chip.
+    #          physical_quantity(NX_CHAR):
+    #            # enumeration: [temperature]
+    #          event_data for the actual sensor data
+    # alternatively
+    diffraction(NXsource):
+      doc: |
+        Reference to the resource which stores acquired pattern from the experiment.
+        
+        Can refer to the original EMD or MRC files or the parsed NXem in RDM e.g. NOMAD OASIS.
+      type(NX_CHAR):
+      path(NX_CHAR):
+      checksum(NX_CHAR):
+      algorithm(NX_CHAR):
+    actuator(NXserialized):
+      doc: |
+        Reference to the resource which stores actuator log file from the experiment.
+      type(NX_CHAR):
+      path(NX_CHAR):
+      checksum(NX_CHAR):
+      algorithm(NX_CHAR):
+    time_synchronization(NXprocess):
+      doc: |
+        Assumptions and computations whereby timestamp data from the
+        detector used for collecting diffraction pattern and the actuator
+        (heating chip) were synchronized.
+      sequence_index(NX_POSINT):
+      pattern_identifier(NX_UINT):
+        dim: (n_p,)
+        unit: NX_UNITLESS
+      start_time(NX_DATE_TIME):
+        doc: |
+          Timestamp when pattern acquisition started.
+        dim: (n_p,)
+      end_time(NX_DATE_TIME):
+        doc: |
+          Timestamp when pattern acquisition ended.
+        dim: (n_p,)
+      # alternatively only timestamp
+    pattern_center(NXprocess):
+      sequence_index(NX_POSINT):
+      config(NXcollection):
+      result(NXcg_point_set):
+        # depends_on(NX_CHAR):
+        #   doc: |
+        #     Hint to help resolve in which coordinate system position values are defined.
+        position(NX_NUMBER):
+          unit: NX_LENGTH
+          dim: (n_p, 2)
+          #\@units: 1/nm
+    distortion_correction(NXprocess):
+      exists: optional
+      sequence_index(NX_POSINT):
+      programID(NXprogram):
+        exists: optional
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+      config(NXcollection):
+      result(NXcg_ellipsoid_set):
+        # depends_on(NX_CHAR):
+        center(NX_NUMBER):
+          unit: NX_LENGTH
+          dim: (n_p, 2)
+          #\@units: 1/nm
+    azimuthal_integration(NXprocess):
+      # no exists, i.e. assuming required
+      doc: |
+        Acquired diffraction pattern azimuthally integrated as a function of time.
+      sequence_index(NX_POSINT):
+      programID(NXprogram):
+        exists: optional
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+      config(NXcollection):
+        # TODO integration parameter
+      result(NXdata):
+        \@signal(NX_CHAR):
+        \@axes(NX_CHAR):  # [axis_s]
+        \@AXISNAME_indices(NX_CHAR):
+        title(NX_CHAR):
+        intensity(NX_FLOAT):
+          dim: (n_p, n_f)
+          unit: NX_UNITLESS
+          \@long_name(NX_CHAR):
+        axis_pattern_identifier(NX_UINT):
+          dim: (n_p,)
+          unit: NX_UNITLESS
+          \@long_name(NX_CHAR):
+        axis_s(NX_FLOAT):
+          dim: (n_f,)
+          unit: NX_ANY
+          #\@units: 1/nm
+          \@long_name(NX_CHAR):
+        axis_time(NX_FLOAT):
+          doc: |
+            Time since start of the in-situ experiment
+          dim: (n_p,)
+          unit: NX_TIME
+          # \@units: s
+    background_subtraction(NXprocess):
+      exists: recommended
+      sequence_index(NX_POSINT):
+      programID(NXprogram):
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+      config(NXcollection):
+        # TODO integration parameter
+      background(NXcollection):
+        # TODO e.g. could add parameter of functional forms for the background of each pattern
+      result(NXdata):
+        doc: |
+          Azimuthally integrated diffraction intensities corrected for background as a function of time.
+        \@signal(NX_CHAR):
+        \@axes(NX_CHAR):  # [axis_time, axis_s]
+        \@AXISNAME_indices(NX_CHAR):
+        title(NX_CHAR):
+        intensity(NX_FLOAT):
+          dim: (n_p, n_f)
+          unit: NX_UNITLESS
+          \@long_name(NX_CHAR):
+        axis_pattern_identifier(NX_UINT):
+          dim: (n_p,)
+          unit: NX_UNITLESS
+          \@long_name(NX_CHAR):
+        axis_s(NX_FLOAT):
+          dim: (n_f,)
+          unit: NX_ANY
+          #\@units: 1/nm
+          \@long_name(NX_CHAR):
+        axis_time(NX_FLOAT):
+          doc: |
+            Time since start of the in-situ experiment
+          dim: (n_p,)
+          unit: NX_TIME
+          # \@units: s
+    # peak_fitting(NXpeak_fitting):
+    #   exists: optional
+    #   doc: |
+    #     Background-corrected azimuthally integrated signals indexed for peaks.
+    # more NXprocess groups could follow only sky is the limit and your imagination and time devotion
+    profiling(NXcs_profiling):
+      exists: optional
+      # possible place to store details about performance, profiling, etc.
+      current_working_directory(NX_CHAR):
+        exists: recommended
+      start_time(NX_DATE_TIME):
+        exists: recommended
+      end_time(NX_DATE_TIME):
+        exists: recommended
+      total_elapsed_time(NX_NUMBER):
+      # number_of_processes(NX_POSINT):
+      # number_of_threads(NX_POSINT):
+      # number_of_gpus(NX_POSINT):

@@ -21,7 +21,9 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcorrector_cs" extends="NXcomponent_em" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<!--
+https://doi.org/10.1017/9781316337455.022-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcorrector_cs" extends="NXcomponent" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -33,7 +35,7 @@
         </symbol>
     </symbols>
     <doc>
-         Corrector for aberrations in an electron microscope.
+         Base class for a corrector reducing (spherical) aberrations in electron microscopy.
          
          Different technology partners use different naming schemes and
          models for quantifying the aberration coefficients.
@@ -41,32 +43,35 @@
          The corrector in an electron microscope is composed of multiple lenses
          and multipole stigmators with details specific for the technology partner
          and microscope. Many of their technical details is proprietary knowledge.
+         
+         If functionalities for correcting multiple aberrations are included in
+         one :ref:`NXcomponent` `like it is reported here &lt;https://www.ceos-gmbh.de/en/research/electrostat&gt;`_ 
+         use multiple groups:
+         
+         * :ref:`NXcorrector_cs` for spherical aberration
+         * :ref:`NXmonochromator` for energy filtering or chromatic aberration
+         * corrector_ax in :ref:`NXem` for axial astigmatism correction
     </doc>
+    <!--user perspective-->
     <field name="applied" type="NX_BOOLEAN">
         <doc>
              Was the corrector used?
         </doc>
     </field>
-    <!--NEW ISSUE: clarify the mathematical details behind the-->
-    <group name="ZEMLIN_TABLEAU" type="NXprocess">
+    <!--NEW ISSUE: clarify further mathematical details-->
+    <group name="tableauID" type="NXprocess">
         <doc>
-             Specific information about the concrete alignment procedure which is a
-             process during which the corrector is configured to enable a calibrated
-             usage of the instrument.
+             Specific information about the alignment procedure that is a process during which
+             the corrector is configured to enable calibrated usage of the instrument.
              
              This :ref:`NXprocess` group should also be used when one describes in a computer
              simulation the specific details about the modelled or assumed aberration
-             corrections. In effect, this base class can also be used for harmonizing
-             the description of such simulation details across different computer codes
-             to enable that a research data management system can find these information
-             in a common place - formatted in a normalized representation.
-             This reduces the necessity to include substantial case-dependent verification
-             code in the research data management system.
+             corrections.
         </doc>
         <field name="description" type="NX_CHAR">
             <doc>
-                 Discouraged free-text field to add further details about
-                 the alignment procedure.
+                 Discouraged free-text field to add further details about the alignment
+                 procedure.
             </doc>
         </field>
         <field name="tilt_angle" type="NX_NUMBER" units="NX_ANGLE">
@@ -102,15 +107,115 @@
                  The images taken during the alignment procedure.
             </doc>
         </group>
-        <group type="NXprocess">
+        <field name="model" type="NX_CHAR">
             <doc>
                  Place for storing measured or estimated aberrations (for each image or final).
+                 
+                 See `S. J. Pennycock and P. D. Nellist &lt;https://doi.org/10.1007/978-1-4419-7200-2&gt;`_ (page 44ff, and page 118ff)
+                 for different definitions available and further details. Table 7-2 of Ibid. publication (page 305ff) documents how
+                 to convert from the Nion to the CEOS definitions. Conversion tables are also summarized by `Y. Liao &lt;https://www.globalsino.com/EM/page3740.html&gt;`_.
             </doc>
-            <group name="ceos" type="NXaberration_model_ceos"/>
-            <group name="nion" type="NXaberration_model_nion"/>
-        </group>
+            <enumeration>
+                <item value="ceos"/>
+                <item value="nion"/>
+            </enumeration>
+        </field>
+        <!--specifically-named aberrations following the CEOS / Typke and Dierksen convention-->
+        <group name="c_1" type="NXaberration"/>
+        <!--magnitude(NX_NUMBER):
+  unit: NX_LENGTH-->
+        <group name="a_1" type="NXaberration"/>
+        <group name="b_2" type="NXaberration"/>
+        <group name="a_2" type="NXaberration"/>
+        <group name="c_3" type="NXaberration"/>
+        <!--magnitude(NX_NUMBER):
+  unit: NX_LENGTH-->
+        <group name="s_3" type="NXaberration"/>
+        <group name="a_3" type="NXaberration"/>
+        <!--based on feedback from Thilo Remmele the following aberrations could be measured
+(enhanced mode, tilt angle > 30 mrad) but are not corrected for with-->
+        <group name="b_4" type="NXaberration"/>
+        <group name="d_4" type="NXaberration"/>
+        <group name="a_4" type="NXaberration"/>
+        <group name="c_5" type="NXaberration"/>
+        <!--magnitude(NX_NUMBER):
+  unit: NX_LENGTH-->
+        <group name="s_5" type="NXaberration"/>
+        <group name="r_5" type="NXaberration"/>
+        <group name="a_6" type="NXaberration"/>
+        <!--specifically-named aberrations following the Nion convention-->
+        <group name="c_1_0" type="NXaberration"/>
+        <!--magnitude(NX_NUMBER):
+  unit: NX_LENGTH-->
+        <group name="c_1_2_a" type="NXaberration"/>
+        <group name="c_1_2_b" type="NXaberration"/>
+        <group name="c_2_1_a" type="NXaberration"/>
+        <group name="c_2_1_b" type="NXaberration"/>
+        <group name="c_2_3_a" type="NXaberration"/>
+        <group name="c_2_3_b" type="NXaberration"/>
+        <group name="c_3_0" type="NXaberration"/>
+        <!--magnitude(NX_NUMBER):
+  unit: NX_LENGTH-->
+        <group name="c_3_2_a" type="NXaberration"/>
+        <group name="c_3_2_b" type="NXaberration"/>
+        <group name="c_3_4_a" type="NXaberration"/>
+        <group name="c_3_4_b" type="NXaberration"/>
+        <group name="c_4_1_a" type="NXaberration"/>
+        <group name="c_4_1_b" type="NXaberration"/>
+        <group name="c_4_3_a" type="NXaberration"/>
+        <group name="c_4_3_b" type="NXaberration"/>
+        <group name="c_4_5_a" type="NXaberration"/>
+        <group name="c_4_5_b" type="NXaberration"/>
+        <group name="c_5_0" type="NXaberration"/>
+        <!--magnitude(NX_NUMBER):
+  unit: NX_LENGTH-->
+        <group name="c_5_2_a" type="NXaberration"/>
+        <group name="c_5_2_b" type="NXaberration"/>
+        <group name="c_5_4_a" type="NXaberration"/>
+        <group name="c_5_4_b" type="NXaberration"/>
+        <group name="c_5_6_a" type="NXaberration"/>
+        <group name="c_5_6_b" type="NXaberration"/>
     </group>
-    <!--technical components of the corrector-->
+    <!--further comments from Thilo Remmele (Leibniz-Institut für Kristallzüchtung)
+ThermoFisher uses CEOS correctors but makes customizations to these in their microscopes
+Aberration naming schema: C_order_multiplicity (similar to NXem, but with
+another coordinate system and in addition with a confidence entry.
+Aberrations with multiplicity 0 have no angle entry (C1,C3,C5,.., CEOS notation)
+contrast transferfuntion: ctf = e^(-i*Xi(g)) in Fourier space
+aberration function:
+Xi(g) = 2*pi/lamda{ 1/2 * (lamda*g)^2 (C20 + C22 cos[2(phi-phi_22)]
++1/3 * (lamda*g)^3 (C31 cos[(phi-phi_31) + C33 cos[3(phi-phi_33)
++1/4 * (lamda*g)^4 (C40 + C42 cos[2(phi-phi_42)] + C44 cos[4(phi-phi_42)]
++1/f * (lamda*g)^f Sum (Cfm cos[m(phi-phi_fm)] where m=[0,2,..f] for even f and m=[1,3,..,f] for odd f
+Thilo Remmele also mentions that there is a mapping of aberration coefficient names:
+C_2_0 -> C1 Defocus
+C_2_2 -> A1 2-fold astigmatism
+C_3_3 -> A2 3-fold astigmatism
+C_3_1 -> B2 axial coma
+C_4_0 -> C3 spherical aberration
+C_4_4 -> A3 4-fold astigmatism
+C_4_2 -> S3 star aberration
+C_5_5 -> A4 5-fold astigmatism
+C_5_1 -> B4 axial coma
+C_5_3 -> D4 three lobe aberration
+C_6_0 -> C5 spherical aberration
+C_6_2 -> S5 star aberration
+C_6_4 -> R5 rosette aberration
+C_6_6 -> A5 6-fold astigmatism
+In a session with HRTEM images the corrector is commonly aligned.
+The final measurement with the estimated residual aberrations
+should be saved in a corrector.html file (an example is appended
+at the end of this file. Unfortunately the datetime is not included
+in that html output, nor is the used outer tilt angle and exposure time.
+The datetime may be estimated from the file datetime and the Delta t entry,
+but caution if that datetime is not preserved on file transfers!
+More than one detector entry could occure but is not common.
+A seperate corrector schema, so it can be easily exchanged to other correctors if necessary.
+It might be useful to collect all the corrector entries in one table, for example to analyse the performance of the corrector.
+The corrector entry of the nexus em definition lacks the confidence information and the
+parameter settings for the estimation oft the aberrations.
+technical design perspective-->
     <group type="NXlens_em"/>
-    <!--technical components of the corrector-->
+    <group type="NXaperture"/>
+    <!--(NXdeflector):-->
 </definition>

@@ -182,22 +182,6 @@ not only for stencil-based methods:
         A base class to describe the relative orientation or rotation members
         of a set of features/objects.
 
-    :ref:`NXslip_system_set`:
-        A base class to describe a set of slip system/slip system family for
-        a given crystal structure.
-
-    :ref:`NXms_feature_set`:
-        A base class to describe any nested set of features of a material at the
-        continuum-, micron-, or nano-scale, including representation of a topology
-        of molecules and atoms.
-
-    :ref:`NXms_snapshot`:
-        A base class to describe the state of microstructural features
-        at a given point in time.
-
-    :ref:`NXms_snapshot_set`:
-        A base class to store a set of :ref:`NXms_snapshot` objects.
-
     :ref:`NXchemical_composition`:
         A base class to document (chemical) composition of a sample or a set of things.
 

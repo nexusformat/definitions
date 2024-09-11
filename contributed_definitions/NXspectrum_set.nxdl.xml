@@ -22,40 +22,41 @@
 # For further information, see http://www.nexusformat.org
 -->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXspectrum_set" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <!--https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
     <symbols>
-        <symbol name="n_p">
+        <symbol name="n_spc">
             <doc>
-                 Number of scan points.
+                 Number of spectra in the stack, for stacks the slowest dimension.
             </doc>
         </symbol>
-        <symbol name="n_z">
+        <symbol name="n_k">
             <doc>
-                 Number of pixel in the slowest direction.
+                 Number of image points along the slower dimension (k equivalent to z).
             </doc>
         </symbol>
-        <symbol name="n_y">
+        <symbol name="n_j">
             <doc>
-                 Number of pixel in the slow direction.
+                 Number of image points along the slow dimension (j equivalent to y).
             </doc>
         </symbol>
-        <symbol name="n_x">
+        <symbol name="n_i">
             <doc>
-                 Number of pixel in the fast direction.
+                 Number of image points along the fast dimension (i equivalent to x).
             </doc>
         </symbol>
         <symbol name="n_energy">
             <doc>
-                 Number of energy bins.
+                 Number of energy bins (always the fastest dimension).
             </doc>
         </symbol>
     </symbols>
     <doc>
          Base class container for reporting a set of spectra.
          
-         The mostly commonly used scanning methods are supported.
-         That is one-, two-, three-dimensional regularly sampled ROIs.
+         The mostly commonly used scanning methods are supported. That is one-,
+         two-, three-dimensional ROIs discretized using regular Euclidean tilings.
          
-         For randomly or dissimilarly spaced scan points use collection instead.
+         Use stack for all other tilings.
     </doc>
     <!--for EELS we likely need a complex-valued NXspectrum_c_set to this
 NXspectrum_set base class here which should then be splitted into an
@@ -66,10 +67,22 @@ NXspectrum_set to reduce redundant fields and specialized NXspectrum_r/c_set-->
         </doc>
         <group name="source" type="NXserialized">
             <doc>
-                 Resolvable data artifact (e.g. filename) from which the all values in
-                 the :ref:`NXdata` instances in this :ref:`NXspectrum_set` were
-                 loaded during parsing.
+                 Resolvable data artifact (e.g. filename) from which all values in the :ref:`NXdata`
+                 instances in this :ref:`NXspectrum_set` were loaded during parsing.
+                 
+                 Possibility to document from which specific other serialized resource as the source
+                 pieces of information were processed when using NeXus as a semantic file format
+                 to serialize that information differently.
+                 
+                 The group in combination with an added field *absolute_path* therein adds context.
             </doc>
+            <field name="absolute_path" type="NX_CHAR">
+                <doc>
+                     Reference to a location inside the artifact that points to the specific group of values
+                     that were processed if the artifacts contains several groups of values and thus
+                     further resolving of ambiguities is required.
+                </doc>
+            </field>
         </group>
         <field name="mode" type="NX_CHAR">
             <doc>
@@ -86,18 +99,17 @@ NXspectrum_set to reduce redundant fields and specialized NXspectrum_r/c_set-->
         <group type="NXprogram"/>
     </group>
     <!--#MK::feel free to contact us when you would like to include
-lik omega/q mapping more complicated scan pattern than rectangular ones.-->
-    <group name="spectrum_zerod" type="NXdata">
+like omega/q mapping more complicated scan pattern than rectangular ones.-->
+    <group name="spectrum_0d" type="NXdata">
         <doc>
-             One spectrum for one pixel in a ROI aka spot measurement.
+             One spectrum for a point of a 0d ROI. Also known as spot measurement.
         </doc>
         <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
             <doc>
                  Counts
             </doc>
-            <dimensions rank="2">
-                <dim index="1" value="n_x"/>
-                <dim index="2" value="n_energy"/>
+            <dimensions rank="1">
+                <dim index="1" value="n_energy"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
@@ -119,17 +131,16 @@ lik omega/q mapping more complicated scan pattern than rectangular ones.-->
             </attribute>
         </field>
     </group>
-    <group name="spectrum_oned" type="NXdata">
+    <group name="spectrum_1d" type="NXdata">
         <doc>
-             One spectrum for each pixel of an equidistantly
-             sampled one-dimensional ROI.
+             One spectrum for each point of a 1d ROI.
         </doc>
         <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
             <doc>
                  Counts
             </doc>
             <dimensions rank="2">
-                <dim index="1" value="n_x"/>
+                <dim index="1" value="n_i"/>
                 <dim index="2" value="n_energy"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
@@ -138,16 +149,16 @@ lik omega/q mapping more complicated scan pattern than rectangular ones.-->
                 </doc>
             </attribute>
         </field>
-        <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Coordinate along x direction.
+                 Point coordinate along the fast dimension.
             </doc>
             <dimensions rank="1">
-                <dim index="1" value="n_x"/>
+                <dim index="1" value="n_i"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Pixel coordinate along x direction
+                     Point coordinate along the fast dimension
                 </doc>
             </attribute>
         </field>
@@ -165,18 +176,17 @@ lik omega/q mapping more complicated scan pattern than rectangular ones.-->
             </attribute>
         </field>
     </group>
-    <group name="spectrum_twod" type="NXdata">
+    <group name="spectrum_2d" type="NXdata">
         <doc>
-             One spectrum for each pixel of an equidistantly
-             sampled two-dimensional ROI.
+             One spectrum for each scan point of 2d ROI.
         </doc>
         <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
             <doc>
                  Counts
             </doc>
             <dimensions rank="3">
-                <dim index="1" value="n_y"/>
-                <dim index="2" value="n_x"/>
+                <dim index="1" value="n_j"/>
+                <dim index="2" value="n_i"/>
                 <dim index="3" value="n_energy"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
@@ -185,29 +195,29 @@ lik omega/q mapping more complicated scan pattern than rectangular ones.-->
                 </doc>
             </attribute>
         </field>
-        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Coordinate along y direction.
+                 Point coordinate along the slow dimension.
             </doc>
             <dimensions rank="1">
-                <dim index="1" value="n_y"/>
+                <dim index="1" value="n_j"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Pixel coordinate along y direction
+                     Point coordinate along the slow dimension.
                 </doc>
             </attribute>
         </field>
-        <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Coordinate along x direction.
+                 Point coordinate along the fast dimension.
             </doc>
             <dimensions rank="1">
-                <dim index="1" value="n_x"/>
+                <dim index="1" value="n_i"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Pixel coordinate along x direction
+                     Point coordinate along the fast dimension.
                 </doc>
             </attribute>
         </field>
@@ -225,19 +235,18 @@ lik omega/q mapping more complicated scan pattern than rectangular ones.-->
             </attribute>
         </field>
     </group>
-    <group name="spectrum_threed" type="NXdata">
+    <group name="spectrum_3d" type="NXdata">
         <doc>
-             One spectrum for each voxel of an equidistantly
-             sampled three-dimensional ROI.
+             One spectrum for point of a 3d ROI.
         </doc>
         <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
             <doc>
                  Counts
             </doc>
             <dimensions rank="4">
-                <dim index="1" value="n_z"/>
-                <dim index="2" value="n_y"/>
-                <dim index="3" value="n_x"/>
+                <dim index="1" value="n_k"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
                 <dim index="4" value="n_energy"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
@@ -246,42 +255,42 @@ lik omega/q mapping more complicated scan pattern than rectangular ones.-->
                 </doc>
             </attribute>
         </field>
-        <field name="axis_z" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="axis_k" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Coordinate along z direction.
+                 Point coordinate along the slower dimension.
             </doc>
             <dimensions rank="1">
-                <dim index="1" value="n_z"/>
+                <dim index="1" value="n_k"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Pixel coordinate along z direction
+                     Point coordinate along the slower dimension.
                 </doc>
             </attribute>
         </field>
-        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Coordinate along y direction.
+                 Point coordinate along the slow dimension.
             </doc>
             <dimensions rank="1">
-                <dim index="1" value="n_y"/>
+                <dim index="1" value="n_j"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Pixel coordinate along y direction
+                     Point coordinate along the slow dimension.
                 </doc>
             </attribute>
         </field>
-        <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+        <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
             <doc>
-                 Coordinate along x direction.
+                 Point coordinate along the fast dimension.
             </doc>
             <dimensions rank="1">
-                <dim index="1" value="n_x"/>
+                <dim index="1" value="n_i"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Pixel coordinate along x direction
+                     Point coordinate along the fast dimension.
                 </doc>
             </attribute>
         </field>
@@ -303,18 +312,16 @@ lik omega/q mapping more complicated scan pattern than rectangular ones.-->
 if there is interest to support arbitrary scan pattern one should use
 scan points and contact us to generalize this base class and related
 base classes-->
-    <group name="collection" type="NXdata">
+    <group name="stack_0d" type="NXdata">
         <doc>
-             One spectrum for each scan point. This representation supports
-             equidistant energy bins. For rectangular sampling use respective
-             one-, two-, and three-dimensional variants instead.
+             Multiple instances of spectrum_0d.
         </doc>
         <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
             <doc>
                  Counts
             </doc>
             <dimensions rank="2">
-                <dim index="1" value="n_p"/>
+                <dim index="1" value="n_spc"/>
                 <dim index="2" value="n_energy"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
@@ -323,16 +330,215 @@ base classes-->
                 </doc>
             </attribute>
         </field>
-        <field name="axis_scan_point_id" type="NX_INT" units="NX_UNITLESS">
+        <field name="group_identifier" type="NX_INT" units="NX_UNITLESS">
             <doc>
-                 Scan point identifier
+                 Group identifier
             </doc>
             <dimensions rank="1">
-                <dim index="1" value="n_p"/>
+                <dim index="1" value="n_spc"/>
             </dimensions>
             <attribute name="long_name" type="NX_CHAR">
                 <doc>
-                     Scan point identifier
+                     Group identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="spectrum_identifier" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Spectrum identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_spc"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Spectrum identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_energy" type="NX_NUMBER" units="NX_ENERGY">
+            <doc>
+                 Energy axis
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_energy"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Energy
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="stack_2d" type="NXdata">
+        <doc>
+             Multiple instances of spectrum_2d.
+        </doc>
+        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Counts
+            </doc>
+            <dimensions rank="4">
+                <dim index="1" value="n_spc"/>
+                <dim index="2" value="n_j"/>
+                <dim index="3" value="n_i"/>
+                <dim index="4" value="n_energy"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Counts
+                </doc>
+            </attribute>
+        </field>
+        <field name="group_identifier" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Group identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_spc"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Group identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="spectrum_identifier" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Spectrum identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_spc"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Spectrum identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Point coordinate along the slow dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_j"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Point coordinate along the slow dimension.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Point coordinate along the fast dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Point coordinate along the fast dimension.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_energy" type="NX_NUMBER" units="NX_ENERGY">
+            <doc>
+                 Energy axis
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_energy"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Energy
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="stack_3d" type="NXdata">
+        <doc>
+             Multiple instances of spectrum_3d.
+        </doc>
+        <field name="intensity" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Counts
+            </doc>
+            <dimensions rank="5">
+                <dim index="1" value="n_spc"/>
+                <dim index="2" value="n_k"/>
+                <dim index="3" value="n_j"/>
+                <dim index="4" value="n_i"/>
+                <dim index="5" value="n_energy"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Counts
+                </doc>
+            </attribute>
+        </field>
+        <field name="group_identifier" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Group identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_spc"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Group identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="spectrum_identifier" type="NX_INT" units="NX_UNITLESS">
+            <doc>
+                 Spectrum identifier
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_spc"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Spectrum identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_k" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Point coordinate along the slower dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_k"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Point coordinate along the slower dimension.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_j" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Point coordinate along the slow dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_j"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Point coordinate along the slow dimension.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_i" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Point coordinate along the fast dimension.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_i"/>
+            </dimensions>
+            <attribute name="long_name" type="NX_CHAR">
+                <doc>
+                     Point coordinate along the fast dimension.
                 </doc>
             </attribute>
         </field>
