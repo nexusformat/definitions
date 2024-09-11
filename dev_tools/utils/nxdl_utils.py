@@ -14,9 +14,9 @@ import numpy as np
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
 
+
 def decode_string(
-    string_obj: Union[np.ndarray, bytes, str],
-    decode: bool = True
+    string_obj: Union[np.ndarray, bytes, str], decode: bool = True
 ) -> Optional[Union[str, List[str], np.ndarray, bytes]]:
     """
     Decodes a numpy ndarray of byte objects to a Python string or list of strings.
@@ -37,7 +37,9 @@ def decode_string(
     if not decode:
         # Return the initial value without decoding
         if not isinstance(string_obj, (np.ndarray, bytes, str)):
-            raise ValueError(f"Unsupported type {type(string_obj)}. Expected np.ndarray, bytes, or str.")
+            raise ValueError(
+                f"Unsupported type {type(string_obj)}. Expected np.ndarray, bytes, or str."
+            )
         if isinstance(string_obj, np.ndarray):
             return string_obj.tolist() if string_obj.size > 0 else None
         return string_obj
@@ -47,11 +49,20 @@ def decode_string(
             return None
 
         # Handle fixed-length strings by stripping padding
-        if string_obj.dtype.kind == 'S':
-            valid_entries = [entry.decode("utf-8").rstrip('\x00') if isinstance(entry, bytes) else entry
-                            for entry in string_obj if isinstance(entry, (str, bytes))]
+        if string_obj.dtype.kind == "S":
+            valid_entries = [
+                (
+                    entry.decode("utf-8").rstrip("\x00")
+                    if isinstance(entry, bytes)
+                    else entry
+                )
+                for entry in string_obj
+                if isinstance(entry, (str, bytes))
+            ]
         else:
-            valid_entries = [entry for entry in string_obj if isinstance(entry, (str, bytes))]
+            valid_entries = [
+                entry for entry in string_obj if isinstance(entry, (str, bytes))
+            ]
 
         # Decode bytes to strings where necessary
         decoded_list = []
@@ -79,7 +90,9 @@ def decode_string(
         return string_obj
 
     else:
-        raise ValueError(f"Unsupported type {type(string_obj)}. Expected np.ndarray, bytes, or str.")
+        raise ValueError(
+            f"Unsupported type {type(string_obj)}. Expected np.ndarray, bytes, or str."
+        )
 
 
 def remove_namespace_from_tag(tag):
