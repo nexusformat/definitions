@@ -34,6 +34,14 @@ def decode_or_not(elem, encoding: str = "utf-8", decode: bool = True):
     if not decode:
         return elem
 
+    # Handle lists of bytes or strings
+    elif isinstance(elem, list):
+        if not elem:
+            return elem  # Return an empty list unchanged
+
+        decoded_list = [decode_or_not(x, encoding, decode) for x in elem]
+        return decoded_list
+
     if isinstance(elem, bytes):
         try:
             return elem.decode(encoding)
