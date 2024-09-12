@@ -9,32 +9,38 @@ from glob import glob
 from pathlib import Path
 from typing import List
 from typing import Optional
-from typing import Union
 
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
 
 
-def decode_or_not(elem: Union[bytes, str], decode: bool = True) -> str:
-    """Decodes a byte array to string if necessary"""
-    __error_msg = f"Unsupported type {type(elem)}. Expected bytes, or str."
+def decode_or_not(elem, encoding: str = "utf-8", decode: bool = True):
+    """
+    Decodes a byte array to a string if necessary. All other types are returned untouched.
+    If `decode` is False, the initial value is returned without decoding, including for byte arrays.
+
+    Args:
+        elem: Any Python object that may need decoding.
+        encoding: The encoding scheme to use. Default is "utf-8".
+        decode: A boolean flag indicating whether to perform decoding.
+
+    Returns:
+        A decoded string (in case of a byte string) or the initial value.
+        If `decode` is False, always returns the initial value.
+
+    Raises:
+        ValueError: If a byte string cannot be decoded using the provided encoding.
+    """
     if not decode:
-        # Return the initial value without decoding
-        if not isinstance(elem, (bytes, str)):
-            raise ValueError(__error_msg)
         return elem
 
     if isinstance(elem, bytes):
         try:
-            return elem.decode("utf-8")
+            return elem.decode(encoding)
         except UnicodeDecodeError as e:
             raise ValueError(f"Error decoding bytes: {e}")
 
-    elif isinstance(elem, str):
-        return elem
-
-    else:
-        raise ValueError(__error_msg)
+    return elem
 
 
 def remove_namespace_from_tag(tag):

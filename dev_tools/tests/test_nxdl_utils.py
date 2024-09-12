@@ -199,26 +199,18 @@ def test_namefitting_precedence(better_fit, better_ref, worse_fit, worse_ref):
 @pytest.mark.parametrize(
     "string_obj, decode, expected",
     [
+        # Test with bytes
         (b"single", True, "single"),
         (b"single", False, b"single"),
         # Test with str
         ("single", True, "single"),
         ("single", False, "single"),
+        # Test with int
+        (123, True, 123),
+        (123, False, 123),
     ],
 )
-def test_decode_string(string_obj, decode, expected):
+def test_decode_or_not(string_obj, decode, expected):
     # Handle normal cases
-    result = nexus.decode_or_not(string_obj, decode)
+    result = nexus.decode_or_not(elem=string_obj, decode=decode)
     assert result == expected, f"Failed for {string_obj} with decode={decode}"
-
-
-@pytest.mark.parametrize(
-    "string_obj, decode",
-    [
-        (123, True),
-        (123, False),
-    ],
-)
-def test_decode_string_exceptions(string_obj, decode):
-    with pytest.raises(ValueError):
-        nexus.decode_or_not(string_obj, decode)
