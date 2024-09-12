@@ -9,9 +9,25 @@ from glob import glob
 from pathlib import Path
 from typing import List
 from typing import Optional
+from typing import Union
 
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
+
+
+def decode_or_not(elem: Union[bytes, str]) -> str:
+    """Decodes a byte array to string if necessary"""
+    if isinstance(elem, bytes):
+        try:
+            return elem.decode("utf-8")
+        except UnicodeDecodeError as e:
+            raise ValueError(f"Error decoding bytes: {e}")
+
+    elif isinstance(elem, str):
+        return elem
+
+    else:
+        raise ValueError(f"Unsupported type {type(elem)}. Expected bytes, or str.")
 
 
 def remove_namespace_from_tag(tag):
@@ -770,7 +786,7 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
         and nxdl_elem.attrib["name"] == "NXdata"
         and hdf_node is not None
         and hdf_node.parent is not None
-        and decode_string(hdf_node.parent.attrs.get("NX_class"))  # noqa: F821
+        and decode_or_not(hdf_node.parent.attrs.get("NX_class"))  # noqa: F821
         == "NXdata"
     ):
         (fnd_child, fit) = get_best_nxdata_child(nxdl_elem, hdf_node, hdf_name)
