@@ -203,22 +203,22 @@ def test_namefitting_precedence(better_fit, better_ref, worse_fit, worse_ref):
         ([b"bytes", "string"], True, ["bytes", "string"]),
         ([b"bytes", "string"], False, [b"bytes", "string"]),
         ([b"bytes", b"more_bytes", "string"], True, ["bytes", "more_bytes", "string"]),
-        ([b"bytes", b"more_bytes", "string"], False, [b"bytes", b"more_bytes", "string"]),
+        (
+            [b"bytes", b"more_bytes", "string"],
+            False,
+            [b"bytes", b"more_bytes", "string"],
+        ),
         ([b"fixed", b"length", b"strings"], True, ["fixed", "length", "strings"]),
         ([b"fixed", b"length", b"strings"], False, [b"fixed", b"length", b"strings"]),
-
         # Test with nested lists
         ([[b"nested1"], [b"nested2"]], True, [["nested1"], ["nested2"]]),
         ([[b"nested1"], [b"nested2"]], False, [[b"nested1"], [b"nested2"]]),
-
         # Test with bytes
         (b"single", True, "single"),
         (b"single", False, b"single"),
-
         # Test with str
         ("single", True, "single"),
         ("single", False, "single"),
-        
         # Test with int
         (123, True, 123),
         (123, False, 123),
