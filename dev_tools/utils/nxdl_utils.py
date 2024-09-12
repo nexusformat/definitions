@@ -15,8 +15,15 @@ import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
 
 
-def decode_or_not(elem: Union[bytes, str]) -> str:
+def decode_or_not(elem: Union[bytes, str], decode: bool = True) -> str:
     """Decodes a byte array to string if necessary"""
+    __error_msg = f"Unsupported type {type(elem)}. Expected bytes, or str."
+    if not decode:
+        # Return the initial value without decoding
+        if not isinstance(elem, (bytes, str)):
+            raise ValueError(__error_msg)
+        return elem
+
     if isinstance(elem, bytes):
         try:
             return elem.decode("utf-8")
@@ -27,7 +34,7 @@ def decode_or_not(elem: Union[bytes, str]) -> str:
         return elem
 
     else:
-        raise ValueError(f"Unsupported type {type(elem)}. Expected bytes, or str.")
+        raise ValueError(__error_msg)
 
 
 def remove_namespace_from_tag(tag):
