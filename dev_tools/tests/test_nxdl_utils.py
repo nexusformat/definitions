@@ -195,6 +195,7 @@ def test_namefitting_precedence(better_fit, better_ref, worse_fit, worse_ref):
         worse_fit, worse_ref
     )
 
+
 @pytest.mark.parametrize(
     "string_obj, decode, expected",
     [
