@@ -14,10 +14,40 @@ import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
 
 
-def decode_or_not(elem):
-    """Decodes a byte array to string if necessary"""
+def decode_or_not(elem, encoding: str = "utf-8", decode: bool = True):
+    """
+    Decodes a byte array to a string if necessary. All other types are returned untouched.
+    If `decode` is False, the initial value is returned without decoding, including for byte arrays.
+
+    Args:
+        elem: Any Python object that may need decoding.
+        encoding: The encoding scheme to use. Default is "utf-8".
+        decode: A boolean flag indicating whether to perform decoding.
+
+    Returns:
+        A decoded string (in case of a byte string) or the initial value.
+        If `decode` is False, always returns the initial value.
+
+    Raises:
+        ValueError: If a byte string cannot be decoded using the provided encoding.
+    """
+    if not decode:
+        return elem
+
+    # Handle lists of bytes or strings
+    elif isinstance(elem, list):
+        if not elem:
+            return elem  # Return an empty list unchanged
+
+        decoded_list = [decode_or_not(x, encoding, decode) for x in elem]
+        return decoded_list
+
     if isinstance(elem, bytes):
-        elem = elem.decode("UTF-8")
+        try:
+            return elem.decode(encoding)
+        except UnicodeDecodeError as e:
+            raise ValueError(f"Error decoding bytes: {e}")
+
     return elem
 
 

@@ -194,3 +194,41 @@ def test_namefitting_precedence(better_fit, better_ref, worse_fit, worse_ref):
     assert nexus.get_nx_namefit(better_fit, better_ref) > nexus.get_nx_namefit(
         worse_fit, worse_ref
     )
+
+
+@pytest.mark.parametrize(
+    "string_obj, decode, expected",
+    [
+        # Test with lists of bytes and strings
+        ([b"bytes", "string"], True, ["bytes", "string"]),
+        ([b"bytes", "string"], False, [b"bytes", "string"]),
+        ([b"bytes", b"more_bytes", "string"], True, ["bytes", "more_bytes", "string"]),
+        (
+            [b"bytes", b"more_bytes", "string"],
+            False,
+            [b"bytes", b"more_bytes", "string"],
+        ),
+        ([b"fixed", b"length", b"strings"], True, ["fixed", "length", "strings"]),
+        ([b"fixed", b"length", b"strings"], False, [b"fixed", b"length", b"strings"]),
+        # Test with nested lists
+        ([[b"nested1"], [b"nested2"]], True, [["nested1"], ["nested2"]]),
+        ([[b"nested1"], [b"nested2"]], False, [[b"nested1"], [b"nested2"]]),
+        # Test with bytes
+        (b"single", True, "single"),
+        (b"single", False, b"single"),
+        # Test with str
+        ("single", True, "single"),
+        ("single", False, "single"),
+        # Test with int
+        (123, True, 123),
+        (123, False, 123),
+    ],
+)
+def test_decode_or_not(string_obj, decode, expected):
+    # Handle normal cases
+    result = nexus.decode_or_not(elem=string_obj, decode=decode)
+    if isinstance(expected, list):
+        assert isinstance(result, list), f"Expected list, but got {type(result)}"
+    # Handle all other cases
+    else:
+        assert result == expected, f"Failed for {string_obj} with decode={decode}"
