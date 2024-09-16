@@ -19,26 +19,25 @@ Ellipsometry is an optical characterization method to describe optical propertie
 The measurements are based on determining how the polarization state of light changes upon transmission and reflection.
 Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
 
-In the application definition we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
+In the application definition, we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
 
 .. _Raman:
 
 Raman
 ############
 
-Raman spectroscopy is a characterization method to analyze vibrational properties for liquids, gases or solids. 
-The measurements is based on the inelastic light scattering due to the materials vibrations.
+Raman spectroscopy is a characterization method to analyze vibrational properties for liquids, gases, or solids. 
+The measurements is based on the inelastic light scattering due to the material's vibrations.
 Interpretation can be done based on peaks, which represent the phonon properties (intensity, center, width).
 
-The application provides a minimum set of description elements, which are necessary to understand for Raman spectroscopy measurements.
-
+The application definition contains a minimum of descriptive elements required to understand Raman spectroscopy measurements.
 
 
 Application Definitions
 -----------------------
 
     :ref:`NXoptical_spectroscopy`:
-       A generic application definition for optial spectorscopy measurements. This including specifically ellipsometry and Raman spectroscopy measurements, but as well other techniques such as photoluminescence, transmission, reflection measurements. The requirements are: (i) an incident photon beam, (ii) a detector to measure scattered/emitted photons and (iii) a sample.
+       A generic application definition for spectroscopy measurements. This includes in particular ellipsometry and Raman spectroscopy measurements, but also other techniques such as photoluminescence, transmission and reflection measurements. The requirements are: (i) an incident photon beam, (ii) a detector to measure scattered/emitted photons, and (iii) a sample.
 
     :ref:`NXellipsometry`:
        An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry.
@@ -50,7 +49,7 @@ Application Definitions
 Base Classes
 ------------
 
-There is a set of base classes for describing an optical experiment.
+This is the set of base classes for describing an optical experiment.
 
     :ref:`NXbeam_device`
        Beam devices are used to relate a beam, which has always at least one origin
@@ -129,7 +128,7 @@ There is a set of base classes for describing a dispersion.
        ``A`` and ``B`` are repeated parameters in the formula above.
        
     :ref:`NXdispersion_table`
-       This describes a tabular dispersion where the dielectric function is an array versus wavelength or energy.
+       This describes a tabular dispersion where the permittivity is an array versus wavelength or energy.
 
 Formula Grammar
 ---------------
@@ -137,6 +136,12 @@ Formula Grammar
 Below you find a grammar to which the formula should adhere and which can be used to parse and
 evaluate the dispersion function. The terms ``single_param_name`` and ``param_name`` should be
 filled with the respective single and repeated params from the stored data.
+The grammer is written in the `EBNF <https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form>`_ dialect
+of `Lark <https://github.com/lark-parser/lark>`_, which is a parsing toolkit for python.
+It is easily translatable to general EBNF and other parser generator dialects.
+`Here <https://github.com/PyEllips/formula-dispersion>`_ is a reference implementation in Rust/Python with a
+`grammar <https://github.com/PyEllips/formula-dispersion/blob/main/src/formula_parser.lalrpop>`_
+written in `lalrpop <https://github.com/lalrpop/lalrpop>`_.
 
 .. code-block::
 

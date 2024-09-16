@@ -21,4 +21,4 @@ Application Definitions
 #######################
 
     :ref:`NXiv_temp`:
-       Application definition for temperature dependent IV curve measurements.
+       Application definition for temperature-dependent current-voltage (IV) curve measurements.
