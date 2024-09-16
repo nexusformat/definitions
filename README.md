@@ -7,6 +7,12 @@
 
 ## NeXus definition developers
 
+After making a change to the NeXus class definitions there are two important checks
+to be made before commiting the change:
+
+ 1. check whether the change does not violate any syntax rules
+ 2. verify whether the change looks as intended in the HTML documentation
+
 First install the test and build requirements with this command (only run once)
 
     make install
