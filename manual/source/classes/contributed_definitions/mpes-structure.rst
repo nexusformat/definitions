@@ -28,7 +28,7 @@ Application Definitions
 #######################
 
 :ref:`NXmpes`:
-   A general application definition with minimalistic metadata requirements, apt to describe all photemission experiments.
+   A general application definition with minimalistic metadata requirements, apt to describe all photoemission experiments.
 
     :ref:`NXmpes_arpes`:
        An application definition for angle-resolved photoemission spectroscopy (ARPES) experiments.

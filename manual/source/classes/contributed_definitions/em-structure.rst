@@ -135,8 +135,6 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXcircuit`:
         A base class to describe a logical unit of at least one integrated circuit.
 
-Method-specific concepts and their usage in application definitions
-###################################################################
 
 .. _EmAnalysisClasses:
 

@@ -37,7 +37,7 @@ Application Definitions
 -----------------------
 
     :ref:`NXoptical_spectroscopy`:
-       A generic application definition for spectroscopy measurements. This includes in particular ellipsometry and Raman spectroscopy measurements, but also other techniques such as photoluminescence, transmission and reflection measurements. The requirements are: (i) an incident photon beam, (ii) a detector to measure scattered/emitted photons, and (iii) a sample.
+       A generic application definition for spectroscopy measurements. This includes in particular ellipsometry and Raman spectroscopy measurements, but also other techniques such as photoluminescence, transmission, and reflection measurements. The requirements are: (i) an incident photon beam, (ii) a detector to measure scattered/emitted photons, and (iii) a sample.
 
     :ref:`NXellipsometry`:
        An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry.
@@ -128,7 +128,7 @@ There is a set of base classes for describing a dispersion.
        ``A`` and ``B`` are repeated parameters in the formula above.
        
     :ref:`NXdispersion_table`
-       This describes a tabular dispersion where the permittivity is an array versus wavelength or energy.
+       This describes a tabular dispersion where the dielectric function is an array versus wavelength or energy.
 
 Formula Grammar
 ---------------
