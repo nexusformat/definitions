@@ -95,6 +95,7 @@ if html_theme== 'sphinx_rtd_theme':
     }
     def setup(app):
         app.add_css_file('to_rtd.css')
+        app.add_css_file('details_summary_hide.css')
 elif html_theme== 'alabaster': # Alabaster allows a very high degree of control form Sphinx conf.py
     html_sidebars = {
     '**': [
@@ -131,6 +132,7 @@ elif html_theme== 'alabaster': # Alabaster allows a very high degree of control 
     }
     def setup(app):
         app.add_css_file('to_alabaster.css')
+        app.add_css_file('details_summary_hide.css')
 else:
     html_sidebars = {
     '**': [
@@ -141,9 +143,8 @@ else:
         'google_search.html'
         ],
     }
-
-def setup(app):
-    app.add_css_file('details_summary_hide.css')
+    def setup(app):
+        app.add_css_file('details_summary_hide.css')
 
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
