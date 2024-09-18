@@ -49,9 +49,7 @@ def test_get_node_at_nxdl_path():
     )
     assert node.attrib["name"] == "long_name"
 
-    nxdl_file_path = os.path.join(
-        local_dir, "../../contributed_definitions/NXem.nxdl.xml"
-    )
+    nxdl_file_path = os.path.join(local_dir, "../../applications/NXem.nxdl.xml")
     elem = ET.parse(nxdl_file_path).getroot()
     node = nexus.get_node_at_nxdl_path(
         "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/end_time", elem=elem
