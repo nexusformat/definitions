@@ -66,6 +66,12 @@ def nxdl_indices() -> Dict[str, dict]:
         else:
             file = ""
             print("---------++++++++-", section)
+        if file.endswith(("applications/index.rst", "base_classes/index.rst")):
+            rst_lines.append(f"{indentation}em-structure\n")
+            rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
+            rst_lines.append(f"{indentation}mpes-structure\n")
+            rst_lines.append(f"{indentation}apm-structure\n")
+
         if file.endswith("contributed_definitions/index.rst"):
             rst_lines.append(f"{indentation}em-structure\n")
             rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
@@ -113,6 +119,18 @@ NeXus base class definitions define the set of terms that
 *might* be used in an instance of that class.
 Consider the base classes as a set of *components*
 that are used to construct a data file.
+
+Some contributions are grouped together:
+  :ref:`Optical Spectroscopy <Optical-Spectroscopy-Structure-BC>`
+
+  :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure-BC>`
+
+  :ref:`Atomprobe Microscopy <Apm-Structure-BC>`
+
+  :ref:`Electron Microscopy <Em-Structure-BC>`
+
+and others are simply listed here:
+
     """,
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     "applications": """
@@ -141,6 +159,19 @@ Use NeXus links liberally in data files to reduce duplication of data.
 In application definitions involving raw data,
 write the raw data in the :ref:`NXinstrument` tree and then link to it
 from the location(s) defined in the relevant application definition.
+
+Some contributions are grouped together:
+  :ref:`Optical Spectroscopy <Optical-Spectroscopy-Structure-APP>`
+
+  :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure-APP>`
+
+  :ref:`Atomprobe Microscopy <Apm-Structure-APP>`
+
+  :ref:`Electron Microscopy <Em-Structure-APP>`
+
+
+and others are simply listed here:
+
     """,
     # - - - - - - - - - - - - - - - - - - - - - - - - - - - -
     "contributed_definitions": """
