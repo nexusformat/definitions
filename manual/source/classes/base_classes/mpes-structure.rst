@@ -43,7 +43,7 @@ Base Classes
    A base class to describe the complex manipulators used in photoemission experiments, often with > 4 degrees of freedom, 
    cryogenic cooling and other advanced features.
 
-Three base classes to describe data processing, which can be used as subclasses of :ref:`NXprocess` if describing post-processing or as subclasses of :ref:`NXdetector` if describing live, electronics level processing:
+Four base classes to describe data processing, which can be used as subclasses of :ref:`NXprocess` if describing post-processing or as subclasses of :ref:`NXdetector` if describing live, electronics level processing:
 
     :ref:`NXcalibration`:
        A base class to describe the 1D calibration of an axis, with a function mapping a raw data scale to a calibrated scale with the same number of points.
