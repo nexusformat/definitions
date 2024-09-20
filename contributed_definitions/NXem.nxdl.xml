@@ -1,0 +1,2034 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--While an important
+step this will still need in the future a mechains
+ So far Essentially when the docstrings are no longer needed
+ but can be replaced by a connection to an automated tool which understands
+ what a specific field represents conceptually, EM data have become more
+ generally interoperable EM data.
+NEW ISSUE: see duration and collection time, duty cycle
+NEW ISSUE: duration and collection_time needs a clearer description and
+definition by the community
+NEW ISSUE: should version always be an enumeration?
+NEW ISSUE: filter keywords \(.*?\)
+NEW ISSUE: NXdetector adding only those fields which have changed or not?
+symbols:
+the NeXus default for application definitions wrt to the exists keyword is
+that it is required-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXem" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         Characterization of a sample during a session on an electron microscope.
+         
+         **The idea and aim of NXem**:
+         Electron microscopy (EM) research, whether it be performed with scanning electron
+         microscope (SEM) or transmission electron microscope (TEM) instruments, uses
+         versatile tools for preparing and characterizing samples and specimens.
+         The term specimen is considered a synonym for sample in this application definition.
+         A specimen is a physical portion of material that is studied/characterized during
+         the microscope session, eventually in different places on the specimen surface,
+         illuminating the surface layers or shining through thin specimens.
+         These places are named regions of interest (ROIs).
+         
+         Fundamentally, an electron microscope is an electron accelerator.
+         Experimentalists use it in sessions during which they characterize as well as
+         prepare specimens. This application definition describes data and metadata about
+         processes and characterization tasks applied to one specimen.
+         The application definition focuses on the usage of EM in materials research.
+         The application definition design makes it in principle applicable also in
+         cryo-EM on biomaterials.
+         
+         Multiple specimens have to be described with multiple :ref:`NXentry` instances.
+         
+         **Electron microscopes motivate the development of a comprehensive data schema:**
+         There are research groups who use an EM in a manner where it is exclusively
+         operated by a single, instrument-responsible scientists or a team of scientists.
+         These users may perform analyses for other users as a service task, especially
+         in large research facility settings. Oftentimes, though, and especially for
+         cutting-edge instruments, the scientists guide the process and maybe even control
+         the microscope. Instruments are usually controlled on-premises but also more
+         and more functionalities for remote control have become available.
+         Scientists oftentimes can ask technicians for support. In all cases,
+         these people are considered users. Users might have different
+         roles though.
+         
+         The rational behind a common EM schema rather than making separate schemas
+         for SEM or TEM are primarily the key similarities of SEM and TEM
+         instruments:
+         
+         Both type of instruments have electro-magnetic lenses. These may differ in
+         design, alignment, number, and level of corrected for aberrations.
+         As an obvious difference, a TEM is mainly used for measuring the transmitted
+         electron beam. This calls for using a different lens setup and relative
+         placement of the specimen in the lens setup. Also TEM specimens are
+         substantially thinner than specimens characterized with SEM to enable an
+         illumination through the specimen. This offers capabilities for probing of 
+         additional physical mechanisms of electron-matter interaction which are
+         unavailable in SEMs.
+         
+         Nevertheless, both types of electron microscopes use detector systems which
+         measure different types of signals that originate from the same set of
+         radiation/specimen interactions. Often these detectors have a similar design
+         and technology or are even used both in SEMs and TEMs.
+         
+         **A comprehensive schema instead of specific SEM or TEM schemas**:
+         Given these physical and technical differences, different instruments have
+         been developed. This led to a coexistence of two broad interacting
+         communities: SEM and TEM users. From a data science perspective, we
+         acknowledge that the more specific a research question is and the narrower it
+         is the addressed circle of users which develops or uses schemas for research
+         data management (RDM) with EM, the more understandable it is that scientists
+         of either community (or sub-community) ask for designing method-specific schemas.
+         
+         Researchers who have a single (main) microscope of some vendor in their lab,
+         may argue they need an NXem_vendor_name schema or an NXem_microscope_name or
+         an NXem_sem or a NXem_tem schema.
+         Scientists exclusively working with one technique or type of signal probed
+         (X-rays, electrons) may argue they wish to be pragmatic and store only
+         what is immediately relevant for their particular technique and
+         research questions. In effect, they may advocate for method-specific
+         schemas such as NXem_ebsd, NXem_eels, NXem_edx, or NXem_imaging.
+         
+         However, the history of electron microscopy has shown that these activities led
+         to a zoo of schemas and vocabulary, with implementation in many data and file formats,
+         difficult to make interoperable. Instead of trying to maintain this, we would like
+         to advocate that the `FAIR principles &lt;https://doi.org/10.1038/sdata.2016.18&gt;`_
+         should guide all decisions how data and metadata should be stored.
+         
+         EM instruments, software, and research are moving targets. Consequently,
+         there is a key challenge and inconvenience with having many different schemas
+         with associated representations of data and metadata: Each combination of
+         schemas or an interoperable-made handshake between two file formats or software
+         packages has to be maintained by software developers. This counts especially
+         when data should be processed interoperably between software packages.
+         
+         This brings two problems: Many software tools and parsers for the handshaking
+         between tools have to be maintained. This can result in usage of different
+         terminology, which in turn results in representations and connections made
+         between different data representations and workflows that are not
+         machine-actionable.
+         `There are community efforts to harmonize the terminology. &lt;https://gitlab.hzdr.de/em_glossary/em_glossary&gt;`_
+         
+         **The advantage of working towards a common vocabulary and representation**:
+         A common vocabulary can serve interoperability as developers of schemas and
+         scientists can reuse for instance these terms, thus supporting interoperability.
+         Ideally, scientists specialize an application definition only for the few very
+         specific additional quantities of their instruments and techniques. This is
+         better than reimplementing the wheel for descriptions of EM instruments.
+         This route of more standardization can support the EM community in that it
+         removes the necessity for having to maintain a very large number of schemas.
+         
+         Aiming for more standardization, i.e. a lower number of schemas rather than
+         a single standard for electron microscopy is a compromise that can serve
+         academia and industry as it enables a focusing of software development
+         efforts on those schemas, on fixing and discussing them, and on harmonizing
+         their common vocabulary. These activities can be specifically relevant also
+         for technology partners building EM hard- and software as it improves the
+         longevity of certain schemas; and thus can help with incentivizing them to support
+         the community with implementing support for such schemas into their applications.
+         
+         In effect, everybody can gain from this as it will likely reduce the cases
+         in which scientists have to fix bugs in making their own tools compliant and
+         interoperable with tools of their colleagues and the wider community.
+         
+         The here proposed NXem application definition offers modular components
+         (EM-research specific base classes) for defining schemas for EM research.
+         Thereby, NXem can be useful to extends top-level ontologies towards a domain-
+         and method-specific ontology for electron microscopy as it is used for
+         materials research.
+         
+         Working towards a common vocabulary is a community activity that profits from
+         everybody reflecting in detail whether certain terms they have used in the past
+         are not eventually conceptually similar if not the same as what this application
+         definition and its base classes provide. We are happy for receiving your feedback.
+         
+         **Addressing the generality versus specificity challenge**:
+         It is noteworthy to understand that (not only for NeXus), schemas differ
+         already if at least one field is required in one version of the schema,
+         but it is set optional in another schema. If group(s), field(s), or
+         attributes are removed or added, or even a docstring is changed, schemas can
+         become inconsistent. It is noteworthy to mention that the idea of a NeXus application
+         definition serves as a contract between a data provider and a data consumer.
+         Providers can be the software of a specific microscopes or users with specific
+         analysis needs. Consumers can be again specific software tools, like vendor
+         software for controlling the instrument or a scientific software for doing
+         artificial intelligence analyses on EM data). Such changes of a schema lead
+         to new versions.
+         
+         **Verification of constraints and conditions**:
+         Tools like NeXus do not avoid or protect against all such possible inconsistencies;
+         however NeXus offers a mechanism and toolset, through which schemas can be
+         documented and defined. In effect, having an openly documented
+         (at a case-specific level of technical detail) schema is a necessary but alone
+         not a sufficient step to take EM research on a route of machine-actionable
+         and interoperable FAIR data.
+         
+         This stresses again the fundamental and necessary role of working towards
+         a common vocabulary and, with a longer perspective in mind, a machine-actionable
+         knowledge representation and verification engine. So far many conditions and
+         requirements are formulated in the docstrings of the respective entries of
+         the application definition.
+         
+         **NXem takes a key step towards standardization of EM data schemas**.
+         It offers a controlled vocabulary and set of relations between concepts and
+         enables the description of the data which are collected for research with
+         electron microscopes. To be most efficient and offering reusability, the NXem
+         application definition should be understood as a template that one should
+         ideally use as is. NXem can be considered a base for designing more specialized
+         definitions. These should ideally be prefixed with NXem_method (e.g. NXem_ebsd).
+         
+         **The use of NXem should be as follows:**
+         Offspring application definitions should not remove groups but leave these
+         optional or, even better, propose changes to NXem.
+         
+         A particular challenge with electron microscopes as physical instruments are
+         their dynamics. To make EM data understandable, repeatable, and eventually
+         corresponding experiments reproducible in general requires a documentation
+         of the spatio-temporal dynamics of the instrument in its environment.
+         It is questionable to which level such a reproducibility is possible with EM
+         at all considering beam damage, effects of the environment, and other not
+         exactly quantifiable influences.
+         While this points to the physical limitations there are also practical and
+         economical constraints on how completely EM research can be documented:
+         For most commercial systems there is a specific accessibility beyond which
+         detailed settings like lens excitations and low-level hardware settings
+         may not be retrievable as technology partners have a substantiated interest in
+         finding a compromise between being open to their users and securing their
+         business models.
+         
+         By design, EM experiments illuminate the specimen with electrons as a
+         consequence of which the specimen changes if not may get destroyed.
+         As such, repeatability of numerical processing and clear descriptions of
+         procedures and system setups should be addressed first.
+         
+         If especially a certain simulation package needs a detailed view of the
+         geometry of the lens system and its excitations during the course of the
+         experiment, it is difficult to fully abstract the technical details of the
+         hardware into a set of names for fields and groups that make for a compromise
+         between clarity but being system-agnostic at the same time.
+         Settings of apertures are an example where aperture modes are in most cases
+         aliases behind which there is a set of very detailed settings specific to the
+         software and control units used. These settings are difficult to retrieve,
+         are not fully documented by technology partners. This simplification for
+         users of microscopes makes experiments easier understandable.
+         On the flipside these subtilities limit the opportunities of especially open-
+         source developments to make data schemas covering enough for general usage and
+         specific enough and sufficiently detailed to remain useful for
+         research by electron microscopy domain experts.
+         
+         Instead, currently it is for the docstring to specify what is conceptually
+         eventually behind such aliases. The design rule we followed while drafting
+         this NXem application definition and base classes is that there are numerous
+         (technical) details about an EM which may warrant a very detailed technical
+         disentangling of settings and reflection of numerous settings as deeply
+         nested groups, fields and attributes. An application definition can offer a
+         place to hold these nested representations; however as discussed
+         at the cost of generality.
+         
+         Which specific details matter for answering scientific research questions is
+         a difficult question to answer by a single team of scientists, especially
+         if the application definition is to speak for a number of vendors. What makes
+         it especially challenging is when the application definition is expected to
+         hold all data that might be of relevance for future questions.
+         
+         We are skeptical if there is one such representation that can fulfill all these
+         aims and interest, while remaining at the same time approachable and executable
+         by a large number of scientists in a community. However, we are also convinced
+         that this is not a reason to accept the status quo of having a very large set
+         of oftentimes strongly overlapping and redundant schemas.
+         
+         NXem is our proposal to motivate the EM community to work towards more
+         standardization and discussion of what constitutes data, i.e. metadata,
+         numerical and categorical data in research with electron microscopes. We found
+         that existent terminology can be encoded into a more controlled vocabulary.
+         
+         We have concluded that despite all these details of current EM research with
+         SEM, TEM, and focused-ion beam instruments, there a clearly identifiable
+         common components and generalizable settings of EM research use cases.
+         Therefore, 
+         
+         **This application definition has the following components at the top-level:**
+         
+         * Each signal, such as a spectrum or image taken at the microscope, should  
+           have an associated time-zone-aware time stamp and report of the specific  
+           settings of the microscope at that point in time when the image was taken.  
+           This is why instances of :ref:`NXevent_data_em` have their own em_lab section.  
+           The reason is that EMs can be highly dynamic, used to illuminate the specimen  
+           differently or show drift during signal acquisition, to name but a few effects.  
+           What constitutes a single EM experiment/measurement?  
+           This can be the collecting of a single diffraction pattern with a scanning TEM (STEM),  
+           taking of a secondary electron image for fracture analysis, taking a set of  
+           EBSD line scans and/or surface mappings in an SEM, or the ion-beam-milling of a  
+           specimen in preparation for e.g. an atom probe experiment.  
+         * :ref:`NXmonitor`;
+           instances to keep track of time-dependent quantities  
+           pertaining to specific components of the instrument.  
+           Alternatively, NXevent_data_em instances can be used to store  
+           time-zone-aware dates of the components, which is  
+           relevant for documenting as exactly as practically possible settings  
+           when images and spectra were taken.  
+         * :ref:`NXinstrument`;
+           conceptually this is a container to store an arbitrary level of detail of the  
+           technical components of the microscope as a device and the lab in which  
+           the microscope is operated.  
+         * :ref:`NXuser`;
+           conceptually, this is a set with at least one NXuser instance which details  
+           who operated or performed the measurement. Additional NXusers can be  
+           referred to in an NXevent_data_em instance to store  
+           individualized details of who executed an event of data acquisition or processing.  
+         * :ref:`NXevent_data_em` instances as an NXevent_data_em_set;  
+           each NXevent_data_em instance is a container to group specific details  
+           about the state of the microscope when a measurement was taken and  
+           relevant data and eventual processing steps were taken (on-the-fly).  
+         * :ref:`NXdata`; at the top-level, this is a place for documenting available  
+           default plottable data. A default plottable can be useful for research data  
+           management systems to show a visual representation of some  
+           aspect of the content of the EM session.  
+           Default plottables are not intended to serve every possible analysis and  
+           visualization demand but are instead a preview. We made this choice
+           because what constitutes a useful default plot is often a matter of interpretation,
+           somewhat of personal taste, and community standards. In effect, default
+           plottables are case- and method-specific.  
+         
+         Usually a session at a microscope is used to collect multiple signals.
+         Examples for possible default plottables could be arbitrarily taken secondary,
+         back-scattered, electron image, diffraction pattern, EELS spectra, composition,
+         or orientation mappings to name but a few.
+         
+         **There are a few design choices to consider with sub-ordinate groups:**
+         
+         * Images and spectra should be stored as :ref:`NXimage_set` and :ref:`NXspectrum_set`  
+           instances to hold data at the earliest possible step in the computational  
+           processing (which is usually performed with the microscope control and or  
+           integrated analysis software). The formatting of the NXdata groups enables the  
+           display of image and spectra with web technology visualization software.  
+         * When two- and three-dimensional geometric primitive data are stored, it is useful  
+           to write additional optional `XDMF &lt;https://www.xdmf.org/index.php/XDMF_Model_and_Format&gt;`_
+           fields which support additional plotting of the data with visualization software.  
+         * Consumable results of EM characterization tasks are usually a sub-set of  
+           data artifacts, as there is not an infinite amount of possible  
+           electron/ion beam-specimen interactions.  
+         * Images based on electron counts are typically detected with specific operation modes
+           such as bright field or dark field imaging in TEM or secondary/back-scattered electron
+           imaging in SEM. 
+         * Also spectra (X-ray quanta or Auger electron counts) typically are referred to
+           under the assumption of a specific operation mode of the microscope.
+         * These data are in virtually all cases a result of some numerical processing. 
+           These data and processing steps are modelled as instances of :ref:`NXprocess`  
+           which use terms from a controlled vocabulary e.g. SE (secondary electron),  
+           BSE (back-scattered electron), Kikuchi, X-ray, Auger, Cathodolum(inescence).  
+         
+         **A key question often asked with EM experiments is how the actual (meta)data
+         should be stored (in memory or on disk)**.
+         
+         The application definition NXem is a graph which describes how numerical data
+         and (meta)data for EM research are related to one another.
+         
+         Electron microscopy experiments are usually controlled/performed via
+         commercial integrated acquisition and instrument control software.
+         In many cases, an EM dataset is useful only if it gets post-processed
+         already during the acquisition, i.e. while the scientist is sitting
+         at the microscope.
+         Many of these processes are automated, while some demand GUI
+         interactions with the control software. Examples include collecting
+         of diffraction pattern and on-the-fly indexing of these.
+         
+         It is possible that different types of programs might be used to 
+         perform these processing steps whether on-the-fly or not. If this is
+         the case the processing should be structured with individual :ref:`NXprocess`
+         instances. If the program and/or version used for processing referred
+         to in an NXprocess group is different to the program and version
+         mentioned in this field, the NXprocess needs
+         to hold an own program and version.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="unbounded">
+        <!--NEW ISSUE: the definition field and its version attribute enumeration
+NEW ISSUE: will be added by yaml2nxdl automatically-->
+        <attribute name="version">
+            <doc>
+                 An at least as strong as SHA256 hashvalue of the file
+                 that specifies the application definition.
+            </doc>
+        </attribute>
+        <!--enumeration: [sha_256_hash]-->
+        <field name="definition">
+            <doc>
+                 NeXus NXDL schema to which this file conforms.
+            </doc>
+            <enumeration>
+                <item value="NXem"/>
+            </enumeration>
+        </field>
+        <field name="experiment_identifier">
+            <doc>
+                 Ideally, a (globally) unique persistent identifier
+                 for referring to this experiment.
+                 
+                 The identifier is usually defined/issued by the facility,
+                 laboratory, or the principle investigator.
+                 The identifier enables to link experiments to e.g. proposals.
+            </doc>
+        </field>
+        <field name="experiment_description" optional="true">
+            <doc>
+                 Free-text description about the experiment.
+                 
+                 Users are strongly advised to detail the sample history in the respective 
+                 field and fill rather as completely as possible the fields of this 
+                 application definition rather than write details about the experiment
+                 into this free-text description field.
+            </doc>
+        </field>
+        <field name="start_time" type="NX_DATE_TIME" recommended="true">
+            <doc>
+                 ISO 8601 time code with local time zone offset to UTC information included
+                 when the microscope session started. If the application demands that time
+                 codes in this section of the application definition should only be used
+                 for specifying when the experiment was performed - and the exact
+                 duration is not relevant - this start_time field should be used.
+                 
+                 Often though it is useful to specify a time interval by specifying both
+                 a start_time and an end_time to allow for more detailed bookkeeping and
+                 interpretation of the experiment. The user should be aware that even
+                 with having both time instances specified, it may not be possible
+                 to infer how long the experiment took or for how long data were acquired.
+                 
+                 More detailed timing data over the course of the experiment have
+                 to be collected to compute this. These computations can take
+                 advantage of individual time stamps in NXevent_data_em instances to
+                 provide additional pieces of information.
+            </doc>
+        </field>
+        <field name="end_time" type="NX_DATE_TIME" recommended="true">
+            <doc>
+                 ISO 8601 time code with local time zone offset to UTC included when
+                 the microscope session ended.
+            </doc>
+        </field>
+        <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+            <field name="program">
+                <attribute name="version"/>
+            </field>
+        </group>
+        <group name="experiment_documentation" type="NXnote" optional="true">
+            <doc>
+                 Binary container for a file or a compressed collection of files which
+                 can be used to add further descriptions and details to the experiment.
+                 The container can hold a compressed archive.
+            </doc>
+        </group>
+        <group name="thumbnail" type="NXnote" optional="true">
+            <doc>
+                 A small image that is representative of the entry; this can be an
+                 image taken from the dataset like a thumbnail of a spectrum.
+                 A 640 x 480 pixel jpeg image is recommended. 
+                 Adding a scale bar to that image is recommended but not required
+                 as the main purpose of the thumbnail is to provide e.g. thumbnail
+                 images for displaying them in data repositories.
+            </doc>
+            <attribute name="type"/>
+        </group>
+        <group type="NXuser" minOccurs="1" maxOccurs="unbounded">
+            <doc>
+                 Contact information and eventually details of at least one person
+                 involved in the taking of the microscope session. This can be the
+                 principle investigator who performed this experiment.
+                 Adding multiple users if relevant is recommended.
+            </doc>
+            <field name="name">
+                <doc>
+                     Given (first) name and surname of the user.
+                </doc>
+            </field>
+            <field name="affiliation" recommended="true">
+                <doc>
+                     Name of the affiliation of the user at the point in time
+                     when the experiment was performed.
+                </doc>
+            </field>
+            <field name="address" recommended="true">
+                <doc>
+                     Postal address of the affiliation.
+                </doc>
+            </field>
+            <field name="email" recommended="true">
+                <doc>
+                     Email address of the user at the point in time when the experiment
+                     was performed. Writing the most permanently used email is recommended.
+                </doc>
+            </field>
+            <field name="orcid" recommended="true">
+                <doc>
+                     Globally unique identifier of the user as offered by services
+                     like ORCID or ResearcherID. If this field is field the specific service
+                     should also be written in orcid_platform
+                </doc>
+            </field>
+            <field name="orcid_platform" recommended="true">
+                <doc>
+                     Name of the OrcID or ResearcherID where the account
+                     under orcid is registered.
+                </doc>
+            </field>
+            <field name="telephone_number" optional="true">
+                <doc>
+                     (Business) (tele)phone number of the user at the point
+                     in time when the experiment was performed.
+                </doc>
+            </field>
+            <field name="role" recommended="true">
+                <doc>
+                     Which role does the user have in the place and at the point 
+                     in time when the experiment was performed? Technician operating
+                     the microscope. Student, postdoc, principle investigator, guest
+                     are common examples.
+                </doc>
+            </field>
+            <field name="social_media_name" optional="true">
+                <doc>
+                     Account name that is associated with the user in social media platforms.
+                </doc>
+            </field>
+            <field name="social_media_platform" optional="true">
+                <doc>
+                     Name of the social media platform where the account
+                     under social_media_name is registered.
+                </doc>
+            </field>
+        </group>
+        <group name="sample" type="NXsample">
+            <!--NEW ISSUE: inject the conclusion from the discussion with Andrea
+according to SAMPLE.yaml 0f8df14 2022/06/15
+ID: -> maps to name
+name: -> short_title
+user: -> not matched right now
+citation: doi ->why relevant, should be solved by RDMS-->
+            <doc>
+                 A description of the material characterized in the experiment.
+                 Sample and specimen are threaded as de facto synonyms.
+            </doc>
+            <field name="method">
+                <doc>
+                     A qualifier whether the sample is a real one or a
+                     virtual one (in a computer simulation)
+                </doc>
+                <enumeration>
+                    <item value="experiment"/>
+                    <item value="simulation"/>
+                </enumeration>
+            </field>
+            <!--MK:: declared_by_vendor I would rather expect this for a substance
+COMPONENT.yaml
+SUBSTANCE:
+QUANTIFY-->
+            <field name="name">
+                <doc>
+                     Ideally (globally) unique persistent identifier. The name distinguishes
+                     the specimen from all others and especially the predecessor/origin
+                     from where the specimen was cut.
+                     
+                     This field must not be used for an alias of the sample.
+                     Instead, use short_title for this, more convenient alias name.
+                     
+                     In cases where multiple specimens have been loaded into the microscope
+                     the name has to identify the specific one, whose results are stored
+                     by this NXentry, because a single NXentry should be used only for
+                     the characterization of a single specimen.
+                     
+                     Details about the specimen preparation should be stored in the
+                     sample history.
+                </doc>
+            </field>
+            <field name="sample_history">
+                <doc>
+                     Ideally, a reference to a (globally) unique persistent identifier, 
+                     representing a data artifact which documents ideally as many details
+                     of the material, its microstructure, and its thermo-chemo-mechanical
+                     processing/preparation history as possible.
+                     
+                     The sample_history is the record what happened before the specimen
+                     was placed into the microscope at the beginning of the session.
+                     
+                     In the case that such a detailed history of the sample/specimen is not
+                     available, use this field as a free-text description to specify a
+                     sub-set of the entire sample history, i.e. what you would consider are
+                     the key steps and relevant information about the specimen,
+                     its material, microstructure, thermo-chemo-mechanical processing state,
+                     and the details of the preparation.
+                     
+                     Specific details about eventual physically-connected material like
+                     embedding resin should be documented ideally also in the sample_history.
+                     If all fails, the description field can be used but it is strongly
+                     discouraged because it leads to eventually non-machine-actionable
+                     data.
+                </doc>
+            </field>
+            <field name="preparation_date" type="NX_DATE_TIME">
+                <doc>
+                     ISO 8601 time code with local time zone offset to UTC information
+                     when the specimen was prepared.
+                     
+                     Ideally report the end of the preparation, i.e. the last known time
+                     the measured specimen surface was actively prepared. Usually this should
+                     be a part of the sample history, i.e. the sample is imagined handed over
+                     for analysis.
+                     
+                     Knowing when the specimen was exposed to e.g. specific atmosphere is
+                     especially required for environmentally sensitive material such as
+                     hydrogen charged specimens or experiments
+                     including tracers with a short half time. Further time stamps prior
+                     to preparation_date should better be placed in resources which
+                     describe the sample_history.
+                </doc>
+            </field>
+            <field name="short_title" optional="true">
+                <doc>
+                     Possibility to give an abbreviation or alias of the specimen name field.
+                </doc>
+            </field>
+            <field name="atom_types">
+                <doc>
+                     List of comma-separated elements from the periodic table that are
+                     contained in the sample. If the sample substance has multiple
+                     components, all elements from each component must be included in 
+                     `atom_types`. 
+                     
+                     The purpose of the field is to offer materials database systems an
+                     opportunity to parse the relevant elements without having to interpret
+                     these from the sample history.
+                </doc>
+            </field>
+            <!--NEW ISSUE: use Andrea and MarkusK groups for describing the geometry of the sample-->
+            <field name="thickness" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     (Measured) sample thickness. The information is recorded to qualify
+                     if the beam used was likely able to shine through the specimen.
+                     For scanning electron microscopy, in many cases the specimen is much
+                     thicker than what is illuminatable by the electron beam.
+                     In this case the value should be set to the actual thickness of
+                     the specimen viewed for an illumination situation where the nominal
+                     surface normal of the specimen is parallel to the optical axis.
+                </doc>
+            </field>
+            <!--\@units: nm
+NEW ISSUE: error estimates of the thickness and origin, i.e. how the value was obtained would be useful
+NEW ISSUE: error model
+NEW ISSUE: the KIT/SCC SEM, TEM schemata further qualify samples whether they are conductive e/ibeam sensitive
+etc. The problem with this is that beam sensitivity is too vague, spatio-temporal electron dose integral dependent
+KIT/SCC distinguish further conductivity and magnetic properties. While the motivation is clear, making
+simple could be problematic or not decision, it is also these descriptors if remaining vague are also not useful
+what are good or bad properties, it would make sense though to quantify these values
+this includes the description of eventual plasma cleaning steps,
+just knowing that a sample was plasma cleaned is insufficient, maybe it was not cleaned long enough
+if plasma cleaning is done outside the EM than its certainly history, if it happens inside the EM
+are the ibeam description capabilities not sufficient enough?-->
+            <field name="density" type="NX_FLOAT" optional="true" units="NX_ANY">
+                <doc>
+                     (Measured) density of the specimen. For multi-layered specimens this
+                     field should only be used to describe the density of the excited
+                     volume. For scanning electron microscopy the usage of this field is
+                     discouraged and instead an instance of an :ref:`NXinteraction_vol_em`
+                     within individual :ref:`NXevent_data_em` instances can provide a much
+                     better description of the relevant details why one may wish to store
+                     the density of the specimen.
+                </doc>
+            </field>
+            <!--\@units: g/cm^3-->
+            <field name="description" optional="true">
+                <doc>
+                     Discouraged free-text field in case properly designed records
+                     for the sample_history are not available.
+                </doc>
+            </field>
+        </group>
+        <group type="NXdata" optional="true">
+            <doc>
+                 Hard link to a location in the hierarchy of the NeXus file
+                 where the data for default plotting are stored.
+            </doc>
+        </group>
+        <group type="NXcoordinate_system_set" recommended="true">
+            <group name="TRANSFORMATIONS" type="NXtransformations" minOccurs="0" maxOccurs="unbounded"/>
+        </group>
+        <!--in what follows each component of the instrument might be equipped with an NXmonitor-->
+        <group type="NXmonitor" optional="true"/>
+        <!--NEW ISSUE ADD AS MANY MONITORS AS NEEDED, also for pressure etc.-->
+        <!--in what follows, an as-detailed as desired collection of components
+making up the instrument follows at this level of the hierarchy-->
+        <group name="em_lab" type="NXinstrument">
+            <doc>
+                 Metadata and numerical data of the microscope and the lab in which it stands.
+                 
+                 The em_lab section contains a description of the instrument and its components.
+                 The component descriptions in this section differ from those inside individual
+                 NXevent_data_em sections. These event instances take the role of time snapshot.
+                 For an NXevent_data_em instance users should store only those settings for a 
+                 component which are relevant to understand the current state of the component.
+                 Here, current means at the point in time, i.e. the time interval, 
+                 which the event represents.
+                 
+                 For example it is not relevant to store in each event's electron_source
+                 group again the details of the gun type and manufacturer but only the
+                 high-voltage if for that event the high-voltage was different. If for all
+                 events the high-voltage was the same it is not even necessary to include
+                 an electron_source section in the event.
+                 
+                 Individual sections of specific type should have the following names:
+                 
+                 * NXaperture: the name should match with the name of the lens  
+                 * NXlens_em: condenser_lens, objective_lens are commonly used names  
+                 * NXcorrector_cs: device for correcting spherical aberrations  
+                 * NXstage_lab: a collection of component for holding the specimen and  
+                   eventual additional component for applying external stimuli on the sample  
+                 * NXdetector: several possible names like secondary_electron,  
+                   backscattered_electron, direct_electron, ebsd, edx, wds, auger,  
+                   cathodoluminescence, camera, ronchigram
+            </doc>
+            <field name="instrument_name">
+                <doc>
+                     Given name of the microscope at the hosting institution. This is an alias.
+                     Examples could be NionHermes, Titan, JEOL, Gemini, etc.
+                </doc>
+            </field>
+            <field name="location" optional="true">
+                <doc>
+                     Location of the lab or place where the instrument is installed.
+                     Using GEOREF is preferred.
+                </doc>
+            </field>
+            <group type="NXfabrication">
+                <field name="vendor" recommended="true"/>
+                <field name="model" recommended="true"/>
+                <field name="identifier" recommended="true"/>
+                <field name="capabilities" optional="true"/>
+            </group>
+            <group type="NXchamber" optional="true"/>
+            <group type="NXebeam_column" minOccurs="1" maxOccurs="1">
+                <group type="NXfabrication" recommended="true">
+                    <field name="vendor" recommended="true"/>
+                    <field name="model" recommended="true"/>
+                    <field name="identifier" recommended="true"/>
+                </group>
+                <group type="NXchamber" optional="true"/>
+                <group name="electron_source" type="NXsource">
+                    <field name="name" recommended="true"/>
+                    <group type="NXfabrication" recommended="true">
+                        <field name="vendor" recommended="true"/>
+                        <field name="model" recommended="true"/>
+                        <field name="identifier" recommended="true"/>
+                    </group>
+                    <field name="voltage" type="NX_FLOAT"/>
+                    <field name="emitter_type" recommended="true">
+                        <enumeration>
+                            <item value="thermionic"/>
+                            <item value="schottky"/>
+                            <item value="field_emission"/>
+                        </enumeration>
+                    </field>
+                </group>
+                <group type="NXaperture_em" minOccurs="0" maxOccurs="unbounded">
+                    <group type="NXfabrication" recommended="true">
+                        <field name="vendor" recommended="true"/>
+                        <field name="model" recommended="true"/>
+                        <field name="identifier" recommended="true"/>
+                    </group>
+                    <field name="value" type="NX_NUMBER"/>
+                    <field name="name"/>
+                    <field name="description" optional="true"/>
+                </group>
+                <group type="NXlens_em" minOccurs="0" maxOccurs="unbounded">
+                    <doc>
+                         If the lens is described at least one of the fields
+                         voltage, current, or value should be defined.
+                    </doc>
+                    <!--a classical case where we want at least one field of multiple to exist-->
+                    <group type="NXfabrication" recommended="true">
+                        <field name="vendor" recommended="true"/>
+                        <field name="model" recommended="true"/>
+                        <field name="identifier" recommended="true"/>
+                    </group>
+                    <field name="voltage" type="NX_NUMBER" recommended="true"/>
+                    <field name="current" type="NX_NUMBER" recommended="true"/>
+                    <field name="value" type="NX_NUMBER" recommended="true"/>
+                </group>
+                <group name="aberration_correction" type="NXcorrector_cs" recommended="true">
+                    <field name="applied" type="NX_BOOLEAN"/>
+                    <field name="name" optional="true"/>
+                    <group type="NXfabrication" recommended="true">
+                        <field name="vendor" recommended="true"/>
+                        <field name="model" recommended="true"/>
+                        <field name="identifier" recommended="true"/>
+                    </group>
+                    <group name="ZEMLIN_TABLEAU" type="NXprocess" recommended="true">
+                        <field name="description" optional="true"/>
+                        <field name="tilt_angle" type="NX_FLOAT" recommended="true" units="NX_ANGLE"/>
+                        <field name="exposure_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                        <field name="magnification" type="NX_NUMBER" optional="true" units="NX_DIMENSIONLESS"/>
+                        <group type="NXprocess" minOccurs="0" maxOccurs="unbounded">
+                            <group name="ceos" type="NXaberration_model_ceos" optional="true">
+                                <group name="c_1" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="a_1" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="b_2" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="a_2" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_3" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="s_3" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="a_3" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <!--based on feedback from Thilo Remmele the following aberrations could be measured-->
+                                <group name="b_4" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="d_4" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="a_4" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_5" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="s_5" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="r_5" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                                <group name="a_6" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                </group>
+                            </group>
+                            <group name="nion" type="NXaberration_model_nion" optional="true">
+                                <group name="c_1_0" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_1_2_a" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_1_2_b" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_2_1_a" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_2_1_b" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_2_3_a" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_2_3_b" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_3_0" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_3_2_a" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_3_2_b" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_3_4_a" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_3_4_b" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_4_1_a" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_4_1_b" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_4_3_a" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_4_3_b" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_4_5_a" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_4_5_b" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_5_0" type="NXaberration" recommended="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_5_2_a" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_5_2_b" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_5_4_a" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_5_4_b" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_5_6_a" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                                <group name="c_5_6_b" type="NXaberration" optional="true">
+                                    <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                    <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                    <field name="uncertainty_model" recommended="true"/>
+                                    <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                </group>
+                            </group>
+                        </group>
+                    </group>
+                </group>
+            </group>
+            <group type="NXibeam_column" minOccurs="0" maxOccurs="2">
+                <group type="NXfabrication" recommended="true">
+                    <field name="vendor" recommended="true"/>
+                    <field name="model" recommended="true"/>
+                    <field name="identifier" recommended="true"/>
+                </group>
+                <group type="NXchamber" optional="true"/>
+                <group name="ion_source" type="NXsource">
+                    <field name="name" recommended="true"/>
+                    <group type="NXfabrication" recommended="true">
+                        <field name="vendor" recommended="true"/>
+                        <field name="model" recommended="true"/>
+                        <field name="identifier" recommended="true"/>
+                    </group>
+                    <field name="emitter_type"/>
+                    <group name="probe" type="NXion">
+                        <field name="charge_state" type="NX_INT" recommended="true"/>
+                        <field name="isotope_vector" type="NX_UINT" recommended="true"/>
+                        <field name="name" recommended="true"/>
+                    </group>
+                    <field name="voltage" type="NX_FLOAT"/>
+                    <field name="current" type="NX_FLOAT"/>
+                </group>
+                <group type="NXaperture_em" recommended="true">
+                    <group type="NXfabrication" recommended="true">
+                        <field name="vendor" recommended="true"/>
+                        <field name="model" recommended="true"/>
+                        <field name="identifier" recommended="true"/>
+                    </group>
+                    <field name="value" type="NX_NUMBER"/>
+                </group>
+                <group type="NXlens_em" recommended="true">
+                    <doc>
+                         If the lens is described at least one of the fields
+                         voltage, current, or value should be defined.
+                    </doc>
+                    <group type="NXfabrication" recommended="true">
+                        <field name="identifier" recommended="true"/>
+                    </group>
+                    <field name="voltage" type="NX_NUMBER" recommended="true"/>
+                    <field name="current" type="NX_NUMBER" recommended="true"/>
+                    <field name="value" type="NX_NUMBER" recommended="true"/>
+                </group>
+            </group>
+            <group name="EBEAM_DEFLECTOR" type="NXscanbox_em" minOccurs="0" maxOccurs="unbounded">
+                <group type="NXfabrication" recommended="true">
+                    <field name="vendor" recommended="true"/>
+                    <field name="model" recommended="true"/>
+                    <field name="identifier" recommended="true"/>
+                </group>
+                <field name="pixel_time" type="NX_FLOAT" recommended="true"/>
+            </group>
+            <group name="IBEAM_DEFLECTOR" type="NXscanbox_em" minOccurs="0" maxOccurs="unbounded">
+                <group type="NXfabrication" recommended="true">
+                    <field name="vendor" recommended="true"/>
+                    <field name="model" recommended="true"/>
+                    <field name="identifier" recommended="true"/>
+                </group>
+            </group>
+            <group type="NXoptical_system_em" recommended="true">
+                <field name="camera_length" type="NX_NUMBER" optional="true"/>
+                <field name="magnification" type="NX_NUMBER" optional="true"/>
+                <field name="defocus" type="NX_NUMBER" recommended="true"/>
+                <!--this is c_1_0 of aberration_correction-->
+                <field name="semi_convergence_angle" type="NX_NUMBER" recommended="true"/>
+                <field name="working_distance" type="NX_FLOAT" recommended="true"/>
+                <field name="beam_current" type="NX_FLOAT" recommended="true"/>
+                <field name="beam_current_description" recommended="true"/>
+            </group>
+            <!--vendor/instrument-specific data currently case-by-case dependent
+e.g. Nion Co. magboard settings
+instances of NXoptical system can be placed here and specific for
+each NXevent_data_em instance if desired-->
+            <!--##MK::eventually only adding (NXfabrication) and the new docstring
+is needed, will the rest be inferred automatically?-->
+            <group name="DETECTOR" type="NXdetector" minOccurs="1" maxOccurs="unbounded">
+                <doc>
+                     Description of the type of the detector.
+                     
+                     Electron microscopes have typically multiple detectors.
+                     Different technologies are in use like CCD, scintillator, 
+                     direct electron, CMOS, or image plate to name but a few.
+                </doc>
+                <field name="local_name">
+                    <doc>
+                         Instrument-specific alias/name
+                    </doc>
+                </field>
+                <!--it is unfortunate that for NXdetector there are already many places
+how one can specify details which could equally end up in fabrications
+we should give better guidance which option to use-->
+                <group type="NXfabrication" recommended="true">
+                    <field name="identifier" recommended="true"/>
+                </group>
+            </group>
+            <group type="NXpump" minOccurs="0" maxOccurs="unbounded"/>
+            <!--NEW ISSUE: do we consider the EELS spectrometer an own detector or an own functional unit i.e. NXeels-->
+            <group name="stage_lab" type="NXstage_lab">
+                <field name="name"/>
+                <group type="NXfabrication" recommended="true">
+                    <field name="vendor" recommended="true"/>
+                    <field name="model" recommended="true"/>
+                    <field name="identifier" recommended="true"/>
+                    <field name="capabilities" optional="true"/>
+                </group>
+                <field name="design" recommended="true"/>
+                <field name="description" optional="true"/>
+                <!--tricky for arbitrary design we cannot enforce all the below to exist at all-->
+                <field name="position" type="NX_FLOAT" recommended="true"/>
+                <field name="rotation" type="NX_FLOAT" recommended="true"/>
+                <field name="tilt_1" type="NX_FLOAT" recommended="true"/>
+                <field name="tilt_2" type="NX_FLOAT" recommended="true"/>
+            </group>
+        </group>
+        <group name="measurement" type="NXevent_data_em_set" minOccurs="0" maxOccurs="1">
+            <!--#MK because it should be possible to use the application definition
+#MK to store e.g. just some descriptions about the instrument
+#MK:with which then no measurements are attached
+this would enable to use nxs file also for instrument inventory
+system like offer through ELNs/or LIMS-->
+            <doc>
+                 A container for storing a set of NXevent_data_em instances.
+                 
+                 An event is a time interval during which the microscope was configured
+                 in a specific way. The microscope is considered as stable enough during
+                 this interval that a measurement with one or multiple detectors is
+                 possible. What constitutes such time interval depends on how the
+                 microscope is used and which measurements the user would like to perform.
+                 
+                 Each NXevent_data_em instance holds one acquisition task with detectors.
+                 Each NXevent_data_em section contains an em_lab group in which specific
+                 settings and states of the microscope during the time interval
+                 can be stored to document the history of states of the microscope over
+                 the course of the session.
+                 
+                 The NXem application definition offers maximal flexibility.
+                 One extreme could be that the only one NXevent_data_em instance is used
+                 and this covers the time interval of the entire session at the microscope.
+                 The other extreme case is that each collection of an image or even
+                 single spot measurement is defined as an NXevent_data_em instance.
+                 In this case the em_lab group inside the NXevent_data_em also holds
+                 the specific time-dependent state of the microscope with which in theory
+                 all dynamics of the system (if measured) can be captured and documented.
+                 
+                 Nowadays microscopes exists for which hard- and software solutions
+                 enable a tracking of the dynamics of the microscope and the actions
+                 of the user (such as with solution like AXONSynchronicity from Protochips).
+                 The NXem application definition can however also be used for less
+                 complex interaction and lower demands wrt to time tracking activities.
+                 
+                 An NXevent_data_em instance holds specific details about how raw data from
+                 a detector were processed. Raw data may already be post-processed as
+                 they are accessible only by the control software with after some internal
+                 processing happened. Nevertheless, these data have to be distinguished from
+                 post-processed data where e.g. raw data are converted to interpreted
+                 spectra, or orientation mappings.
+                 
+                 This post-processing tasks can be performed (on-the-fly, i.e. during
+                 acquisition for sure during the microscope session) or afterwards.
+                 Post-processing is performed with commercial software or various
+                 types and scripts.
+                 
+                 Currently, several specializations of NXimage_set and Nspectrum_set
+                 are used which store some details of this processing. However, as post-
+                 processing tasks can be substantially more advanced and involved it
+                 is clear that data artifacts from the measurement and data artifacts
+                 generated during post-processing are weakly connected only, maybe
+                 exclusively by the fact that a complex numerical post-processing workflow
+                 just takes one raw dataset from an NXevent_data_em instance but generates
+                 multiple derived data artifacts from this. All these should be described
+                 as own application definitions and only weak connections should be made
+                 to an instance of NXem. Instances of NXsubentry is one mechanism in
+                 NeXus how this can be achieved in the future.
+            </doc>
+            <group type="NXevent_data_em" minOccurs="1" maxOccurs="unbounded">
+                <doc>
+                     A container holding a specific result of the measurement and
+                     eventually metadata how that result was obtained numerically.
+                     
+                     NXevent_data_em instances can hold several specific NXimage_em or
+                     NXspectrum_em instances taken and considered as one event, i.e.
+                     a point in time when the microscope had the settings specified
+                     either in NXinstrument or in this NXevent_data_em instance.
+                     
+                     The application definition is designed without an explicit need for
+                     having an NXevent_data_em instance that contains an NXimage_em or 
+                     NXspectra_em instance. Thereby, an NXevent_data_em can also be used 
+                     for just documentation about the specific state of the microscope
+                     irrespective whether data have been collected during this time interval.
+                     
+                     In other words the NXinstrument group details primarily the more
+                     static settings and components of the microscope as they are found
+                     by the operator during the session. The NXevent_data_em samples
+                     the dynamics.
+                     
+                     It is not necessary to store data in NXebeam, NXibeam instances
+                     of NXevent_data_em but in this case it is assumed that the settings
+                     were constant over the entire course of the microscope session
+                     and thus all relevant metadata inside the NXinstrument groups
+                     are sufficient to understand the session.
+                     
+                     So far there exists no standard which a majority of the technology
+                     partners and the materials science electron microscopy community
+                     have accepted which could be used for a very generic documentation,
+                     storage and exchange of electron microscope data. Therefore, it is
+                     still a frequent case that specific files have many fields which cannot
+                     safely be mapped or interpreted.
+                     **Therefore, users are always given the advice to keep the vendor files.**
+                     Working however with these vendor files inside specific software,
+                     like materials databases, demands for parsers which extract pieces of
+                     information from the vendor representation (numerical data and metadata)
+                     and map them on a schema with which the database and its associated
+                     software tools can work with.
+                     
+                     Currently, one would loose immediately track of e.g. provenance and
+                     the origin of certain data in NXevent_data_em instances unless really
+                     all data are safely and reliably copied over into an instance of the
+                     schema. Currently, though, this is sadly effectively prevented in many
+                     cases as vendors indeed implemented often sophisticated provenance
+                     and commercial software state tracking tools but these are not yet
+                     documented covering enough in our opinion so that it is safe to assume
+                     all vendor field names are known, logically understood, interpretable,
+                     and thus mappable on a common schema using a controlled common
+                     vocabulary.
+                     
+                     Therefore we encourage user for now to store for each NXimage_set
+                     or NXspectra_set instance to supply the so-called source of the data.
+                     This can for instance be the name and hashvalue of the original
+                     file which was acquired during the microscope session and from which then
+                     certain details like numerical data and metadata were copied into an
+                     instance of this schema for the purpose of working with the data in
+                     e.g. tools offered by research data management (RDM) systems or 
+                     materials database.
+                     
+                     During our work on implementing file format/metadata parsers and
+                     developing this application definition, we realized that **several
+                     software tools currently do not consistently format critical metadata
+                     like time-zone-aware timestamps** when events of data collection or
+                     processing happened.
+                     
+                     We would like to encourage the community and especially the vendors
+                     to work towards a standardization, or at least an open documentation
+                     of the way how time-zone-aware time data are collected and stored how
+                     and where during a microscope session and how they end up in files
+                     and databases with which users interact.
+                     This would enable to supplement instances of this schema with specific
+                     time data and assure that these time data can be used to reliably
+                     contextualize individual datasets and processing steps in materials
+                     information systems.
+                     
+                     For the reason that these measures have not yet been fully taken,
+                     the start_time and end_time is a recommended option.
+                     The idea behind these time-zone-aware dates is to identify when
+                     the data were collected at the microscope but NOT when they were
+                     transcoded by some software tool(s) while storing the data in an
+                     instance of this schema.
+                </doc>
+                <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
+                <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+                <field name="event_identifier" recommended="true"/>
+                <field name="event_type" recommended="true"/>
+                <!--a collection of images take and group under this event
+NEW ISSUE: should this only be one instance for a given event?-->
+                <group name="IMAGE_SET" type="NXimage_set" optional="true">
+                    <group type="NXprocess">
+                        <field name="source">
+                            <attribute name="version"/>
+                        </field>
+                        <field name="mode" recommended="true"/>
+                        <field name="detector_identifier"/>
+                        <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+                            <field name="program">
+                                <attribute name="version"/>
+                            </field>
+                        </group>
+                    </group>
+                    <group name="stack" type="NXdata" recommended="true">
+                        <attribute name="signal"/>
+                        <attribute name="axes"/>
+                        <attribute name="AXISNAME_indices"/>
+                        <field name="title"/>
+                        <field name="data_counts" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 3
+  dim: [[1, n_images], [2, n_y], [3, n_x]]-->
+                        <field name="axis_image_identifier" type="NX_UINT">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_images]]-->
+                        <field name="axis_y" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_y]]-->
+                        <field name="axis_x" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                    </group>
+                </group>
+                <!--dimensions:
+  rank: 1
+  dim: [[1, n_x]]-->
+                <group name="SPECTRUM_SET" type="NXspectrum_set" optional="true">
+                    <group type="NXprocess">
+                        <field name="source">
+                            <attribute name="version"/>
+                        </field>
+                        <field name="mode" recommended="true"/>
+                        <field name="detector_identifier"/>
+                        <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+                            <field name="program">
+                                <attribute name="version"/>
+                            </field>
+                        </group>
+                    </group>
+                    <group name="stack" type="NXdata" recommended="true">
+                        <field name="data_counts" type="NX_NUMBER" units="NX_UNITLESS">
+                            <dimensions rank="3">
+                                <dim index="1" value="n_y"/>
+                                <dim index="2" value="n_x"/>
+                                <dim index="3" value="n_energy"/>
+                            </dimensions>
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--\@signal: counts
+\@axes: [ypos, xpos, energy]
+\@ypos_indices: 0
+\@xpos_indices: 1
+\@energy_indices: 2-->
+                        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+                            <dimensions rank="1">
+                                <dim index="1" value="n_y"/>
+                            </dimensions>
+                            <attribute name="long_name"/>
+                        </field>
+                        <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+                            <dimensions rank="1">
+                                <dim index="1" value="n_x"/>
+                            </dimensions>
+                            <attribute name="long_name"/>
+                        </field>
+                        <field name="axis_energy" type="NX_NUMBER" units="NX_ENERGY">
+                            <dimensions rank="1">
+                                <dim index="1" value="n_energy"/>
+                            </dimensions>
+                            <attribute name="long_name"/>
+                        </field>
+                    </group>
+                    <group name="summary" type="NXdata" recommended="true">
+                        <field name="data_counts" type="NX_NUMBER" units="NX_UNITLESS">
+                            <dimensions rank="1">
+                                <dim index="1" value="n_energy"/>
+                            </dimensions>
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--\@signal: counts
+\@axes: [energy]
+\@energy_indices: 0-->
+                        <field name="axis_energy" type="NX_NUMBER" units="NX_ENERGY">
+                            <dimensions rank="1">
+                                <dim index="1" value="n_energy"/>
+                            </dimensions>
+                            <attribute name="long_name"/>
+                        </field>
+                    </group>
+                </group>
+                <group name="adf" type="NXimage_set" optional="true">
+                    <group type="NXprocess">
+                        <field name="source">
+                            <attribute name="version"/>
+                        </field>
+                        <field name="mode" recommended="true"/>
+                        <field name="detector_identifier"/>
+                        <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+                            <field name="program">
+                                <attribute name="version"/>
+                            </field>
+                        </group>
+                    </group>
+                    <field name="inner_half_angle" type="NX_FLOAT" recommended="true" units="NX_ANGLE">
+                        <doc>
+                             Annulus inner half angle
+                        </doc>
+                    </field>
+                    <field name="outer_half_angle" type="NX_FLOAT" recommended="true" units="NX_ANGLE">
+                        <doc>
+                             Annulus outer half angle
+                        </doc>
+                    </field>
+                    <group name="stack" type="NXdata" recommended="true">
+                        <attribute name="signal"/>
+                        <attribute name="axes"/>
+                        <attribute name="AXISNAME_indices"/>
+                        <!--\@long_name:-->
+                        <field name="title"/>
+                        <field name="data_counts" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <field name="axis_image_identifier" type="NX_UINT">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 3
+  dim: [[1, n_images], [2, n_y], [3, n_x]]-->
+                        <field name="axis_y" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_y]]-->
+                        <field name="axis_x" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                    </group>
+                </group>
+                <!--dimensions:
+  rank: 1
+  dim: [[1, n_x]]-->
+                <group name="xray" type="NXspectrum_set" optional="true">
+                    <group type="NXprocess">
+                        <field name="source">
+                            <attribute name="version"/>
+                        </field>
+                        <field name="mode" recommended="true"/>
+                        <field name="detector_identifier"/>
+                        <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+                            <field name="program">
+                                <attribute name="version"/>
+                            </field>
+                        </group>
+                    </group>
+                    <group name="stack" type="NXdata">
+                        <attribute name="signal"/>
+                        <attribute name="axes"/>
+                        <attribute name="AXISNAME_indices"/>
+                        <!--\@long_name:-->
+                        <field name="title"/>
+                        <field name="data_counts" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 3
+  dim: [[1, n_y], [2, n_x], [3, n_photon_energy]]-->
+                        <field name="axis_y" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_y]]-->
+                        <field name="axis_x" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_x]]-->
+                        <field name="axis_photon_energy" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                    </group>
+                    <!--dimensions:
+  rank: 1
+  dim: [[1, n_photon_energy]]-->
+                    <group name="summary" type="NXdata">
+                        <attribute name="signal"/>
+                        <attribute name="axes"/>
+                        <attribute name="AXISNAME_indices"/>
+                        <!--\@long_name:-->
+                        <field name="title"/>
+                        <field name="data_counts" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_photon_energy]]-->
+                        <field name="axis_photon_energy" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                    </group>
+                    <!--dimensions:
+  rank: 1
+  dim: [[1, n_photon_energy]]
+NEW ISSUE: all of this should be offloaded to NXem_edx -\->-->
+                    <group name="indexing" type="NXprocess" optional="true">
+                        <!--##MK:: much content of the base class has not been added although
+should be considered and made recommended at least-->
+                        <group name="ELEMENTNAME" type="NXprocess" minOccurs="1" maxOccurs="256">
+                            <group name="summary" type="NXdata">
+                                <attribute name="signal"/>
+                                <attribute name="axes"/>
+                                <attribute name="AXISNAME_indices"/>
+                                <!--\@long_name:-->
+                                <field name="title"/>
+                                <field name="data_counts" type="NX_NUMBER">
+                                    <attribute name="long_name"/>
+                                </field>
+                                <!--dimensions:
+  rank: 2
+  dim: [[1, n_y], [2, n_x]]-->
+                                <field name="axis_y" type="NX_NUMBER">
+                                    <attribute name="long_name"/>
+                                </field>
+                                <!--dimensions:
+  rank: 1
+  dim: [[1, n_y]]-->
+                                <field name="axis_x" type="NX_NUMBER">
+                                    <attribute name="long_name"/>
+                                </field>
+                            </group>
+                        </group>
+                    </group>
+                </group>
+                <!--dimensions:
+  rank: 1
+  dim: [[1, n_x]]
+NEW ISSUE: all of this should be offloaded to NXem_edx -\->-->
+                <group name="eels" type="NXspectrum_set" optional="true">
+                    <group type="NXprocess">
+                        <field name="source">
+                            <attribute name="version"/>
+                        </field>
+                        <field name="mode" recommended="true"/>
+                        <field name="detector_identifier"/>
+                        <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+                            <field name="program">
+                                <attribute name="version"/>
+                            </field>
+                        </group>
+                    </group>
+                    <group name="stack" type="NXdata">
+                        <attribute name="signal"/>
+                        <attribute name="axes"/>
+                        <attribute name="AXISNAME_indices"/>
+                        <!--\@long_name:-->
+                        <field name="title"/>
+                        <field name="data_counts" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 3
+  dim: [[1, n_y], [2, n_x], [3, n_energy_loss]]-->
+                        <field name="axis_y" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_y]]-->
+                        <field name="axis_x" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_x]]-->
+                        <field name="axis_energy_loss" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                    </group>
+                    <!--dimensions:
+  rank: 1
+  dim: [[1, n_energy_loss]]-->
+                    <group name="summary" type="NXdata">
+                        <attribute name="signal"/>
+                        <attribute name="axes"/>
+                        <attribute name="AXISNAME_indices"/>
+                        <!--\@long_name:-->
+                        <field name="title"/>
+                        <field name="data_counts" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_energy_loss]]-->
+                        <field name="axis_energy_loss" type="NX_NUMBER">
+                            <!--dimensions:
+  rank: 1
+  dim: [[1, n_energy_loss]]-->
+                            <attribute name="long_name"/>
+                        </field>
+                    </group>
+                </group>
+                <!--base classes for which we have at the moment no example implemented
+consider to replace se, bse, bf, df, chamber, ronchigram, by generic NXimage_set
+NEW ISSUE: all of this should be offloaded to NXem_eels -\->-->
+                <group name="kikuchi" type="NXimage_set" optional="true">
+                    <group type="NXprocess">
+                        <field name="source">
+                            <attribute name="version"/>
+                        </field>
+                        <field name="mode" recommended="true"/>
+                        <field name="detector_identifier"/>
+                        <group type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+                            <field name="program">
+                                <attribute name="version"/>
+                            </field>
+                        </group>
+                    </group>
+                    <group name="stack" type="NXdata">
+                        <attribute name="signal"/>
+                        <attribute name="axes"/>
+                        <attribute name="AXISNAME_indices"/>
+                        <!--\@long_name:-->
+                        <field name="title"/>
+                        <field name="data_counts" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 3
+  dim: [[1, n_p], [2, n_y], [3, n_x]]-->
+                        <field name="pattern_identifier" type="NX_UINT">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_p]]-->
+                        <field name="axis_y" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_y]]-->
+                        <field name="axis_x" type="NX_NUMBER">
+                            <attribute name="long_name"/>
+                        </field>
+                        <!--dimensions:
+  rank: 1
+  dim: [[1, n_x]]-->
+                        <field name="scan_point_identifier" type="NX_UINT"/>
+                    </group>
+                </group>
+                <!--\@long_name:
+dimensions:
+  rank: 1
+  dim: [[1, n_p]]
+no summary because this will be handled by EBSD-->
+                <!--(NXimage_set_em_se):
+  exists: optional
+(NXimage_set_em_bse):
+  exists: optional
+(NXimage_set_em_bf):
+  exists: optional
+(NXimage_set_em_df):
+  exists: optional
+(NXspectrum_set_em_auger):
+  exists: optional
+(NXspectrum_set_em_cathodolum):
+  exists: optional
+(NXimage_set_em_ecci):
+  exists: optional
+(NXimage_set_em_diffrac):
+  exists: optional
+(NXimage_set_em_ronchigram):
+  exists: optional
+(NXimage_set_em_chamber):
+  exists: optional
+a collection of specific details about state of the microscope-->
+                <group name="em_lab" type="NXinstrument" optional="true">
+                    <group type="NXchamber" optional="true"/>
+                    <group type="NXebeam_column" minOccurs="0" maxOccurs="1">
+                        <group type="NXchamber" optional="true"/>
+                        <group name="electron_source" type="NXsource" optional="true">
+                            <field name="voltage" type="NX_FLOAT"/>
+                        </group>
+                        <group type="NXaperture_em" optional="true">
+                            <field name="value" type="NX_NUMBER"/>
+                        </group>
+                        <group type="NXlens_em" optional="true">
+                            <field name="voltage" type="NX_NUMBER" recommended="true"/>
+                            <field name="current" type="NX_NUMBER" recommended="true"/>
+                            <field name="value" type="NX_NUMBER" recommended="true"/>
+                        </group>
+                        <group name="aberration_correction" type="NXcorrector_cs" recommended="true">
+                            <field name="applied" type="NX_BOOLEAN"/>
+                            <field name="name" optional="true"/>
+                            <group type="NXfabrication" recommended="true">
+                                <field name="vendor" recommended="true"/>
+                                <field name="model" recommended="true"/>
+                                <field name="identifier" recommended="true"/>
+                            </group>
+                            <group name="ZEMLIN_TABLEAU" type="NXprocess" recommended="true">
+                                <field name="description" optional="true"/>
+                                <field name="tilt_angle" type="NX_FLOAT" recommended="true" units="NX_ANGLE"/>
+                                <field name="exposure_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                <field name="magnification" type="NX_NUMBER" optional="true" units="NX_DIMENSIONLESS"/>
+                                <group type="NXprocess" minOccurs="0" maxOccurs="unbounded">
+                                    <group name="ceos" type="NXaberration_model_ceos" optional="true">
+                                        <group name="c_1" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="a_1" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="b_2" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="a_2" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_3" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="s_3" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="a_3" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <!--based on feedback from Thilo Remmele the following aberrations could be measured-->
+                                        <group name="b_4" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="d_4" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="a_4" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_5" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="s_5" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="r_5" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="a_6" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="angle" type="NX_FLOAT" units="NX_ANGLE"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" recommended="true" units="NX_TIME"/>
+                                        </group>
+                                    </group>
+                                    <group name="nion" type="NXaberration_model_nion" optional="true">
+                                        <group name="c_1_0" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_1_2_a" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_1_2_b" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_2_1_a" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_2_1_b" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_2_3_a" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_2_3_b" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_3_0" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_3_2_a" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_3_2_b" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_3_4_a" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_3_4_b" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_4_1_a" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_4_1_b" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_4_3_a" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_4_3_b" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_4_5_a" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_4_5_b" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_5_0" type="NXaberration" recommended="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_5_2_a" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_5_2_b" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_5_4_a" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_5_4_b" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_5_6_a" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                        <group name="c_5_6_b" type="NXaberration" optional="true">
+                                            <field name="magnitude" type="NX_FLOAT" units="NX_LENGTH"/>
+                                            <field name="uncertainty" type="NX_FLOAT" recommended="true" units="NX_LENGTH"/>
+                                            <field name="uncertainty_model" recommended="true"/>
+                                            <field name="delta_time" type="NX_FLOAT" optional="true" units="NX_TIME"/>
+                                        </group>
+                                    </group>
+                                </group>
+                            </group>
+                        </group>
+                    </group>
+                    <group type="NXibeam_column" minOccurs="0" maxOccurs="2">
+                        <group type="NXchamber" optional="true"/>
+                        <group name="ion_source" type="NXsource" optional="true">
+                            <group name="probe" type="NXion" recommended="true">
+                                <field name="charge_state" type="NX_INT" recommended="true"/>
+                                <field name="isotope_vector" type="NX_UINT" recommended="true"/>
+                                <field name="name" recommended="true"/>
+                            </group>
+                            <field name="voltage" type="NX_FLOAT" recommended="true"/>
+                            <field name="current" type="NX_FLOAT" recommended="true"/>
+                        </group>
+                        <group type="NXaperture_em" optional="true">
+                            <field name="value" type="NX_NUMBER" recommended="true"/>
+                        </group>
+                        <group type="NXlens_em" optional="true">
+                            <field name="voltage" type="NX_NUMBER" recommended="true"/>
+                            <field name="current" type="NX_NUMBER" recommended="true"/>
+                            <field name="value" type="NX_NUMBER" recommended="true"/>
+                        </group>
+                    </group>
+                    <group name="ebeam_deflector" type="NXscanbox_em" optional="true">
+                        <field name="pixel_time" type="NX_FLOAT" recommended="true"/>
+                    </group>
+                    <group name="ibeam_deflector" type="NXscanbox_em" optional="true"/>
+                    <!--NEW ISSUE: how to handle situations where we wish to describe multiple deflectors?-->
+                    <group type="NXoptical_system_em" optional="true">
+                        <field name="camera_length" type="NX_NUMBER" optional="true"/>
+                        <field name="magnification" type="NX_NUMBER" optional="true"/>
+                        <field name="defocus" type="NX_NUMBER" recommended="true"/>
+                        <field name="semi_convergence_angle" type="NX_NUMBER" recommended="true"/>
+                        <field name="working_distance" type="NX_FLOAT" recommended="true"/>
+                        <field name="beam_current" type="NX_FLOAT" recommended="true"/>
+                        <field name="beam_current_description" recommended="true"/>
+                    </group>
+                    <group type="NXdetector" optional="true"/>
+                    <!--dynamically changing detector settings uses only during this NXevent_data_em-->
+                    <group type="NXpump" optional="true"/>
+                    <group type="NXstage_lab" optional="true">
+                        <field name="position" type="NX_FLOAT" recommended="true"/>
+                        <field name="rotation" type="NX_FLOAT" recommended="true"/>
+                        <field name="tilt_1" type="NX_FLOAT" recommended="true"/>
+                        <field name="tilt_2" type="NX_FLOAT" recommended="true"/>
+                    </group>
+                </group>
+                <group type="NXuser" minOccurs="0" maxOccurs="unbounded">
+                    <field name="name"/>
+                </group>
+            </group>
+        </group>
+    </group>
+</definition>

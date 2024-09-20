@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_grid" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="d">
+            <doc>
+                 The dimensionality of the grid.
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 The cardinality or total number of cells/grid points.
+            </doc>
+        </symbol>
+        <symbol name="n_b">
+            <doc>
+                 Number of boundaries of the bounding box or primitive to the grid.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Computational geometry description of a Wigner-Seitz cell grid in Euclidean space.
+         
+         Frequently convenient three-dimensional grids with cubic cells are used.
+         Exemplar applications are spectral-solver based crystal plasticity
+         and stencil methods like phase-field or cellular automata.
+    </doc>
+    <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
+        <enumeration>
+            <item value="1"/>
+            <item value="2"/>
+            <item value="3"/>
+        </enumeration>
+    </field>
+    <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
+    <field name="origin" type="NX_NUMBER">
+        <dimensions rank="1">
+            <dim index="1" value="d"/>
+        </dimensions>
+    </field>
+    <field name="symmetry">
+        <doc>
+             The symmetry of the lattice defining the shape of the unit cell.
+        </doc>
+        <enumeration>
+            <item value="cubic"/>
+        </enumeration>
+    </field>
+    <field name="cell_dimensions" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             The unit cell dimensions using crystallographic notation.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="d"/>
+        </dimensions>
+    </field>
+    <field name="extent" type="NX_POSINT" units="NX_UNITLESS">
+        <doc>
+             Number of unit cells along each of the d unit vectors.
+             The total number of cells, or grid points has to be the cardinality.
+             If the grid has an irregular number of grid positions in each direction,
+             as it could be for instance the case of a grid where all grid points
+             outside some masking primitive are removed, this extent field should
+             not be used. Instead use the coordinate field.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="d"/>
+        </dimensions>
+    </field>
+    <group type="NXtransformations">
+        <doc>
+             Reference to or definition of a coordinate system with
+             which the positions and directions are interpretable.
+        </doc>
+    </group>
+    <!--number_of_cells(NX_UINT): maybe already too trivial quantities
+should constraints on the grid be place here or not-->
+    <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer which specifies the first index to be used for distinguishing
+             identifiers for cells. Identifiers are defined either implicitly
+             or explicitly. For implicit indexing the identifiers are defined on the
+             interval [identifier_offset, identifier_offset+c-1].
+             For explicit indexing the identifier array has to be defined.
+             
+             The identifier_offset field can for example be used to communicate if the
+             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
+             or from 0 (referred to as C-, Python-style index notation) respectively.
+        </doc>
+    </field>
+    <field name="identifier" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer used to distinguish cells for explicit indexing.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="position" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Position of each cell in Euclidean space.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="c"/>
+            <dim index="2" value="d"/>
+        </dimensions>
+    </field>
+    <field name="coordinate" type="NX_INT" units="NX_DIMENSIONLESS">
+        <doc>
+             Coordinate of each cell with respect to the discrete grid.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="c"/>
+            <dim index="2" value="d"/>
+        </dimensions>
+    </field>
+    <!--this should be a ROI-->
+    <group name="bounding_box" type="NXcg_polyhedron_set">
+        <doc>
+             A tight bounding box or sphere or bounding primitive about the grid.
+        </doc>
+    </group>
+    <!--a good example for a general bounding box description for such a grids of triclinic cells
+https://docs.lammps.org/Howto_triclinic.html NXcg_polyhedron because a parallelepiped-->
+    <field name="number_of_boundaries" type="NX_POSINT" units="NX_UNITLESS">
+        <doc>
+             How many distinct boundaries are distinguished?
+             Most grids discretize a cubic or cuboidal region. In this case
+             six sides can be distinguished, each making an own boundary.
+        </doc>
+    </field>
+    <field name="boundaries">
+        <doc>
+             Name of domain boundaries of the simulation box/ROI e.g. left, right,
+             front, back, bottom, top.
+        </doc>
+        <!--The field must have as many entries as there are number_of_boundaries.-->
+        <dimensions rank="1">
+            <dim index="1" value="n_b"/>
+        </dimensions>
+    </field>
+    <field name="boundary_conditions" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             The boundary conditions for each boundary:
+             
+             0 - undefined
+             1 - open
+             2 - periodic
+             3 - mirror
+             4 - von Neumann
+             5 - Dirichlet
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_b"/>
+        </dimensions>
+    </field>
+</definition>
