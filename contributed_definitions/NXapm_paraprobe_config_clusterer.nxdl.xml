@@ -1,0 +1,477 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXapm_paraprobe_config_clusterer" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <!--n_positions: Number of position values.
+n_disjoint_clusters: Number of disjoint cluster.-->
+        <symbol name="n_ivecmax">
+            <doc>
+                 Maximum number of atoms per molecular ion. Should be 32 for paraprobe.
+            </doc>
+        </symbol>
+        <symbol name="n_clust_algos">
+            <doc>
+                 Number of clustering algorithms used.
+            </doc>
+        </symbol>
+        <symbol name="n_ions">
+            <doc>
+                 Number of different iontypes to distinguish during clustering.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Configuration of a paraprobe-clusterer tool run in atom probe microscopy.
+    </doc>
+    <group type="NXentry">
+        <!--by default for appdefs the value of the exists keyword is required
+unless it is explicitly specified differently-->
+        <attribute name="version">
+            <doc>
+                 Version specifier of this application definition.
+            </doc>
+        </attribute>
+        <field name="definition">
+            <doc>
+                 Official NeXus NXDL schema with which this file was written.
+            </doc>
+            <enumeration>
+                <item value="NXapm_paraprobe_config_clusterer"/>
+            </enumeration>
+        </field>
+        <field name="program">
+            <doc>
+                 Given name of the program/software/tool with which this NeXus
+                 (configuration) file was generated.
+            </doc>
+            <attribute name="version">
+                <doc>
+                     Ideally program version plus build number, or commit hash or description
+                     of ever persistent resources where the source code of the program and
+                     build instructions can be found so that the program can be configured
+                     ideally in such a manner that the result of this computational process
+                     is recreatable in the same deterministic manner.
+                </doc>
+            </attribute>
+        </field>
+        <field name="time_stamp" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 formatted time code with local time zone offset to UTC
+                 information included when this configuration file was created.
+            </doc>
+        </field>
+        <field name="analysis_identifier">
+            <doc>
+                 Ideally, a (globally persistent) unique identifier for referring
+                 to this analysis.
+            </doc>
+        </field>
+        <field name="analysis_description" optional="true">
+            <doc>
+                 Possibility for leaving a free-text description about this analysis.
+            </doc>
+        </field>
+        <field name="number_of_processes" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 How many tasks to perform?
+            </doc>
+        </field>
+        <group name="cameca_to_nexus" type="NXprocess" optional="true">
+            <doc>
+                 This process maps results from cluster analyses performed with IVAS/APSuite
+                 into an interoperable representation. Specifically in this process
+                 paraprobe-clusterer takes results from clustering methods from other tools
+                 of the APM community, like IVAS/APSuite. These results are usually reported
+                 in two ways. Either as an explicit list of reconstructed ion positions.
+                 In the case of IVAS these positions are reported through a text file
+                 with a cluster label for each position.
+                 
+                 Alternatively, the list of positions is reported, as it is the case for
+                 AMETEK (IVAS/AP Suite) but the cluster labels are specified implicitly
+                 only in the following way: The mass-to-charge-state ratio column of a
+                 what is effectively a file formatted like POS is used to assign a hypothetical
+                 mass-to-charge value which resolves a floating point representation
+                 of the cluster ID.
+                 
+                 Another case can occur where all disjoint floating point values,
+                 i.e. here cluster labels, are reported and then a dictionary is created
+                 how each value matches to a cluster ID.
+                 
+                 In general the cluster ID zero is reserved for marking the dataset
+                 as to not be assigned to any cluster. Therefore, indices of disjoint
+                 clusters start at 1.
+            </doc>
+            <group name="dataset" type="NXapm_input_reconstruction">
+                <field name="filename">
+                    <attribute name="version"/>
+                </field>
+                <field name="dataset_name_reconstruction"/>
+                <field name="dataset_name_mass_to_charge">
+                    <doc>
+                         AMETEK/Cameca results of cluster analyses, like with the maximum-
+                         separation (MS) method clustering algorithm `J. Hyde et al. &lt;https://doi.org/10.1557/PROC-650-R6.6&gt;`_  
+                         are stored as an improper POS file: This is a matrix of floating
+                         point quadruplets, one for each ion and as many quadruplets as
+                         ions were investigated. The first three values encode the position
+                         of the ion. The fourth value is an improper mass-to-charge-state-ratio
+                         value which encodes the integer identifier of the cluster as a floating
+                         point number.
+                    </doc>
+                </field>
+            </group>
+            <!--mapping_method:
+  doc: |
+    How should cluster labels be created from the cluster_labels information
+    especially when these areNcluste floating point values.
+ enumeration: [take_as_is, use_dictionary]
+mapping_dictionary_keyword(NX_NUMBER):
+  doc: |
+    The list of all keywords of a dictionary which maps implicit cluster
+    indices like those from IVAS/APSuite which were0ass-to-charge-state ratios.
+  unit: NX_UNITLESS
+  dimensions:
+    rank: 1
+    dim: [[1, n_disjoint_clusters]]
+mapping_dictionary_value(NX_UINT):
+  doc: |
+    The list of all values of a dictionary which maps implicit cluster
+    indices like those from IVAS/APSuite which were0ass-to-charge-state ratios.
+    The sequences of mapping_dictionary_keyword and mapping_dictionary_value
+    have to match.
+  unit: NX_UNITLESS
+  dimensions:
+    rank: 1
+    dim: [[1, n_disjoint_clusters]]-->
+            <field name="recover_evaporation_id" type="NX_BOOLEAN">
+                <doc>
+                     Specifies if the tool should try to recover for each position the closest
+                     matching position from dataset/dataset_name_reconstruction (within
+                     floating point accuracy). This can be useful for instance when users
+                     wish to recover the original evaporation ID, which IVAS/AP Suite drops
+                     for instance when writing their *.indexed.* cluster results POS files.
+                </doc>
+            </field>
+        </group>
+        <!--recover_bitmask(NX_BOOLEAN):
+  doc: |
+    Specifies if the tool should try to recover, after a recovery of the
+    evaporation IDs a bitmask which identifies which of the positions
+    in dataset/dataset/dataset_name_reconstruction where covered
+    by the IVAS/APSuite cluster analysis. This can be useful to recover
+    the region of interest.-->
+        <group name="cluster_analysis" type="NXprocess" minOccurs="0" maxOccurs="1">
+            <doc>
+                 This process performs a cluster analysis on a reconstructed dataset
+                 or a portion of the reconstruction.
+            </doc>
+            <group name="dataset" type="NXapm_input_reconstruction">
+                <field name="filename">
+                    <attribute name="version"/>
+                </field>
+                <field name="dataset_name_reconstruction"/>
+                <field name="dataset_name_mass_to_charge"/>
+            </group>
+            <group name="iontypes" type="NXapm_input_ranging">
+                <field name="filename">
+                    <attribute name="version"/>
+                </field>
+                <field name="group_name_iontypes"/>
+            </group>
+            <group name="ion_to_edge_distances" type="NXprocess" optional="true">
+                <doc>
+                     The tool enables to inject precomputed distance information for each
+                     point/ion which can be used for further post-processing and analysis.
+                </doc>
+                <field name="filename">
+                    <doc>
+                         Name of an HDF5 file which contains the ion distances.
+                    </doc>
+                    <attribute name="version">
+                        <doc>
+                             Version identifier of the file such as a secure hash which documents
+                             the binary state of the file to add an additional layer of
+                             reproducibility from which file specifically contains these data.
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="dataset_name">
+                    <doc>
+                         Absolute HDF5 path to the dataset with distance values for each ion.
+                    </doc>
+                </field>
+            </group>
+            <group name="spatial_filter" type="NXspatial_filter" optional="true">
+                <field name="windowing_method">
+                    <enumeration>
+                        <item value="entire_dataset"/>
+                    </enumeration>
+                </field>
+                <group type="NXcg_ellipsoid_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="half_axes_radii" type="NX_NUMBER"/>
+                    <field name="orientation" type="NX_NUMBER"/>
+                </group>
+                <group type="NXcg_cylinder_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="height" type="NX_NUMBER"/>
+                    <field name="radii" type="NX_NUMBER"/>
+                </group>
+                <group type="NXcg_hexahedron_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <group name="hexahedra" type="NXcg_face_list_data_structure"/>
+                </group>
+                <group type="NXcs_filter_boolean_mask" optional="true">
+                    <field name="number_of_objects" type="NX_UINT"/>
+                    <field name="bitdepth" type="NX_UINT"/>
+                    <field name="mask" type="NX_UINT"/>
+                    <field name="identifier" type="NX_UINT"/>
+                </group>
+            </group>
+            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true"/>
+            <group name="iontype_filter" type="NXmatch_filter" optional="true"/>
+            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true"/>
+            <!--clustering_algorithm:
+  doc: |
+    Name of the clustering algorithm used.
+  enumeration: [dbscan]  # , optics, hpdbscan]
+  dimensions:
+    rank: 1
+    dim: [[1, n_clust_algos]]-->
+            <field name="ion_type_filter">
+                <doc>
+                     How should iontypes be interpreted/considered during the cluster analysis.
+                     Different options exist how iontypes are interpreted (if considered at all)
+                     given an iontype represents in general a (molecular) ion with different isotopes
+                     that have individually different multiplicity.
+                     
+                     The value resolve_all will set an ion active in the analysis
+                     regardless of which iontype it is.
+                     The value resolve_unknown will set an ion active when it is of the
+                     UNKNOWNTYPE.
+                     The value resolve_ion will set an ion active if it is of the
+                     specific iontype, irregardless of its elemental or isotopic details.
+                     The value resolve_element will set an ion active, and most importantly,
+                     account as many times for it, as the (molecular) ion contains
+                     atoms of elements in the whitelist ion_query_isotope_vector.
+                     The value resolve_isotope will set an ion active, and most importantly,
+                     account as many times for it, as the (molecular) ion contains isotopes
+                     in the whitelist ion_query_isotope_vector.
+                     
+                     In effect, ion_query_isotope_vector acts as a whitelist to filter
+                     which ions are considered as source ions of the correlation statistics
+                     and how the multiplicity of each ion will be factorized.
+                     
+                     This is relevant as in atom probe we have the situation that a ion
+                     of a molecular ion with more than one nuclid, say Ti O for example
+                     is counted such that although there is a single TiO molecular ion
+                     at a position that the cluster has two members. This multiplicity
+                     affects the size of the feature and chemical composition.
+                </doc>
+                <!--enumeration: [resolve_all, resolve_unknown, resolve_ion, resolve_element, resolve_isotope]-->
+                <enumeration>
+                    <item value="resolve_element"/>
+                </enumeration>
+            </field>
+            <field name="ion_query_isotope_vector" type="NX_UINT" units="NX_UNITLESS">
+                <doc>
+                     Matrix of isotope vectors, as many as rows as different candidates
+                     for iontypes should be distinguished as possible source iontypes.
+                     In the simplest case, the matrix contains only the proton number
+                     of the element in the row, all other values set to zero.
+                     Combined with ion_query_type_source set to resolve_element this will
+                     recover usual spatial correlation statistics like the 1NN C-C
+                     spatial statistics.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="n_ions"/>
+                    <dim index="2" value="n_ivecmax"/>
+                </dimensions>
+            </field>
+            <group name="dbscan" type="NXprocess">
+                <doc>
+                     Settings for DBScan clustering algorithm. For original details about the
+                     algorithms and (performance-relevant) details consider:
+                     
+                     * `M. Ester et al. &lt;https://dx.doi.org/10.5555/3001460.3001507&gt;`_  
+                     * `M. Götz et al. &lt;https://dx.doi.org/10.1145/2834892.2834894&gt;`_  
+                     
+                     For details about how the DBScan algorithms is the key behind the
+                     specific modification known as the maximum-separation method in the
+                     atom probe community consider `E. Jägle et al. &lt;https://dx.doi.org/10.1017/S1431927614013294&gt;`_
+                </doc>
+                <field name="high_throughput_method">
+                    <doc>
+                         Strategy how runs are performed with different parameter:
+                         
+                         * For tuple as many runs are performed as parameter values.
+                         * For combinatorics individual parameter arrays are looped over.
+                         
+                         As an example we may define eps with ten entries and min_pts with
+                         three entries. If high_throughput_method is tuple the analysis is
+                         invalid as we have an insufficient number of min_pts for the ten
+                         eps values.
+                         By contrast, for combinatorics paraprobe-clusterer will run three
+                         individual min_pts runs for each eps value, resulting in a total
+                         of 30 analyses.
+                         As an example the DBScan analysis reported in `M. Kühbach et al. &lt;https://dx.doi.org/10.1038/s41524-020-00486-1&gt;`_
+                         would have defined an array of values np.linspace(0.2, 5.0, nums=241, endpoint=True)
+                         eps values, min_pts one, and high_throughput_method set to combinatorics.
+                    </doc>
+                    <enumeration>
+                        <item value="tuple"/>
+                        <item value="combinatorics"/>
+                    </enumeration>
+                </field>
+                <field name="eps" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Array of epsilon (eps) parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="i"/>
+                    </dimensions>
+                </field>
+                <field name="min_pts" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Array of minimum points (min_pts) parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+            </group>
+            <!--THE IDEA BEHIND paraprobe-clusterer is that users can run a number of
+cluster analyses on their dataset on exactly the same point cloud and under
+the same conditions-->
+            <group name="optics" type="NXprocess">
+                <doc>
+                     Settings for the OPTICS clustering algorithm.
+                     
+                     * `M. Ankerest et al. &lt;https://dx.doi.org/10.1145/304181.304187&gt;`_
+                </doc>
+                <field name="high_throughput_method">
+                    <doc>
+                         Strategy how runs are performed with different parameter:
+                         
+                         * For tuple as many runs are performed as parameter values.
+                         * For combinatorics individual parameter arrays are looped over.
+                         
+                         See the explanation for the corresponding parameter for dbscan
+                         processes above-mentioned for further details.
+                    </doc>
+                    <enumeration>
+                        <item value="tuple"/>
+                        <item value="combinatorics"/>
+                    </enumeration>
+                </field>
+                <field name="min_pts" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Array of minimum points (min_pts) parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="i"/>
+                    </dimensions>
+                </field>
+                <field name="max_eps" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Array of maximum epsilon (eps) parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="hdbscan" type="NXprocess">
+                <doc>
+                     Settings for the HPDBScan clustering algorithm.
+                     
+                     * L. McInnes et al. &lt;https://dx.doi.org/10.21105/joss.00205&gt;`_  
+                     * scikit-learn hdbscan library `&lt;https://hdbscan.readthedocs.io/en/latest/how_hdbscan_works.html&gt;`_  
+                     
+                     See also this documentation for details about the parameter.
+                     Here we use the terminology of the hdbscan documentation.
+                </doc>
+                <field name="high_throughput_method">
+                    <doc>
+                         Strategy how runs are performed with different parameter:
+                         
+                         * For tuple as many runs are performed as parameter values.
+                         * For combinatorics individual parameter arrays are looped over.
+                         
+                         See the explanation for the corresponding parameter for dbscan
+                         processes above-mentioned for further details.
+                    </doc>
+                    <enumeration>
+                        <item value="tuple"/>
+                        <item value="combinatorics"/>
+                    </enumeration>
+                </field>
+                <field name="min_cluster_size" type="NX_NUMBER" units="NX_ANY">
+                    <doc>
+                         Array of min_cluster_size parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="i"/>
+                    </dimensions>
+                </field>
+                <field name="min_samples" type="NX_NUMBER" units="NX_ANY">
+                    <doc>
+                         Array of min_samples parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+                <field name="cluster_selection_epsilon" type="NX_NUMBER" units="NX_ANY">
+                    <doc>
+                         Array of cluster_selection parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="k"/>
+                    </dimensions>
+                </field>
+                <field name="alpha" type="NX_NUMBER" units="NX_ANY">
+                    <doc>
+                         Array of alpha parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="m"/>
+                    </dimensions>
+                </field>
+            </group>
+        </group>
+    </group>
+    <!--ADD FURTHER ALGORITHMS, see L. Stephenson for further details
+e.g. https://doi.org/10.1017/S1431927607070900-->
+</definition>

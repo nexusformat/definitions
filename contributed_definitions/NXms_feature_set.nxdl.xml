@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--NXms_feature_set can be used e.g. as groups inside instances of NXms_snapshot
+for an MD simulation each timestep is such snapshot all snapshot for a set
+which is the parent group that has all these NXms_snapshot instances as childs
+  time_stamp: # simulated, physical-->
+<!--Thea, Joseph, Lauri, Dinga (TJLD) just for comparison for each group and field to what this would map in their model for the MDTutorial 2-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXms_feature_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="d">
+            <doc>
+                 Dimensionality
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 Cardinality/number of members/features in the feature set.
+            </doc>
+        </symbol>
+        <symbol name="n_type_dict">
+            <doc>
+                 Number of types in the dictionary of human-readable types of features.
+            </doc>
+        </symbol>
+        <symbol name="n_parent_ids">
+            <doc>
+                 Total number of parent identifier.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Set of topological/spatial features in materials build from other features.
+    </doc>
+    <!--TJLD: this class represents a generalization of AtomGroups
+TJLD: one such for atoms(NXms_feature_set)
+TJLD: one such for atom_groups(NXms_feature_set)
+TJLD: but not one for every molecule, i.e. all molecules and how their atoms with ids are related to atoms ids is concatenated
+TJLD: clearly there are two possibilities: either concatenate or make one NXms_feature_set for each molecule or component in the topology hierarchy
+TJLD: however the here proposed design generalizes the arbitrary (microstructural) features and computational geometry based coarse-grained representations-->
+    <attribute name="depends_on">
+        <!--TJLD: not required it is currently assumed that features are always build from atoms and this relation is shown using their ids, integers on [0, n_atoms-1]-->
+        <doc>
+             Name (or link?) to another NXms_feature_set which defines features what are
+             assumed as the parents/super_features of all members in this feature set.
+             If depends_on is set to &quot;.&quot; or this attribute is not defined in an instance
+             of this application definition, assume that this feature_set instance
+             represents the root feature_set of the feature tree/graph.
+        </doc>
+    </attribute>
+    <!--the design of this base class makes it possible to have Joseph's suggestion
+but it has the additional benefit that as it defines the set one also
+bundle the description for all features at this hierarchy level into combined
+arrays to make the eventual storage of this for instances with millions of features
+more efficient as in the current design each molecule would again be a group
+and having millions of groups comes with e.g. HDF5 with substantial overlap
+I faced this when storing grains from micro-scale continuum crystal growth simulations
+TJLD: is_molecule(NX_BOOLEAN): not used, could however be added in an appdef which uses instances of NXms_feature_set
+TJLD: the key point we can use NXms_feature_set in the same way as currently TJLD use atoms and atoms/atom_groups/molecule0, */molecule1, ...
+but with the additional benefit of a much richer geometrical description and the details about the uncertainty of these descriptions
+I can also imagine that materials engineers e.g. can reuse NXms_feature_set in an application definition by just then naming
+their group e.g. grains(NXms_feature_set) and use in the application definition either only the (material point), interface network, or volumetric description-->
+    <field name="dimensionality" type="NX_UINT">
+        <!--TJLD: not needed because they assume everything is 3d-->
+        <doc>
+             What is the best matching description how dimensional the feature is.
+        </doc>
+        <enumeration>
+            <item value="0"/>
+            <item value="1"/>
+            <item value="2"/>
+            <item value="3"/>
+        </enumeration>
+    </field>
+    <field name="cardinality" type="NX_UINT" units="NX_UNITLESS">
+        <!--TJLD: equivalent to the number of AtomGroups class instance childs-->
+        <doc>
+             How many features/members are in this set?
+        </doc>
+    </field>
+    <field name="type_dict_keyword">
+        <!--TJLD: equivalent to the controlled vocabulary term monomer or molecule, i.e. label
+TJLD: but with the difference that in this NeXus design here different features can take different roles
+TJLD: and do not conceptually have to be atoms, alternatively one could also create an NXms_interface_set which
+TJLD: inherits from NXms_feature_set but would need to have no dimensionality-->
+        <doc>
+             The keywords of the dictionary of human-readable types of features.
+             Using terms from a community-agreed upon controlled vocabulary, e.g.
+             atom, solute, vacancy, monomer, molecule, anti-site, crowd_ion,
+             quadruple junction, triple line, disconnection, dislocation, 
+             kink, jog, stacking_fault, homo_phase_boundary, hetero_phase_boundary,
+             surface, thermal_groove_root, precipitate, dispersoid, pore, crack
+             is recommended.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_type_dict"/>
+        </dimensions>
+    </field>
+    <field name="type_dict_value" type="NX_UINT" units="NX_UNITLESS">
+        <!--TJLD: equivalent to the AtomGroups index-->
+        <doc>
+             The integer identifier used to resolve of which type each feature is,
+             i.e. the values of the dictionary of human-readable types of features.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_type_dict"/>
+        </dimensions>
+    </field>
+    <field name="number_of_parent_identifier" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             For each feature in the set specify the associated number of identifier
+             to parent features as are resolvable via depends_on.
+             This array enables to compute the array interval from which details for
+             specific features can be extracted as if they would be stored in an own
+             group.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="parent_identifier" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Concatenated array of parent identifier for each feature (in the sequence)
+             according to identifier and how the identifier of features in the here
+             described feature set are defined (implicitly from 0, to c-1 or via explicit
+             identifier.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_parent_ids"/>
+        </dimensions>
+    </field>
+    <!--description of the geometry of the features
+MK::how can be define that inside lines(NXprocess) we assure that there is either no geometry or only one geometry but then this geometry can be either an NXcg_polyline_set or NXcg_spline_set?
+the key problem is that at least for an implementation in HDF5 we are not allowed to have two groups named geometry even if their attributes are different because
+HDF5 implements no conceptual understanding of the relations between elements in the underlying graph which holds the data, these elements are either attributes, fields, groups, all of which
+end up as links-->
+    <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer which specifies the first index to be used for distinguishing
+             features. Identifiers are defined either implicitly
+             or explicitly. For implicit indexing the identifiers are defined on the
+             interval [identifier_offset, identifier_offset+c-1].
+             For explicit indexing the identifier array has to be defined.
+             
+             The identifier_offset field can for example be used to communicate if the
+             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
+             or from 0 (referred to as C-, Python-style index notation) respectively.
+        </doc>
+    </field>
+    <field name="identifier" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer used to distinguish features for explicit indexing.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <group name="points" type="NXprocess">
+        <!--TJLD: this design here is different, TJLD give atom positions only (at least as of now) for the root of an object
+TJLD: while all higher-order features that are connected through their assumed topology just refer to the atoms in the root
+TJLD: via their IDs, TJLD design is ideal for systems build from atoms but would create unnecessary copies for higher-dimensional-type features
+TJLD: in fact initially I also thought it is useful to create an NXms_dislocation_set, and an NXms_atom_set but overall these are just
+specializations of NXms_feature_set. Instead I like the key approach in TJLD which is to nest instances of the same class in TJLD's case AtomGroups
+but here NXms_feature_set instances-->
+        <doc>
+             Assumptions and parameter to arrive at geometric primitives
+             to locate zero-dimensional/point-(like) features which are
+             discretized/represented by points.
+        </doc>
+        <group name="geometry" type="NXcg_point_set"/>
+        <group name="uncertainty" type="NXprocess">
+            <doc>
+                 Assumptions, parameters, and details how positional uncertainty
+                 of the geometry is quantified.
+            </doc>
+        </group>
+    </group>
+    <group name="lines" type="NXprocess">
+        <!--TJLD: not conceptualized, see comments for points and what the benefit of using NeXus would be-->
+        <doc>
+             Assumptions and parameters to arrive at geometric primitives
+             to locate one-dimensional/line-like features which are
+             discretized by polylines.
+        </doc>
+        <!--MK::geometry(NXcg_spline_set)-->
+        <group name="geometry" type="NXcg_polyline_set"/>
+        <group name="uncertainty" type="NXprocess">
+            <doc>
+                 Assumptions, parameters, and details how positional uncertainty
+                 of the geometry is quantified.
+            </doc>
+        </group>
+    </group>
+    <group name="interfaces" type="NXprocess">
+        <doc>
+             Assumptions and parameters to arrive at geometric primitives
+             to locate two-dimensional/interface features which are
+             discretized by triangulated surface meshes.
+        </doc>
+        <!--MK::geometry(NXcg_nurbs_set):-->
+        <group name="geometry" type="NXcg_triangle_set"/>
+        <group name="uncertainty" type="NXprocess">
+            <doc>
+                 Assumptions, parameters, and details how positional uncertainty
+                 of the geometry is quantified.
+            </doc>
+        </group>
+    </group>
+    <group name="volumes" type="NXprocess">
+        <doc>
+             Assumptions and parameters to arrive at geometric primitives
+             to locate three-dimensional/volumetric features which are
+             discretized by triangulated surface meshes of polyhedra.
+        </doc>
+        <!--MK::geometry(NXcg_nurbs_set):-->
+        <group name="geometry" type="NXcg_polyhedron_set"/>
+        <group name="uncertainty" type="NXprocess">
+            <doc>
+                 Assumptions, parameters, and details how positional uncertainty
+                 of the geometry is quantified.
+            </doc>
+        </group>
+    </group>
+    <!--Sandor and Markus agree that how trajectories are extracted should be stored in instances of NXprocess at respective places
+Sandor suggested it can be useful to also describe how one could transform system-specific atom positions from the system-focused coordinate system to a molecule- or atom-focused local coordinate system-->
+    <!--how to map results from MD simulations was already sketched by the comments from TJLD
+but ones more here stating it explicitly
+atoms(NXms_feature_set):
+  # no \@depends_on: as everything is build spatiotemporally coarse-grained from the sampled atom positions and/or their trajectories
+dislocations(NXms_feature_set):
+  # \@depends_on: <<path_to>>/atoms
+  # is trivially the same case as was described already for the DDD simulation-->
+    <!--how to map from DREAM.3D to NXms_feature_set
+material_points(NXms_feature_set):  # material points can be voxels of a grid (which should be specified with an instance of NXcg_grid) or real material points
+  # no \@depends_on: "." required or value can be "." as material_points are considered the root
+grains(NXms_feature_set):
+  \@depends_on: <<path_to>>/material_points
+boundaries(NXms_feature_set):
+  \@depends_on: <<path_to>>/grains
+triple_lines(NXms_feature_set):
+  \@depends_on: <<path_to>>/boundaries
+quadruple_junctions(NXms_feature_set):
+  \@depends_on: <<path_to>>/triple_lines-->
+    <!--how to map from e.g. DDD codes like ParaDis to NXms_feature_set
+dislocations(NXms_feature_set):
+either all types of dislocations are specified via the type_dict dictionary or by making several named instances of NXms_feature_set classes, i.e. groups
+multi_junctions(NXms_feature_set):
+  \@depends_on: <<path_to>>/dislocations-->
+    <!--how to describe e.g. 3D cracks
+cracks(NXms_feature_set):
+  # you can use volumes and interfaces to describe explicitly the 3D geometry
+  # alternatively you can-->
+    <!--how to map from an MTex v5.8.2 @grain2d object
+grains.poly is a cell of list of vertex indices referring to grains.V
+grains.id
+grains.phaseId to which phase does each grain belong why is it different to phase?
+grains.prop (mean and gos)
+grains.boundary
+    F, list of minmax-hashed vertex indices building the facet
+    grainId, list of pairs of grains incident at facet special value 0 marks grains with boundary contact
+    ebsdId, list of interpolated scan points incident
+    phaseId, homo/heterophase information list of pairs of phases incident at facet
+    V, list of facet support vertices, the support of the polyline
+    midPoint, list of facet midPoint coordinates
+    direction 3d vector (V(F(i, 1),:) - V(F(i, 2), :)) and with z = 0 and then normalized, so not respecting winding order
+grains.triplePoints
+    id, list of vertex id for the location of the triple point referring to grains.V or grains.boundary.V as these lists are equivalent
+    grainid, triplet of adjoining grain ids
+    boundaryId, triplet of adjoining boundary facets from grains.boundary.F
+    nextVertexId, next vertex hit when walking from the triple point
+    phaseId, is it a triple point between homophases or heterophases
+    V, list of x, y coordinates for the triple points
+    angles, trivial nextVertexId to triplePoint vertex angles
+grains(NXms_feature_set):
+boundaries(NXms_feature_set):
+# alternatively one NXms_feature_set for homophase boundaries-->
+</definition>
