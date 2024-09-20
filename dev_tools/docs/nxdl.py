@@ -12,8 +12,8 @@ from ..globals.directories import get_nxdl_root
 from ..globals.errors import NXDLParseError
 from ..globals.nxdl import NXDL_NAMESPACE
 from ..globals.urls import REPO_URL
-from ..utils import nxdl_utils as pynxtools_nxlib
 from ..utils.github import get_file_contributors_via_api
+from ..utils.nxdl_utils import get_inherited_nodes
 from ..utils.types import PathLike
 from .anchor_list import AnchorRegistry
 
@@ -703,7 +703,7 @@ class NXClassDocGenerator:
         path = path[path.find("/", 1) :]
 
         try:
-            parents = pynxtools_nxlib.get_inherited_nodes(path, nx_name)[2]
+            parents = get_inherited_nodes(path, nx_name)[2]
         except FileNotFoundError:
             return ""
         if len(parents) > 1:

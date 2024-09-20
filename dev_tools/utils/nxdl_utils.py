@@ -78,9 +78,11 @@ nexus_def_path = get_nexus_definitions_path()
 
 def get_app_defs_names():
     """Returns all the AppDef names without their extension: .nxdl.xml"""
-    app_def_path_glob = nexus_def_path / "applications" / "*.nxdl*"
+    app_def_path_glob = nexus_def_path / "applications" / "*.nxdl.xml"
 
-    contrib_def_path_glob = Path(nexus_def_path) / "contributed_definitions" / "*.nxdl*"
+    contrib_def_path_glob = (
+        Path(nexus_def_path) / "contributed_definitions" / "*.nxdl.xml"
+    )
 
     files = sorted(glob(str(app_def_path_glob)))
     for nexus_file in sorted(glob(str(contrib_def_path_glob))):
