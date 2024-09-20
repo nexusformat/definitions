@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--key points to keep in mind when thinking about a general enough description for coarse-graining systems of atoms into
+so-called microstructural features of interest for which we may store also thermodynamic properties or other feature-specific descriptors
+  several viewpoints how to coarse-grain are equally justified: grains are useful when there are crystallites with adjoining interfaces and #   none, or only some statistical populations of defects and/or some spatially-well defined defects inside these
+  however, if grains are build almost only from defects like dislocation walls, it might no longer be useful to define the grains
+  as a well identifiable region whose majority volume shows long-range atomic periodicity (so that defining an orientation makes) sense.
+  one could then rather describe the set of defects. Alternatively one could describe a material volume by sampling individual so-called
+  material points (e.g. in continuum-scale plasticity models) or describe the material volume really from the atoms up
+  but there are many terms used in materials engineering which people may want to distinguish which stand however between the scales e.g.
+  lattice curvature, this is jargon with some truth in it but curvature has to be build from atoms and defects need to build the curvature
+  dislocations are another good example where different research questions demand differently granularized descriptions e.g.
+  average density, total line length, per character, per family, line length, curvature, jog, kink density,
+  coarse-grainable structural motifs in the dislocation core, atomic structure
+  also different scales one would like to distinguish as this is relevant when defects couple/show spatiotemporal correlations
+  to specific mechanisms (e.g. phonons) or when defect affect the properties of other defects
+  ambiguous choices: is the grain boundary part of the grain or is it an own defect?
+  i.e. can/should we store grains as childs of their grain boundary set vs the interface the childs of the grains?
+  Depending on the use case we need to have a flexible description which can address a continuum of descriptors:
+  important is that one can logically map different features
+  Length scale of homogeneity: With the reality of a multi-parameter space of all possible methods and effects and
+  different external stimuli applied for real materials, simulations in computational materials science typically focus
+  their analysis on a few individual, spatiotemporally constrained effects and boundary conditions for which the simulation
+  is formulated, useful, interpretable, and comparable to experiment.
+  Data structures for multi-scale materials modeling IMM/ICME are currently diverse because they reflect the above-mentioned needs
+  and different views which researchers have on their simulations e.g. DFT (time, length-scale, which electronic effects)
+  RVE annealing phenomena at the micrometer scale (pressure, temperature, length scale, interactions considered or not)
+  Some regions are well separated spatially (although it can be non-trivial to quantify the distance in a multi-dim parameter space)
+  Some simulations are cross-scale (classical MD at the cutting edge with micrometer crystal plasticity microsecond and/or annealing at
+  ns time scale) MD with classical vs abinitio-informed potential for studying evolution of mechanisms and phenomena at different length scales-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXms" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_b">
+            <doc>
+                 Number of boundaries of the bounding box or primitive to domain.
+            </doc>
+        </symbol>
+        <symbol name="n_p">
+            <doc>
+                 Number of parameter required for the chosen orientation parameterization.
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 Number of texture components identified.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition, spatiotemporal characterization of a microstructure.
+    </doc>
+    <group type="NXentry">
+        <attribute name="version">
+            <doc>
+                 An at least as strong as SHA256 hashvalue of the file
+                 that specifies the application definition.
+            </doc>
+        </attribute>
+        <!--enumeration: [sha_256_hash]-->
+        <field name="definition">
+            <doc>
+                 NeXus NXDL schema to which this file conforms.
+            </doc>
+            <enumeration>
+                <item value="NXms"/>
+            </enumeration>
+        </field>
+        <field name="workflow_identifier">
+            <doc>
+                 Ideally, a (globally) unique persistent identifier
+                 for referring to this experiment or computer simulation.
+                 
+                 The identifier is usually defined/issued by the facility, laboratory,
+                 or the principle investigator. The identifier enables to link
+                 experiments to e.g. proposals.
+            </doc>
+        </field>
+        <field name="workflow_description" optional="true">
+            <doc>
+                 Free-text description about the workflow (experiment/analysis/simulation).
+                 
+                 Users are strongly advised to detail the sample history in the 
+                 respective field and fill rather as completely as possible the fields
+                 of this application definition rather than write details about the
+                 experiment into this free-text description field.
+            </doc>
+        </field>
+        <field name="start_time" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 time code with local time zone offset to UTC information
+                 included when the characterization started.
+            </doc>
+        </field>
+        <field name="end_time" type="NX_DATE_TIME" recommended="true">
+            <doc>
+                 ISO 8601 time code with local time zone offset to UTC included
+                 when the characterization ended.
+            </doc>
+        </field>
+        <group name="PROGRAM" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+            <field name="program_name">
+                <attribute name="version"/>
+            </field>
+        </group>
+        <field name="experiment_or_simulation">
+            <doc>
+                 Specify if the (characterization) results/data of this instance of an
+                 application definition are based on the results of a simulation or the
+                 results of a post-processing of measured data to describe
+                 a microstructure.
+                 
+                 The term microstructure is used to describe the spatial arrangement of
+                 crystal defects inside a sample/specimen without demanding necessarily
+                 that this structure is mainly at the micron length scale.
+                 Nanostructure and macrostructure are close synonyms.
+                 Material architecture is a narrow synonym.
+                 
+                 Given that microstructure simulations nowadays more and more consider
+                 the atomic arrangement, this application definition can also be used
+                 to describe features at the scale of atoms.
+            </doc>
+            <enumeration>
+                <item value="experiment"/>
+                <item value="simulation"/>
+            </enumeration>
+        </field>
+        <group name="USER" type="NXuser" minOccurs="0" maxOccurs="unbounded">
+            <doc>
+                 Contact information and eventually details of at least one person
+                 involved in creating this result. This can be the principle investigator
+                 who performed this experiment. Adding multiple users if relevant is recommended.
+            </doc>
+            <field name="name">
+                <doc>
+                     Given (first) name and surname of the user.
+                </doc>
+            </field>
+            <field name="affiliation" recommended="true">
+                <doc>
+                     Name of the affiliation of the user at the point in time
+                     when the experiment was performed.
+                </doc>
+            </field>
+            <field name="address" recommended="true">
+                <doc>
+                     Postal address of the affiliation.
+                </doc>
+            </field>
+            <field name="email" recommended="true">
+                <doc>
+                     Email address of the user at the point in time when the experiment
+                     was performed. Writing the most permanently used email is recommended.
+                </doc>
+            </field>
+            <field name="orcid" recommended="true">
+                <doc>
+                     Globally unique identifier of the user as offered by services
+                     like ORCID or ResearcherID. If this field is field the specific service
+                     should also be written in orcid_platform
+                </doc>
+            </field>
+            <field name="orcid_platform" recommended="true">
+                <doc>
+                     Name of the OrcID or ResearcherID where the account
+                     under orcid is registered.
+                </doc>
+            </field>
+            <field name="telephone_number" optional="true">
+                <doc>
+                     (Business) (tele)phone number of the user at the point
+                     in time when the experiment was performed.
+                </doc>
+            </field>
+            <field name="role" recommended="true">
+                <doc>
+                     Which role does the user have in the place and at the point 
+                     in time when the experiment was performed? Technician operating
+                     the microscope. Student, postdoc, principle investigator, guest
+                     are common examples.
+                </doc>
+            </field>
+            <field name="social_media_name" optional="true">
+                <doc>
+                     Account name that is associated with the user in social media platforms.
+                </doc>
+            </field>
+            <field name="social_media_platform" optional="true">
+                <doc>
+                     Name of the social media platform where the account
+                     under social_media_name is registered.
+                </doc>
+            </field>
+        </group>
+        <group name="specimen" type="NXsample">
+            <!--NEW ISSUE: inject the conclusion from the discussion with Andrea
+according to SAMPLE.yaml 0f8df14 2022/06/15-->
+            <field name="name">
+                <doc>
+                     Descriptive name or ideally (globally) unique persistent identifier.
+                </doc>
+            </field>
+        </group>
+        <!--sample_history:
+ doc: |
+   Ideally, a reference to the location of or a (globally) unique
+   persistent identifier of e.g. another file which should document
+   ideally as many details as possible of the material, its
+   microstructure, and its thermo-chemo-mechanical processing/
+   preparation history.
+preparation_date(NX_DATE_TIME):
+ doc: |
+   ISO 8601 time code with local time zone offset to UTC information
+   when the specimen was prepared.-->
+        <group type="NXdata" optional="true">
+            <doc>
+                 Hard link to a location in the hierarchy of the NeXus file
+                 where the data for default plotting are stored.
+            </doc>
+        </group>
+        <group type="NXcoordinate_system_set">
+            <doc>
+                 Container to hold different coordinate systems conventions.
+                 A least a right-handed Cartesian coordinate system with base vectors
+                 named x, y, and z has to be specified. Each base vector of the
+                 coordinate system should be described with an NXtransformations instance.
+            </doc>
+            <group name="TRANSFORMATIONS" type="NXtransformations" minOccurs="3" maxOccurs="unbounded"/>
+        </group>
+        <group name="conventions" type="NXem_ebsd_conventions">
+            <group name="rotation_conventions" type="NXprocess">
+                <field name="three_dimensional_rotation_handedness"/>
+                <field name="rotation_convention"/>
+                <field name="euler_angle_convention"/>
+                <field name="axis_angle_convention"/>
+                <field name="orientation_parameterization_sign_convention"/>
+            </group>
+            <group name="processing_reference_frame" type="NXprocess">
+                <field name="reference_frame_type"/>
+                <field name="xaxis_direction"/>
+                <field name="xaxis_alias"/>
+                <field name="yaxis_direction"/>
+                <field name="yaxis_alias"/>
+                <field name="zaxis_direction"/>
+                <field name="zaxis_alias"/>
+                <field name="origin"/>
+            </group>
+            <group name="sample_reference_frame" type="NXprocess">
+                <field name="reference_frame_type"/>
+                <field name="xaxis_direction"/>
+                <field name="yaxis_direction"/>
+                <field name="zaxis_direction"/>
+                <field name="origin"/>
+            </group>
+        </group>
+        <group name="ROI_SET" type="NXcg_roi_set" minOccurs="1" maxOccurs="unbounded">
+            <!--however for solitary unit models (i.e. ensembles of volume elements/simulation domains) and for replica methods
+we may need more than one domain
+the volume element is not called representative because for what a volume element is representative is a matter of
+interpretation (fundamentally this is an assumption) and can differ for different descriptors-->
+            <doc>
+                 The simulated or characterized material volume element aka domain.
+                 At least one instance of geometry required either NXcg_grid,
+                 NXcg_polyhedron_set, or NXcg_point_set. This geometry group needs
+                 to contain details about the boundary conditions.
+            </doc>
+            <group name="grid" type="NXcg_grid" optional="true"/>
+            <!--specific application definitions can use these fields to specialize-->
+            <group name="point_set" type="NXcg_point_set" optional="true"/>
+            <group name="polyhedron_set" type="NXcg_polyhedron_set" optional="true"/>
+            <group name="boundary" type="NXcg_polyhedron_set" optional="true">
+                <doc>
+                     A boundary to the volume element.
+                     Either an instance of NXcg_hexahedron_set or of NXcg_ellipsoid_set.
+                </doc>
+                <!--a good example for a general bounding box description for such a grids of triclinic cells
+https://docs.lammps.org/Howto_triclinic.html NXcg_hexahedron_set because can be a parallelepiped-->
+                <field name="number_of_boundaries" type="NX_POSINT" units="NX_UNITLESS">
+                    <doc>
+                         How many distinct boundaries are distinguished. Value required equal to n_b.
+                    </doc>
+                </field>
+                <field name="boundaries">
+                    <doc>
+                         Name of the boundaries. E.g. left, right, front, back, bottom, top,
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_b"/>
+                    </dimensions>
+                </field>
+                <field name="boundary_conditions" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         The boundary conditions for each boundary:
+                         
+                         0 - undefined
+                         1 - open
+                         2 - periodic
+                         3 - mirror
+                         4 - von Neumann
+                         5 - Dirichlet
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_b"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="snapshot_set" type="NXms_snapshot_set">
+                <doc>
+                     Collection of microstructural data observed/simulated.
+                </doc>
+                <field name="identifier_offset" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Integer which specifies the first index to be used for distinguishing
+                         snapshots. Identifiers are defined either implicitly or explicitly.
+                         For implicit indexing the identifiers are defined on the
+                         interval [identifier_offset, identifier_offset+c-1].
+                         For explicit indexing the identifier array has to be defined.
+                         
+                         The identifier_offset field can for example be used to communicate
+                         if the identifiers are expected to start from 1 (referred to as
+                         Fortran-/Matlab-) or from 0 (referred to as C-, Python-style index
+                         notation) respectively.
+                    </doc>
+                </field>
+                <!--essentially NXmonitor instances for evolution of ensemble summary statistics-->
+                <group name="evolution" type="NXprocess" optional="true">
+                    <doc>
+                         Summary quantities which are the result of some post-processing of
+                         the snapshot data (averaging, integrating, interpolating).
+                         Frequently used descriptors from continuum mechanics and thermodynamics
+                         can be used here. A few examples are given. Each descriptor is currently
+                         modelled as an instance of an NXprocess because it is relevant to
+                         understand how the descriptors are computed.
+                    </doc>
+                    <group name="temperature" type="NXprocess" optional="true"/>
+                    <group name="pressure" type="NXprocess" optional="true"/>
+                    <group name="stress" type="NXprocess" optional="true"/>
+                    <group name="strain" type="NXprocess" optional="true"/>
+                    <group name="deformation_gradient" type="NXprocess" optional="true"/>
+                    <group name="magnetic_field" type="NXprocess" optional="true"/>
+                    <group name="electric_field" type="NXprocess" optional="true"/>
+                </group>
+                <!--time-resolved results for individual snapshots
+virtually all computer simulations and all experiments always probe
+snapshots-->
+                <group name="MS_SNAPSHOT" type="NXms_snapshot">
+                    <field name="time" type="NX_NUMBER" units="NX_TIME">
+                        <doc>
+                             Measured or simulated physical time stamp for this snapshot.
+                             Not to be confused with wall-clock timing or profiling data.
+                        </doc>
+                    </field>
+                    <field name="iteration" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Iteration or increment counter.
+                        </doc>
+                    </field>
+                    <!--optional places to store the grid for instance if it changes-->
+                    <group name="grid" type="NXcg_grid" optional="true"/>
+                    <group name="polyhedron_set" type="NXcg_polyhedron_set" optional="true"/>
+                    <group name="point_set" type="NXcg_point_set" optional="true"/>
+                    <!--homogenization:
+constituent:
+constitutive:
+ROI(NXcg_roi_set): #multiple rois, for each geometry, connectivity/topology, cellType...
+see that the materialpoint that is tracked conceptually in tools like DAMASK is a ROI (which is currently scale-invariant), isnt a coarse-graining of atom configurations a homogenization
+several "results" homogenized quantities at (eventually different length scales
+continuum-scale view thermodynamic(NXview)
+mechanical
+damage
+thermal
+composition-->
+                    <group name="MS_FEATURE_SET" type="NXms_feature_set" minOccurs="0" maxOccurs="unbounded">
+                        <doc>
+                             Conceptually distinguished object/feature in the ROI/
+                             system with some relevance. Instances of NXms_feature_set can
+                             be nested to build a hierarchy of logically-related objects.
+                             
+                             A typical example for MD simulations is to have one
+                             ms_feature_set for the atoms which is the parent to another
+                             ms_feature_set for monomers/molecules/proteins which is then the
+                             parent to another ms_feature_set for the secondary, another feature_set
+                             for the tertiary, and the parent for another feature_set for the
+                             quaternary structure.
+                             
+                             Another typical example from materials engineering is to have
+                             one ms_feature_set for crystals (grains/phases) which serves as
+                             the parent to another ms_feature_set for interfaces between these
+                             crystals which then is the parent for another ms_feature_set to
+                             describe the triple junctions which is then the parent for the
+                             quadruple/higher-order junctions between which connect the
+                             triple lines.
+                             
+                             Another example from discrete dislocation dynamics could be to
+                             have one ms_feature_set for the dislocations (maybe separate
+                             sets for each dislocation type or family) which are then
+                             parents to other ms_feature_set which describe junctions between
+                             dislocations or features along the dislocation line network.
+                        </doc>
+                    </group>
+                    <!--respective application definitions based on NXms should add and
+specialize-->
+                    <group name="odf" type="NXprocess" optional="true">
+                        <doc>
+                             Details about the orientation distribution function
+                             within the entire domain.
+                        </doc>
+                        <field name="computation_method">
+                            <doc>
+                                 With which method was the ODF approximated?
+                            </doc>
+                        </field>
+                        <!--add approximation parameter-->
+                        <field name="texture_index" type="NX_NUMBER" optional="true" units="NX_ANY">
+                            <doc>
+                                 TO BE DEFINED
+                            </doc>
+                        </field>
+                        <field name="texture_strength" type="NX_NUMBER" optional="true" units="NX_ANY">
+                            <doc>
+                                 TO BE DEFINED
+                            </doc>
+                        </field>
+                        <group name="volume_statistics" type="NXorientation_set" optional="true">
+                            <doc>
+                                 Collection of texture components commonly referred to.
+                            </doc>
+                            <group name="TRANSFORMATIONS" type="NXtransformations">
+                                <doc>
+                                     Reference to or definition of a coordinate system with
+                                     which the definitions are interpretable.
+                                </doc>
+                            </group>
+                            <field name="parameterization">
+                                <enumeration>
+                                    <item value="bunge-euler (ZXZ)"/>
+                                    <item value="quaternion"/>
+                                </enumeration>
+                            </field>
+                            <field name="orientation" type="NX_NUMBER" units="NX_ANY">
+                                <doc>
+                                     Parameterized orientations.
+                                </doc>
+                                <dimensions rank="2">
+                                    <dim index="1" value="c"/>
+                                    <dim index="2" value="n_p"/>
+                                </dimensions>
+                            </field>
+                            <field name="name">
+                                <doc>
+                                     Name of each texture component, e.g. Cube, Dillamore, Y.
+                                </doc>
+                                <dimensions rank="1">
+                                    <dim index="1" value="c"/>
+                                </dimensions>
+                            </field>
+                            <field name="integration_radius" type="NX_NUMBER" units="NX_ANGLE">
+                                <doc>
+                                     The portion of orientation space integrated over
+                                     to compute the volume fraction.
+                                </doc>
+                                <dimensions rank="1">
+                                    <dim index="1" value="c"/>
+                                </dimensions>
+                            </field>
+                            <field name="volume_fraction" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+                                <doc>
+                                     The volume fraction of each texture component.
+                                </doc>
+                                <dimensions rank="1">
+                                    <dim index="1" value="c"/>
+                                </dimensions>
+                            </field>
+                        </group>
+                    </group>
+                    <!--a grain-boundary character distribution
+is again a spatial correlation  statistics, GBCD can be understood like an ODF in that the entire surface Of a grain boundary (interface) network is partitioned into regions between grains in specific disorientation relationships, and boundary plane inclination so that one can again ask for the "texture" i.e. which fraction of the area network is of specific disorientation and nominal plane inclination relationship-->
+                    <group name="modf" type="NXprocess" optional="true">
+                        <doc>
+                             Details about the disorientation distribution function
+                             within the entire domain.
+                        </doc>
+                    </group>
+                    <group name="gbcd" type="NXprocess" optional="true">
+                        <doc>
+                             Details about the grain boundary character distribution
+                             within the entire domain.
+                        </doc>
+                    </group>
+                    <!--add descriptions for the state of each cell
+e.g. values of phase field variables if desired-->
+                    <group name="temperature" type="NXprocess" optional="true"/>
+                    <group name="pressure" type="NXprocess" optional="true"/>
+                    <group name="stress" type="NXprocess" optional="true"/>
+                    <group name="strain" type="NXprocess" optional="true"/>
+                    <group name="deformation_gradient" type="NXprocess" optional="true"/>
+                    <group name="magnetic_field" type="NXprocess" optional="true"/>
+                    <group name="electric_field" type="NXprocess" optional="true"/>
+                    <group name="recrystallization_kinetics" type="NXprocess" optional="true"/>
+                    <group name="grain_size_distribution" type="NXprocess" optional="true"/>
+                    <group name="recrystallization_front" type="NXprocess" optional="true"/>
+                </group>
+            </group>
+        </group>
+    </group>
+</definition>

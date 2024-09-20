@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXclustering" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_lbl_num">
+            <doc>
+                 Number of numeral labels per object.
+            </doc>
+        </symbol>
+        <symbol name="n_lbl_cat">
+            <doc>
+                 Number of categorical labels per object.
+            </doc>
+        </symbol>
+        <symbol name="n_cluster">
+            <doc>
+                 Total number of clusters detected.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Metadata to the results of a clustering analysis.
+         
+         Clustering algorithms are routine tools to segment a set of objects/primitives
+         into groups, objects of different type. A plethora of algorithms have been
+         proposed for geometric primitives as objects, such as points, triangles,
+         or (abstract) objects.
+         
+         This base class considers metadata and results of one clustering
+         applied to a set in which objects are either categorized as noise
+         or belonging to a cluster, specifically here only one cluster.
+    </doc>
+    <field name="number_of_numeric_labels" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             How many numeric labels does each object have.
+        </doc>
+    </field>
+    <field name="number_of_categorical_labels" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             How many categorical labels does each object have.
+        </doc>
+    </field>
+    <field name="objects">
+        <doc>
+             Reference to a set of objects investigated in a cluster analysis.
+             Objects must have clear integer identifier.
+        </doc>
+    </field>
+    <field name="numeric_label" type="NX_NUMBER">
+        <doc>
+             Reference to numeric attribute data for each object.
+        </doc>
+    </field>
+    <field name="categorical_label">
+        <doc>
+             Reference to categorical attribute data for each object.
+        </doc>
+    </field>
+    <!--list instances of base classes of an applied cluster algorithm
+e.g. (NXclustering_hdbscan):-->
+    <field name="identifier_offset" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Which identifier is the first to be used to label a cluster.
+             
+             The value should be chosen in such a way that special values can be resolved:
+             * identifier_offset-1 indicates an object belongs to no cluster.
+             * identifier_offset-2 indicates an object belongs to the noise category.
+             Setting for instance identifier_offset to 1 recovers the commonly used
+             case that objects of the noise category get values to -1 and unassigned points to 0.
+        </doc>
+    </field>
+    <field name="unassigned" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Total number of objects categorized as unassigned.
+        </doc>
+    </field>
+    <field name="noise" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Total number of objects categorized as noise.
+        </doc>
+    </field>
+    <field name="number_of_cluster" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Total number of clusters (excluding noise and unassigned).
+        </doc>
+    </field>
+    <field name="size" type="NX_NUMBER" units="NX_UNITLESS">
+        <doc>
+             Number of objects associated to each cluster. The labels are implicit,
+             meaning the zeroth/first entry in the array belongs to the first cluster,
+             the second entry to the second cluster and so on and so forth.
+             The first cluster has the value of identifier_offset as its identifier.
+             The second cluster has identifier_offset + 1, and so on and so forth.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_cluster"/>
+        </dimensions>
+    </field>
+    <!--should we handle, and if so how fuzzy assignments or similarly probability-->
+</definition>

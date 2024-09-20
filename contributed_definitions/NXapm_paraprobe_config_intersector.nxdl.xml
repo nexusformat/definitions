@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXapm_paraprobe_config_intersector" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+    </symbols>
+    <doc>
+         Configuration of a paraprobe-intersector tool run in atom probe microscopy.
+    </doc>
+    <group type="NXentry">
+        <!--by default for appdefs the value of the exists keyword is required
+unless it is explicitly specified differently-->
+        <attribute name="version">
+            <doc>
+                 Version specifier of this application definition.
+            </doc>
+        </attribute>
+        <field name="definition">
+            <doc>
+                 Official NeXus NXDL schema with which this file was written.
+            </doc>
+            <enumeration>
+                <item value="NXapm_paraprobe_config_intersector"/>
+            </enumeration>
+        </field>
+        <field name="program">
+            <doc>
+                 Given name of the program/software/tool with which this NeXus
+                 (configuration) file was generated.
+            </doc>
+            <attribute name="version">
+                <doc>
+                     Ideally program version plus build number, or commit hash or description
+                     of ever persistent resources where the source code of the program and
+                     build instructions can be found so that the program can be configured
+                     ideally in such a manner that the result of this computational process
+                     is recreatable in the same deterministic manner.
+                </doc>
+            </attribute>
+        </field>
+        <field name="analysis_identifier">
+            <doc>
+                 Ideally, a (globally persistent) unique identifier for referring
+                 to this analysis.
+            </doc>
+        </field>
+        <field name="analysis_description" optional="true">
+            <doc>
+                 Possibility for leaving a free-text description about this analysis.
+            </doc>
+        </field>
+        <field name="results_path" optional="true">
+            <doc>
+                 Path to the directory where the tool should store NeXus/HDF5 results
+                 of this analysis. If not specified results will be stored in the
+                 current working directory.
+            </doc>
+        </field>
+        <field name="time_stamp" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 formatted time code with local time zone offset to
+                 UTC information included when this configuration file was created.
+            </doc>
+        </field>
+        <field name="number_of_processes" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 For now a support field for the tool to identify how many individual
+                 analyses the tool should execute as part of the analysis.
+            </doc>
+        </field>
+        <group name="VOLUME_VOLUME_SPATIAL_CORRELATION" type="NXprocess" minOccurs="1" maxOccurs="unbounded">
+            <doc>
+                 Tracking volume_volume_spatial_correlation is the process of building logical
+                 relations between volumetric features based on meshes, their proximity and
+                 eventual intersections. Volumetric overlap and proximity of volumetric
+                 features is identified for members of sets of features to members of
+                 other sets of volumetric features.
+                 Specifically, for each time step k pairs of sets are compared:
+                 Members of a so-called current_set to members of a so-called next_set.
+                 Members can be different types of volumetric features.
+                 In the analysis of M. Kuehbach et al. specifically features can be
+                 so-called objects (closed non-degnerated polyhedra representing watertight
+                 parts of an e.g. iso-surface) and/or proxies. Proxies are computed
+                 doppelganger/replacement meshes for parts of an iso-surface which initially
+                 were not resulting in watertight meshes because objects at the edge
+                 of the dataset or incompletely measured or truncated objects.
+            </doc>
+            <field name="intersection_detection_method">
+                <doc>
+                     Specifies the method whereby to decide if two objects intersect volumetrically.
+                     For reasons which are detailed in the supplementary material of
+                     `M. Kühbach et al. &lt;https://arxiv.org/abs/2205.13510&gt;`_, the tool by
+                     default assumes that two objects intersect if they share at least one
+                     ion with the same evaporation ID (shared_ion).
+                     Alternatively, with specifying tetrahedra_intersections,
+                     the tool can perform an intersection analysis which attempts to 
+                     tetrahedralize first each polyhedron. If successful, the tool then checks
+                     for at least one pair of intersecting tetrahedra to identify if two objects
+                     intersect or not.
+                     
+                     However, we found that these geometrical analyses can result in corner
+                     cases which the currently used library (TetGen) was not unable to
+                     tetrahedralize successfully. These cases were virtually always
+                     associated with complicated non-convex polyhedra which had portions
+                     of the mesh that were connected by almost point like tubes of triangles.
+                     Finding more robust methods for computing intersections between
+                     not necessarily convex polyhedra might improve the situation in the future.
+                </doc>
+                <enumeration>
+                    <item value="shared_ion"/>
+                </enumeration>
+            </field>
+            <field name="analyze_intersection" type="NX_BOOLEAN">
+                <doc>
+                     Specifies if the tool evaluates if for each pair the two objects
+                     (and proxies if used) intersect volumetrically.
+                </doc>
+            </field>
+            <field name="analyze_proximity" type="NX_BOOLEAN">
+                <doc>
+                     Specifies if the tool evaluates if for each pair the two objects
+                     (and proxies if used) lie closer to one another than the
+                     threshold_proximity.
+                </doc>
+            </field>
+            <field name="analyze_coprecipitation" type="NX_BOOLEAN">
+                <doc>
+                     Specifies if the tool evaluates, ones all tracking tasks were
+                     successfully completed, how intersecting or proximity related
+                     objects build sub-graphs. This is the feature which enabled
+                     M. Kühbach et al. 2022 the high-throughput analyses of how many
+                     objects are coprecipitates in the sense that they are single,
+                     duplet, triplet, or high-order. For these analyses to work
+                     has_object_volume needs to be activated.
+                </doc>
+            </field>
+            <field name="threshold_proximity" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     The maximum Euclidean distance between two objects below which
+                     both objects are still considered within proximity.
+                </doc>
+            </field>
+            <!--\@units: nm-->
+            <field name="has_current_to_next_links" type="NX_BOOLEAN">
+                <doc>
+                     Specifies if the tool stores the so-called forward relations between
+                     nodes representing members of the current_set to nodes representing
+                     members of the next_set.
+                </doc>
+            </field>
+            <field name="has_next_to_current_links" type="NX_BOOLEAN">
+                <doc>
+                     Specifies if the tool stores the so-called backward relations between
+                     nodes representing members of the next_set to nodes representing
+                     members of the current_set.
+                </doc>
+            </field>
+            <group name="current_set" type="NXprocess">
+                <doc>
+                     Current set stores a set of members, meshes of volumetric features,
+                     which will be checked for proximity and/or volumetric intersection,
+                     to members of the current_set.
+                     The meshes were generated as a result of some other meshing process.
+                </doc>
+                <field name="set_identifier" type="NX_UINT" units="NX_ANY">
+                    <doc>
+                         This identifier can be used to label the current set. The label
+                         effectively represents (can be interpreted as) the time/iteration
+                         step when the current set was taken. As it is detailed in `M. Kühbach
+                         et al. 2022 &lt;https://arxiv.org/abs/2205.13510&gt;`_, this identifier
+                         takes the role of the time variable :math:`k`.
+                    </doc>
+                </field>
+                <!--number_of_objects(NX_UINT):
+  doc: For now a support field to tell the tool how many objects to load.
+ unit: NX_UNITLESS-->
+                <field name="number_of_feature_types" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         The total number of distinguished feature sets FEATURE.
+                         It is assumed that the members within all these FEATURE sets
+                         are representing a set together. As an example this set might represent
+                         all volumetric_features. However, users might have formed
+                         a subset of this set where individuals were regrouped.
+                         For paraprobe-nanochem this is the case for objects and proxies.
+                         Specifically, objects are distinguished further into those far
+                         from and those close to the edge of the dataset.
+                         Similarly, proxies are distinguished further into those far
+                         from and those close to the edge of the dataset.
+                         So while these four sub-sets contain different so-called types of
+                         features key is that they were all generated for one set, here the
+                         current_set.
+                    </doc>
+                </field>
+                <group name="FEATURE" type="NXcollection" minOccurs="1" maxOccurs="4">
+                    <field name="feature_type">
+                        <doc>
+                             Descriptive category explaining what these features are.
+                        </doc>
+                        <enumeration>
+                            <item value="objects_far_from_edge"/>
+                            <item value="objects_close_to_edge"/>
+                            <item value="proxies_far_from_edge"/>
+                            <item value="proxies_close_to_edge"/>
+                        </enumeration>
+                    </field>
+                    <field name="filename">
+                        <doc>
+                             Name of the (NeXus)/HDF5 file which contains triangulated
+                             surface meshes of the members of the set as instances of
+                             NXcg_polyhedron_set.
+                        </doc>
+                        <!--NEW ISSUE: make more robust checks wrt to the consistence of the datasets-->
+                        <attribute name="version">
+                            <doc>
+                                 Version identifier of the file such as a secure hash which documents
+                                 the binary state of the file to add an additional layer of
+                                 reproducibility from which file specifically contains these data.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <field name="groupname_geometry_prefix">
+                        <doc>
+                             String whereby the path to the geometry data can be interferred automatically.
+                             Currently groupname_geometry_prefix/object&lt;ID&gt;/polyhedron.
+                        </doc>
+                    </field>
+                    <field name="feature_identifier" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Array of identifier whereby the path to the geometry data
+                             can be interferred automatically.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="i"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+            <group name="next_set" type="NXcollection">
+                <doc>
+                     Next set stores a set of members, meshes of volumetric features,
+                     which will be checked for proximity and/or volumetric intersection,
+                     to members of the next_set.
+                     The meshes were generated as a result of some other meshing process.
+                </doc>
+                <field name="set_identifier" type="NX_UINT" units="NX_ANY">
+                    <doc>
+                         This identifier can be used to label the next_set. The label
+                         effectively represents (can be interpreted as) the time/iteration
+                         step when the current set was taken. As it is detailed in `M. Kühbach
+                         et al. 2022 &lt;https://arxiv.org/abs/2205.13510&gt;`_, this identifier
+                         takes the role of the time variable :math:`k + 1`.
+                    </doc>
+                </field>
+                <!--number_of_objects(NX_UINT):
+  doc: For now a support field to tell the tool how many objects to load.
+ unit: NX_UNITLESS-->
+                <field name="number_of_feature_types" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         The total number of distinguished feature sets FEATURE.
+                         It is assumed that the members within all these FEATURE sets
+                         are representing a set together. As an example this set might represent
+                         all volumetric_features. However, users might have formed
+                         a subset of this set where individuals were regrouped.
+                         For paraprobe-nanochem this is the case for objects and proxies.
+                         Specifically, objects are distinguished further into those far
+                         from and those close to the edge of the dataset.
+                         Similarly, proxies are distinguished further into those far
+                         from and those close to the edge of the dataset.
+                         So while these four sub-sets contain different so-called types of
+                         features key is that they were all generated for one set, here the
+                         next_set.
+                    </doc>
+                </field>
+                <group name="FEATURE" type="NXcollection" minOccurs="1" maxOccurs="4">
+                    <field name="feature_type">
+                        <doc>
+                             Descriptive category explaining what these features are.
+                        </doc>
+                        <enumeration>
+                            <item value="objects_far_from_edge"/>
+                            <item value="objects_close_to_edge"/>
+                            <item value="proxies_far_from_edge"/>
+                            <item value="proxies_close_to_edge"/>
+                        </enumeration>
+                    </field>
+                    <field name="filename">
+                        <doc>
+                             Name of the (NeXus)/HDF5 file which contains triangulated
+                             surface meshes of the members of the set as instances of
+                             NXcg_polyhedron_set.
+                        </doc>
+                        <!--NEW ISSUE: make more robust checks wrt to the consistence of the datasets-->
+                        <attribute name="version">
+                            <doc>
+                                 Version identifier of the file such as a secure hash which documents
+                                 the binary state of the file to add an additional layer of
+                                 reproducibility from which file specifically contains these data.
+                            </doc>
+                        </attribute>
+                    </field>
+                    <field name="groupname_geometry_prefix">
+                        <doc>
+                             String whereby the path to the geometry data can be interferred automatically.
+                             Currently groupname_geometry_prefix/object&lt;ID&gt;/polyhedron.
+                        </doc>
+                    </field>
+                    <field name="feature_identifier" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Array of identifier whereby the path to the geometry data
+                             can be interferred automatically.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="j"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+        </group>
+        <!--##MK::tetrahedra volume intersection and tessellation, and Nef polyhedra intersection
+##MK::are considered guru features and therefore currently supported via modifying the C/C++ source code-->
+        <group name="performance" type="NXcs_profiling">
+            <field name="current_working_directory"/>
+        </group>
+    </group>
+</definition>
