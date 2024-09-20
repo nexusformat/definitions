@@ -1,2 +1,2 @@
-REPO_URL = "https://github.com/FAIRmat-NFDI/nexus_definitions/tree/fairmat"
+REPO_URL = "https://github.com/nexusformat/definitions/blob/main"
 MANUAL_URL = "https://manual.nexusformat.org"
