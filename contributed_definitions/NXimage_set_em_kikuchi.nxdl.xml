@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXimage_set_em_kikuchi" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="n_sc">
+            <doc>
+                 Number of scanned points. Scan point may have none, one, or more pattern.
+            </doc>
+        </symbol>
+        <symbol name="n_p">
+            <doc>
+                 Number of diffraction pattern.
+            </doc>
+        </symbol>
+        <symbol name="n_y">
+            <doc>
+                 Number of pixel per Kikuchi pattern in the slow direction.
+            </doc>
+        </symbol>
+        <symbol name="n_x">
+            <doc>
+                 Number of pixel per Kikuchi pattern in the fast direction.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Measured set of electron backscatter diffraction data, aka Kikuchi pattern.
+         Kikuchi pattern are the raw data for computational workflows in the field
+         of orientation (imaging) microscopy. The technique is especially used in
+         materials science and materials engineering.
+         
+         Based on a fuse of the `M. A. Jackson et al. &lt;https://doi.org/10.1186/2193-9772-3-4&gt;`_
+         of the DREAM.3D community and the open H5OINA format of Oxford Instruments
+         `P. Pinard et al. &lt;https://doi.org/10.1017/S1431927621006103&gt;`_
+         
+         EBSD can be used, usually with FIB/SEM microscopes, for three-dimensional
+         orientation microscopy. So-called serial section analyses. For a detailed
+         overview of these techniques see e.g.
+         
+         * `M. A. Groeber et al. &lt;https://doi.org/10.1186/2193-9772-3-5&gt;`_  
+         * `A. J. Schwartz et al. &lt;https://doi.org/10.1007/978-1-4757-3205-4&gt;`_  
+         * `P. A. Rottman et al. &lt;https://doi.org/10.1016/j.mattod.2021.05.003&gt;`_  
+         
+         With serial-sectioning this involves however always a sequence of measuring,
+         milling. In this regard, each serial section (measuring) and milling
+         is an own NXevent_data_em instance and thus there such a three-dimensional
+         characterization should be stored as a set of two-dimensional data,
+         with as many NXevent_data_em instances as sections were measured.
+         
+         These measured serial sectioning images need virtually always post-processing
+         to arrive at the aligned and cleaned image stack before a respective digital
+         model of the inspected microstructure can be analyzed. The resulting volume
+         is often termed a so-called (representative) volume element (RVE).
+         Several software packages are available for performing this post-processing.
+         For now we do not consider metadata of these post-processing steps
+         as a part of this base class because the connection between the large variety
+         of such post-processing steps and the measured electron microscopy data
+         is usually very small.
+         
+         If we envision a (knowledge) graph for EBSD it consists of individual
+         sub-graphs which convey information about the specimen preparation,
+         the measurement of the specimen in the electron microscope,
+         the indexing of the collected Kikuchi pattern stack,
+         eventual post-processing of the indexed orientation image
+         via similarity grouping algorithms to yield (grains, texture).
+         Conceptually these post-processing steps are most frequently
+         serving the idea to reconstruct quantitatively so-called
+         microstructural features (grains, phases, interfaces). Materials scientists
+         use these features according to the multi-scale materials modeling paradigm
+         to infer material properties. They do so by quantifying correlations between
+         the spatial arrangement of the features, their individual properties,
+         and (macroscopic) properties of materials.
+    </doc>
+    <!--a collection of pattern-related metadata-->
+    <group type="NXprocess">
+        <doc>
+             Details how Kikuchi pattern were processed from the detector readings.
+             Scientists interested in EBSD should inspect the respective NXem_ebsd
+             application definition which can be used as a partner application definition
+             to detail substantially more details to this processing.
+        </doc>
+    </group>
+    <group name="stack" type="NXdata">
+        <doc>
+             Collected Kikuchi pattern as an image stack. As raw and closest to the
+             first retrievable measured data as possible, i.e. do not use this
+             container to store already averaged, filtered or whatever post-processed
+             pattern unless these are generated unmodifiably by the instrument
+             given the way how the instrument and control software was configured
+             for your microscope session.
+        </doc>
+        <field name="scan_point_identifier" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 Array which resolves the scan point to which each pattern belongs.
+                 Scan points are evaluated in sequence starting from scan point zero
+                 until scan point n_sc - 1. Evaluating the cumulated of this array
+                 decodes which pattern in intensity belong to which scan point.
+                 In an example we may assume we collected three scan points. For the first
+                 we measure one pattern, for the second we measure three pattern,
+                 for the last we measure no pattern.
+                 The values of scan_point_identifier will be 0, 1, 1, 1, as we have
+                 measured four pattern in total.
+                 
+                 In most cases usually one pattern is averaged by the detector for
+                 some amount of time and then reported as one pattern. Use compressed
+                 arrays allows to store the scan_point_identifier efficiently.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_p"/>
+            </dimensions>
+        </field>
+        <field name="data_counts" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Signal intensity. For so-called three-dimensional or serial sectioning
+                 EBSD it is necessary to follow a sequence of specimen surface preparation
+                 and data collection. In this case users should collect the data for each
+                 serial sectioning step in an own instance of NXimage_set_em_kikuchi.
+                 All eventual post-processing of these measured data should be documented
+                 via NXebsd, resulting microstructure representations should be stored
+                 as NXms.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_p"/>
+                <dim index="2" value="n_y"/>
+                <dim index="3" value="n_x"/>
+            </dimensions>
+            <!--n_p fast 2, n_y faster 1, n_x fastest 0
+in axes fast to fastest
+while for _indices fastest to fast-->
+            <attribute name="long_name">
+                <doc>
+                     Kikuchi pattern intensity
+                </doc>
+            </attribute>
+        </field>
+        <!--\@signal: intensity
+\@axes: [pattern_identifier, ypos, xpos]
+\@xpos_indices: 0
+\@ypos_indices: 1
+\@pattern_identifier_indices: 2-->
+        <field name="pattern_identifier" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 Pattern are enumerated starting from 0 to n_p - 1.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_p"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Kikuchi pattern identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Pixel coordinate along the y direction.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_y"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Label for the y axis
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Pixel coordinate along the x direction.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_x"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Label for the x axis
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <!--maybe time code data when the pattern were taken?
+key is it all happened in between the time defined in NXevent_data_em
+optionally link to NXebsd instance?-->
+</definition>
