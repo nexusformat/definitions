@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!-- n_control_points: The number of control points for tessellating regions instead of tessellating the volume about ion positions.-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXapm_paraprobe_config_tessellator" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+    </symbols>
+    <doc>
+         Configuration of a paraprobe-tessellator tool run in atom probe microscopy.
+    </doc>
+    <group type="NXentry">
+        <!--by default for appdefs the value of the exists keyword is required
+unless it is explicitly specified differently-->
+        <attribute name="version">
+            <doc>
+                 Version specifier of this application definition.
+            </doc>
+        </attribute>
+        <field name="definition">
+            <doc>
+                 Official NeXus NXDL schema with which this file was written.
+            </doc>
+            <enumeration>
+                <item value="NXapm_paraprobe_config_tessellator"/>
+            </enumeration>
+        </field>
+        <field name="program">
+            <doc>
+                 Given name of the program/software/tool with which this NeXus
+                 (configuration) file was generated.
+            </doc>
+            <attribute name="version">
+                <doc>
+                     Ideally program version plus build number, or commit hash or description
+                     of ever persistent resources where the source code of the program and
+                     build instructions can be found so that the program can be configured
+                     ideally in such a manner that the result of this computational process
+                     is recreatable in the same deterministic manner.
+                </doc>
+            </attribute>
+        </field>
+        <field name="analysis_identifier">
+            <doc>
+                 Ideally, a (globally persistent) unique identifier for referring
+                 to this analysis.
+            </doc>
+        </field>
+        <field name="analysis_description" optional="true">
+            <doc>
+                 Possibility for leaving a free-text description about this analysis.
+            </doc>
+        </field>
+        <field name="results_path" optional="true">
+            <doc>
+                 Path to the directory where the tool should store NeXus/HDF5 results
+                 of this analysis. If not specified results will be stored in the
+                 current working directory.
+            </doc>
+        </field>
+        <field name="time_stamp" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 formatted time code with local time zone offset to UTC
+                 information included when this configuration file was created.
+            </doc>
+        </field>
+        <field name="number_of_processes" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 How many individual analyses should the tool execute.
+            </doc>
+        </field>
+        <group type="NXprocess">
+            <group name="dataset" type="NXapm_input_reconstruction">
+                <field name="filename">
+                    <attribute name="version"/>
+                </field>
+                <field name="dataset_name_reconstruction"/>
+                <field name="dataset_name_mass_to_charge"/>
+            </group>
+            <group name="iontypes" type="NXapm_input_ranging">
+                <field name="filename">
+                    <attribute name="version"/>
+                </field>
+                <field name="group_name_iontypes"/>
+            </group>
+            <group name="spatial_filter" type="NXspatial_filter" optional="true">
+                <field name="windowing_method"/>
+                <group type="NXcg_ellipsoid_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="half_axes_radii" type="NX_NUMBER"/>
+                    <field name="orientation" type="NX_NUMBER"/>
+                </group>
+                <group type="NXcg_cylinder_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="height" type="NX_NUMBER"/>
+                    <field name="radii" type="NX_NUMBER"/>
+                </group>
+                <group type="NXcg_hexahedron_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <group name="hexahedra" type="NXcg_face_list_data_structure"/>
+                </group>
+                <group type="NXcs_filter_boolean_mask" optional="true">
+                    <field name="number_of_objects" type="NX_UINT"/>
+                    <field name="bitdepth" type="NX_UINT"/>
+                    <field name="mask" type="NX_UINT"/>
+                    <field name="identifier" type="NX_UINT"/>
+                </group>
+            </group>
+            <!--a perfect example for limited conditions in NeXus
+if windowing_method is entire_dataset: no constraint on existence of NXcg and NXcs instances
+if windowing_method is union_of_primitives: sum of cardinality of NXcg >= 0
+if windowing_method is bitmasked_points: sum cardinality of NXcg := 0 and cardinality of NXcs_filter_boolean_mask == 1-->
+            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true"/>
+            <group name="iontype_filter" type="NXmatch_filter" optional="true"/>
+            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true"/>
+            <group name="ion_to_edge_distances" type="NXprocess" optional="true">
+                <doc>
+                     The tool enables to inject precomputed distance information for
+                     each point which can be used for further post-processing and analysis.
+                </doc>
+                <field name="filename">
+                    <doc>
+                         Name of an HDF5 file which contains the ion distances.
+                         Users are responsible this file and referred to dataset under
+                         dataset_name have an ion_distance value for each ion.
+                    </doc>
+                    <attribute name="version">
+                        <doc>
+                             Version identifier of the file such as a secure hash which
+                             documents the binary state of the file to add an additional layer of
+                             reproducibility.
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="dataset_name">
+                    <doc>
+                         Absolute HDF5 path to the dataset with distance values for each ion.
+                    </doc>
+                </field>
+            </group>
+            <group name="tessellating" type="NXprocess">
+                <field name="method">
+                    <doc>
+                         Specifies for which points the tool will compute the tessellation.
+                         By default, a Voronoi tessellation is computed for all ions in the
+                         filtered point cloud.
+                    </doc>
+                    <!-- The value control_points will compute the tessellation for the
+ provided overlay_control_points irregardless of the ion point cloud.
+ This enables for instance computations as proposed by P. Felfer and
+ coworkers where, for the purpose of e.g. interfacial excess quantification,
+ a tessellation of the dataset into regions about manually-specified
+ control points is needed.
+ For this option, the overlay_control points.-->
+                    <enumeration>
+                        <item value="default"/>
+                    </enumeration>
+                </field>
+                <!--overlay_control_points(NXprocess):
+   doc: |
+     Overlaying an additional set of control points onto the reconstruction
+     can be used as a first step to construct a tessellation of the dataset
+     into regions to segment the dataset or construct a model for internal
+     structural features in the dataset. Such an approach was suggested
+     e.g. by P. Felfer et al. which use a control points to locate
+     interfaces (grain/phase boundaries) in atom probe data to perform
+     e.g. interfacial excess computations. The control points can be
+     imported for example from some manual preprocessing of a dataset
+     where the user figured these control points could be of relevance
+     for the analysis.
+   # NEW ISSUE: dislocation lines
+   exists: optional
+   filename:
+     doc: |
+       Name of an HDF5 file which contains control point coordinates.
+     \@version:
+       doc: |
+         Version identifier of the file such as a secure hash which
+         documents the binary state of the file to add an additional
+         layer of reproducibility.
+   dataset_name:
+     doc: |
+       Absolute HDF5 path to the dataset which contains the array of
+       control points. This has to be an array of shape
+       (n_control_points, 3).-->
+                <field name="has_cell_volume" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report the volume of each cell.
+                    </doc>
+                </field>
+                <field name="has_cell_neighbors" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report the first-order neighbors of each cell.
+                    </doc>
+                </field>
+                <field name="has_cell_geometry" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report the facets and vertices of each cell.
+                    </doc>
+                </field>
+                <field name="has_cell_edge_detection" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report if the cell makes contact with
+                         the tight axis-aligned bounding box about the point cloud.
+                         This can be used to identify if the shape of the cell is affected
+                         by the edge of the dataset or if cells are deeply enough embedded
+                         into the point cloud so that the shape of their cells are not affected
+                         by the presence of the boundary.
+                    </doc>
+                </field>
+            </group>
+        </group>
+        <!--erosion_distance(NX_FLOAT):
+  doc: |
+    Maximum distance for which cells are eroded.
+  unit: NX_LENGTH
+  # \@units: nm
+  # minValue: EPSILON-->
+        <group name="performance" type="NXcs_profiling">
+            <field name="current_working_directory"/>
+        </group>
+    </group>
+</definition>

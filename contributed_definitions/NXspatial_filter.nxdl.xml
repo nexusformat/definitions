@@ -1,10 +1,10 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-#
+# 
 # Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
-#
+# 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -21,14 +21,19 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<!--
-n_vertices: Number of vertices for polyhedra.
-n_facets: Number of facets for polyhedra.-->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXspatial_filter" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<!-- n_polyhedra: Number of polyhedra.
+ n_vertices: Number of vertices for polyhedra.
+ n_facets: Number of facets for polyhedra.-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXspatial_filter" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
+        <symbol name="n_ellipsoids">
+            <doc>
+                 Number of ellipsoids.
+            </doc>
+        </symbol>
         <symbol name="n_hexahedra">
             <doc>
                  Number of hexahedra.
@@ -39,51 +44,42 @@ n_facets: Number of facets for polyhedra.-->
                  Number of cylinders.
             </doc>
         </symbol>
-        <symbol name="n_ellipsoids">
-            <doc>
-                 Number of ellipsoids.
-            </doc>
-        </symbol>
-        <symbol name="n_polyhedra">
-            <doc>
-                 Number of polyhedra.
-            </doc>
-        </symbol>
     </symbols>
     <doc>
-         Base class for a spatial filter for objects within a region-of-interest (ROI).
-         
-         Objects can be points or objects composed from other geometric primitives.
+         Spatial filter to filter entries within a region-of-interest based on their
+         position.
     </doc>
-    <field name="windowing_method" type="NX_CHAR">
+    <field name="windowing_method">
         <doc>
-             Qualitative statement which describes the logical operations
-             that define which objects will be included and which excluded:
+             Qualitative statement which specifies which spatial filtering with respective
+             geometric primitives or bitmask is used. These settings are possible:
              
-             * entire_dataset, no filter is applied, all objects are included.
-             * union_of_primitives, a filter with (possibly non-axis-aligned) geometric
-               primitives. Objects in or on the surface of the primitives are included.
-               All other objects are excluded.
-             * bitmask, a boolean array whose bits encode with 1 which objects
-               are included. Bits set to zero encode which objects are excluded.
-               Users of python can use the bitfield operations
-               of the numpy package to work with bitfields.
+             * entire_dataset, no filter is applied, the entire dataset is used.  
+             * union_of_primitives, a filter with (rotated) geometric primitives.  
+               All ions in or on the surface of the primitives are considered  
+               while all other ions are ignored.  
+             * bitmasked_points, a boolean array whose bits encode with 1  
+               which ions should be included. Those ions whose bit is set to 0  
+               will be excluded. Users of python can use the bitfield operations  
+               of the numpy package to define such bitfields.  
+             
+             Conditions:
+             In the case that windowing_method is entire_dataset all entries are processed.
+             In the case that windowing_method is union_of_primitives,
+             it is possible to specify none or all types of primitives
+             (ellipsoids, cylinder, hexahedra). If no primitives are specified
+             the filter falls back to entire_dataset.
+             In the case that windowing_method is bitmask, the bitmask has to be defined;
+             otherwise the filter falls back to entire dataset.
         </doc>
-        <!--In the case that windowing_method is union_of_primitives,
-it is possible to specify none or all types of primitives
-(ellipsoids, cylinder, hexahedra). If no primitives are specified
-the filter falls back to entire_dataset.
-In the case that windowing_method is bitmask, the bitmask has to be defined;
-otherwise the filter falls back to entire dataset.-->
         <enumeration>
             <item value="entire_dataset"/>
             <item value="union_of_primitives"/>
             <item value="bitmask"/>
         </enumeration>
     </field>
-    <group type="NXcg_hexahedron_set"/>
-    <group type="NXcg_cylinder_set"/>
     <group type="NXcg_ellipsoid_set"/>
-    <group type="NXcg_polyhedron_set"/>
+    <group type="NXcg_cylinder_set"/>
+    <group type="NXcg_hexahedron_set"/>
     <group type="NXcs_filter_boolean_mask"/>
 </definition>

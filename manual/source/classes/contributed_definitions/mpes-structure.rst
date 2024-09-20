@@ -1,8 +1,8 @@
 .. _Mpes-Structure:
 
-=======================================
+==============================================
 Photoemission & core-level spectroscopy
-=======================================
+==============================================
 
 .. index::
    IntroductionMpes
@@ -17,7 +17,7 @@ Photoemission & core-level spectroscopy
 Introduction
 ############
 
-Set of data storage objects to describe multidimensional photoemission (MPES) experiments including x-ray photoelectron spectroscopy (XPS), ultraviolet photoelectron spectroscopy (UPS),
+Set of data storage objects to describe photoemission experiments including x-ray photoelectron spectroscopy (XPS), ultraviolet photoelectron spectroscopy (UPS),
 hard x-ray photoelectron spectroscopy (HAXPES), angle-resolved photoemission spectroscopy (ARPES), two-photon photoemission (2PPE) 
 and photoemission electron microscopy (PEEM). Also includes descriptors for advanced specializations, such as spin-resolution, time resolution, 
 near-ambient pressure conditions, dichroism etc.
@@ -28,13 +28,7 @@ Application Definitions
 #######################
 
 :ref:`NXmpes`:
-   A general application definition with minimalistic metadata requirements, apt to describe all photoemission experiments.
-
-    :ref:`NXmpes_arpes`:
-       An application definition for angle-resolved photoemission spectroscopy (ARPES) experiments.
-
-    :ref:`NXxps`:
-       An application definition for X-ray/ultraviolet photoelectron spectroscopy (XPS/UPS) measurements.
+   A general appdef with minimalistic metadata requirements, apt to describe all photemission experiments.
 
 .. _MpesBC:
 
@@ -67,25 +61,16 @@ Three base classes to describe data processing, which can be used as subclasses 
 
     :ref:`NXregistration`:
        A base class to describe the rigid transformations that are applied to an image. May be redundant as they can be described with :ref:`NXtransformations`.
-      
-    :ref:`NXprocess_mpes`:
-       A base class specializing :ref:`NXprocess`, describing events of data processing, reconstruction, or analysis for photoemission-related data.
 
 .. _MpesCommonBC:
 
 Common Base Classes
 ###################
 
-There are related base classes that are common to other techniques:
+There are two related base classes that are common to other techniques:
 
     :ref:`NXlens_em`:
        A class to describe all types of lenses. Includes electrostatic lenses for electron energy analysers.
 
     :ref:`NXdeflector`
        A class to describe all kinds of deflectors, including electrostatic and magnetostatic deflectors for electron energy analysers.
-
-    :ref:`NXresolution`:
-      Describes the resolution of a physical quantity, e.g. the resolution of the MPES spectrometer.
-      
-    :ref:`NXfit`, :ref:`NXpeak`, :ref:`NXfit_background`, :ref:`NXfit_function`, :ref:`NXfit_parameter`:
-      Base classes for describing a fit procedure, e.g. a peak fitting in energy space in XPS.
