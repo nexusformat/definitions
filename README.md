@@ -25,17 +25,6 @@ Open the HTML manual in a web brower for visual verification
 
     firefox build/manual/build/html/index.html
 
-Convenient editing of definitions is available in nyaml format. For this, definitions need to be converted first from xml to yaml format by the command
-
-    make nyaml
-
-After editing the definitions in nyaml format in the nyaml subdirectories, the following command can be used to update the definitions in nxdl.xml format:
-
-    make nxdl
-
-> [!WARNING]  
-> Please be aware that your nyaml files might be out of sync with the nxdl files when you update your repo. So it's best practice to stash your changes to the nyaml files and regenerate the files with `make nyaml` before adding any changes.
-
 ### HTML pages with contributor information
 
 To build the html pages that contains contributor information on the sidebar set a github access token to an environment variable called GH_TOKEN.

@@ -1,8 +1,8 @@
 .. _Examples:
 
-==============================
-NeXus: Examples data files I/O
-==============================
+================================================
+Examples of writing and reading NeXus data files
+================================================
 ..
 	.. image:: ../img/NeXus.png
 
