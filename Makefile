@@ -60,6 +60,9 @@ test ::
 
 clean ::
 	$(RM) -rf $(BUILD_DIR)
+	$(RM) -rf $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)
+	$(RM) -rf $(APPDEF_DIR)/$(NYAML_SUBDIR)
+	$(RM) -rf $(CONTRIB_DIR)/$(NYAML_SUBDIR)
 
 prepare ::
 	$(PYTHON) -m dev_tools manual --prepare --build-root $(BUILD_DIR)
@@ -94,10 +97,24 @@ all ::
 	@echo "HTML built: `ls -lAFgh $(BUILD_DIR)/manual/build/html/index.html`"
 	@echo "PDF built: `ls -lAFgh $(BUILD_DIR)/manual/build/latex/nexus.pdf`"
 
+$(BASE_CLASS_DIR)/%.nxdl.xml : $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)/%.yaml
+	nyaml2nxdl $< --output-file $@
+
+$(CONTRIB_DIR)/%.nxdl.xml : $(CONTRIB_DIR)/$(NYAML_SUBDIR)/%.yaml
+	nyaml2nxdl $< --output-file $@
+
+$(APPDEF_DIR)/%.nxdl.xml : $(APPDEF_DIR)/$(NYAML_SUBDIR)/%.yaml
+	nyaml2nxdl $< --output-file $@
+
+nxdl: $(YBC_NXDL_TARGETS) $(YCONTRIB_NXDL_TARGETS) $(YAPPDEF_NXDL_TARGETS)
+
+nyaml:
+	$(MAKE) -f nyaml.mk
+
 
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2024 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
