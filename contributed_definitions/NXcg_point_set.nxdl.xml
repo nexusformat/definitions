@@ -21,32 +21,40 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXgraph_node_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
-    <!--a graph in which space d-dimensional, categorical, at all a metric one?-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXcg_point_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
         <symbol name="d">
             <doc>
-                 The dimensionality of the graph. Eventually use one for categorical.
+                 The dimensionality, which has to be at least 1.
             </doc>
         </symbol>
         <symbol name="c">
             <doc>
-                 The cardinality of the set, i.e. the number of nodes/vertices of the graph.
+                 The cardinality of the set, i.e. the number of points.
             </doc>
         </symbol>
     </symbols>
     <doc>
-         A set of nodes/vertices in space representing members of a graph.
+         Computational geometry description of a set of points in Euclidean space.
+         
+         The relevant coordinate system should be referred to in the NXtransformations
+         instance. Points may have an associated time value; however users are advised
+         to store time data of point sets rather as instances of time events, where
+         for each point in time there is an NXcg_point_set instance which specifies the
+         points locations. This is a frequent situation in experiments and computer
+         simulations, where positions of points are taken at the same point in time;
+         and therefore an additional time array would demand to store redundant pieces
+         of information for each point.
     </doc>
     <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS"/>
     <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
     <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Integer which specifies the first index to be used for distinguishing
-             nodes. Identifiers are defined either implicitly
+             identifiers for points. Identifiers are defined either implicitly
              or explicitly. For implicit indexing the identifiers are defined on the
              interval [identifier_offset, identifier_offset+c-1].
              For explicit indexing the identifier array has to be defined.
@@ -58,32 +66,33 @@
     </field>
     <field name="identifier" type="NX_INT" units="NX_UNITLESS">
         <doc>
-             Integer used to distinguish nodes for explicit indexing.
+             Integer used to distinguish points for explicit indexing.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
         </dimensions>
     </field>
-    <field name="is_a">
+    <field name="position" type="NX_NUMBER" units="NX_LENGTH">
         <doc>
-             A human-readable qualifier which type or e.g. class instance the
-             node is an instance of. As e.g. a NeXus application definition is a
-             graph, more specifically a hierarchical directed labelled property graph,
-             instances which are groups like NXgraph_node_set could have an is_a
-             qualifier reading NXgraph_node_set.
+             The array of point coordinates.
         </doc>
-        <dimensions rank="1">
+        <dimensions rank="2">
             <dim index="1" value="c"/>
+            <dim index="2" value="d"/>
         </dimensions>
     </field>
-    <field name="label">
+    <field name="time" type="NX_NUMBER" units="NX_TIME">
         <doc>
-             A human-readable label/caption/tag of the graph.
+             The optional array of time for each vertex.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="c"/>
         </dimensions>
     </field>
-    <!--how to handle arrays which are compressed? This can be useful for instance
-if there are substantially fewer disjoint labels than c-->
+    <group type="NXtransformations">
+        <doc>
+             Reference to or definition of a coordinate system with
+             which the positions and directions are interpretable.
+        </doc>
+    </group>
 </definition>
