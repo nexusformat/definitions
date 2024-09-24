@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXspectrum_set_em_xray" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <!--NEW ISSUE: use computational geometry to offer arbitrary scan pattern
+NEW ISSUE: make the binning flexible per scan point-->
+    <symbols>
+        <!--n_p: Number of scan points-->
+        <symbol name="n_y">
+            <doc>
+                 Number of pixel per X-ray mapping in the slow direction
+            </doc>
+        </symbol>
+        <symbol name="n_x">
+            <doc>
+                 Number of pixel per X-ray mapping in the fast direction
+            </doc>
+        </symbol>
+        <symbol name="n_photon_energy">
+            <doc>
+                 Number of X-ray photon energy (bins)
+            </doc>
+        </symbol>
+        <symbol name="n_elements">
+            <doc>
+                 Number of identified elements
+            </doc>
+        </symbol>
+        <symbol name="n_peaks">
+            <doc>
+                 Number of peaks
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Container for reporting a set of energy-dispersive X-ray spectra.
+         
+         Virtually the most important case is that spectra are collected in 
+         a scanning microscope (SEM or STEM) for a collection of points.
+         The majority of cases use simple d-dimensional regular scan pattern,
+         such as single point, line profiles, or (rectangular) surface mappings.
+         The latter pattern is the most frequently used.
+         
+         For now the base class provides for scans for which the settings,
+         binning, and energy resolution is the same for each scan point.
+         
+         `IUPAC instead of Siegbahn notation &lt;https://doi.org/10.1002/xrs.1300200308&gt;`_
+         should be used.
+    </doc>
+    <group type="NXprocess">
+        <doc>
+             Details how X-ray spectra were processed from the detector readings.
+        </doc>
+        <field name="source">
+            <doc>
+                 Typically the name of the input, (vendor) file from which all
+                 the NXdata instances in this NXspectrum_set_em_xray were loaded during
+                 parsing to represent them in e.g. databases.
+            </doc>
+            <attribute name="version">
+                <doc>
+                     An at least as strong as SHA256 hashvalue of the dataset/file
+                     which represents the source digitally to support provenance tracking.
+                </doc>
+            </attribute>
+        </field>
+        <field name="program">
+            <doc>
+                 Commercial or otherwise given name to the program which was used
+                 to process detector data into the X-ray spectra stack and summary.
+            </doc>
+            <attribute name="version">
+                <doc>
+                     Program version plus build number, commit hash, or description
+                     of an ever persistent resource where the source code of the program
+                     and build instructions can be found so that the program
+                     can be configured in such a manner that the result file
+                     is ideally recreatable yielding the same results.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <!--##MK::for supporting arbitrary scan pattern we need a good example first
+##MK::feel free to contact us in this regard!-->
+    <group name="stack" type="NXdata">
+        <doc>
+             Collected X-ray spectra for all pixels of a rectangular region-of-interest.
+             This representation supports rectangular scan pattern.
+        </doc>
+        <field name="data_counts" type="NX_NUMBER" units="NX_UNITLESS">
+            <dimensions rank="3">
+                <dim index="1" value="n_y"/>
+                <dim index="2" value="n_x"/>
+                <dim index="3" value="n_photon_energy"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     X-ray photon counts
+                </doc>
+            </attribute>
+        </field>
+        <!--\@signal: counts
+\@axes: [ypos, xpos, photon_energy]
+\@ypos_indices: 0
+\@xpos_indices: 1
+\@photon_energy_indices: 2-->
+        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+            <dimensions rank="1">
+                <dim index="1" value="n_y"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Coordinate along y direction.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+            <dimensions rank="1">
+                <dim index="1" value="n_x"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Coordinate along x direction.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_photon_energy" type="NX_NUMBER" units="NX_ENERGY">
+            <dimensions rank="1">
+                <dim index="1" value="n_photon_energy"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Photon energy.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="summary" type="NXdata">
+        <doc>
+             Accumulated X-ray spectrum over all pixels of a rectangular
+             region-of-interest. This representation supports rectangular scan pattern.
+        </doc>
+        <field name="data_counts" type="NX_NUMBER" units="NX_UNITLESS">
+            <dimensions rank="1">
+                <dim index="1" value="n_photon_energy"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     X-ray photon counts
+                </doc>
+            </attribute>
+        </field>
+        <!--\@signal: counts
+\@axes: [photon_energy]
+\@photon_energy_indices: 0-->
+        <field name="axis_photon_energy" type="NX_NUMBER" units="NX_ENERGY">
+            <dimensions rank="1">
+                <dim index="1" value="n_photon_energy"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Photon energy
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <!--for post-processing of/with the above-defined data entries-->
+    <group name="indexing" type="NXprocess">
+        <doc>
+             Details about computational steps how peaks were indexed as elements.
+        </doc>
+        <field name="program">
+            <doc>
+                 Given name of the program that was used to perform this computation.
+            </doc>
+            <attribute name="version">
+                <doc>
+                     Program version plus build number, commit hash, or description of an
+                     ever persistent resource where the source code of the program and
+                     build instructions can be found so that the program can be configured
+                     in such a manner that the result file is ideally recreatable yielding
+                     the same results.
+                </doc>
+            </attribute>
+        </field>
+        <group type="NXpeak">
+            <doc>
+                 Name and location of each X-ray line which was indexed as a known ion.
+                 For each ion an NXion instance should be created which specifies
+                 the origin of the signal. For each ion also the relevant IUPAC notation
+                 X-ray lines should be specified.
+            </doc>
+            <group type="NXion">
+                <field name="iupac_line_names">
+                    <doc>
+                         IUPAC notation identifier of the line which the peak represents.
+                         
+                         This can be a list of IUPAC notations for (the seldom) case that
+                         multiple lines are group with the same peak.
+                    </doc>
+                </field>
+            </group>
+        </group>
+        <field name="element_names">
+            <doc>
+                 List of the names of identified elements.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_elements"/>
+            </dimensions>
+        </field>
+        <group name="ELEMENTNAME" type="NXprocess">
+            <doc>
+                 Individual element-specific EDX/EDS/EDXS/SXES mapping
+                 
+                 A composition map is an image whose intensities for each pixel are the
+                 accumulated X-ray quanta *under the curve(s)* of a set of peaks.
+            </doc>
+            <field name="program">
+                <doc>
+                     Given name of the program that was used to perform this computation.
+                </doc>
+                <attribute name="version">
+                    <doc>
+                         Program version plus build number, commit hash, or description of an
+                         ever persistent resource where the source code of the program and
+                         build instructions can be found so that the program can be configured
+                         in such a manner that the result file is ideally recreatable yielding
+                         the same results.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="peaks">
+                <doc>
+                     A list of strings of named instances of NXpeak from indexing
+                     whose X-ray quanta where accumulated for each pixel.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_peaks"/>
+                </dimensions>
+            </field>
+            <field name="name">
+                <doc>
+                     Human-readable, given name to the image.
+                </doc>
+            </field>
+            <!--example how an element-specific pattern could be stored-->
+            <group name="summary" type="NXdata">
+                <doc>
+                     Individual element-specific maps. Individual maps should
+                     each be a group and be named according to element_names.
+                </doc>
+                <field name="data_counts" type="NX_NUMBER" units="NX_UNITLESS">
+                    <dimensions rank="2">
+                        <dim index="1" value="n_y"/>
+                        <dim index="2" value="n_x"/>
+                    </dimensions>
+                    <attribute name="long_name">
+                        <doc>
+                             Accumulated photon counts for observed element.
+                        </doc>
+                    </attribute>
+                </field>
+                <!--\@signal: counts
+\@axes: [ypos, xpos]
+\@xpos_indices: 1
+\@ypos_indices: 0-->
+                <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_y"/>
+                    </dimensions>
+                    <attribute name="long_name">
+                        <doc>
+                             Coordinate along y direction.
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+                    <dimensions rank="1">
+                        <dim index="1" value="n_x"/>
+                    </dimensions>
+                    <attribute name="long_name">
+                        <doc>
+                             Coordinate along x direction.
+                        </doc>
+                    </attribute>
+                </field>
+            </group>
+        </group>
+    </group>
+</definition>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXorientation_set" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <!--This class stores a set of specifically parameterized NXtransformations which describe
+how each object is oriented/rotated with respect to a reference coordinate system.
+we should offer here support for d==2, d==3-->
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="d">
+            <doc>
+                 The dimensionality of the reference space/coordinate system.
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 The cardinality of the set, i.e. the number of orientations.
+            </doc>
+        </symbol>
+        <symbol name="n_p">
+            <doc>
+                 Number of parameters for the chosen parameterization.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Details about individual orientations of a set of objects.
+         
+         For a more detailed insight into the discussion of parameterizing
+         orientations in materials science see:
+         
+         * https://doi.org/10.1016/j.matchar.2016.04.008
+         * https://doi.org/10.1088/0965-0393/23/8/083501
+         * https://doi.org/10.1007/978-3-662-09156-2 group-theory of rotations
+         * https://doi.org/10.1016/C2013-0-11769-2 the classical book of H.-J. Bunge
+    </doc>
+    <!--depending on the dimensionality n_p is correlated but not necessarily, e.g. for d==3 one can store quaternions (n_p==4) or Bunge-Euler angles (n_p==3)
+clearly one could think about a single best approach that everybody should use, and indeed quaternions could be a candidate but this conflicts with the
+expectations understanding and in fact habit by very many materials engineers who know and report their values in Euler angles so at least one would need to
+have a system in place which converts...-->
+    <group type="NXtransformations">
+        <doc>
+             Reference to or definition of a coordinate system with
+             which the definitions are interpretable.
+        </doc>
+    </group>
+    <field name="parameterization">
+        <enumeration>
+            <item value="bunge-euler (ZXZ)"/>
+            <item value="quaternion"/>
+        </enumeration>
+    </field>
+    <!--how to take into account the reduction to two-d? just list these cases XY, XZ, ... also in the enumeration?
+an instance of an NXorientation_set is useful as attribute (meta)data to a set of microstructural objects e.g. crystals, grains when the base class is stored as a sub-ordinate of the grain_set
+one may argue we expect that for each grain there is an orientation value, in this case the indexing is implicit and this is often used in computer simulations
+without making a specific statement that e.g. the 0-th value of the array gives the volume of the 0-th grain but that 0-th grain might not necessarily be named as grain 0 but e.g. grain 23
+because many computer simulations deal with ensemble where the number of objects changes over time, e.g. molecular dynamics simulation treat always the same set of atoms but post-processing
+of the data may reveal these atoms are grouped/labelled as different microstructural features (grains, dislocations, vacancies) and then the names/identifiers of the objects may change over time
+therefore the idea to specify if we use implicit or explicit indexing and listing of the indices because I know of colleagues where even that went havoc!-->
+    <field name="objects">
+        <doc>
+             A link or reference to the objects whose identifier are referred to in
+             identifier to resolve which row tuple is the orientation of each object
+             by reading orientations.
+        </doc>
+    </field>
+    <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer which specifies which orientation (row of array orientation) matches
+             to which object.e first index to be used for distinguishing
+             hexahedra. Identifiers are defined either implicitly
+             or explicitly. For implicit indexing the identifiers are defined on the
+             interval [identifier_offset, identifier_offset+c-1].
+             For explicit indexing the identifier array has to be defined.
+             
+             The identifier_offset field can for example be used to communicate if the
+             identifiers are expected to start from 1 (referred to as Fortran-/Matlab-)
+             or from 0 (referred to as C-, Python-style index notation) respectively.
+        </doc>
+    </field>
+    <field name="identifier" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer used to distinguish how a row in orientation describes a specific
+             object with an explicit identifier that can be queried via inspecting the
+             list of available objects in objects.
+             
+             The rational behind having such a more complicated pattern is that not
+             all objects referred when following the link in objects may still exists
+             or are still tracked when the orientation set was characterized.
+             
+             This design enables to also use NXorientation_set in situations where
+             the orientation of objects change as a function in time.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="orientation" type="NX_NUMBER" units="NX_ANY">
+        <doc>
+             Parameterized orientations.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="c"/>
+            <dim index="2" value="n_p"/>
+        </dimensions>
+    </field>
+    <!--e.g. in this way one could easily, efficiently, store and map familiar habits of microscopists
+to store e.g. orientations of measurement points or of grains via a (c := Ngrains, n_p := 3)
+matrix of Bunge-Euler angles, or of (c := Ngrains, n_p := 4) matrix of quaternions.-->
+    <!--the benefit of such a representation is that with a known NXorientation_set base class one can implement a common parameterization transformation library (of which several already exist) in the microstructure modelling communities so that a program can read the information in the (NXorientation_set) instance and automatically transform/compute between different parameterizations. Super relevant for interoperability e.g. in SEM/EBSD, where this was a long standing issue and right now the most frequently accepted consensus is to report either Bunge-Euler angles or quaternions and then use existent transformation libraries (as implemented by e.g. Marc de Graeff for SEM/EBSD and used by many but not yet the majority of people in the computational materials modelling community within crystal plasticity, crystal growth modeling, DREAM.3D)-->
+</definition>
