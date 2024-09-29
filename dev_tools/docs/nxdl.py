@@ -78,8 +78,10 @@ class NXClassDocGenerator:
                 f'Unexpected class name "{nxclass_name}"; does not start with NX'
             )
         lexical_name = nxclass_name[2:]  # without padding 'NX', for indexing
+
         self._listing_category = self._CATEGORY_TO_LISTING[category]
         self._use_application_defaults = category == "application"
+        self._contribution = nxdl_file.parent.name == "contributed_definitions"
 
         # print ReST comments and section header
         source = os.path.relpath(nxdl_file, get_nxdl_root())
@@ -127,7 +129,12 @@ class NXClassDocGenerator:
 
         self._print("")
         self._print("**Status**:\n")
-        self._print(f"  {self._listing_category.strip()}, extends {extends}")
+        if self._contribution:
+            self._print(
+                f"  *{self._listing_category}* (contribution), extends {extends}"
+            )
+        else:
+            self._print(f"  {self._listing_category}, extends {extends}")
 
         self._print_if_deprecated(ns, root, "")
 
@@ -605,12 +612,6 @@ class NXClassDocGenerator:
         :param indent: to keep track of indentation level
         :param parent_path: NX class path of parent nodes
         """
-
-        self._use_application_defaults = self._listing_category in (
-            "application definition",
-            "contributed definition",
-        )
-
         for node in parent.xpath("nx:field", namespaces=ns):
             name = node.get("name")
             index_name = name
