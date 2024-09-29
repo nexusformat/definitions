@@ -1,0 +1,1040 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_nanochem_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_ityp_deloc_cand">
+            <doc>
+                 How many iontypes does the delocalization filter specify.
+            </doc>
+        </symbol>
+        <symbol name="n_grid">
+            <doc>
+                 How many grid_resolutions values.
+            </doc>
+        </symbol>
+        <symbol name="n_var">
+            <doc>
+                 How many kernel_variance values.
+            </doc>
+        </symbol>
+        <symbol name="n_control_pts">
+            <doc>
+                 How many disjoint control points are defined.
+            </doc>
+        </symbol>
+        <symbol name="n_fct_filter_cand">
+            <doc>
+                 How many iontypes does the interface meshing iontype filter specify.
+            </doc>
+        </symbol>
+        <symbol name="n_fct_iterations">
+            <doc>
+                 How many DCOM iterations.
+            </doc>
+        </symbol>
+        <symbol name="n_ivec_max">
+            <doc>
+                 Maximum number of atoms per molecular ion.
+            </doc>
+        </symbol>
+        <symbol name="n_rois">
+            <doc>
+                 Number of cylinder ROIs to place for oned_profile if no feature mesh is used.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for a configuration file of the paraprobe-nanochem tool.
+         
+         This tool is part of the paraprobe-toolbox. Inspect :ref:`NXapm_paraprobe_tool_config` for details.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_paraprobe_nanochem_config"/>
+            </enumeration>
+        </field>
+        <group name="delocalization" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="1">
+            <doc>
+                 Discretization and distributing of the ion point cloud on a 3D grid
+                 to enable continuum-scale analyses.
+                 
+                 By default, the tool computes a full kernel density estimation of decomposed
+                 ions to create one discretized field for each element.
+                 
+                 One delocalization task configures a parameter sweep with at least one
+                 delocalization. The total number of runs depends on the number of
+                 grid_resolution and kernel_variance values. For example, setting two grid_resolutions
+                 and three kernel_variance will compute six runs. Two sets of three with the first set using
+                 the first grid_resolutions and in sequence the kernel_variance respectively.
+            </doc>
+            <!-- Although, this uses an efficient multithreaded algorithm the computation is costly.
+ Therefore, it can be advantageous for users to load an already computed delocalization.
+ This can be achieved with the load_existent option.-->
+            <group type="NXidentifier" optional="true"/>
+            <field name="analysis_identifier" type="NX_UINT" recommended="true"/>
+            <group name="reconstruction" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="position" type="NX_CHAR"/>
+                <field name="mass_to_charge" type="NX_CHAR"/>
+            </group>
+            <group name="ranging" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="ranging_definitions" type="NX_CHAR"/>
+            </group>
+            <group name="surface" type="NXserialized">
+                <doc>
+                     A precomputed triangulated surface mesh representing a model (of the surface)
+                     of the edge of the dataset. This model can be used to detect and control
+                     various sources of bias in the analyses.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="vertices" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the array
+                         of vertex positions for the triangles in that triangle_set.
+                    </doc>
+                </field>
+                <field name="indices" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the array
+                         of vertex indices for the triangles in that triangle_set.
+                    </doc>
+                </field>
+            </group>
+            <group name="surface_distance" type="NXserialized" recommended="true">
+                <doc>
+                     Distance between each ion and triangulated surface mesh.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="distance" type="NX_CHAR"/>
+            </group>
+            <group name="spatial_filter" type="NXspatial_filter">
+                <field name="windowing_method" type="NX_CHAR"/>
+                <group name="hexahedron_set" type="NXcg_hexahedron_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <group name="hexahedra" type="NXcg_face_list_data_structure">
+                        <field name="vertices" type="NX_UINT"/>
+                    </group>
+                </group>
+                <group name="cylinder_set" type="NXcg_cylinder_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="height" type="NX_NUMBER"/>
+                    <field name="radii" type="NX_NUMBER"/>
+                </group>
+                <group name="ellipsoid_set" type="NXcg_ellipsoid_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="half_axes_radii" type="NX_NUMBER"/>
+                    <field name="orientation" type="NX_NUMBER"/>
+                </group>
+                <group name="polyhedron_set" type="NXcg_polyhedron_set" optional="true"/>
+                <!--TODO-->
+                <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
+                    <field name="number_of_objects" type="NX_UINT"/>
+                    <field name="bitdepth" type="NX_UINT"/>
+                    <field name="mask" type="NX_UINT"/>
+                </group>
+            </group>
+            <!--leave open if scalar or matrix
+  dim: (i,)
+identifier(NX_UINT):-->
+            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
+                <field name="min_incr_max" type="NX_INT"/>
+            </group>
+            <group name="iontype_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <!--config-->
+            <field name="method" type="NX_CHAR">
+                <doc>
+                     Compute delocalization or load an existent one from input.
+                </doc>
+                <enumeration>
+                    <item value="compute"/>
+                    <item value="load_existent"/>
+                </enumeration>
+            </field>
+            <group name="input" type="NXserialized">
+                <doc>
+                     Serialized result of an already computed delocalization which is for performance
+                     reasons here just loaded and not computed again.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="results" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the group within which
+                         individual delocalization results are stored.
+                    </doc>
+                </field>
+            </group>
+            <!--TODO: add more descriptions-->
+            <field name="nuclide_whitelist" type="NX_UINT" units="NX_UNITLESS">
+                <doc>
+                     Matrix of nuclides representing how iontypes should be accounted for during
+                     the delocalization. This is the most general approach to define if and how many
+                     times an ion is to be counted. The tool performs a so-called atomic decomposition
+                     of all iontypes, i.e. the tool analyses from how many atoms of each nuclide
+                     or element respectively an (molecular) ion is built from.
+                     
+                     Taking the hydroxonium H3O+ molecular ion as an example:
+                     It contains hydrogen and oxygen atoms. The multiplicity of hydrogen
+                     is three whereas that of oxygen is one. Therefore, the respective atomic decomposition
+                     analysis prior to the iso-surface computation adds three hydrogen counts for each
+                     H3O+ ion.
+                     
+                     This is a practical solution which accepts that on the one hand not every bond is
+                     broken during an atom probe experiment but also that ions may react further during
+                     their flight to the detector. The exact details depend on the local field conditions,
+                     quantum mechanics of possible electron transfer and thus the detailed trajectory
+                     of the system and its electronic state.
+                     
+                     The detection of molecular ions instead of always single atom ions only is the
+                     reason that an atom probe experiment tells much about field evaporation physics
+                     but also faces an inherent loss of information with respect to the detailed spatial
+                     arrangement that is independent of other imprecisions such as effect of limited
+                     accuracy of reconstruction protocols and their parameterization.
+                     
+                     Unused values in each row of the matrix are nullified.
+                     Nuclides are identified as hashed nuclide (see :ref:`NXion`) for further details.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="n_ityp_deloc_cand"/>
+                    <dim index="2" value="n_ivec_max"/>
+                </dimensions>
+            </field>
+            <field name="grid_resolution" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     Array of edge lengths of the cubic cells used for discretizing the reconstructed dataset
+                     on a cuboidal 3D grid (:ref:`NXcg_grid`). The tool performs as many delocalization
+                     computations as values are specified in grid_resolution.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_grid"/>
+                </dimensions>
+            </field>
+            <field name="kernel_size" type="NX_UINT" units="NX_UNITLESS">
+                <doc>
+                     Half the width of a :math:`{(2 \cdot n + 1)}^3` cubic kernel of cubic voxel
+                     beyond which the Gaussian Ansatz function will be truncated. Intensity outside
+                     the kernel is factorized into the kernel via a normalization procedure.
+                </doc>
+            </field>
+            <field name="kernel_variance" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     Array of variance values :math:`\sigma` of the Gaussian Ansatz kernel
+                     (:math:`\sigma_x := \sigma`, :math:`\sigma_x = \sigma_y = 2 \cdot \sigma_z`).
+                     The tool performs as many delocalization computations as values are specified
+                     in kernel_variance.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_var"/>
+                </dimensions>
+            </field>
+            <field name="normalization" type="NX_CHAR">
+                <doc>
+                     How should the results of the kernel-density estimation be normalized into quantities.
+                     By default, the tool computes the total number (intensity) of ions or elements.
+                     Alternatively, the tool can compute the total intensity, the composition,
+                     or the concentration of the ions/elements specified by the nuclide_whitelist.
+                </doc>
+                <enumeration>
+                    <item value="none"/>
+                    <item value="composition"/>
+                    <item value="concentration"/>
+                </enumeration>
+            </field>
+            <field name="has_scalar_fields" type="NX_BOOLEAN">
+                <doc>
+                     Specifies if the tool should report the delocalization 3D field values.
+                </doc>
+            </field>
+            <group name="isosurfacing" type="NXprocess" minOccurs="0" maxOccurs="1">
+                <doc>
+                     Configuration of the set of iso-surfaces to compute using that delocalization.
+                     Such iso-surfaces are the starting point for a reconstruction of so-called objects or
+                     (microstructual) features. Examples of scientific relevant are (line features e.g. dislocations
+                     poles, surface features such as interfaces, i.e. phase and grain boundaries, or volumetric
+                     features such as precipitates.
+                     Users should be aware that reconstructed datasets in atom probe are a model and may face
+                     inaccuracies and artifacts that can be mistaken incorrectly as microstructural features.
+                </doc>
+                <field name="edge_method" type="NX_CHAR">
+                    <doc>
+                         As it is detailed in `M. Kühbach et al. &lt;https://arxiv.org/abs/2205.13510&gt;`_, the handling of
+                         triangles at the surface (edge) of the dataset requires special attention especially for
+                         composition-normalized delocalization. Here, it is possible that the composition
+                         increases towards the edge of the dataset because the quotient of two numbers
+                         that are both smaller than one is larger instead of smaller than the counter.
+                         
+                         By default, the tool uses a modified marching cubes algorithm of Lewiner et al.
+                         which detects if voxels face such a situation. In this case, no triangles are generated
+                         for such voxels.
+                         
+                         Alternatively, keep_edge_triangles instructs the tool to not remove triangles at the
+                         edge of the dataset at the cost of bias. When using this keep_edge_triangles users
+                         should understand that all features in contact with the edge of the dataset get usually
+                         artificial enlarged. Consequently, triangulated surface meshes of these objects are
+                         closed during the marching. However, this closure is artificial and can biased shape
+                         analyses for those objects. This also holds for such practices that are offered in
+                         proprietary software like IVAS / AP Suite. The situation is comparable to analyses
+                         of grain shapes via orientation microscopy from electron microscopy or X-ray
+                         diffraction tomography. Features at the edge of the dataset may have not been
+                         captured fully.
+                         
+                         Thanks to collaboration with V. V. Rielli and S. Primig from the Sydney atom probe group,
+                         paraprobe-nanochem implements a complete pipeline to process features at the edge of the
+                         dataset. Specifically, these are modelled and replaced with closed polyhedral objects using
+                         an iterative mesh and hole-filling procedures with fairing operations.
+                         
+                         The tool bookkeeps such objects separately to lead the decision whether or not to
+                         consider these objects to the user. Users should be aware that results from fairing operations
+                         should be compared to results from analyses where all objects at the edge
+                         of the dataset have been removed. Furthermore, users should be careful with overestimating
+                         the statistical significance of their dataset especially when using atom probe when they
+                         use their atom probe result to compare different descriptors. Even though a dataset may
+                         deliver statistically significant results for compositions, this does not necessarily mean that
+                         same dataset will also yield statistically significant and insignificantly biased results for
+                         3D object analyses!
+                         
+                         Being able to quantify these effects and making atom probers aware of these subtleties
+                         was one of the main reasons why the paraprobe-nanochem tool was implemented.
+                    </doc>
+                    <enumeration>
+                        <item value="default"/>
+                        <item value="keep_edge_triangles"/>
+                    </enumeration>
+                </field>
+                <field name="edge_threshold" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         The ion-to-surface distance that is used in the analyses of features to identify whether
+                         these are laying inside the dataset or close to the surface (edge) of the dataset.
+                         
+                         If an object has at least one ion with an ion-to-surface-distance below this threshold,
+                         the object is considered close to the edge of the dataset. The tool uses a distance-based
+                         approach to solve the in general complicated and involved treatment of computing
+                         volumetric intersections between closed 2-manifolds that are not necessarily convex.
+                         The main practical reason is that such computational geometry analyses face numerical
+                         robustness issues as a consequence of which a mesh can be detected as being completely
+                         inside another mesh although in reality it is only :math:`\epsilon`-close only, i.e. almost
+                         touching only the edge (e.g. from inside).
+                         
+                         Practically, humans would likely still state in such case that the object is close to the
+                         edge of the dataset; however mathematically the object is indeed completely inside.
+                         In short, a distance-based approach is rigorous and flexible.
+                    </doc>
+                </field>
+                <field name="phi" type="NX_FLOAT" units="NX_ANY">
+                    <doc>
+                         Iso-contour values. For each value, the tool computes an iso-surface and performs
+                         subsequent analyses for each iso-surface. The unit depends on the choice for the
+                         normalization of the accumulated ion intensity values per voxel:
+                         
+                         * total, total number of ions, irrespective their iontype
+                         * candidates, total number of ions with type in the isotope_whitelist.
+                         * composition, candidates but normalized by composition, i.e. at.-%
+                         * concentration, candidates but normalized by voxel volume, i.e. ions/nm^3
+                    </doc>
+                </field>
+                <field name="has_triangle_soup" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report the triangle soup which represents each triangle of the
+                         iso-surface complex. The resulting set of triangles is colloquially referred to as a soup
+                         because different sub-set may not be connected.
+                         
+                         Each triangle is reported with an ID specifying to which triangle cluster (with IDs starting at zero)
+                         the triangle belongs. The clustering of triangles within the soup is performed with a
+                         modified DBScan algorithm.
+                    </doc>
+                </field>
+                <field name="has_object" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should analyze for each cluster of triangles how they can be combinatorially
+                         processed to describe a closed polyhedron. Such a closed polyhedron (not-necessarily convex!)
+                         can be used to describe objects with relevance in the microstructure.
+                         
+                         Users should be aware that the resulting mesh does not necessarily represent the original precipitate.
+                         In fact, inaccuracies in the reconstructed positions cause inaccuracies in all downstream processing
+                         operations. Especially the effect on one-dimensional spatial statistics like nearest neighbor correlation
+                         functions were discussed in the literature `B. Gault et al. &lt;https://doi.org/10.1017/S1431927621012952&gt;`_.
+                         
+                         In continuation of these thoughts, this applies also to reconstructed objects.
+                         A well-known example is the discussion of shape deviations of scandium-rich precipitates in aluminium alloys
+                         which in reconstructions may appear as ellipsoids although they should be indeed almost spherical
+                         provided their size is larger than the atomic length scale.
+                    </doc>
+                </field>
+                <field name="has_object_geometry" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report a triangulated surface mesh for each identified closed polyhedron.
+                         It is common that a marching cubes algorithm creates iso-surfaces with a fraction of tiny sub-complexes
+                         (e.g. small isolated tetrahedra).
+                         
+                         These can be small tetrahedra/polyhedra about the center of a voxel of the support grid
+                         on which marching cubes operates. Such objects may not contain an ion; especially when considering
+                         that delocalization procedures smoothen the positions of the ions. Although these small objects are
+                         interesting from a numerical point of view, scientists may argue they are not worth to be reported because
+                         a microstructural feature should contain at least a few atoms to become relevant.
+                         Therefore, paraprobe-nanochem by default does not report closed objects which bound a volume
+                         that contains no ion.
+                    </doc>
+                </field>
+                <field name="has_object_properties" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report properties of each closed polyhedron, such
+                         as volume and other details.
+                    </doc>
+                </field>
+                <field name="has_object_obb" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report for each closed polyhedron an approximately optimal bounding box
+                         fitted to all triangles of the surface mesh of the object and ion positions inside or on the surface of the mesh.
+                         This bounding box informs about the closed object's shape (aspect ratios).
+                         
+                         Users should be aware that the choice of the algorithm to compute the bounding box can have an
+                         effect on aspect ratio statistics. It is known that computing the true optimal bounding box of in 3D
+                         is an :math:`\mathcal{O}^3`-time-complex task. The tool uses well-established approximate algorithms
+                         of the Computational Geometry Algorithms Library (CGAL).
+                    </doc>
+                </field>
+                <field name="has_object_ions" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report for each closed polyhedron all evaporation IDs of those ions which
+                         lay inside or on the boundary of the polyhedron. This information is used by the paraprobe-intersector
+                         tool to infer if two objects share common ions, which is then understood as that the two objects intersect.
+                         
+                         Users should be aware that two arbitrarily closed polyhedra in three-dimensional space can intersect
+                         but not share a common ion. In fact, the volume bounded by the polyhedron has sharp edges and flat
+                         face(t)s. When taking two objects, an edge of one object may for instance pierce into the surface of
+                         another object. In this case the objects partially overlap / intersect volumetrically; however this piercing
+                         might be so small or happening in the volume between two reconstructed ion positions. Consequently,
+                         sharing ions is a sufficient but not a necessary condition for interpreting (volumetric) intersections
+                         between objects.
+                         
+                         Paraprobe-intersector implements a rigorous alternative to handle such intersections using a tetrahedralization
+                         of closed objects. However, in many practical cases, we found through examples that there are polyhedra (especially when they are non-convex and have almost point-like) connected channels, where
+                         tetrahedralization libraries have challenges dealing with. In this case, checking intersections
+                         via shared_ions is a more practical alternative.
+                    </doc>
+                </field>
+                <field name="has_object_edge_contact" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report if a (closed) object has contact with the surface aka edge of the dataset.
+                         For this the tool currently inspects if the shortest distance between the set of triangles of the triangulated
+                         surface mesh and the triangles of the edge model is larger than edge_threshold.
+                         If this is the case, the object is assumed to be deeply embedded in the interior of the dataset.
+                         Otherwise, the object is considered to have an edge contact, i.e. it shape is likely affected by the edge.
+                    </doc>
+                </field>
+                <field name="has_proxy" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should analyze a closed polyhedron (aka proxy) for each cluster of triangles whose
+                         combinatorial analysis according to has_object returned that the object is not a closed polyhedron.
+                         Such proxies are closed via iterative hole-filling, mesh refinement, and fairing operations.
+                         
+                         Users should be aware that the resulting mesh does not necessarily represent the original feature.
+                         In most cases objects, precipitates in atom probe end up as open objects because they have been
+                         clipped by the edge of the dataset. Using a proxy is in this case a strategy to still be able to account
+                         for these objects. However, users should make themselves familiar with the consequences and
+                         potential biases which this can introduce into the analysis.
+                    </doc>
+                </field>
+                <field name="has_proxy_geometry" type="NX_BOOLEAN">
+                    <doc>
+                         Like has_object_geometry but for the proxies.
+                    </doc>
+                </field>
+                <field name="has_proxy_properties" type="NX_BOOLEAN">
+                    <doc>
+                         Like has_object_properties but for the proxies.
+                    </doc>
+                </field>
+                <field name="has_proxy_obb" type="NX_BOOLEAN">
+                    <doc>
+                         Like has_object_obb but for the proxies.
+                    </doc>
+                </field>
+                <field name="has_proxy_ions" type="NX_BOOLEAN">
+                    <doc>
+                         Like has_object_ions but for the proxies.
+                    </doc>
+                </field>
+                <field name="has_proxy_edge_contact" type="NX_BOOLEAN">
+                    <doc>
+                         Like has_object_edge_contact but for the proxies.
+                    </doc>
+                </field>
+                <field name="has_object_proxigram" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report for each closed object a (cylindrical) region-of-interest (ROI) that gets
+                         placed, centered, and aligned with the local normal for each triangle of the object.
+                    </doc>
+                </field>
+                <field name="has_object_proxigram_edge_contact" type="NX_BOOLEAN">
+                    <doc>
+                         Specifies if the tool should report for each ROI that was placed at a triangle of each object if this ROI intersects
+                         with the edge the dataset. Currently, the tool supports cylindrical ROIs. A computational geometry test is
+                         performed to check for a possible intersection of each ROI with the triangulated surface mesh that is defined
+                         via surface. Results of this cylinder-set-of-triangles intersection are interpreted as follows:
+                         If the cylinder intersects with at least one triangle of the surface (mesh) the ROI is assumed to make edge contact.
+                         Otherwise, the ROI is assumed to make  no edge contact.
+                         
+                         Users should note that this approach does not work if the ROI is laying completely outside the dataset as also
+                         in this case the cylinder intersects with any triangle. However, for atom probe this case is practically irrelevant
+                         provided constructions such as alpha shapes or alpha wrappings (such as paraproeb-surfacer does) about the
+                         ions of the entire reconstructed volume are used.
+                    </doc>
+                </field>
+            </group>
+        </group>
+        <!--has_object_mesh_smoothing(NX_BOOLEAN):
+  doc: Specifies if the tool should post-process each mesh to improve the mesh quality.
+mesh_smoothing(NXprocess):
+NEW ISSUE: here we need to specify how the meshes were smoothened-->
+        <group name="interface_meshing" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="1">
+            <doc>
+                 Use a principle component analysis (PCA) to mesh a single free-standing interface patch within
+                 the reconstructed volume that is decorated by ions of specific iontypes (e.g. solute atoms).
+                 
+                 Interface_meshing is a typical starting point for the quantification of Gibbsian interfacial excess
+                 in cases when closed objects constructed from patches e.g. iso-surfaces are not available or
+                 when there is no substantial or consistently oriented concentration gradients across an interface
+                 patch. The functionality can also be useful when the amount of latent crystallographic information
+                 within the point cloud is insufficient or when combined with interface_meshing based on ion density
+                 traces in field-desorption maps (see `Y. Wei et al. &lt;https://doi.org/10.1371/journal.pone.0225041&gt;`_
+                 and `A. Breen et al. &lt;https://github.com/breen-aj/detector&gt;`_ for details).
+                 
+                 Noteworthy to mention is that the method used is conceptually similar to the work of `Z. Peng et al. &lt;https://doi.org/10.1017/S1431927618016112&gt;`_ and related work (DCOM algorithm) by `P. Felfer et al. &lt;https://doi.org/10.1016/j.ultramic.2015.06.002&gt;`_. Compared to these implementations
+                 paraprobe-nanochem uses inspection functionalities which detect potential geometric
+                 inconsistencies or self-interactions of the evolved DCOM mesh.
+            </doc>
+            <group type="NXidentifier" optional="true"/>
+            <field name="analysis_identifier" type="NX_UINT" recommended="true"/>
+            <group name="reconstruction" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="position" type="NX_CHAR"/>
+                <field name="mass_to_charge" type="NX_CHAR"/>
+            </group>
+            <group name="ranging" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="ranging_definitions" type="NX_CHAR"/>
+            </group>
+            <group name="surface" type="NXserialized" optional="true">
+                <doc>
+                     A precomputed triangulated surface mesh representing a model (of the surface)
+                     of the edge of the dataset. This model can be used to detect and control
+                     various sources of bias in the analyses.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="vertices" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the array
+                         of vertex positions for the triangles in that triangle_set.
+                    </doc>
+                </field>
+                <field name="indices" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the array
+                         of vertex indices for the triangles in that triangle_set.
+                    </doc>
+                </field>
+            </group>
+            <group name="spatial_filter" type="NXspatial_filter">
+                <field name="windowing_method" type="NX_CHAR"/>
+                <group name="hexahedron_set" type="NXcg_hexahedron_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <group name="hexahedra" type="NXcg_face_list_data_structure">
+                        <field name="vertices" type="NX_UINT"/>
+                    </group>
+                </group>
+                <group name="cylinder_set" type="NXcg_cylinder_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="height" type="NX_NUMBER"/>
+                    <field name="radii" type="NX_NUMBER"/>
+                </group>
+                <group name="ellipsoid_set" type="NXcg_ellipsoid_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="half_axes_radii" type="NX_NUMBER"/>
+                    <field name="orientation" type="NX_NUMBER"/>
+                </group>
+                <group name="polyhedron_set" type="NXcg_polyhedron_set" optional="true"/>
+                <!--TODO-->
+                <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
+                    <field name="number_of_objects" type="NX_UINT"/>
+                    <field name="bitdepth" type="NX_UINT"/>
+                    <field name="mask" type="NX_UINT"/>
+                </group>
+            </group>
+            <!--leave open if scalar or matrix
+  dim: (i,)
+identifier(NX_UINT):-->
+            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
+                <field name="min_incr_max" type="NX_INT"/>
+            </group>
+            <group name="iontype_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <!--config-->
+            <field name="initialization" type="NX_CHAR">
+                <doc>
+                     How is the PCA initialized:
+                     
+                     * default, means based on segregated solutes in the ROI
+                     * control_point_file, means based on reading an external list of
+                       control points, currently coming from the Leoben APT_Analyzer.
+                     
+                     The control_point_file is currently expected with a specific format.
+                     The Leoben group lead by L. Romaner has developed a GUI tool `A. Reichmann et al. &lt;https://github.com/areichm/APT_analyzer&gt;`_ creates a control_point_file that
+                     can be parsed by paraprobe-parmsetup-nanochem to match the here required
+                     formatting in control_points.
+                </doc>
+                <enumeration>
+                    <item value="default"/>
+                    <item value="control_point_file"/>
+                </enumeration>
+            </field>
+            <group name="control_point" type="NXserialized">
+                <doc>
+                     Details about the control point file used.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="control_points" type="NX_CHAR">
+                    <doc>
+                         X, Y, Z position matrix of disjoint control points.
+                    </doc>
+                </field>
+            </group>
+            <field name="method" type="NX_CHAR">
+                <doc>
+                     Method used for identifying and refining the location of the interface. Currently,
+                     paraprobe-nanochem implements a PCA followed by an iterative loop of isotropic
+                     mesh refinement and DCOM step(s), paired with self-intersection detection.
+                </doc>
+                <enumeration>
+                    <item value="pca_plus_dcom"/>
+                </enumeration>
+            </field>
+            <group name="decoration_filter" type="NXmatch_filter">
+                <doc>
+                     Specify those nuclides which the tool should inspect iontypes for if they contain such nuclides.
+                     If this is the case ions of such type are taken with the number of nuclides of this multiplicity found.
+                     The atoms of these ions are assumed to serve as useful markers for locating the interface and
+                     refining the interface mesh.
+                </doc>
+                <field name="method" type="NX_CHAR">
+                    <enumeration>
+                        <item value="whitelist"/>
+                    </enumeration>
+                </field>
+                <field name="match" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Array of nuclide iontypes to filter.
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="n_fct_filter_cand"/>
+                        <dim index="2" value="n_ivec_max"/>
+                    </dimensions>
+                </field>
+            </group>
+            <field name="number_of_iterations" type="NX_UINT" units="NX_UNITLESS">
+                <doc>
+                     How many times should the DCOM and mesh refinement be applied?
+                </doc>
+            </field>
+            <field name="target_edge_length" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     Array of decreasing positive not smaller than one nanometer real values
+                     which specify how the initial triangles of the mesh should be iteratively
+                     refined by edge splitting and related mesh refinement operations.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_fct_iterations"/>
+                </dimensions>
+            </field>
+            <field name="target_dcom_radius" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     Array of decreasing positive not smaller than one nanometer real values
+                     which specify the radius of the spherical region of interest within which the
+                     DCOM algorithm decides for each vertex how the vertex might be relocated.
+                     
+                     The larger it is the DCOM radius in relation to the target_edge_length the more
+                     likely it becomes that vertices will be relocated so substantially that triangle
+                     self-intersections may occur. The tool detects these and stops in a controlled
+                     manner so that the user can repeat the analyses with using a different parameterization.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_fct_iterations"/>
+                </dimensions>
+            </field>
+            <field name="target_smoothing_step" type="NX_UINT" units="NX_UNITLESS">
+                <doc>
+                     Array of integers which specify for each DCOM step how many times the mesh
+                     should be iteratively smoothened. Users should be aware that all three arrays
+                     target_edge_length, target_dcom_radius, and target_smoothing_step are interpreted
+                     in the same sequence, i.e. the zeroth entry of each array specifies the respective
+                     parameter values to be used in the first DCOM iteration. The first entry of each array
+                     those for the second DCOM iteration and so on and so forth.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_fct_iterations"/>
+                </dimensions>
+            </field>
+        </group>
+        <group name="oned_profile" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="1">
+            <doc>
+                 Analysis of one-dimensional profiles in ROIs placed in the dataset.
+                 Such analyses are useful for quantifying interfacial excess or for
+                 performing classical composition analyses.
+                 
+                 The tool will test for each ROIs if it is completely embedded in the dataset.
+                 Specifically, each such test evaluates if the ROI cuts at least one triangle
+                 of the triangulated surface mesh that is referred to by surface.
+                 If this is the case the ROI is marked as one close to the surface
+                 and not analyzed further. Otherwise, the ROI is marked as one far
+                 from the surface and processed further.
+                 
+                 For each ROI the tool computes atomically decomposed profiles.
+                 This means, molecular ions are splitted into nuclides as many times as
+                 their respective multiplicity. For each processed ROI the tool stores
+                 a sorted list of signed distance values to enable post-processing with
+                 other software like e.g. reporter to perform classical
+                 Krakauer/Seidman-style interfacial excess analyses.
+                 
+                 Users should be aware that the latter intersection analysis is not
+                 a volumetric intersection analysis. Given that the triangulated mesh
+                 referred to in surface is not required to mesh neither a watertight
+                 nor convex polyhedron a rigorous testing of volumetric intersection
+                 is much more involved. If the mesh is watertight one could use split
+                 the task in first tessellating the mesh into convex polyhedra (e.g.
+                 tetrahedra and apply a volumetric intersection method like the
+                 Gilbert-Johnson-Keerthi algorithm (GJK). In cases when the mesh is not
+                 even watertight distance-based segmentation in combination with again
+                 intersection of triangles and convex polyhedra is a robust but currently
+                 not implemented method to quantify intersections.
+            </doc>
+            <group type="NXidentifier" optional="true"/>
+            <field name="analysis_identifier" type="NX_UINT" recommended="true"/>
+            <group name="reconstruction" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="position" type="NX_CHAR"/>
+                <field name="mass_to_charge" type="NX_CHAR"/>
+            </group>
+            <group name="ranging" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="ranging_definitions" type="NX_CHAR"/>
+            </group>
+            <group name="surface" type="NXserialized" optional="true">
+                <doc>
+                     A precomputed triangulated surface mesh representing a model (of the surface)
+                     of the edge of the dataset. This model can be used to detect and control
+                     various sources of bias in the analyses.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="vertices" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the array
+                         of vertex positions for the triangles in that triangle_set.
+                    </doc>
+                </field>
+                <field name="indices" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the array
+                         of vertex indices for the triangles in that triangle_set.
+                    </doc>
+                </field>
+            </group>
+            <group name="surface_distance" type="NXserialized" recommended="true">
+                <doc>
+                     Distance between each ion and triangulated surface mesh.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="distance" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the distance values.
+                         The tool assumes that the values are stored in the same order as
+                         points (ions).
+                    </doc>
+                </field>
+            </group>
+            <group name="feature" type="NXserialized" optional="true">
+                <doc>
+                     A precomputed triangulated mesh of the feature representing a model of the
+                     interface at which to place ROIs to profile. This can be the mesh of an
+                     interface as returned e.g. by a previous interface_meshing task or the
+                     mesh of an iso-surface from a previous delocalization task.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="vertices" type="NX_CHAR">
+                    <doc>
+                         Absolute HDF5 path to the dataset that specifies the array of vertex positions.
+                    </doc>
+                </field>
+                <field name="indices" type="NX_CHAR">
+                    <doc>
+                         Absolute HDF5 path to the dataset that specifies the array of facet indices
+                         which refer to vertices.
+                    </doc>
+                </field>
+                <field name="facet_normals" type="NX_CHAR">
+                    <doc>
+                         Absolute HDF5 path to the dataset that  specifies the array of facet signed unit
+                         normals.
+                    </doc>
+                </field>
+                <field name="vertex_normals" type="NX_CHAR">
+                    <doc>
+                         Absolute HDF5 path to the dataset that specifies the array of vertex signed unit
+                         normals.
+                    </doc>
+                </field>
+                <!--triangulated surface meshes are only approximations to eventually curved shape of objects
+consequently, vertex and facet normals typically differ, the former are typically interpolated
+from normals of neighboring facets, type of weighting schemes can affect results quantitatively-->
+                <group name="patch_filter" type="NXmatch_filter" optional="true">
+                    <doc>
+                         If interface_model is isosurface this filter can be used to restrict the analysis to specific
+                         patches of an iso-surface.
+                    </doc>
+                    <field name="method" type="NX_CHAR"/>
+                    <field name="match" type="NX_NUMBER"/>
+                </group>
+            </group>
+            <group name="feature_distance" type="NXserialized" optional="true">
+                <doc>
+                     To enable an additional filtration of specific parts of the feature
+                     mesh it is recommended to feed precomputed distances of each ion to
+                     the triangles of the feature mesh.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="distance" type="NX_CHAR">
+                    <doc>
+                         Absolute path in the (HDF5) file that points to the distance values.
+                         The tool assumes that the values are stored in the same order as
+                         points (ions).
+                    </doc>
+                </field>
+            </group>
+            <group name="spatial_filter" type="NXspatial_filter">
+                <field name="windowing_method" type="NX_CHAR"/>
+                <group name="hexahedron_set" type="NXcg_hexahedron_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <group name="hexahedra" type="NXcg_face_list_data_structure">
+                        <field name="vertices" type="NX_UINT"/>
+                    </group>
+                </group>
+                <group name="cylinder_set" type="NXcg_cylinder_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="height" type="NX_NUMBER"/>
+                    <field name="radii" type="NX_NUMBER"/>
+                </group>
+                <group name="ellipsoid_set" type="NXcg_ellipsoid_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="half_axes_radii" type="NX_NUMBER"/>
+                    <field name="orientation" type="NX_NUMBER"/>
+                </group>
+                <group name="polyhedron_set" type="NXcg_polyhedron_set" optional="true"/>
+                <!--TODO-->
+                <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
+                    <field name="number_of_objects" type="NX_UINT"/>
+                    <field name="bitdepth" type="NX_UINT"/>
+                    <field name="mask" type="NX_UINT"/>
+                </group>
+            </group>
+            <!--leave open if scalar or matrix
+  dim: (i,)
+identifier(NX_UINT):-->
+            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
+                <field name="min_incr_max" type="NX_INT"/>
+            </group>
+            <group name="iontype_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <!--config-->
+            <group name="user_defined_roi" type="NXobject" optional="true">
+                <doc>
+                     As an alternative mode the tool can be instructed to place ROIs
+                     at specific locations into the dataset. This is the programmatic
+                     equivalent to the classical approach in atom probe to place ROIs
+                     for composition analyses via positioning and rotating them via
+                     a graphical user interface (such as in IVAS / AP Suite).
+                </doc>
+                <group name="cylinder_set" type="NXcg_cylinder_set">
+                    <!--dimensionality(NX_POSINT):
+cardinality(NX_POSINT):-->
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER">
+                        <dimensions rank="2">
+                            <dim index="1" value="n_rois"/>
+                            <dim index="2" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="height" type="NX_NUMBER">
+                        <dimensions rank="2">
+                            <dim index="1" value="n_rois"/>
+                            <dim index="2" value="3"/>
+                        </dimensions>
+                    </field>
+                    <field name="radii" type="NX_NUMBER">
+                        <dimensions rank="1">
+                            <dim index="1" value="n_rois"/>
+                        </dimensions>
+                    </field>
+                </group>
+            </group>
+            <!--could add other shapes in the future if necessary
+but cylinders are most frequently used-->
+            <field name="distancing_model" type="NX_CHAR">
+                <doc>
+                     Which type of distance should be reported for the profile.
+                </doc>
+                <enumeration>
+                    <item value="project_to_triangle_plane"/>
+                </enumeration>
+            </field>
+            <field name="roi_orientation" type="NX_CHAR">
+                <doc>
+                     For each ROI, along which direction should the cylindrical ROI
+                     be oriented if ROIs are placed at triangles of the feature mesh.
+                </doc>
+                <enumeration>
+                    <item value="triangle_outer_unit_normal"/>
+                </enumeration>
+            </field>
+            <field name="roi_cylinder_height" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     For each ROI, how high (projected onto the cylinder axis) should
+                     the cylindrical ROI be if ROIs are placed at triangles
+                     of the feature mesh.
+                </doc>
+            </field>
+            <field name="roi_cylinder_radius" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     For each ROI, how wide (in radius) should the cylindrical ROI
+                     be if ROIs are placed at triangles of the feature mesh.
+                </doc>
+            </field>
+        </group>
+        <group name="common" type="NXapm_paraprobe_tool_common">
+            <field name="status" type="NX_CHAR"/>
+            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <field name="program" type="NX_CHAR">
+                    <attribute name="version" type="NX_CHAR"/>
+                </field>
+            </group>
+            <group name="profiling" type="NXcs_profiling" recommended="true">
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="total_elapsed_time" type="NX_FLOAT"/>
+                <field name="current_working_directory" type="NX_CHAR"/>
+            </group>
+        </group>
+    </group>
+</definition>

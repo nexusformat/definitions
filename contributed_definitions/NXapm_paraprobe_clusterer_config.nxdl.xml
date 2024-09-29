@@ -1,0 +1,384 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_paraprobe_clusterer_config" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <!--n_positions: Number of position values.
+n_disjoint_clusters: Number of disjoint cluster.-->
+        <symbol name="n_ivec_max">
+            <doc>
+                 Maximum number of atoms per molecular ion. Should be 32 for paraprobe.
+            </doc>
+        </symbol>
+        <symbol name="n_clust_algos">
+            <doc>
+                 Number of clustering algorithms used.
+            </doc>
+        </symbol>
+        <symbol name="n_ions">
+            <doc>
+                 Number of different iontypes to distinguish during clustering.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for a configuration file of the paraprobe-clusterer tool.
+         
+         This tool is part of the paraprobe-toolbox. Inspect :ref:`NXapm_paraprobe_tool_config` for details.
+    </doc>
+    <group type="NXentry" minOccurs="1" maxOccurs="1">
+        <field name="definition" type="NX_CHAR">
+            <attribute name="version" type="NX_CHAR"/>
+            <enumeration>
+                <item value="NXapm_paraprobe_clusterer_config"/>
+            </enumeration>
+        </field>
+        <field name="number_of_tasks" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 How many cluster_analysis tasks should the tool execute.
+            </doc>
+        </field>
+        <group name="cameca_to_nexus" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="1">
+            <doc>
+                 This process maps results from a cluster analysis made with IVAS / AP Suite
+                 into an interoperable representation. IVAS / AP Suite usually exports such results
+                 as a list of reconstructed ion positions with one cluster label per position. 
+                 These labels are reported via the mass-to-charge-state-ratio column of what is effectively
+                 a binary file that is formatted like a POS file but cluster labels written out using floating
+                 point numbers.
+            </doc>
+            <group name="reconstruction" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="position" type="NX_CHAR"/>
+                <field name="mass_to_charge" type="NX_CHAR"/>
+            </group>
+            <group name="results" type="NXserialized">
+                <doc>
+                     File with the results of the cluster analyses that was computed with IVAS / AP suite
+                     (e.g. maximum-separation method clustering algorithm `J. Hyde et al. &lt;https://doi.org/10.1557/PROC-650-R6.6&gt;`_).
+                     The information is stored in an improper (.indexed.) POS file as a matrix of floating
+                     point quadruplets, one quadruplet for each ion. The first three values of each
+                     quadruplet encode the position of the ion. The fourth value is the integer identifier
+                     of the cluster encoded as a floating point number.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+            </group>
+            <field name="recover_evaporation_id" type="NX_BOOLEAN">
+                <doc>
+                     Specifies if paraprobe-clusterer should use the evaporation_ids from reconstruction
+                     for recovering for each position in the :ref:`NXserialized` results the closest matching position
+                     (within floating point accuracy). This can be useful when users wish to recover the 
+                     original evaporation_id, which IVAS /AP Suite drops when writing their *.indexed.* cluster
+                     results POS files that is referred to results.
+                </doc>
+            </field>
+        </group>
+        <!--recover_bitmask(NX_BOOLEAN):
+doc: |
+  Specifies if the tool should try to recover, after a recovery of the
+  evaporation IDs a bitmask which identifies which of the positions
+  in dataset/dataset/dataset_name_reconstruction where covered
+  by the IVAS/APSuite cluster analysis. This can be useful to recover
+   the region of interest.-->
+        <group name="cluster_analysisID" type="NXapm_paraprobe_tool_config" minOccurs="0" maxOccurs="unbounded">
+            <doc>
+                 This process performs a cluster analysis on a
+                 reconstructed dataset or a ROI within it.
+            </doc>
+            <group name="reconstruction" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="position" type="NX_CHAR"/>
+                <field name="mass_to_charge" type="NX_CHAR"/>
+            </group>
+            <group name="ranging" type="NXserialized">
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="ranging_definitions" type="NX_CHAR"/>
+            </group>
+            <group name="surface_distance" type="NXserialized" optional="true">
+                <doc>
+                     Distance between each ion and triangulated surface mesh.
+                </doc>
+                <field name="type" type="NX_CHAR"/>
+                <field name="path" type="NX_CHAR"/>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR"/>
+                <field name="distance" type="NX_CHAR"/>
+            </group>
+            <group name="spatial_filter" type="NXspatial_filter">
+                <field name="windowing_method" type="NX_CHAR"/>
+                <group name="hexahedron_set" type="NXcg_hexahedron_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <group name="hexahedra" type="NXcg_face_list_data_structure">
+                        <field name="vertices" type="NX_UINT"/>
+                    </group>
+                </group>
+                <group name="cylinder_set" type="NXcg_cylinder_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="height" type="NX_NUMBER"/>
+                    <field name="radii" type="NX_NUMBER"/>
+                </group>
+                <group name="ellipsoid_set" type="NXcg_ellipsoid_set" optional="true">
+                    <field name="dimensionality" type="NX_POSINT"/>
+                    <field name="cardinality" type="NX_POSINT"/>
+                    <field name="identifier_offset" type="NX_INT"/>
+                    <field name="center" type="NX_NUMBER"/>
+                    <field name="half_axes_radii" type="NX_NUMBER"/>
+                    <field name="orientation" type="NX_NUMBER"/>
+                </group>
+                <group name="polyhedron_set" type="NXcg_polyhedron_set" optional="true"/>
+                <!--TODO-->
+                <group name="bitmask" type="NXcs_filter_boolean_mask" optional="true">
+                    <field name="number_of_objects" type="NX_UINT"/>
+                    <field name="bitdepth" type="NX_UINT"/>
+                    <field name="mask" type="NX_UINT"/>
+                </group>
+            </group>
+            <!--leave open if scalar or matrix
+  dim: (i,)
+identifier(NX_UINT):-->
+            <group name="evaporation_id_filter" type="NXsubsampling_filter" optional="true">
+                <field name="min_incr_max" type="NX_INT"/>
+            </group>
+            <group name="iontype_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <group name="hit_multiplicity_filter" type="NXmatch_filter" optional="true">
+                <field name="method" type="NX_CHAR"/>
+                <field name="match" type="NX_NUMBER"/>
+            </group>
+            <!--config-->
+            <field name="ion_type_filter" type="NX_CHAR">
+                <doc>
+                     How should iontypes be considered during the cluster analysis.
+                     
+                     The value resolve_all will set an ion active
+                     in the analysis regardless of which iontype it is.
+                     
+                     The value resolve_unknown will set an ion active
+                     when it is of the UNKNOWNTYPE.
+                     
+                     The value resolve_ion will set an ion active
+                     if it is of the specific iontype, irregardless of its nuclide structure.
+                     
+                     The value resolve_element will set an ion active and account as many times
+                     for it, as the (molecular) ion contains atoms of elements in the whitelist
+                     ion_query_nuclide_vector.
+                     
+                     The value resolve_isotope will set an ion active and account as many times
+                     for it, as the (molecular) ion contains nuclides in the whitelist
+                     ion_query_nuclide_vector.
+                     
+                     In effect, ion_query_nuclide_vector acts as a whitelist to filter which ions are
+                     considered as source ions of the correlation statistics and how the multiplicity
+                     of each ion will be factorized.
+                     
+                     This is relevant as in atom probe we have the situation that an ion of a molecular
+                     ion with more than one nuclide, say Ti O for example is counted potentially several
+                     times because at that position (reconstructed) position it has been assumed  that
+                     there was a Ti and an O atom. This multiplicity affects the size of the feature and its
+                     chemical composition.
+                </doc>
+                <!--enumeration: [resolve_all, resolve_unknown, resolve_ion, resolve_element, resolve_isotope]-->
+                <enumeration>
+                    <item value="resolve_element"/>
+                </enumeration>
+            </field>
+            <field name="ion_query_nuclide_vector" type="NX_UINT" units="NX_UNITLESS">
+                <doc>
+                     Matrix of nuclide vectors, as many as rows as different candidates
+                     for iontypes should be distinguished as possible source iontypes.
+                     In the simplest case, the matrix contains only the proton number
+                     of the element in the row, all other values set to zero.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="n_ions"/>
+                    <dim index="2" value="n_ivec_max"/>
+                </dimensions>
+            </field>
+            <!--which clustering algorithms to execute?-->
+            <group name="dbscan" type="NXprocess">
+                <doc>
+                     Settings for DBScan clustering algorithm. For original details about the
+                     algorithm and (performance-relevant) details consider:
+                     
+                     * `M. Ester et al. &lt;https://dx.doi.org/10.5555/3001460.3001507&gt;`_
+                     * `M. Götz et al. &lt;https://dx.doi.org/10.1145/2834892.2834894&gt;`_
+                     
+                     For details about how the DBScan algorithms is the key behind the
+                     specific modification known as the maximum-separation method in the
+                     atom probe community consider `E. Jägle et al. &lt;https://dx.doi.org/10.1017/S1431927614013294&gt;`_
+                </doc>
+                <field name="high_throughput_method" type="NX_CHAR">
+                    <doc>
+                         Strategy how a set of cluster analyses with different parameter is executed:
+                         
+                         * For tuple as many runs are performed as parameter values have been defined.
+                         * For combinatorics individual parameter arrays are looped over.
+                         
+                         As an example we may provide ten entries for eps and three entries for min_pts.
+                         If high_throughput_method is set to tuple, the analysis is invalid because we have
+                         an insufficient number of min_pts values to pair them with our ten eps values.
+                         By contrast, if high_throughput_method is set to combinatorics, the tool will run three
+                         individual min_pts runs for each eps value, resulting in a total of 30 analyses.
+                         
+                         A typical example from the literature `M. Kühbach et al. &lt;https://dx.doi.org/10.1038/s41524-020-00486-1&gt;`_
+                         can be instructed via setting eps to an array of values np.linspace(0.2, 5.0, nums=241, endpoint=True),
+                         one min_pts value that is equal to 1, and high_throughput_method set to combinatorics.
+                    </doc>
+                    <enumeration>
+                        <item value="tuple"/>
+                        <item value="combinatorics"/>
+                    </enumeration>
+                </field>
+                <field name="eps" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Array of epsilon (eps) parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="i"/>
+                    </dimensions>
+                </field>
+                <field name="min_pts" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Array of minimum points (min_pts) parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+            </group>
+            <!--THE IDEA BEHIND paraprobe-clusterer is that users can run a number of cluster analyses
+on their dataset on exactly the same point cloud and under the same conditions
+optics(NXprocess):
+  doc: |
+    Settings for the OPTICS clustering algorithm.
+
+    * `M. Ankerest et al. <https://dx.doi.org/10.1145/304181.304187>`_
+  high_throughput_method(NX_CHAR):
+    doc: |
+      Strategy how runs with different parameter values are composed,
+      following the explanation for higih_throughput_method of dbscan.
+    enumeration: [tuple, combinatorics]
+  min_pts(NX_UINT):
+    doc: |
+      Array of minimum points (min_pts) parameter values.
+    unit: NX_UNITLESS
+    dim: (i,)
+  max_eps(NX_FLOAT):
+    doc: |
+      Array of maximum epsilon (eps) parameter values.
+    unit: NX_LENGTH
+    dim: (j,)-->
+            <group name="hdbscan" type="NXprocess">
+                <doc>
+                     Settings for the HPDBScan clustering algorithm.
+                     
+                     * L. McInnes et al. &lt;https://dx.doi.org/10.21105/joss.00205&gt;`_
+                     * scikit-learn hdbscan library `&lt;https://hdbscan.readthedocs.io/en/latest/how_hdbscan_works.html&gt;`_
+                     
+                     See also this documentation for details about the parameter.
+                     Here we use the terminology of the hdbscan documentation.
+                </doc>
+                <field name="high_throughput_method" type="NX_CHAR">
+                    <doc>
+                         Strategy how runs with different parameter values are composed,
+                         following the explanation for higih_throughput_method of dbscan.
+                    </doc>
+                    <enumeration>
+                        <item value="tuple"/>
+                        <item value="combinatorics"/>
+                    </enumeration>
+                </field>
+                <field name="min_cluster_size" type="NX_NUMBER" units="NX_ANY">
+                    <doc>
+                         Array of min_cluster_size parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="i"/>
+                    </dimensions>
+                </field>
+                <field name="min_samples" type="NX_NUMBER" units="NX_ANY">
+                    <doc>
+                         Array of min_samples parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="j"/>
+                    </dimensions>
+                </field>
+                <field name="cluster_selection_epsilon" type="NX_NUMBER" units="NX_ANY">
+                    <doc>
+                         Array of cluster_selection parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="k"/>
+                    </dimensions>
+                </field>
+                <field name="alpha" type="NX_NUMBER" units="NX_ANY">
+                    <doc>
+                         Array of alpha parameter values.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="m"/>
+                    </dimensions>
+                </field>
+            </group>
+        </group>
+        <!--ADD FURTHER ALGORITHMS, see L. Stephenson for further details
+e.g. https://doi.org/10.1017/S1431927607070900-->
+        <group name="common" type="NXapm_paraprobe_tool_common">
+            <field name="status" type="NX_CHAR"/>
+            <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <field name="program" type="NX_CHAR">
+                    <attribute name="version" type="NX_CHAR"/>
+                </field>
+            </group>
+            <group name="profiling" type="NXcs_profiling" recommended="true">
+                <field name="start_time" type="NX_DATE_TIME"/>
+                <field name="end_time" type="NX_DATE_TIME"/>
+                <field name="total_elapsed_time" type="NX_FLOAT"/>
+                <field name="current_working_directory" type="NX_CHAR"/>
+            </group>
+        </group>
+    </group>
+</definition>
