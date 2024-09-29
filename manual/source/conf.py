@@ -48,7 +48,8 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.todo',
     'sphinx_tabs.tabs',
-    'contrib_ext'
+    'contrib_ext',
+    'sphinx_gallery.gen_gallery'
 ]
 
 # Show `.. todo` directives in the output
@@ -108,4 +109,10 @@ latex_elements = {
     \DeclareUnicodeCharacter{1F517}{X}
     \DeclareUnicodeCharacter{2906}{<=}
     \listfiles'''
+}
+
+# -- Options the gallery -------------------------------------------------
+sphinx_gallery_conf = {
+    'examples_dirs': '../../galleries/nxdata',  # path with .py files
+    'gallery_dirs': 'classes/base_classes/data',  # path where to save gallery generated output
 }
