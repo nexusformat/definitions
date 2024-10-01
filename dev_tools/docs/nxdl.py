@@ -14,6 +14,7 @@ from ..globals.nxdl import NXDL_NAMESPACE
 from ..globals.urls import REPO_URL
 from ..utils.github import get_file_contributors_via_api
 from ..utils.nxdl_utils import get_inherited_nodes
+from ..utils.nxdl_utils import get_rst_formatted_name
 from ..utils.types import PathLike
 from .anchor_list import AnchorRegistry
 
@@ -564,13 +565,14 @@ class NXClassDocGenerator:
 
     def _print_attribute(self, ns, kind, node, optional, indent, parent_path):
         name = node.get("name")
+        formatted_name = get_rst_formatted_name(node)
         index_name = name
         self._print(
             f"{indent}" f"{self._hyperlink_target(parent_path, name, 'attribute')}"
         )
         self._print(f"{indent}.. index:: {index_name} ({kind} attribute)\n")
         self._print(
-            f"{indent}**@{name}**: {optional}{self._format_type(node)}{self._format_units(node)} {self.get_first_parent_ref(f'{parent_path}/{name}', 'attribute')}\n"
+            f"{indent}{formatted_name}: {optional}{self._format_type(node)}{self._format_units(node)} {self.get_first_parent_ref(f'{parent_path}/{name}', 'attribute')}\n"
         )
         self._print_doc_enum(indent, ns, node)
 
@@ -592,6 +594,7 @@ class NXClassDocGenerator:
         """
         for node in parent.xpath("nx:field", namespaces=ns):
             name = node.get("name")
+            formatted_name = get_rst_formatted_name(node)
             index_name = name
             dims = self._analyze_dimensions(ns, node)
 
@@ -599,7 +602,7 @@ class NXClassDocGenerator:
             self._print(f"{indent}{self._hyperlink_target(parent_path, name, 'field')}")
             self._print(f"{indent}.. index:: {index_name} (field)\n")
             self._print(
-                f"{indent}**{name}**: "
+                f"{indent}{formatted_name}: "
                 f"{optional_text}"
                 f"{self._format_type(node)}"
                 f"{dims}"
@@ -624,6 +627,7 @@ class NXClassDocGenerator:
 
         for node in parent.xpath("nx:group", namespaces=ns):
             name = node.get("name", "")
+            formatted_name = get_rst_formatted_name(node)
             typ = node.get("type", "untyped (this is an error; please report)")
 
             optional_text = self._get_required_or_optional_text(node)
@@ -636,7 +640,7 @@ class NXClassDocGenerator:
             # TODO: https://github.com/nexusformat/definitions/issues/1057
             self._print(f"{indent}{hTarget}")
             self._print(
-                f"{indent}**{name}**: {optional_text}{typ} {self.get_first_parent_ref(f'{parent_path}/{name}', 'group')}\n"
+                f"{indent}{formatted_name}: {optional_text}{typ} {self.get_first_parent_ref(f'{parent_path}/{name}', 'group')}\n"
             )
 
             self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
@@ -664,9 +668,10 @@ class NXClassDocGenerator:
 
         for node in parent.xpath("nx:link", namespaces=ns):
             name = node.get("name")
+            formatted_name = get_rst_formatted_name(node)
             self._print(f"{indent}{self._hyperlink_target(parent_path, name, 'link')}")
             self._print(
-                f"{indent}**{name}**: "
+                f"{indent}{formatted_name}: "
                 ":ref:`link<Design-Links>` "
                 f"(suggested target: ``{node.get('target')}``)"
                 "\n"

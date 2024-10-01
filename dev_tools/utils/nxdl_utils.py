@@ -3,6 +3,7 @@
 """
 
 import os
+import re
 import textwrap
 from functools import lru_cache
 from glob import glob
@@ -839,3 +840,59 @@ def get_node_at_nxdl_path(
                 "Please check this entry in the template dictionary."
             )
     return elem
+
+
+def get_rst_formatted_name(node):
+    """Return the RST formatted name of the node (field, group, link or attribute).
+
+    The formatting is determined as follows:
+
+    - all characters are bold formatted
+    - substitutable characters are bold and italic formatted
+    - attributes start with a bold "@" character
+    """
+    name = node.get("name", "")
+    nameType = node.get("nameType", "")
+
+    node_type = get_local_name_from_xml(node)
+
+    if not name and node_type == "group":
+        # Derive the name from the type without the NX prefix
+        group_type = node.get("type", "")
+        name = group_type.lstrip("NX").upper()
+        if not nameType:
+            nameType = "any"
+
+    # Characters that are NOT substitutable
+    fixstart = "**"
+    fixstop = "**"
+
+    # Characters that are substitutable
+    varstart = "*" # TODO: should be bolditalic instead of italic
+    varstop = "*"
+
+    if nameType == "any":
+        # Formatting: bold and italicized
+        if node_type == "attribute":
+            return fr"{fixstart}@{fixstop}\ {varstart}{name}{varstop}"
+        else:
+            return f"{varstart}{name}{varstop}"
+
+    if nameType == "partial":
+        # Formatting: bold and capital letters italicized
+        substrings = _SPLIT_NAMETYPE_PARTIAL.findall(name)
+        formatted_parts = [
+            f"{varstart}{s}{varstop}" if s.isupper() else f"{fixstart}{s}{fixstop}" for s in substrings
+        ]
+        if node_type == "attribute":
+            formatted_parts.insert(0, f"{fixstart}@{fixstop}")
+        return r"\ ".join(formatted_parts)
+
+    # Formatting: bold only
+    if node_type == "attribute":
+        return f"{fixstart}@{name}{fixstop}"
+    else:
+        return f"{fixstart}{name}{fixstop}"
+
+
+_SPLIT_NAMETYPE_PARTIAL = re.compile(r"[A-Z]+|[^A-Z]+")
