@@ -868,13 +868,13 @@ def get_rst_formatted_name(node):
     fixstop = "**"
 
     # Characters that are substitutable
-    varstart = "*" # TODO: should be bolditalic instead of italic
+    varstart = "*"  # TODO: should be bolditalic instead of italic
     varstop = "*"
 
     if nameType == "any":
         # Formatting: bold and italicized
         if node_type == "attribute":
-            return fr"{fixstart}@{fixstop}\ {varstart}{name}{varstop}"
+            return rf"{fixstart}@{fixstop}\ {varstart}{name}{varstop}"
         else:
             return f"{varstart}{name}{varstop}"
 
@@ -882,7 +882,8 @@ def get_rst_formatted_name(node):
         # Formatting: bold and capital letters italicized
         substrings = _SPLIT_NAMETYPE_PARTIAL.findall(name)
         formatted_parts = [
-            f"{varstart}{s}{varstop}" if s.isupper() else f"{fixstart}{s}{fixstop}" for s in substrings
+            f"{varstart}{s}{varstop}" if s.isupper() else f"{fixstart}{s}{fixstop}"
+            for s in substrings
         ]
         if node_type == "attribute":
             formatted_parts.insert(0, f"{fixstart}@{fixstop}")
