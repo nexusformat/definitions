@@ -21,6 +21,18 @@ Highlights of each release are described below.  For more details, see our wiki
 (https://github.com/nexusformat/definitions/wiki/Release-Notes)
 which provides links to the Release Notes (itemized list of changes) for any release.
 
+.. incoming change for next release
+
+  v2025.mm
+  ++++++++
+
+  for release sometime in *2025*
+
+  Maintenance
+  -----------
+
+  * Add nameType="partial" to NXDL schema.
+  * Use 'nameType' attribute in fields, groups, and attributes.
 
 v2024.02
 ++++++++
