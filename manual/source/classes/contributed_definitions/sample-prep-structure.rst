@@ -16,5 +16,3 @@ Virtually all experiments require a preparation of the sample. As most technique
 techniques is the key to successful experiments. Unfortunately, the quality of such processes is often difficult to reproduce. Nevertheless, documenting how samples
 are prepared is relevant. This part of the proposal provides prototypes how descriptions of steps performed by human or robots in a lab could be described using NeXus.
 
-    :ref:`NXlab_electro_chemo_mechanical_preparation`, :ref:`NXlab_sample_mounting`:
-        Prototype application definitions for documenting steps during sample preparation.

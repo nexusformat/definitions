@@ -12,7 +12,11 @@ Photoemission & core-level spectroscopy
    MpesExtendedBC
 
 
-.. _IntroductionMpes-APP:
+
+EXAMPLE FOR DOCUMENTATION OF A GROUP OF APPLICATION DEFINITIONS
+
+
+. _IntroductionMpes-APP:
 
 Introduction
 ############
@@ -30,13 +34,4 @@ Application Definitions
 :ref:`NXmpes`:
    A general application definition with minimalistic metadata requirements, apt to describe all photoemission experiments.
 
-:ref:`NXmpes_arpes`:
-   An application definition for angle-resolved photoemission spectroscopy (ARPES) experiments.
-
-:ref:`NXxps`:
-   An application definition for X-ray/ultraviolet photoelectron spectroscopy (XPS/UPS) measurements.
-
-:ref:`NXarpes`:
-   An application definition for angle-resolved photoemission spectroscopy (ARPES) experiments. This definition is a legacy 
-   support for older NXarpes experiments. For newer experiments, the user is advised to use :ref:`NXmpes_arpes`:.”
 

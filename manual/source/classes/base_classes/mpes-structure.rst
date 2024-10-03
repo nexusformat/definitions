@@ -12,6 +12,10 @@ Photoemission & core-level spectroscopy
    MpesExtendedBC
 
 
+
+EXAMPLE FOR DOCUMENTATION OF A GROUP OF BASE CLASSES
+
+
 .. _IntroductionMpes-BC:
 
 Introduction
@@ -33,29 +37,10 @@ Base Classes
       :ref:`NXcollectioncolumn`:
          Base class to describe the set of electronic lenses in the electron collection column (standard, PEEM, momentum-microscope, etc.).
 
-      :ref:`NXenergydispersion`:
-         Base class to describe the energy dispersion sytem (hemispherical, time-of-flight, etc.).
 
-      :ref:`NXspindispersion`:
-         Base class to describe the set of electronic lenses in the electron collection column.
-
-:ref:`NXmanipulator`:
-   A base class to describe the complex manipulators used in photoemission experiments, often with > 4 degrees of freedom, 
-   cryogenic cooling and other advanced features.
 
 Four base classes to describe data processing, which can be used as subclasses of :ref:`NXprocess` if describing post-processing or as subclasses of :ref:`NXdetector` if describing live, electronics level processing:
 
-    :ref:`NXcalibration`:
-       A base class to describe the 1D calibration of an axis, with a function mapping a raw data scale to a calibrated scale with the same number of points.
-
-    :ref:`NXdistortion`:
-       A base class to describe the 2D distortion correction of an axis, with a matrix mapping a raw data image to a undistorted image.
-
-    :ref:`NXregistration`:
-       A base class to describe the rigid transformations that are applied to an image. May be redundant as they can be described with :ref:`NXtransformations`.
-      
-    :ref:`NXprocess_mpes`:
-       A base class specializing :ref:`NXprocess`, describing events of data processing, reconstruction, or analysis for photoemission-related data.
 
 .. _MpesCommonBC-BC:
 
@@ -64,14 +49,3 @@ Common Base Classes
 
 There are related base classes that are common to other techniques:
 
-    :ref:`NXlens_em`:
-       A class to describe all types of lenses. Includes electrostatic lenses for electron energy analysers.
-
-    :ref:`NXdeflector`
-       A class to describe all kinds of deflectors, including electrostatic and magnetostatic deflectors for electron energy analysers.
-
-    :ref:`NXresolution`:
-      Describes the resolution of a physical quantity, e.g. the resolution of the MPES spectrometer.
-      
-    :ref:`NXfit`, :ref:`NXpeak`, :ref:`NXfit_background`, :ref:`NXfit_function`, :ref:`NXfit_parameter`:
-      Base classes for describing a fit procedure, e.g. a peak fitting in energy space in XPS.

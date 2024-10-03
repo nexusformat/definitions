@@ -10,6 +10,10 @@ Optical Spectroscopy
    DispersiveMaterial
 
 
+
+EXAMPLE FOR DOCUMENTATION OF A GROUP OF BASE CLASSES
+
+
 .. _Ellipsometry-BC:
 
 Ellipsometry
@@ -36,28 +40,15 @@ The application definition contains a minimum of descriptive elements required t
 Application Definitions
 -----------------------
 
-    :ref:`NXoptical_spectroscopy`:
-       A generic application definition for spectroscopy measurements. This includes in particular ellipsometry and Raman spectroscopy measurements, but also other techniques such as photoluminescence, transmission, and reflection measurements. The requirements are: (i) an incident photon beam, (ii) a detector to measure scattered/emitted photons, and (iii) a sample.
-
     :ref:`NXellipsometry`:
        An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry.
 
-    :ref:`NXraman`:
-       An application definition for Raman spectroscopy measurements.
 
 
 Base Classes
 ------------
 
 This is the set of base classes for describing an optical experiment.
-
-    :ref:`NXbeam_device`
-       Beam devices are used to relate a beam, which has always at least one origin
-       and at least one destination. 
-       
-       By referencing the beam devices with each other, a beam path can be
-       constructed. This can be used for vizualization or beam propery modeling
-       along the beam path.
 
     :ref:`NXbeam`
       Beam properties such as intensity, polarization, wavelength or direction.
@@ -70,12 +61,6 @@ This is the set of base classes for describing an optical experiment.
 
     :ref:`NXmonochromator`
       A monochromator is often used to energetically disperse the scattered or emitted light.
-
-    :ref:`NXlens_opt`
-       Description of an optical lens.
-       
-    :ref:`NXwaveplate`
-       A waveplate or retarder.
 
     :ref:`NXsensor`
        Specify external parameters that have influenced the sample such as

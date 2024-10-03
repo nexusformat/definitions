@@ -43,11 +43,11 @@ The following base classes are proposed to support modularizing the storage of p
         A chamber may offer a controlled atmosphere to execute an experiment and/or offer functionalities
         for storing and loading specimens.
 
-    :ref:`NXcoordinate_system_set`, :ref:`NXcoordinate_system`:
+    :ref:`NXcoordinate_system_set`:
         Base classes to describe different coordinate systems used and/or to be harmonized
         or transformed into one another when interpreting the dataset.
 
-    :ref:`NXion`: (about to become replaced by :ref:`NXatom_set`)
+    :ref:`NXion`:
        A base class to describe molecular ions with an adjustable number of atoms/isotopes building each ion.
        For the usage in atom probe research the maximum number of atoms supported building a molecular ion
        is currently set to a maximum of 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with
@@ -57,28 +57,6 @@ The following base classes are proposed to support modularizing the storage of p
         A base class to bundle manufacturer/technology-partner-specific details about
         a component or device of an instrument.
 
-    :ref:`NXpeak`: (about to become complemented by NXpeak_fitting)
-        A base class to describe peaks mathematically to detail how peaks in
-        mass-to-charge-state ratio histograms (aka mass spectra) are defined and
-        labelled as iontypes.
-
-    :ref:`NXpump`:
-        A base class to describe details about pump(s) used as components of an instrument.
-
-    :ref:`NXpulser_apm`:
-        A base class to describe the high-voltage and/or laser pulsing capabilities.
-
-    :ref:`NXreflectron`:
-        A base class to describe a kinetic-energy-sensitive filtering device
-        for time-of-flight (ToF) mass spectrometry.
-
-    :ref:`NXstage_lab`:
-        A base class to describe the specimen fixture including the cryo-head.
-        Nowadays, stages of microscopes represent small-scale laboratory platforms.
-        Therefore, there is a need to define the characteristics of such stages in more detail,
-        especially in light of in-situ experiments. Many similarities exists between a stage
-        in an electron microscope and one in an atom probe instrument. Both offer fixture
-        functionalities and additional components for applying e.g. stimuli on the specimen.
 
 Microscopy experiments, not only taking into account those performed on commercial instruments, offer users to apply a set of
 data processing steps. Some of them are frequently applied on-the-fly. For now we represent these steps with specifically named
@@ -86,23 +64,6 @@ instances of the :ref:`NXprocess` base class.
 
 Several base classes were defined to document processing of atom probe data with established algorithms:
 
-    :ref:`NXapm_hit_finding`:
-        A base class to describe hit finding algorithm.
-
-    :ref:`NXapm_volt_and_bowl`:
-        A base class to describe the voltage-and-bowl correction.
-
-    :ref:`NXapm_charge_state_analysis`:
-        A base class to document the resolving of the charge_state.
-
-    :ref:`NXapm_reconstruction`:
-        A base class to document the tomographic reconstruction algorithm.
-
-    :ref:`NXapm_ranging`:
-        A base class to document the ranging process.
-
-    :ref:`NXapm_msr`, :ref:`NXapm_sim`:
-        Respective base classes that serve as templates to compose the :ref:`NXapm` application definition from.
 
 These base classes are examples that substantiate that data processing steps are essential to transform atom probe measurements or simulations into knowledge. Therefore, these steps should be documented
 to enable reproducible research, if possible even numerical reproducibility of the results, 
@@ -112,19 +73,6 @@ open-source community software can be modified to use descriptions of these comp
 A detailed inspection of spatial and other type of filters frequently used in analysis of atom probe
 data revealed that it is better to define atom-probe-agnostic reusable concepts for filters:
 
-    :ref:`NXspatial_filter`:
-        A base class proposing how a point cloud can be spatially filtered in a specific yet general manner.
-        This base class takes advantage of :ref:`NXcg_ellipsoid_set`, :ref:`NXcg_cylinder_set`,
-        and :ref:`NXcg_hexahedron_set` to cater for commonly used geometric primitives in atom probe.
-        The primitives are used for defining the shape and extent of a region of interest (ROI).
-
-    :ref:`NXsubsampling_filter`:
-        A base class for a filter that can also be used for specifying how entries
-        like ions can be filtered via sub-sampling.
-
-    :ref:`NXmatch_filter`:
-        A base class for a filter that can also be used for specifying how entries
-        like ions can be filtered based on their type or other descriptors like hit multiplicity.
 
 The respective research software here is the `paraprobe-toolbox <https://paraprobe-toolbox.readthedocs.io/>`_
 The software is developed by `M. Kühbach et al. <https://arxiv.org/abs/2205.13510>`_.
@@ -209,8 +157,6 @@ Base classes have been defined to group common pieces of information for each to
 toolbox. For each tool we define a pair of base classes. One for the configuration (input) side
 and one for the results (output) side:
 
-    :ref:`NXapm_paraprobe_tool_config`, :ref:`NXapm_paraprobe_tool_results`, :ref:`NXapm_paraprobe_tool_common`:
-     Configuration, results, and common parts respectively useful for the application definitions for tools of the paraprobe-toolbox.
 
 .. _ApmParaprobeAppDef:
 
@@ -221,51 +167,6 @@ NXapm_paraprobe application definitions are in fact pairs of application definit
 One for the configuration (input) side and one for the results (output) side. For each
 tool one such pair is proposed:
 
-    :ref:`NXapm_paraprobe_transcoder_config`, :ref:`NXapm_paraprobe_transcoder_results`:
-        Configuration and the results respectively of the paraprobe-transcoder tool.
-        Load POS, ePOS, APSuite APT, RRNG, RNG, and NeXus NXapm files.
-        Store reconstructed positions, ions, and charge states.
-
-    :ref:`NXapm_paraprobe_ranger_config`, :ref:`NXapm_paraprobe_ranger_results`:
-        Configuration and results respectively of the paraprobe-ranger tool.
-        Apply ranging definitions and explore possible molecular ions.
-        Store applied ranging definitions and combinatorial analyses of possible iontypes.
-
-    :ref:`NXapm_paraprobe_selector_config`, :ref:`NXapm_paraprobe_selector_results`:
-        Configuration and results respectively of the paraprobe-selector tool.
-        Defining complex spatial regions-of-interest to filter reconstructed datasets.
-        Store which points are inside or on the boundary of complex spatial regions-of-interest.
-
-    :ref:`NXapm_paraprobe_surfacer_config`, :ref:`NXapm_paraprobe_surfacer_results`:
-        Configuration and results respectively of the paraprobe-surfacer tool.
-        Create a model for the edge of a point cloud via convex hulls, alpha shapes, or alpha-wrappings.
-        Store triangulated surface meshes of models for the edge of a dataset.
-
-    :ref:`NXapm_paraprobe_distancer_config`, :ref:`NXapm_paraprobe_distancer_results`:
-        Configuration and results respectively of the paraprobe-distancer tool.
-        Compute and store analytical distances between ions to a set of triangles.
-
-    :ref:`NXapm_paraprobe_tessellator_config`, :ref:`NXapm_paraprobe_tessellator_results`:
-        Configuration and results respectively of the paraprobe-tessellator tool.
-        Compute and store Voronoi cells and properties of these for all ions in a dataset.
-
-    :ref:`NXapm_paraprobe_spatstat_config`, :ref:`NXapm_paraprobe_spatstat_results`:
-        Configuration and results respectively of the paraprobe-spatstat tool.
-        Compute spatial statistics on the entire or selected regions of the reconstructed dataset.
-
-    :ref:`NXapm_paraprobe_clusterer_config`, :ref:`NXapm_paraprobe_clusterer_results`:
-        Configuration and results resepctively of the paraprobe-clusterer tool.
-        Compute cluster analyses with established machine learning algorithms using CPU or GPUs.
-
-    :ref:`NXapm_paraprobe_nanochem_config`, :ref:`NXapm_paraprobe_nanochem_results`:
-        Configuration and results resepctively of the paraprobe-nanochem tool.
-        Compute delocalization, iso-surfaces, analyze 3D objects, composition profiles, and mesh interfaces.
-
-    :ref:`NXapm_paraprobe_intersector_config`, :ref:`NXapm_paraprobe_intersector_results`:
-        Configuration and results resepctively of the paraprobe-intersector tool.
-        Analyze volumetric intersections and proximity of 3D objects discretized as triangulated surface meshes
-        in continuum space to study the effect the parameterization of surface extraction algorithms on the resulting shape,
-        spatial arrangement, and colocation of 3D objects via graph-based techniques.
 
 .. _ApmGermanNfdi:
 
@@ -280,5 +181,3 @@ GmbH in Düsseldorf <https://github.com/eisenforschung/CompositionSpace>`_ by A.
 
 Specifically, within the IUC09 we refactored the code base behind the publication `A. Saxena et al. <https://dx.doi.org/10.1093/micmic/ozad086>`_ to better document its configuration, here as an example implemented like for  the above-mentioned paraprobe-toolbox using NeXus:
  
-    :ref:`NXapm_compositionspace_config`, :ref:`NXapm_compositionspace_results`:
-        Configuration and the results respectively of the CompositionSpace tool.
