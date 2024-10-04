@@ -310,9 +310,7 @@ def belongs_to(nxdl_elem, child, name, class_type=None, hdf_name=None):
         return True
     if not hdf_name:  # search for name fits is only allowed for hdf_nodes
         return False
-    name_any = (
-        "nameType" in child.attrib.keys() and child.attrib["nameType"] == "any"
-    ) or (
+    name_any = child.attrib["nameType"].get("nameType") == "any" or (
         get_local_name_from_xml(child) == "group"
         and "nameType" not in child.attrib.keys()
         and "name" not in child.attrib.keys()
@@ -325,9 +323,7 @@ def belongs_to_capital(params):
     """Checking continues for Upper case"""
     (act_htmlname, chk_name, name_any, nxdl_elem, child, name) = params
     # or starts with capital and no reserved words used
-    name_partial = (
-        "nameType" in child.attrib.keys() and child.attrib["nameType"] == "partial"
-    ) or (
+    name_partial = child.attrib["nameType"].get("nameType") == "partial" or (
         get_local_name_from_xml(child) == "group"
         and "nameType" not in child.attrib.keys()
         and "name" not in child.attrib.keys()
@@ -352,10 +348,7 @@ def belongs_to_capital(params):
                 and "nameType" not in child2.attrib.keys()
                 and "name" not in child2.attrib.keys()
             )
-            name_partial2 = (
-                "nameType" in child2.attrib.keys()
-                and child2.attrib["nameType"] == "partial"
-            )
+            name_partial2 = child2.attrib.get("nameType") == "partial"
             if name_partial2 or name_any2:
                 fit2 = get_nx_namefit(
                     chk_name,
@@ -849,17 +842,12 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
         if get_local_name_from_xml(child) == nexus_type and (
             nexus_type != "group" or get_nx_class(child) == hdf_class_name
         ):
-            name_any = (
-                "nameType" in child.attrib.keys() and child.attrib["nameType"] == "any"
-            ) or (
+            name_any = child.attrib.get("nameType") == "any" or (
                 nexus_type == "group"
                 and "nameType" not in child.attrib.keys()
                 and "name" not in child.attrib.keys()
             )
-            name_partial = (
-                "nameType" in child.attrib.keys()
-                and child.attrib["nameType"] == "partial"
-            )
+            name_partial = child.attrib.get("nameType") == "partial"
             if name_partial or name_any:
                 fit = get_nx_namefit(
                     hdf_name,
