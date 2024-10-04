@@ -10,6 +10,9 @@ Optical Spectroscopy
    DispersiveMaterial
 
 
+EXAMPLE FOR DOCUMENTATION OF A GROUP OF APPLICATION DEFINITIONS
+
+
 .. _Ellipsometry-APP:
 
 Ellipsometry
@@ -51,14 +54,6 @@ Base Classes
 
 This is the set of base classes for describing an optical experiment.
 
-    :ref:`NXbeam_device`
-       Beam devices are used to relate a beam, which has always at least one origin
-       and at least one destination. 
-       
-       By referencing the beam devices with each other, a beam path can be
-       constructed. This can be used for vizualization or beam propery modeling
-       along the beam path.
-
     :ref:`NXbeam`
       Beam properties such as intensity, polarization, wavelength or direction.
 
@@ -70,12 +65,6 @@ This is the set of base classes for describing an optical experiment.
 
     :ref:`NXmonochromator`
       A monochromator is often used to energetically disperse the scattered or emitted light.
-
-    :ref:`NXlens_opt`
-       Description of an optical lens.
-       
-    :ref:`NXwaveplate`
-       A waveplate or retarder.
 
     :ref:`NXsensor`
        Specify external parameters that have influenced the sample such as
