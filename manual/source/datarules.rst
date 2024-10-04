@@ -198,20 +198,22 @@ the prefixes reserved by NeXus.
     reserved prefixes; PDBX_
     reserved prefixes; SAS_
     reserved prefixes; SILX_
+    reserved prefixes; identifier
 
-============  ==================  ============================================  =============================================================
-prefix        use                 meaning                                       URL
-============  ==================  ============================================  =============================================================
-``BLUESKY_``  attributes          reserved for use by Bluesky project           https://blueskyproject.io
-``DECTRIS_``  attributes, fields  reserved for use by Dectris                   https://www.dectris.com
-``IDF_``      attributes          reserved for use by pulsedTD Muon definition  https://www.isis.stfc.ac.uk/Pages/nexus-definition-v27924.pdf
-``NDAttr``    attributes          reserved for use by EPICS area detector       https://github.com/areaDetector
-``NX``        NXDL class          for the class names used with NeXus groups    https://www.nexusformat.org
-``NX_``       attributes          reserved for use by NeXus                     https://www.nexusformat.org
-``PDBX_``     attributes          reserved for the US protein data bank         https://www.rcsb.org
-``SAS_``      attributes          reserved for use by canSAS                    https://www.cansas.org
-``SILX_``     attributes          reserved for use by silx                      https://www.silx.org
-============  ==================  ============================================  =============================================================
+============== ==================  ============================================  =============================================================
+prefix         use                 meaning                                       URL
+============== ==================  ============================================  =============================================================
+``BLUESKY_``   attributes          reserved for use by Bluesky project           https://blueskyproject.io
+``DECTRIS_``   attributes, fields  reserved for use by Dectris                   https://www.dectris.com
+``IDF_``       attributes          reserved for use by pulsedTD Muon definition  https://www.isis.stfc.ac.uk/Pages/nexus-definition-v27924.pdf
+``NDAttr``     attributes          reserved for use by EPICS area detector       https://github.com/areaDetector
+``NX``         NXDL class          for the class names used with NeXus groups    https://www.nexusformat.org
+``NX_``        attributes          reserved for use by NeXus                     https://www.nexusformat.org
+``PDBX_``      attributes          reserved for the US protein data bank         https://www.rcsb.org
+``SAS_``       attributes          reserved for use by canSAS                    https://www.cansas.org
+``SILX_``      attributes          reserved for use by silx                      https://www.silx.org
+``identifier`` attributes          reserved for unique identfier in groups       -
+============== ==================  ============================================  =============================================================
 
 .. index:: ! reserved suffixes
 
