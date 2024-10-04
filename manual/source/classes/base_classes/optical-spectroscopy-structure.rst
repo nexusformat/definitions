@@ -1,69 +1,71 @@
-.. _Ellipsometry-Structure:
+.. _Optical-Spectroscopy-Structure-BC:
 
-========================
+====================
 Optical Spectroscopy
-========================
+====================
 
 .. index::
-   Ellipsometry
-   DispersiveMaterial
+   Ellipsometry-BC
+   Raman-BC
+   DispersiveMaterial-BC
 
-EXAMPLE FOR DOCUMENTATION OF A GROUP OF BASE CLASSES
 
-
-.. _Ellipsometry:
+.. _Ellipsometry-BC:
 
 Ellipsometry
-##############
+############
 
 Ellipsometry is an optical characterization method to describe optical properties of interfaces and thickness of films.
 The measurements are based on determining how the polarization state of light changes upon transmission and reflection.
 Interpretation is based on Fresnel equations and numerical models of the optical properties of the materials.
 
-In the application definition we provide a minimum set of description elements allowing for a reproducible recording of ellipsometry measurements. 
+.. _Raman-BC:
 
+Raman
+############
 
-Application Definitions
------------------------
-
-    :ref:`NXoptical_spectroscopy`:
-       A generic application definition for optical spectroscopy measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
-
-    :ref:`NXellipsometry`:
-       An application definition for ellipsometry measurements, including complex systems up to variable angle spectroscopic ellipsometry. 
+Raman spectroscopy is a characterization method to analyze vibrational properties for liquids, gases, or solids. 
+The measurements is based on the inelastic light scattering due to the material's vibrations.
+Interpretation can be done based on peaks, which represent the phonon properties (intensity, center, width).
 
 Base Classes
 ------------
 
 This is the set of base classes for describing an optical experiment.
-            
-    :ref:`NXbeam_splitter`
-       A beam splitter, i.e. a device splitting the light into two or more beams.
+
+    :ref:`NXbeam_device`
+       Beam devices are used to relate a beam, which has always at least one origin
+       and at least one destination. 
        
-       Use two or more NXbeam_paths to describe the beam paths after the beam
-       splitter. In the dependency chain of the new beam paths, the first elements
-       each point to this beam splitter, as this is the previous element.
+       By referencing the beam devices with each other, a beam path can be
+       constructed. This can be used for vizualization or beam propery modeling
+       along the beam path.
 
-    :ref:`NXfiber`
-       An optical fiber, e.g. glass fiber.
+    :ref:`NXbeam`
+      Beam properties such as intensity, polarization, wavelength or direction.
 
-    :ref:`NXoptical_lens`
+    :ref:`NXdetector`
+      A detector for signal detection.
+
+    :ref:`NXsource`
+      A light source such as laser, lamp or LED.
+
+    :ref:`NXmonochromator`
+      A monochromator is often used to energetically disperse the scattered or emitted light.
+
+    :ref:`NXlens_opt`
        Description of an optical lens.
        
-    :ref:`NXpolarizer_opt`
-       An optical polarizer.
-
     :ref:`NXwaveplate`
        A waveplate or retarder.
 
-    :ref:`NXenvironment`
-       Specify external parameters that have influenced the sample,
-       such as the surrounding medium, and varied parameters e.g.
-       temperature, pressure, pH value, optical excitation etc.
+    :ref:`NXsensor`
+       Specify external parameters that have influenced the sample such as
+       varied parameters e.g. temperature, pressure, pH value, beam intensity, etc.
 
 
 
-.. _DispersiveMaterial:
+.. _DispersiveMaterial-BC:
 
 Dispersive Material
 ###################
@@ -71,16 +73,6 @@ Dispersive Material
 A dispersive material is a description for the optical dispersion of materials.
 This description may be used to store optical model data from an ellipsometric analysis 
 (or any other technique) or to build a database of optical constants for optical properties of materials.
-
-Application Definition
-----------------------
-
-    :ref:`NXdispersive_material`:
-       An application definition to describe the dispersive properties of a material.
-       The material may be isotropic, uniaxial or biaxial. Hence, it may contain up
-       to three dispersive functions or tables.
-
-
 
 Base Classes
 ------------
@@ -108,7 +100,7 @@ There is a set of base classes for describing a dispersion.
        ``A`` and ``B`` are repeated parameters in the formula above.
        
     :ref:`NXdispersion_table`
-       This describes a tabular dispersion where the permittivity is an array versus wavelength or energy.
+       This describes a tabular dispersion where the dielectric function is an array versus wavelength or energy.
 
 Formula Grammar
 ---------------
