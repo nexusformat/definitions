@@ -212,7 +212,7 @@ prefix         use                 meaning                                      
 ``PDBX_``      attributes          reserved for the US protein data bank         https://www.rcsb.org
 ``SAS_``       attributes          reserved for use by canSAS                    https://www.cansas.org
 ``SILX_``      attributes          reserved for use by silx                      https://www.silx.org
-``identifier`` attributes          reserved for unique identfier in groups       -
+``identifier`` fields          reserved for unique identfier in groups       -
 ============== ==================  ============================================  =============================================================
 
 .. index:: ! reserved suffixes
