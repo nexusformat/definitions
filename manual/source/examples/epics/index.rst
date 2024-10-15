@@ -216,6 +216,9 @@ to validate ...      ... use this XML Schema file
 ===================  ===================================
 ``attributes.xml``   `NDAttributes.xsd <https://github.com/areaDetector/ADCore/blob/master/XML_schema/NDAttributes.xsd>`_
 ``layout.xml``       `hdf5_xml_layout_schema.xsd <https://github.com/areaDetector/ADCore/blob/master/XML_schema/hdf5_xml_layout_schema.xsd>`_
+``nxdl.xsd``         `XMLSchema.xsd <https://www.w3.org/2012/04/XMLSchema.xsd>`_
+``nxdlTypes.xsd``    `XMLSchema.xsd <https://www.w3.org/2012/04/XMLSchema.xsd>`_
+any NXDL file        ``nxdl.xsd``
 ===================  ===================================
 
 .. _EPICS_Area_Detector.examples.python:
