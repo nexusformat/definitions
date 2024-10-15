@@ -199,6 +199,25 @@ were arrays rather than single values.  That was due to an error in the original
 This has been fixed in the ``attributes.xml`` file presented here.
 
 
+.. _EPICS_Area_Detector.examples.validate-xml:
+
+Validate the XML files
+**********************
+
+To validate an XML file, you'll need the associated ``.xsd`` (XML Schema) file,
+then use this command::
+
+   xmllint --noout --schema path/to/local/schema/file.xsd  file_to_validate.xml
+
+These are the XML Schema files to use:
+
+===================  ===================================
+to validate ...      ... use this XML Schema file
+===================  ===================================
+``attributes.xml``   `NDAttributes.xsd <https://github.com/areaDetector/ADCore/blob/master/XML_schema/NDAttributes.xsd>`_
+``layout.xml``       `hdf5_xml_layout_schema.xsd <https://github.com/areaDetector/ADCore/blob/master/XML_schema/hdf5_xml_layout_schema.xsd>`_
+===================  ===================================
+
 .. _EPICS_Area_Detector.examples.python:
 
 Python code to store an image in a NeXus file
