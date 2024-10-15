@@ -59,6 +59,11 @@ will close the file with the context.
 
         .. tab:: nexusformat
 
+            In the nexusformat version, these attributes are added automatically
+            when calling ``NXdata(y, x)`` with the first argument defining the
+            signal and the second the axes. With signals of higher rank, the
+            second argument would be a list of axes.
+
             .. literalinclude:: nexusformat/simple_example_basic_write.py
                 :tab-width: 4
                 :linenos:
@@ -98,6 +103,8 @@ extracting other useful stuff from the file.
 
         .. tab:: nexusformat
 
+            The nexusformat version prints the whole file as a tree.
+
             .. literalinclude:: nexusformat/simple_example_basic_read.py
                 :tab-width: 4
                 :linenos:
@@ -115,11 +122,23 @@ Output from ``simple_example_basic_read.py`` is shown next.
 .. compound::
 
     .. rubric:: Output from ``simple_example_basic_read.py``
+    .. tabs::
 
-    .. literalinclude:: output.txt
-	    :tab-width: 4
-	    :linenos:
-	    :language: text
+        .. tab:: nexusformat
+
+            The nexusformat version prints the whole file as a tree.
+
+            .. literalinclude:: nexusformat/output.txt
+                :tab-width: 4
+                :linenos:
+                :language: text
+
+        .. tab:: h5py
+
+            .. literalinclude:: output.txt
+                :tab-width: 4
+                :linenos:
+                :language: text
 
 downloads
 =========
