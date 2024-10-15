@@ -24,16 +24,16 @@ support library must create and set the ``NX_class`` attribute on each group.
 
     Examine the example code below for these key actions to create the structure:
 
-    =====================================   ================================  ================================================
-    action                                  nexusformat function              h5py function
-    =====================================   ================================  ================================================
-    create file & root (``/``) structure    ``nxopen(fileName, "w")``         ``h5py.File(fileName, "w")``
-    create ``/entry`` group                 ``f["entry"] = NXentry()``        ``f.create_group("entry")``
-    create ``/entry/mr_scan`` group         ``f["entry/mr_scan"] = Ndata()``  ``nxentry.create_group("mr_scan")``
-    store ``mr`` data                       ``NXfield(mr_arr, ...)``          ``nxdata.create_dataset("mr", data=mr_arr)``
-    store ``I00`` data                      ``NXfield(i00_arr, ...)``         ``nxdata.create_dataset("I00", data=i00_arr)``
-    add ``title``                           ``f["entry/title"] = ...``        ``nxentry.create_dataset("title", ...)``
-    =====================================   ================================  ================================================
+    =====================================   ================================================  ================================================
+    action                                  nexusformat function                              h5py function
+    =====================================   ================================================  ================================================
+    create file & root (``/``) structure    ``with nxopen(fileName, "w") as f:``              ``with h5py.File(fileName, "w") as f:``
+    create ``/entry`` group                 ``f["entry"] = NXentry()``                        ``nxentry = f.create_group("entry"); nxentry.attrs["NX_class"] = "NXentry"``
+    create ``/entry/mr_scan`` group         ``f["entry/mr_scan"] = NXdata(y, x)``             ``nxentry.create_group("mr_scan"); nxentry["mr_scan"].attrs["NX_class"] = "NXdata"``
+    store ``mr`` data                       ``x = NXfield(mr_arr, units="degrees", ...)``     ``nxdata.create_dataset("mr", data=mr_arr, units="degrees")``
+    store ``I00`` data                      ``y = NXfield(i00_arr, units="counts", ...)``     ``nxdata.create_dataset("I00", data=i00_arr, units="counts")``
+    add ``title``                           ``f["entry/title"] = ...``                        ``nxentry.create_dataset("title", ...)``
+    =====================================   ================================================  ================================================
 
 The ``title`` string is added to label the default plot.
 
