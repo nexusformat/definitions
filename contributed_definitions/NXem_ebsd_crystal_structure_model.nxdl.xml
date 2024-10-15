@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXem_ebsd_crystal_structure_model" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="n_hkl">
+            <doc>
+                 Number of reflectors (Miller crystallographic plane triplets).
+            </doc>
+        </symbol>
+        <symbol name="n_pos">
+            <doc>
+                 Number of atom positions.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Crystal structure phase models used for indexing Kikuchi pattern.
+         
+         This base class contains key metadata relevant to every physical
+         kinematic or dynamic diffraction model to be used for simulating
+         Kikuchi diffraction pattern.
+         The actual indexing of Kikuchi pattern however maybe use different
+         algorithms which build on these simulation results but evaluate different
+         workflows of comparing simulated and measured Kikuchi pattern to make
+         suggestions which orientation is the most likely (if any) for each
+         scan point investigated.
+         
+         Traditionally Hough transform based indexing has been the most frequently
+         used algorithm. More and more dictionary based alternatives are used.
+         Either way both algorithm need a crystal structure model.
+    </doc>
+    <!--for EBSD specifically we need to know the assumed crystal structure
+with assumed statistically distributed atoms, i.e. structure and atom
+positions-->
+    <field name="crystallographic_database_identifier">
+        <doc>
+             Identifier of an entry from crystallographic_database which was used
+             for creating this structure model.
+        </doc>
+    </field>
+    <field name="crystallographic_database">
+        <doc>
+             Name of the crystallographic database to resolve
+             crystallographic_database_identifier e.g. COD or others.
+        </doc>
+    </field>
+    <!--defined using which convention?-->
+    <field name="unit_cell_abc" type="NX_FLOAT" units="NX_LENGTH">
+        <doc>
+             Crystallography unit cell parameters a, b, and c.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="3"/>
+        </dimensions>
+    </field>
+    <!--defined using which convention?-->
+    <field name="unit_cell_alphabetagamma" type="NX_FLOAT" units="NX_ANGLE">
+        <doc>
+             Crystallography unit cell parameters alpha, beta, and gamma.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="3"/>
+        </dimensions>
+    </field>
+    <field name="unit_cell_volume" type="NX_FLOAT" units="NX_VOLUME">
+        <doc>
+             Volume of the unit cell
+        </doc>
+    </field>
+    <field name="space_group">
+        <doc>
+             Crystallographic space group
+        </doc>
+    </field>
+    <!--add enumeration all possible-->
+    <field name="is_centrosymmetric" type="NX_BOOLEAN">
+        <doc>
+             True if space group is considered a centrosymmetric one.
+             False if space group is considered a non-centrosymmetric one.
+             Centrosymmetric has all types and combinations of symmetry elements
+             (translation, rotational axis, mirror planes, center of inversion)
+             Non-centrosymmetric compared to centrosymmetric is constrained (no inversion).
+             Chiral compared to non-centrosymmetric is constrained (no mirror planes).
+        </doc>
+    </field>
+    <field name="is_chiral" type="NX_BOOLEAN">
+        <doc>
+             True if space group is considered a chiral one.
+             False if space group is consider a non-chiral one.
+        </doc>
+    </field>
+    <field name="laue_group">
+        <doc>
+             Laue group
+        </doc>
+    </field>
+    <!--add enumeration all possible-->
+    <field name="point_group">
+        <doc>
+             Point group using International Notation.
+        </doc>
+    </field>
+    <!--add enumeration all possible-->
+    <field name="unit_cell_class">
+        <doc>
+             Crystal system
+        </doc>
+        <enumeration>
+            <item value="triclinic"/>
+            <item value="monoclinic"/>
+            <item value="orthorhombic"/>
+            <item value="tetragonal"/>
+            <item value="rhombohedral"/>
+            <item value="hexagonal"/>
+            <item value="cubic"/>
+        </enumeration>
+    </field>
+    <field name="phase_identifier" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Numeric identifier for each phase.
+             The value 0 is reserved for the unknown phase essentially representing the
+             null-model that no phase model was sufficiently significantly confirmed.
+             Consequently, the value 0 must not be used as a phase_identifier.
+        </doc>
+    </field>
+    <field name="phase_name">
+        <doc>
+             Name of the phase/alias.
+        </doc>
+    </field>
+    <field name="atom_identifier">
+        <doc>
+             Labels for each atom position
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_pos"/>
+        </dimensions>
+    </field>
+    <field name="atom" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             The hash value :math:`H` is :math:`H = Z + N*256` with :math:`Z`
+             the number of protons and :math:`N` the number of neutrons
+             of each isotope respectively. Z and N have to be 8-bit unsigned integers.
+             For the rationale behind this `M. Kühbach et al. (2021) &lt;https://doi.org/10.1017/S1431927621012241&gt;`_
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_pos"/>
+        </dimensions>
+    </field>
+    <field name="atom_positions" type="NX_FLOAT" units="NX_LENGTH">
+        <doc>
+             Atom positions x, y, z.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n_pos"/>
+            <dim index="2" value="3"/>
+        </dimensions>
+    </field>
+    <!--in addition we need to have a physical model e.g. kinematic or dynamical e-diffraction theory
+to describe the simulated Kikuchi pattern generated from such a model-->
+    <field name="atom_occupancy" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+        <doc>
+             Relative occupancy of the atom position.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_pos"/>
+        </dimensions>
+    </field>
+    <field name="number_of_planes" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             How many reflectors are distinguished. Value has to be n_hkl.
+        </doc>
+    </field>
+    <!-- Miller indices :math:`(hkl)[uvw]`.-->
+    <field name="plane_miller" type="NX_NUMBER" units="NX_UNITLESS">
+        <doc>
+             Miller indices :math:`(hkl)`.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n_hkl"/>
+            <dim index="2" value="3"/>
+        </dimensions>
+    </field>
+    <field name="dspacing" type="NX_FLOAT" units="NX_LENGTH">
+        <doc>
+             D-spacing.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_hkl"/>
+        </dimensions>
+    </field>
+    <field name="relative_intensity" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+        <doc>
+             Relative intensity of the signal for the plane.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_hkl"/>
+        </dimensions>
+    </field>
+    <!--here the theoreticians expert (Marc deGraeff, Aimo Winkelmann, Peter Rez)
+can give some good suggestions on how to improve and ideally make even
+more general this section-->
+</definition>

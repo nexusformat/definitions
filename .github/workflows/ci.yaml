@@ -1,4 +1,4 @@
-name: CI
+name: Documentation build
 
 on:
   push:
@@ -14,6 +14,11 @@ on:
         type: boolean
         required: true
         default: false
+      upload:
+        description: 'Upload documentation (pdfs in _static/)'
+        type: boolean
+        required: true
+        default: false
 
 defaults:
   run:
@@ -25,19 +30,25 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.12']
       max-parallel: 5
     env:
       python_version: ${{ matrix.python-version }}
+      python_deploy_version: '3.8' # version to use for deployment
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
       - name: Deploy Information
-        if: ${{ github.event.inputs.deploy && env.python_version == '3.7' }}
+        if: ${{ github.event.inputs.deploy && env.python_version == env.python_deploy_version }}
         run: |
           echo "The HTML NeXus User Manual will be pushed to"
           echo " https://github.com/nexusformat/definitions/tree/gh-pages"
@@ -66,34 +77,39 @@ jobs:
             texlive-latex-recommended \
             texlive-latex-extra \
             texlive-fonts-recommended
+          tex --version
 
       - name: Generate build files
+        env:
+          GH_TOKEN: ${{ (env.python_version == env.python_deploy_version && (github.event.inputs.deploy || github.event.inputs.upload)) && secrets.GITHUB_TOKEN  || 'NONE' }}
         run: |
           make prepare
 
-      - name: Build Impatient Guid
+      - name: Build Impatient Guide
         run: |
           make impatient-guide
           ls -lAFgh build/impatient-guide/build/html/index.html
-          ls -lAFgh build/impatient-guide/build/latex/NXImpatient.pdf
+          mkdir -p build/html
+          mv build/impatient-guide/build/html build/html/impatient
 
       - name: Build User Manual
         run: |
           make pdf
           make html
           ls -lAFgh build/manual/build/html/index.html
-          ls -lAFgh build/manual/build/latex/nexus.pdf
+          mkdir -p build/html
+          mv build/manual/build/html/* build/html
 
-      - name: Build and Commit the User Manual
-        if: ${{ github.event.inputs.deploy && env.python_version == '3.7' }}
-        uses: sphinx-notes/pages@master
+      - name: Deploy both the User Manual and the Impatient Guide
+        if: ${{ github.event.inputs.deploy && env.python_version == env.python_deploy_version }}
+        uses: JamesIves/github-pages-deploy-action@v4
         with:
-          # path to the conf.py directory
-          documentation_path: build/manual/source
+          token: ${{ secrets.GITHUB_TOKEN }}
+          folder: build/html
 
-      - name: Deploy the User Manual
-        if: ${{ github.event.inputs.deploy && env.python_version == '3.7' }}
-        uses: ad-m/github-push-action@master
+      - name: Upload the User Manual and the Impatient Guide
+        if: ${{ github.event.inputs.upload && env.python_version == env.python_deploy_version }}
+        uses: actions/upload-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: gh-pages
+          name: nexus-definitions-docs
+          path: build/html

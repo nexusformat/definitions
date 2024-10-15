@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--05/2023
+A draft of a new base class to describe a beam path consisting of one or
+more optical elements (e.g. a beam path in a luminescence setup).-->
+<!--To do:
+[ ] Harmonize common fields/classes among base classes used in NXbeam_path,
+    e.g. NXshape in NXbeam_splitter and NXpolarizer_opt, or NXsample used for
+    describing substrates and coatings etc.
+[ ] How to describe a setup or beam path? Order/sequence defined by
+    NXtransformations? => discussion needed-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXbeam_path" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         A beam path consisting of one or more optical elements.
+         
+         NXbeam_path is used in NXopt to describe the beam path, i.e. the arrangement
+         of optical elements between the excitation source and the sample, or between
+         the sample and the detector unit.
+         
+         To describe the order of the elements, use 'order(NXtransformations)', where
+         each element's position points to the preceding element via '@depends_on'.
+         Special case beam splitter: A beam splitter is a device which separates the
+         beam into two or more beams. If such a device is part of the beam path use
+         two or more NXbeam_paths to describe the beam paths after the beam splitter.
+         In this case, in the dependency chain of the new beam paths, the first
+         elements each point to the beam splitter, as this is the previous element.
+         
+         Describe the relevant optical elements in the beam path by using the
+         appropriate base classes. You may use as many elements as needed, also
+         several elements of the same type as long as each element has its own name.
+    </doc>
+    <field name="depends_on">
+        <doc>
+             Entry point of the dependency chain defined by the NXtransformations
+             field, i.e. a link to the last element in the beam path.
+             Example: /entry/instrument/beam_path/detector.
+        </doc>
+    </field>
+    <group type="NXtransformations">
+        <!--Possibilities:
+(1) Modify NXtransformations to include properties that modify the light beam
+(e.g. polarization state) instead (or in addition) to transformations like
+translation and rotation
+(2) Base class similar to NXtransformations but for changes of optical
+properties (e.g. polarization state).-->
+        <doc>
+             Specify the order of the optical elements by defining a dependency chain.
+             For each element, a '@depends_on' attribute should be used to state the
+             position of the element in the beam path by pointing to the previous
+             element. For the very first element, use the string &quot;.&quot; instead.
+        </doc>
+        <field name="AXISNAME" type="NX_NUMBER" units="NX_TRANSFORMATION">
+            <doc>
+                 For each element in the beam path, one such field must exist with a
+                 '@depends_on' attribute defined to specify its position in the beam
+                 path. Note that also 'NXopt/ENTRY/INSTRUMENT/sample_stage' and windows
+                 ('NXopt/ENTRY/INSTRUMENT/sample_stage/entry_window' and
+                 'NXopt/ENTRY/INSTRUMENT/sample_stage/exit_window') may be added to the
+                 dependency chain, i.e. may have an entry in this class even if they are
+                 not described in the beam path.
+                 ELEMENT is a place holder for the name of an optical beam path element.
+                 Note that the name of this field must be exactly the same as the
+                 element's field name.
+            </doc>
+            <attribute name="depends_on">
+                <doc>
+                     Add a link to the previous beam path element.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group type="NXsource">
+        <doc>
+             Excitation source. One or more may be needed (e.g. two for a pump-probe
+             setup with one pump and one probe beam).
+             Depending on the source type, different properties are relevant, which
+             are provided through the respective base class (e.g. use NXopt_source for
+             lamps or lasers, NXchem_source for chemical reaction etc.).
+             Some base classes are incomplete (NXchem_source, NXbio_source); the
+             expertise of the respective communities is needed.
+        </doc>
+        <field name="depends_on">
+            <doc>
+                 Use this field to point to the previous optical element.
+            </doc>
+        </field>
+        <field name="type">
+            <doc>
+                 Type of excitation source.
+            </doc>
+            <enumeration>
+                <item value="semiconductor laser"/>
+                <item value="gas laser"/>
+                <item value="other laser"/>
+                <item value="lamp"/>
+                <item value="X-rays"/>
+                <item value="silicon carbide globar"/>
+                <item value="super continuum"/>
+                <item value="chemical reaction"/>
+                <item value="ultrasound"/>
+                <item value="sound"/>
+                <item value="living organism"/>
+                <item value="power supply"/>
+                <item value="electron source"/>
+                <item value="other"/>
+            </enumeration>
+        </field>
+        <!--Spallation Neutron Source
+Pulsed Reactor Neutron Source
+Reactor Neutron Source
+Synchrotron X-ray Source
+Pulsed Muon Source
+Rotating Anode X-ray
+Fixed Tube X-ray
+UV Laser
+Free-Electron Laser
+Optical Laser
+Ion Source
+UV Plasma Source
+Metal Jet X-ray-->
+        <!--separate base classes for different sources:
+(NXacoustic_source): # needs to be developed
+  doc: |
+    Acoustic source, e.g. an ultrasonic transducero or a imploding gas
+    bubble (sonoluminescence).
+(NXpower_supply): # needs to be developed
+(NXchem_source): # input for experts from that field needed
+(NXbio_source): # input for experts from that field needed
+# is NXsource sufficient for x-rays?
+(NXopt_source):
+doc: Specify the properties of the optical source.-->
+        <field name="lifespan" type="NX_NUMBER" units="NX_TIME">
+            <doc>
+                 Lifespan of the excitation (typically provided in hours).
+            </doc>
+        </field>
+        <field name="measure_time" type="NX_NUMBER" units="NX_TIME">
+            <doc>
+                 How many hours has the lamp been used?
+            </doc>
+        </field>
+        <field name="excitation_wavelength" type="NX_FLOAT" units="NX_ANY">
+            <doc>
+                 Wavelengths or energy vector of the excitation source. This can be a
+                 single value or a spectrum, depending on the type of experiment.
+            </doc>
+            <attribute name="units">
+                <doc>
+                     Unit of wavelength or energy.
+                </doc>
+            </attribute>
+        </field>
+        <field name="beam_profile">
+            <!--??? What's the best way to enter this ???-->
+            <doc>
+                 Two- or three-dimensional beam profile.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="N_beam_profile_dim"/>
+                <dim index="2" value="N_beam_profile_points"/>
+            </dimensions>
+        </field>
+        <field name="peak_power" type="NX_FLOAT" units="NX_POWER">
+            <doc>
+                 Power of one light pulse if the source is a pulsed source.
+            </doc>
+        </field>
+        <field name="cw" type="NX_BOOLEAN">
+            <doc>
+                 Is the excitation source continuous wave (CW)?
+            </doc>
+        </field>
+        <field name="cw_power" type="NX_FLOAT">
+            <doc>
+                 Power of CW beam.
+            </doc>
+        </field>
+        <field name="bandwidth" type="NX_FLOAT" units="NX_WAVELENGTH">
+            <doc>
+                 FWHM bandwidth of the excitation source.
+            </doc>
+        </field>
+        <field name="coherence_length" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                 Coherence length.
+            </doc>
+        </field>
+        <field name="divergence" type="NX_FLOAT" units="NX_ANGLE">
+            <doc>
+                 Divergence of the excitation beam.
+            </doc>
+        </field>
+    </group>
+    <group type="NXpinhole">
+        <doc>
+             Use this field to describe a simple pinhole (round geometry). Define its
+             dimension using 'diameter'. For more complex geometries, 'NXaperture'
+             should be used.
+        </doc>
+    </group>
+    <group type="NXslit">
+        <doc>
+             Use this field to describe a simple slit (rectangular geometry). Define
+             its dimensions using 'x_gap' and 'y_gap'. For more complex geometries,
+             'NXaperture' should be used.
+        </doc>
+    </group>
+    <group name="aperture_NUMBER" type="NXaperture">
+        <doc>
+             Use this field to describe an aperture. To specify a window, use the
+             field 'window_NUMBER(NXaperture)'.
+        </doc>
+    </group>
+    <group name="window_NUMBER" type="NXaperture">
+        <doc>
+             A window, e.g. an entry or exit window of a cryostat.
+        </doc>
+        <field name="depends_on">
+            <doc>
+                 Use this field to point to the previous optical element.
+            </doc>
+        </field>
+        <field name="material" type="NX_CHAR">
+            <doc>
+                 The material of the window.
+            </doc>
+            <enumeration>
+                <item value="quartz"/>
+                <item value="diamond"/>
+                <item value="calcium fluoride"/>
+                <item value="zinc selenide"/>
+                <item value="thallium bromoiodide"/>
+                <item value="alkali halide compound"/>
+                <item value="Mylar"/>
+                <item value="other"/>
+            </enumeration>
+        </field>
+        <field name="other_material" type="NX_CHAR">
+            <doc>
+                 If you specified 'other' as material, decsribe here what it is.
+            </doc>
+        </field>
+        <field name="thickness" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                 Thickness of the window
+            </doc>
+        </field>
+        <field name="orientation_angle" type="NX_FLOAT" units="NX_ANGLE">
+            <doc>
+                 Angle of the window normal (outer) vs. the substrate normal
+                 (similar to the angle of incidence).
+            </doc>
+        </field>
+        <field name="reference_data_link">
+            <doc>
+                 If reference data were measured add a link to the NeXus file where they
+                 are described.
+            </doc>
+        </field>
+    </group>
+    <group type="NXmirror"/>
+    <group name="filter_NUMBER" type="NXfilter"/>
+    <group type="NXattenuator">
+        <doc>
+             A device that reduces the intensity of a beam by attenuation.
+        </doc>
+        <field name="attenuator_transmission" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+            <doc>
+                 The transmitted intensity divided by the incident intensity.
+            </doc>
+        </field>
+        <field name="attenuation" type="NX_FLOAT" units="NX_ANY">
+            <doc>
+                 Attenuation of the attenuator in dB.
+            </doc>
+            <attribute name="units">
+                <doc>
+                     Unit of the measured data is not covered by NXDL units state
+                     here which unit was used.
+                </doc>
+            </attribute>
+        </field>
+        <group type="NXaperture">
+            <doc>
+                 Input and output aperture of the attenuator.
+            </doc>
+        </group>
+        <group type="NXgeometry">
+            <doc>
+                 Geometry (shape, size etc.) of the attenuator.
+            </doc>
+        </group>
+    </group>
+    <group type="NXgrating">
+        <doc>
+             A diffraction grating. Define relevant parameters in the corresponding
+             fields, e.g. order of diffration (diffraction_order) or angular
+             dispersion (angular_dispersion).
+        </doc>
+        <field name="type">
+            <doc>
+                 Define the type of the grating.
+            </doc>
+        </field>
+        <field name="angular_dispersion" type="NX_FLOAT" units="NX_UNITLESS">
+            <doc>
+                 Dispersion of the grating in nm/mm (or e.g. nm/mrad).
+            </doc>
+        </field>
+        <field name="grooves" type="NX_FLOAT" units="NX_PER_LENGTH">
+            <doc>
+                 Number of grooves per mm.
+            </doc>
+        </field>
+        <field name="blaze_wavelength" type="NX_FLOAT" units="NX_WAVELENGTH">
+            <doc>
+                 Blaze wavelength of the grating.
+            </doc>
+        </field>
+        <field name="efficiency" type="NX_FLOAT" units="NX_UNITLESS">
+            <doc>
+                 Efficiency curve versus wavelength or energy.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="N_spectrum"/>
+            </dimensions>
+        </field>
+        <field name="spectrum" type="NX_FLOAT" units="NX_ANY">
+            <doc>
+                 Spectral values, e.g. wavelength or energy. Vector of length
+                 N_spectrum.
+            </doc>
+            <attribute name="units">
+                <doc>
+                     Unit of wavelength array (e.g. nanometer or Angstrom)
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group type="NXdisk_chopper">
+        <doc>
+             A device blocking the beam in a temporal periodic pattern, e.g. a optical
+             chopper wheel. Specify the frequency range using 'min_frequency' and
+             'max_frequency'.
+        </doc>
+        <field name="min_frequency" type="NX_FLOAT" units="NX_FREQUENCY">
+            <doc>
+                 Minimum frequency in Hertz.
+            </doc>
+        </field>
+        <field name="max_frequency" type="NX_FLOAT" units="NX_FREQUENCY">
+            <doc>
+                 Maximum frequency in Hertz.
+            </doc>
+        </field>
+        <field name="frequency_resolution" type="NX_FLOAT" units="NX_FREQUENCY">
+            <doc>
+                 Frequency resolution in Hertz.
+            </doc>
+        </field>
+    </group>
+    <group type="NXmonochromator">
+        <doc>
+             A monochromator or spectrometer.
+        </doc>
+        <field name="spectrum" type="NX_FLOAT" units="NX_ANY">
+            <doc>
+                 Spectral values of the monochromator, e.g. wavelength or energy values
+                 used for the measurement.
+            </doc>
+            <attribute name="units">
+                <doc>
+                     Unit of wavelength array (e.g. nanometer or Angstrom)
+                </doc>
+            </attribute>
+        </field>
+        <group type="NXgrating">
+            <doc>
+                 Diffraction grating. If two or more gratings were used, define the
+                 angular dispersion and the wavelength range (min/max wavelength) for
+                 each grating and make sure that the wavelength ranges do not overlap.
+                 The dispersion should be defined for the entire wavelength range of the
+                 experiment.
+            </doc>
+            <field name="angular_dispersion" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                <doc>
+                     Dispersion of the grating in nm/mm.
+                </doc>
+            </field>
+            <field name="grating_wavelength_min" type="NX_FLOAT" units="NX_WAVELENGTH">
+                <doc>
+                     Minimum wavelength of the grating.
+                </doc>
+            </field>
+            <field name="grating_wavelength_max" type="NX_FLOAT" units="NX_WAVELENGTH">
+                <doc>
+                     Maximum wavelength of the grating.
+                </doc>
+            </field>
+        </group>
+        <field name="spectral_resolution" type="NX_FLOAT" units="NX_WAVENUMBER">
+            <doc>
+                 Spectral resolution of the instrument.
+            </doc>
+        </field>
+        <group type="NXslit">
+            <doc>
+                 Define the width of the monochromator slit in the subfield x_gap.
+            </doc>
+            <field name="fixed_slit" type="NX_BOOLEAN">
+                <doc>
+                     Was the slit width fixed?
+                </doc>
+            </field>
+            <field name="max_gap" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                     If slit width was not fixed, define the maximum slit width.
+                </doc>
+            </field>
+        </group>
+    </group>
+    <!--x-ray optics:-->
+    <group type="NXxraylens"/>
+    <!--what else?-->
+    <!--====== New base classes: ======-->
+    <group type="NXpolarizer_opt"/>
+    <group type="NXbeam_splitter"/>
+    <group type="NXwaveplate"/>
+    <group type="NXlens_opt"/>
+    <group type="NXfiber"/>
+</definition>

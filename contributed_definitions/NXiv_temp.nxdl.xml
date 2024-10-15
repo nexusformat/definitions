@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXiv_temp" extends="NXsensor_scan" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="n_different_temperatures">
+            <doc>
+                 Number of different temperature setpoints used in the experiment.
+            </doc>
+        </symbol>
+        <symbol name="n_different_voltages">
+            <doc>
+                 Number of different voltage setpoints used in the experiment.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for temperature-dependent IV curve measurements.
+         
+         In this application definition, times should be specified always together
+         with an UTC offset.
+         
+         This is the application definition describing temperature dependent IV curve
+         measurements. For this a temperature is set. After reaching the temperature,
+         a voltage sweep is performed. For each voltage a current is measured.
+         Then, the next desired temperature is set and an IV measurement is performed.
+    </doc>
+    <group type="NXentry">
+        <field name="definition">
+            <enumeration>
+                <item value="NXiv_temp"/>
+            </enumeration>
+        </field>
+        <group type="NXinstrument">
+            <group type="NXenvironment">
+                <doc>
+                     Describes an environment setup for a temperature-dependent IV measurement experiment.
+                     
+                     The temperature and voltage must be present as independently scanned controllers and
+                     the current sensor must also be present with its readings.
+                </doc>
+                <group name="voltage_controller" type="NXsensor"/>
+                <group name="temperature_controller" type="NXsensor"/>
+                <group name="current_sensor" type="NXsensor"/>
+            </group>
+        </group>
+        <group type="NXdata">
+            <doc>
+                 This NXdata should contain separate fields for the current values at different temperature setpoints, for example current_at_100C.
+                 There should also be two more fields called temperature and voltage containing the setpoint values.
+                 There should also be a field with an array of rank equal to the number of different temperature setpoints and each child's dimension
+                 equal to the number of voltage setpoints.
+            </doc>
+            <field name="temperature" type="NX_NUMBER"/>
+            <field name="voltage" type="NX_NUMBER"/>
+            <field name="current" type="NX_NUMBER">
+                <dimensions rank="2">
+                    <dim index="1" value="n_different_temperatures"/>
+                    <dim index="2" value="n_different_voltages"/>
+                </dimensions>
+            </field>
+        </group>
+    </group>
+</definition>

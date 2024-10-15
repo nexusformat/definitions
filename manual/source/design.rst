@@ -412,7 +412,7 @@ a URL to a group in another file.  More information about the
 ``@napimount`` attribute is described in the
 *NeXus Programmers Reference*. [#]_
 
-.. [#] https://manual.nexusformat.org/_static/NeXusIntern.pdf
+.. [#] https://github.com/nexusformat/code/raw/master/doc/api/NeXusIntern.pdf
 
 .. index:: link; external file, NeXus link
 

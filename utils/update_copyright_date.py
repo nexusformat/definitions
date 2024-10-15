@@ -12,12 +12,19 @@ See copyright text at bottom of this file for example.
 
 import os, sys
 import mimetypes
-from build_preparation import ROOT_DIR_EXPECTED_RESOURCES
 import datetime
 
 YEAR = datetime.datetime.now().year
 LEFT_SIDE_TEXT_MATCH = "Copyright (C) "
 RIGHT_SIDE_TEXT_MATCH = " NeXus International Advisory Committee (NIAC)"
+ROOT_DIR_EXPECTED_RESOURCES = {
+    "files": """COPYING LGPL.txt Makefile NXDL_VERSION
+                nxdl.xsd nxdlTypes.xsd README.md
+             """.split(),
+    "subdirs": """applications base_classes contributed_definitions manual
+                 package utils www impatient-guide
+               """.split(),
+}
 
 
 def update(filename):
@@ -170,7 +177,7 @@ if __name__ == "__main__":
 
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2008-2024 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public

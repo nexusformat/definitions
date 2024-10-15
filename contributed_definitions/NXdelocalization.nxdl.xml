@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXdelocalization" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_p">
+            <doc>
+                 Number of points/objects.
+            </doc>
+        </symbol>
+        <symbol name="n_m">
+            <doc>
+                 Number of mark data per point/object.
+            </doc>
+        </symbol>
+        <symbol name="n_atoms">
+            <doc>
+                 Number of atoms in the whitelist.
+            </doc>
+        </symbol>
+        <symbol name="n_isotopes">
+            <doc>
+                 Number of isotopes in the whitelist.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Base class to describe the delocalization of point-like objects on a grid.
+         
+         Such a procedure is for instance used in image processing and e.g. atom probe
+         microscopy (APM) to discretize a point cloud onto a grid to enable e.g.
+         computing of point density, composition, or concentration values, obtain
+         scalar fields, and compute gradients of these fields.
+    </doc>
+    <field name="grid">
+        <doc>
+             Reference or link to the grid on which the delocalization is applied.
+        </doc>
+    </field>
+    <field name="objects">
+        <doc>
+             Reference or link to the points which are delocalized on the grid.
+        </doc>
+    </field>
+    <!--for APM the speciality is nothing but:
+each point marks the location of an ion (object) in the tomographic reconstruction
+there is a boolean mask which filters which ions, i.e. points are considered
+plus there is a weight interpretation model, specifically in atom probe
+if a (molecular) ion is decomposed into its atoms or isotopes
+plus, given there is such a weight interpretation model, there is a weight
+associated, specifically an integer >= 1 with each considered ion and 0 for
+all ions which are not considered,
+this weight is the multiplicity with respect to the interpretation model
+i.e. a C:2 molecular ion has a multiplicity of 2 if the ion is considered
+and the interpretation model that to consider carbon atoms or carbon ions-->
+    <field name="weighting_model">
+        <doc>
+             The weighting model specifies how mark data are mapped to a weight per point.
+             For atom probe microscopy (APM) as an example, different models are used which
+             account differently for the multiplicity of an ion/atom:
+             
+             * default, points all get the same weight 1.;
+               for APM this is equivalent to ion species
+             * atomic_decomposition, points get as much weight as they have atoms
+               of a type in element_whitelist,
+             * isotope_decomposition, points get as much weight as they have
+               isotopes of a type in isotope_whitelist.
+             
+             This description shows an example that could be reinterpreted for
+             similar such data processing steps in other fields of science.
+        </doc>
+        <enumeration>
+            <item value="default"/>
+            <item value="atomic_decomposition"/>
+            <item value="isotope_decomposition"/>
+        </enumeration>
+    </field>
+    <!--other
+can one conditionally set a field required if a weighting_model has a
+specific value,
+i.e. if atomic_decomposition is set element_whitelist t is required
+i.e. if isotope_decomposition is set isotope_whitelist is required?-->
+    <field name="element_whitelist" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             A list of elements (via proton number) to consider for the atomic_decomposition
+             weighting model. Elements must exist in the periodic table of elements.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_atoms"/>
+        </dimensions>
+    </field>
+    <field name="isotope_whitelist" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             A list of isotopes to consider for the isotope_decomposition weighting model.
+             Isotopes must exist in the nuclid table. Entries in the fastest changing
+             dimension should be the pair of proton (first entry) and neutron number
+             (second entry).
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n_isotopes"/>
+            <dim index="2" value="2"/>
+        </dimensions>
+    </field>
+    <field name="mark" type="NX_NUMBER">
+        <doc>
+             Attribute data for each member of the point cloud. For APM these are the
+             ion species labels generated via ranging. The number of mark data per
+             point is 1 in the case for atom probe.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n_p"/>
+            <dim index="2" value="n_m"/>
+        </dimensions>
+    </field>
+    <field name="weight" type="NX_NUMBER">
+        <doc>
+             Weighting factor with which the integrated intensity per grid cell is
+             multiplied specifically for each point. For APM the weight are positive
+             integer values, specifically the multiplicity of the ion,
+             according to the details of the weighting_model.
+        </doc>
+    </field>
+</definition>

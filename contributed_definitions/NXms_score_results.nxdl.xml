@@ -1,0 +1,720 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--inspect comments behind NXms-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXms_score_results" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="n_b">
+            <doc>
+                 Number of boundaries of the bounding box or primitive to domain.
+            </doc>
+        </symbol>
+        <symbol name="n_p">
+            <doc>
+                 Number of parameter required for chosen orientation parameterization.
+            </doc>
+        </symbol>
+        <symbol name="n_tex">
+            <doc>
+                 Number of texture components identified.
+            </doc>
+        </symbol>
+        <symbol name="d">
+            <doc>
+                 Dimensionality.
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 Cardinality.
+            </doc>
+        </symbol>
+        <symbol name="n_front">
+            <doc>
+                 Number of active cells in the (recrystallization) front.
+            </doc>
+        </symbol>
+        <symbol name="n_grains">
+            <doc>
+                 Number of grains in the computer simulation.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Application definition for storing results of the SCORE cellular automaton.
+         
+         The SCORE cellular automaton model for primary recrystallization is an
+         example of typical materials engineering applications used within the field
+         of so-called Integral Computational Materials Engineering (ICME) whereby
+         one can simulate the evolution of microstructures.
+         
+         Specifically the SCORE model can be used to simulate the growth of static
+         recrystallization nuclei. The model is described in the literature:
+         
+         * `M. Kühbach et al. &lt;https://doi.org/10.1016/j.actamat.2016.01.068&gt;`_  
+         * `C. Haase et al. &lt;https://doi.org/10.1016/j.actamat.2015.08.057&gt;`_  
+         * `M. Diehl et al. &lt;https://doi.org/10.1088/1361-651X/ab51bd&gt;`_
+    </doc>
+    <group type="NXentry">
+        <attribute name="version">
+            <doc>
+                 An at least as strong as SHA256 hashvalue of the file
+                 that specifies the application definition.
+            </doc>
+        </attribute>
+        <!--enumeration: [sha_256_hash]-->
+        <field name="definition">
+            <doc>
+                 NeXus NXDL schema to which this file conforms.
+            </doc>
+            <enumeration>
+                <item value="NXms_score_results"/>
+            </enumeration>
+        </field>
+        <field name="analysis_identifier">
+            <doc>
+                 Ideally, a (globally) unique persistent identifier
+                 for referring to this computer simulation.
+                 
+                 The identifier is usually defined/issued by the facility, laboratory,
+                 or the principle investigator. The identifier enables to link
+                 experiments to e.g. proposals.
+            </doc>
+        </field>
+        <field name="analysis_description" optional="true">
+            <doc>
+                 Free-text description about the workflow (analysis/simulation).
+                 
+                 Users are strongly advised to detail the sample history in the 
+                 respective field and fill rather as completely as possible the fields
+                 of this application definition rather than write details about the
+                 experiment into this free-text description field.
+            </doc>
+        </field>
+        <field name="start_time" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 time code with local time zone offset to UTC information
+                 included when the characterization started.
+            </doc>
+        </field>
+        <field name="end_time" type="NX_DATE_TIME">
+            <doc>
+                 ISO 8601 time code with local time zone offset to UTC included
+                 when the characterization ended.
+            </doc>
+        </field>
+        <group name="PROGRAM" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+            <field name="program_name">
+                <attribute name="version"/>
+            </field>
+        </group>
+        <field name="experiment_or_simulation">
+            <doc>
+                 Specify if the (characterization) results/data of this instance of an
+                 application definition are based on the results of a simulation or the
+                 results of a post-processing of measured data to describe a microstructure.
+                 The term microstructure is used to describe the spatial arrangement of
+                 crystal defects inside a sample/specimen without demanding necessarily
+                 that this structure is mainly at the micron length scale.
+                 Nanostructure and macrostructure are close synonyms.
+                 Material architecture is a narrow synonym.
+            </doc>
+            <enumeration>
+                <item value="experiment"/>
+                <item value="simulation"/>
+            </enumeration>
+        </field>
+        <!--always a simulation!-->
+        <field name="config_filename">
+            <doc>
+                 The path and name of the config file for this analysis.
+            </doc>
+            <attribute name="version">
+                <doc>
+                     At least SHA256 strong hash of the specific config_file for
+                     tracking provenance.
+                </doc>
+            </attribute>
+        </field>
+        <field name="results_path" optional="true">
+            <doc>
+                 Path to the directory where the tool should store NeXus/HDF5 results
+                 of this analysis. If not specified results will be stored in the
+                 current working directory.
+            </doc>
+        </field>
+        <field name="status">
+            <doc>
+                 A statement whether the SCORE executable managed to
+                 process the analysis or failed prematurely.
+                 
+                 This status is written to the results file after the end_time
+                 at which point the executable must not compute any analysis.
+                 Only when this status message is present and shows `success`, the
+                 user should consider the results. In all other cases it might be
+                 that the executable has terminated prematurely or another error
+                 occurred.
+            </doc>
+            <enumeration>
+                <item value="success"/>
+                <item value="failure"/>
+            </enumeration>
+        </field>
+        <group name="USER" type="NXuser" minOccurs="0" maxOccurs="unbounded">
+            <doc>
+                 Contact information and eventually details of at least one person
+                 involved in creating this result. This can be the principle investigator
+                 who performed this experiment. Adding multiple users if relevant is recommended.
+            </doc>
+            <field name="name">
+                <doc>
+                     Given (first) name and surname of the user.
+                </doc>
+            </field>
+            <field name="affiliation" recommended="true">
+                <doc>
+                     Name of the affiliation of the user at the point in time
+                     when the experiment was performed.
+                </doc>
+            </field>
+            <field name="address" recommended="true">
+                <doc>
+                     Postal address of the affiliation.
+                </doc>
+            </field>
+            <field name="email" recommended="true">
+                <doc>
+                     Email address of the user at the point in time when the experiment
+                     was performed. Writing the most permanently used email is recommended.
+                </doc>
+            </field>
+            <field name="orcid" recommended="true">
+                <doc>
+                     Globally unique identifier of the user as offered by services
+                     like ORCID or ResearcherID. If this field is field the specific service
+                     should also be written in orcid_platform
+                </doc>
+            </field>
+            <field name="orcid_platform" recommended="true">
+                <doc>
+                     Name of the OrcID or ResearcherID where the account
+                     under orcid is registered.
+                </doc>
+            </field>
+            <field name="telephone_number" optional="true">
+                <doc>
+                     (Business) (tele)phone number of the user at the point
+                     in time when the experiment was performed.
+                </doc>
+            </field>
+            <field name="role" recommended="true">
+                <doc>
+                     Which role does the user have in the place and at the point 
+                     in time when the experiment was performed? Technician operating
+                     the microscope. Student, postdoc, principle investigator, guest
+                     are common examples.
+                </doc>
+            </field>
+            <field name="social_media_name" optional="true">
+                <doc>
+                     Account name that is associated with the user in social media platforms.
+                </doc>
+            </field>
+            <field name="social_media_platform" optional="true">
+                <doc>
+                     Name of the social media platform where the account
+                     under social_media_name is registered.
+                </doc>
+            </field>
+        </group>
+        <group name="specimen" type="NXsample">
+            <!--NEW ISSUE: inject the conclusion from the discussion with Andrea
+according to SAMPLE.yaml 0f8df14 2022/06/15-->
+            <field name="name">
+                <doc>
+                     Descriptive name or ideally (globally) unique persistent identifier.
+                </doc>
+            </field>
+        </group>
+        <!--sample_history:
+ doc: |
+   Ideally, a reference to the location of or a (globally) unique
+   persistent identifier of e.g. another file which should document
+   ideally as many details as possible of the material, its
+   microstructure, and its thermo-chemo-mechanical processing/
+   preparation history.
+preparation_date(NX_DATE_TIME):
+ doc: |
+   ISO 8601 time code with local time zone offset to UTC information
+   when the specimen was prepared.-->
+        <group type="NXdata" optional="true">
+            <doc>
+                 Hard link to a location in the hierarchy of the NeXus file
+                 where the data for default plotting are stored.
+            </doc>
+        </group>
+        <group type="NXcoordinate_system_set">
+            <doc>
+                 Container to hold different coordinate systems conventions.
+                 A least a right-handed Cartesian coordinate system with base vectors
+                 named x, y, and z has to be specified. Each base vector of the
+                 coordinate system should be described with an NXtransformations instance.
+            </doc>
+            <group name="TRANSFORMATIONS" type="NXtransformations" minOccurs="3" maxOccurs="unbounded"/>
+        </group>
+        <group name="conventions" type="NXem_ebsd_conventions">
+            <group name="rotation_conventions" type="NXprocess">
+                <field name="three_dimensional_rotation_handedness"/>
+                <field name="rotation_convention"/>
+                <field name="euler_angle_convention"/>
+                <field name="axis_angle_convention"/>
+                <field name="orientation_parameterization_sign_convention"/>
+            </group>
+            <group name="processing_reference_frame" type="NXprocess">
+                <field name="reference_frame_type"/>
+                <field name="xaxis_direction"/>
+                <field name="xaxis_alias"/>
+                <field name="yaxis_direction"/>
+                <field name="yaxis_alias"/>
+                <field name="zaxis_direction"/>
+                <field name="zaxis_alias"/>
+                <field name="origin"/>
+            </group>
+            <group name="sample_reference_frame" type="NXprocess">
+                <field name="reference_frame_type"/>
+                <field name="xaxis_direction"/>
+                <field name="yaxis_direction"/>
+                <field name="zaxis_direction"/>
+                <field name="origin"/>
+            </group>
+        </group>
+        <group name="ROI_SET" type="NXcg_roi_set" minOccurs="1" maxOccurs="unbounded">
+            <!--however for solitary unit models aka volume element ensemble, replica methods we may need more than one domain
+the volume element is not called representative because for what we consider the volume element to be representative
+for is a matter of interpretation (fundamentally this is an assumption) and can differ for different descriptors-->
+            <doc>
+                 The simulated or characterized material volume element aka domain.
+                 At least one instance of geometry required either NXcg_grid,
+                 NXcg_polyhedron_set, or NXcg_point_set. This geometry group needs
+                 to contain details about the boundary conditions.
+            </doc>
+            <group name="grid" type="NXcg_grid">
+                <field name="dimensionality" type="NX_POSINT"/>
+                <field name="cardinality" type="NX_POSINT"/>
+                <field name="origin" type="NX_NUMBER"/>
+                <field name="symmetry"/>
+                <field name="cell_dimensions" type="NX_NUMBER"/>
+                <field name="extent" type="NX_POSINT"/>
+                <field name="identifier_offset" type="NX_INT"/>
+            </group>
+            <group name="boundary" type="NXcg_polyhedron_set">
+                <doc>
+                     A tight bounding box or sphere or bounding primitive about the grid.
+                </doc>
+                <!--a good example for a general bounding box description for such a grids of triclinic cells
+https://docs.lammps.org/Howto_triclinic.html NXcg_polyhedron because a parallelepiped-->
+                <field name="number_of_boundaries" type="NX_POSINT" units="NX_UNITLESS">
+                    <doc>
+                         How many distinct boundaries are distinguished?
+                         Most grids discretize a cubic or cuboidal region. In this case
+                         six sides can be distinguished, each making an own boundary.
+                    </doc>
+                </field>
+                <field name="boundaries" minOccurs="0">
+                    <doc>
+                         Name of the boundaries. E.g. left, right, front, back, bottom, top,
+                         The field must have as many entries as there are number_of_boundaries.
+                    </doc>
+                </field>
+                <field name="boundary_conditions" type="NX_INT" units="NX_UNITLESS">
+                    <doc>
+                         The boundary conditions for each boundary:
+                         
+                         0 - undefined
+                         1 - open
+                         2 - periodic
+                         3 - mirror
+                         4 - von Neumann
+                         5 - Dirichlet
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_b"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="snapshot_set" type="NXms_snapshot_set">
+                <doc>
+                     Collection of microstructural data observed/simulated.
+                </doc>
+                <field name="identifier_offset" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                         Integer which specifies the first index to be used for distinguishing
+                         snapshots. Identifiers are defined either implicitly or explicitly.
+                         For implicit indexing the identifiers are defined on the
+                         interval [identifier_offset, identifier_offset+c-1].
+                         For explicit indexing the identifier array has to be defined.
+                         
+                         The identifier_offset field can for example be used to communicate
+                         if the identifiers are expected to start from 1 (referred to as
+                         Fortran-/Matlab-) or from 0 (referred to as C-, Python-style index
+                         notation) respectively.
+                    </doc>
+                </field>
+                <!--essentially NXmonitor instances for evolution of ensemble summary statistics-->
+                <group name="evolution" type="NXprocess" optional="true">
+                    <doc>
+                         Summary quantities which are the result of some post-processing of
+                         the snapshot data (averaging, integrating, interpolating).
+                         Frequently used descriptors from continuum mechanics and thermodynamics
+                         can be used here. A few examples are given. Each descriptor is currently
+                         modelled as an instance of an NXprocess because it is relevant to
+                         understand how the descriptors are computed.
+                    </doc>
+                    <group name="time" type="NXprocess" optional="true">
+                        <doc>
+                             Evolution of the physical time.
+                        </doc>
+                    </group>
+                    <group name="temperature" type="NXprocess" optional="true">
+                        <doc>
+                             Evolution of the simulated temperature over time.
+                        </doc>
+                    </group>
+                    <!--pressure(NXprocess):
+  exists: optional
+stress(NXprocess):
+  exists: optional
+strain(NXprocess):
+  exists: optional
+deformation_gradient(NXprocess):
+  exists: optional
+magnetic_field(NXprocess):
+  exists: optional
+electric_field(NXprocess):
+  exists: optional-->
+                    <group name="kinetics" type="NXprocess" optional="true">
+                        <doc>
+                             Evolution of the recrystallized volume fraction over time.
+                        </doc>
+                    </group>
+                </group>
+                <!--recrystallization_front(NXprocess):
+  exists: optional
+time-resolved results for individual snapshots
+virtually all computer simulations and all experiments always probe
+snapshots-->
+                <group name="MS_SNAPSHOT" type="NXms_snapshot">
+                    <field name="time" type="NX_NUMBER" units="NX_TIME">
+                        <doc>
+                             Measured or simulated physical time stamp for this snapshot.
+                             Not to be confused with wall-clock timing or profiling data.
+                        </doc>
+                    </field>
+                    <field name="temperature" type="NX_NUMBER" units="NX_TEMPERATURE">
+                        <doc>
+                             Simulated temperature.
+                        </doc>
+                    </field>
+                    <field name="iteration" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             Iteration or increment counter.
+                        </doc>
+                    </field>
+                    <!--optional places to store the grid for instance if it changes-->
+                    <group name="grid" type="NXcg_grid" recommended="true">
+                        <field name="grain_identifier" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+                            <doc>
+                                 Grain identifier for each cell.
+                            </doc>
+                            <dimensions rank="3">
+                                <dim index="1" value="n_x"/>
+                                <dim index="2" value="n_y"/>
+                                <dim index="3" value="n_z"/>
+                            </dimensions>
+                        </field>
+                        <field name="thread_identifier" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                            <doc>
+                                 Identifier of the OpenMP thread which processed this part of the grid.
+                            </doc>
+                            <dimensions rank="3">
+                                <dim index="1" value="n_x"/>
+                                <dim index="2" value="n_y"/>
+                                <dim index="3" value="n_z"/>
+                            </dimensions>
+                        </field>
+                    </group>
+                    <!--check comments behind NXms-->
+                    <group name="recrystallization_front" type="NXprocess" recommended="true">
+                        <doc>
+                             Details about those cells which in this time step represent
+                             the discretized recrystallization front.
+                        </doc>
+                        <field name="halo_region" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                            <doc>
+                                 Which cells are currently in a halo region of threads.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_front"/>
+                            </dimensions>
+                        </field>
+                        <field name="mobility_weight" type="NX_NUMBER" recommended="true" units="NX_UNITLESS">
+                            <doc>
+                                 So-called mobility weight which is a scaling factor to
+                                 control the mobility of the grain boundary which is assumed
+                                 to sweep currently this volume.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_front"/>
+                            </dimensions>
+                        </field>
+                        <field name="coordinate" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
+                            <doc>
+                                 Grid coordinates of each cell in the recrystallization front.
+                            </doc>
+                            <dimensions rank="2">
+                                <dim index="1" value="n_front"/>
+                                <dim index="2" value="3"/>
+                            </dimensions>
+                        </field>
+                        <field name="deformed_grain_identifier" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+                            <doc>
+                                 Grain identifier assigned to each cell in the recrystallization front.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_front"/>
+                            </dimensions>
+                        </field>
+                        <field name="recrystallized_grain_identifier" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+                            <doc>
+                                 Grain identifier assigned to each nucleus which affected that cell in the
+                                 recrystallization front.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_front"/>
+                            </dimensions>
+                        </field>
+                        <field name="recrystallized_volume_fraction" type="NX_NUMBER" recommended="true" units="NX_DIMENSIONLESS">
+                            <doc>
+                                 Relative volume transformed as a measure of infection progress.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_front"/>
+                            </dimensions>
+                        </field>
+                        <field name="thread_identifier" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                            <doc>
+                                 Identifier of the OpenMP thread processing each cell in the recrystallization
+                                 front.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_front"/>
+                            </dimensions>
+                        </field>
+                        <field name="infection_direction" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                            <doc>
+                                 Hint about the direction from which the cell was infected.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_front"/>
+                            </dimensions>
+                        </field>
+                    </group>
+                    <group name="grain_ensemble" type="NXprocess" recommended="true">
+                        <doc>
+                             Current grain-related quantities.
+                        </doc>
+                        <field name="euler" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                            <doc>
+                                 Bunge-Euler angle triplets for each grain.
+                            </doc>
+                            <dimensions rank="2">
+                                <dim index="1" value="n_grains"/>
+                                <dim index="2" value="3"/>
+                            </dimensions>
+                        </field>
+                        <field name="volume" type="NX_NUMBER" units="NX_VOLUME">
+                            <doc>
+                                 Discrete volume of each grain accounting also for partially
+                                 transformed cells.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_grains"/>
+                            </dimensions>
+                        </field>
+                        <field name="dislocation_density" type="NX_NUMBER" recommended="true" units="NX_ANY">
+                            <doc>
+                                 Current value for the dislocation density as a measure of
+                                 the remaining stored energy in assumed crystal defects inside
+                                 each grain. The difference between these values scales the
+                                 driving force of grain boundary migration.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_grains"/>
+                            </dimensions>
+                        </field>
+                        <field name="is_deformed" type="NX_BOOLEAN" recommended="true">
+                            <doc>
+                                 Is the grain deformed.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_grains"/>
+                            </dimensions>
+                        </field>
+                        <field name="is_recrystallized" type="NX_BOOLEAN" recommended="true">
+                            <doc>
+                                 Is the grain recrystallized.
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="n_grains"/>
+                            </dimensions>
+                        </field>
+                    </group>
+                    <group name="recrystallized_kinetics" type="NXprocess">
+                        <doc>
+                             Current recrystallized volume fraction.
+                        </doc>
+                        <field name="value" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+                            <doc>
+                                 Currently evaluated actual recrystallized volume fraction.
+                                 This takes into account partially recrystallized cells.
+                            </doc>
+                        </field>
+                        <field name="target" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+                            <doc>
+                                 Currently desired target recrystallized volume fraction at
+                                 which the user requested to log a snapshot.
+                            </doc>
+                        </field>
+                    </group>
+                    <!--pressure(NXprocess):
+  exists: optional-->
+                    <group name="stress" type="NXprocess" optional="true">
+                        <field name="value" type="NX_NUMBER" units="NX_ANY">
+                            <doc>
+                                 Currently assumed globally applied Cauchy stress tensor on the ROI.
+                            </doc>
+                            <dimensions rank="2">
+                                <dim index="1" value="3"/>
+                                <dim index="2" value="3"/>
+                            </dimensions>
+                        </field>
+                    </group>
+                    <group name="strain" type="NXprocess" optional="true">
+                        <field name="value" type="NX_NUMBER" units="NX_UNITLESS">
+                            <doc>
+                                 Currently assumed globally applied Cauchy strain tensor on the ROI.
+                            </doc>
+                            <dimensions rank="2">
+                                <dim index="1" value="3"/>
+                                <dim index="2" value="3"/>
+                            </dimensions>
+                        </field>
+                    </group>
+                </group>
+            </group>
+        </group>
+        <!--deformation_gradient(NXprocess):
+  exists: optional
+magnetic_field(NXprocess):
+  exists: optional
+electric_field(NXprocess):
+  exists: optional-->
+        <group name="performance" type="NXcs_profiling">
+            <field name="current_working_directory"/>
+            <field name="command_line_call" optional="true"/>
+            <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
+            <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+            <field name="total_elapsed_time" type="NX_NUMBER"/>
+            <field name="number_of_processes" type="NX_POSINT"/>
+            <field name="number_of_threads" type="NX_POSINT"/>
+            <field name="number_of_gpus" type="NX_POSINT"/>
+            <group type="NXcs_computer" recommended="true">
+                <field name="name" recommended="true"/>
+                <field name="operating_system">
+                    <attribute name="version"/>
+                </field>
+                <field name="uuid" optional="true"/>
+                <group type="NXcs_cpu" minOccurs="0" maxOccurs="unbounded">
+                    <field name="name" optional="true"/>
+                    <group type="NXfabrication" recommended="true">
+                        <field name="identifier" optional="true"/>
+                        <field name="capabilities" optional="true"/>
+                    </group>
+                </group>
+                <group type="NXcs_gpu" minOccurs="0" maxOccurs="unbounded">
+                    <field name="name" optional="true"/>
+                    <group type="NXfabrication" recommended="true">
+                        <field name="identifier" optional="true"/>
+                        <field name="capabilities" optional="true"/>
+                    </group>
+                </group>
+                <group type="NXcs_mm_sys" minOccurs="0" maxOccurs="1">
+                    <field name="total_physical_memory" type="NX_NUMBER"/>
+                </group>
+                <group type="NXcs_io_sys" minOccurs="0" maxOccurs="1">
+                    <group type="NXcs_io_obj" minOccurs="1" maxOccurs="unbounded">
+                        <field name="technology"/>
+                        <field name="max_physical_capacity" type="NX_NUMBER"/>
+                        <field name="name" optional="true"/>
+                        <group type="NXfabrication" recommended="true">
+                            <field name="identifier" optional="true"/>
+                            <field name="capabilities" optional="true"/>
+                        </group>
+                    </group>
+                </group>
+                <group type="NXcs_profiling_event">
+                    <field name="start_time" type="NX_DATE_TIME" optional="true"/>
+                    <field name="end_time" type="NX_DATE_TIME" optional="true"/>
+                    <field name="description"/>
+                    <field name="elapsed_time" type="NX_NUMBER"/>
+                    <field name="number_of_processes" type="NX_POSINT">
+                        <!--exists: recommended-->
+                        <doc>
+                             Specify if it was different from the number_of_processes
+                             in the NXcs_profiling super class.
+                        </doc>
+                    </field>
+                    <field name="number_of_threads" type="NX_POSINT">
+                        <!--exists: recommended-->
+                        <doc>
+                             Specify if it was different from the number_of_threads
+                             in the NXcs_profiling super class.
+                        </doc>
+                    </field>
+                    <field name="number_of_gpus" type="NX_POSINT">
+                        <!--exists: recommended-->
+                        <doc>
+                             Specify if it was different from the number_of_threads
+                             in the NXcs_profiling super class.
+                        </doc>
+                    </field>
+                    <field name="max_virtual_memory_snapshot" type="NX_NUMBER" recommended="true"/>
+                    <field name="max_resident_memory_snapshot" type="NX_NUMBER" recommended="true"/>
+                </group>
+            </group>
+        </group>
+    </group>
+</definition>

@@ -8,14 +8,13 @@
 
 import sys, os, datetime
 
+
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
-
+# add the abs path to the custom extension for collecting the contributor variables from the rst files
+sys.path.insert(0, os.path.abspath('../../../dev_tools/ext'))
 
 # -- Project information -----------------------------------------------------
 
@@ -42,12 +41,15 @@ needs_sphinx = '2.3'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    'sphinx_toolbox.collapse',
     'sphinx.ext.mathjax',
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.todo',
-    'sphinx_tabs.tabs'
+    'sphinx_tabs.tabs',
+    'contrib_ext',
+    'chios.bolditalic'
 ]
 
 # Show `.. todo` directives in the output
@@ -80,19 +82,38 @@ html_extra_path = ['CNAME']
 
 html_sidebars = {
     '**': [
-        'localtoc.html', 
-        'relations.html', 
-        'sourcelink.html', 
-        'searchbox.html', 
+        'localtoc.html',
+        'relations.html',
+        'sourcelink.html',
+        'searchbox.html',
         'google_search.html'
     ],
 }
 
+def setup(app):
+    app.add_css_file('details_summary_hide.css')
+
+# The name of an image file (within the static path) to use as favicon of the
+# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# pixels large.
+html_favicon = "../../../common/favicon.ico"
+
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'NeXusManualdoc'
 
+html_contexthtml_context = {
+  'css_files': [
+    '_static/bespoke.css',  # custom CSS styling
+    '_static/bolditalic.css',  # bolditalic styling
+    ],
+  }
+
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {
-    'maxlistdepth':7, # some application definitions are deeply nested
-    'preamble': '\\usepackage{amsbsy}\n'
+    'maxlistdepth':25, # some application definitions are deeply nested
+    'preamble': r'''
+    \usepackage{amsbsy}
+    \DeclareUnicodeCharacter{1F517}{X}
+    \DeclareUnicodeCharacter{2906}{<=}
+    \listfiles'''
 }

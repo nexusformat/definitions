@@ -1,3 +1,4 @@
+from contextlib import contextmanager
 from typing import Optional
 
 import lxml.etree
@@ -16,13 +17,19 @@ def validate_definition(
     xml_schema: Optional[lxml.etree.XMLSchema] = None,
 ):
     xml_file_name = str(xml_file_name)
-    try:
+    with _handle_xml_error(xml_file_name, lxml.etree.XMLSyntaxError):
         xml_tree = lxml.etree.parse(xml_file_name)
-    except lxml.etree.XMLSyntaxError:
-        raise errors.XMLSyntaxError(xml_file_name)
     if xml_schema is None:
         xml_schema = nxdl_schema()
-    try:
+    with _handle_xml_error(xml_file_name, lxml.etree.DocumentInvalid):
         xml_schema.assertValid(xml_tree)
-    except lxml.etree.DocumentInvalid:
-        raise errors.NXDLSyntaxError(xml_file_name)
+
+
+@contextmanager
+def _handle_xml_error(xml_file_name: str, *exception_types):
+    try:
+        yield
+    except exception_types as e:
+        raise errors.XMLSyntaxError(
+            "\n  " + "\n  ".join([xml_file_name] + str(e).rsplit(":", 1))
+        ) from e

@@ -1,0 +1,868 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--05/2023
+Draft of a NeXus application definition which serves as a template for various
+optical spectroscopy experiments-->
+<!--To do:
+[ ] Check base classes (NXbeam_path + base classes used by it)
+[ ] Harmonize NXopt and NXellipsometry
+[ ] Fix dimensions and ranks-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" name="NXopt" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             Variables used throughout the document, e.g. dimensions or parameters.
+        </doc>
+        <symbol name="N_spectrum">
+            <doc>
+                 Length of the spectrum array (e.g. wavelength or energy) of the measured
+                 data.
+            </doc>
+        </symbol>
+        <symbol name="N_sensors">
+            <doc>
+                 Number of sensors used to measure parameters that influence the sample,
+                 such as temperature or pressure.
+            </doc>
+        </symbol>
+        <symbol name="N_measurements">
+            <doc>
+                 Number of measurements (1st dimension of measured_data array). This is
+                 equal to the number of parameters scanned. For example, if the experiment
+                 was performed at three different temperatures and two different pressures
+                 N_measurements = 2*3 = 6.
+            </doc>
+        </symbol>
+        <symbol name="N_detection_angles">
+            <doc>
+                 Number of detection angles of the beam reflected or scattered off the
+                 sample.
+            </doc>
+        </symbol>
+        <symbol name="N_incident_angles">
+            <doc>
+                 Number of angles of incidence of the incident beam.
+            </doc>
+        </symbol>
+        <symbol name="N_observables">
+            <doc>
+                 Number of observables that are saved in a measurement. e.g. one for
+                 intensity, reflectivity or transmittance, two for Psi and Delta etc. This
+                 is equal to the second dimension of the data array 'measured_data' and the
+                 number of column names.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         An application definition for optical spectroscopy experiments.
+    </doc>
+    <group type="NXentry">
+        <doc>
+             An application definition template for optical spectroscopy experiments.
+             
+             A general optical experiment consists of a light or excitation source, a
+             beam path, a sample + its stage + its environment, and a detection unit.
+             Examples are reflection or transmission measurements, photoluminescence,
+             Raman spectroscopy, ellipsometry etc.
+        </doc>
+        <field name="definition">
+            <doc>
+                 An application definition describing a general optical experiment.
+            </doc>
+            <attribute name="version">
+                <doc>
+                     Version number to identify which definition of this application
+                     definition was used for this entry/data.
+                </doc>
+            </attribute>
+            <attribute name="url">
+                <doc>
+                     URL where to find further material (documentation, examples) relevant
+                     to the application definition.
+                </doc>
+            </attribute>
+            <enumeration>
+                <item value="NXopt"/>
+            </enumeration>
+        </field>
+        <field name="experiment_identifier">
+            <doc>
+                 A (globally persistent) unique identifier of the experiment.
+                 (i) The identifier is usually defined by the facility or principle
+                 investigator.
+                 (ii) The identifier enables to link experiments to e.g. proposals.
+            </doc>
+        </field>
+        <field name="experiment_description" optional="true">
+            <doc>
+                 An optional free-text description of the experiment.
+                 
+                 However, details of the experiment should be defined in the specific
+                 fields of this application definition rather than in this experiment
+                 description.
+            </doc>
+        </field>
+        <field name="experiment_type">
+            <doc>
+                 Specify the type of the optical experiment.
+            </doc>
+        </field>
+        <field name="start_time" type="NX_DATE_TIME">
+            <doc>
+                 Start time of the experiment. UTC offset should be specified.
+            </doc>
+        </field>
+        <group type="NXuser">
+            <doc>
+                 Contact information of at least the user of the instrument or the
+                 investigator who performed this experiment.
+                 Adding multiple users, if relevant, is recommended.
+            </doc>
+            <field name="name" type="NX_CHAR">
+                <doc>
+                     Name of the user.
+                </doc>
+            </field>
+            <field name="affiliation" type="NX_CHAR" recommended="true">
+                <doc>
+                     Name of the affiliation of the user at the point in time when the
+                     experiment was performed.
+                </doc>
+            </field>
+            <field name="address" type="NX_CHAR" recommended="true">
+                <doc>
+                     Street address of the user's affiliation.
+                </doc>
+            </field>
+            <field name="email" type="NX_CHAR">
+                <doc>
+                     Email address of the user.
+                </doc>
+            </field>
+            <field name="orcid" type="NX_CHAR" recommended="true">
+                <doc>
+                     Author ID defined by https://orcid.org/.
+                </doc>
+            </field>
+            <field name="telephone_number" type="NX_CHAR" recommended="true">
+                <doc>
+                     Telephone number of the user.
+                </doc>
+            </field>
+        </group>
+        <group type="NXinstrument">
+            <doc>
+                 Properties of the experimental setup. This includes general information
+                 about the instrument (such as model, company etc.), information about
+                 the calibration of the instrument, elements of the beam path including
+                 the excitation or light source and the detector unit, the sample stage
+                 (plus the sample environment, which also includes sensors used to
+                 monitor external conditions) and elements of the beam path.
+                 
+                 Meta data describing the sample should be specified in ENTRY/SAMPLE
+                 outside of ENTRY/INSTRUMENT.
+            </doc>
+            <field name="model">
+                <doc>
+                     The name of the instrument.
+                </doc>
+                <attribute name="version">
+                    <doc>
+                         The used version of the hardware if available. If not a commercial
+                         instrument use date of completion of the hardware.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="company" optional="true">
+                <doc>
+                     Name of the company which build the instrument.
+                </doc>
+            </field>
+            <field name="construction_year" type="NX_DATE_TIME" optional="true">
+                <doc>
+                     ISO8601 date when the instrument was constructed.
+                     UTC offset should be specified.
+                </doc>
+            </field>
+            <group name="software" type="NXprocess">
+                <field name="program">
+                    <doc>
+                         Commercial or otherwise defined given name of the program that was
+                         used to measure the data, i.e. the software used to start and
+                         record the measured data and/or metadata.
+                         If home written, one can provide the actual steps in the NOTE
+                         subfield here.
+                    </doc>
+                </field>
+                <field name="version">
+                    <doc>
+                         Either version with build number, commit hash, or description of a
+                         (online) repository where the source code of the program and build
+                         instructions can be found so that the program can be configured in
+                         such a way that result files can be created ideally in a
+                         deterministic manner.
+                    </doc>
+                </field>
+                <attribute name="url" optional="true">
+                    <doc>
+                         Website of the software.
+                    </doc>
+                </attribute>
+            </group>
+            <group name="firmware" type="NXprogram" recommended="true">
+                <doc>
+                     Commercial or otherwise defined name of the firmware that was used
+                     for the measurement - if available.
+                </doc>
+                <attribute name="version">
+                    <doc>
+                         Version and build number or commit hash of the software source code.
+                    </doc>
+                </attribute>
+                <attribute name="url" optional="true">
+                    <doc>
+                         Website of the software.
+                    </doc>
+                </attribute>
+            </group>
+            <field name="calibration_status" type="NX_CHAR">
+                <doc>
+                     Was a calibration performed? If yes, when was it done? If the
+                     calibration time is provided, it should be specified in
+                     ENTRY/INSTRUMENT/calibration/calibration_time.
+                </doc>
+                <enumeration>
+                    <item value="calibration time provided"/>
+                    <item value="no calibration"/>
+                    <item value="within 1 hour"/>
+                    <item value="within 1 day"/>
+                    <item value="within 1 week"/>
+                </enumeration>
+            </field>
+            <group name="calibration" type="NXsubentry" recommended="true">
+                <doc>
+                     The calibration data and metadata should be described in a separate NeXus file
+                     with the link provided in 'calibration_link'.
+                </doc>
+                <field name="calibration_time" type="NX_DATE_TIME" optional="true">
+                    <doc>
+                         If calibtration status is 'calibration time provided', specify the
+                         ISO8601 date when calibration was last performed before this
+                         measurement. UTC offset should be specified.
+                    </doc>
+                </field>
+                <field name="calibration_data_link">
+                    <doc>
+                         Link to the NeXus file containing the calibration data and metadata.
+                    </doc>
+                </field>
+            </group>
+            <group type="NXbeam_path">
+                <doc>
+                     Describes an arrangement of optical or other elements, e.g. the beam
+                     path between the light source and the sample, or between the sample
+                     and the detector unit (including the sources and detectors
+                     themselves).
+                     
+                     If a beam splitter (i.e. a device that splits the incoming beam into
+                     two or more beams) is part of the beam path, two or more NXbeam_path
+                     fields may be needed to fully describe the beam paths and the correct
+                     sequence of the beam path elements.
+                     Use as many beam paths as needed to describe the setup.
+                </doc>
+            </group>
+            <field name="angle_of_incidence" type="NX_NUMBER" units="NX_ANGLE">
+                <doc>
+                     Angle(s) of the incident beam vs. the normal of the bottom reflective
+                     (substrate) surface in the sample.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="N_incident_angles"/>
+                </dimensions>
+                <attribute name="units"/>
+            </field>
+            <field name="detection_angle" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                <doc>
+                     Detection angle(s) of the beam reflected or scattered off the sample
+                     vs. the normal of the bottom reflective (substrate) surface in the
+                     sample if not equal to the angle(s) of incidence.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="N_detection_angles"/>
+                </dimensions>
+            </field>
+            <group name="sample_stage" type="NXsubentry">
+                <doc>
+                     Sample stage, holding the sample at a specific position in X,Y,Z
+                     (Cartesian) coordinate system and at an orientation defined
+                     by three Euler angles (alpha, beta, gamma).
+                </doc>
+                <field name="stage_type">
+                    <doc>
+                         Specify the type of the sample stage.
+                    </doc>
+                    <enumeration>
+                        <item value="manual stage"/>
+                        <item value="scanning stage"/>
+                        <item value="liquid stage"/>
+                        <item value="gas cell"/>
+                        <item value="cryostat"/>
+                    </enumeration>
+                </field>
+                <field name="alternative" optional="true">
+                    <doc>
+                         If there is no motorized stage, we should at least qualify where
+                         the beam hits the sample and in what direction the sample stands
+                         in a free-text description, e.g. 'center of sample, long edge
+                         parallel to the plane of incidence'.
+                    </doc>
+                </field>
+                <group name="environment_conditions" type="NXenvironment">
+                    <doc>
+                         Specify external parameters that have influenced the sample, such
+                         as the surrounding medium, and varied parameters e.g. temperature,
+                         pressure, pH value, optical excitation etc.
+                    </doc>
+                    <field name="medium">
+                        <doc>
+                             Describe what was the medium above or around the sample. The
+                             common model is built up from the substrate to the medium on the
+                             other side. Both boundaries are assumed infinite in the model.
+                             Here, define the name of the medium (e.g. water, air, UHV, etc.).
+                        </doc>
+                    </field>
+                    <field name="medium_refractive_indices" type="NX_FLOAT" optional="true" units="NX_UNITLESS">
+                        <doc>
+                             Array of pairs of complex refractive indices n + ik of the medium
+                             for every measured spectral point/wavelength/energy.
+                             Only necessary if the measurement was performed not in air, or
+                             something very well known, e.g. high purity water.
+                        </doc>
+                        <dimensions rank="2">
+                            <dim index="1" value="2"/>
+                            <dim index="2" value="N_spectrum"/>
+                        </dimensions>
+                    </field>
+                    <group name="PARAMETER" type="NXsensor" optional="true">
+                        <doc>
+                             A sensor used to monitor an external condition influencing the
+                             sample, such as temperature or pressure. It is suggested to
+                             replace 'PARAMETER' by the type of the varied parameter defined
+                             in 'parameter_type'.
+                             The measured parameter values should be provided in 'values'.
+                             For each parameter, a 'PARAMETER(NXsensor)' field needs to exist.
+                             In other words, there are N_sensors 'PARAMETER(NXsensor)' fields.
+                        </doc>
+                        <field name="parameter_type">
+                            <doc>
+                                 Indicates which parameter was changed. Its definition must exist
+                                 below. The specified variable has to be N_measurements long,
+                                 providing the parameters for each data set. If you vary more than
+                                 one parameter simultaneously.
+                                 If the measured parameter is not contained in the list `other`
+                                 should be specified and the `parameter_type_name` should be provided.
+                            </doc>
+                            <enumeration>
+                                <item value="conductivity"/>
+                                <item value="detection_angle"/>
+                                <item value="electric_field"/>
+                                <item value="flow"/>
+                                <item value="incident_angle"/>
+                                <item value="magnetic_field"/>
+                                <item value="optical_excitation"/>
+                                <item value="pH"/>
+                                <item value="pressure"/>
+                                <item value="resistance"/>
+                                <item value="shear"/>
+                                <item value="stage_positions"/>
+                                <item value="strain"/>
+                                <item value="stress"/>
+                                <item value="surface_pressure"/>
+                                <item value="temperature"/>
+                                <item value="voltage"/>
+                                <item value="other"/>
+                            </enumeration>
+                        </field>
+                        <field name="parameter_type_name" optional="true">
+                            <doc>
+                                 If the parameter_type is `other` a name should be specified here.
+                            </doc>
+                        </field>
+                        <field name="number_of_parameters" type="NX_POSINT" units="NX_UNITLESS">
+                            <doc>
+                                 Number of different parameter values at which the measurement
+                                 was performed. For example, if the measurement was performed at
+                                 temperatures of 4, 77 and 300 K, then number_of_parameters = 3.
+                            </doc>
+                        </field>
+                        <field name="values" type="NX_FLOAT" units="NX_ANY">
+                            <doc>
+                                 Vector containing the values of the varied parameter. Its
+                                 length is equal to N_measurements. The order of the values
+                                 should be as follows:
+                                 
+                                 * Order the sensors according to number_of_parameters starting
+                                   with the lowest number. If number_of_parameters is equal for
+                                   two sensors order them alphabetically (sensor/parameter name).
+                                 * The first sensor's j parameters should be ordered in the
+                                   following way. The first N_measurements/number_of_parameters
+                                   entries of the vector contain the first parameter (a1), the
+                                   second N_measurements/number_of_parameters contain the second
+                                   parameter (a2) etc., so the vector looks like:
+                                   [
+                                   a1,a1,...,a1,
+                                   a2,a2,...,a2,
+                                   ...
+                                   aj,aj,...aj
+                                   ]
+                                 * The kth sensor's m parameters should be ordered in the
+                                   following way:
+                                   [
+                                   p1,...p1,p2,...,p2,...pm,...,pm,
+                                   p1,...p1,p2,...,p2,...pm,...,pm,
+                                   ...
+                                   p1,...p1,p2,...,p2,...pm,...,pm
+                                   ]
+                                 * The last sensor's n parameters should be ordered in the
+                                   following way:
+                                   [
+                                   z1,z2,...,zn,
+                                   z1,z2,...,zn,
+                                   ...
+                                   z1,z2,...,zn]
+                                 
+                                 For example, if the experiment was performed at three different
+                                 temperatures (T1, T2, T3), two different pressures (p1, p2) and
+                                 two different angles of incidence (a1, a2), then
+                                 N_measurements = 12 and the order of the values for the various
+                                 parameter vectors is:
+                                 
+                                 * angle_of_incidence: [a1,a1,a1,a1,a1,a1,a2,a2,a2,a2,a2,a2]
+                                 * pressure: [p1,p1,p1,p2,p2,p2,p1,p1,p1,p2,p2,p2]
+                                 * temperature: [T1,T2,T3,T1,T2,T3,T1,T2,T3,T1,T2,T3]
+                            </doc>
+                            <dimensions rank="1">
+                                <dim index="1" value="N_measurements"/>
+                            </dimensions>
+                        </field>
+                    </group>
+                </group>
+                <group name="WINDOW" type="NXaperture" optional="true">
+                    <doc>
+                         For environmental measurements, the environment (liquid, vapor
+                         etc.) is enclosed in a cell, which has windows both in the
+                         direction of the source (entry window) and the detector (exit
+                         window) (looking from the sample). In case that the entry and exit
+                         windows are not the same type and do not have the same properties,
+                         use a second 'WINDOW(MXaperture)' field.
+                         
+                         The windows also add a phase shift to the light altering the
+                         measured signal. This shift has to be corrected based on measuring
+                         a known sample (reference sample) or the actual sample of interest
+                         in the environmental cell. State if a window correction has been
+                         performed in 'window_effects_corrected'. Reference data should be
+                         considered as a separate experiment, and a link to the NeXus file
+                         should be added in reference_data_link in measured_data.
+                         
+                         The window is considered to be a part of the sample stage but also
+                         beam path. Hence, its position within the beam path should be
+                         defined by the 'depends_on' field.
+                    </doc>
+                    <field name="depends_on" recommended="true">
+                        <doc>
+                             Specify the position of the window in the beam path by pointing
+                             to the preceding element in the sequence of beam path elements.
+                        </doc>
+                    </field>
+                    <field name="window_effects_corrected" type="NX_BOOLEAN">
+                        <doc>
+                             Was a window correction performed? If 'True' describe the window
+                             correction procedure in 'window_correction/procedure'.
+                        </doc>
+                    </field>
+                    <group name="window_correction" type="NXprocess" optional="true">
+                        <doc>
+                             Was a window correction performed? If 'True' describe the
+                             window correction procedure in ''
+                        </doc>
+                        <field name="procedure">
+                            <doc>
+                                 Describe when (before or after the main measurement + time
+                                 stamp in 'date') and how the window effects have been
+                                 corrected, i.e. either mathematically or by performing a
+                                 reference measurement. In the latter case, provide the link to
+                                 to the reference data in 'reference_data_link'.
+                            </doc>
+                        </field>
+                        <field name="reference_data_link" optional="true">
+                            <doc>
+                                 Link to the NeXus file which describes the reference data if a
+                                 reference measurement for window correction was performed.
+                                 Ideally, the reference measurement was performed on a reference
+                                 sample and on the same sample, and using the same conditions as
+                                 for the actual measurement with and without windows. It should
+                                 have been conducted as close in time to the actual measurement
+                                 as possible.
+                            </doc>
+                        </field>
+                    </group>
+                    <field name="material" type="NX_CHAR">
+                        <doc>
+                             The material of the window.
+                        </doc>
+                        <enumeration>
+                            <item value="quartz"/>
+                            <item value="diamond"/>
+                            <item value="calcium fluoride"/>
+                            <item value="zinc selenide"/>
+                            <item value="thallium bromoiodide"/>
+                            <item value="alkali halide compound"/>
+                            <item value="Mylar"/>
+                            <item value="other"/>
+                        </enumeration>
+                    </field>
+                    <field name="other_material" type="NX_CHAR" optional="true">
+                        <doc>
+                             If you specified 'other' as material, decsribe here what it is.
+                        </doc>
+                    </field>
+                    <field name="thickness" type="NX_FLOAT" units="NX_LENGTH">
+                        <doc>
+                             Thickness of the window.
+                        </doc>
+                    </field>
+                    <field name="orientation_angle" type="NX_FLOAT" units="NX_ANGLE">
+                        <doc>
+                             Angle of the window normal (outer) vs. the substrate normal
+                             (similar to the angle of incidence).
+                        </doc>
+                    </field>
+                </group>
+            </group>
+        </group>
+        <group type="NXsample">
+            <doc>
+                 Properties of the sample, such as sample type, layer structure,
+                 chemical formula, atom types, its history etc.
+                 Information about the sample stage and sample environment should be
+                 described in ENTRY/INSTRUMENT/sample_stage.
+            </doc>
+            <field name="sample_name">
+                <doc>
+                     Descriptive name of the sample
+                </doc>
+            </field>
+            <field name="sample_type">
+                <doc>
+                     Specify the type of sample, e.g. thin film, single crystal etc.
+                </doc>
+                <enumeration>
+                    <item value="thin film"/>
+                    <item value="single crystal"/>
+                    <item value="poly crystal"/>
+                    <item value="single layer"/>
+                    <item value="multi layer"/>
+                </enumeration>
+            </field>
+            <field name="layer_structure">
+                <doc>
+                     Qualitative description of the layer structure for the sample,
+                     starting with the top layer (i.e. the one on the front surface, on
+                     which the light incident), e.g. native oxide/bulk substrate, or
+                     Si/native oxide/thermal oxide/polymer/peptide.
+                </doc>
+            </field>
+            <field name="chemical_formula">
+                <doc>
+                     Chemical formula of the sample. Use the Hill system (explained here:
+                     https://en.wikipedia.org/wiki/Chemical_formula#Hill_system) to write
+                     the chemical formula. In case the sample consists of several layers,
+                     this should be a list of the chemical formulas of the individual
+                     layers, where the first entry is the chemical formula of the top
+                     layer (the one on the front surface, on which the light incident).
+                     The order must be consistent with layer_structure
+                </doc>
+            </field>
+            <field name="atom_types">
+                <doc>
+                     List of comma-separated elements from the periodic table that are
+                     contained in the sample. If the sample substance has multiple
+                     components, all elements from each component must be included in
+                     'atom_types'.
+                </doc>
+            </field>
+            <field name="sample_history">
+                <doc>
+                     Ideally, a reference to the location or a unique (globally
+                     persistent) identifier (e.g.) of e.g. another file which gives
+                     as many as possible details of the material, its microstructure,
+                     and its thermo-chemo-mechanical processing/preparation history.
+                     In the case that such a detailed history of the sample is not
+                     available, use this field as a free-text description to specify
+                     details of the sample and its preparation.
+                </doc>
+            </field>
+            <field name="preparation_date" type="NX_DATE_TIME" recommended="true">
+                <doc>
+                     ISO8601 date with time zone (UTC offset) specified.
+                </doc>
+            </field>
+            <field name="substrate" recommended="true">
+                <doc>
+                     Description of the substrate.
+                </doc>
+            </field>
+            <field name="sample_orientation" optional="true">
+                <doc>
+                     Specify the sample orientation.
+                </doc>
+            </field>
+        </group>
+        <group name="data_collection" type="NXprocess">
+            <doc>
+                 Measured data, data errors, and varied parameters. If reference data
+                 were measured they should be considered a separate experiment and a
+                 link to its NeXus file should be added in reference_data_link.
+            </doc>
+            <field name="data_identifier" type="NX_NUMBER">
+                <doc>
+                     An identifier to correlate data to the experimental conditions,
+                     if several were used in this measurement; typically an index of 0-N.
+                </doc>
+            </field>
+            <field name="data_type">
+                <doc>
+                     Select which type of data was recorded, for example intensity,
+                     reflectivity, transmittance, Psi and Delta etc.
+                     It is possible to have multiple selections. The enumeration list
+                     depends on the type of experiment and may differ for different
+                     application definitions.
+                </doc>
+                <enumeration>
+                    <item value="intensity"/>
+                    <item value="reflectivity"/>
+                    <item value="transmittance"/>
+                    <item value="Psi/Delta"/>
+                    <item value="tan(Psi)/cos(Delta)"/>
+                    <item value="Mueller matrix"/>
+                    <item value="Jones matrix"/>
+                    <item value="N/C/S"/>
+                    <item value="raw data"/>
+                </enumeration>
+            </field>
+            <!--This should be a required field, but is set to 'optional' for the moment-->
+            <field name="NAME_spectrum" type="NX_FLOAT" optional="true" units="NX_ANY">
+                <doc>
+                     Spectral values (e.g. wavelength or energy) used for the measurement.
+                     An array of 1 or more elements. Length defines N_spectrum. Replace
+                     'SPECTRUM' by the physical quantity that is used, e.g. wavelength.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="N_spectrum"/>
+                </dimensions>
+                <attribute name="units" optional="true">
+                    <doc>
+                         If applicable, change 'unit: NX_ANY' to the appropriate NXDL unit.
+                         If the unit of the measured data is not covered by NXDL units state
+                         here which unit was used.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="measured_data" type="NX_FLOAT" units="NX_ANY">
+                <doc>
+                     Resulting data from the measurement, described by 'data_type'.
+                     
+                     The first dimension is defined by the number of measurements taken,
+                     (N_measurements). The instructions on how to order the values
+                     contained in the parameter vectors given in the doc string of
+                     INSTRUMENT/sample_stage/environment_conditions/PARAMETER/values,
+                     define the N_measurements parameter sets. For example, if the
+                     experiment was performed at three different temperatures
+                     (T1, T2, T3), two different pressures (p1, p2) and two different
+                     angles of incidence (a1, a2), the first measurement was taken at the
+                     parameters {a1,p1,T1}, the second measurement at {a1,p1,T2} etc.
+                </doc>
+                <dimensions rank="3">
+                    <dim index="1" value="N_measurements"/>
+                    <dim index="2" value="N_observables"/>
+                    <dim index="3" value="N_spectrum"/>
+                </dimensions>
+                <attribute name="units" optional="true">
+                    <doc>
+                         If applicable, change 'unit: NX_ANY' to the appropriate NXDL unit.
+                         If the unit of the measured data is not covered by NXDL units state
+                         here which unit was used.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="measured_data_errors" type="NX_FLOAT" optional="true" units="NX_ANY">
+                <doc>
+                     Specified uncertainties (errors) of the data described by 'data_type'
+                     and provided in 'measured_data'.
+                </doc>
+                <dimensions rank="3">
+                    <dim index="1" value="N_measurements"/>
+                    <dim index="2" value="N_observables"/>
+                    <dim index="3" value="N_spectrum"/>
+                </dimensions>
+                <attribute name="units" optional="true">
+                    <doc>
+                         If applicable, change 'unit: NX_ANY' to the appropriate NXDL unit.
+                         If the unit of the measured data is not covered by NXDL units state
+                         here which unit was used.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="varied_parameter_link" optional="true">
+                <doc>
+                     List of links to the values of the sensors. Add a link for each
+                     varied parameter (i.e. for each sensor).
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="N_sensors"/>
+                </dimensions>
+            </field>
+            <field name="reference_data_link" optional="true">
+                <doc>
+                     Link to the NeXus file which describes the reference data if a
+                     reference measurement was performed. Ideally, the reference
+                     measurement was performed using the same conditions as the actual
+                     measurement and should be as close in time to the actual measurement
+                     as possible.
+                </doc>
+            </field>
+            <group name="data_software" type="NXprocess" optional="true">
+                <field name="program">
+                    <doc>
+                         Commercial or otherwise defined given name of the program that was
+                         used to generate the result file(s) with measured data and/or
+                         metadata (in most cases, this is the same as INSTRUMENT/software).
+                         If home written, one can provide the actual steps in the NOTE
+                         subfield here.
+                    </doc>
+                </field>
+                <field name="version">
+                    <doc>
+                         Either version with build number, commit hash, or description of a
+                         (online) repository where the source code of the program and build
+                         instructions can be found so that the program can be configured in
+                         such a way that result files can be created ideally in a
+                         deterministic manner.
+                    </doc>
+                </field>
+                <attribute name="url" optional="true">
+                    <doc>
+                         Website of the software.
+                    </doc>
+                </attribute>
+            </group>
+            <group type="NXdata" optional="true">
+                <doc>
+                     A plot of the multi-dimensional data array provided in
+                     ENTRY/data/measured_data.
+                </doc>
+                <attribute name="axes">
+                    <doc>
+                         Spectrum, i.e. x-axis of the data (e.g. wavelength, energy etc.)
+                    </doc>
+                </attribute>
+            </group>
+        </group>
+        <group name="derived_parameters" type="NXprocess" optional="true">
+            <doc>
+                 Parameters that are derived from the measured data.
+            </doc>
+            <field name="depolarization" type="NX_NUMBER" optional="true" units="NX_UNITLESS">
+                <doc>
+                     Light loss due to depolarization as a value in [0-1].
+                </doc>
+                <dimensions rank="3">
+                    <dim index="1" value="N_measurements"/>
+                    <dim index="2" value="1"/>
+                    <dim index="3" value="N_spectrum"/>
+                </dimensions>
+            </field>
+            <field name="Jones_quality_factor" type="NX_NUMBER" optional="true" units="NX_UNITLESS">
+                <doc>
+                     Jones quality factor.
+                </doc>
+                <dimensions rank="3">
+                    <dim index="1" value="N_measurements"/>
+                    <dim index="2" value="1"/>
+                    <dim index="3" value="N_spectrum"/>
+                </dimensions>
+            </field>
+            <field name="reflectivity" type="NX_NUMBER" optional="true" units="NX_UNITLESS">
+                <doc>
+                     Reflectivity.
+                </doc>
+                <dimensions rank="3">
+                    <dim index="1" value="N_measurements"/>
+                    <dim index="2" value="1"/>
+                    <dim index="3" value="N_spectrum"/>
+                </dimensions>
+            </field>
+            <field name="transmittance" type="NX_NUMBER" optional="true" units="NX_UNITLESS">
+                <doc>
+                     Transmittance.
+                </doc>
+                <dimensions rank="3">
+                    <dim index="1" value="N_measurements"/>
+                    <dim index="2" value="1"/>
+                    <dim index="3" value="N_spectrum"/>
+                </dimensions>
+            </field>
+            <group name="ANALYSIS_program" type="NXprocess" optional="true">
+                <field name="program">
+                    <doc>
+                         Commercial or otherwise defined given name of the program that was
+                         used to generate or calculate the derived parameters.
+                         If home written, one can provide the actual steps in the NOTE
+                         subfield here.
+                    </doc>
+                </field>
+                <field name="version">
+                    <doc>
+                         Either version with build number, commit hash, or description of a
+                         (online) repository where the source code of the program and build
+                         instructions can be found so that the program can be configured in
+                         such a way that result files can be created ideally in a
+                         deterministic manner.
+                    </doc>
+                </field>
+            </group>
+        </group>
+        <group name="plot" type="NXdata">
+            <doc>
+                 A default view of the data provided in ENTRY/data_collection/measured_data. This
+                 should be the part of the data set which provides the most suitable
+                 representation of the data.
+            </doc>
+            <attribute name="axes">
+                <doc>
+                     Spectrum, i.e. x-axis of the data (e.g. wavelength, energy etc.)
+                </doc>
+            </attribute>
+        </group>
+    </group>
+</definition>
