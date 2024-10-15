@@ -29,9 +29,9 @@ support library must create and set the ``NX_class`` attribute on each group.
     =====================================   ================================================  ================================================
     create file & root (``/``) structure    ``with nxopen(fileName, "w") as f:``              ``with h5py.File(fileName, "w") as f:``
     create ``/entry`` group                 ``f["entry"] = NXentry()``                        ``nxentry = f.create_group("entry"); nxentry.attrs["NX_class"] = "NXentry"``
-    create ``/entry/mr_scan`` group         ``f["entry/mr_scan"] = NXdata(y, x)``             ``nxdata = nxentry.create_group("mr_scan"); nxentry["mr_scan"].attrs["NX_class"] = "NXdata"``
-    store ``mr`` data                       ``x = NXfield(mr_arr, units="degrees", ...)``     ``nxdata.create_dataset("mr", data=mr_arr, units="degrees")``
-    store ``I00`` data                      ``y = NXfield(i00_arr, units="counts", ...)``     ``nxdata.create_dataset("I00", data=i00_arr, units="counts")``
+    create ``/entry/mr_scan`` group         ``f["entry/mr_scan"] = NXdata(y, x)``             ``nxdata = nxentry.create_group("mr_scan"); nxdata.attrs["NX_class"] = "NXdata"``
+    store ``mr`` data                       ``x = NXfield(mr_arr, units="degrees", ...)``     ``x = nxdata.create_dataset("mr", data=mr_arr); x.attrs["units"] = "degrees"``
+    store ``I00`` data                      ``y = NXfield(i00_arr, units="counts", ...)``     ``y = nxdata.create_dataset("I00", data=i00_arr); y.attrs["units"] = "counts"``
     add ``title``                           ``f["entry/title"] = ...``                        ``nxentry.create_dataset("title", ...)``
     =====================================   ================================================  ================================================
 
