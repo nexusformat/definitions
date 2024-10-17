@@ -46,7 +46,7 @@ def decode_or_not(elem, encoding: str = "utf-8", decode: bool = True):
         try:
             return elem.decode(encoding)
         except UnicodeDecodeError as e:
-            e.add_note(f'Error decoding bytes object: {elem}')
+            e.add_note(f"Error decoding bytes object: {elem}")
             raise
 
     return elem
