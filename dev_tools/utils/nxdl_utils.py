@@ -316,19 +316,16 @@ def is_name_type(child, name_type_value: str) -> bool:
         name_type_value (str): The nameType value to compare against ("any" or "partial").
 
     """
-    if (child.attrib.get("nameType") == name_type_value):
+    if child.attrib.get("nameType") == name_type_value:
         return True
-    
 
-    if name_type_value == "any" and(
-        get_local_name_from_xml(child) == "group" and
-            "nameType" not in child.attrib and
-            "name" not in child.attrib):
+    if name_type_value == "any" and (
+        get_local_name_from_xml(child) == "group"
+        and "nameType" not in child.attrib
+        and "name" not in child.attrib
+    ):
         return True
     return False
-
-
-
 
 
 def belongs_to(nxdl_elem, child, name, class_type=None, hdf_name=None):
@@ -858,7 +855,7 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
             nexus_type != "group" or get_nx_class(child) == hdf_class_name
         ):
             name_any = is_name_type(child, "any")
-            name_partial = is_name_type(child, "partial") 
+            name_partial = is_name_type(child, "partial")
             if name_partial or name_any:
                 fit = get_nx_namefit(
                     hdf_name,
