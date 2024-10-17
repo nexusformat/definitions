@@ -46,7 +46,7 @@ def decode_or_not(elem, encoding: str = "utf-8", decode: bool = True):
         try:
             return elem.decode(encoding)
         except UnicodeDecodeError as e:
-            raise ValueError(f"Error decoding bytes") from e
+            raise ValueError("Error decoding bytes") from e
 
     return elem
 
@@ -305,6 +305,7 @@ def get_node_name(node):
             name = name[2:].upper()
     return name
 
+
 def is_name_type(child, name_type_value: str) -> bool:
     """
     Determines if the child XML element's nameType attribute is equal to
@@ -315,14 +316,12 @@ def is_name_type(child, name_type_value: str) -> bool:
         name_type_value (str): The nameType value to compare against ("any" or "partial").
 
     """
-    return (
-        child.attrib.get("nameType") == name_type_value or
-        (
-            get_local_name_from_xml(child) == "group" and
-            "nameType" not in child.attrib and
-            "name" not in child.attrib
-        )
+    return child.attrib.get("nameType") == name_type_value or (
+        get_local_name_from_xml(child) == "group"
+        and "nameType" not in child.attrib
+        and "name" not in child.attrib
     )
+
 
 def belongs_to(nxdl_elem, child, name, class_type=None, hdf_name=None):
     """Checks if an HDF5 node name corresponds to a child of the NXDL element
