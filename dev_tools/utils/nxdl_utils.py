@@ -46,7 +46,7 @@ def decode_or_not(elem, encoding: str = "utf-8", decode: bool = True):
         try:
             return elem.decode(encoding)
         except UnicodeDecodeError as e:
-            raise ValueError(f"Error decoding bytes: {e}") from e
+            raise ValueError(f"Error decoding bytes") from e
 
     return elem
 
@@ -850,11 +850,7 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
         if get_local_name_from_xml(child) == nexus_type and (
             nexus_type != "group" or get_nx_class(child) == hdf_class_name
         ):
-            name_any = child.attrib.get("nameType") == "any" or (
-                nexus_type == "group"
-                and "nameType" not in child.attrib.keys()
-                and "name" not in child.attrib.keys()
-            )
+            name_any = is_name_type(child, "any")
             name_partial = child.attrib.get("nameType") == "partial"
             if name_partial or name_any:
                 fit = get_nx_namefit(
