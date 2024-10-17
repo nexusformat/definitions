@@ -32,8 +32,8 @@ def test_get_nexus_classes_units_attributes():
 
 def test_get_node_at_nxdl_path():
     """Test to verify if we receive the right XML element for a given NXDL path"""
-    local_dir = os.path.abspath(os.path.dirname(__file__))
-    nxdl_file_path = os.path.join(local_dir, "./NXtest.nxdl.xml")
+    local_dir = Path(__file__).resolve().parent
+    nxdl_file_path = local_dir / "NXtest.nxdl.xml"
     elem = ET.parse(nxdl_file_path).getroot()
     node = nexus.get_node_at_nxdl_path("/ENTRY/NXODD_name", elem=elem)
     assert node.attrib["type"] == "NXdata"
@@ -48,7 +48,8 @@ def test_get_node_at_nxdl_path():
     )
     assert node.attrib["name"] == "long_name"
 
-    nxdl_file_path = os.path.join(local_dir, "../../applications/NXem.nxdl.xml")
+    nxdl_file_path_em = local_dir.parent.parent / "applications" / "NXem.nxdl.xml"
+
     elem = ET.parse(nxdl_file_path).getroot()
     node = nexus.get_node_at_nxdl_path(
         "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/end_time", elem=elem
