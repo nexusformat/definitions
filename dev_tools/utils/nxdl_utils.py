@@ -46,7 +46,7 @@ def decode_or_not(elem, encoding: str = "utf-8", decode: bool = True):
         try:
             return elem.decode(encoding)
         except UnicodeDecodeError as e:
-            raise ValueError(f"Error decoding bytes: {e}")
+            raise ValueError(f"Error decoding bytes: {e}") from e
 
     return elem
 
@@ -153,19 +153,22 @@ def get_nx_namefit(
 ) -> int:
     """
     Checks if an HDF5 node name corresponds to a child of the NXDL element.
-    A group of uppercase letters anywhere in the name is treated as freely choosable
-    part of this name.
-    If a match is found this function returns twice the length for an exact match,
-    otherwise the number of matching characters (case insensitive) or zero, if
-    `name_any` is set to True, is returned.
-    All uppercase groups are considered independently.
-    Lowercase matches are independent of uppercase group lengths, e.g.,
-    an hdf_name `get_nx_namefit("my_fancy_yet_long_name", "my_SOME_name")` would
-    return a score of 8 for the lowercase matches `my_..._name`.
-    All characters in `[a-zA-Z0-9_.]` are considered for matching to an uppercase letter.
-    If you use any other letter in the name, it will not match and return -1.
-    Periods at the beginning or end of the hdf_name are not allowed, only exact
-    matches will be considered.
+    Groups of uppercase letters anywhere in the name are treated as freely
+    choosable parts of this name.
+
+    If a match is found, this function returns twice the length of the
+    name for an exact match. If there is no exact match, the function
+    returns the number of matching characters (case insensitive). If
+    `name_any` is set to True, it returns zero instead of a count of
+    matches. All uppercase groups are considered independently, and
+    lowercase matches do not depend on uppercase group lengths. For example,
+    calling `get_nx_namefit("my_fancy_yet_long_name", "my_SOME_name")`
+    would return a score of 8 for the lowercase matches `my_..._name`.
+
+    All characters in `[a-zA-Z0-9_.]` are considered for matching to an
+    uppercase letter. Any other character in the name will result in
+    a non-match and return -1. Periods at the beginning or end of the
+    `hdf_name` are not allowed; only exact matches will be considered.
 
     Examples:
 
@@ -183,6 +186,11 @@ def get_nx_namefit(
         name_any (bool, optional):
             Accept any name and return either 0 (match) or -1 (no match).
             Defaults to False.
+        name_partial (bool, optional):
+            If set to True, the function will return the total length of the name
+            plus the number of matching characters, minus the count of uppercase
+            letters in the concept name. This allows for partial matches to
+            contribute to the score. Defaults to False.
 
     Returns:
         int: -1 if no match is found or the number of matching
@@ -297,6 +305,24 @@ def get_node_name(node):
             name = name[2:].upper()
     return name
 
+def is_name_type(child, name_type_value: str) -> bool:
+    """
+    Determines if the child XML element's nameType attribute is equal to
+    the specified value or if the child is a group without nameType and name attributes.
+
+    Args:
+        child: The XML element to check.
+        name_type_value (str): The nameType value to compare against ("any" or "partial").
+
+    """
+    return (
+        child.attrib.get("nameType") == name_type_value or
+        (
+            get_local_name_from_xml(child) == "group" and
+            "nameType" not in child.attrib and
+            "name" not in child.attrib
+        )
+    )
 
 def belongs_to(nxdl_elem, child, name, class_type=None, hdf_name=None):
     """Checks if an HDF5 node name corresponds to a child of the NXDL element
@@ -310,24 +336,10 @@ def belongs_to(nxdl_elem, child, name, class_type=None, hdf_name=None):
         return True
     if not hdf_name:  # search for name fits is only allowed for hdf_nodes
         return False
-    name_any = child.attrib["nameType"].get("nameType") == "any" or (
-        get_local_name_from_xml(child) == "group"
-        and "nameType" not in child.attrib.keys()
-        and "name" not in child.attrib.keys()
-    )
-    params = [act_htmlname, chk_name, name_any, nxdl_elem, child, name]
-    return belongs_to_capital(params)
+    name_any = is_name_type(child, "any")
 
-
-def belongs_to_capital(params):
-    """Checking continues for Upper case"""
-    (act_htmlname, chk_name, name_any, nxdl_elem, child, name) = params
     # or starts with capital and no reserved words used
-    name_partial = child.attrib["nameType"].get("nameType") == "partial" or (
-        get_local_name_from_xml(child) == "group"
-        and "nameType" not in child.attrib.keys()
-        and "name" not in child.attrib.keys()
-    )
+    name_partial = is_name_type(child, "partial")
     if (name_any or name_partial) and name != "doc" and name != "enumeration":
         fit = get_nx_namefit(
             chk_name, act_htmlname, name_any=name_any, name_partial=name_partial
@@ -343,11 +355,7 @@ def belongs_to_capital(params):
             ):
                 continue
             # check if the name of another sibling fits better
-            name_any2 = child2.attrib.get("nameType") == "any" or (
-                get_local_name_from_xml(child2) == "group"
-                and "nameType" not in child2.attrib.keys()
-                and "name" not in child2.attrib.keys()
-            )
+            name_any2 = is_name_type(child2, "any")
             name_partial2 = child2.attrib.get("nameType") == "partial"
             if name_partial2 or name_any2:
                 fit2 = get_nx_namefit(
@@ -356,8 +364,8 @@ def belongs_to_capital(params):
                     name_any=name_any2,
                     name_partial=name_partial2,
                 )
-            if fit2 > fit:
-                return False
+                if fit2 > fit:
+                    return False
         # accept this fit
         return True
     return False
