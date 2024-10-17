@@ -29,7 +29,7 @@ def decode_or_not(elem, encoding: str = "utf-8", decode: bool = True):
         If `decode` is False, always returns the initial value.
 
     Raises:
-        ValueError: If a byte string cannot be decoded using the provided encoding.
+        UnicodeDecodeError: If a byte string cannot be decoded using the provided encoding.
     """
     if not decode:
         return elem
@@ -46,7 +46,8 @@ def decode_or_not(elem, encoding: str = "utf-8", decode: bool = True):
         try:
             return elem.decode(encoding)
         except UnicodeDecodeError as e:
-            raise UnicodeDecodeError(f"Error decoding bytes: {e}")
+            e.add_note(f'Error decoding bytes object: {elem}')
+            raise
 
     return elem
 
