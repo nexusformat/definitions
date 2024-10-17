@@ -858,11 +858,7 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
             nexus_type != "group" or get_nx_class(child) == hdf_class_name
         ):
             name_any = is_name_type(child, "any")
-<<<<<<< Updated upstream
-            name_partial = child.attrib.get("nameType") == "partial"
-=======
             name_partial = is_name_type(child, "partial") 
->>>>>>> Stashed changes
             if name_partial or name_any:
                 fit = get_nx_namefit(
                     hdf_name,
