@@ -1,4 +1,4 @@
-NeXus welcomes contributions. The format is managed by the NeXus international advisory committee (NIAC), but the larger community is vital to continue growing and improving the format. 
+NeXus welcomes contributions. The format is managed by the NeXus International Advisory Committee (NIAC), but the larger community is vital to continue growing and improving the format.
 
 We use GitHub issue tracking and pull requests to manage and discuss new features and improvements.  The base classes and application definitions in this repository are under under tighter control than the documentation and scripts that build our webpages.  For substantive, breaking, or major changes to the NeXus standard, the NIAC will generally need to vote on pull requests (see the [charter](https://www.nexusformat.org/NIAC.html#organization)). For typographical, documentation, or clarification changes, no vote is required.
 
