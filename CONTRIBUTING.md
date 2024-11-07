@@ -1,0 +1,7 @@
+NeXus welcomes contributions. The format is managed by the NeXus international advisory committee (NIAC), but the larger community is vital to continue growing and improving the format. 
+
+We use GitHub issue tracking and pull requests to manage and discuss new features and improvements.  The base classes and application definitions in this repository are under under tighter control than the documentation and scripts that build our webpages.  For substantive, breaking, or major changes to the NeXus standard, the NIAC will generally need to vote on pull requests (see the [charter](https://www.nexusformat.org/NIAC.html#organization)). For typographical, documentation, or clarification changes, no vote is required.
+
+Generally for contributions, a GitHub issue should be created that describes a problem and answers "why" there needs to be work done.  Then a pull request is created that is the "how" of the fix.  The pull request should be suffiently detailed that reviewers can understand the context of the work, and should refer to the original issue.  Pull request and commit titles should generally be 50 characters or less to be nicely displayed in various readers.  Note, for small fixes, issues are not required, but if the PR is large or if two PRs would solve the same problem differently, add an issue.  
+
+All pull requests need at least one accepting review and to pass the continuous integration checks before they are merged.
