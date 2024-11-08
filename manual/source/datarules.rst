@@ -67,7 +67,7 @@ described by the following :index:`rules <rules; naming>`:
    .. rubric:: Regular expression pattern for NXDL group and field names
 
    The NIAC recognises that the majority of the world uses characters
-   outside of the basic latin (a.k.a. US-ASCII, 7-bit ASCII) set
+   outside of the basic latin (a.k.a. US-ASCII [#7bit-ASCII]_) set
    currently included in the allowed names. The restriction given here
    reflects current technical issues and we expect to revisit the issue
    and relax such restrictions in future.
