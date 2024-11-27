@@ -3,6 +3,8 @@
 # General SPM Base Class
 
 
+
+
 <!-- ```mermaid
 graph TD;
   subgraph SPM
@@ -13,7 +15,7 @@ graph TD;
     id4["Reproducibility Indicators"]
     id2["NXinstrument"]
     id5["Resolution Indicators"]
-    id6["NXsample"] 
+    id6["NXsample"]
 
   end
 
@@ -46,7 +48,7 @@ graph TD;
   id13 --> id22
   id13 --> id23
   id13 --> id24
-  
+
 ```
 
 ## STM App Def

@@ -79,4 +79,6 @@ graph TD;
 1. SPM, STM, AFM, STS
 2. Lockin, Bias_spectorscopy, Bias_sweep, Scan_control, Positioner_spm, 
 3. piezoelectric_material, piezo_config_spm, rcs, cantilever_spm
-
+# TODO:
+1. Add scan type `trajectory` for STS in config and eln file.
+2. lockin_current_flip_value --> lockin_current_flip_sign.

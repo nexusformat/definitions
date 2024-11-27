@@ -2,24 +2,36 @@ category: base
 doc: |
   A base class for bias spectroscopy to describe the change in the physical properties
   of the sample with respect to the sweep voltage applied on a sample of STM/AFM/... experiment.
+  
+  In these experiments an electric potential is applied between the (conductive) sample and the probe
+  (tip), and the physical properties (e.g. tunnelling current) is measured as the function of this
+  potential. The potential is varied in so-called voltage sweeps and the corresponding properties are
+  recorded accordingly.
 type: group
 NXbias_spectroscopy(NXobject):
   measurement_type:
     doc: |
       The measurement of the I(V) curve can come in two ways:
-      1. Constant Spacing: The bias voltage is swept from the start to the end with a constant
+      1. Constant spacing: The bias voltage is swept from the start to the end with a constant
       spacing between the tip and surface.
-      2. Variadic Spacing: The bias voltage is swept from the start to the end in a discretized
-      spacing between the tip and surface.
+      2. Variable spacing: The bias voltage is swept from the start to the end in a discretized
+      spacing between the tip and surface. (Either an array of voltages, or the steps are defined).
     enumeration: [constant_spacing, variadic_spacing]
   (NXpositioner_spm):
     doc: |
-      The pid positioner information while running bias voltage-tunneling current
-      measurement.
+      The PID (proportional, integral, differential feedback system) positioner information while running
+      bias voltage-tunneling current measurement.
+      
+      These components position the probe relative to the sample, thus help obtaining maps of the data
+      across the sample surface.
     z_offset(NX_NUMBER):
       unit: NX_LENGTH
       doc: |
-        The z-offset is a starting tip position before the sweep starts.
+        The z-offset is a starting tip position before the sweep starts (typically the position of a
+        piezo element).
+  
+  # how these time specifications relate to the later time values, like
+  # scan_time?
   (NXcircuit):
     exists: optional
     acquisition_time(NX_DATE_TIME):
@@ -27,7 +39,7 @@ NXbias_spectroscopy(NXobject):
       unit: NX_TIME
       doc: |
         The time or period is taken by a bias sweep to acquire the data for
-        a single bias sweep point.
+        a single bias sweep point (when the given point or whole sweep is started.).
     animation_time(NX_DATE_TIME):
       exists: optional
       unit: NX_TIME
@@ -38,7 +50,9 @@ NXbias_spectroscopy(NXobject):
       unit: NX_TIME
       doc: |
         The time or period is taken by the circuit to measure a full bias sweep voltage or
-        bias current.
+        bias current. (duration of the measurement)
+    
+    # how does this indicators_period differs from animation time?
     indicators_period(NX_DATE_TIME):
       exists: optional
       unit: NX_TIME
@@ -49,9 +63,18 @@ NXbias_spectroscopy(NXobject):
     doc: |
       The bias sweep information.
     scan_type:
+      
+      # I modify this text, by I may be wrong T.
+      # key is: I can change X,Y location at constant voltage or do a sweep
+      # at every X,Y coordinate, and I can define patterns how X,Y values follow
+      # each other (e.g. spiral)
       doc: |
-        The type of scan like mesh, spiral, etc. For STS experiment, the scan type is
-        usually a single-point scan (trajectory scan).
+        The type of scan like mesh, spiral, etc.
+        
+        This combines not only how the voltages are changed, but how the voltage values are
+        correlated to a position across the sample surface, measuring sweeps are each spatial
+        coordinate or mapping the response at constant voltage, etc.
+        For STS experiment, the scan type is usually a single-point scan (trajectory scan).
       enumeration: [linear]
     sweep_number(NX_NUMBER):
       doc: |
@@ -102,8 +125,13 @@ NXbias_spectroscopy(NXobject):
           The N (substring) denotes the angle of the scan area with different physical
           axes.
     linear_sweep(NXobject):
+      
+      # is this a special case of the scans described above?
       doc: |
         The linear scan information for scanning of a smaple.
+        
+        In this scan type the probe is scanned with a constant velocity across the surface,
+        and parameters are measured along the line.
       scan_speed(NX_NUMBER):
         unit: NX_ANY
         doc: |
@@ -125,7 +153,7 @@ NXbias_spectroscopy(NXobject):
           The data that comes from scanning the area.
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 5b57b4e955019fabedb0a7fe4fc70a0626dce64f58aa542d7ab6d4161d0a0bdd
+# 52bd177dcba0a77279ff6cfc95840d6216cefde09209d2b6f4ec5e9425588aa1
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -153,14 +181,19 @@ NXbias_spectroscopy(NXobject):
 #     <doc>
 #          A base class for bias spectroscopy to describe the change in the physical properties
 #          of the sample with respect to the sweep voltage applied on a sample of STM/AFM/... experiment.
+#          
+#          In these experiments an electric potential is applied between the (conductive) sample and the probe
+#          (tip), and the physical properties (e.g. tunnelling current) is measured as the function of this
+#          potential. The potential is varied in so-called voltage sweeps and the corresponding properties are
+#          recorded accordingly.
 #     </doc>
 #     <field name="measurement_type">
 #         <doc>
 #              The measurement of the I(V) curve can come in two ways:
-#              1. Constant Spacing: The bias voltage is swept from the start to the end with a constant
+#              1. Constant spacing: The bias voltage is swept from the start to the end with a constant
 #              spacing between the tip and surface.
-#              2. Variadic Spacing: The bias voltage is swept from the start to the end in a discretized
-#              spacing between the tip and surface.
+#              2. Variable spacing: The bias voltage is swept from the start to the end in a discretized
+#              spacing between the tip and surface. (Either an array of voltages, or the steps are defined).
 #         </doc>
 #         <enumeration>
 #             <item value="constant_spacing"/>
@@ -169,20 +202,26 @@ NXbias_spectroscopy(NXobject):
 #     </field>
 #     <group type="NXpositioner_spm">
 #         <doc>
-#              The pid positioner information while running bias voltage-tunneling current
-#              measurement.
+#              The PID (proportional, integral, differential feedback system) positioner information while running
+#              bias voltage-tunneling current measurement.
+#              
+#              These components position the probe relative to the sample, thus help obtaining maps of the data
+#              across the sample surface.
 #         </doc>
 #         <field name="z_offset" type="NX_NUMBER" units="NX_LENGTH">
 #             <doc>
-#                  The z-offset is a starting tip position before the sweep starts.
+#                  The z-offset is a starting tip position before the sweep starts (typically the position of a
+#                  piezo element).
 #             </doc>
 #         </field>
 #     </group>
+#     <!--how these time specifications relate to the later time values, like
+# scan_time?-->
 #     <group type="NXcircuit" optional="true">
 #         <field name="acquisition_time" type="NX_DATE_TIME" optional="true" units="NX_TIME">
 #             <doc>
 #                  The time or period is taken by a bias sweep to acquire the data for
-#                  a single bias sweep point.
+#                  a single bias sweep point (when the given point or whole sweep is started.).
 #             </doc>
 #         </field>
 #         <field name="animation_time" type="NX_DATE_TIME" optional="true" units="NX_TIME">
@@ -193,9 +232,10 @@ NXbias_spectroscopy(NXobject):
 #         <field name="measurement_time" type="NX_DATE_TIME" optional="true" units="NX_TIME">
 #             <doc>
 #                  The time or period is taken by the circuit to measure a full bias sweep voltage or
-#                  bias current.
+#                  bias current. (duration of the measurement)
 #             </doc>
 #         </field>
+#         <!--how does this indicators_period differs from animation time?-->
 #         <field name="indicators_period" type="NX_DATE_TIME" optional="true" units="NX_TIME">
 #             <doc>
 #                  The time or period is taken by the circuit to indicate the bias sweep voltage
@@ -208,9 +248,17 @@ NXbias_spectroscopy(NXobject):
 #              The bias sweep information.
 #         </doc>
 #         <field name="scan_type">
+#             <!--I modify this text, by I may be wrong T.
+# key is: I can change X,Y location at constant voltage or do a sweep
+# at every X,Y coordinate, and I can define patterns how X,Y values follow
+# each other (e.g. spiral)-->
 #             <doc>
-#                  The type of scan like mesh, spiral, etc. For STS experiment, the scan type is
-#                  usually a single-point scan (trajectory scan).
+#                  The type of scan like mesh, spiral, etc.
+#                  
+#                  This combines not only how the voltages are changed, but how the voltage values are
+#                  correlated to a position across the sample surface, measuring sweeps are each spatial
+#                  coordinate or mapping the response at constant voltage, etc.
+#                  For STS experiment, the scan type is usually a single-point scan (trajectory scan).
 #             </doc>
 #             <enumeration>
 #                 <item value="linear"/>
@@ -273,8 +321,12 @@ NXbias_spectroscopy(NXobject):
 #             </field>
 #         </group>
 #         <group name="linear_sweep" type="NXobject">
+#             <!--is this a special case of the scans described above?-->
 #             <doc>
 #                  The linear scan information for scanning of a smaple.
+#                  
+#                  In this scan type the probe is scanned with a constant velocity across the surface,
+#                  and parameters are measured along the line.
 #             </doc>
 #             <field name="scan_speed" type="NX_NUMBER" units="NX_ANY">
 #                 <doc>

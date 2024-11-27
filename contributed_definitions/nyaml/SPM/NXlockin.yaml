@@ -4,14 +4,15 @@ doc: |
   
   The lock-in amplifier information: the device is being used to extract a (potentially)
   very weak input signal buried in the noisy background, where the input signal has
-  the same frequency (or its harmonic) as a known reference signal. Additionally,
-  the phase shift between the input signal and the reference signal is measured.
+  the same frequency (or its harmonic) as a known reference signal, using heterodyn
+  detection.
+  This method extracts the amplitude and phase shift of the current signal to the reference.
   The reference signal might be created by a generator built-in into the lock-in amplifier.
 type: group
 NXlockin(NXobject):
   hardware(NXfabrication):
     doc: |
-      Hardware manufacturers and type of lock-in amplifier.
+      Hardware manufacturers and type (product number) of lock-in amplifier.
   (NXamplifier):
     doc: |
       Description of the amplifier (after detection of the signal from the noise)
@@ -29,14 +30,16 @@ NXlockin(NXobject):
   lockin_current_flip_value(NX_NUMBER):
     exists: optional
     doc: |
-      The number that defines the sign of the lock-in current. The calibration procedure
-      with retracted tip is normally performed to compensate for the signal phase delay
+      The number that defines the sign of the lock-in current.
+      The calibration procedure with retracted tip is normally performed to compensate for the signal phase delay
       in SPM. The procedure yields two possible solutions, this number should be equal
       to 1 or -1 depending on which solution is chosen.
   
   # (For bais modulate signal, it depands on the modulate type)
   
   # unit could be NX_VOLTAGE or NX_CURRENT
+  # these (reference amplitude, frequency and phase) should be specivied on channel basis,
+  # even when common reference is sent to different channels
   reference_amplitude(NX_NUMBER):
     unit: NX_ANY
     doc: |
@@ -48,12 +51,10 @@ NXlockin(NXobject):
   reference_phase(NX_NUMBER):
     unit: NX_ANGLE
     doc: |
-      Phase of the reference signal for the lock-in amplifier.
+      Phase of the reference signal set in the lock-in amplifier.
   demodulated_signal(NX_CHAR):
     doc: |
-      The modulated output signal will be demodulated, in order to determine the amplitude
-      and phase at the frequency set in the Frequency field or harmonics, such as current,
-      bias, et.al.
+      Type of the demodulated signal,  current | voltage.
   demodulated_frequency(NX_NUMBER):
     unit: NX_FREQUENCY
     doc: |
@@ -69,20 +70,10 @@ NXlockin(NXobject):
     unit: NX_ANY
     doc: |
       The amplitude of the demodulated signal.
-  amplitude_demodulation_bandwidth(NX_NUMBER):
-    unit: NX_ANY
-    doc: |
-      The bandwidth of the modulated signal that can be applied in amplitude
-      demodulation mechanism.
   demodulated_phase(NX_NUMBER):
     unit: NX_ANGLE
     doc: |
       The phase of the demodulated signal.
-  phase_demodulation_bandwidth(NX_NUMBER):
-    unit: NX_FREQUENCY
-    doc: |
-      The bandwidth of the modulated signal that can be applied in phase demodulation
-      mechanism.
   demodulator_channels(NX_CHAR):
     doc: |
       List of the demodulator channels.
@@ -109,7 +100,7 @@ NXlockin(NXobject):
   ref_phase_N(NX_NUMBER):
     unit: NX_ANGLE
     doc: |
-      Reference phase of reference signal with respect to the demodulated signal
+      An extra reference phase offset of reference signal with respect to the demodulated signal
       (foreach Channels).
   integration_time(NX_NUMBER):
     unit: NX_TIME
@@ -124,7 +115,7 @@ NXlockin(NXobject):
       Ratio of output signal amplitude to input signal amplitue (V/V).
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# c5a5794e8253813e28db0dbe2df778f6bffd00b2447d0488f665e5f89a9a669a
+# b6ec8c5dd40bf67fb9caed4ec5e4ac1e6f8bc9a6d2f650d17682f47bcda0b898
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -154,13 +145,14 @@ NXlockin(NXobject):
 #          
 #          The lock-in amplifier information: the device is being used to extract a (potentially)
 #          very weak input signal buried in the noisy background, where the input signal has
-#          the same frequency (or its harmonic) as a known reference signal. Additionally,
-#          the phase shift between the input signal and the reference signal is measured.
+#          the same frequency (or its harmonic) as a known reference signal, using heterodyn
+#          detection.
+#          This method extracts the amplitude and phase shift of the current signal to the reference.
 #          The reference signal might be created by a generator built-in into the lock-in amplifier.
 #     </doc>
 #     <group name="hardware" type="NXfabrication">
 #         <doc>
-#              Hardware manufacturers and type of lock-in amplifier.
+#              Hardware manufacturers and type (product number) of lock-in amplifier.
 #         </doc>
 #     </group>
 #     <group type="NXamplifier">
@@ -187,14 +179,16 @@ NXlockin(NXobject):
 #     </field>
 #     <field name="lockin_current_flip_value" type="NX_NUMBER" optional="true">
 #         <doc>
-#              The number that defines the sign of the lock-in current. The calibration procedure
-#              with retracted tip is normally performed to compensate for the signal phase delay
+#              The number that defines the sign of the lock-in current.
+#              The calibration procedure with retracted tip is normally performed to compensate for the signal phase delay
 #              in SPM. The procedure yields two possible solutions, this number should be equal
 #              to 1 or -1 depending on which solution is chosen.
 #         </doc>
 #     </field>
 #     <!--(For bais modulate signal, it depands on the modulate type)-->
-#     <!--unit could be NX_VOLTAGE or NX_CURRENT-->
+#     <!--unit could be NX_VOLTAGE or NX_CURRENT
+# these (reference amplitude, frequency and phase) should be specivied on channel basis,
+# even when common reference is sent to different channels-->
 #     <field name="reference_amplitude" type="NX_NUMBER" units="NX_ANY">
 #         <doc>
 #              Amplitude of the reference signal for the lock-in amplifier.
@@ -207,14 +201,12 @@ NXlockin(NXobject):
 #     </field>
 #     <field name="reference_phase" type="NX_NUMBER" units="NX_ANGLE">
 #         <doc>
-#              Phase of the reference signal for the lock-in amplifier.
+#              Phase of the reference signal set in the lock-in amplifier.
 #         </doc>
 #     </field>
 #     <field name="demodulated_signal" type="NX_CHAR">
 #         <doc>
-#              The modulated output signal will be demodulated, in order to determine the amplitude
-#              and phase at the frequency set in the Frequency field or harmonics, such as current,
-#              bias, et.al.
+#              Type of the demodulated signal,  current | voltage.
 #         </doc>
 #     </field>
 #     <field name="demodulated_frequency" type="NX_NUMBER" units="NX_FREQUENCY">
@@ -234,21 +226,9 @@ NXlockin(NXobject):
 #              The amplitude of the demodulated signal.
 #         </doc>
 #     </field>
-#     <field name="amplitude_demodulation_bandwidth" type="NX_NUMBER" units="NX_ANY">
-#         <doc>
-#              The bandwidth of the modulated signal that can be applied in amplitude
-#              demodulation mechanism.
-#         </doc>
-#     </field>
 #     <field name="demodulated_phase" type="NX_NUMBER" units="NX_ANGLE">
 #         <doc>
 #              The phase of the demodulated signal.
-#         </doc>
-#     </field>
-#     <field name="phase_demodulation_bandwidth" type="NX_NUMBER" units="NX_FREQUENCY">
-#         <doc>
-#              The bandwidth of the modulated signal that can be applied in phase demodulation
-#              mechanism.
 #         </doc>
 #     </field>
 #     <field name="demodulator_channels" type="NX_CHAR">
@@ -284,7 +264,7 @@ NXlockin(NXobject):
 #     </field>
 #     <field name="ref_phase_N" type="NX_NUMBER" units="NX_ANGLE">
 #         <doc>
-#              Reference phase of reference signal with respect to the demodulated signal
+#              An extra reference phase offset of reference signal with respect to the demodulated signal
 #              (foreach Channels).
 #         </doc>
 #     </field>
