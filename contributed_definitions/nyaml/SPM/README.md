@@ -81,4 +81,4 @@ graph TD;
 3. piezoelectric_material, piezo_config_spm, rcs, cantilever_spm
 # TODO:
 1. Add scan type `trajectory` for STS in config and eln file.
-2. lockin_current_flip_value --> lockin_current_flip_sign.
+
