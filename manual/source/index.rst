@@ -17,7 +17,7 @@ https://www.nexusformat.org/
     optical-spectroscopy-structure
     apm-structure
     transport-structure
-    sts-structure
+    spm-structure
     cgms-structure
     north-structure
     laboratory-structure
