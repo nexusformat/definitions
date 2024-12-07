@@ -519,7 +519,7 @@ But there are some base classes which have special uses which need to be mention
 These groups can appear anywhere in the NeXus hierarchy, where needed. Preferably close to the component they
 annotate or in a ``NXcollection``. All of the base classes are documented in the reference manual.
 
-.. inheritance:
+.. _inheritance:
 
 Inheritance in NeXus
 --------------------
