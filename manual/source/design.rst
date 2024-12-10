@@ -524,13 +524,14 @@ annotate or in a ``NXcollection``. All of the base classes are documented in the
 Inheritance in NeXus
 --------------------
 
-Simple inheritance is supported in NeXus for both base classes and application defintions (which are
+Single inheritance is supported in NeXus for both base classes and application definitions (which are
 described below).  Extending a base class or application definition inherits the properties and objects of the
-parent class or definiton, such as groups, fields, attributes, and symbol tables. These properties and objects
-of the parent can then be overriden by the subclass.  Only single inheritance is allowed (you can only inherit
+parent class or definition, such as groups, fields, attributes, and symbol tables. These properties and objects
+of the parent can then be overridden by the subclass.  Only single inheritance is allowed (you can only inherit
 from a single parent).
 
-Use the ``@extends`` attribute of a definition to indicate which definition is being subclassed.
+Use the ``@extends`` attribute of a definition to indicate which definition is being subclassed. Base classes
+should extend from ``NXobject`` unless they are being subclassed.
 
 .. _NXdata-facilitates-TheDefaultPlot:
 
