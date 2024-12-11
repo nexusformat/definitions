@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXapm_ranging" extends="NXprocess" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         Base class for the configuration and results of ranging definitions.
+         
+         Ranging is a data post-processing step used in the research field of
+         atom probe during which elemental, isotopic, and/or molecular identities
+         are assigned to mass-to-charge-state-ratios within a certain interval.
+         The documentation of these steps is based on ideas that
+         have been described in the literature:
+         
+         * `M. K. Miller &lt;https://doi.org/10.1002/sia.1719&gt;`_
+         * `D. Haley et al. &lt;https://doi.org/10.1017/S1431927620024290&gt;`_
+         * `M. Kühbach et al. &lt;https://doi.org/10.1017/S1431927621012241&gt;`_
+    </doc>
+    <group type="NXprogram"/>
+    <group type="NXserialized"/>
+    <field name="number_of_ion_types" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             How many ion types are distinguished. If no ranging was performed, each
+             ion is of the special unknown type. The iontype ID of this unknown type
+             is 0 representing a reserve value. Consequently,
+             iontypes start counting from 1.
+        </doc>
+    </field>
+    <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Assumed maximum value that suffices to store all relevant
+             molecular ions, even the most complicated ones.
+             Currently, a value of 32 is used (see M. Kühbach et al. &lt;https://doi.org/10.1017/S1431927621012241&gt;`_).
+        </doc>
+    </field>
+    <group name="mass_to_charge_distribution" type="NXprocess">
+        <doc>
+             Specifies the mass-to-charge-state-ratio histogram.
+        </doc>
+        <group type="NXprogram"/>
+        <field name="min_incr_max" type="NX_FLOAT" units="NX_ANY">
+            <doc>
+                 Smallest, increment, and largest mass-to-charge-state ratio value.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="3"/>
+            </dimensions>
+        </field>
+        <group name="mass_spectrum" type="NXdata">
+            <doc>
+                 A default histogram aka mass spectrum of
+                 the mass-to-charge-state ratio values.
+            </doc>
+        </group>
+    </group>
+    <group name="background_quantification" type="NXprocess">
+        <doc>
+             Details of the background model that was used to
+             correct the total counts per bin into counts.
+        </doc>
+        <group type="NXprogram"/>
+        <field name="description" type="NX_CHAR">
+            <doc>
+                 To begin with we use a free-text field to learn how
+                 atom probers define a background model. Future versions
+                 of NXapm_ranging can then use this information to parameterize
+                 these models.
+            </doc>
+        </field>
+    </group>
+    <!--NEW ISSUE: add parameters of the background model in an e.g.
+NXcollection as these are specific to every background model
+NEW ISSUE: touching upon i.e. research activities by Andrew London et al.
+substantiating the need for a clearer description how peak/signals were
+eventually processed via deconvolution methods-->
+    <group name="peak_search_and_deconvolution" type="NXprocess">
+        <doc>
+             How where peaks in the background-corrected in the histogram
+             of mass-to-charge-state ratio values identified?
+        </doc>
+        <group type="NXprogram"/>
+        <group type="NXpeak"/>
+    </group>
+    <group name="peak_identification" type="NXprocess">
+        <doc>
+             Details about how peaks, with taking into account
+             error models, were interpreted as ion types or not.
+        </doc>
+        <group type="NXprogram"/>
+        <group type="NXion"/>
+    </group>
+</definition>
