@@ -22,7 +22,7 @@ def manual_args(parser):
     parser.add_argument(
         "--prepare",
         action="store_true",
-        help="Create the build files for the NeXus Impatient Guide",
+        help="Create the build files for the NeXus documentation",
     )
     parser.add_argument(
         "--diff",

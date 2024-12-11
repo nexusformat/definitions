@@ -232,19 +232,24 @@ This is a list of commonly asked questions concerning the NeXus data format.
    class within the definition are valid instances of
    the original class, but not vice-versa?
 
-   Keep in mind that NeXus is not specifically object oriented.
-   The putative super class might be either
-   :ref:`NXentry` (for single-technique data, such as SAXS)
-   or :ref:`NXsubentry` (for multi-technique data
-   such as SAXS/WAXS/USAXS/GIWAXS or SAXS/SANS).
+   Yes.  When writing an application definition, you can
+   add additional metadata to base classes that are not in the
+   base class definition. This essentially sub-classes the
+   original base class.
 
-   If you are thinking of a new application definition that uses
-   another as a starting point (like a super class), then there
-   is an ``extends`` attribute in the definition element of the
-   NXDL file (example here from :ref:`NXarpes`)::
+   This is different than using the ``extends`` attribute, which
+   can be used to make new base classes that inherit the properties
+   of the parent classes, or new application definitions that use
+   another as a starting point. For example the
+   ``NXelectron_detector`` base class extends the ``NXdetector``
+   base class::
 
-       <definition name="NXarpes" extends="NXobject" type="group"
+     <definition category="base" name="NXelectron_detector" extends="NXdetector">
 
-   which describes this relationship. For most (?all?) all NXDL
-   files to date, they extend the :ref:`NXobject` base class
-   (the base object of NeXus).
+   This is similar to how the application definition ``NXdirecttof`` extends
+   the ``NXtofraw`` application definition::
+
+     <definition category="application" name="NXdirecttof" extends="NXtofraw">
+
+   Most NXDL files extend the :ref:`NXobject` base class (the base object
+   of NeXus).
