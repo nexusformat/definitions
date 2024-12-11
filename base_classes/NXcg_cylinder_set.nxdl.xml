@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--
+redundant as there is NXcsg, NXquadric, NXsolid_geometry with which
+cylinder could be constructed, but NXcylinder is easier to understand-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_cylinder_set" extends="NXcg_primitive_set" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="d">
+            <doc>
+                 The dimensionality of the space in which the members are assumed embedded.
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 The cardinality of the set, i.e. the number of members.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Computational geometry description of a set of cylinders.
+         
+         The radius can either be defined in the radii field or by filling both
+         the upper_cap_radii or lower_cap_radii field. The latter field case can
+         thus be used to represent truncated cones.
+    </doc>
+    <field name="height" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             A direction vector which is parallel to the cylinder/cone axis
+             and whose magnitude is the height of the cylinder/cone.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="c"/>
+            <dim index="2" value="d"/>
+        </dimensions>
+    </field>
+    <!--observe that although we claim that d is the dimensionality we have
+currently no strategy to tell it must not be d but the actual value
+equally so the symbol c, currently all we say that in the specialization
+defined here the fields radii, upper_cap_radius, and others are all having
+value arguments of the same shape, i.e. these are arrays of rank one with some length c!
+behind the dimensionality field defined either in the here defined specialization
+of NXcg_primitive_set or otherwise that variable is undefined
+alternatively one could store the center of the lower and upper cap but
+these are then no longer necessarily on the same axis
+maybe a future feature for representing skewed cylinder, but then
+one should really better use NXquadric...-->
+    <field name="radius" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Radius of the cylinder if all have the same radius.
+        </doc>
+    </field>
+    <field name="radii" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Radii of the cylinder.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="upper_cap_radii" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Radii of the upper circular cap.
+             
+             This field, combined with lower_cap_radius can be used to describe
+             (eventually truncated) circular cones.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="lower_cap_radii" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Radii of the upper circular cap.
+             
+             This field, combined with upper_cap_radius can be used to describe
+             (eventually truncated) circular cones.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <!--properties of the cylinder-->
+    <field name="lateral_surface_area" type="NX_NUMBER" units="NX_AREA">
+        <doc>
+             Lateral surface area
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="upper_cap_surface_area" type="NX_NUMBER" units="NX_AREA">
+        <doc>
+             Area of the upper cap of each cylinder.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="lower_cap_surface_area" type="NX_NUMBER" units="NX_AREA">
+        <doc>
+             Area of the lower cap of each cylinder.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="total_surface_area" type="NX_NUMBER" units="NX_AREA">
+        <doc>
+             Sum of upper and lower cap areas and lateral surface area
+             of each cylinder.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <!--again cap, lateral surface area and volume are so trivial to compute
+do we need really storage for this or recompute on-the-fly?
+similarly to hollow sphere discussion, hollow cylinder, cylinder stack
+do wish to define intersections?, if this is the case, one
+should use the NXcsg and NXquadric descriptions?-->
+</definition>
