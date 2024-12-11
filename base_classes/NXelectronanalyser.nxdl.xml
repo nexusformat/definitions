@@ -1,0 +1,310 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXelectronanalyser" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays
+        </doc>
+        <symbol name="nfa">
+            <doc>
+                 Number of fast axes (axes acquired simultaneously, without scanning a
+                 physical quantity)
+            </doc>
+        </symbol>
+        <symbol name="nsa">
+            <doc>
+                 Number of slow axes (axes acquired scanning a physical quantity)
+            </doc>
+        </symbol>
+        <symbol name="n_transmission_function">
+            <doc>
+                 Number of data points in the transmission function.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Basic class for describing a electron analyzer.
+         
+         This concept is related to term `12.59`_ of the ISO 18115-1:2023 standard.
+         
+         .. _12.59: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.59
+    </doc>
+    <field name="description" type="NX_CHAR">
+        <doc>
+             Free text description of the type of the detector
+        </doc>
+    </field>
+    <field name="name" type="NX_CHAR">
+        <doc>
+             Name or model of the equipment
+        </doc>
+        <attribute name="short_name" type="NX_CHAR">
+            <doc>
+                 Acronym or other shorthand name
+            </doc>
+        </attribute>
+    </field>
+    <field name="work_function" type="NX_FLOAT" units="NX_ENERGY">
+        <doc>
+             Work function of the electron analyser.
+             
+             The work function of a uniform surface of a conductor is the minimum energy required to remove
+             an electron from the interior of the solid to a vacuum level immediately outside the solid surface.
+             
+             The kinetic energy :math:`E_K` of a photoelectron emitted from an energy-level with binding energy
+             :math:`E_B` below the Fermi level is given by :math:`E_K = h\nu - E_B - W = h\nu - E_B - e \phi_{\mathrm{sample}}`.
+             Here, :math:`W = e \phi_{\mathrm{sample}}` is the work function of the sample surface (with the potential difference :math:`\phi_{\mathrm{sample}}`
+             between the electrochemical potential of electrons in the bulk and the electrostatic potential of an electron in the vacuum just outside the surface).
+             
+             In PES measurements, the sample and the spectrometer (with work function :math:`\phi_{\mathrm{spectr.}}`)
+             are electrically connected and therefore their Fermi levels are aligned. Due to the difference in local
+             vacuum level between the sample and spectrometer, there exists an electric potential difference (contact potential)
+             :math:`\Delta\phi = \phi_{\mathrm{sample}} - \phi_{\mathrm{spectr.}}`. The measured kinetic energy of
+             a photoelectron in PES is therefore given by
+             :math:`E_K^{\mathrm{meas.}} = h\nu - E_B + \Delta \phi = h\nu - E_B - e \phi_{\mathrm{spectr.}}`.
+             As a result, the measured kinetic energy :math:`E_K^{\mathrm{meas.}}` of a photoelectron is `independent`
+             of the sample work function. Nonetheless, the work function :math:`\phi_s` needs to be known to
+             accurately determine the binding energy scale.
+        </doc>
+    </field>
+    <field name="voltage_energy_range" type="NX_FLOAT" units="NX_VOLTAGE">
+        <doc>
+             Energy range of the voltage supplies. This influences the noise of the supplies,
+             and thereby the energy resolution.
+        </doc>
+    </field>
+    <group name="energy_resolution" type="NXresolution">
+        <doc>
+             Energy resolution of the analyser with the current setting. May be linked from an
+             NXcalibration.
+        </doc>
+        <field name="physical_quantity">
+            <enumeration>
+                <item value="energy"/>
+            </enumeration>
+        </field>
+        <field name="resolution" type="NX_FLOAT" units="NX_ENERGY">
+            <doc>
+                 Minimum distinguishable energy separation in the energy spectra.
+                 
+                 This concept is related to term `10.24`_ of the ISO 18115-1:2023 standard.
+                 
+                 .. _10.24: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.24
+            </doc>
+        </field>
+        <field name="resolution_errors" type="NX_FLOAT" units="NX_ENERGY"/>
+        <field name="relative_resolution" type="NX_FLOAT">
+            <doc>
+                 Ratio of the energy resolution of the electron analyser at a specified energy
+                 value to that energy value.
+                 
+                 This concept is related to term `10.7`_ of the ISO 18115-1:2023 standard.
+                 
+                 .. _10.7: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.7
+            </doc>
+        </field>
+    </group>
+    <group name="momentum_resolution" type="NXresolution">
+        <doc>
+             Momentum resolution of the electron analyser (FWHM)
+        </doc>
+        <field name="physical_quantity">
+            <enumeration>
+                <item value="momentum"/>
+            </enumeration>
+        </field>
+        <field name="resolution" type="NX_FLOAT" units="NX_WAVENUMBER"/>
+        <field name="resolution_errors" type="NX_FLOAT" units="NX_WAVENUMBER"/>
+    </group>
+    <group name="angular_resolution" type="NXresolution">
+        <doc>
+             Angular resolution of the electron analyser (FWHM)
+        </doc>
+        <field name="physical_quantity">
+            <enumeration>
+                <item value="angle"/>
+            </enumeration>
+        </field>
+        <field name="resolution" type="NX_FLOAT" units="NX_ANGLE"/>
+        <field name="resolution_errors" type="NX_FLOAT" units="NX_ANGLE"/>
+    </group>
+    <group name="spatial_resolution" type="NXresolution">
+        <doc>
+             Spatial resolution of the electron analyser (Airy disk radius)
+             
+             This concept is related to term `10.14`_ of the ISO 18115-1:2023 standard.
+             
+             .. _10.14: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:10.15
+        </doc>
+        <field name="physical_quantity">
+            <enumeration>
+                <item value="length"/>
+            </enumeration>
+        </field>
+        <field name="resolution" type="NX_FLOAT" units="NX_LENGTH"/>
+        <field name="resolution_errors" type="NX_FLOAT" units="NX_LENGTH"/>
+    </group>
+    <field name="fast_axes" type="NX_CHAR">
+        <doc>
+             List of the axes that are acquired simultaneously by the detector.
+             These refer only to the experimental variables recorded by the electron analyser.
+             Other variables such as temperature, manipulator angles etc. are labeled as fast or slow in the data.
+             
+             .. csv-table:: Examples
+               :header: "Mode", "fast_axes", "slow_axes"
+             
+               Hemispherical in ARPES mode,  "['energy', 'kx']",""
+               "Hemispherical with channeltron, sweeping energy mode", "", [\"energy\"]
+               "Tof", "['energy', 'kx', 'ky']",""
+               "Momentum microscope, spin-resolved", "['energy', 'kx', 'ky']", "['spin up-down', 'spin left-right']"
+             
+             Axes may be less abstract than this, i.e. ['detector_x', 'detector_y'].
+             If energy_scan_mode=sweep, fast_axes: ['energy', 'kx']; slow_axes: ['energy'] is allowed.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="nfa"/>
+        </dimensions>
+    </field>
+    <field name="slow_axes" type="NX_CHAR">
+        <doc>
+             List of the axes that are acquired by scanning a physical parameter, listed in
+             order of decreasing speed. See fast_axes for examples.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="nsa"/>
+        </dimensions>
+    </field>
+    <group name="transmission_function" type="NXdata">
+        <doc>
+             Transmission function of the electron analyser.
+             
+             The transmission function (TF) specifies the detection efficiency per solid angle for electrons of
+             different kinetic energy passing through the electron analyser. It depends on the spectrometer
+             geometry as well as operation settings such as lens mode and pass energy.
+             The transmission function is usually given as relative intensity vs. kinetic energy.
+             
+             The TF is used for calibration of the intensity scale in quantitative XPS. Without proper
+             transmission correction, a comparison of results measured from the same sample using different
+             operating modes for an instrument would show significant variations in atomic
+             concentrations.
+             
+             This concept is related to term `7.15`_ of the ISO 18115-1:2023 standard.
+             
+             .. _7.15: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:7.15
+        </doc>
+        <attribute name="signal">
+            <enumeration>
+                <item value="relative_intensity"/>
+            </enumeration>
+        </attribute>
+        <attribute name="axes">
+            <enumeration>
+                <item value="kinetic_energy"/>
+            </enumeration>
+        </attribute>
+        <field name="kinetic_energy" type="NX_FLOAT" units="NX_ENERGY">
+            <doc>
+                 Kinetic energy values
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_transmission_function"/>
+            </dimensions>
+        </field>
+        <field name="relative_intensity" type="NX_FLOAT" units="NX_UNITLESS">
+            <doc>
+                 Relative transmission efficiency for the given kinetic energies
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_transmission_function"/>
+            </dimensions>
+        </field>
+    </group>
+    <field name="depends_on" type="NX_CHAR">
+        <doc>
+             Refers to the last transformation specifying the position of the electron analyser
+             in the NXtransformations chain.
+        </doc>
+    </field>
+    <group type="NXtransformations">
+        <doc>
+             Collection of axis-based translations and rotations to describe the location and
+             geometry of the electron analyser as a component in the instrument. Conventions
+             from the NXtransformations base class are used. In principle, the McStas
+             coordinate system is used. The first transformation has to point either to
+             another component of the system or "." (for pointing to the reference frame) to
+             relate it relative to the experimental setup. Typically, the components of a
+             system should all be related relative to each other and only one component
+             should relate to the reference coordinate system.
+        </doc>
+    </group>
+    <attribute name="default">
+        <doc>
+             .. index:: plotting
+             
+             Declares which child group contains a path leading
+             to a :ref:`NXdata` group.
+             
+             It is recommended (as of NIAC2014) to use this attribute
+             to help define the path to the default dataset to be plotted.
+             See https://www.nexusformat.org/2014_How_to_find_default_data.html
+             for a summary of the discussion.
+        </doc>
+    </attribute>
+    <group type="NXcollectioncolumn">
+        <doc>
+             Describes the electron collection (spatial and momentum imaging) column
+        </doc>
+    </group>
+    <group type="NXenergydispersion">
+        <doc>
+             Describes the energy dispersion section
+        </doc>
+    </group>
+    <group type="NXspindispersion">
+        <doc>
+             Describes the spin dispersion section
+        </doc>
+    </group>
+    <group type="NXdetector">
+        <doc>
+             Describes the electron detector
+        </doc>
+    </group>
+    <group type="NXdeflector">
+        <doc>
+             Deflectors outside the main optics ensembles described by the subclasses
+        </doc>
+    </group>
+    <group type="NXlens_em">
+        <doc>
+             Individual lenses outside the main optics ensembles described by the subclasses
+        </doc>
+    </group>
+    <group type="NXfabrication"/>
+    <group type="NXresolution">
+        <doc>
+             Any other resolution not explicitly named in this base class.
+        </doc>
+    </group>
+</definition>
