@@ -45,26 +45,65 @@ def nxdl_files():
         ).getroot(),
     }
 
+
 @pytest.mark.parametrize(
     "file_name, nxdl_path, expected",
     [
         # NXtest.nxdl.xml test cases
-        ("NXtest.nxdl.xml", "/ENTRY/NXODD_name", {"type": "NXdata", "name": "NXODD_name"}),
-        ("NXtest.nxdl.xml", "/ENTRY/NXODD_name/float_value", {"type": "NX_FLOAT", "name": "float_value"}),
-        ("NXtest.nxdl.xml", "/ENTRY/NXODD_name/AXISNAME/long_name", {"name": "long_name"}),
-
+        (
+            "NXtest.nxdl.xml",
+            "/ENTRY/NXODD_name",
+            {"type": "NXdata", "name": "NXODD_name"},
+        ),
+        (
+            "NXtest.nxdl.xml",
+            "/ENTRY/NXODD_name/float_value",
+            {"type": "NX_FLOAT", "name": "float_value"},
+        ),
+        (
+            "NXtest.nxdl.xml",
+            "/ENTRY/NXODD_name/AXISNAME/long_name",
+            {"name": "long_name"},
+        ),
         # NXiv_temp.nxdl.xml test cases
-        ("NXiv_temp.nxdl.xml", "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", {"name": "voltage_controller"}),
-        ("NXiv_temp.nxdl.xml", "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller/calibration_time", {"name": "calibration_time"}),
-
+        (
+            "NXiv_temp.nxdl.xml",
+            "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller",
+            {"name": "voltage_controller"},
+        ),
+        (
+            "NXiv_temp.nxdl.xml",
+            "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller/calibration_time",
+            {"name": "calibration_time"},
+        ),
         # NXem.nxdl.xml test cases
-        ("NXem.nxdl.xml", "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/end_time", {"name": "end_time"}),
+        (
+            "NXem.nxdl.xml",
+            "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/end_time",
+            {"name": "end_time"},
+        ),
         ("NXem.nxdl.xml", "/ENTRY/measurement", {"type": "NXem_msr"}),
-        ("NXem.nxdl.xml", "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_SET/image_3d", {"type": "NXdata"}),
-        ("NXem.nxdl.xml", "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_SET/image_3d/AXISNAME_indices", {"name": "AXISNAME_indices"}),
-        ("NXem.nxdl.xml", "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_SET/image_3d/axis_j", {"type": "NX_NUMBER"}),
-        ("NXem.nxdl.xml", "/ENTRY/coordinate_system_set", {"type": "NXcoordinate_system_set"}),
-    ]
+        (
+            "NXem.nxdl.xml",
+            "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_SET/image_3d",
+            {"type": "NXdata"},
+        ),
+        (
+            "NXem.nxdl.xml",
+            "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_SET/image_3d/AXISNAME_indices",
+            {"name": "AXISNAME_indices"},
+        ),
+        (
+            "NXem.nxdl.xml",
+            "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_SET/image_3d/axis_j",
+            {"type": "NX_NUMBER"},
+        ),
+        (
+            "NXem.nxdl.xml",
+            "/ENTRY/coordinate_system_set",
+            {"type": "NXcoordinate_system_set"},
+        ),
+    ],
 )
 def test_get_node_at_nxdl_path(nxdl_files, file_name, nxdl_path, expected):
     """Test to verify if we receive the right XML element for a given NXDL path."""
@@ -79,17 +118,30 @@ def test_get_node_at_nxdl_path(nxdl_files, file_name, nxdl_path, expected):
     [
         # NXtest.nxdl.xml test cases
         ("NXtest.nxdl.xml", "/ENTRY/NXODD_name", None, 3),
-
         # NXiv_temp.nxdl.xml test cases
         ("NXiv_temp.nxdl.xml", "/ENTRY/INSTRUMENT/ENVIRONMENT", None, 3),
-        ("NXiv_temp.nxdl.xml", "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", None, 4),
-        ("NXiv_temp.nxdl.xml", "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", "NXiv_temp", 4),
-    ]
+        (
+            "NXiv_temp.nxdl.xml",
+            "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller",
+            None,
+            4,
+        ),
+        (
+            "NXiv_temp.nxdl.xml",
+            "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller",
+            "NXiv_temp",
+            4,
+        ),
+    ],
 )
-def test_get_inherited_nodes(nxdl_files, file_name, nxdl_path, nx_name, expected_length):
+def test_get_inherited_nodes(
+    nxdl_files, file_name, nxdl_path, nx_name, expected_length
+):
     """Test to verify if we receive the right XML element list for a given NXDL path."""
     elem = nxdl_files[file_name]
-    (_, _, elist) = nexus.get_inherited_nodes(nxdl_path=nxdl_path, elem=elem, nx_name=nx_name)
+    (_, _, elist) = nexus.get_inherited_nodes(
+        nxdl_path=nxdl_path, elem=elem, nx_name=nx_name
+    )
     assert len(elist) == expected_length
 
 
