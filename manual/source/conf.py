@@ -48,7 +48,8 @@ extensions = [
     'sphinx.ext.githubpages',
     'sphinx.ext.todo',
     'sphinx_tabs.tabs',
-    'contrib_ext'
+    'contrib_ext',
+    'chios.bolditalic'
 ]
 
 # Show `.. todo` directives in the output
@@ -99,6 +100,13 @@ html_favicon = "../../../common/favicon.ico"
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'NeXusManualdoc'
+
+html_contexthtml_context = {
+  'css_files': [
+    '_static/bespoke.css',  # custom CSS styling
+    '_static/bolditalic.css',  # bolditalic styling
+    ],
+  }
 
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {
