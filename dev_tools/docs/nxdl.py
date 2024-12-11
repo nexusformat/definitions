@@ -511,9 +511,12 @@ class NXClassDocGenerator:
         node_list = parent.xpath("nx:item", namespaces=ns)
         if len(node_list) == 0:
             return ""
-        
+
         if parent.attrib.get("open", "false") == "true":
-            self._print(f"{indent}This is an open enumeration. Any of these values is suggested:", end="")
+            self._print(
+                f"{indent}This is an open enumeration. Any of these values is suggested:",
+                end="",
+            )
         else:
             if len(node_list) == 1:
                 self._print(f"{indent}Obligatory value:", end="")
