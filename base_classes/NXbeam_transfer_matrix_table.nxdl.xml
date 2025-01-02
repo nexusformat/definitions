@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXbeam_transfer_matrix_table" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             Variables used throughout the document, e.g. dimensions or parameters.
+        </doc>
+        <symbol name="N_variables">
+            <doc>
+                 Length of the array associated to the data type.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Contains datastructures of an experimental optical setup (i.e., multiple 
+         transfermatrix tables).   These datastructures are used to relate physical
+         properties of two beams (NXbeam) which have one common optical element
+         (NXopt_element) (one specific transfermatrix).
+         One of these beams in an input beam and the other one is an output beam.
+         
+         The data describes the change of beam properties, e.g. the intensity of a 
+         beam is reduced because the transmission coefficient of the beam device is
+         lower than 1.
+    </doc>
+    <field name="datatype_N">
+        <doc>
+             Select which type of data was recorded, for example aperture and
+             focal length.
+             It is possible to have multiple selections. This selection defines
+             how many columns (N_variables) are stored in the data array.
+             N in the name, is the index number in which order the given
+             property is listed.
+        </doc>
+        <enumeration>
+            <item value="aperture"/>
+            <item value="focallength"/>
+            <item value="orientation"/>
+            <item value="jones matrix"/>
+        </enumeration>
+    </field>
+    <field name="matrix_elements">
+        <doc>
+             Please list in this array the column and row names used in your actual data.
+             That is in the case of aperture ['diameter'] or focal length ['focal_length_value']
+             and for orientation matrix ['OM1', 'OM2', 'OM3'] or for jones matrix
+             ['JM1','JM2']
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_variables"/>
+        </dimensions>
+    </field>
+    <field name="TRANSFER_MATRIX" type="NX_NUMBER">
+        <doc>
+             Contains the datastructure which relates beam properties of an 
+             input and output beam as result of the input beam interaction
+             with the beam device.
+             
+             Transfermatrix relationship between N input beams and M output beams.
+             It contains a table with the relevant matricis to be used for different
+             transmissitted properties (such as polarization, intensity, phase).
+             
+             Data structure for all transfermatrices of an beam device in a setup.
+             For each combination of N input and M output beams and for L physical
+             concept (i.e. beam intensity), one matrix can be defined.
+             
+             In this way, the transfermatrix table has the dimension NxM.
+             
+             For each entry, in this transfermatrix, there are L formalisms.
+             Each formalism has the dimension math:`dim(L_i)xdim(L_i)`,
+             whereby math:`L_i` is the specific physical concept (Intensity, polarization, direction).
+             
+             A beamsplitter with two input laser beams can have a total of
+             four transfermatrices (2 Input x 2 Output).
+             
+             The dimension of the transfermatrix depends on the parameters.
+             Examples are:
+             1x1 for intensity/power
+             2x2 for jones formalism
+             3x3 for direction
+        </doc>
+        <dimensions rank="2">
+            <doc>
+                 Square matrix with dimension N_variables x N_variables
+            </doc>
+            <dim index="1" value="N_variables"/>
+            <dim index="2" value="N_variables"/>
+        </dimensions>
+        <attribute name="input">
+            <doc>
+                 Specific name of input beam which the transfermatrix table is related to.
+            </doc>
+        </attribute>
+        <attribute name="output">
+            <doc>
+                 Specific name of output beam which the transfermatrix table is related to.
+            </doc>
+        </attribute>
+    </field>
+</definition>
