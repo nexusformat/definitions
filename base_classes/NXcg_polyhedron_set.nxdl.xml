@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--
+it is useful to define own base classes for frequently used classes
+a polyhedron is a specific polytope in 3d, do we need
+higher-dimensional polytopes? that could be useful for simplicies though
+as they are used in numerics etc. maybe reach out here to our friends
+from MarDI, for now let's assume we do not need polytopes for d > 3
+NeXus already supports polyhedra via NXoff_geometry
+the here proposed base class extends the capabilities to qualifiers of
+polyhedra and also half_edge_data_structures that can be useful
+for clean graph-based descriptions of polyhedra.-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_polyhedron_set" extends="NXcg_primitive_set" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="c">
+            <doc>
+                 The cardinality of the set, i.e. the number of polyhedra.
+            </doc>
+        </symbol>
+        <symbol name="n_e_total">
+            <doc>
+                 The total number of edges for all polyhedra.
+            </doc>
+        </symbol>
+        <symbol name="n_f_total">
+            <doc>
+                 The total number of faces for all polyhedra.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Computational geometry description of a set of polyhedra in Euclidean space.
+         
+         Polyhedra or so-called cells (especially in the convex of tessellations) are
+         constructed from polygon meshes. Polyhedra may make contact to allow a usage
+         of this base class for a description of tessellations.
+         
+         For the description of more complicated manifolds and especially for polyhedra
+         with holes, users are advised to check if their particular needs are described
+         by creating customized instances of an :ref:`NXcg_polygon_set`.
+    </doc>
+    <!--qualifiers and properties of polyhedra-->
+    <field name="number_of_faces" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             The number of faces for each polyhedron. Faces of adjoining polyhedra
+             are counted for each polyhedron.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="face_area" type="NX_NUMBER" units="NX_AREA">
+        <doc>
+             Area of each of faces.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_f_total"/>
+        </dimensions>
+    </field>
+    <field name="number_of_edges" type="NX_INT">
+        <doc>
+             The number of edges for each polyhedron. Edges of adjoining polyhedra
+             are counterd for each polyhedron.
+        </doc>
+    </field>
+    <field name="edge_length" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Length of each edge.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_e_total"/>
+        </dimensions>
+    </field>
+    <!--detailed mesh-based representation-->
+    <group name="polyhedra" type="NXcg_face_list_data_structure">
+        <doc>
+             Combined storage of all primitives of all polyhedra.
+        </doc>
+    </group>
+    <group name="polyhedronID" type="NXcg_face_list_data_structure">
+        <doc>
+             Individual storage of each polyhedron.
+        </doc>
+    </group>
+    <group name="polyhedron_half_edgeID" type="NXcg_half_edge_data_structure">
+        <doc>
+             Individual storage of each polygon as a graph.
+        </doc>
+    </group>
+</definition>
