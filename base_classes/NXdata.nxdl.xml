@@ -60,9 +60,9 @@
 			does not describe how the data is to be plotted or even the dimensionality of the plot.
 			https://www.nexusformat.org/NIAC2018Minutes.html#nxdata-plottype--attribute
 
-		**Usage:**
+		.. include:: data/index.rst
 
-		.. admonition:: Plot data versus x axis
+		.. admonition:: Example of a simple curve plot
 
 			.. code-block::
 
@@ -102,7 +102,7 @@
 				data:NXdata
 				  @signal = "data1"
 				  @auxiliary_signals = ["data2", "data3"]
-				  data1: float[10,20,30]  --> the default signal
+				  data1: float[10,20,30]  # the default signal
 				  data2: float[10,20,30]
 				  data3: float[10,20,30]
 
@@ -127,7 +127,7 @@
 		3. The :ref:`AXISNAME_indices &lt;/NXdata@AXISNAME_indices-attribute&gt;` attributes describe the :ref:`DATA &lt;/NXdata/DATA-field&gt;`
 		   dimensions spanned by the corresponding :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` fields.
 
-		Additional requirements for a complete definition
+		The fields and attributes have the following constraints
 
 		1. The length of the :ref:`axes &lt;/NXdata@axes-attribute&gt;` attribute must be equal to the rank of the :ref:`DATA &lt;/NXdata/DATA-field&gt;`
 		   fields. When a particular dimension has no default axis, the string “.” is used in that position.
@@ -153,7 +153,7 @@
 		   or one more than the number of data points ``DATA.shape[AXISNAME_indices[i]]+1`` in case the
 		   :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field contains histogram bin edges along dimension ``i``.
 
-		Highlight consequences that follow the definition
+		Highlight consequences of these constraints
 
 		1. An :ref:`AXISNAME &lt;/NXdata/AXISNAME-field&gt;` field can have more than one dimension and can therefore span
 		   more than one :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimension. Conversely, one :ref:`DATA &lt;/NXdata/DATA-field&gt;` dimension
@@ -164,49 +164,20 @@
 		   (excluding the “.” string) are axis field names. In addition the prefix of an attribute ending with the string "_indices" is also
 		   an axis field name.
 
-		.. admonition:: The following example covers all axes features supported
+		.. admonition:: The following example covers all axes features supported (see :ref:`sphx_glr_classes_base_classes_data_plot_fscan2d.py`)
 
 			.. code-block::
 
 				data:NXdata
 				  @signal = "data"
-				  @axes = ["x_set", "y_set", "."]  --> default axes for all three dimensions
+				  @axes = ["x_set", "y_set", "."]  # default axes for all three dimensions
 				  @x_encoder_indices = [0, 1]
-				  @y_encoder_indices = 1  --> or [1]
+				  @y_encoder_indices = 1           # or [1]
 				  data: float[10,7,1024]
-				  x_encoder: float[11,7]  --> coordinates along the first and second dimensions
-				  y_encoder: float[7]     --> coordinates along the second dimension
-				  x_set: float[10]        --> coordinates along the first dimension
-				  y_set: float[7]         --> coordinates along the second dimension
-
-		One scientific application that provided such data is 2D scanning X-Ray Fluorescence (XRF)
-		where the sample is scanned through a focussed X-ray beam in two dimensions and an XRF spectrum
-		with 1024 channels is recorded at each position. In addition the x motor is scanned
-		continuously and both motors have an encoder which records the actual motor position as
-		opposed to the requested or `set` position.
-
-		.. image:: data/example2D_hist.png
-				:width: 100%
-
-		1. ``@axes`` has three values which corresponds to the ``data`` rank of three
-
-		2. ``x_set`` and ``y_set`` are the default axes for the first two dimensions while the third
-		   dimension does not have a default axis or any axis for that matter.
-
-		3. ``x_set_indices`` and ``y_set_indices`` are omitted because they would be equal to
-		   the position of ``"x_set"`` and ``"y_set"`` in ``@axes``.
-
-		4. The first dimension is spanned by two axes ``x_set`` and ``x_encoder``. Since
-		   the x motor is scanned continuously, the encoder records the edge of every bin
-		   on which an XRF spectrum is recorded yielding 11 values instead of 10 along the
-		   first dimension. The ``x_encoder`` spans two dimensions because the actual x edges
-		   are slightly different for every x motion at each y position.
-
-		5. The second dimension is spanned by two axes ``y_set`` and ``y_encoder``. The axes
-		   have as many values are there are data points along the second dimension. This is
-		   because the y motor moves one step after each scan of the x motor. Since the y
-		   motor does not move while scanning x, there is no need for ``y_encoder`` to span
-		   the first dimension because the value along this dimension remains constant.
+				  x_encoder: float[11,7]           # coordinates along the first and second dimensions
+				  y_encoder: float[7]              # coordinates along the second dimension
+				  x_set: float[10]                 # default coordinates along the first dimension
+				  y_set: float[7]                  # default coordinates along the second dimension
 
 		**Uncertainties:**
 
