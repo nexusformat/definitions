@@ -1,0 +1,281 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXevent_data_apm" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="p">
+            <doc>
+                 Number of pulses collected in between start_time and end_time.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Base class to store state and (meta)data of events over the course of an atom probe experiment.
+         
+         This base class applies the concept of the :ref:`NXevent_data_em` base class to the specific needs
+         of atom probe research. Against static and dynamic quantities are splitted to avoid a duplication
+         of information. Specifically, the time interval considered is the entire time
+         starting at start_time until end_time during which we assume the pulser triggered named pulses.
+         These pulses are identified via the pulse_identifier field. The point in time when each was issued
+         is specified via the combination of start_time and delta_time.
+         
+         Conceptually and technically NeXus currently stores tensorial information as arrays of values
+         (with each value of the same datatype). For instance, a field temperature(NX_FLOAT) stores
+         a set of temperature values but that field when used somewhere is a concept. However, that
+         concept has no information at which point in time these temperatures were taken.
+         An existent functional relationship between the two concepts is not defined.
+         
+         However, a correct interpretation of the temperature values demands knowledge about what is
+         the independent quantity on which temperature depends on or according to which frequency
+         temperature values were sampled.
+         In NeXus there are two approaches which cope with such correlations:
+         One is :ref:`NXdata` where the attribute signal specifies the correlation.
+         The other one is :ref:`NXlog` which, like NXdata, demands to granularize logged_against
+         (dependent signal) and independent quantities into an own group.
+         In many cases this additional grouping is not desired though.
+         
+         One naive solution typically employed is then to store the independent variable values via a second
+         vector e.g. time_stamp with the same number of entries (with dimensionality defined through symbols).
+         However, there is no independent logical connection between these two concepts, i.e. temperature 
+         and time_stamp.
+         
+         In the case of atom probe though the time that one would use in NXlog is defined implicitly via pulse_identifier,
+         which is the independent variable vector against which eventually dozens of channels of data are logged.
+         Not only are these channels logged they should ideally also be self-descriptive in that these channels have
+         pulse_identifier as the independent variable but we do not wish to duplicate this information all the time but
+         reference it.
+         
+         Therefore, we here explore the use of an attribute with symbol logged_against. Maybe it is better to use the
+         symbol depends_on but this is easily to be confused with depends_on that is used for instances of
+         :ref:`NXtransformations`. Consequently, if depends_on were to be used extra logic is needed by consuming
+         applications to understand that the here build correlations are conceptually different ones.
+         
+         This issue should be discussed further by the NeXus community.
+    </doc>
+    <field name="start_time" type="NX_DATE_TIME">
+        <doc>
+             ISO 8601 time code with local time zone offset to UTC information included
+             when the snapshot time interval started. If the user wishes to specify an
+             interval of time that the snapshot should represent during which the instrument
+             was stable and configured using specific settings and calibrations,
+             the start_time is the start (left bound of the time interval) while
+             the end_time specifies the end (right bound) of the time interval.
+        </doc>
+    </field>
+    <field name="end_time" type="NX_DATE_TIME">
+        <doc>
+             ISO 8601 time code with local time zone offset to UTC information included
+             when the snapshot time interval ended.
+        </doc>
+    </field>
+    <field name="delta_time" type="NX_NUMBER" units="NX_TIME">
+        <doc>
+             Delta time array which resolves for each pulse_identifier the time difference
+             between when that pulse was issued and start_time.
+             
+             In summary, using start_time, end_time, delta_time, pulse_identifier_offset,
+             and pulse_identifier exactly specifies the connection between when a pulse was
+             issued relative to start and absolute in UTC.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="p"/>
+        </dimensions>
+    </field>
+    <field name="pulse_identifier_offset" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer used to name the first pulse to know if there is an
+             offset of the identifiers to zero.
+             
+             Identifiers can be defined either implicitly or explicitly.
+             For implicit indexing identifiers are defined on the interval
+             :math:`[identifier\_offset, identifier\_offset + c - 1]`.
+             
+             Therefore, implicit identifier are completely defined by the value of
+             identifier_offset and cardinality. For example if identifier run from
+             -2 to 3 the value for identifier_offset is -2.
+             
+             For explicit indexing the field identifier has to be used.
+             Fortran-/Matlab- and C-/Python-style indexing have specific implicit
+             identifier conventions where identifier_offset is 1 and 0 respectively.
+        </doc>
+    </field>
+    <field name="pulse_identifier" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Identifier that contextualizes how the detector and pulser of an atom probe
+             instrument follows a sequence of pulses to trigger field evaporation.
+             
+             The pulse_identifier is used to associate thus an information about time
+             when the quantities documented in this NXpulser_apm base class have been
+             collected via sampling.
+             
+             In virtually all cases the pulser is a blackbox. Depending on how the
+             instrument is configured during a measurement the target
+             values and thus also the actual values may change.
+             
+             Maybe the first part of the experiment is run at a certain pulse fraction but thereafter
+             the pulse_fraction is changed. In this case the field pulse_fraction is a vector which
+             collects all measured values of the pulse_fraction, pulse_identifier is then an equally
+             long vector which stores the set of events (e.g. pulsing events) when that value was
+             measured.
+             
+             This may cause several situations: In the case that e.g. the pulse_fraction is never changed
+             and also exact details not interesting, one stores the set value for the pulse_fraction
+             and a single value for the pulse_identifier e.g. 0 to indicate that the pulse_fraction was set
+             at the beginning and it was maintained constant during the measurement.
+             If the pulse_fraction was maybe changed after the 100000th pulse, pulse_fraction is a
+             vector with two values one for the first and another one for the value from the 100000-th
+             pulse onwards. The values of pulse_identifier are then [0, 99999] respectively.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="p"/>
+        </dimensions>
+    </field>
+    <group name="instrument" type="NXinstrument">
+        <doc>
+             (Meta)data of the dynamics and changes of the microscope over the course of
+             pulsing.
+        </doc>
+        <group name="control" type="NXcollection">
+            <doc>
+                 Relevant quantities during a measurement with a LEAP system as suggested by
+                 `T. Blum et al. &lt;https://doi.org/10.1002/9781119227250.ch18&gt;`_.
+            </doc>
+            <field name="evaporation_control" type="NX_CHAR">
+                <enumeration>
+                    <item value="detection_rate"/>
+                </enumeration>
+            </field>
+            <field name="target_detection_rate" type="NX_FLOAT" units="NX_ANY"/>
+        </group>
+        <group type="NXreflectron"/>
+        <group name="local_electrode" type="NXlens_em"/>
+        <group name="ion_detector" type="NXdetector">
+            <field name="signal_amplitude" type="NX_FLOAT" units="NX_CURRENT">
+                <doc>
+                     Amplitude of the signal detected on the multi-channel plate (MCP).
+                     
+                     This field should be used for storing the signal amplitude quantity
+                     within ATO files. The ATO file format is used primarily by the
+                     atom probe groups of the GPM in Rouen, France.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="p"/>
+                </dimensions>
+            </field>
+        </group>
+        <!--does p only specific the length or does it also convey a logical correlation
+conceptually to another vector which happens to have the same dimensions
+I clear say NO !-->
+        <group name="pulser" type="NXpulser_apm"/>
+        <group name="stage_lab" type="NXstage_lab">
+            <field name="setpoint_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
+                <doc>
+                     Set point temperature to achieve during the measurement.
+                </doc>
+            </field>
+            <field name="base_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
+                <doc>
+                     Average temperature (at the specimen base) during the measurement.
+                </doc>
+            </field>
+            <!--normally one would use NXsensor/NXlog but point is that the temperature
+is logged against the pulse_identifier as even in the proprietary file format from
+AMETEK/Cameca nowhere there is the actual time when the pulse was triggered
+just the sampling frequency and I guess but am not 100percent sure which quantity
+from Cameca this is also the time when the first pulse was triggered
+using NXlog does make sense when individual NXsensors have different timing
+but for atom probe if at all the pulse-based implicit time is available-->
+            <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
+                <doc>
+                     The best estimate, at experiment time, for the temperature at the
+                     sample base (furthest point along sample apex and holding assembly
+                     that is removable from the sample stage).
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="p"/>
+                </dimensions>
+                <attribute name="logged_against" type="NX_CHAR">
+                    <doc>
+                         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+                    </doc>
+                </attribute>
+            </field>
+        </group>
+        <group name="analysis_chamber" type="NXchamber">
+            <field name="chamber_pressure" type="NX_FLOAT" units="NX_PRESSURE">
+                <doc>
+                     Average pressure in the analysis chamber during the measurement.
+                </doc>
+            </field>
+            <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
+                <doc>
+                     Pressure in the analysis chamber.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="p"/>
+                </dimensions>
+                <attribute name="logged_against" type="NX_CHAR">
+                    <doc>
+                         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+                    </doc>
+                </attribute>
+            </field>
+        </group>
+        <group name="buffer_chamber" type="NXchamber">
+            <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
+                <doc>
+                     Pressure in the analysis chamber.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="p"/>
+                </dimensions>
+                <attribute name="logged_against" type="NX_CHAR">
+                    <doc>
+                         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+                    </doc>
+                </attribute>
+            </field>
+        </group>
+        <group name="load_lock_chamber" type="NXchamber">
+            <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
+                <doc>
+                     Pressure in the analysis chamber.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="p"/>
+                </dimensions>
+                <attribute name="logged_against" type="NX_CHAR">
+                    <doc>
+                         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+                    </doc>
+                </attribute>
+            </field>
+        </group>
+    </group>
+    <!--getter_pump(NXpump):
+roughening_pump(NXpump):
+turbomolecular_pump(NXpump):-->
+</definition>

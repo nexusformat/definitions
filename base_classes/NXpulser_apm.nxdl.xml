@@ -1,0 +1,238 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXpulser_apm" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="p">
+            <doc>
+                 Number of pulses collected in between start_time and end_time
+                 resolved by an instance of :ref:`NXevent_data_apm`.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Base class for a laser- and/or voltage-pulsing device used in atom probe
+         microscopy.
+    </doc>
+    <group type="NXfabrication"/>
+    <field name="pulse_mode" type="NX_CHAR">
+        <doc>
+             Detail whereby ion extraction is triggered methodologically.
+        </doc>
+        <enumeration>
+            <item value="laser"/>
+            <item value="voltage"/>
+            <item value="laser_and_voltage"/>
+        </enumeration>
+    </field>
+    <!--
+the example of how the IFES APT TC's HDF format deals with such data
+conceptually, concepts are mixed into superconcepts interleaved tuple with
+different units: "PulseFrequency : Real array, 2xn (Hz) This is the frequency of
+the high voltage or laser pulser. first entry : first pulse number where the
+spacing between this and all subsequent pulses are considered to be at the
+selected frequency. Each first entry must be strictly increasing in value. The
+second entry contains the frequency value" as data can be compressed in this
+case very efficiently we go for with an array of length 1xn_ions
+-->
+    <field name="pulse_frequency" type="NX_FLOAT" units="NX_FREQUENCY">
+        <doc>
+             Frequency with which the pulser fire(s).
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="p"/>
+        </dimensions>
+        <attribute name="logged_against" type="NX_CHAR">
+            <doc>
+                 Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+            </doc>
+        </attribute>
+    </field>
+    <field name="pulse_fraction" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+        <doc>
+             Fraction of the pulse_voltage that is applied in addition
+             to the standing_voltage at peak voltage of a pulse.
+             
+             If a standing voltage is applied, this gives nominal pulse fraction
+             (as a function of standing voltage). Otherwise, this field should
+             not be present.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="p"/>
+        </dimensions>
+        <attribute name="logged_against" type="NX_CHAR">
+            <doc>
+                 Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+            </doc>
+        </attribute>
+    </field>
+    <!--
+example of a conditional requirement that can be dealt with igorously by OWL but not by NeXus!
+as either pulse_voltage is required in an appdef but then that
+existence constraint is independent of other values.
+-->
+    <field name="pulse_voltage" type="NX_FLOAT" units="NX_VOLTAGE">
+        <doc>
+             Pulsed voltage, in laser pulsing mode this field can be omitted.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="p"/>
+        </dimensions>
+        <attribute name="logged_against" type="NX_CHAR">
+            <doc>
+                 Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+            </doc>
+        </attribute>
+    </field>
+    <field name="pulse_number" type="NX_UINT" units="NX_UNITLESS">
+        <doc>
+             Absolute number of pulses starting from the beginning of the experiment.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="p"/>
+        </dimensions>
+        <attribute name="logged_against" type="NX_CHAR">
+            <doc>
+                 Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+            </doc>
+        </attribute>
+    </field>
+    <!--eventually equivalent to pulse_identifier within NXevent_data_apm-->
+    <field name="standing_voltage" type="NX_FLOAT" units="NX_VOLTAGE">
+        <doc>
+             Direct current voltage between the specimen and the (local electrode) in
+             the case of local electrode atom probe (LEAP) instrument. Otherwise, the
+             standing voltage applied to the sample, relative to system ground.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="p"/>
+        </dimensions>
+        <attribute name="logged_against" type="NX_CHAR">
+            <doc>
+                 Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+            </doc>
+        </attribute>
+    </field>
+    <group type="NXsource">
+        <doc>
+             Atom probe microscopes use controlled laser, voltage, or a combination of
+             pulsing strategies to trigger ion extraction via exciting and eventual field evaporation
+             field emission of ion at the specimen surface.
+        </doc>
+        <field name="name" type="NX_CHAR">
+            <doc>
+                 Given name/alias.
+            </doc>
+        </field>
+        <group type="NXfabrication"/>
+        <field name="wavelength" type="NX_FLOAT" units="NX_WAVELENGTH">
+            <doc>
+                 Nominal wavelength of the laser radiation.
+            </doc>
+        </field>
+        <field name="power" type="NX_FLOAT" units="NX_POWER">
+            <doc>
+                 Nominal power of the laser source while illuminating the specimen.
+            </doc>
+        </field>
+        <field name="pulse_energy" type="NX_FLOAT" units="NX_ENERGY">
+            <doc>
+                 Average energy of the laser at peak of each pulse.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="p"/>
+            </dimensions>
+            <attribute name="logged_against" type="NX_CHAR">
+                <doc>
+                     Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+                </doc>
+            </attribute>
+        </field>
+        <group type="NXbeam">
+            <doc>
+                 Details about specific positions along the laser beam
+                 which illuminates the (atom probe) specimen.
+            </doc>
+            <field name="incidence_vector" type="NX_NUMBER" units="NX_LENGTH">
+                <doc>
+                     Track time-dependent settings over the course of the measurement
+                     how the laser beam shines on the specimen, i.e. the mean vector
+                     is parallel to the laser propagation direction.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="p"/>
+                    <dim index="2" value="3"/>
+                </dimensions>
+                <attribute name="logged_against" type="NX_CHAR">
+                    <doc>
+                         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="pinhole_position" type="NX_NUMBER" units="NX_LENGTH">
+                <doc>
+                     Track time-dependent settings over the course of the measurement
+                     where the laser beam exits the focusing optics.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="p"/>
+                    <dim index="2" value="3"/>
+                </dimensions>
+                <attribute name="logged_against" type="NX_CHAR">
+                    <doc>
+                         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+                    </doc>
+                </attribute>
+            </field>
+            <field name="spot_position" type="NX_NUMBER" units="NX_LENGTH">
+                <doc>
+                     Track time-dependent settings over the course of the
+                     measurement where the laser hits the specimen.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="p"/>
+                    <dim index="2" value="3"/>
+                </dimensions>
+                <attribute name="logged_against" type="NX_CHAR">
+                    <doc>
+                         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+                    </doc>
+                </attribute>
+            </field>
+        </group>
+        <group type="NXtransformations">
+            <doc>
+                 Affine transformations which describe the geometry how the
+                 laser focusing optics/pinhole-attached coordinate system is
+                 defined, how it has to be transformed so that it aligns with
+                 the specimen coordinate system.
+            </doc>
+        </group>
+    </group>
+    <!--A right-handed Cartesian coordinate system, the so-called laser space,
+should be assumed, whose positive z-axis points
+into the direction of the propagating laser beam.-->
+</definition>
