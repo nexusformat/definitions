@@ -514,7 +514,7 @@ class NXClassDocGenerator:
 
         if parent.attrib.get("open", "false") == "true":
             self._print(
-                f"{indent}This is an open enumeration. Any of these values is suggested:",
+                f"{indent}Any of these values or a custom value:",
                 end="",
             )
         else:
