@@ -21,7 +21,7 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXem_ebsd" extends="NXem_method" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXem_ebsd" extends="NXprocess" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <symbol name="n_op">
             <doc>
@@ -60,44 +60,40 @@
     <doc>
          Base class method-specific for Electron Backscatter Diffraction (EBSD).
          
-         The general procedure of an EBSD experiment is as follows.
+         The general procedure of an EBSD experiment is as follows:
          Users load the specimen, collect first a coarse image of the surface.
-         Next, they set an approximate value for the calibrated working distance and
-         tilt the stage to set the desired diffraction conditions.
+         Next, they set an approximate value for the calibrated working distance
+         and tilt the stage into diffraction conditions.
          
-         Users then typically configure the microscope for collecting higher quality data
-         and push in the EBSD detector. Subsequently, they fine tune the illumination
-         and aberration corrector settings and select one or multiple ROIs for
-         the microscope to machine off automatically. They configure on-the-fly
-         indexing parameter and start the measurement queue.
+         Users then typically configure the microscope for collecting quality data.
+         The EBSD detector is pushed in (if retractable). Subsequently, they fine tune
+         the illumination and aberration corrector settings and select one or multiple ROIs
+         for the microscope to machine off automatically. They configure on-the-fly
+         indexing parameter and then typically start the measurement queue.
+         From this point onwards nowadays typically the microscope runs automatically.
          
-         Nowadays, this is in most cases an automated process. The pattern
-         collection runs during the allocated microscope session until the
-         queue finishes or gets interrupted by errors or the next user terminates
-         sessions which run over time.
+         Diffraction pattern get collected until the queue finishes or gets interrupted by 
+         either errors or arrival to the end of the users' allocated timeslot at the instrument.
          
-         Kikuchi pattern surplus eventually multi-modal detector signals are
-         collected and usually indexed on-the-fly. Patterns may be stored or not
-         so one should not assume that raw data are always stored.
-         
+         Kikuchi pattern (EBSP) are usually indexed on-the-fly. These patterns are the raw data.
+         For practical reasons they are often discarded though ones sufficient on-the-fly
+         indexing succeeded.
+
          Results are stored in files, which afterwards are typically copied
-         automatically or manual for archival purposes to certain storage
-         locations or further consumption. The result of such an EBSD
+         automatically or manually for archival purposes to certain storage
+         locations for further consumption. The result of such an EBSD
          measurement/experiment is a set of usually proprietary or open files
          from technology partners.
          
          This :ref:`NXem_ebsd` base class is a proposal how to represent method-specific
          data, metadata, and connections between these for the research field of
-         electron microscopy.
+         electron microscopy exemplified here for electron backscatter diffraction (EBSD).
+         The base class solves two key documentation issues within the EBSD community:
          
-         More specifically, exemplified here for electron backscatter diffraction (EBSD)
-         we show how NeXus can be used to solve two key documentation issues so far
-         missing in the field of EBSD.
-         
-         Firstly, an instance of NXem_ebsd (such as a NeXus/HDF5 file which is formatted
+         Firstly, an instance of NXem_ebsd (such as a NeXus/HDF5 file that is formatted
          according to NXem_ebsd) stores the connection between the microscope session and
-         the key datasets which are considered typically results of the various processing
-         steps involved when working with EBSD data.
+         the key datasets which are considered typically results of the afore-mentioned
+         steps involved in an EBSD experiment.
          
          Different groups in NXem_ebsd make connections to data artifacts which were collected
          when working with electron microscopes via the NXem application definition.
@@ -106,44 +102,41 @@
          the user operating the microscope, details about the microscope session,
          and details about the acquisition and eventual indexing of Kikuchi pattern,
          associated overview images, like secondary electron or backscattered electron
-         images of the region-of-interest probed and many more pieces of information.
+         images of the region-of-interest probed, and many more pieces of information.
          
          Secondly, NXem_ebsd connects and stores the conventions and reference frames
          which were used and which are the key to a correct mathematical interpretation
-         of every EBSD result. Otherwise, results would be ripped out of their context,
-         as it is the current situation with many traditional studies where EBSD data
-         were indexed on-the-fly and shared with the community only via sharing
-         the strongly processed results file in some technology-partner-specific file
-         format but without communicating all conventions or relying on the assumptions
-         that colleagues likely know these conventions even though multiple definitions
-         are possible.
+         of every experiment or simulation using EBSD.
+         
+         Otherwise, results would be ripped out of their context like it is the current situation
+         with many traditional studies where EBSD data were indexed on-the-fly and shared
+         with the community only via sharing the strongly processed results file in some
+         technology-partner-specific file format but without communicating all conventions or
+         just relying on the assumptions that colleagues likely know these conventions even though
+         multiple definitions are possible.
          
          NXem_ebsd covers experiments with one-, two-dimensional, and so-called three-
          dimensional EBSD datasets. The third dimension is either time (in the case of
-         quasi in-situ experiments) or space (in the case of serial-sectioning) methods
-         where a combination of mechanical or ion milling is used repetitively to measure
-         the same region-of-interest at different depth increments. Material removal
-         can be achieved with electron or ion polishing, using manual
-         steps or using automated equipment like a robot system.
+         quasi in-situ experiments) or space (in the case of serial-sectioning) experiments
+         where a combination of repetitive removal of material from the surface layer to measure
+         otherwise the same region-of-interest at different depth increments. Material removal
+         can be achieved with mechanical, electron, or ion polishing, using manual
+         steps or automated equipment like a robot system `S. Tsai et al. &lt;https://doi.org/10.1063/5.0087945&gt;`_.
          
          Three-dimensional experiments require to follow a sequence of specimen, surface
-         preparation, and data collection steps. By nature these methods are destructive
-         in that they either require the removal of the previously measured material region
-         or that the sample surface can degrade due to e.g. contamination or other
-         electron-matter interaction.
+         preparation, and data collection steps. By virtue of design, these methods are destructive
+         either because of the necessary material removal or surface degradation due to e.g.
+         contamination or other electron-matter interaction.
          
-         For three-dimensional EBSD, multiple two-dimensional EBSD orientation mappings are
-         combined into one reconstructed stack. That is serial-sectioning is mainly a
-         computational workflow. Users collect data for each serial sectioning step
-         via an experiment. This assures that data for associated microscope sessions
-         and steps of data processing stay connected and contextualized.
+         For three-dimensional EBSD, multiple two-dimensional EBSD orientation mappings
+         are combined into one reconstructed stack (a computational workflow). Users collect
+         data for each serial sectioning step via an experiment. This assures that data for associated
+         microscope sessions and steps of data processing stay contextualized and connected.
          
          Eventual tomography methods also use such a workflow because first diffraction
-         images are collected (e.g. with X-ray) and then these imagres are indexed and
-         computed into a 3D orientation mapping. The here proposed NXem_ebsd application
-         definition contains conceptual ideas how this splitting between measurement and
-         post-processing can be granularized also for such X-ray-based techniques, whether
-         it be 3DXRD or HEDM.
+         images are collected (e.g. with X-ray) and then these images are indexed to process
+         a 3D orientation mapping. Therefore, the here proposed base class can be a blueprint
+         also for future class to embrace our colleagues from X-ray-based techniques be it 3DXRD or HEDM.
          
          This concept is related to term `Electron Backscatter Diffraction`_ of the EMglossary standard.
          
@@ -160,14 +153,14 @@
              
              If any of these assumptions is not met, the user is required to explicitly state this.
              
-             Reference DOI: 10.1016/j.matchar.2016.04.008 suggests to label the
+             Reference `&lt;https://doi.org/10.1016/j.matchar.2016.04.008&gt;`_ suggests to label the
              base vectors of this coordinate system as Xg, Yg, Zg.
         </doc>
         <field name="origin" type="NX_CHAR">
             <doc>
-                 Origin of the gnomonic_projection_reference_frame.
+                 Origin of the gnomonic_reference_frame.
                  
-                 Reference DOI: 10.1016/j.matchar.2016.04.008 suggests to
+                 Reference `&lt;https://doi.org/10.1016/j.matchar.2016.04.008&gt;`_ suggests to
                  assume that this is coordinate Xg = 0, Yg = 0, Zg = 0.
             </doc>
             <enumeration>
@@ -223,20 +216,21 @@
     </group>
     <group name="pattern_centre" type="NXprocess">
         <doc>
-             Details about the definition of the pattern centre as a special point in the gnomonic_reference_frame.
+             Details about the definition of the pattern centre as a special point in the
+             gnomonic_reference_frame.
              
-             Keep in mind that the gnomonic space is in virtually all cases embedded in the detector space.
-             Specifically, the XgYg plane is defined such that it is laying inside the XdYd plane
-             (of the detector reference frame).
+             Typically the gnomonic space is embedded in the detector space.
+             Specifically, the XgYg plane is defined such that it is laying inside the
+             XdYd plane (of the detector reference frame).
              
-             When the normalization direction is the same as e.g. the detector x-axis direction one
-             effectively normalizes in fractions of the width of the detector.
+             When the normalization direction is the same as e.g. the detector x-axis direction
+             one effectively normalizes in fractions of the width of the detector.
              
-             The issue with terms like width and height is that these degenerate if the detector
-             region-of-interest is square-shaped. This is why instead of referring to width and height
-             one should report as if one were to measure practically with a ruler and one is specific
-             about in which direction positive distances are measured.
-             
+             The issue with terms like width and height, though, is that these become degenerated
+             if the detector region-of-interest is square-shaped. This is why instead of referring to
+             width and height it is better to state explicit which direction is considered positive
+             when measuring distances.
+            
              For the concepts used to specify the boundary_convention it is assumed that the
              region-of-interest is defined by a rectangle, referring to the direction of outer-unit
              normals to the respective edges of this rectangle.
@@ -306,18 +300,16 @@ will be used in practice.
 enumeration: [undefined, Bruker, JEOL, FEI, Oxford]-->
     <group name="measurement" type="NXprocess">
         <doc>
-             This group documents relevant details about the conditions and the tools
-             used for measuring a stack of Kikuchi diffraction pattern with an
-             electron microscope.
+             This group documents relevant details about the conditions and the
+             tools for measuring diffraction pattern with an electron microscope.
              
              The most frequently collected EBSD data are captured for rectangular
-             regions-of-interested which are sampled with regular square or
-             hexagon-shaped pixels.
+             regions-of-interest using a discretization with square or hexagon tiles.
         </doc>
         <field name="time" type="NX_NUMBER" units="NX_TIME">
             <doc>
                  Physical time since the beginning of a timestamp that is required to be
-                 same for all experiments in the set. The purpose of this marker is
+                 the same for all experiments in the set. The purpose of this marker is
                  to identify how all experiments in the set need to be arranged
                  sequentially based on the time elapsed.
                  The time is relevant to sort e.g. experiments of consecutive quasi
@@ -331,19 +323,9 @@ enumeration: [undefined, Bruker, JEOL, FEI, Oxford]-->
                 </doc>
             </attribute>
         </field>
-        <!--(NXtransformations):
-  doc: |
-    Transformation which details where the region-of-interest described under
-    indexing is located in absolute coordinates and rotation with respect
-    to which coordinate system.
-pattern_available(NX_BOOLEAN):
-  doc: |
-    True if pattern were stored and are retrieveable via depends_on or source.-->
         <field name="depends_on" type="NX_CHAR">
             <doc>
-                 If available and it is stored in an instance of an application definition this field
-                 specifies the path to an instance of :ref:`NXdata` where the measured patterns
-                 are stored.
+                 Path to an instance of :ref:`NXdata` where the measured patterns are stored.
             </doc>
         </field>
         <group name="source" type="NXserialized">
@@ -356,32 +338,28 @@ pattern_available(NX_BOOLEAN):
     <group name="simulation" type="NXprocess">
         <doc>
              This group documents relevant details about the conditions and the tools
-             used for simulating a stack of Kikuchi diffraction pattern with some
-             physical model.
+             used for simulating diffraction pattern with some physical model.
              
-             This group should not be confused with a group named simulation that
-             is however an instance of NXem_sim. Instead, the simulation group here
-             should be used if (e.g. instead of a measurement) a stack of pattern
-             were simulated that one wishes to use for indexing patterns.
-             
+             This group should be used if (e.g. instead of a measurement) the pattern
+             were simulated (possibly awaiting indexing).
+              
              In many practical cases where pattern are analyzed on-the-fly and dictionary
              indexing strategies are used, so-called master pattern(s) are used to compare
-             measured or simulated pattern with the master pattern. In this case,
-             master pattern are the result of a computer simulation and thus should
+             measured or simulated patterns with the master patterns. In this case, the
+             master patterns are the result of a computer simulation, and thus should
              be stored using an own properly documented entry within a simulation
              group as an instance of :ref:`NXem_sim`.
         </doc>
         <field name="depends_on" type="NX_CHAR">
             <doc>
-                 If available and it is stored in an instance of an application definition this field specifies
-                 the path to an instance of :ref:`NXimage_set` where the simulated patterns are stored.
+                 Path to an instance of :ref:`NXimage` where the simulated patterns are stored.
             </doc>
         </field>
         <group name="source" type="NXserialized">
             <doc>
                  Reference (e.g. path and filename) to an existent digital resource which
-                 stores either the pattern or input (already processed EBSD data)
-                 which is now processed further as described by this NXem_ebsd instance.
+                 stores either the patterns or input (already processed EBSD data) that are
+                 about to become processed further as described by this NXem_ebsd instance.
             </doc>
         </group>
     </group>
@@ -389,21 +367,21 @@ pattern_available(NX_BOOLEAN):
         <doc>
              The EBSD system, including components like the electron gun, pole-piece,
              stage tilting, EBSD detector, and the gnomonic projection have to be
-             calibrated to achieve reliable indexing results.
+             calibrated to achieve reliable, precise, and accurate indexing results.
              
              Specifically, the gnomonic projection has to be calibrated.
-             Typically, silicon or quartz crystals are used for this purpose.
+             Typically, standard specimens made from silicon or quartz crystals
+             in specific orientations are used for this purpose.
              
-             Considering a system is well-calibrated, it is much more frequently the
-             case in practice that users assume the system is calibrated (and thus usable)
-             vs. they perform the calibration of the EBSD system.
+             Considering that a system used is already calibrated well-enough is much
+             more frequently the case in practice than that users perform the calibration
+             of the EBSD system themselves (with above-mentioned standard specimens).
              
              In the first case, the user assumes that the principle geometry of the
              hardware components and the settings in the control and EBSD pattern
              acquisition software has been calibrated. Consequently, users pick from
-             an existent library of phase candidates, i.e.
-             :ref:`NXcrystal_structure` instances. Examples are
-             reflector models as stored in CRY files (HKL/Channel 5/Flamenco).
+             an existent library of phase candidates, i.e. :ref:`NXcrystal_structure` instances.
+             Examples are reflector models as stored in CRY files (HKL/Channel 5/Flamenco).
              
              In the second case, users calibrate the system during the session
              using standards (silicon, quartz, or other common specimens).
@@ -414,20 +392,19 @@ pattern_available(NX_BOOLEAN):
              
              For EBSD this has key implications: Taking TSL OIM/EDAX as an example,
              the conventions how orientations are stored is affected by how the
-             reference frames are configured and this setup is made at the level
+             reference frames are configured and how this setup was made at the level
              of the GUI software.
              
              Unfortunately, these pieces of information are not necessarily stored
              in the results files. In effect, key conventions become disconnected
              from the data so it remains the users' obligation to remember these
              settings or write these down in a lab notebook. Otherwise, these metadata
-             get lost. All these issues are a motivation and problem which
-             :ref:`NXem_ebsd` solves in that all conventions can be specified explicitly.
+             get lost. All these issues are a motivation and problem which :ref:`NXem_ebsd`
+             solves in that all conventions can be specified explicitly.
         </doc>
         <field name="depends_on" type="NX_CHAR">
             <doc>
-                 If available and it is stored in an instance of an application definition this field specifies
-                 the path to an instance of :ref:`NXem_msr` where calibration is stored.
+                 Path to an instance of :ref:`NXem_msr` where calibration is stored.
             </doc>
         </field>
         <group name="source" type="NXserialized">
@@ -442,22 +419,21 @@ pattern_available(NX_BOOLEAN):
              (on-the-fly) the beam scans the specimen. The resulting method is also
              known as orientation imaging microscopy (OIM).
              
-             Different algorithms can be used to index EBSD pattern. Common to them
-             is the computational step where simulated reference pattern are compared
-             with measured or simulated patterns. These latter patterns are referred
-             to via the measurement or simulation groups of this base class.
+             Different algorithms can be used to index EBSP. Common to them is the
+             computational step where simulated or theoretically assumed patterns
+             are compared with the measured ones. These latter patterns are referred
+             to via the measurement or simulation groups of this base class respectively.
              
              Quality descriptors are defined based on which an indexing algorithm
              yields a quantitative measure of how similar measured and reference
-             pattern are, and thus if no, one, or multiple so-called solutions
-             were found.
+             patterns are, and thus if no, one, or multiple so-called solutions were found.
              
-             Assumed or simulated pattern are simulated using kinematic or dynamical
+             Assumed or simulated patterns are simulated using kinematical or dynamical
              theory of electron diffraction delivering master pattern.
              
              The Hough transform is essentially a discretized Radon transform (for details see `M. van Ginkel et al. &lt;https://www.semanticscholar.org/paper/A-short-introduction-to-the-Radon-and-Hough-and-how-Ginkel/fb6226f606cad489a15e38ed961c419037ccc858&gt;`_).
-             Recently, dictionary-based indexing methods are increasingly becoming used
-             partly driven by the interest to use artificial intelligence algorithms.
+             Recently, dictionary-based indexing methods, and artificial intelligence-based
+             methods are also used for indexing.
         </doc>
         <group name="source" type="NXserialized">
             <doc>
@@ -498,13 +474,13 @@ pattern_available(NX_BOOLEAN):
                  Specific parameter relevant only for certain algorithms used.
             </doc>
         </group>
-        <group name="phaseID" type="NXcrystal_structure">
+        <group name="phaseID" type="NXcrystal_structure" nameType="partial">
             <doc>
                  Details for each phase used as a model with which the patterns were
                  indexed. Instances of :ref:`NXcrystal_structure` in this group must
                  have the group name prefix phase. The identifier in the name is an
                  integer. We start counting from 1 because the value 0 is reserved for
-                 the special phase that is the null-model, i.e. the null phase, notIndexed.
+                 the special phase that is the null-model, i.e. the null phase aka notIndexed.
             </doc>
         </group>
         <field name="status" type="NX_UINT" units="NX_UNITLESS">
@@ -522,17 +498,16 @@ pattern_available(NX_BOOLEAN):
                 <dim index="1" value="n_sc"/>
             </dimensions>
         </field>
-        <field name="n_phases_per_scan_point" type="NX_INT" units="NX_UNITLESS">
+        <field name="phases_per_scan_point" type="NX_INT" units="NX_UNITLESS">
             <doc>
                  How many phases i.e. crystal structure models were used to index each
                  scan point if any? Let's assume an example to explain how this field
                  should be used: In the simplest case users collected one pattern for
                  each scan point and have indexed using one phase, i.e. one instance
-                 of an NXem_ebsd_crystal_structure_model.
+                 of an :ref:`NXcrystal_structure`.
                  
-                 In another example users may have skipped some scan points (not indexed)
-                 them at all) and/or used differing numbers of phases for different scan
-                 points.
+                 In another example users may have skipped some scan points (not indexed
+                 them at all) or used differing numbers of phases for different scan points.
                  
                  The cumulated of this array decodes how phase_identifier and phase_matching
                  arrays have to be interpreted. In the simplest case (one pattern per scan
@@ -546,7 +521,7 @@ pattern_available(NX_BOOLEAN):
         </field>
         <field name="phase_identifier" type="NX_INT" units="NX_UNITLESS">
             <doc>
-                 The array n_phases_per_scan_point details how the phase_identifier
+                 The array phases_per_scan_point details how the phase_identifier
                  and the phase_matching arrays have to be interpreted.
                  
                  For the example with a single phase phase_identifier has trivial
@@ -554,20 +529,20 @@ pattern_available(NX_BOOLEAN):
                  sufficiently significant with the model for phase 1).
                  
                  When there are multiple phases, it is possible (although not frequently
-                 needed) that a pattern matches eventually (not equally well) sufficiently
-                 significant with multiple pattern. This can especially happen in cases of
+                 required) that a pattern matches eventually (not equally well) sufficiently
+                 significant with multiple patterns. This can especially happen in cases of
                  pseudosymmetry and more frequently with an improperly calibrated system
                  or false or inaccurate phase models e.g. (ferrite, austenite).
                  Having such field is especially relevant for recent machine learning
-                 or dictionary based indexing schemes because in combination with
-                 phase_matching these fields communicate the results in a model-agnostic
-                 way.
+                 or dictionary-based indexing methods because in combination with
+                 phase_matching these fields communicate the results in a
+                 model-agnostic way.
                  
-                 Depending on the n_phases_per_scan_point value phase_identifier and
+                 Depending on the phases_per_scan_point value phase_identifier and
                  phase_matching arrays represent a collection of concatenated tuples,
                  which are organized in sequence: The solutions for the 0-th scan point,
                  the 1-th scan point, the n_sc - 1 th scan point and omitting tuples
-                 for those scan points with no phases according to n_phases_per_scan_point
+                 for those scan points with no phases according to phases_per_scan_point.
             </doc>
             <dimensions rank="1">
                 <dim index="1" value="n_solutions"/>
@@ -576,8 +551,8 @@ pattern_available(NX_BOOLEAN):
         <field name="phase_matching" type="NX_INT" units="NX_UNITLESS">
             <doc>
                  One-dimensional array, pattern by pattern labelling the solutions found.
-                 The array n_phases_per_scan_point has to be specified because it details
-                 how the phase_identifier and the phase_matching arrays have to be interpreted.
+                 The array phases_per_scan_point has to be specified because it details
+                 how the phase_identifier and the phase_matching arrays are interpreted.
                  See documentation of phase_identifier for further details.
             </doc>
             <dimensions rank="1">
@@ -587,8 +562,7 @@ pattern_available(NX_BOOLEAN):
         <field name="phase_matching_descriptor" type="NX_CHAR">
             <doc>
                  Phase_matching is a descriptor for how well the solution matches or not.
-                 Examples can be confidence_index, mean_angular_deviation, some AI-based
-                 matching probability (other), i.e. the details are implementation-specific.
+                 Examples can be confidence_index, mean_angular_deviation, or other.
             </doc>
             <enumeration>
                 <item value="undefined"/>
@@ -597,22 +571,10 @@ pattern_available(NX_BOOLEAN):
                 <item value="other"/>
             </enumeration>
         </field>
-        <group name="rotation_set" type="NXrotation_set"/>
-        <!--
-px is no one of the following two calibrated i) is not px*stepsize or ii) is not
-px*stepsize + offset
--->
+        <group name="rotation" type="NXrotation"/>
         <field name="scan_point_positions" type="NX_NUMBER" units="NX_LENGTH">
-            <!--
-we make this only required as people may not yet be so happy with
-having to walk a graph from measurement -> path -> NXevent_data_em
--> em_lab/ebeam_deflector to retrieve the actual scan positions
-although this would be cleaner, also scan_point_positions could be
-an instance of NXcg_point_set with a depends_on pointing
-to sample_reference_frame
--->
             <doc>
-                 Calibrated center positions of each scan point
+                 Calibrated centre positions of each scan point
                  in the sample surface reference system.
             </doc>
             <dimensions rank="2">
@@ -644,21 +606,12 @@ overview over the entire map, rediscretized on a tight aabb-->
                 <doc>
                      Descriptor representing the image contrast.
                 </doc>
-                <!--taking two examples (CTF and H5OINA choked completely of possibility to find s.th. conceptually common to plot-->
                 <enumeration>
                     <item value="band_contrast"/>
                     <item value="confidence_index"/>
                     <item value="mean_angular_deviation"/>
                 </enumeration>
             </field>
-            <!--\@signal:  # data
-\@axes:  # [axis_y, axis_x]
-\@axis_x_indices: 0
-\@axis_y_indices: 1
-\@signal:
-\@axes:
-\@AXISNAME_indices:
-\@long_name:-->
             <field name="title" type="NX_CHAR">
                 <doc>
                      Title of the default plot.
@@ -672,12 +625,9 @@ overview over the entire map, rediscretized on a tight aabb-->
                     <dim index="1" value="n_y"/>
                     <dim index="2" value="n_x"/>
                 </dimensions>
-                <!--n_0 slow 2, n_1 fast 1, rgb triplet is fastest 0
-in axes fast to fastest
-while for _indices fastest to fast-->
                 <attribute name="long_name" type="NX_CHAR">
                     <doc>
-                         Descriptor values.
+                         Descriptor values
                     </doc>
                 </attribute>
             </field>
