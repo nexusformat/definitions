@@ -93,7 +93,7 @@ described by the following :index:`rules <rules; naming>`:
        ^[a-zA-Z0-9_]([a-zA-Z0-9_.]*[a-zA-Z0-9_])?$
 
    The length should be limited to no more than
-   63 characters (imposed by the HDF5 :index:`rules <rules; HDF5>` for names).
+   63 characters (historically imposed by the HDF4 :index:`rules <rules; HDF>` for names).
 
    It is recognized that some facilities will construct data files with
    group and field names with upper case letters or start names with a
