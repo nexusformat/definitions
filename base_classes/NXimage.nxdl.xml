@@ -21,31 +21,13 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<!--
-a key challenge is setting constraints, lets explain with contrasting two use cases:
-case 1 assuming an image is nothing but a collection of point-wise information without making explicit tiling and discretization information
-case 2 assuming that like most frequently assumed we understand an image probing Euclidean space
-assuming that we expect that the image is represented using a pixel grid because it was captured
-using sensors that are arranged on generator points of a regular tiling.
-in the first case, one should not constrain the dimensions for images beyond 1d
-because beyond 1d the question of offset and stride comes up i.e. the question which
-tiling is used to construct the sensor array
-in the second case, one should constrain the dimensions for all dimensions as otherwise
-there are no instructions how to arrange the sensors or the pixels for visualizing the image
-because the image is not just a bunch of point wise intensities
-but if the dimensions are not constrained again images in application definitions will be represented
-using different conventions.-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXimage" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
-    <!--for earlier variants see here
-https://github.com/FAIRmat-NFDI/nexus_definitions/commit/0682943baaef54d4a6386b5433f9721af6d3d81b
-https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
     <symbols>
         <symbol name="n_img">
             <doc>
                  Number of images in the stack, for stacks the slowest dimension.
             </doc>
         </symbol>
-        <!--should we support further dimensions-->
         <symbol name="n_k">
             <doc>
                  Number of image points along the slow dimension (k equivalent to z).
@@ -89,7 +71,7 @@ https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
          * `FFTW by M. Frigo and S. G. Johnson &lt;https://www.fftw.org/fftw3_doc/Tutorial.html#Tutorial&gt;`_
          * `Intel MKL by the Intel Co. &lt;https://www.intel.com/content/www/us/en/docs/onemkl/developer-reference-c/2024-2/fourier-transform-functions.html&gt;`_
          * `cuFFT by the NVidia Co. &lt;https://docs.nvidia.com/cuda/cufft/index.html&gt;`_
-         * `NFFT by the Chemnitz group &lt;https://www-user.tu-chemnitz.de/~potts/nfft/&gt;`_ for non-equispaced computations
+         * `NFFT by the TU Chemnitz group &lt;https://www-user.tu-chemnitz.de/~potts/nfft/&gt;`_ for non-equispaced computations
          
          Users are strongly advised to inspect carefully which specific conventions their library uses
          to enable storing and modifying the implementation of their code such that the serialized
@@ -98,10 +80,10 @@ https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
          It is often the case that several images are combined using processing. In this case,
          the number of images which are combined in a collection is not necessarily the same
          for each collection. The NXimage base class addresses this logical distinction
-         through the notation of image_identifier and group_identifier concepts.
-         That is image_identifier are always counting from offset in increments of one.
+         through the notation of identifier_image and identifier_group concepts.
+         That is identifier_image are always counting from offset in increments of one.
          as each image is its own entity. By contrast, a group may contain no, or several images.
-         Consequently, group_identifier are not required to be contiguous.
+         Consequently, identifier_group are not required to be contiguous.
     </doc>
     <group type="NXprocess">
         <doc>
@@ -110,7 +92,7 @@ https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
         <group name="source" type="NXserialized">
             <doc>
                  Resolvable data artifact (e.g. file) from which all values in the :ref:`NXdata`
-                 instances in this :ref:`NXimage_set` were loaded during parsing.
+                 instances in this :ref:`NXimage` were loaded during parsing.
                  
                  Possibility to document from which specific other serialized resource as the source
                  pieces of information were processed when using NeXus as a semantic file format
@@ -126,10 +108,7 @@ https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
                 </doc>
             </field>
         </group>
-        <!--mode(NX_CHAR):
-  doc: |
-   Imaging (data collection) mode of the instrument during acquisition.-->
-        <field name="detector_identifier" type="NX_CHAR">
+        <field name="identifier_detector" type="NX_CHAR">
             <doc>
                  Link or name of an :ref:`NXdetector` instance with which the data were
                  collected.
@@ -141,11 +120,6 @@ https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
             </doc>
         </group>
     </group>
-    <!--space(NX_CHAR):
-  doc:
-  - |
-    The reference space in which the image set is defined.
-  enumeration: [real, reciprocal]-->
     <group name="image_1d" type="NXdata">
         <doc>
              One-dimensional image.
@@ -395,7 +369,7 @@ https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
                 <dim index="2" value="n_i"/>
             </dimensions>
         </field>
-        <field name="group_identifier" type="NX_INT" units="NX_UNITLESS">
+        <field name="identifier_group" type="NX_INT" units="NX_UNITLESS">
             <doc>
                  Group identifier
             </doc>
@@ -408,7 +382,7 @@ https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
                 </doc>
             </attribute>
         </field>
-        <field name="image_identifier" type="NX_INT" units="NX_UNITLESS">
+        <field name="identifier_image" type="NX_INT" units="NX_UNITLESS">
             <doc>
                  Image identifier
             </doc>
@@ -481,7 +455,7 @@ https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
                 <dim index="3" value="n_i"/>
             </dimensions>
         </field>
-        <field name="group_identifier" type="NX_INT" units="NX_UNITLESS">
+        <field name="identifier_group" type="NX_INT" units="NX_UNITLESS">
             <doc>
                  Group identifier
             </doc>
@@ -494,7 +468,7 @@ https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
                 </doc>
             </attribute>
         </field>
-        <field name="image_identifier" type="NX_INT" units="NX_UNITLESS">
+        <field name="identifier_image" type="NX_INT" units="NX_UNITLESS">
             <doc>
                  Image identifier
             </doc>
@@ -584,7 +558,7 @@ https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
                 <dim index="4" value="n_i"/>
             </dimensions>
         </field>
-        <field name="group_identifier" type="NX_INT" units="NX_UNITLESS">
+        <field name="identifier_group" type="NX_INT" units="NX_UNITLESS">
             <doc>
                  Group identifier
             </doc>
@@ -597,7 +571,7 @@ https://en.wikipedia.org/wiki/Euclidean_tilings_by_convex_regular_polygons-->
                 </doc>
             </attribute>
         </field>
-        <field name="image_identifier" type="NX_INT" units="NX_UNITLESS">
+        <field name="identifier_image" type="NX_INT" units="NX_UNITLESS">
             <doc>
                  Image identifier
             </doc>
