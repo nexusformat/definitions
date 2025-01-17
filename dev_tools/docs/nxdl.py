@@ -514,7 +514,7 @@ class NXClassDocGenerator:
 
         if parent.attrib.get("open", "false") == "true":
             self._print(
-                f"{indent}Any of these values or a custom value:",
+                f"{indent}Any of these values or a custom value (if you use a custom value, also set @custom=True):",
                 end="",
             )
         else:
