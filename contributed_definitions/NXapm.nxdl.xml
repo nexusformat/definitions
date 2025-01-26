@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2014-2025 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -114,7 +114,7 @@ cannot be made required as for simulations you do not have a run number!
                  should be stored as individual :ref:`NXentry` instances in one NeXus file.
             </doc>
         </field>
-        <field name="experiment_alias" type="NX_CHAR">
+        <field name="experiment_alias" type="NX_CHAR" recommended="true">
             <doc>
                  Either an identifier or an alias that is human-friendly so that scientists find that experiment again.
                  For experiments usually this is the run_number but for simulation typically no run_numbers are issued.
@@ -165,6 +165,11 @@ the appdef definition here is nothing else then the documentation of this for a 
             <doc>
                  ISO 8601 time code with local time zone offset to UTC included
                  when the atom probe session ended.
+            </doc>
+        </field>
+        <field name="elapsed_time" type="NX_FLOAT" units="NX_TIME">
+            <doc>
+                 TODO
             </doc>
         </field>
         <group type="NXcite" minOccurs="0" maxOccurs="unbounded">
@@ -454,7 +459,7 @@ schema for heat treatment
             </field>
         </group>
         <!--describing the geometry of the specimen-->
-        <group name="coordinate_system_set" type="NXcoordinate_system_set">
+        <group name="coordinate_system_set" type="NXcoordinate_system_set" recommended="true">
             <doc>
                  Set to hold different coordinate systems conventions.
                  Inspect the description of the :ref:`NXcoordinate_system_set`
@@ -514,10 +519,20 @@ schema for heat treatment
         </group>
         <group name="measurement" type="NXapm_msr" optional="true">
             <group name="instrument" type="NXinstrument">
+                <field name="identifier_name" type="NX_UINT">
+                    <doc>
+                         TODO
+                    </doc>
+                </field>
                 <field name="instrument_name" type="NX_CHAR" optional="true"/>
                 <group name="fabrication" type="NXfabrication">
                     <field name="vendor" type="NX_CHAR"/>
                     <field name="model" type="NX_CHAR"/>
+                    <field name="serial_number" type="NX_UINT" units="NX_UNITLESS">
+                        <doc>
+                             TODO
+                        </doc>
+                    </field>
                     <group name="identifier" type="NXidentifier" recommended="true"/>
                 </group>
                 <group name="reflectron" type="NXreflectron">
@@ -560,24 +575,23 @@ schema for heat treatment
                         </field>
                     </group>
                 </group>
-                <!--use NXbeam in the future
-stage_lab(NXstage_lab):-->
-                <group name="analysis_chamber" type="NXchamber" recommended="true">
-                    <field name="flight_path" type="NX_FLOAT" recommended="true" units="NX_LENGTH">
+                <!--use NXbeam in the future-->
+                <group name="stage" type="NXstage_lab" recommended="true">
+                    <field name="specimen_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
                         <doc>
-                             The space inside the atom probe along which ions pass nominally
-                             when they leave the specimen and travel to the detector.
+                             TODO
                         </doc>
                     </field>
                 </group>
-                <!--atmosphere(NXcollection):
+                <group name="analysis_chamber" type="NXchamber" recommended="true"/>
+            </group>
+            <!--atmosphere(NXcollection):
 buffer_chamber(NXchamber):
 load_lock_chamber(NXchamber):
 getter_pump(NXpump):
 roughening_pump(NXpump):
 turbomolecular_pump(NXpump):-->
-                <field name="status" type="NX_CHAR"/>
-            </group>
+            <field name="status" type="NX_CHAR"/>
             <group name="event_data_apm_set" type="NXevent_data_apm_set" optional="true">
                 <!--the case of allowing to not have event_data but only the above-mentioned instrument
 details can be useful to convey details about an atom probe instrument in general-->
@@ -701,8 +715,8 @@ a time series of the specimen shape evolution-->
                 <group name="serialized" type="NXserialized" recommended="true">
                     <field name="type" type="NX_CHAR"/>
                     <field name="path" type="NX_CHAR"/>
-                    <field name="checksum" type="NX_CHAR"/>
-                    <field name="algorithm" type="NX_CHAR"/>
+                    <field name="checksum" type="NX_CHAR" optional="true"/>
+                    <field name="algorithm" type="NX_CHAR" optional="true"/>
                 </group>
             </group>
             <group name="hit_finding" type="NXapm_hit_finding" recommended="true">
@@ -728,6 +742,7 @@ we can only make recommendations-->
                 <field name="arrival_time_pairs" type="NX_NUMBER" optional="true"/>
                 <!--results of the hit_finding algorithm-->
                 <field name="hit_quality_types" type="NX_CHAR" optional="true"/>
+                <field name="total_hit_quality" type="NX_UINT" optional="true"/>
                 <field name="hit_quality_identifier" type="NX_UINT" optional="true"/>
                 <field name="hit_positions" type="NX_NUMBER" recommended="true">
                     <dimensions rank="2">
@@ -835,11 +850,12 @@ Relevant for ranging are the calibrated data, thats why only these
                     </dimensions>
                 </field>
                 <!--result-->
-                <field name="calibrated_tof" type="NX_FLOAT">
+                <field name="calibrated_tof" type="NX_FLOAT" recommended="true">
                     <dimensions rank="1">
                         <dim index="1" value="n"/>
                     </dimensions>
                 </field>
+                <field name="tof_zero_estimate" type="NX_FLOAT" optional="true"/>
             </group>
             <group name="mass_to_charge_conversion" type="NXprocess" recommended="true">
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
