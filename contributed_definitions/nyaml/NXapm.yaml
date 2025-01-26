@@ -78,6 +78,7 @@ NXapm(NXobject):
         We follow this habit of most atom probe groups. Such interrupted runs
         should be stored as individual :ref:`NXentry` instances in one NeXus file.
     experiment_alias(NX_CHAR):
+      exists: recommended
       doc: |
         Either an identifier or an alias that is human-friendly so that scientists find that experiment again.
         For experiments usually this is the run_number but for simulation typically no run_numbers are issued.
@@ -124,6 +125,10 @@ NXapm(NXobject):
       doc: |
         ISO 8601 time code with local time zone offset to UTC included
         when the atom probe session ended.
+    elapsed_time(NX_FLOAT):
+      doc: |
+        TODO
+      unit: NX_TIME
     (NXcite):
       exists: [min, 0, max, infty]
       doi(NX_CHAR):
@@ -373,6 +378,7 @@ NXapm(NXobject):
         unit: NX_ANGLE
       # describing the geometry of the specimen
     coordinate_system_set(NXcoordinate_system_set):
+      exists: recommended  # should be made required
       doc: |
         Set to hold different coordinate systems conventions.
         Inspect the description of the :ref:`NXcoordinate_system_set`
@@ -432,11 +438,18 @@ NXapm(NXobject):
     measurement(NXapm_msr):
       exists: optional
       instrument(NXinstrument):
+        identifier_name(NX_UINT):
+          doc: |
+            TODO
         instrument_name(NX_CHAR):
           exists: optional
         fabrication(NXfabrication):
           vendor(NX_CHAR):
           model(NX_CHAR):
+          serial_number(NX_UINT):
+            doc: |
+              TODO
+            unit: NX_UNITLESS
           identifier(NXidentifier):
             exists: recommended
         reflectron(NXreflectron):
@@ -476,22 +489,21 @@ NXapm(NXobject):
                 The wavelength of the radiation emitted by the source.
               unit: NX_WAVELENGTH
             # use NXbeam in the future
-        # stage_lab(NXstage_lab):
+        stage(NXstage_lab):
+          exists: recommended
+          specimen_temperature(NX_FLOAT):
+            doc: |
+              TODO
+            unit: NX_TEMPERATURE
         analysis_chamber(NXchamber):
           exists: recommended
-          flight_path(NX_FLOAT):
-            exists: recommended
-            doc: |
-              The space inside the atom probe along which ions pass nominally
-              when they leave the specimen and travel to the detector.
-            unit: NX_LENGTH
         # atmosphere(NXcollection):
         # buffer_chamber(NXchamber):
         # load_lock_chamber(NXchamber):
         # getter_pump(NXpump):
         # roughening_pump(NXpump):
         # turbomolecular_pump(NXpump):
-        status(NX_CHAR):
+      status(NX_CHAR):
       event_data_apm_set(NXevent_data_apm_set):
         exists: optional
         # the case of allowing to not have event_data but only the above-mentioned instrument
@@ -554,10 +566,8 @@ NXapm(NXobject):
             # getter_pump(NXpump):
             # roughening_pump(NXpump):
             # turbomolecular_pump(NXpump):
-
     simulation(NXapm_sim):
       exists: optional
-
     atom_probe(NXroi):
       exists: recommended  # [min, 0, max, infty]
       doc: |
@@ -607,8 +617,9 @@ NXapm(NXobject):
           type(NX_CHAR):
           path(NX_CHAR):
           checksum(NX_CHAR):
+            exists: optional
           algorithm(NX_CHAR):
-
+            exists: optional
       hit_finding(NXapm_hit_finding):
         exists: recommended
         # we careful how we go about doing this here, we recommended to make some details of the hit_finding
@@ -635,6 +646,8 @@ NXapm(NXobject):
           exists: optional
         # results of the hit_finding algorithm
         hit_quality_types(NX_CHAR):
+          exists: optional
+        total_hit_quality(NX_UINT):
           exists: optional
         hit_quality_identifier(NX_UINT):
           exists: optional
@@ -734,8 +747,10 @@ NXapm(NXobject):
           dim: (n,)
         # result
         calibrated_tof(NX_FLOAT):
+          exists: recommended  # make required
           dim: (n,)
-
+        tof_zero_estimate(NX_FLOAT):
+          exists: optional
       mass_to_charge_conversion(NXprocess):
         exists: recommended
         sequence_index(NX_POSINT):
@@ -847,7 +862,6 @@ NXapm(NXobject):
           algorithm(NX_CHAR):
         # number_of_ion_types(NX_UINT):
         maximum_number_of_atoms_per_molecular_ion(NX_UINT):
-
         mass_to_charge_distribution(NXprocess):
           exists: recommended
           sequence_index(NX_POSINT):
@@ -870,7 +884,6 @@ NXapm(NXobject):
             axis_mass_to_charge(NX_FLOAT):
               dim: (n_bins,)
               \@long_name(NX_CHAR):
-
         background_quantification(NXprocess):
           exists: recommended
           sequence_index(NX_POSINT):
@@ -932,7 +945,6 @@ NXapm(NXobject):
             position(NX_NUMBER):
 
         # peak deconvolution(NXprocess):
-
         peak_identification(NXprocess):  # aka specify ranging definitions i.e. mqmin, mqmax intervals (ranges) and (molecular) ion candidates
           exists: recommended
           sequence_index(NX_POSINT):
