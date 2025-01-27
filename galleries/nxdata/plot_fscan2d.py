@@ -26,6 +26,7 @@ opposed to the requested or `set` position.
       @axes = ["x_set", "y_set"]
       @x_encoder_indices = [0, 1]
       @y_encoder_indices = 1
+      @signal = "z"
       z: NX_FLOAT64[10,16]
       x_encoder: NX_FLOAT64[11,16]
       y_encoder: NX_FLOAT64[16]
