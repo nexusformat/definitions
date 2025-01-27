@@ -17,11 +17,11 @@ this example but this is not necessarily the case.
     @default = "data"
     data:
       @NX_class = "NXdata"
-      @axes = ["x", "y"]
+      @axes = ["y", "x"]
       @signal = "z"
       x: NX_FLOAT64[16]
       y: NX_FLOAT64[30]
-      z: NX_FLOAT64[16,30]
+      z: NX_FLOAT64[30,16]
 
 Explanation:
 
