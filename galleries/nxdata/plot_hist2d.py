@@ -17,11 +17,11 @@ the bin widths are not necessarily identical.
     @default = "data"
     data:
       @NX_class = "NXdata"
-      @axes = ["x", "y"]
+      @axes = ["y", "x"]
       @signal = "z"
       x: NX_FLOAT64[7]
       y: NX_FLOAT64[9]
-      z: NX_FLOAT64[6,8]
+      z: NX_FLOAT64[8,6]
 
 Explanation:
 
@@ -29,9 +29,11 @@ Explanation:
 
 2. ``z`` is the default signal to be plotted versus ``x`` and ``y``.
 
-3. ``x`` has one more value than the first dimension of ``z`` since it contains the bin edges.
+3. ``z`` has 6 rows and 8 columns.
 
-4. ``y`` has one more value than the second dimension of ``z`` since it contains the bin edges.
+4. ``y`` has one more value than the first dimension of ``z`` since it contains the bin edges.
+
+5. ``x`` has one more value than the second dimension of ``z`` since it contains the bin edges.
 """
 
 # Data
@@ -44,7 +46,7 @@ xx = np.linspace(-3, 3, 200)
 yy = np.linspace(-3, 3, 200)
 xx, yy = np.meshgrid(xx, yy)
 zz = (1 - xx / 2 + xx**5 + yy**3) * np.exp(-(xx**2) - yy**2)
-z, _, _ = np.histogram2d(xx.flatten(), yy.flatten(), bins=[x, y], weights=zz.flatten())
+z, _, _ = np.histogram2d(yy.flatten(), xx.flatten(), bins=[y, x], weights=zz.flatten())
 
 # Plot
 import matplotlib.pyplot as plt  # noqa E402
@@ -52,6 +54,7 @@ import matplotlib.pyplot as plt  # noqa E402
 plt.style.use("_mpl-gallery-nogrid")
 
 fig, ax = plt.subplots()
-mesh = ax.pcolormesh(x, y, z.T, edgecolor="k", linewidth=0.7)
+
+mesh = ax.pcolormesh(x, y, z, edgecolor="k", linewidth=0.7, shading="flat")
 
 plt.show()

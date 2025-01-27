@@ -28,6 +28,10 @@ Explanation:
 1. ``@axes`` has two values which corresponds to the signal rank of two.
 
 2. ``z`` is the default signal to be plotted versus ``x`` and ``y``.
+
+3. ``z`` has 30 rows and 16 columns.
+
+4. ``y`` spans the first dimension of ``z`` and ``x`` the second.
 """
 
 # Data
@@ -46,6 +50,6 @@ plt.style.use("_mpl-gallery-nogrid")
 
 fig, ax = plt.subplots()
 
-ax.imshow(z, origin="lower", aspect="auto")
+ax.imshow(z, extent=[x[0], x[-1], y[0], y[-1]], origin="lower")
 
 plt.show()
