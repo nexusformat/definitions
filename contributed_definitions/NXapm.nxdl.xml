@@ -34,9 +34,19 @@
                  to store results of an already reconstructed datasets.
             </doc>
         </symbol>
+        <symbol name="p_out">
+            <doc>
+                 Number of pulses returned by the hit finding algorithm. Not necessarily p or n.
+            </doc>
+        </symbol>
         <symbol name="n_ht">
             <doc>
                  Number of hit qualities (hit types) distinguished.
+            </doc>
+        </symbol>
+        <symbol name="n_dld">
+            <doc>
+                 Number of delay-line wires of the detector.
             </doc>
         </symbol>
         <symbol name="n">
@@ -701,7 +711,11 @@ load_lock_chamber(NXchamber):
 getter_pump(NXpump):
 roughening_pump(NXpump):
 turbomolecular_pump(NXpump):-->
-        <group name="simulation" type="NXapm_sim" optional="true"/>
+        <group name="simulation" type="NXobject" optional="true">
+            <doc>
+                 Simulation of ion extraction from matter via laser and/or voltage pulsing.
+            </doc>
+        </group>
         <group name="atom_probe" type="NXroi" recommended="true">
             <doc>
                  A region-of-interest analyzed either during or after the session for which
@@ -757,7 +771,10 @@ a time series of the specimen shape evolution-->
                     <field name="algorithm" type="NX_CHAR" optional="true"/>
                 </group>
             </group>
-            <group name="hit_finding" type="NXapm_hit_finding" recommended="true">
+            <group name="hit_finding" type="NXprocess" recommended="true">
+                <doc>
+                     Configuration of and results obtained from a hit finding algorithm.
+                </doc>
                 <!--we careful how we go about doing this here, we recommended to make some details of the hit_finding
 algorithm open namely the input and the output what the black box then does by AMETEK/Cameca
 does not have to be exposed (although this clearly is against FAIR principles but the scientific community
@@ -776,36 +793,118 @@ we can only make recommendations-->
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
-                <field name="number_of_dld_wires" type="NX_UINT" recommended="true"/>
-                <field name="arrival_time_pairs" type="NX_NUMBER" optional="true"/>
-                <!--results of the hit_finding algorithm-->
-                <field name="hit_positions" type="NX_NUMBER" recommended="true">
+                <field name="number_of_dld_wires" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+                    <doc>
+                         The number of wires in the detector.
+                    </doc>
+                    <enumeration>
+                        <item value="1"/>
+                        <item value="2"/>
+                        <item value="3"/>
+                    </enumeration>
+                </field>
+                <field name="dld_wire_names" type="NX_CHAR" optional="true">
+                    <doc>
+                         Alias tuple (begin, end) of each DLD wire of the detector.
+                         Order follows arrival_time_pairs.
+                    </doc>
                     <dimensions rank="2">
-                        <dim index="1" value="i"/>
+                        <dim index="1" value="n_dld"/>
                         <dim index="2" value="2"/>
                     </dimensions>
                 </field>
-                <field name="hit_multiplicity" type="NX_UINT" recommended="true">
+                <field name="arrival_time_pairs" type="NX_NUMBER" optional="true" units="NX_TIME">
+                    <doc>
+                         Raw readings from the analog-to-digital-converter
+                         timing circuits of the detector wires.
+                    </doc>
+                    <dimensions rank="3">
+                        <dim index="1" value="p"/>
+                        <dim index="2" value="n_dld"/>
+                        <dim index="3" value="2"/>
+                    </dimensions>
+                </field>
+                <!--results of the hit_finding algorithm-->
+                <field name="hit_positions" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
+                    <doc>
+                         Evaluated ion impact coordinates on the detector.
+                         Use the depends_on field to specify which reference
+                         frame the positions are defined.
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="p_out"/>
+                        <dim index="2" value="2"/>
+                    </dimensions>
+                    <attribute name="depends_on" type="NX_CHAR">
+                        <doc>
+                             Defines in which reference frame the positions are defined.
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="total_event_golden" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         CRunHeader.fTotalEventGolden
+                    </doc>
+                </field>
+                <field name="total_event_incomplete" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         CRunHeader.fTotalEventIncomplete
+                    </doc>
+                </field>
+                <field name="total_event_multiple" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         CRunHeader.fTotalEventMultiple
+                    </doc>
+                </field>
+                <field name="total_event_partial" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         CRunHeader.fTotalEventPartials
+                    </doc>
+                </field>
+                <field name="total_event_record" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         CRunHeader.fTotalEventRecords
+                    </doc>
+                </field>
+                <field name="hit_quality_identifier" type="NX_UINT" optional="true">
+                    <doc>
+                         Identifier used for each hit_quality type.
+                         Following the order of hit_quality_types.
+                    </doc>
                     <dimensions rank="1">
-                        <dim index="1" value="i"/>
+                        <dim index="1" value="n_ht"/>
+                    </dimensions>
+                </field>
+                <field name="hit_quality" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         Hit quality identifier for each pulse.
+                         Identifier have to be within hit_quality_identifier.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="p_out"/>
+                    </dimensions>
+                </field>
+                <field name="hit_multiplicity" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <doc>
+                         This processing yields for each ion with how many others it evaporated
+                         if these were collected on the same pulse. Extraction of multiple ions
+                         on one pulse on different or even the same pixel of the detector are possible.
+                         
+                         Multiplicity must not be confused with how many atoms of the same element
+                         a molecular ion contains.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="p_out"/>
                     </dimensions>
                 </field>
             </group>
-            <!--statistics(NXprocess):
-  multiples(NX_FLOAT):
-    doc: |
-      Fraction of multiple hits.
-    unit: NX_DIMENSIONLESS
-the following two quantities are relicts from ePOS files used to give some
+            <!--the following two quantities are relicts from ePOS files used to give some
 insight into the results of the hit_finding algorithm of IVAS/APSuite but typically
 used only in the context to learn about the multiplicity of an ion.
 pulses_since_last_ion(NX_UINT):
-  exists: optional
-  dim: (i,)
-pulse_identifier(NX_INT):  # this is the pulse on which they came
-  exists: optional
-  dim: (i,)
-i number of hits after hits finding but prior calibrations-->
+  dim: (n,)
+pulse_identifier(NX_INT):
+  dim: (n,)-->
             <group name="hit_spatial_filtering" type="NXprocess" recommended="true">
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
                 <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
@@ -856,7 +955,13 @@ i number of hits after hits finding but prior calibrations-->
                 </group>
             </group>
             <!--at this point the original set of events p has been filtered down to n-->
-            <group name="voltage_and_bowl" type="NXapm_volt_and_bowl" recommended="true">
+            <group name="voltage_and_bowl" type="NXprocess" recommended="true">
+                <doc>
+                     Configuration of and results obtained from a voltage-and-bowl ToF correction algorithm.
+                     
+                     The voltage-and-bowl correction is a data post-processing step to correct ion impact positions
+                     for flight path differences, detector biases, and nonlinearities.
+                </doc>
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
                 <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
                     <field name="program" type="NX_CHAR">
@@ -869,23 +974,32 @@ i number of hits after hits finding but prior calibrations-->
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
-                <!--config/input to the algorithm
-NEW ISSUE: realistic is that currently scientists can pull always a calibrated time-of-flight
-but not necessarily unprocessed timing data from the detector (unless individuals built the instrument).
-Relevant for ranging are the calibrated data, thats why only these
-(as an intermediate/compromise solution) are required in this version of the application definition-->
+                <!--
+currently cannot be made required because of being a quantity measured by
+proprietary hardware with proprietary semantics
+-->
                 <field name="raw_tof" type="NX_FLOAT" recommended="true">
+                    <doc>
+                         Raw time-of-flight data without corrections.
+                    </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n"/>
                     </dimensions>
                 </field>
                 <!--result-->
+                <field name="tof_zero_estimate" type="NX_FLOAT" optional="true" units="NX_TIME">
+                    <doc>
+                         The parameter :math:`t_0`  CAnalysis.CCalibMass.fT0Estimate
+                    </doc>
+                </field>
                 <field name="calibrated_tof" type="NX_FLOAT" recommended="true">
+                    <doc>
+                         Calibrated time-of-flight.
+                    </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n"/>
                     </dimensions>
                 </field>
-                <field name="tof_zero_estimate" type="NX_FLOAT" optional="true"/>
             </group>
             <group name="mass_to_charge_conversion" type="NXprocess" recommended="true">
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>

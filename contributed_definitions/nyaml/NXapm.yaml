@@ -9,8 +9,12 @@ symbols:
     instance of :ref:`NXevent_data_apm`. If this is not defined, p is the number of
     ions included in the reconstructed volume if the application definition is used
     to store results of an already reconstructed datasets.
+  p_out: |
+    Number of pulses returned by the hit finding algorithm. Not necessarily p or n.
   n_ht: |
     Number of hit qualities (hit types) distinguished.
+  n_dld: |
+    Number of delay-line wires of the detector.
   n: |
     Number of ions spatially filtered from results of the hit_finding algorithm
     from which an instance of a reconstructed volume has been generated.
@@ -630,8 +634,10 @@ NXapm(NXobject):
             exists: optional
           algorithm(NX_CHAR):
             exists: optional
-      hit_finding(NXapm_hit_finding):
+      hit_finding(NXprocess):
         exists: recommended
+        doc: |
+          Configuration of and results obtained from a hit finding algorithm.
         # we careful how we go about doing this here, we recommended to make some details of the hit_finding
         # algorithm open namely the input and the output what the black box then does by AMETEK/Cameca
         # does not have to be exposed (although this clearly is against FAIR principles but the scientific community
@@ -652,31 +658,91 @@ NXapm(NXobject):
           algorithm(NX_CHAR):
         number_of_dld_wires(NX_UINT):
           exists: recommended
+          doc: |
+            The number of wires in the detector.
+          unit: NX_UNITLESS
+          enumeration: [1, 2, 3]
+        dld_wire_names(NX_CHAR):
+          exists: optional
+          doc: |
+            Alias tuple (begin, end) of each DLD wire of the detector.
+            Order follows arrival_time_pairs.
+          dim: (n_dld, 2)
         arrival_time_pairs(NX_NUMBER):
           exists: optional
+          doc: |
+            Raw readings from the analog-to-digital-converter
+            timing circuits of the detector wires.
+          unit: NX_TIME
+          dim: (p, n_dld, 2)
         # results of the hit_finding algorithm
         hit_positions(NX_NUMBER):
           exists: recommended
-          dim: (i, 2)
+          doc: |
+            Evaluated ion impact coordinates on the detector.
+            Use the depends_on field to specify which reference
+            frame the positions are defined.
+          unit: NX_LENGTH
+          dim: (p_out, 2)
+          \@depends_on(NX_CHAR):
+            doc: |
+              Defines in which reference frame the positions are defined.
+        total_event_golden(NX_UINT):
+          exists: optional
+          doc: |
+            CRunHeader.fTotalEventGolden
+          unit: NX_UNITLESS
+        total_event_incomplete(NX_UINT):
+          exists: optional
+          doc: |
+            CRunHeader.fTotalEventIncomplete
+          unit: NX_UNITLESS
+        total_event_multiple(NX_UINT):
+          exists: optional
+          doc: |
+            CRunHeader.fTotalEventMultiple
+          unit: NX_UNITLESS
+        total_event_partial(NX_UINT):
+          exists: optional
+          doc: |
+            CRunHeader.fTotalEventPartials
+          unit: NX_UNITLESS
+        total_event_record(NX_UINT):
+          exists: optional
+          doc: |
+            CRunHeader.fTotalEventRecords
+          unit: NX_UNITLESS
+        hit_quality_identifier(NX_UINT):
+          exists: optional
+          doc: |
+            Identifier used for each hit_quality type.
+            Following the order of hit_quality_types.
+          dim: (n_ht,)
+        hit_quality(NX_UINT):
+          exists: optional
+          doc: |
+            Hit quality identifier for each pulse.
+            Identifier have to be within hit_quality_identifier.
+          unit: NX_UNITLESS
+          dim: (p_out,)
         hit_multiplicity(NX_UINT):
-          exists: recommended
-          dim: (i,)
-        # statistics(NXprocess):
-        #   multiples(NX_FLOAT):
-        #     doc: |
-        #       Fraction of multiple hits.
-        #     unit: NX_DIMENSIONLESS
-        # the following two quantities are relicts from ePOS files used to give some
-        # insight into the results of the hit_finding algorithm of IVAS/APSuite but typically
-        # used only in the context to learn about the multiplicity of an ion.
-        # pulses_since_last_ion(NX_UINT):
-        #   exists: optional
-        #   dim: (i,)
-        # pulse_identifier(NX_INT):  # this is the pulse on which they came
-        #   exists: optional
-        #   dim: (i,)
-        # i number of hits after hits finding but prior calibrations
-
+          exists: optional
+          doc: |
+            This processing yields for each ion with how many others it evaporated
+            if these were collected on the same pulse. Extraction of multiple ions
+            on one pulse on different or even the same pixel of the detector are possible.
+            
+            Multiplicity must not be confused with how many atoms of the same element
+            a molecular ion contains.
+          unit: NX_UNITLESS
+          dim: (p_out,)
+          # the following two quantities are relicts from ePOS files used to give some
+          # insight into the results of the hit_finding algorithm of IVAS/APSuite but typically
+          # used only in the context to learn about the multiplicity of an ion.
+          # pulses_since_last_ion(NX_UINT):
+          #   dim: (n,)
+          # pulse_identifier(NX_INT):
+          #   dim: (n,)
       hit_spatial_filtering(NXprocess):
         exists: recommended
         sequence_index(NX_POSINT):
