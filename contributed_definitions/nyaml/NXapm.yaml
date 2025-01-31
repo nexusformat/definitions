@@ -4,23 +4,26 @@ doc: |
 symbols:
   doc: |
     The symbols used in the schema to specify e.g. dimensions of arrays.
+  n_ht: |
+    Number of hit qualities (hit types) distinguished.
+  n_dld: |
+    Number of delay-line wires of the detector.
+  n_bins: |
+    Number of bins used in the mass-to-charge-state-ratio spectrum.
   p: |
     Number of pulses collected in between start_time and end_time resolved by an
     instance of :ref:`NXevent_data_apm`. If this is not defined, p is the number of
     ions included in the reconstructed volume if the application definition is used
     to store results of an already reconstructed datasets.
   p_out: |
-    Number of pulses returned by the hit finding algorithm. Not necessarily p or n.
-  n_ht: |
-    Number of hit qualities (hit types) distinguished.
-  n_dld: |
-    Number of delay-line wires of the detector.
+    Number of pulses returned by the hit finding algorithm.
+    Neither necessarily equal to p nor to n.
   n: |
     Number of ions spatially filtered from results of the hit_finding algorithm
     from which an instance of a reconstructed volume has been generated.
     These ions get new identifier assigned in the process (the so-called
     evaporation_identifier). This identifier must not be confused with
-    the pulse_identifier.
+    the pulse_identifier. Typically smaller than both p_out and p_out.
 type: group
 NXapm(NXobject):
   (NXentry):  # entryID
@@ -528,70 +531,45 @@ NXapm(NXobject):
         than in a measurement with a real instrument. In addition, simulation often also ignore objects and fields in the flight path
         such as local electrodes or physical obstacles and electric fields (controlled or stray fields).
       instrument(NXinstrument_apm):
-        identifier_name(NX_UINT):
-          doc: |
-            TODO
         type(NX_CHAR):
           exists: recommended
-          doc: |
-            Which type of instrument.
-          enumeration: [Inspico, 3DAP, LAWATAP, LEAP 3000 Si, LEAP 3000X Si, LEAP 3000 HR, LEAP 3000X HR, LEAP 4000 Si, LEAP 4000X Si, LEAP 4000 HR, LEAP 4000X HR, LEAP 5000 XS, LEAP 5000 XR, LEAP 5000 R, EIKOS, EIKOS-UV, LEAP 6000 XR, LEAP INVIZO, Photonic AP, TeraSAT, TAPHR, Modular AP, Titanium APT, Extreme UV APT, unknown]
         fabrication(NXfabrication):
+          exists: recommended
           vendor(NX_CHAR):
           model(NX_CHAR):
           serial_number(NX_CHAR):
-          identifier(NXidentifier):
-            exists: recommended
         reflectron(NXobject):
           exists: optional
           status(NX_CHAR):
-          fabrication(NXfabrication):
-            exists: recommended
-            vendor(NX_CHAR):
-            model(NX_CHAR):
-        # decelerate_electrode(NXlens_em):
         local_electrode(NXlens_em):
-          # add flat test status
+          exists: recommended
           name(NX_CHAR):
           fabrication(NXfabrication):
-            exists: recommended
+            exists: optional
             vendor(NX_CHAR):
             model(NX_CHAR):
         ion_detector(NXdetector):
           exists: recommended
           fabrication(NXfabrication):
-            exists: recommended  # for LEAP systems they come shipped configured
+            exists: optional
             vendor(NX_CHAR):
             model(NX_CHAR):
-        pulser(NXpulser_apm):
+        pulser(NXobject):
+          exists: recommended
           fabrication(NXfabrication):
-            exists: recommended
+            exists: optional
             vendor(NX_CHAR):
             model(NX_CHAR):
           pulse_mode(NX_CHAR):
+          pulse_frequency(NX_FLOAT):
+            exists: recommended
           sourceID(NXsource):
-            exists: [min, 0, max, 2]  # conditionally required if pulse_mode is not voltage!
+            exists: [min, 0, max, 2]  # conditionally required, sourceID only if pulse_mode is not voltage!
             fabrication(NXfabrication):
               exists: recommended
               vendor(NX_CHAR):
               model(NX_CHAR):
-            wavelength(NX_FLOAT):
-              doc: |
-                The wavelength of the radiation emitted by the source.
-              unit: NX_WAVELENGTH
-            # use NXbeam in the future
-        stage(NXstage_lab):
-          exists: recommended
-          specimen_temperature(NX_FLOAT):
-            exists: recommended
-        analysis_chamber(NXchamber):
-          exists: recommended
-        # atmosphere(NXcollection):
-        # buffer_chamber(NXchamber):
-        # load_lock_chamber(NXchamber):
-        # getter_pump(NXpump):
-        # roughening_pump(NXpump):
-        # turbomolecular_pump(NXpump):
+            # wavelength and pulse_energy as dynamic/volatile quantities stored in event data part
         comment(NX_CHAR):
           doc: |
             Free text field for additional comments.
@@ -628,56 +606,53 @@ NXapm(NXobject):
           exists: [min, 0, max, infty]
           # all these cannot be made required because for LEAP only stored in RHIT/HITS
           # but for M-TAP and Oxcart these pieces of information are available.
-          # start_time(NX_DATE_TIME):
-          # end_time(NX_DATE_TIME):
+          start_time(NX_DATE_TIME):
+            exists: recommended
+          end_time(NX_DATE_TIME):
+            exists: recommended
           # delta_time(NX_NUMBER):
           # pulse_identifier_offset(NX_INT):
           # pulse_identifier(NX_INT):
           instrument(NXinstrument_apm):
             exists: recommended
-            # optional groups can always be added but they will not be annotated eventually properly by pynxtools
-            # reflectron(NXreflectron):
+            reflectron(NXobject):
+              exists: recommended
+              voltage(NX_FLOAT):
             # decelerate_electrode(NXlens_em):
-            # local_electrode(NXlens_em):
+            local_electrode(NXlens_em):
+              exists: recommended
+              voltage(NX_FLOAT):
             # ion_detector(NXdetector):
-              # exists: optional
-              # signal_amplitude(NX_FLOAT):
-            pulser(NXpulser_apm):
+            pulser(NXobject):
+              exists: recommended
               pulse_frequency(NX_FLOAT):
-                # unit: NX_FREQUENCY
-                # dim: (p,)
                 \@logged_against(NX_CHAR):
               pulse_fraction(NX_FLOAT):
-                # unit: NX_DIMENSIONLESS
-                # dim: (p,)
                 \@logged_against(NX_CHAR):
               pulse_voltage(NX_FLOAT):  # ePOS, APT pulsed voltage
-                exists: recommended  # not required for voltage pulsing
-                # unit: NX_VOLTAGE
-                # dim: (p,)
+                exists: optional  # not required for voltage pulsing
+                dim: (n,)
                 \@logged_against(NX_CHAR):
-              # pulse_number(NX_UINT):
+              pulse_number(NX_UINT):
+                exists: optional
+                dim: (n,)
+                \@logged_against(NX_CHAR):
               standing_voltage(NX_FLOAT):  #  ePOS, APT standing voltage
-                # unit: NX_VOLTAGE
-                # dim: (p,)
+                exists: optional
+                dim: (n,)
                 \@logged_against(NX_CHAR):
               sourceID(NXsource):
                 exists: [min, 0, max, 2]  # not required for voltage pulsing
                 pulse_energy(NX_FLOAT):
-                  # unit: NX_ENERGY
-                  # dim: (p,)
+                  dim: (n,)
                   \@logged_against(NX_CHAR):
-              # laser geometry at the moment has no example nor any feedback from the community
+              # laser geometry at the moment has neither a worked out example
+              # nor any feedback from the community despite the work from B. Gault
+              # on laser atom probe was granted a Leibnitz award
             stage(NXstage_lab):
-              # setpoint_temperature(NX_FLOAT):
-              base_temperature(NX_FLOAT):
+              specimen_temperature(NX_FLOAT):
             analysis_chamber(NXchamber):
-              chamber_pressure(NX_FLOAT):
-            # buffer_chamber(NXchamber):
-            # load_lock_chamber(NXchamber):
-            # getter_pump(NXpump):
-            # roughening_pump(NXpump):
-            # turbomolecular_pump(NXpump):
+              analysis_pressure(NX_FLOAT):
     simulation(NXobject):
       exists: optional
       doc: |
@@ -708,6 +683,14 @@ NXapm(NXobject):
        # could use a stack_3d(NXdata) to record time series of specimen shape evolution
       raw_data(NXprocess):
         exists: recommended
+        doc: |
+          For almost atom probe instruments (meta)data about raw data follow proprietary semantics.
+          Therefore, this group can currently be used only to point to these digital artifacts
+          in an effort to document all step of an analysis workflow.
+          
+          The physical quantities measured in an atom probe experiment are time-of-flight and
+          tuples of arrival_time_pairs as a function of the event chain on the pulser.
+          From these tuples hits are computed in a process called hit_finding.
         sequence_index(NX_POSINT):
           exists: recommended
         programID(NXprogram):
@@ -723,6 +706,26 @@ NXapm(NXobject):
             exists: optional
           algorithm(NX_CHAR):
             exists: optional
+        # technical details of data the ion_detector collects
+        number_of_dld_wires(NX_UINT):
+          exists: recommended
+          doc: |
+            The number of wires in the detector.
+          unit: NX_UNITLESS
+          enumeration: [1, 2, 3]
+        dld_wire_names(NX_CHAR):
+          exists: optional
+          doc: |
+            Alias tuple (begin, end) of each DLD wire of the detector.
+            Order follows arrival_time_pairs.
+          dim: (n_dld, 2)
+        arrival_time_pairs(NX_NUMBER):
+          exists: optional
+          doc: |
+            Raw readings from the analog-to-digital-converter
+            timing circuits of the detector wires.
+          unit: NX_TIME
+          dim: (p, n_dld, 2)
       hit_finding(NXprocess):
         exists: recommended
         doc: |
@@ -745,25 +748,6 @@ NXapm(NXobject):
           path(NX_CHAR):
           checksum(NX_CHAR):
           algorithm(NX_CHAR):
-        number_of_dld_wires(NX_UINT):
-          exists: recommended
-          doc: |
-            The number of wires in the detector.
-          unit: NX_UNITLESS
-          enumeration: [1, 2, 3]
-        dld_wire_names(NX_CHAR):
-          exists: optional
-          doc: |
-            Alias tuple (begin, end) of each DLD wire of the detector.
-            Order follows arrival_time_pairs.
-          dim: (n_dld, 2)
-        arrival_time_pairs(NX_NUMBER):
-          exists: optional
-          doc: |
-            Raw readings from the analog-to-digital-converter
-            timing circuits of the detector wires.
-          unit: NX_TIME
-          dim: (p, n_dld, 2)
         # results of the hit_finding algorithm
         hit_positions(NX_NUMBER):
           exists: recommended
@@ -832,6 +816,7 @@ NXapm(NXobject):
           #   dim: (n,)
           # pulse_identifier(NX_INT):
           #   dim: (n,)
+      # at this point the original set of events p has been filtered down to p_out
       hit_spatial_filtering(NXprocess):
         exists: recommended
         sequence_index(NX_POSINT):
@@ -877,15 +862,14 @@ NXapm(NXobject):
           bitdepth(NX_UINT):
           mask(NX_UINT):
           identifier(NX_INT):
-
-      # at this point the original set of events p has been filtered down to n
+      # at this point the set of events p_out has been filtered down to n
       voltage_and_bowl(NXprocess):
         exists: recommended
         doc: |
-          Configuration of and results obtained from a voltage-and-bowl ToF correction algorithm.
+          Configuration of and results obtained from a voltage-and-bowl time-of-flight correction algorithm.
           
-          The voltage-and-bowl correction is a data post-processing step to correct ion impact positions
-          for flight path differences, detector biases, and nonlinearities.
+          The voltage-and-bowl correction is a data post-processing step to correct ion impact
+          positions for flight path differences, detector biases, and nonlinearities.
         sequence_index(NX_POSINT):
           exists: recommended
         programID(NXprogram):
@@ -899,7 +883,8 @@ NXapm(NXobject):
           checksum(NX_CHAR):
           algorithm(NX_CHAR):
         raw_tof(NX_FLOAT):
-          # currently cannot be made required because of being a quantity measured by proprietary hardware with proprietary semantics
+          # currently cannot be made required because of being a quantity measured
+          # by proprietary hardware with proprietary semantics
           exists: recommended
           doc: |
             Raw time-of-flight data without corrections.
@@ -908,7 +893,7 @@ NXapm(NXobject):
         tof_zero_estimate(NX_FLOAT):
           exists: optional
           doc: |
-            The parameter :math:`t_0`  CAnalysis.CCalibMass.fT0Estimate
+            The parameter :math:`t_0`, CAnalysis.CCalibMass.fT0Estimate
           unit: NX_TIME
         calibrated_tof(NX_FLOAT):
           exists: recommended
@@ -933,7 +918,6 @@ NXapm(NXobject):
         # results
         mass_to_charge(NX_FLOAT):
           dim: (n,)
-
       reconstruction(NXapm_reconstruction):
         exists: recommended
         sequence_index(NX_POSINT):
@@ -1008,7 +992,6 @@ NXapm(NXobject):
             axis_x(NX_FLOAT):
               dim: (n_x,)
               \@long_name(NX_CHAR):
-
       ranging(NXapm_ranging):
         exists: recommended
         sequence_index(NX_POSINT):
@@ -1034,7 +1017,6 @@ NXapm(NXobject):
             program(NX_CHAR):
               \@version(NX_CHAR):
           min_incr_max(NX_FLOAT):
-            # dim: (3,)  # u
           mass_spectrum(NXdata):
             \@signal(NX_CHAR):
             \@axes(NX_CHAR):
