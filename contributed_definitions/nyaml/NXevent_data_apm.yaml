@@ -2,7 +2,9 @@ category: base
 doc: |
   Base class to store state and (meta)data of events over the course of an atom probe experiment.
   
-  This base class applies the concept of the :ref:`NXevent_data_em` base class to the specific needs
+  Having at least one instance for an instance of NXapm is recommended.
+  
+  This base class applies the concept of the NXevent_data_em base class to the specific needs
   of atom probe research. Against static and dynamic quantities are splitted to avoid a duplication
   of information. Specifically, the time interval considered is the entire time
   starting at start_time until end_time during which we assume the pulser triggered named pulses.
@@ -93,8 +95,7 @@ NXevent_data_apm(NXobject):
       instrument follows a sequence of pulses to trigger field evaporation.
       
       The pulse_identifier is used to associate thus an information about time
-      when the quantities documented in this NXpulser_apm base class have been
-      collected via sampling.
+      when quantities have been collected via sampling.
       
       In virtually all cases the pulser is a blackbox. Depending on how the
       instrument is configured during a measurement the target
@@ -115,95 +116,4 @@ NXevent_data_apm(NXobject):
       pulse onwards. The values of pulse_identifier are then [0, 99999] respectively.
     unit: NX_UNITLESS
     dim: (p,)
-  instrument(NXinstrument):
-    doc: |
-      (Meta)data of the dynamics and changes of the microscope over the course of pulsing.
-    control(NXcollection):
-      doc: |
-        Relevant quantities during a measurement with a LEAP system as suggested by
-        `T. Blum et al. <https://doi.org/10.1002/9781119227250.ch18>`_.
-      evaporation_control(NX_CHAR):
-        enumeration: [detection_rate]
-      target_detection_rate(NX_FLOAT):
-        unit: NX_ANY  # ions/pulse
-    reflectron(NXobject):
-      status(NX_CHAR):
-        doc: |
-          Presence and status of the reflectron.
-        enumeration: [none, present, used]
-      voltage(NX_FLOAT):
-        doc: |
-          The maximum voltage applied to the reflectron, relative to system ground.
-        unit: NX_VOLTAGE
-    local_electrode(NXlens_em):
-    ion_detector(NXdetector):
-      signal_amplitude(NX_FLOAT):
-        doc: |
-          Amplitude of the signal detected on the multi-channel plate (MCP).
-          
-          This field should be used for storing the signal amplitude quantity
-          within ATO files. The ATO file format is used primarily by the
-          atom probe groups of the GPM in Rouen, France.
-        unit: NX_CURRENT
-        dim: (p,)
-    pulser(NXpulser_apm):
-    stage_lab(NXstage_lab):
-      setpoint_temperature(NX_FLOAT):
-        doc: |
-          Set point temperature to achieve during the measurement.
-        unit: NX_TEMPERATURE
-      base_temperature(NX_FLOAT):
-        doc: |
-          Average temperature (at the specimen base) during the measurement.
-        unit: NX_TEMPERATURE
-        # normally one would use NXsensor/NXlog but point is that the temperature
-        # is logged against the pulse_identifier as even in the proprietary file format from
-        # AMETEK/Cameca nowhere there is the actual time when the pulse was triggered
-        # just the sampling frequency and I guess but am not 100percent sure which quantity
-        # from Cameca this is also the time when the first pulse was triggered
-        # using NXlog does make sense when individual NXsensors have different timing
-        # but for atom probe if at all the pulse-based implicit time is available
-      temperature(NX_FLOAT):
-        doc: |
-          The best estimate, at experiment time, for the temperature at the
-          sample base (furthest point along sample apex and holding assembly
-          that is removable from the sample stage).
-        unit: NX_TEMPERATURE
-        dim: (p,)
-        \@logged_against(NX_CHAR):
-          doc: |
-            Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
-    analysis_chamber(NXchamber):
-      chamber_pressure(NX_FLOAT):
-        doc: |
-          Average pressure in the analysis chamber during the measurement.
-        unit: NX_PRESSURE
-      pressure(NX_FLOAT):
-        doc: |
-          Pressure in the analysis chamber.
-        unit: NX_PRESSURE
-        dim: (p,)
-        \@logged_against(NX_CHAR):
-          doc: |
-            Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
-    buffer_chamber(NXchamber):
-      pressure(NX_FLOAT):
-        doc: |
-          Pressure in the analysis chamber.
-        unit: NX_PRESSURE
-        dim: (p,)
-        \@logged_against(NX_CHAR):
-          doc: |
-            Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
-    load_lock_chamber(NXchamber):
-      pressure(NX_FLOAT):
-        doc: |
-          Pressure in the analysis chamber.
-        unit: NX_PRESSURE
-        dim: (p,)
-        \@logged_against(NX_CHAR):
-          doc: |
-            Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
-    # getter_pump(NXpump):
-    # roughening_pump(NXpump):
-    # turbomolecular_pump(NXpump):
+  instrument(NXinstrument_apm):
