@@ -441,9 +441,94 @@ NXapm(NXobject):
         y_direction(NX_CHAR):
         z_direction(NX_CHAR):
 
-    measurement(NXapm_msr):
+    measurement(NXobject):
       exists: optional
-      instrument(NXinstrument):
+      # docstring currently with NXapm_msr
+      doc: |
+        Base class for collecting a session with a real atom probe or field-ion microscope.
+        
+        Workflows used during experiments or simulations of atom probe and related field-evaporation
+        research should be documented in more detail and be better contextualized not only because of
+        ongoing developments and the tighter becoming connection between atom probe and other
+        methods for material characterization foremost electron microscopy see e.g.:
+        
+        * `T. Kelly et al. <https://doi.org/10.1017/S1431927620022205>`_
+        * `C. Fleischmann et al. <https://doi.org/10.1016/j.ultramic.2018.08.010>`_
+        * `W. Windl et al. <https://doi.org/10.1093/micmic/ozad067.294>`_
+        * `C. Freysoldt et al. <https://doi.org/10.1103/PhysRevLett.124.176801>`_
+        * `G. da Costa et al. <https://doi.org/10.1038/s41467-024-54169-2>`_
+        
+        to mention but a few.
+        
+        To arrive at a design of base classes and an application definition that can be used
+        for both real and simulated atom probe experiments it is worthwhile to recall concepts that are
+        related to events and (molecular) ions:
+        
+        * Pulsing events which are used to trigger ion extraction events.
+        * Physical events and corresponding signal triggered by an ion hitting the detector.
+          Some of these events are not necessarily caused by or directly correlated with an identifiable pulsing event.
+        * Processed ion hits which are the result of an algorithm that took the physical and pulsing events as input
+          and qualified some of these events as to be of sufficiently high quality to call them (molecular) ions that are
+          wortwhile to be considered further and eventually included in the reconstructed volume.
+        * Calibration and signal filtering steps applied to these processed ion hits as input which results in actually
+          selected (molecular) ions based on which an instance of a reconstruction is created.
+        * Correlation of these ions with a statistics and theoretical model of mass-to-charge-state ratio values
+          and charge states of the (molecular) ions to substantiate that some of these ions can be considered
+          as rangable ions and hence an iontype can be assigned to these via running peak finding algorithms
+          and subsequent peak labeling. In the field of atom probe this these peak identification methods
+          are known as ranging definitions.
+        
+        Not only in AMETEK/Cameca's IVAS/APSuite software, which the majority of atom probers use, these concepts
+        are well distinguished. However, the algorithms used to transform correlations between pulses and physical events
+        into actual events (detector hits) ions is a proprietary one - the so-called hit finding algorithm.
+        
+        Due to this practical inaccessibility of details, virtually all atom probe studies currently use a reporting scheme
+        where the course of the specimen evaporation is documented such that quantities are a function of evaporation identifier
+        i.e. actual event/ion, i.e. after having the hit finding algorithm and correlations applied.
+        That is evaporation_identifier values take the role of an implicit time and course of the experiment given that
+        ion extraction physically is a sequential process.
+        
+        There is a number of research groups who build own instruments and share different aspects of their technical
+        specifications and approaches how they apply data processing e.g.:
+        
+        * `M. Monajem et al. <https://doi.org/10.1017/S1431927622003397>`_
+        * `P. Stender et al. <https://doi.org/10.1017/S1431927621013982>`_ 
+        * `I. Dimkou et al. <https://doi.org/10.1093/micmic/ozac051>`_
+        
+        to name but a few.
+        
+        Despite some of these activities embrace practices of open-source development, they use essentially the same
+        workflow that has been proposed by AMETEK/Cameca and its forerunner company Imago: A graphical user interface
+        software is used to explore and thus analyze reconstructed atom probe datasets.
+        
+        Specifically, software is used to correlate and interpret pulsing and physical events into processed ion hits.
+        Some of these ion hits are reported as (molecular) ions with ranged iontypes to yield a dataset based on which
+        scientific conclusions about the characterized material volume are made. Also here a reconstruction is 
+        point cloud that serves as the proxy for the characterized material volume, i.e. the reconstruction is a model.
+        
+        By contrast, simulations of field-evaporation have the luxury to document the flight path and allow a following of all
+        the whereabouts of each ion evaporated if this is desired. This level of detail is currently not characterizable in experiment.
+        Thus, there is a divide between schemas describing simulations of atom probe vs measurements of atom probe.
+        We argue that this divide can be bridged with realizing the above-mentioned context and the realization that
+        similar concepts are used in both research realms with many concepts not only being similar but being exactly the same.
+        
+        A further argument to support this view is that computer simulations of atom probe usually are compared to reconstructed
+        datasets, either to the input configuration that served as the virtual specimen or to a real world atom probe experiment
+        and reconstructions computed from these. In both cases, the recorded simulated physical events of simulated ions hitting
+        a simulated detector is not the end of the research workflow but typically the input to apply additional algorithms such as
+        (spatial) filtering and reconstruction algorithms.
+        
+        Only the practical need for making ranging definitions is (at least as of now) not as much needed in field-evaporation
+        simulations than it is in real world measurements because each ion has a prescribed iontype in the simulation.
+        Be it a specifically charged nuclid or a molecular ion whose flight path the simulation resolves.
+        Although, in principle simpler though, we have to consider that this is caused by many assumptions made in the simulations.
+        Indeed, the multi-scale (time and space) aspects of the challenge that is the simulating of field-evaporation often require
+        simplifications because of otherwise too high becoming computing resource demands and existent knowledge gaps
+        in how to deal with all quantum physics complexities. Molecular ion dissociation upon flight is one such complexity.
+        Also the complexity of simulation setups is typically defined simpler in simulation (e.g. straight flight path assumption)
+        than in a measurement with a real instrument. In addition, simulation often also ignore objects and fields in the flight path
+        such as local electrodes or physical obstacles and electric fields (controlled or stray fields).
+      instrument(NXinstrument_apm):
         identifier_name(NX_UINT):
           doc: |
             TODO
@@ -513,10 +598,13 @@ NXapm(NXobject):
             Free text field for additional comments.
       status(NX_CHAR):
         exists: recommended
+        doc: |
+          A statement whether the measurement was successful or failed prematurely.
       quality(NX_CHAR):
+        exists: recommended
         doc: |
           CAnalysis.CResults.fQuality
-      event_data(NXobject):
+      events(NXobject):
         exists: optional
         # the case of allowing to not have event_data but only the above-mentioned instrument
         # details can be useful to convey details about an atom probe instrument in general
@@ -529,7 +617,7 @@ NXapm(NXobject):
           # delta_time(NX_NUMBER):
           # pulse_identifier_offset(NX_INT):
           # pulse_identifier(NX_INT):
-          instrument(NXinstrument):
+          instrument(NXinstrument_apm):
             exists: recommended
             control(NXcollection):
               evaporation_control(NX_CHAR):
@@ -581,27 +669,18 @@ NXapm(NXobject):
       exists: optional
       doc: |
         Simulation of ion extraction from matter via laser and/or voltage pulsing.
+      # future possibility to reuse concepts from NXinstrument_apm again without
+      # the need for defining them again
     atom_probe(NXroi):
       exists: recommended  # [min, 0, max, infty]
       doc: |
         A region-of-interest analyzed either during or after the session for which
         specific processed data of the measured or simulated data are available.
-      # add a default plot V = f(time/evaporation_id), essentially for each quantity
-      # NEW ISSUE: check also here the PYCCAPT pipeline from P. Felfer's group
-      # all other details are instances of NXprocess as steps along the pipeline
-
-      # NEW ISSUE: hit_quality table 
-      # NEW ISSUE: pyccapt
-      # NEW ISSUE: add section for propagation_delay(NXprocess) ?
-      # NEW ISSUE: make recon an own subentry NXapm_reconstruction
-      # NEW ISSUE: different algorithms used one could create a class for each reconstruction method
-      # NEW ISSUE: make this rather an own subentry NXapm_ranging
-
+      # earlier comments here https://github.com/FAIRmat-NFDI/nexus_definitions/commit/a8602870f13f04b8befc902efb345afe650d8dd3
       initial_specimen(NXimage_set):
         exists: recommended
         doc: |
-          SEM or TEM image of the initial specimen i.e.
-          ideally taken prior to the data acquisition.
+          SEM or TEM image of the initial specimen (ideally taken prior data acquisition).
         image_2d(NXdata):
           \@signal(NX_CHAR):
           \@axes(NX_CHAR):
@@ -613,9 +692,7 @@ NXapm(NXobject):
           axis_i(NX_NUMBER):
             dim: (n_i,)
             \@long_name(NX_CHAR):
-       # one could use a stack_3d(NXdata) to record
-       # a time series of the specimen shape evolution
-
+       # could use a stack_3d(NXdata) to record time series of specimen shape evolution
       raw_data(NXprocess):
         exists: recommended
         sequence_index(NX_POSINT):
