@@ -1,6 +1,4 @@
-"""This is a code that performs several tests on nexus tool
-
-"""
+"""This is a code that performs several tests on nexus tool"""
 
 from pathlib import Path
 
