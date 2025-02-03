@@ -1,0 +1,415 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2014-2025 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--
+One could use an NXnote or reference to another NeXus file where these static (meta)data
+are stored but then referencing this in an application definition would demand to make such
+file required, while NXinstrument_apm can be used directly for the static and the dynamic
+or volatile (meta)data.-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXinstrument_apm" extends="NXinstrument" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         Base class to document an instrument used for atom probe microscopy.
+         
+         Inheriting from NXinstrument, this base class is designed to offer the same concepts about
+         instrument-centric metadata to be used in two places inside NXapm without demanding that
+         the application definition needs to define the concepts in two places as maintaining this is
+         prone to errors. This base class implements the key design idea behind the NXapm application
+         definition in that we would like to offer a design where all (meta)data which over the course
+         of a measurement remain static can be stored only once and without polluting the application
+         definition with another group with concepts that should be used for storing (meta)data about
+         the instrument during events that happen during the course of the measurement.
+         
+         This design was inspired by NXem and electron microscopy where typically the instrument is
+         used in sessions and dozens of logical sets of data are collected under not necessarily always
+         the same instrument conditions. We do not want to repeat therefore the static (meta)data, as
+         this is redundant storage by virtue of design. The typical example is an electron microscope
+         where hundreds of images are taken and all static instrument data stored with each image.
+         This makes sense in cases when the image is used as a digital artifact that is exchanged across
+         different software applications or research data management systems but as in NeXus there
+         is either all information bundled into one artifact or there is a coordinating master artifact
+         that references related artifacts there is no point to store hundreds of times that always the
+         same microscope with the same lens setup was used to collect these images.
+    </doc>
+    <field name="type" type="NX_CHAR">
+        <doc>
+             Which type of instrument.
+        </doc>
+        <enumeration>
+            <item value="Inspico"/>
+            <item value="3DAP"/>
+            <item value="LAWATAP"/>
+            <item value="LEAP 3000 Si"/>
+            <item value="LEAP 3000X Si"/>
+            <item value="LEAP 3000 HR"/>
+            <item value="LEAP 3000X HR"/>
+            <item value="LEAP 4000 Si"/>
+            <item value="LEAP 4000X Si"/>
+            <item value="LEAP 4000 HR"/>
+            <item value="LEAP 4000X HR"/>
+            <item value="LEAP 5000 XS"/>
+            <item value="LEAP 5000 XR"/>
+            <item value="LEAP 5000 R"/>
+            <item value="EIKOS"/>
+            <item value="EIKOS-UV"/>
+            <item value="LEAP 6000 XR"/>
+            <item value="LEAP INVIZO"/>
+            <item value="Photonic AP"/>
+            <item value="TeraSAT"/>
+            <item value="TAPHR"/>
+            <item value="Modular AP"/>
+            <item value="Titanium APT"/>
+            <item value="Extreme UV APT"/>
+            <item value="unknown"/>
+        </enumeration>
+    </field>
+    <group name="fabrication" type="NXfabrication"/>
+    <!--(NXcsg):
+  doc: |
+    Possibility to include a detailed computational geometry description of the instrument.-->
+    <field name="location" type="NX_CHAR">
+        <doc>
+             Location of the lab or place where the instrument is installed. Using GEOREF is
+             preferred.
+        </doc>
+    </field>
+    <group name="reflectron" type="NXobject">
+        <doc>
+             Device which reduces ToF differences of ions in ToF experiments.
+             
+             For atom probe the reflectron can be considered an energy compensation device.
+             Such a device can be realized technically for example with a Poschenrieder lens.
+             
+             Consult the following U.S. patents for further details:
+             
+             * 3863068 and 6740872 for the reflectron
+             * 8134119 for the curved reflectron
+        </doc>
+        <field name="status" type="NX_CHAR">
+            <doc>
+                 Presence and status of the reflectron.
+            </doc>
+            <enumeration>
+                <item value="present"/>
+                <item value="used"/>
+            </enumeration>
+        </field>
+        <field name="name" type="NX_CHAR">
+            <doc>
+                 Given name/alias.
+            </doc>
+        </field>
+        <field name="description" type="NX_CHAR">
+            <doc>
+                 Free-text field to specify further details about the reflectron.
+                 The field can be used to inform e. g. if the reflectron is flat or curved.
+            </doc>
+        </field>
+        <field name="voltage" type="NX_FLOAT" units="NX_VOLTAGE">
+            <doc>
+                 The maximum voltage applied to the reflectron, relative to system ground.
+            </doc>
+        </field>
+        <group name="fabrication" type="NXfabrication"/>
+        <group type="NXtransformations">
+            <doc>
+                 Affine transformation(s) which detail where the reflectron is located
+                 relative to e.g. the origin of the specimen space reference coordinate
+                 system. This group can also be used for specifying how the reflectron
+                 is rotated relative to a given axis in the instrument.
+            </doc>
+        </group>
+    </group>
+    <group name="decelerate_electrode" type="NXlens_em">
+        <doc>
+             A counter electrode of the LEAP 6000 series atom probes.
+        </doc>
+    </group>
+    <!--counter_electrodes being optional WO2016171675A1
+see https://en.wikipedia.org/wiki/Einzel_lens for details double einzel lens in the invizo 6000
+according to A. Breen (UNSW)-->
+    <group name="local_electrode" type="NXlens_em">
+        <doc>
+             A local electrode guiding the ion flight path.
+             Also called counter or extraction electrode.
+        </doc>
+        <field name="voltage" type="NX_FLOAT" units="NX_VOLTAGE">
+            <doc>
+                 Acceleration voltage
+            </doc>
+        </field>
+    </group>
+    <!--but the local_electrode does not really on purpose create a magnetic field,
+specific for an electro-magnetic lens is the symmetry of its field
+NEW ISSUE: for now keep that we have what is an NXlens_em
+NEW ISSUE: APEX MONITOR / LEAP distance monitoring
+NEW ISSUE: the definition of flat test data should be included and documented
+NEW ISSUE: local electrode, baking strategies, storage-->
+    <group name="ion_detector" type="NXdetector">
+        <doc>
+             Detector for taking raw time-of-flight and ion/hit impact positions data.
+        </doc>
+        <field name="signal_amplitude" type="NX_FLOAT" units="NX_CURRENT">
+            <doc>
+                 Amplitude of the signal detected on the multi-channel plate (MCP).
+                 
+                 This field should be used for storing the signal amplitude quantity
+                 within ATO files. The ATO file format is used primarily by the
+                 atom probe groups of the GPM in Rouen, France.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="p"/>
+            </dimensions>
+        </field>
+        <field name="mcp_efficiency" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+            <doc>
+                 CRunHeader.fMcpEfficiency
+            </doc>
+        </field>
+        <field name="mesh_efficiency" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+            <doc>
+                 CRunHeader.fMeshEfficiency
+            </doc>
+        </field>
+    </group>
+    <!--model, serial_number, manufacturer_name all inherited from NXdetector base class-->
+    <group name="pulser" type="NXobject">
+        <doc>
+             Laser- and/or voltage-pulsing device to trigger ion removal.
+        </doc>
+        <!--technical design-->
+        <group name="fabrication" type="NXfabrication"/>
+        <field name="pulse_mode" type="NX_CHAR">
+            <doc>
+                 Detail whereby ion extraction is triggered methodologically.
+            </doc>
+            <enumeration>
+                <item value="laser"/>
+                <item value="voltage"/>
+                <item value="laser_and_voltage"/>
+                <item value="other"/>
+                <item value="unknown"/>
+            </enumeration>
+        </field>
+        <!--
+the example of how the IFES APT TC's HDF format deals with such data
+conceptually, concepts are mixed into superconcepts interleaved tuple with
+different units: "PulseFrequency : Real array, 2xn (Hz) This is the frequency of
+the high voltage or laser pulser. first entry : first pulse number where the
+spacing between this and all subsequent pulses are considered to be at the
+selected frequency. Each first entry must be strictly increasing in value. The
+second entry contains the frequency value" as data can be compressed in this
+case very efficiently we go for with an array of length 1xn_ions
+-->
+        <field name="pulse_frequency" type="NX_FLOAT" units="NX_FREQUENCY">
+            <doc>
+                 Frequency with which the pulser fire(s).
+            </doc>
+            <attribute name="logged_against" type="NX_CHAR">
+                <doc>
+                     Path to pulse_identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="pulse_fraction" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+            <doc>
+                 Fraction of the pulse_voltage that is applied in addition
+                 to the standing_voltage at peak voltage of a pulse.
+                 
+                 If a standing voltage is applied, this gives nominal pulse fraction
+                 (as a function of standing voltage). Otherwise, this field should
+                 not be present.
+            </doc>
+            <attribute name="logged_against" type="NX_CHAR">
+                <doc>
+                     Path to pulse_identifier
+                </doc>
+            </attribute>
+        </field>
+        <!--
+example of a conditional requirement that can be dealt with igorously by OWL but not by NeXus!
+as either pulse_voltage is required in an appdef but then that
+existence constraint is independent of other values.
+-->
+        <field name="pulse_voltage" type="NX_FLOAT" units="NX_VOLTAGE">
+            <doc>
+                 Pulsed voltage, in laser pulsing mode this field can be omitted.
+            </doc>
+            <attribute name="logged_against" type="NX_CHAR">
+                <doc>
+                     Path to pulse_identifier
+                </doc>
+            </attribute>
+        </field>
+        <field name="pulse_number" type="NX_UINT" units="NX_UNITLESS">
+            <doc>
+                 Absolute number of pulses starting from the beginning of the experiment.
+            </doc>
+            <attribute name="logged_against" type="NX_CHAR">
+                <doc>
+                     Path to pulse_identifier
+                </doc>
+            </attribute>
+        </field>
+        <!--eventually equivalent to pulse_identifier within NXevent_data_apm-->
+        <field name="standing_voltage" type="NX_FLOAT" units="NX_VOLTAGE">
+            <doc>
+                 Direct current voltage between the specimen and the (local electrode) in
+                 the case of local electrode atom probe (LEAP) instrument. Otherwise, the
+                 standing voltage applied to the sample, relative to system ground.
+            </doc>
+            <attribute name="logged_against" type="NX_CHAR">
+                <doc>
+                     Path to pulse_identifier
+                </doc>
+            </attribute>
+        </field>
+        <group name="sourceID" type="NXsource">
+            <doc>
+                 Atom probe microscopes use controlled laser, voltage, or a combination of
+                 pulsing strategies to trigger ion extraction via exciting and eventual field evaporation
+                 field emission of ion at the specimen surface.
+            </doc>
+            <group name="fabrication" type="NXfabrication"/>
+            <field name="wavelength" type="NX_FLOAT" units="NX_WAVELENGTH">
+                <doc>
+                     The wavelength of the radiation emitted by the source.
+                </doc>
+            </field>
+            <field name="power" type="NX_FLOAT" units="NX_POWER">
+                <doc>
+                     Nominal power of the laser source while illuminating the specimen.
+                </doc>
+            </field>
+            <field name="pulse_energy" type="NX_FLOAT" units="NX_ENERGY">
+                <doc>
+                     Average energy of the laser at peak of each pulse.
+                </doc>
+                <attribute name="logged_against" type="NX_CHAR">
+                    <doc>
+                         Path to pulse_identifier
+                    </doc>
+                </attribute>
+            </field>
+            <group type="NXbeam">
+                <doc>
+                     Details about specific positions along the laser beam
+                     which illuminates the (atom probe) specimen.
+                </doc>
+                <field name="incidence_vector" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                         Track time-dependent settings over the course of the measurement
+                         how the laser beam shines on the specimen, i.e. the mean vector
+                         is parallel to the laser propagation direction.
+                    </doc>
+                    <attribute name="logged_against" type="NX_CHAR">
+                        <doc>
+                             Path to pulse_identifier
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="pinhole_position" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                         Track time-dependent settings over the course of the measurement
+                         where the laser beam exits the focusing optics.
+                    </doc>
+                    <attribute name="logged_against" type="NX_CHAR">
+                        <doc>
+                             Path to pulse_identifier
+                        </doc>
+                    </attribute>
+                </field>
+                <field name="spot_position" type="NX_NUMBER" units="NX_LENGTH">
+                    <doc>
+                         Track time-dependent settings over the course of the
+                         measurement where the laser hits the specimen.
+                    </doc>
+                    <attribute name="logged_against" type="NX_CHAR">
+                        <doc>
+                             Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
+                        </doc>
+                    </attribute>
+                </field>
+            </group>
+            <group type="NXtransformations">
+                <doc>
+                     Affine transformations which describe the geometry how the
+                     laser focusing optics/pinhole-attached coordinate system is
+                     defined, how it has to be transformed so that it aligns with
+                     the specimen coordinate system.
+                </doc>
+            </group>
+        </group>
+    </group>
+    <group name="stage" type="NXstage_lab">
+        <field name="specimen_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
+            <doc>
+                 CRunHeader.CAnalysis.fSpecimenTemperature
+            </doc>
+        </field>
+    </group>
+    <!--NEW ISSUE: add NXapm_energy_analyzer, a voltage grid like done in Rouen/GPM-->
+    <group name="analysis_chamber" type="NXchamber">
+        <field name="flight_path" type="NX_FLOAT" units="NX_LENGTH">
+            <doc>
+                 The space inside the atom probe along which ions pass nominally
+                 when they leave the specimen and travel to the detector.
+            </doc>
+        </field>
+        <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
+            <doc>
+                 CRunHeader.CLasHeader.fAnalysisPressure
+            </doc>
+        </field>
+    </group>
+    <group name="buffer_chamber" type="NXchamber"/>
+    <group name="load_lock_chamber" type="NXchamber"/>
+    <group name="getter_pump" type="NXpump"/>
+    <group name="roughening_pump" type="NXpump"/>
+    <group name="turbomolecular_pump" type="NXpump"/>
+    <field name="comment" type="NX_CHAR">
+        <doc>
+             Free-text field for additional comments.
+        </doc>
+    </field>
+    <group name="control" type="NXcollection">
+        <doc>
+             Relevant quantities during a measurement with a LEAP system as were
+             suggested by `T. Blum et al. &lt;https://doi.org/10.1002/9781119227250.ch18&gt;`_.
+        </doc>
+        <field name="evaporation_control" type="NX_CHAR">
+            <doc>
+                 Parameter set typically in the GUI of the control software which
+                 defines the rules and control loops whereby the pulser and other
+                 components of the instrument are controlled during evaporation.
+            </doc>
+        </field>
+        <field name="target_detection_rate" type="NX_NUMBER" units="NX_ANY">
+            <doc>
+                 Control parameter set typically in the GUI relevant to assure that
+                 the instrument internally controls its settings such to assure a
+                 significant yet not too high ion influx on the detector to avoid
+                 detection losses.
+            </doc>
+        </field>
+    </group>
+</definition>

@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2014-2025 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -35,7 +35,9 @@
     <doc>
          Base class to store state and (meta)data of events over the course of an atom probe experiment.
          
-         This base class applies the concept of the :ref:`NXevent_data_em` base class to the specific needs
+         Having at least one instance for an instance of NXapm is recommended.
+         
+         This base class applies the concept of the NXevent_data_em base class to the specific needs
          of atom probe research. Against static and dynamic quantities are splitted to avoid a duplication
          of information. Specifically, the time interval considered is the entire time
          starting at start_time until end_time during which we assume the pulser triggered named pulses.
@@ -128,8 +130,7 @@
              instrument follows a sequence of pulses to trigger field evaporation.
              
              The pulse_identifier is used to associate thus an information about time
-             when the quantities documented in this NXpulser_apm base class have been
-             collected via sampling.
+             when quantities have been collected via sampling.
              
              In virtually all cases the pulser is a blackbox. Depending on how the
              instrument is configured during a measurement the target
@@ -153,129 +154,5 @@
             <dim index="1" value="p"/>
         </dimensions>
     </field>
-    <group name="instrument" type="NXinstrument">
-        <doc>
-             (Meta)data of the dynamics and changes of the microscope over the course of
-             pulsing.
-        </doc>
-        <group name="control" type="NXcollection">
-            <doc>
-                 Relevant quantities during a measurement with a LEAP system as suggested by
-                 `T. Blum et al. &lt;https://doi.org/10.1002/9781119227250.ch18&gt;`_.
-            </doc>
-            <field name="evaporation_control" type="NX_CHAR">
-                <enumeration>
-                    <item value="detection_rate"/>
-                </enumeration>
-            </field>
-            <field name="target_detection_rate" type="NX_FLOAT" units="NX_ANY"/>
-        </group>
-        <group type="NXreflectron"/>
-        <group name="local_electrode" type="NXlens_em"/>
-        <group name="ion_detector" type="NXdetector">
-            <field name="signal_amplitude" type="NX_FLOAT" units="NX_CURRENT">
-                <doc>
-                     Amplitude of the signal detected on the multi-channel plate (MCP).
-                     
-                     This field should be used for storing the signal amplitude quantity
-                     within ATO files. The ATO file format is used primarily by the
-                     atom probe groups of the GPM in Rouen, France.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="p"/>
-                </dimensions>
-            </field>
-        </group>
-        <!--does p only specific the length or does it also convey a logical correlation
-conceptually to another vector which happens to have the same dimensions
-I clear say NO !-->
-        <group name="pulser" type="NXpulser_apm"/>
-        <group name="stage_lab" type="NXstage_lab">
-            <field name="setpoint_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
-                <doc>
-                     Set point temperature to achieve during the measurement.
-                </doc>
-            </field>
-            <field name="base_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
-                <doc>
-                     Average temperature (at the specimen base) during the measurement.
-                </doc>
-            </field>
-            <!--normally one would use NXsensor/NXlog but point is that the temperature
-is logged against the pulse_identifier as even in the proprietary file format from
-AMETEK/Cameca nowhere there is the actual time when the pulse was triggered
-just the sampling frequency and I guess but am not 100percent sure which quantity
-from Cameca this is also the time when the first pulse was triggered
-using NXlog does make sense when individual NXsensors have different timing
-but for atom probe if at all the pulse-based implicit time is available-->
-            <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
-                <doc>
-                     The best estimate, at experiment time, for the temperature at the
-                     sample base (furthest point along sample apex and holding assembly
-                     that is removable from the sample stage).
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="p"/>
-                </dimensions>
-                <attribute name="logged_against" type="NX_CHAR">
-                    <doc>
-                         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
-                    </doc>
-                </attribute>
-            </field>
-        </group>
-        <group name="analysis_chamber" type="NXchamber">
-            <field name="chamber_pressure" type="NX_FLOAT" units="NX_PRESSURE">
-                <doc>
-                     Average pressure in the analysis chamber during the measurement.
-                </doc>
-            </field>
-            <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
-                <doc>
-                     Pressure in the analysis chamber.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="p"/>
-                </dimensions>
-                <attribute name="logged_against" type="NX_CHAR">
-                    <doc>
-                         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
-                    </doc>
-                </attribute>
-            </field>
-        </group>
-        <group name="buffer_chamber" type="NXchamber">
-            <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
-                <doc>
-                     Pressure in the analysis chamber.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="p"/>
-                </dimensions>
-                <attribute name="logged_against" type="NX_CHAR">
-                    <doc>
-                         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
-                    </doc>
-                </attribute>
-            </field>
-        </group>
-        <group name="load_lock_chamber" type="NXchamber">
-            <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
-                <doc>
-                     Pressure in the analysis chamber.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="p"/>
-                </dimensions>
-                <attribute name="logged_against" type="NX_CHAR">
-                    <doc>
-                         Path to pulse_identifier in an instance of :ref:`NXevent_data_apm`.
-                    </doc>
-                </attribute>
-            </field>
-        </group>
-    </group>
-    <!--getter_pump(NXpump):
-roughening_pump(NXpump):
-turbomolecular_pump(NXpump):-->
+    <group name="instrument" type="NXinstrument_apm"/>
 </definition>
