@@ -103,9 +103,6 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXspectrum`:
         Base class and specializations comparable to NXimage_set but for storing spectra. Specialized base classes should use controlled vocabulary items as prefixes such as **eels** electron energy loss spectroscopy, **xray** X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS), **auger** Auger spectroscopy, or **cathodolum** for cathodoluminescence spectra.
 
-    :ref:`NXstage_lab`:
-        As it was mentioned for atom probe microscopy, this is a base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities which modern stages of electron microscopes frequently offer.
-
 Method-specific concepts and their usage in application definitions
 ###################################################################
 
