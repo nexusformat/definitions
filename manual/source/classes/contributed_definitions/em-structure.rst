@@ -41,17 +41,10 @@ A microscope session ends with the scientist removing the specimen from the inst
 Base Classes
 ############
 
-The following base classes are proposed to support modularizing the storage of pieces of information:
+The following base classes are proposed to support modularizing the storage of pieces of information with a focus on EM:
 
-    :ref:`NXaberration_model`, :ref:`NXaberration_model_ceos`, :ref:`NXaberration_model_nion`, :ref:`NXaberration`:
-        Base classes to describe procedures and values for the calibration of aberrations based on either CEOS or Nion.
-
-    :ref:`NXaperture_em`:
-        A base class to describe an aperture.
-
-    :ref:`NXchamber`:
-        A base class to describe the chamber as a part of the microscope or storage unit
-        for transferring specimens in between or within an instrument.
+    :ref:`NXaberration`:
+        Base class to describe procedures and values for the calibration of aberrations.
 
     :ref:`NXcoordinate_system_set`:
         A base class to describe different coordinate systems used and/or to be harmonized
@@ -69,20 +62,21 @@ The following base classes are proposed to support modularizing the storage of p
         A base class representing a container to hold time-stamped and microscope-state-
         annotated data during a session at an electron microscope.
 
-    :ref:`NXevent_data_em_set`:
-        A base class to group all :ref:`NXevent_data_em` instances.
-
     :ref:`NXibeam_column`:
         A base class serving the possibility to group the components relevant for generating
         and shaping an ion beam of an instrument to offer focused-ion beam (milling) capabilities.
 
-    :ref:`NXimage_set`:
-        Base classes for storing acquisition details for individual images or stacks of images. Specialized versions can be defined and use controlled vocabulary terms for group name prefixes like **adf** annular dark field, **bf** bright field, **bse** backscattered electron, **chamber** camera to monitor the stage and chamber, **df** darkfield, **diffrac** diffraction, **ecci** electron channeling contrast imaging, **kikuchi** electron backscatter diffraction, **ronchigram** - convergent beam diffraction pattern, or **se** secondary electron.
+    :ref:`NXimage`:
+        Base class for storing acquisition details for individual images or stacks of images. Specialized versions can be defined and use controlled vocabulary terms for group name prefixes like **adf** annular dark field, **bf** bright field, **bse** backscattered electron, **chamber** camera to monitor the stage and chamber, **df** darkfield, **diffrac** diffraction, **ecci** electron channeling contrast imaging, **kikuchi** electron backscatter diffraction, **ronchigram** - convergent beam diffraction pattern, or **se** secondary electron.
 
-    :ref:`NXinteraction_vol_em`:
-        A base class to describe details about e.g. the simulated or known volume of interaction of the electrons with the specimen.
+    :ref:`NXinstrument_em`:
+        A base class which defines all modular parts that make up an instrument (real or simulated) for studying
+        electron matter interaction. This base class is used in NXem in two places: One that is placed inside an ENTRY.measurement.instrument
+        group. This group holds all those (meta)data which do not change during a session, i.e. instrument name, typically identifier of 
+        hardware components or version of control software. Another one that is placed inside an ENTRY.measurements.events group.
+        This group holds all those (meta)data data change when collecting data during a session.
 
-    :ref:`NXion`:
+    :ref:`NXion` about to become replaced by :ref:`NXatom`:
         A base class to describe charged molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion is 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with which all possible isotopes can be described.
 
     :ref:`NXlens_em`:
@@ -106,7 +100,7 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXscanbox_em`:
         A base class to represent the component of an electron microscope which realizes a controlled deflection (and eventually shift, blanking, and/or descanning) of the electron beam to illuminate the specimen in a controlled manner. This can be used to document the scan pattern.
 
-    :ref:`NXspectrum_set`:
+    :ref:`NXspectrum`:
         Base class and specializations comparable to NXimage_set but for storing spectra. Specialized base classes should use controlled vocabulary items as prefixes such as **eels** electron energy loss spectroscopy, **xray** X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS), **auger** Auger spectroscopy, or **cathodolum** for cathodoluminescence spectra.
 
     :ref:`NXstage_lab`:
@@ -119,13 +113,7 @@ It became clear during the design of the electron-microscopy-specific additions 
 
 More consolidation through the use of NXsubentry classes should be considered in the future.
 
-    :ref:`NXem_ebsd`:
-        Application definition for collecting and indexing Kikuchi pattern into orientation maps for the two-dimensional, three- and four-dimensional case.
-
-Several new base classes are used by this application definition.
-
-    :ref:`NXem_ebsd_conventions`:
-        A collection of reference frames and rotation conventions necessary to interpret the alignment and orientation data.
-
-    :ref:`NXem_ebsd_crystal_structure_model`:
-        A description of a crystalline phase/structure used for a forward simulation using kinetic or dynamic diffraction theory to generate simulated diffraction pattern against which measured pattern can be indexed.
+    :ref:`NXem_ebsd`, :ref:`NXem_eds`, :ref:`NXem_eels`, :ref:`NXem_img`:
+        Base class providing concepts for specific data acquistion modes and associated analysis used in electron microscopy
+        such as collecting and indexing Kikuchi pattern into orientation maps for the two-dimensional, three-, X-ray spectrscopy,
+        different imaging modes, or electron energy loss spectroscopy (EELS).
