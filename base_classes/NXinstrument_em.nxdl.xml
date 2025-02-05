@@ -53,10 +53,8 @@
     <group type="NXfabrication"/>
     <group type="NXebeam_column"/>
     <group type="NXibeam_column"/>
-    <!--(NXpbeam_column): components adding laser pulsing capabilities (more than just NXsource)-->
+    <!--(NXpbeam_column) for adding laser pulsing capabilities (NXsource + x)-->
     <group type="NXoptical_system_em"/>
-    <!--storing these data should happen in event_data, i.e. dynamic quantities-->
-    <group type="NXscanbox_em"/>
     <group type="NXdetector">
         <doc>
              Description of the type of the detector.
@@ -65,14 +63,150 @@
              Different technologies are in use like CCD, scintillator,
              direct electron, CMOS, or image plate to name but a few.
         </doc>
-        <field name="local_name" type="NX_CHAR">
+    </group>
+    <group type="NXscanbox_em"/>
+    <group name="stage" type="NXmanipulator">
+        <doc>
+             Stages in an electron microscope are multi-functional devices.
+             Stages enable experimentalists the application of controlled external stimuli
+             on the specimen. Modern stages realize a hierarchy of components.
+             A multi-axial tilt rotation holder is a good example where the control of
+             each degree of freedom is technically implemented via providing instances
+             of either :ref:`NXpositioner`, :ref:`NXactuator`, or specialized :ref:`NXobject`
+             that achieve the rotating and positioning of the specimen.
+             
+             The physical process of mounting a specimen on a stage in practice often
+             comes with an own hierarchy of fixtures to bridge e.g. length scales technically.
+             An example from atom probe microscopy is that researchers may work
+             with wire samples which are clipped into a larger fixing unit to enable
+             careful specimen handling. Alternatively, a microtip is a silicon post
+             upon which e.g. an atom probe specimen is mounted. Multiple of such microtips
+             are then grouped into a microtip array to conveniently enable loading of multiple
+             specimens into the instrument with fewer operations. There are further scenarios
+             typically encountered related to mounting and locating specimens inside an
+             electron microscope, a few examples follow:
+             
+             * A nanoparticle on a copper grid. The copper grid is the holder.
+               This grid itself is fixed to a stage.
+             * An atom probe specimen fixed in a stub. In this case the stub can be
+               considered the holder, while the cryostat temperature control unit is
+               a component of the stage.
+             * For in-situ experiments with e.g. chips with read-out electronics
+               as actuators, the chips are again placed in a larger unit. A typical
+               example are in-situ experiments using e.g. the tools of `Protochips &lt;https://www.protochips.com&gt;`_.
+             * Other examples are (quasi) in-situ experiments where experimentalists
+               anneal or deform the specimen via e.g. in-situ tensile testing machines
+               which are mounted on the specimen holder.
+             
+             For specific details and inspiration about stages in electron microscopes:
+             
+             * `Holders with multiple axes &lt;https://www.nanotechnik.com/e5as.html&gt;`_
+             * `Chip-based designs &lt;https://www.protochips.com/products/fusion/fusion-select-components/&gt;`_
+             * `Further chip-based designs &lt;https://www.nanoprobetech.com/about&gt;`_
+             * `Stages in transmission electron microscopy &lt;https://doi.org/10.1007/978-3-662-14824-2&gt;`_ (page 103, table 4.2)
+             * `Further stages in transmission electron microscopy &lt;https://doi.org/10.1007/978-1-4757-2519-3&gt;`_ (page 124ff)
+             * `Specimens in atom probe &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_ (page 47ff)
+             * `Exemplar micro-manipulators &lt;https://nano.oxinst.com/products/omniprobe/omniprobe-200&gt;`_
+             # see for complicated positioning tools like an eucentric five-axis table stage in an SEM
+        </doc>
+        <!--see for complicated positioning tools like an eucentric five-axis table stage in an SEM
+https://www.nanotechnik.com/e5as.html-->
+        <group type="NXfabrication"/>
+        <field name="design" type="NX_CHAR">
             <doc>
-                 Instrument-specific alias/name
+                 Principal design of the stage.
+                 
+                 Exemplar terms could be side_entry, top_entry,
+                 single_tilt, quick_change, multiple_specimen,
+                 bulk_specimen, double_tilt, tilt_rotate,
+                 heating_chip, atmosphere_chip,
+                 electrical_biasing_chip, liquid_cell_chip
             </doc>
         </field>
+        <field name="alias" type="NX_CHAR">
+            <doc>
+                 Free-text field to give a term how that a stage_lab at this level of the
+                 stage_lab hierarchy is commonly referred to. Examples could be stub,
+                 puck, carousel, microtip, clip, holder, etc.
+            </doc>
+        </field>
+        <!--the pragmatic view for the majority of published datasets and EM images
+only tilt and position values are reported but the coordinate systems and conventions
+used in which these were defined are often not reported in the associated scientific publications
+this can be interpreted as that position values and tilts are only meaningful for those users
+in a particular narrow community which work with that particular microscope-->
+        <field name="tilt1" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                 The interpretation of this tilt1 value can be contextualized via the comment
+                 attribute. However, it is better to describe the reference frame in which the
+                 tilt is defined explicitly using instances of :ref:`NXtransformations` and
+                 respective instances of :ref:`NXcoordinate_system`. Especially when this
+                 NXinstrument_em base class is used in an application definition like NXem.
+            </doc>
+            <attribute name="comment" type="NX_CHAR">
+                <doc>
+                     Discouraged free-text field to provide details about how to interpret tilt1.
+                </doc>
+            </attribute>
+        </field>
+        <field name="tilt2" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                 The interpretation of this tilt2 value can be contextualized via the comment
+                 attribute. However, it is better to describe the reference frame in which the
+                 tilt is defined explicitly using instances of :ref:`NXtransformations` and
+                 respective instances of :ref:`NXcoordinate_system`. Especially when this
+                 NXinstrument_em base class is used in an application definition like NXem.
+            </doc>
+            <attribute name="comment" type="NX_CHAR">
+                <doc>
+                     Discouraged free-text field to provide details about how to interpret tilt2.
+                </doc>
+            </attribute>
+        </field>
+        <field name="rotation" type="NX_NUMBER" units="NX_ANGLE">
+            <doc>
+                 The interpretation of this rotation value can be contextualized via the comment
+                 attribute. However, it is better to describe the reference frame in which the
+                 rotation is defined explicitly using instances of :ref:`NXtransformations` and
+                 respective instances of :ref:`NXcoordinate_system`. Especially when this
+                 NXinstrument_em base class is used in an application definition like NXem.
+            </doc>
+            <attribute name="comment" type="NX_CHAR">
+                <doc>
+                     Discouraged free-text field to provide details about how to interpret rotation.
+                </doc>
+            </attribute>
+        </field>
+        <field name="position" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 The interpretation of these position values can be contextualized via the comment
+                 attribute. However, it is better to describe the reference frame in which the
+                 position values are defined explicitly using instances of :ref:`NXtransformations`
+                 and respective instances of :ref:`NXcoordinate_system`. Especially when this
+                 NXinstrument_em base class is used in an application definition like NXem.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="3"/>
+            </dimensions>
+            <attribute name="comment" type="NX_CHAR">
+                <doc>
+                     Discouraged free-text field to provide details about how to interpret position
+                     values.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="nanoprobe" type="NXmanipulator">
+        <doc>
+             In contrast to a stage, the nanoprobe is an additional manipulator that is specifically
+             frequently found in FIB/SEM instruments to pick up and relocated portions of the specimen
+             that have been cut free to realize specialized geometries locally and make site-specific
+             measurements.
+        </doc>
+        <!--https://nano.oxinst.com/nanomanipulators.-->
+        <group type="NXfabrication"/>
     </group>
     <group type="NXpump"/>
-    <group type="NXstage_lab"/>
     <group type="NXsensor"/>
     <group type="NXactuator"/>
 </definition>
