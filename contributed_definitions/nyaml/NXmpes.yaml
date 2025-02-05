@@ -117,19 +117,14 @@ NXmpes(NXobject):
           exists: recommended
         identifier(NXidentifier):
           exists: recommended
-      sourceTYPE(NXsource):
+      source_probe(NXsource):
         exists: recommended
         doc: |
-          A source used to generate a beam. Properties refer strictly to parameters of the
-          source, not of the output beam. For example, the energy of the source is not the
-          optical power of the beam, but the energy of the electron beam in a synchrotron
-          or similar.
+          The source used to generate the :ref:`beam_probe &lt;/NXmpes/ENTRY/INSTRUMENT/beam_probe-field&gt;`.
           
-          Note that the uppercase notation in sourceTYPE means that multiple sources can
-          be provided. The uppercase part can be substituted with any string that consists
-          of alphanumeric characters, including both uppercase and lowercase letters from A to Z
-          and numerical digits from 0 to 9. For example, in pump-probe experiments, it is possible
-          to have both a `source_probe` and a `source_pump`.
+          Properties refer strictly to parameters of the source, not of the output beam. For example,
+          the energy of the source is not the optical power of the beam, but the energy of the electron beam
+          in a synchrotron or similar.
         type:
           enumeration: [Synchrotron X-ray Source, Rotating Anode X-ray, Fixed Tube X-ray, UV Laser, Free-Electron Laser, Optical Laser, UV Plasma Source, Metal Jet X-ray, HHG laser, UV lamp, Monochromatized electron source, other]
         type_other:
@@ -153,14 +148,92 @@ NXmpes(NXobject):
             A reference to a beam emitted by this source.
             Should be named with the same appendix, e.g.,
             for `source_probe` it should refer to `beam_probe`.
-            
+
             Example:
               * /entry/instrument/source_probe = /entry/instrument/beam_probe
-      beamTYPE(NXbeam):
+      source_pump(NXsource):
+        exists: optional
         doc: |
-          Properties of the photon beam at a given location.
-          Should be named with the same appendix as sourceTYPE, e.g.,
-          for `source_probe` it should refer to `beam_probe`.
+          The source used to generate the :ref:`beam_probe &lt;/NXmpes/ENTRY/INSTRUMENT/beam_probe-field&gt;`
+          in pump-probe experiments.
+
+          Properties refer strictly to parameters of the source, not of the output beam.
+        type:
+        type_other:
+          exists: optional
+          doc: |
+            Specification of type, may also go to name.
+        name:
+          exists: recommended
+        probe:
+          exists: optional
+        device_information(NXfabrication):
+          exists: recommended
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
+          identifier(NXidentifier):
+            exists: recommended
+        associated_beam(NX_CHAR):
+          doc: |
+            A reference to a beam emitted by this source.
+            Should be named with the same appendix, e.g.,
+            for `source_pump` it should refer to `beam_pump`.
+
+            Example:
+              * /entry/instrument/source_pump = /entry/instrument/beam_pump
+      sourceTYPE(NXsource):
+        exists: recommended
+        doc: |
+          Any other source used to generate a beam.
+
+          This group is to be used for any additional beams that are not described by
+          :ref:`source_probe &lt;/NXmpes/ENTRY/INSTRUMENT/source_probe-field&gt;` or
+          :ref:`source_pump &lt;/NXmpes/ENTRY/INSTRUMENT/source_pump-field&gt;`.
+
+          An example could be a low energy electron source for charge neutralization
+          (see also :ref:`flood_gun &lt;/NXmpes/ENTRY/INSTRUMENT/flood_gun-group&gt;`.
+
+          Properties refer strictly to parameters of the source, not of the output beam.
+
+          Note that the uppercase notation in sourceTYPE means that multiple sources can
+          be provided. The uppercase part can be substituted with any string that consists
+          of alphanumeric characters, including both uppercase and lowercase letters from A to Z
+          and numerical digits from 0 to 9. For example, in pump-probe experiments, it is possible
+          to have both a `source_laser` and a `source_electron`.
+        type:
+        type_other:
+          exists: optional
+          doc: |
+            Specification of type, may also go to name.
+        name:
+          exists: recommended
+        probe:
+          exists: optional
+        device_information(NXfabrication):
+          exists: recommended
+          vendor:
+            exists: recommended
+          model:
+            exists: recommended
+          identifier(NXidentifier):
+            exists: recommended
+        associated_beam(NX_CHAR):
+          doc: |
+            A reference to a beam emitted by this source.
+            Should be named with the same appendix, e.g.,
+            for `source_laser` it should refer to `beam_laser`.
+
+            Example:
+              * /entry/instrument/source_laser = /entry/instrument/beam_laser
+      beam_probe(NXbeam):
+        doc: |
+          Properties of the probe beam at a given location.
+
+          This is the beam that is used to facilitate the photoemission during MPES
+          experiments. It is used to measure the state of a system at a specific moment
+          in time.
         distance(NX_NUMBER):
           unit: NX_LENGTH
           exists: recommended
@@ -186,9 +259,83 @@ NXmpes(NXobject):
             Should be named with the same appendix, e.g.,
             for `beam_probe` it should refer to `source_probe`.
             This should be specified if an associated source exists.
-            
+
             Example:
               * /entry/instrument/beam_probe = /entry/instrument/source_probe
+      beam_pump(NXbeam):
+        exists: optional
+        doc: |
+          Properties of the pump beam at a given location.
+
+          In pump-probe experiments, this is the beam that excites the system,
+          initiating a change in its state. It sets the timing for the experiment
+          by defining time zero in a pump-probe setup.
+        distance(NX_NUMBER):
+          unit: NX_LENGTH
+          exists: recommended
+          doc: |
+            Distance between the point where the current NXbeam instance is evaluating
+            the beam properties and the point where the beam interacts with the sample.
+            For photoemission, the latter is the point where the the centre of the beam
+            touches the sample surface.
+        incident_energy(NX_FLOAT):
+          unit: NX_ENERGY
+        incident_energy_spread(NX_NUMBER):
+          exists: recommended
+          unit: NX_ENERGY
+        incident_polarization(NX_NUMBER):
+          exists: recommended
+          unit: NX_ANY
+        extent(NX_FLOAT):
+          exists: recommended
+        associated_source(NX_CHAR):
+          exists: recommended
+          doc: |
+            The source that emitted this beam.
+            Should be named with the same appendix, e.g.,
+            for `beam_pump` it should refer to `source_pump`.
+            This should be specified if an associated source exists.
+
+            Example:
+              * /entry/instrument/beam_pump = /entry/instrument/source_pump
+      beamTYPE(NXbeam): 
+        doc: |
+          Properties of any other photon beam at a given location.
+
+          This group is to be used for any additional beams that are not described by
+          :ref:`beam_probe &lt;/NXmpes/ENTRY/INSTRUMENT/beam_probe-field&gt;` or
+          :ref:`beam_pump &lt;/NXmpes/ENTRY/INSTRUMENT/beam_pump-field&gt;`.
+
+          Should be named with the same appendix as sourceTYPE, e.g.,
+          for `source_laser` it should refer to `beam_laser`.
+        distance(NX_NUMBER):
+          unit: NX_LENGTH
+          exists: recommended
+          doc: |
+            Distance between the point where the current NXbeam instance is evaluating
+            the beam properties and the point where the beam interacts with the sample.
+            For photoemission, the latter is the point where the the centre of the beam
+            touches the sample surface.
+        incident_energy(NX_FLOAT):
+          unit: NX_ENERGY
+        incident_energy_spread(NX_NUMBER):
+          exists: recommended
+          unit: NX_ENERGY
+        incident_polarization(NX_NUMBER):
+          exists: recommended
+          unit: NX_ANY
+        extent(NX_FLOAT):
+          exists: recommended
+        associated_source(NX_CHAR):
+          exists: recommended
+          doc: |
+            The source that emitted this beam.
+            Should be named with the same appendix, e.g.,
+            for `beam_laser` it should refer to `source_laser`.
+            This should be specified if an associated source exists.
+
+            Example:
+              * /entry/instrument/beam_laser = /entry/instrument/source_laser
       (NXelectronanalyser):
         device_information(NXfabrication):
           exists: recommended
