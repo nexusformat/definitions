@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2014-2025 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -152,20 +152,15 @@
             <group name="device_information" type="NXfabrication" recommended="true">
                 <field name="vendor" recommended="true"/>
                 <field name="model" recommended="true"/>
-                <group name="identifier" type="NXidentifier" recommended="true"/>
+                <field name="identifier" recommended="true"/>
             </group>
-            <group name="sourceTYPE" type="NXsource" recommended="true">
+            <group name="source_probe" type="NXsource" recommended="true">
                 <doc>
-                     A source used to generate a beam. Properties refer strictly to parameters of the
-                     source, not of the output beam. For example, the energy of the source is not the
-                     optical power of the beam, but the energy of the electron beam in a synchrotron
-                     or similar.
+                     The source used to generate the :ref:`beam_probe &amp;lt;/NXmpes/ENTRY/INSTRUMENT/beam_probe-field&amp;gt;`.
                      
-                     Note that the uppercase notation in sourceTYPE means that multiple sources can
-                     be provided. The uppercase part can be substituted with any string that consists
-                     of alphanumeric characters, including both uppercase and lowercase letters from A to Z
-                     and numerical digits from 0 to 9. For example, in pump-probe experiments, it is possible
-                     to have both a `source_probe` and a `source_pump`.
+                     Properties refer strictly to parameters of the source, not of the output beam. For example,
+                     the energy of the source is not the optical power of the beam, but the energy of the electron beam
+                     in a synchrotron or similar.
                 </doc>
                 <field name="type">
                     <enumeration>
@@ -193,7 +188,7 @@
                 <group name="device_information" type="NXfabrication" recommended="true">
                     <field name="vendor" recommended="true"/>
                     <field name="model" recommended="true"/>
-                    <group name="identifier" type="NXidentifier" recommended="true"/>
+                    <field name="identifier" recommended="true"/>
                 </group>
                 <field name="associated_beam" type="NX_CHAR">
                     <doc>
@@ -206,11 +201,87 @@
                     </doc>
                 </field>
             </group>
-            <group name="beamTYPE" type="NXbeam">
+            <group name="source_pump" type="NXsource" optional="true">
                 <doc>
-                     Properties of the photon beam at a given location.
-                     Should be named with the same appendix as sourceTYPE, e.g.,
-                     for `source_probe` it should refer to `beam_probe`.
+                     The source used to generate the :ref:`beam_probe &amp;lt;/NXmpes/ENTRY/INSTRUMENT/beam_probe-field&amp;gt;`
+                     in pump-probe experiments.
+                     
+                     Properties refer strictly to parameters of the source, not of the output beam.
+                </doc>
+                <field name="type"/>
+                <field name="type_other" optional="true">
+                    <doc>
+                         Specification of type, may also go to name.
+                    </doc>
+                </field>
+                <field name="name" recommended="true"/>
+                <field name="probe" optional="true"/>
+                <group name="device_information" type="NXfabrication" recommended="true">
+                    <field name="vendor" recommended="true"/>
+                    <field name="model" recommended="true"/>
+                    <field name="identifier" recommended="true"/>
+                </group>
+                <field name="associated_beam" type="NX_CHAR">
+                    <doc>
+                         A reference to a beam emitted by this source.
+                         Should be named with the same appendix, e.g.,
+                         for `source_pump` it should refer to `beam_pump`.
+                         
+                         Example:
+                           * /entry/instrument/source_pump = /entry/instrument/beam_pump
+                    </doc>
+                </field>
+            </group>
+            <group name="sourceTYPE" type="NXsource" recommended="true">
+                <doc>
+                     Any other source used to generate a beam.
+                     
+                     This group is to be used for any additional beams that are not described by
+                     :ref:`source_probe &amp;lt;/NXmpes/ENTRY/INSTRUMENT/source_probe-field&amp;gt;` or
+                     :ref:`source_pump &amp;lt;/NXmpes/ENTRY/INSTRUMENT/source_pump-field&amp;gt;`.
+                     
+                     An example could be a low energy electron source for charge neutralization
+                     (see also :ref:`flood_gun &amp;lt;/NXmpes/ENTRY/INSTRUMENT/flood_gun-group&amp;gt;`.
+                     
+                     Properties refer strictly to parameters of the source, not of the output beam.
+                     
+                     Note that the uppercase notation in sourceTYPE means that multiple sources can
+                     be provided. The uppercase part can be substituted with any string that consists
+                     of alphanumeric characters, including both uppercase and lowercase letters from A to Z
+                     and numerical digits from 0 to 9. For example, in pump-probe experiments, it is possible
+                     to have both a `source_laser` and a `source_electron`.
+                </doc>
+                <field name="type"/>
+                <field name="type_other" optional="true">
+                    <doc>
+                         Specification of type, may also go to name.
+                    </doc>
+                </field>
+                <field name="name" recommended="true"/>
+                <field name="probe" optional="true"/>
+                <group name="device_information" type="NXfabrication" recommended="true">
+                    <field name="vendor" recommended="true"/>
+                    <field name="model" recommended="true"/>
+                    <group name="identifier" type="NXidentifier" recommended="true"/>
+                </group>
+                <field name="associated_beam" type="NX_CHAR">
+                    <doc>
+                         A reference to a beam emitted by this source.
+                         Should be named with the same appendix, e.g.,
+                         for `source_laser` it should refer to `beam_laser`.
+                         
+                         Example:
+                           * /entry/instrument/source_laser = /entry/instrument/beam_laser
+                    </doc>
+                </field>
+            </group>
+            <group name="beam_probe" type="NXbeam">
+                <doc>
+                     Properties of the probe beam at a given location.
+                     
+                     This is the beam that is used to facilitate the photoemission during MPES
+                     experiments. It is used to measure the state of a system at a specific moment
+                     in time.
                 </doc>
                 <field name="distance" type="NX_NUMBER" units="NX_LENGTH" recommended="true">
                     <doc>
@@ -236,11 +307,78 @@
                     </doc>
                 </field>
             </group>
+            <group name="beam_pump" type="NXbeam" optional="true">
+                <doc>
+                     Properties of the pump beam at a given location.
+                     
+                     In pump-probe experiments, this is the beam that excites the system,
+                     initiating a change in its state. It sets the timing for the experiment
+                     by defining time zero in a pump-probe setup.
+                </doc>
+                <field name="distance" type="NX_NUMBER" units="NX_LENGTH" recommended="true">
+                    <doc>
+                         Distance between the point where the current NXbeam instance is evaluating
+                         the beam properties and the point where the beam interacts with the sample.
+                         For photoemission, the latter is the point where the the centre of the beam
+                         touches the sample surface.
+                    </doc>
+                </field>
+                <field name="incident_energy" type="NX_FLOAT" units="NX_ENERGY"/>
+                <field name="incident_energy_spread" type="NX_NUMBER" recommended="true" units="NX_ENERGY"/>
+                <field name="incident_polarization" type="NX_NUMBER" recommended="true" units="NX_ANY"/>
+                <field name="extent" type="NX_FLOAT" recommended="true"/>
+                <field name="associated_source" type="NX_CHAR" recommended="true">
+                    <doc>
+                         The source that emitted this beam.
+                         Should be named with the same appendix, e.g.,
+                         for `beam_pump` it should refer to `source_pump`.
+                         This should be specified if an associated source exists.
+                         
+                         Example:
+                           * /entry/instrument/beam_pump = /entry/instrument/source_pump
+                    </doc>
+                </field>
+            </group>
+            <group name="beamTYPE" type="NXbeam">
+                <doc>
+                     Properties of any other photon beam at a given location.
+                     
+                     This group is to be used for any additional beams that are not described by
+                     :ref:`beam_probe &amp;lt;/NXmpes/ENTRY/INSTRUMENT/beam_probe-field&amp;gt;` or
+                     :ref:`beam_pump &amp;lt;/NXmpes/ENTRY/INSTRUMENT/beam_pump-field&amp;gt;`.
+                     
+                     Should be named with the same appendix as sourceTYPE, e.g.,
+                     for `source_laser` it should refer to `beam_laser`.
+                </doc>
+                <field name="distance" type="NX_NUMBER" units="NX_LENGTH" recommended="true">
+                    <doc>
+                         Distance between the point where the current NXbeam instance is evaluating
+                         the beam properties and the point where the beam interacts with the sample.
+                         For photoemission, the latter is the point where the the centre of the beam
+                         touches the sample surface.
+                    </doc>
+                </field>
+                <field name="incident_energy" type="NX_FLOAT" units="NX_ENERGY"/>
+                <field name="incident_energy_spread" type="NX_NUMBER" recommended="true" units="NX_ENERGY"/>
+                <field name="incident_polarization" type="NX_NUMBER" recommended="true" units="NX_ANY"/>
+                <field name="extent" type="NX_FLOAT" recommended="true"/>
+                <field name="associated_source" type="NX_CHAR" recommended="true">
+                    <doc>
+                         The source that emitted this beam.
+                         Should be named with the same appendix, e.g.,
+                         for `beam_laser` it should refer to `source_laser`.
+                         This should be specified if an associated source exists.
+                         
+                         Example:
+                           * /entry/instrument/beam_laser = /entry/instrument/source_laser
+                    </doc>
+                </field>
+            </group>
             <group type="NXelectronanalyser">
                 <group name="device_information" type="NXfabrication" recommended="true">
                     <field name="vendor" recommended="true"/>
                     <field name="model" recommended="true"/>
-                    <group name="identifier" type="NXidentifier" recommended="true"/>
+                    <field name="identifier" recommended="true"/>
                 </group>
                 <field name="description" recommended="true"/>
                 <field name="work_function" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
@@ -297,7 +435,7 @@
                     <group name="device_information" type="NXfabrication" recommended="true">
                         <field name="vendor" recommended="true"/>
                         <field name="model" recommended="true"/>
-                        <group name="identifier" type="NXidentifier" recommended="true"/>
+                        <field name="identifier" recommended="true"/>
                     </group>
                 </group>
                 <group type="NXenergydispersion">
@@ -341,7 +479,7 @@
                     <group name="device_information" type="NXfabrication" recommended="true">
                         <field name="vendor" recommended="true"/>
                         <field name="model" recommended="true"/>
-                        <group name="identifier" type="NXidentifier" recommended="true"/>
+                        <field name="identifier" recommended="true"/>
                     </group>
                 </group>
                 <group type="NXdetector">
@@ -370,7 +508,7 @@
                     <group name="device_information" type="NXfabrication" recommended="true">
                         <field name="vendor" recommended="true"/>
                         <field name="model" recommended="true"/>
-                        <group name="identifier" type="NXidentifier" recommended="true"/>
+                        <field name="identifier" recommended="true"/>
                     </group>
                     <group name="raw_data" type="NXdata" recommended="true">
                         <doc>
@@ -380,34 +518,10 @@
                              This group ideally collects the data with the lowest level of processing
                              possible.
                              
-                             Fields should be named according to the following convention:
-                             
-                             - **pixel_x**: Detector pixel in x direction.
-                             - **pixel_y**: Detector pixel in y direction.
-                             - **energy**: (Un)calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
-                             - **kx**: (Un)calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
-                             - **ky**: (Un)calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
-                             - **kz**: (Un)calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
-                             - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
-                               Unit category: NX_ANGLE
-                             - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-                               Unit category: NX_ANGLE
-                             - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
-                               Unit category: NX_LENGTH
-                             - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-                               Unit category: NX_LENGTH
-                             - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
-                             - **polarization_angle**: Linear polarization angle of the incoming or
-                               outgoing beam.
-                               Unit category: NX_ANGLE (° or rad)
-                             - **ellipticity**: Ellipticity of the incoming or outgoing beam.
-                               Unit category: NX_ANGLE (° or rad)
-                             - **time_of_flight**: Total time of flight. Unit category: NX_TIME_OF_FLIGHT
-                             - **time_of_flight_adc**: Time-of-flight values, analog-to-digital converted.
-                             - **external_AXIS**: Describes an axis which is coming from outside the detectors scope.
-                             
-                             Note that this list is a glossary with explicitly named axis names, which is only intended to cover the most
-                             common measurement axes and is therefore not complete. It is possible to add axes with other names at any time.
+                             Axes should be named according to the conventions defined below. Note that this
+                             list is a glossary with explicitly named axis names, which is only intended to
+                             coverthe most common measurement axes and is therefore not complete. It is
+                             possible to add axes with other names at any time.
                         </doc>
                         <attribute name="signal">
                             <enumeration>
@@ -417,6 +531,168 @@
                         <field name="raw" type="NX_NUMBER">
                             <doc>
                                  Raw data before calibration.
+                            </doc>
+                        </field>
+                        <field name="pixel_x" type="NX_FLOAT" optional="true" units="NX_ANY">
+                            <doc>
+                                 Detector pixel in x direction.
+                            </doc>
+                        </field>
+                        <field name="pixel_y" type="NX_FLOAT" optional="true" units="NX_ANY">
+                            <doc>
+                                 Detector pixel in y direction.
+                            </doc>
+                        </field>
+                        <field name="energy" type="NX_NUMBER" recommended="true" units="NX_ENERGY">
+                            <doc>
+                                 (Un)calibrated energy axis.
+                            </doc>
+                            <attribute name="type" type="NX_CHAR">
+                                <doc>
+                                     The energy can be either stored as kinetic or as binding energy.
+                                </doc>
+                                <enumeration>
+                                    <item value="kinetic">
+                                        <doc>
+                                             (Un)calibrated kinetic energy axis.
+                                             
+                                             This concept is related to term `3.35`_ of the ISO 18115-1:2023 standard.
+                                             
+                                             .. _3.35: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.35
+                                        </doc>
+                                    </item>
+                                    <item value="binding">
+                                        <doc>
+                                             (Un)calibrated binding energy axis.
+                                             
+                                             This concept is related to term `12.16`_ of the ISO 18115-1:2023 standard.
+                                             
+                                             .. _12.16: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
+                                        </doc>
+                                    </item>
+                                </enumeration>
+                            </attribute>
+                        </field>
+                        <field name="photon_energy" type="NX_NUMBER" optional="true" units="NX_ENERGY">
+                            <doc>
+                                 (Un)calibrated photon energy of the incoming probe beam.
+                                 
+                                 Could be a link to /entry/instrumen/beam_probe/incident_energy.
+                            </doc>
+                        </field>
+                        <field name="kx" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                            <doc>
+                                 (Un)calibrated k-space coordinate in x direction. It is envisioned that the axes in
+                                 momentum space are named ``kx``, ``ky``, and ``kz``. Typically, the vectors in
+                                 momentum space are defined such that ``kx`` and ``ky`` comprise the parallel
+                                 component, while ``kz`` is the perpendicular component.
+                                 
+                                 It is also possible to define ``k_parallel`` and ``k_perp`` for the parallel
+                                 and perpendicular momenta, respectively.
+                                 
+                                 Units are typically 1/Angström.
+                            </doc>
+                        </field>
+                        <field name="ky" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                            <doc>
+                                 (Un)calibrated k-space coordinate in y direction. For more information, see the
+                                 definition of the :ref:`kx &amp;lt;/NXmpes/ENTRY/INSTRUMENT/ELECTRONANALYSER/DETECTOR/raw_data/kx-field&amp;gt;`
+                                 axis.
+                            </doc>
+                        </field>
+                        <field name="kz" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                            <doc>
+                                 (Un)calibrated k-space coordinate in z direction. For more information, see the
+                                 definition of the :ref:`kx &amp;lt;/NXmpes/ENTRY/INSTRUMENT/ELECTRONANALYSER/DETECTOR/raw_data/kx-field&amp;gt;`
+                                 axis.
+                            </doc>
+                        </field>
+                        <field name="k_parallel" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                            <doc>
+                                 (Un)calibrated parallel component in k-space.
+                                 
+                                 ``k_parallel`` and :ref:`k_perpendicular &amp;lt;/NXmpes/ENTRY/INSTRUMENT/ELECTRONANALYSER/DETECTOR/raw_data/k_perpendicular-field&amp;gt;`
+                                 describe how the electron's wave vector ``k`` is split into components relative
+                                 to the surface.
+                                 
+                                 ``k_parallel`` is the component of the electron's wave vector that is parallel to
+                                 the surface. It is conserved during the photoemission process. This means that the
+                                 electron's momentum along the surface inside the material is directly related to
+                                 its measured momentum outside the material.
+                                 
+                                 Units are typically 1/Angström.
+                            </doc>
+                        </field>
+                        <field name="k_perpendicular" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                            <doc>
+                                 (Un)calibrated perpendicular component in k-space.
+                                 
+                                 ``k_perpendicular`` is the component that is normal (perpendicular) to the surface.
+                                 It is not conserved during photoemission because the electron experiences a potential
+                                 change when it exits the  material into vacuum. To determine ``k_perpendicular``
+                                 inside the material, one typically needs to estimate the inner potential :math:`V_0`,
+                                 which accounts for the energy shift due to the material's work function and electronic
+                                 structure.
+                                 
+                                 Units are typically 1/Angström.
+                            </doc>
+                        </field>
+                        <field name="angular0" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                            <doc>
+                                 First (un)calibrated angular coordinate. It is envisioned that the axes in angular space
+                                 are named ``angular0`` and ``angular1``.
+                                 
+                                 The angular axes should be named in order of decreasing speed, i.e., ``angular0``
+                                 should be the fastest scan axis and ``angular1`` should be the slow-axis angular
+                                 coordinate. However, ``angular0`` may also be second slow axis if the measurement
+                                 is angularly integrated and ``angular1`` could also be the second fast axis in the
+                                 case of simultaneous dispersion in two angular dimensions.
+                            </doc>
+                        </field>
+                        <field name="angular1" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                            <doc>
+                                 Second (un)calibrated angular coordinate.
+                                 
+                                 For more information, see the
+                                 definition of the :ref:`angular0 &amp;lt;/NXmpes/ENTRY/INSTRUMENT/ELECTRONANALYSER/DETECTOR/raw_data/angular0-field&amp;gt;`
+                                 axis.
+                                 
+                                 This is typically the slower scan axis compared to ``angular0``.
+                            </doc>
+                        </field>
+                        <field name="spatial0" type="NX_NUMBER" optional="true" units="NX_LENGTH">
+                            <doc>
+                                 First (un)calibrated spatial coordinate. It is envisioned that the axes in angular space
+                                 are named ``spatial0`` and ``spatial1``.
+                                 
+                                 The spatial axes should be named in order of decreasing speed, i.e., ``spatial0``
+                                 should be the fastest scan axis and `spatial1`` should be the slow-axis spatial
+                                 coordinate. However, ``spatial`` may also be second slow axis if the measurement
+                                 is spatially integrated and ``spatial1`` could also be the second fast axis in the
+                                 case of simultaneous dispersion in two spatial dimensions.
+                            </doc>
+                        </field>
+                        <field name="spatial1" type="NX_NUMBER" optional="true" units="NX_LENGTH">
+                            <doc>
+                                 Second (un)calibrated spatial coordinate.
+                                 
+                                 For more information, see the
+                                 definition of the :ref:`spatial0 &amp;lt;/NXmpes/ENTRY/INSTRUMENT/ELECTRONANALYSER/DETECTOR/raw_data/spatial0-field&amp;gt;`
+                                 axis.
+                                 
+                                 This is typically the slower scan axis compared to ``spatial0``.
+                            </doc>
+                        </field>
+                        <field name="delay" type="NX_NUMBER" units="NX_TIME">
+                            <doc>
+                                 Calibrated delay time.
+                            </doc>
+                        </field>
+                        <field name="temperature" type="NX_NUMBER" units="NX_TIME">
+                            <doc>
+                                 (Un)calibrated temperature axis in case of experiments where the temperature was
+                                 scanned. This is typically the sample temperature and could be linked from
+                                 /entry/sample/temperature_env/temperature_sensor/value.
                             </doc>
                         </field>
                     </group>
@@ -496,7 +772,7 @@
                 <group name="device_information" type="NXfabrication" recommended="true">
                     <field name="vendor" recommended="true"/>
                     <field name="model" recommended="true"/>
-                    <group name="identifier" type="NXidentifier" recommended="true"/>
+                    <field name="identifier" recommended="true"/>
                 </group>
             </group>
             <group name="pressure_gauge" type="NXsensor" recommended="true">
@@ -568,37 +844,116 @@
                  `AXISNAME` in `data` should be called `AXISNAME_calibration`.
             </doc>
             <group name="energy_calibration" type="NXcalibration" optional="true">
-                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
+                <doc>
+                     Calibration event on the energy axis.
+                     
+                     For XPS, the calibration should ideally be performed according to
+                     `ISO 15472:2010`_ specification.
+                     
+                     .. _ISO 15472:2010: https://www.iso.org/standard/74811.html
+                </doc>
+                <field name="physical_quantity">
+                    <enumeration>
+                        <item value="energy"/>
+                    </enumeration>
+                </field>
+                <field name="calibrated_axis" type="NX_FLOAT" units="NX_ENERGY">
+                    <doc>
+                         This is the calibrated energy axis to be used for data plotting.
+                    </doc>
+                </field>
             </group>
-            <group name="kN_calibration" type="NXcalibration" optional="true">
-                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
-            </group>
-            <group name="angularN_calibration" type="NXcalibration" optional="true">
-                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
-            </group>
-            <group name="spatialN_calibration" type="NXcalibration" optional="true">
-                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
-            </group>
-            <group name="delay_calibration" type="NXcalibration" optional="true">
-                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
-            </group>
-            <group name="polarization_angle_calibration" type="NXcalibration" optional="true">
-                <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
-            </group>
-            <group name="ellipticity_calibration" type="NXcalibration" optional="true">
+            <group name="AXIS_calibration" type="NXcalibration" optional="true">
+                <doc>
+                     Calibration event for one on the axes in the main
+                     :ref:`NXdata &amp;lt;/NXmpes/data-group&amp;gt;`_.
+                     
+                     The naming of these calibrations should follow those in the
+                     :ref:`NXdata &amp;lt;/NXmpes/data-group&amp;gt;`_. For example,
+                     for the momentum axis ``kx``, the corresponding calibration should
+                     be called ``kx_calibration``.
+                </doc>
                 <field name="calibrated_axis" type="NX_FLOAT" recommended="true"/>
             </group>
             <group name="energy_referencing" type="NXcalibration" optional="true">
-                <group name="level" type="NXelectron_level" recommended="true"/>
-                <field name="reference_peak"/>
-                <field name="binding_energy" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
-                <field name="offset" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
-                <field name="calibrated_axis" type="NX_FLOAT" units="NX_ENERGY" recommended="true"/>
+                <doc>
+                     For energy referencing, the measured energies are corrected for the charging potential
+                     (i.e., the electrical potential of the surface region of an insulating sample, caused by
+                     irradiation) such that those energies correspond to a sample with no surface charge.
+                     Usually, the energy axis is adjusted by shifting all energies uniformally until one
+                     well-defined emission line peak (or the Fermi edge) is located at a known _correct_ energy.
+                     
+                     This concept is related to term `12.74 ff.`_ of the ISO 18115-1:2023 standard.
+                     
+                     .. _12.74 ff.: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.74
+                </doc>
+                <field name="physical_quantity">
+                    <enumeration>
+                        <item value="energy"/>
+                    </enumeration>
+                </field>
+                <group name="level" type="NXelectron_level" recommended="true">
+                    <doc>
+                         Electronic core or valence level that was used for the calibration.
+                    </doc>
+                </group>
+                <field name="reference_peak" recommended="true">
+                    <doc>
+                         Reference peak that was used for the calibration.
+                         
+                         For example: adventitious carbon | C-C | metallic Au | elemental Si | Fermi edge | vacuum level
+                    </doc>
+                </field>
+                <field name="binding_energy" type="NX_FLOAT" recommended="true" units="NX_ENERGY">
+                    <doc>
+                         The binding energy (in units of eV) that the specified emission line appeared at,
+                         after adjusting the binding energy scale.
+                         
+                         This concept is related to term `12.16`_ of the ISO 18115-1:2023 standard.
+                         
+                         .. _12.16: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.16
+                    </doc>
+                </field>
+                <field name="offset" type="NX_FLOAT" recommended="true" units="NX_ENERGY">
+                    <doc>
+                         Offset between measured binding energy and calibrated binding energy of the
+                         emission line.
+                    </doc>
+                </field>
+                <field name="calibrated_axis" type="NX_FLOAT" recommended="true" units="NX_ENERGY">
+                    <doc>
+                         This is the calibrated energy axis to be used for data plotting.
+                         
+                         This could be a link to /entry/data/energy.
+                    </doc>
+                </field>
             </group>
             <group name="transmission_correction" type="NXcalibration" optional="true">
+                <doc>
+                     In the transmission correction, each intensity measurement for electrons of a given
+                     kinetic energy is multiplied by the corresponding value in the relative_intensity
+                     field of the transmission_function. This calibration procedure is used to account for
+                     the different tranmsission efficiencies when using different lens modes.
+                </doc>
                 <group name="transmission_function" type="NXdata" recommended="true">
-                    <attribute name="signal"/>
-                    <attribute name="axes"/>
+                    <doc>
+                         Transmission function of the electron analyser.
+                         
+                         The transmission function (TF) specifies the detection efficiency for electrons of
+                         different kinetic energy passing through the electron analyser.
+                         
+                         This can be a link to /entry/instrument/electronanalyser/transmission_function.
+                    </doc>
+                    <attribute name="signal">
+                        <enumeration>
+                            <item value="relative_intensity"/>
+                        </enumeration>
+                    </attribute>
+                    <attribute name="axes">
+                        <enumeration>
+                            <item value="kinetic_energy"/>
+                        </enumeration>
+                    </attribute>
                     <field name="kinetic_energy" type="NX_FLOAT" units="NX_ENERGY">
                         <doc>
                              Kinetic energy values
@@ -617,10 +972,25 @@
                     </field>
                 </group>
             </group>
+            <group type="NXregistration">
+                <doc>
+                     Describes the operations of image registration.
+                </doc>
+            </group>
+            <group type="NXdistortion">
+                <doc>
+                     Describes the operations of image distortion correction.
+                </doc>
+            </group>
+            <group type="NXcalibration">
+                <doc>
+                     Any further calibration procedures, e.g. axis calibrations.
+                </doc>
+            </group>
         </group>
         <group type="NXsample">
             <field name="name"/>
-            <group name="identifier" type="NXidentifier" recommended="true"/>
+            <field name="identifier" recommended="true"/>
             <group type="NXsubstance" recommended="true">
                 <doc>
                      For samples containing a single pure substance. For mixtures use the
@@ -826,33 +1196,10 @@
                  
                  In NXmpes, it is recommended to provide an energy axis.
                  
-                 Fields should be named according to the following convention:
-                 
-                 - **energy**: Calibrated energy (kinetic or binding energy). Unit category: NX_ENERGY (e.g., eV).
-                 - **kx**: Calibrated x axis in k-space. Unit category: NX_ANY (e.g., 1/Angström).
-                 - **ky**: Calibrated y axis in k-space. Unit category: NX_ANY (1/Angström).
-                 - **kz**: Calibrated z axis in k-space. Unit category: NX_ANY (1/Angström).
-                 - **angular0**: Fast-axis angular coordinate (or second slow axis if angularly integrated).
-                   Unit category: NX_ANGLE
-                 - **angular1**: Slow-axis angular coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-                   Unit category: NX_ANGLE
-                 - **spatial0**: Fast-axis spatial coordinate (or second slow axis if spatially integrated)
-                   Unit category: NX_LENGTH
-                 - **spatial1**: Slow-axis spatial coordinate (or second fast axis if simultaneously dispersed in 2 dimensions)
-                   Unit category: NX_LENGTH
-                 - **delay**: Calibrated delay time. Unit category: NX_TIME (s).
-                 - **polarization_angle**: Linear polarization angle of the incoming or
-                   outgoing beam. This could be a link to
-                   /entry/instrument/beam/incident_polarization_angle or
-                   /entry/instrument/beam/final_polarization_angle if they exist.
-                   Unit category: NX_ANGLE (° or rad)
-                 - **ellipticity**: Ellipticity of the incoming or outgoing beam.
-                   Could be a link to /entry/instrument/beam/incident_ellipticity or
-                   /entry/instrument/beam/final_ellipticity if they exist.
-                   Unit category: NX_ANGLE (° or rad)
-                 
-                 Note that this list is a glossary with explicitly named axis names, which is only intended to cover the most
-                 common measurement axes and is therefore not complete. It is possible to add axes with other names at any time.
+                 Axes should be named according to the conventions defined below. Note that this
+                 list is a glossary with explicitly named axis names, which is only intended to cover
+                 the most common measurement axes and is therefore not complete. It is possible to add
+                 axes with other names at any time.
             </doc>
             <attribute name="signal">
                 <enumeration>
@@ -869,7 +1216,7 @@
             </field>
             <field name="energy" type="NX_NUMBER" units="NX_ENERGY" recommended="true">
                 <doc>
-                     Calibrated energy axis.
+                     Calibrated axis for the energy of the measured electrons.
                      
                      Could be linked from the respective '@reference' field.
                 </doc>
@@ -913,6 +1260,128 @@
                 </attribute>
             </field>
             <attribute name="energy_indices" recommended="true"/>
+            <field name="photon_energy" type="NX_NUMBER" optional="true" units="NX_ENERGY">
+                <doc>
+                     Calibrated photon energy of the incoming probe beam.
+                     
+                     Could be a link to /entry/instrumen/beam_probe/incident_energy.
+                </doc>
+            </field>
+            <field name="kx" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                <doc>
+                     Calibrated k-space coordinate in x direction. It is envisioned that the axes in
+                     momentum space are named ``kx``, ``ky``, and ``kz``. Typically, the vectors in
+                     momentum space are defined such that ``kx`` and ``ky`` comprise the parallel
+                     component, while ``kz`` is the perpendicular component.
+                     
+                     It is also possible to define ``k_parallel`` and ``k_perp`` for the parallel
+                     and perpendicular momenta, respectively.
+                     
+                     Units are typically 1/Angström.
+                </doc>
+            </field>
+            <field name="ky" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                <doc>
+                     Calibrated k-space coordinate in y direction. For more information, see the
+                     definition of the :ref:`kx &amp;lt;/NXmpes/ENTRY/data/kx-field&amp;gt;`
+                     axis.
+                </doc>
+            </field>
+            <field name="kz" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                <doc>
+                     Calibrated k-space coordinate in z direction. For more information, see the
+                     definition of the :ref:`kx &amp;lt;/NXmpes/ENTRY/data/kx-field&amp;gt;`
+                     axis.
+                </doc>
+            </field>
+            <field name="k_parallel" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                <doc>
+                     Calibrated parallel component in k-space.
+                     
+                     ``k_parallel`` and :ref:`k_perpendicular &amp;lt;/NXmpes/ENTRY/data/k_perpendicular-field&amp;gt;`
+                     describe how the electron's wave vector ``k`` is split into components relative
+                     to the surface.
+                     
+                     ``k_parallel`` is the component of the electron's wave vector that is parallel to
+                     the surface. It is conserved during the photoemission process. This means that the
+                     electron's momentum along the surface inside the material is directly related to
+                     its measured momentum outside the material.
+                     
+                     Units are typically 1/Angström.
+                </doc>
+            </field>
+            <field name="k_perpendicular" type="NX_NUMBER" optional="true" units="NX_WAVENUMBER">
+                <doc>
+                     Calibrated perpendicular component in k-space.
+                     
+                     ``k_perpendicular`` is the component that is normal (perpendicular) to the surface.
+                     It is not conserved during photoemission because the electron experiences a potential
+                     change when it exits the  material into vacuum. To determine ``k_perpendicular``
+                     inside the material, one typically needs to estimate the inner potential :math:`V_0`,
+                     which accounts for the energy shift due to the material's work function and electronic
+                     structure.
+                     
+                     Units are typically 1/Angström.
+                </doc>
+            </field>
+            <field name="angular0" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                <doc>
+                     First calibrated angular coordinate. It is envisioned that the axes in angular space
+                     are named ``angular0`` and ``angular1``.
+                     
+                     The angular axes should be named in order of decreasing speed, i.e., ``angular0``
+                     should be the fastest scan axis and ``angular1`` should be the slow-axis angular
+                     coordinate. However, ``angular0`` may also be second slow axis if the measurement
+                     is angularly integrated and ``angular1`` could also be the second fast axis in the
+                     case of simultaneous dispersion in two angular dimensions.
+                </doc>
+            </field>
+            <field name="angular1" type="NX_NUMBER" optional="true" units="NX_ANGLE">
+                <doc>
+                     Second calibrated angular coordinate.
+                     
+                     For more information, see the
+                     definition of the :ref:`angular0 &amp;lt;/NXmpes/ENTRY/data/angular0-field&amp;gt;`
+                     axis.
+                     
+                     This is typically the slower scan axis compared to ``angular0``.
+                </doc>
+            </field>
+            <field name="spatial0" type="NX_NUMBER" optional="true" units="NX_LENGTH">
+                <doc>
+                     First calibrated spatial coordinate. It is envisioned that the axes in angular space
+                     are named ``spatial0`` and ``spatial1``.
+                     
+                     The spatial axes should be named in order of decreasing speed, i.e., ``spatial0``
+                     should be the fastest scan axis and `spatial1`` should be the slow-axis spatial
+                     coordinate. However, ``spatial`` may also be second slow axis if the measurement
+                     is spatially integrated and ``spatial1`` could also be the second fast axis in the
+                     case of simultaneous dispersion in two spatial dimensions.
+                </doc>
+            </field>
+            <field name="spatial1" type="NX_NUMBER" optional="true" units="NX_LENGTH">
+                <doc>
+                     Second calibrated spatial coordinate.
+                     
+                     For more information, see the
+                     definition of the :ref:`spatial0 &amp;lt;/NXmpes/ENTRY/data/spatial0-field&amp;gt;`
+                     axis.
+                     
+                     This is typically the slower scan axis compared to ``spatial0``.
+                </doc>
+            </field>
+            <field name="delay" type="NX_NUMBER" units="NX_TIME">
+                <doc>
+                     Calibrated delay time.
+                </doc>
+            </field>
+            <field name="temperature" type="NX_NUMBER" units="NX_TIME">
+                <doc>
+                     Calibrated temperature axis in case of experiments where the temperature was
+                     scanned. This is typically the sample temperature and could be linked from
+                     /entry/sample/temperature_env/temperature_sensor/value.
+                </doc>
+            </field>
         </group>
     </group>
 </definition>
