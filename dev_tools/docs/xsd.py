@@ -252,6 +252,29 @@ class XSDDocGenerator:
             self._print(self._indent(indentLevel) + "\n")
 
     def get_doc_from_node(self, node, retval=None):
+        def handle_code_and_literals(self, text):
+            """
+            This function ensures inline code (``code``) and code blocks (.. code-block::) are correctly handled for reStructuredText.
+            """
+            lines = text.splitlines()
+            self._print(text, lines)
+            result_lines = []
+
+            for line in lines:
+                # Check for inline code (e.g., ``code``)
+                if "``" in line:
+                    line = self.handle_inline_code(line)
+
+                # Check for code blocks (i.e., .. code-block::)
+                if line.strip().startswith(".. code-block"):
+                    # We assume the block is correctly formatted, so leave it as is
+                    result_lines.append(f"{line.strip()}")
+
+                else:
+                    result_lines.append(line)
+
+            return "\n".join(result_lines)
+
         annotation_node = node.find("xs:annotation", self.ns)
         if annotation_node is None:
             return retval
@@ -279,7 +302,10 @@ class XSDDocGenerator:
             htmlparser = HTMLParser.HTMLParser()
             text = htmlparser.unescape(text)
 
-        return text.lstrip()
+            # Handle potential inline code and code blocks
+            text = self.handle_code_and_literals(text)
+
+            return text.lstrip()
 
     def add_figure(self, name, indentLevel=0):
         imageFile = f"img/nxdl/nxdl_{name}.png"
