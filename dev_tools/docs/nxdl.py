@@ -593,6 +593,7 @@ class NXClassDocGenerator:
             self._print_enumeration(
                 collapse_indent + self._INDENTATION_UNIT, ns, node_list[0]
             )
+
     def _print_attribute(self, ns, kind, node, optional, indent, parent_path):
         name = node.get("name")
         formatted_name = get_rst_formatted_name(node)
@@ -605,7 +606,6 @@ class NXClassDocGenerator:
             f"{indent}{formatted_name}: {optional}{self._format_type(node)}{self._format_units(node)} {self.get_first_parent_ref(f'{parent_path}/{name}', 'attribute')}\n"
         )
         self._print_doc_enum(indent, ns, node)
-
 
     def _print_extends_text(self, ns, node, indent):
         extends_text = node.get("extends", None)
