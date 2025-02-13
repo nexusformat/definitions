@@ -38,7 +38,7 @@ Explanation:
 1. ``@axes`` has two values which corresponds to the signal rank of two.
 
 2. ``x_set`` and ``y_set`` are the default axes which can be used by readers
-   that cannot handle multi-dimensional coordinated.
+   that cannot handle multi-dimensional coordinates.
 
 3. ``x_set_indices`` and ``y_set_indices`` are omitted because they would be equal to
    the position of ``"x_set"`` and ``"y_set"`` in ``@axes``.
