@@ -255,19 +255,23 @@ NXmicrostructure_score_config(NXobject):
         doc: |
           Parameter of the Rollett-Holm migration model.
         # For rollett_holm :math:`m(\Theta) = m_0 \cdot (1 - c_1 * exp(-c_2 \cdot \frac{\Theta}{15}^{c_3}))`.
-        m_null(NX_FLOAT):
+        pre_factor(NX_FLOAT):
           doc: |
-            The assumed mobility :math:`m_0` of the fastest grain boundary in the system.
+            Pre-exponential factor for the fastest grain boundary in the system.
           unit: NX_ANY  # m^4/Js
-        c_one(NX_FLOAT):
+        enthalpy(NX_FLOAT):
+          doc: |
+            Migration activation enthalpy for the fastest grain boundary in the system.
+          unit: NX_ANY  # eV
+        c1(NX_FLOAT):
           doc: |
             Mobility scaling factor :math:`c_1`. Typically 0.99 or higher but not 1.
           unit: NX_DIMENSIONLESS
-        c_two(NX_FLOAT):
+        c2(NX_FLOAT):
           doc: |
             Mobility scaling factor :math:`c_2`. Typically 5.
           unit: NX_UNITLESS
-        c_three(NX_FLOAT):
+        c3(NX_FLOAT):
           doc: |
             Mobility scaling factor :math:`c_3`. Typically 9.
           unit: NX_UNITLESS
@@ -382,11 +386,14 @@ NXmicrostructure_score_config(NXobject):
             The x axis is assumed pointing along the rolling direction.
             The y axis is assumed pointing along the transverse direction.
             The z axis is assumed pointing along the normal direction.
-        cell_dimensions(NX_NUMBER):
+          unit: NX_UNITLESS
+          dim: (3,)  # (d,)
+        cell_dimensions(NX_FLOAT):
           doc: |
-            Edge length of the material point (single cell of the cellular automata).
+            Edge length of the material point that in SCORE
+            is discretized via equisized cubic voxels.
           unit: NX_LENGTH
-          dim: (d,)
+          # dim: (d,)
     numerics(NXobject):
       doc: |
         Criteria which enable to stop the simulation in a controlled manner.
@@ -411,7 +418,22 @@ NXmicrostructure_score_config(NXobject):
           fastest grain boundary in the system how much a cell
           may be consumed in a single iteration.
         unit: NX_DIMENSIONLESS
-        #####################################
+      x_set(NX_FLOAT):
+        doc: |
+          List of target values at which recrystallized volume fractions the state
+          of the CA is evaluated and stored. The code documents summary statistics
+          like recrystallized volume fraction for each iteration and the volume of each
+          grain. Furthermore, snapshots of the microstructure are stored.
+          These can take much disk space though because SCORE is able to evolve CA
+          with up to :math:`1600^3` cells. Snapshot data document the current microstructure
+          including the assignment of grains and cells surplus the state of the
+          recrystallization front.
+          
+          Despite these front data make up for approximately one order of magnitude
+          less cells than represented in the domain, more numerical data have to be
+          collected for each cell in the front than just a grain identifier.
+        unit: NX_DIMENSIONLESS
+        dim: (n_snapshot,)
       cell_cache(NXobject):
         doc: |
           Parameter which control the memory management
@@ -441,23 +463,6 @@ NXmicrostructure_score_config(NXobject):
             of the recrystallization front.
           unit: NX_DIMENSIONLESS
           dim: (n_defrag,)
-    sampling(NXobject):
-      x(NX_FLOAT):
-        doc: |
-          List of target values at which recrystallized volume fractions the state
-          of the CA is evaluated and stored. The code documents summary statistics
-          like recrystallized volume fraction for each iteration and the volume of each
-          grain. Furthermore, snapshots of the microstructure are stored.
-          These can take much disk space though because SCORE is able to evolve CA
-          with up to :math:`1600^3` cells. Snapshot data document the current microstructure
-          including the assignment of grains and cells surplus the state of the
-          recrystallization front.
-          
-          Despite these front data make up for approximately one order of magnitude
-          less cells than represented in the domain, more numerical data have to be
-          collected for each cell in the front than just a grain identifier.
-        unit: NX_DIMENSIONLESS
-        dim: (n_snapshot,)
     solitary_unit(NXobject):
       apply(NX_BOOLEAN):
         doc: |

@@ -394,22 +394,27 @@ lagb_to_hagb_cut(NX_FLOAT):
                      Parameter of the Rollett-Holm migration model.
                 </doc>
                 <!--For rollett_holm :math:`m(\Theta) = m_0 \cdot (1 - c_1 * exp(-c_2 \cdot \frac{\Theta}{15}^{c_3}))`.-->
-                <field name="m_null" type="NX_FLOAT" units="NX_ANY">
+                <field name="pre_factor" type="NX_FLOAT" units="NX_ANY">
                     <doc>
-                         The assumed mobility :math:`m_0` of the fastest grain boundary in the system.
+                         Pre-exponential factor for the fastest grain boundary in the system.
                     </doc>
                 </field>
-                <field name="c_one" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                <field name="enthalpy" type="NX_FLOAT" units="NX_ANY">
+                    <doc>
+                         Migration activation enthalpy for the fastest grain boundary in the system.
+                    </doc>
+                </field>
+                <field name="c1" type="NX_FLOAT" units="NX_DIMENSIONLESS">
                     <doc>
                          Mobility scaling factor :math:`c_1`. Typically 0.99 or higher but not 1.
                     </doc>
                 </field>
-                <field name="c_two" type="NX_FLOAT" units="NX_UNITLESS">
+                <field name="c2" type="NX_FLOAT" units="NX_UNITLESS">
                     <doc>
                          Mobility scaling factor :math:`c_2`. Typically 5.
                     </doc>
                 </field>
-                <field name="c_three" type="NX_FLOAT" units="NX_UNITLESS">
+                <field name="c3" type="NX_FLOAT" units="NX_UNITLESS">
                     <doc>
                          Mobility scaling factor :math:`c_3`. Typically 9.
                     </doc>
@@ -566,7 +571,7 @@ like showing a r(t) plot-->
                  material point-specific values to values averaged per deformed grain.
             </doc>
             <group name="grid" type="NXcg_grid">
-                <field name="extent" type="NX_UINT">
+                <field name="extent" type="NX_UINT" units="NX_UNITLESS">
                     <doc>
                          Extend of each CA domain in voxel along the x, y, and z direction.
                          Deformation of sheet material is assumed.
@@ -574,17 +579,19 @@ like showing a r(t) plot-->
                          The y axis is assumed pointing along the transverse direction.
                          The z axis is assumed pointing along the normal direction.
                     </doc>
-                </field>
-                <field name="cell_dimensions" type="NX_NUMBER" units="NX_LENGTH">
-                    <doc>
-                         Edge length of the material point (single cell of the cellular automata).
-                    </doc>
                     <dimensions>
-                        <dim index="1" value="d"/>
+                        <dim index="1" value="3"/>
                     </dimensions>
+                </field>
+                <field name="cell_dimensions" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                         Edge length of the material point that in SCORE
+                         is discretized via equisized cubic voxels.
+                    </doc>
                 </field>
             </group>
         </group>
+        <!--dim: (d,)-->
         <group name="numerics" type="NXobject">
             <doc>
                  Criteria which enable to stop the simulation in a controlled manner.
@@ -614,7 +621,25 @@ like showing a r(t) plot-->
                      may be consumed in a single iteration.
                 </doc>
             </field>
-            <!--####################################-->
+            <field name="x_set" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                <doc>
+                     List of target values at which recrystallized volume fractions the state
+                     of the CA is evaluated and stored. The code documents summary statistics
+                     like recrystallized volume fraction for each iteration and the volume of each
+                     grain. Furthermore, snapshots of the microstructure are stored.
+                     These can take much disk space though because SCORE is able to evolve CA
+                     with up to :math:`1600^3` cells. Snapshot data document the current microstructure
+                     including the assignment of grains and cells surplus the state of the
+                     recrystallization front.
+                     
+                     Despite these front data make up for approximately one order of magnitude
+                     less cells than represented in the domain, more numerical data have to be
+                     collected for each cell in the front than just a grain identifier.
+                </doc>
+                <dimensions>
+                    <dim index="1" value="n_snapshot"/>
+                </dimensions>
+            </field>
             <group name="cell_cache" type="NXobject">
                 <doc>
                      Parameter which control the memory management
@@ -653,27 +678,6 @@ like showing a r(t) plot-->
                     </dimensions>
                 </field>
             </group>
-        </group>
-        <group name="sampling" type="NXobject">
-            <field name="x" type="NX_FLOAT" units="NX_DIMENSIONLESS">
-                <doc>
-                     List of target values at which recrystallized volume fractions the state
-                     of the CA is evaluated and stored. The code documents summary statistics
-                     like recrystallized volume fraction for each iteration and the volume of each
-                     grain. Furthermore, snapshots of the microstructure are stored.
-                     These can take much disk space though because SCORE is able to evolve CA
-                     with up to :math:`1600^3` cells. Snapshot data document the current microstructure
-                     including the assignment of grains and cells surplus the state of the
-                     recrystallization front.
-                     
-                     Despite these front data make up for approximately one order of magnitude
-                     less cells than represented in the domain, more numerical data have to be
-                     collected for each cell in the front than just a grain identifier.
-                </doc>
-                <dimensions>
-                    <dim index="1" value="n_snapshot"/>
-                </dimensions>
-            </field>
         </group>
         <group name="solitary_unit" type="NXobject">
             <field name="apply" type="NX_BOOLEAN">
