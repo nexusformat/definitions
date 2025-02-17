@@ -47,9 +47,8 @@ def test_get_node_at_nxdl_path():
     )
     assert node.attrib["name"] == "long_name"
 
-    nxdl_file_path = os.path.join(
-        local_dir, "../../contributed_definitions/NXem.nxdl.xml"
-    )
+    nxdl_file_path = local_dir / "../../contributed_definitions/NXem.nxdl.xml"
+
     elem = ET.parse(nxdl_file_path).getroot()
     node = nexus.get_node_at_nxdl_path(
         "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/end_time", elem=elem
@@ -80,9 +79,8 @@ def test_get_node_at_nxdl_path():
     node = nexus.get_node_at_nxdl_path("/ENTRY/coordinate_system_set", elem=elem)
     assert node.attrib["type"] == "NXcoordinate_system_set"
 
-    nxdl_file_path = os.path.join(
-        local_dir, "../../contributed_definitions/NXiv_temp.nxdl.xml"
-    )
+    nxdl_file_path = local_dir / "../../contributed_definitions/NXiv_temp.nxdl.xml"
+
     elem = ET.parse(nxdl_file_path).getroot()
     node = nexus.get_node_at_nxdl_path(
         "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", elem=elem
