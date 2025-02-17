@@ -52,11 +52,6 @@ The following base classes are proposed to support modularizing the storage of p
         electron matter interaction. Through these base classes NeXus supports to serialize details of a measurement and a related computer simulation
         into one data artifact.
 
-    :ref:`NXidentifier`, :ref:`NXserialized`:
-        Base classes to support storage of metadata whereby the source of information stored in a NeXus data artifact or class instances can be
-        documented especially when one does not store all relevant information using NeXus but one would like to refer to a specific other resource
-        where these pieces of information are stored.
-
     :ref:`NXebeam_column`:
         A base class serving the possibility to group the components relevant for generating
         and shaping the electron beam.
