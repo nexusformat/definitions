@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXpid_controller" extends="NXcomponent" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+        A description of a feedback system in terms of the settings of a proportional-integral-derivative (PID) controller.
+         
+        Automated control of a physical quantity is often achieved by connecting the output of a sensor to an actuator
+        (e.g. using a thermocouple to monitor the effect of a heater and influence the power provided to it). The physical
+        quantity being operated on is typically referred to as the "Process Variable", with the desired value being the 
+        "Setpoint" (which may vary as a function of time) and the "Error Value" is the time-varying function of the difference 
+        between the Setpoint value and the concurrent measurement of the Process Variable  (Error Value = Setpoint - Process Variable).
+         
+        A PID controller calculates an output value for use as an input signal to an actuator via the weighted sum of four terms:
+        * Proportional: the current Error Value
+        * Integral: the integral of the Error Value function
+        * Derivative: the first derivative of the Error Value function
+        * Feed Forward: A model of the physical system (optional)
+        
+        The weightings of these terms are given by the corresponding constants:
+        * K_p
+        * K_i
+        * K_d
+        * K_ff
+         
+        A classic PID controller only implements the P, I and D terms and the values of the K_p, K_i and K_d constants are sufficient to fully
+        describe the behaviour of the feedback system implemented by such a PID controller. The inclusion of a Feed Forward term in a feedback system
+        is a modern adaptation that aids optimisation of the automated control. It is not present in all PID controllers, but it is also not uncommon.
+         
+        Note that the ``NXpid_controller`` is designed to be a child object of the actuator that its output is connected to. The parent object
+        representing the actuator is likely to be represented by an ``NXactuator`` or ``NXpositioner`` base class, but there is a wide variety
+        of possible applications for PID controllers.
+    </doc>
+    <field name="description">
+        <doc>
+            Description of how the Process Value for the PID controller is produced by sensor(s) in the setup.
+             
+            For example, a set of sensors could be averaged over before feeding it back into the loop.
+        </doc>
+    </field>
+    <group name="pv_sensor" type="NXsensor">
+        <doc>
+            The sensor representing the Process Value used in the feedback loop for the PID.
+             
+            In case multiple sensors were used, this NXsensor should contain the proper calculated/aggregated value.
+        </doc>
+        <group name="value_log" type="NXlog">
+            <field name="value" type="NX_NUMBER">
+                <doc>
+                     The actual timeseries data fed back into the PID controller.
+                </doc>
+            </field>
+        </group>
+    </group>
+    <field name="setpoint" type="NX_FLOAT" units="NX_ANY">
+        <doc>
+            The Setpoint(s) used as an input for the PID controller.
+             
+            It can also be a link to an ``NXsensor.value`` field.
+        </doc>
+    </field>
+    <field name="K_p" type="NX_NUMBER" nameType="specified">
+        <doc>
+            Proportional gain constant. This constant determines how strongly the output value
+            directly follows the current Error Value. When this constant dominates, the output
+            value is linearly proportional to the Error Value.
+        </doc>
+    </field>
+    <field name="K_i" type="NX_NUMBER" nameType="specified">
+        <doc>
+            Integral gain constant. This constant determines how strongly the output value
+            should react to an accumulated offset in the Error Value that should have
+            been corrected previously. since the integral term is proportional to both
+            the magnitude and persistence of the Error Value over time.
+        </doc>
+    </field>
+    <field name="K_d" type="NX_NUMBER" nameType="specified">
+        <doc>
+            Derivative gain constant. This constant determines how much the feedback system
+            should anticipate the future value of the Error Value function through adjustment of the 
+            output value that is proportional to the rate of change (i.e. derivative) of the Error Value.
+            This term is important for damping oscillations in the feedback system.
+        </doc>
+    </field>
+    <field name="K_ff" type="NX_NUMBER" nameType="specified">
+        <doc>
+            Feed Forward gain constant. This constant determines how much the feedback system
+            should rely on a calculated output value to achieve the desired Process Variable value.
+            A Feed Forward system uses a model of the physical system to calculate an appropriate 
+            output value to achieve a desired Setpoint value. A description of this model should be provided
+            in the ``feed_forward_model`` field.
+        </doc>
+    </field>
+    <field name="feed_forward_model" type="NX_CHAR">
+        <doc>
+            A description of the model used for the Feed Forward part of the feedback system. Note that such models typically
+            involve the Setpoint value, but not the Error Value. The simplest model is simply proportional to the Setpoint value.
+            For example, the position (Process Variable) of a sample is measured by a a linear optical encoder (sensor) and 
+            manipulated by a piezoelectric scanning stage (actuator). The corresponding Feed Forward model could be that the 
+            output value (voltage applied to the piezo) is proportional to the Setpoint value (measured position of the sample).
+             
+            A complex model could involve any number of input variables, mathematical functions, and coefficients in order to
+            describe the physical system relevant to the PID controller.
+        </doc>
+    </field>
+    <field name="control_action">
+        <doc>
+            The Error Value of PID feedback system is normally constructed in terms of the correction needed to bring
+            the Process Variable towards a match with the Setpoint. This "direct" control action means that a measurement of
+            the Process Variable that is lower than the Setpoint results in a positive Error Value and a generally positive 
+            control output that tells the actuator to push the value of the Process Variable upwards. In some implementations,
+            the actuator will respond to a more positive control output by pushing the Process Variable towards lower values (e.g. 
+            a Peltier cooler) and so the output of the feedback system must be reversed to match the behaviour of the physical system.
+            A feedback system may also be implemented with reverse action in order to ensure that failures (e.g. disconnected sensor
+            output or actuator input) result in a safe state (e.g. a valve should be left open to release pressure).
+        </doc>
+        <enumeration>
+            <item value="direct" />
+            <item value="reverse" />
+        </enumeration>
+    </field>
+</definition>
