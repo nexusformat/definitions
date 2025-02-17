@@ -50,7 +50,7 @@ Application Definitions
 Base Classes
 ------------
 
-There is a set of base classes for describing an optical experiment.
+This is the set of base classes for describing an optical experiment.
 
     :ref:`NXbeam_device`
        Beam devices are used to relate a beam, which has always at least one origin
@@ -129,7 +129,7 @@ There is a set of base classes for describing a dispersion.
        ``A`` and ``B`` are repeated parameters in the formula above.
        
     :ref:`NXdispersion_table`
-       This describes a tabular dispersion where the dielectric function is an array versus wavelength or energy.
+       This describes a tabular dispersion where the permittivity is an array versus wavelength or energy.
 
 Formula Grammar
 ---------------
@@ -137,6 +137,12 @@ Formula Grammar
 Below you find a grammar to which the formula should adhere and which can be used to parse and
 evaluate the dispersion function. The terms ``single_param_name`` and ``param_name`` should be
 filled with the respective single and repeated params from the stored data.
+The grammer is written in the `EBNF <https://en.wikipedia.org/wiki/Extended_Backus%E2%80%93Naur_form>`_ dialect
+of `Lark <https://github.com/lark-parser/lark>`_, which is a parsing toolkit for python.
+It is easily translatable to general EBNF and other parser generator dialects.
+`Here <https://github.com/PyEllips/formula-dispersion>`_ is a reference implementation in Rust/Python with a
+`grammar <https://github.com/PyEllips/formula-dispersion/blob/main/src/formula_parser.lalrpop>`_
+written in `lalrpop <https://github.com/lalrpop/lalrpop>`_.
 
 .. code-block::
 

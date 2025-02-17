@@ -167,7 +167,7 @@ Some contributions are grouped together:
 
   :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure>`
 
-  :ref:`Atomprobe Microscopy <Apm-Structure>`
+  :ref:`Atom Probe Microscopy <Apm-Structure>`
 
   :ref:`Electron Microscopy <Em-Structure>`
 

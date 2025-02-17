@@ -130,7 +130,7 @@ for frequently used shapes and geometric primitives are proposed:
         A base class for a collection (or soup) of hexahedra to represent
         e.g. simpler (bounding) boxes for e.g. binary trees.
 
-These base classes make use of base classes which describe data structures:
+These base classes describe data structures used for more complex geometries:
 
     :ref:`NXcg_face_list_data_structure`:
         A base class to store the usual way how polygon/polyhedra data are reported:
@@ -154,9 +154,8 @@ These base classes make use of base classes which describe data structures:
         convex hull, are frequently used geometrical models for describing
         a boundary or edge to a set of geometric primitives.
 
-Furthermore, a few base classes are defined for documenting the working with
-discretized representations of material (area or volume) which can be useful
-not only for stencil-based methods:
+Next, a few base classes are defined for documenting discretized representations
+of material (area or volume) which can be useful not only for stencil-based methods:
 
     :ref:`NXcg_grid`:
         A base class for a grid of cells discretizing e.g. a computational domain

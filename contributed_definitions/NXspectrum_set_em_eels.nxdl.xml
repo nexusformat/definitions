@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXspectrum_set_em_eels" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <!--n_p: Number of scan points-->
+        <symbol name="n_y">
+            <doc>
+                 Number of pixel per EELS mapping in the slow direction.
+            </doc>
+        </symbol>
+        <symbol name="n_x">
+            <doc>
+                 Number of pixel per EELS mapping in the fast direction.
+            </doc>
+        </symbol>
+        <symbol name="n_energy_loss">
+            <doc>
+                 Number of electron energy loss bins.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Container for reporting a set of electron energy loss (EELS) spectra.
+         
+         Virtually the most important case is that spectra are collected in 
+         a scanning microscope (SEM or STEM) for a collection of points.
+         The majority of cases use simple d-dimensional regular scan pattern,
+         such as single point, line profiles, or (rectangular) surface mappings.
+         
+         The latter pattern is the most frequently used.
+         For now the base class provides for scans for which the settings,
+         binning, and energy resolution is the same for each scan point.
+    </doc>
+    <group type="NXprocess">
+        <doc>
+             Details how EELS spectra were processed from the detector readings.
+        </doc>
+        <field name="source">
+            <doc>
+                 Typically the name of the input, (vendor) file from which all
+                 the NXdata instances in this NXspectrum_set_em_eels were loaded during
+                 parsing to represent them in e.g. databases.
+            </doc>
+            <attribute name="version">
+                <doc>
+                     An at least as strong as SHA256 hashvalue of the dataset/file
+                     which represents the source digitally to support provenance tracking.
+                </doc>
+            </attribute>
+        </field>
+        <field name="program">
+            <doc>
+                 Commercial or otherwise given name to the program which was used
+                 to process detector data into the EELS spectra stack and summary.
+            </doc>
+            <attribute name="version">
+                <doc>
+                     Program version plus build number, commit hash, or description
+                     of an ever persistent resource where the source code of the program
+                     and build instructions can be found so that the program
+                     can be configured in such a manner that the result file
+                     is ideally recreatable yielding the same results.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="stack" type="NXdata">
+        <doc>
+             Collected EELS spectra for all pixels of a rectangular region-of-interest.
+             This representation supports rectangular scan pattern.
+        </doc>
+        <field name="data_counts" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Counts for one spectrum per each pixel.
+            </doc>
+            <dimensions rank="3">
+                <dim index="1" value="n_y"/>
+                <dim index="2" value="n_x"/>
+                <dim index="3" value="n_energy_loss"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     EELS counts
+                </doc>
+            </attribute>
+        </field>
+        <!--\@signal: counts
+\@axes: [ypos, xpos, energy_loss]
+\@energy_loss_indices: 2
+\@xpos_indices: 1
+\@ypos_indices: 0-->
+        <field name="axis_y" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Pixel center of mass position y-coordinates.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_y"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Coordinate along y direction.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_x" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Pixel center of mass position x-coordinates.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_x"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Coordinate along x direction.
+                </doc>
+            </attribute>
+        </field>
+        <field name="axis_energy_loss" type="NX_NUMBER" units="NX_ENERGY">
+            <doc>
+                 Pixel center of mass energy loss bins.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_energy_loss"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Coordinate along energy loss axis.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="summary" type="NXdata">
+        <doc>
+             Accumulated EELS spectrum over all pixels of a rectangular
+             region-of-interest. This representation supports rectangular scan pattern.
+        </doc>
+        <field name="data_counts" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Counts for specific energy losses.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_energy_loss"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Counts electrons with an energy loss within binned range.
+                </doc>
+            </attribute>
+        </field>
+        <!--\@signal: counts
+\@axes: [energy_loss]
+\@energy_loss_indices: 0-->
+        <field name="axis_energy_loss" type="NX_NUMBER" units="NX_ENERGY">
+            <doc>
+                 Pixel center of mass energy loss bins.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n_energy_loss"/>
+            </dimensions>
+            <attribute name="long_name">
+                <doc>
+                     Coordinate along energy loss axis.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+</definition>

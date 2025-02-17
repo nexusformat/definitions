@@ -1,24 +1,6 @@
 """This is a code that performs several tests on nexus tool"""
 
-#
-# Copyright The NOMAD Authors.
-#
-# This file is part of NOMAD. See https://nomad-lab.eu for further info.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-#
-
-import os
+from pathlib import Path
 
 import lxml.etree as ET
 import pytest
@@ -49,8 +31,8 @@ def test_get_nexus_classes_units_attributes():
 
 def test_get_node_at_nxdl_path():
     """Test to verify if we receive the right XML element for a given NXDL path"""
-    local_dir = os.path.abspath(os.path.dirname(__file__))
-    nxdl_file_path = os.path.join(local_dir, "./NXtest.nxdl.xml")
+    local_dir = Path(__file__).resolve().parent
+    nxdl_file_path = local_dir / "NXtest.nxdl.xml"
     elem = ET.parse(nxdl_file_path).getroot()
     node = nexus.get_node_at_nxdl_path("/ENTRY/NXODD_name", elem=elem)
     assert node.attrib["type"] == "NXdata"
@@ -115,10 +97,17 @@ def test_get_node_at_nxdl_path():
 
 def test_get_inherited_nodes():
     """Test to verify if we receive the right XML element list for a given NXDL path."""
-    local_dir = os.path.abspath(os.path.dirname(__file__))
-    nxdl_file_path = os.path.join(
-        local_dir, "../../contributed_definitions/NXiv_temp.nxdl.xml"
+    local_dir = Path(__file__).resolve().parent
+    nxdl_file_path = local_dir / "NXtest.nxdl.xml"
+
+    elem = ET.parse(nxdl_file_path).getroot()
+    (_, _, elist) = nexus.get_inherited_nodes(nxdl_path="/ENTRY/NXODD_name", elem=elem)
+    assert len(elist) == 3
+
+    nxdl_file_path = (
+        local_dir.parent.parent / "contributed_definitions" / "NXiv_temp.nxdl.xml"
     )
+
     elem = ET.parse(nxdl_file_path).getroot()
     (_, _, elist) = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT", elem=elem
@@ -128,13 +117,13 @@ def test_get_inherited_nodes():
     (_, _, elist) = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", elem=elem
     )
-    assert len(elist) == 4
+    assert len(elist) == 5
 
     (_, _, elist) = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller",
         nx_name="NXiv_temp",
     )
-    assert len(elist) == 4
+    assert len(elist) == 5
 
 
 @pytest.mark.parametrize(
@@ -158,9 +147,9 @@ def test_get_inherited_nodes():
 def test_namefitting(hdf_name, concept_name, should_fit):
     """Test namefitting of nexus concept names"""
     if should_fit:
-        assert nexus.get_nx_namefit(hdf_name, concept_name) > -1
+        assert nexus.get_nx_namefit(hdf_name, concept_name, name_partial=True) > -1
     else:
-        assert nexus.get_nx_namefit(hdf_name, concept_name) == -1
+        assert nexus.get_nx_namefit(hdf_name, concept_name, name_partial=True) == -1
 
 
 @pytest.mark.parametrize(
@@ -178,7 +167,7 @@ def test_namefitting(hdf_name, concept_name, should_fit):
 )
 def test_namefitting_scores(hdf_name, concept_name, score):
     """Test namefitting of nexus concept names"""
-    assert nexus.get_nx_namefit(hdf_name, concept_name) == score
+    assert nexus.get_nx_namefit(hdf_name, concept_name, name_partial=True) == score
 
 
 @pytest.mark.parametrize(
@@ -191,9 +180,9 @@ def test_namefitting_scores(hdf_name, concept_name, score):
 def test_namefitting_precedence(better_fit, better_ref, worse_fit, worse_ref):
     """Test if namefitting follows proper precedence rules"""
 
-    assert nexus.get_nx_namefit(better_fit, better_ref) > nexus.get_nx_namefit(
-        worse_fit, worse_ref
-    )
+    assert nexus.get_nx_namefit(
+        better_fit, better_ref, name_partial=True
+    ) > nexus.get_nx_namefit(worse_fit, worse_ref)
 
 
 @pytest.mark.parametrize(
