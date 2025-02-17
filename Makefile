@@ -114,20 +114,6 @@ nxdl: $(YBC_NXDL_TARGETS) $(YCONTRIB_NXDL_TARGETS) $(YAPPDEF_NXDL_TARGETS)
 nyaml:
 	$(MAKE) -f nyaml.mk
 
-$(BASE_CLASS_DIR)/%.nxdl.xml : $(BASE_CLASS_DIR)/$(NYAML_SUBDIR)/%.yaml
-	nyaml2nxdl $< --output-file $@
-
-$(CONTRIB_DIR)/%.nxdl.xml : $(CONTRIB_DIR)/$(NYAML_SUBDIR)/%.yaml
-	nyaml2nxdl $< --output-file $@
-
-$(APPDEF_DIR)/%.nxdl.xml : $(APPDEF_DIR)/$(NYAML_SUBDIR)/%.yaml
-	nyaml2nxdl $< --output-file $@
-
-nxdl: $(YBC_NXDL_TARGETS) $(YCONTRIB_NXDL_TARGETS) $(YAPPDEF_NXDL_TARGETS)
-
-nyaml:
-	$(MAKE) -f nyaml.mk
-
 
 # NeXus - Neutron and X-ray Common Data Format
 #
