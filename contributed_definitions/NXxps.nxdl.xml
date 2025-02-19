@@ -76,17 +76,17 @@
                         <item value="sample stage normal"/>
                     </enumeration>
                 </field>
-                <field name="x">
+                <field name="x" type="NX_NUMBER">
                     <enumeration>
                         <item value="[-1, 0, 0]"/>
                     </enumeration>
                 </field>
-                <field name="y">
+                <field name="y" type="NX_NUMBER">
                     <enumeration>
                         <item value="[0, 1, 0]"/>
                     </enumeration>
                 </field>
-                <field name="z">
+                <field name="z" type="NX_NUMBER">
                     <enumeration>
                         <item value="[0, 0, 1]"/>
                     </enumeration>
@@ -289,15 +289,15 @@
                         This could be a link to entry/data/data.
                     </doc>
                 </field>
-                <field name="input_independent" type="NX_NUMBER" units="NX_ANY">
+                <field name="input_independent" type="NX_NUMBER" units="NX_ENERGY">
                     <doc>
                         Independent variable for this fit procedure.
                         
                         This could be a link to entry/data/energy.
                     </doc>
                 </field>
-                <field name="envelope" type="NX_NUMBER"/>
-                <field name="residual" type="NX_NUMBER" recommended="true"/>
+                <field name="envelope" type="NX_NUMBER" units="NX_ANY"/>
+                <field name="residual" type="NX_NUMBER" recommended="true" units="NX_ANY"/>
             </group>
             <group name="peakPEAK" type="NXpeak">
                 <field name="label"/>
@@ -318,32 +318,85 @@
                     </field>
                 </group>
                 <group name="function" type="NXfit_function" recommended="true">
-                    <field name="description"/>
-                    <field name="formula" recommended="true"/>
-                    <group name="area" type="NXfit_parameter" optional="true">
+                    <field name="description">
                         <doc>
-                            Area of the peak.
-                        </doc>
-                    </group>
-                    <group name="width" type="NXfit_parameter" optional="true">
-                        <doc>
-                            Width of a peak at a defined fraction of the peak height.
+                            Human-readable description of the peak fit function.
                             
-                            Usually, this will be the Full Width at Half Maximum of the peak (FWHM).
-                            For asymmetric peaks, convenient measures of peak width are the half-widths of
-                            each side of the peak at half maximum intensity.
-                            
-                            This concept is related to term `3.28`_ of the ISO 18115-1:2023 standard.
-                            
-                            .. _3.28: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.28
+                            The user is encouraged to use one of the options defined in the enumeration, but in case none of these fit
+                            (e.g., in the case of very complex lineshapes), a different value for the ``description`` field
+                            can be used. In that case in particular, but also if one of the suggested values is used, the functional
+                            form of the peak should be given by the ``formula_description`` field.
                         </doc>
-                        <field name="value" units="NX_ENERGY"/>
-                    </group>
-                    <group name="position" type="NXfit_parameter" optional="true">
-                        <doc>
-                            Position of the peak on the energy axis.
-                        </doc>
-                        <field name="value" units="NX_ENERGY"/>
+                        <enumeration open="True">
+                            <item value="Gaussian">
+                                <doc>
+                                    doc
+                                </doc>
+                            </item>
+                            <item value="Lorentzian">
+                                <doc>
+                                    doc
+                                </doc>
+                            </item>
+                            <item value="Voigt">
+                                <doc>
+                                    doc
+                                </doc>
+                            </item>
+                            <item value="Gaussian-Lorentzian Sum">
+                                <doc>
+                                    doc
+                                </doc>
+                            </item>
+                            <item value="Gaussian-Lorentzian Product">
+                                <doc>
+                                    doc
+                                </doc>
+                            </item>
+                            <item value="Asymmetric Lorentzian">
+                                <doc>
+                                    doc
+                                </doc>
+                            </item>
+                            <item value="Asymmetric Finite">
+                                <doc>
+                                    doc
+                                </doc>
+                            </item>
+                            <item value="Doniach-Sunjic">
+                                <doc>
+                                    doc
+                                </doc>
+                            </item>
+                        </enumeration>
+                    </field>
+                    <field name="formula_description" recommended="true"/>
+                    <group name="fit_parameters" type="NXparameters" recommended="true">
+                        <field name="area" optional="true">
+                            <doc>
+                                Area of the peak.
+                            </doc>
+                        </field>
+                        <field name="width" optional="true">
+                            <doc>
+                                Width of a peak at a defined fraction of the peak height.
+                                
+                                Usually, this will be the Full Width at Half Maximum of the peak (FWHM).
+                                For asymmetric peaks, convenient measures of peak width are the half-widths of
+                                each side of the peak at half maximum intensity.
+                                
+                                This concept is related to term `3.28`_ of the ISO 18115-1:2023 standard.
+                                
+                                .. _3.28: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.28
+                            </doc>
+                            <field name="value" units="NX_ENERGY"/>
+                        </field>
+                        <field name="position" optional="true">
+                            <doc>
+                                Position of the peak on the energy axis.
+                            </doc>
+                            <field name="value" units="NX_ENERGY"/>
+                        </field>
                     </group>
                 </group>
                 <field name="total_area" recommended="true">
@@ -380,19 +433,49 @@
                         <doc>
                             Human-readable description of the background fit function.
                             
-                            .. csv-table:: Examples for background descriptions
-                              :header: "Background Type", "Description"
-                              
-                              "Linear", "Linear background, i.e., a simple straight line from the minimal to the maximal abscissa value."
-                              "Shirley", "Shirley background. In the Shirley background, the background intensity at any given binding energy is proportional to the intensity of the total peak area above the background in the lower binding energy peak range (i.e., the background goes up in proportion to the total number of photoelectrons below its binding energy position)."
-                              "Tougaard", "Tougaard background (or Tougaard universal cross-section approach) which is a methodology for integrating the intensity of the background at a given binding energy from the spectral intensities to higher kinetic energies."
-                              "Step Down/Step Up", "Background function for fitting a complementary error function to an edge, used for fitting a step in the data."
-                            
-                            In case none of these examples apply, the functional form of the background should be given by the `formula`
-                            field.
+                            The user is encouraged to use one of the options defined in the enumeration, but in case none of these fit
+                            (e.g., in the case of very complex non-linear backgrounds), a different value for the ``description`` field
+                            can be used. In that case in particular, but also if one of the suggested values is used, the functional
+                            form of the background should be given by the ``formula_description`` field.
                         </doc>
+                        <enumeration open="True">
+                            <item value="Linear">
+                                <doc>
+                                    Linear background, i.e., a simple straight line from the minimal to the maximal
+                                    abscissa value.
+                                </doc>
+                            </item>
+                            <item value="Shirley">
+                                <doc>
+                                    Shirley background. In the Shirley background, the background intensity at any
+                                    given binding energy is proportional to the intensity of the total peak area
+                                    above the background in the lower binding energy peak range (i.e., the
+                                    background goes up in proportion to the total number of photoelectrons below its
+                                    binding energy position).
+                                </doc>
+                            </item>
+                            <item value="Tougaard">
+                                <doc>
+                                    Tougaard background (or Tougaard universal cross-section approach) which is a
+                                    methodology for integrating the intensity of the background at a given binding
+                                    energy from the spectral intensities to higher kinetic energies.
+                                </doc>
+                            </item>
+                            <item value="Step Down">
+                                <doc>
+                                    Background function for fitting a complementary error function to an edge, used
+                                    for fitting a step down in the data.
+                                </doc>
+                            </item>
+                            <item value="Step Up">
+                                <doc>
+                                    Background function for fitting a complementary error function to an edge, used
+                                    for fitting a step up in the data.
+                                </doc>
+                            </item>
+                        </enumeration>
                     </field>
-                    <field name="formula" recommended="true"/>
+                    <field name="formula_description" recommended="true"/>
                 </group>
             </group>
             <group name="global_fit_function" type="NXfit_function" recommended="true">
