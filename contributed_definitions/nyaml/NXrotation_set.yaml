@@ -39,6 +39,7 @@ NXrotation_set(NXobject):
     doc: |
       Reference to an instance of :ref:`NXcoordinate_system_set` which contextualizes
       how the here reported parameterized quantities can be interpreted.
+  
   # 2D rotations are a special type of 3D rotations and thus treated in 3D
   # just how to rotate the object into the reference frame defined by depends_on
   crystal_symmetry(NX_CHAR):
@@ -54,7 +55,9 @@ NXrotation_set(NXobject):
       In this case the first string is for phase A the second one for phase B.
       An example of this most complex case is the description of the
       disorientation between crystals adjoining a hetero-phase boundary.
-    dim: (n_phases,)
+    dimensions:
+      rank: 1
+      dim: (n_phases,)
   sample_symmetry(NX_CHAR):
     doc: |
       Point group which defines an assumed symmetry imprinted upon processing
@@ -76,41 +79,52 @@ NXrotation_set(NXobject):
       symmetries are anyway not fully observed, and thus an accepting of
       eventual inaccuracies just for the sake of reporting a simplified
       symmetrized description should be avoided.
-    dim: (n_phases,)
-  rotation_quaternion(NX_NUMBER):  # H \in SO3
+    dimensions:
+      rank: 1
+      dim: (n_phases,)
+  rotation_quaternion(NX_NUMBER):
+    unit: NX_DIMENSIONLESS
     doc: |
       The set of rotations expressed in quaternion parameterization considering
       crystal_symmetry and sample_symmetry. Rotations which should be
       interpreted as antipodal are not marked as such.
-    unit: NX_DIMENSIONLESS
-    dim: (c, 4)
+    dimensions:
+      rank: 2
+      dim: (c, 4)
   rotation_euler(NX_NUMBER):
+    unit: NX_ANGLE
     doc: |
       The set of rotations expressed in Euler angle parameterization considering
       the same applied symmetries as detailed for the field rotation_quaternion.
       To interpret Euler angles correctly, it is necessary to inspect the
       conventions behind depends_on to resolve which of the many Euler-angle
       conventions possible (Bunge ZXZ, XYZ, Kocks, Tait, etc.) were used.
-    unit: NX_ANGLE
-    dim: (c, 3)
+    dimensions:
+      rank: 2
+      dim: (c, 3)
+  
   # rotation_rodrigues(NX_NUMBER):
   # rotation_homochoric(NX_NUMBER):
   # rotation_axis_angle(NX_NUMBER):
-
+  
   # orientation how to rotate the crystal into sample and vice versa obeying crystal and sample symmetry
   is_antipodal(NX_BOOLEAN):
     doc: |
-     True for all those value tuples which have assumed antipodal symmetry.
-     False for all others.
-    dim: (c,)
+      True for all those value tuples which have assumed antipodal symmetry.
+      False for all others.
+    dimensions:
+      rank: 1
+      dim: (c,)
   orientation_quaternion(NX_NUMBER):
+    unit: NX_DIMENSIONLESS
     doc: |
       The set of orientations expressed in quaternion parameterization and
       obeying symmetry for equivalent cases as detailed in crystal_symmetry
       and sample_symmetry. The supplementary field is_antipodal can be used
       to mark orientations with the antipodal property.
-    unit: NX_DIMENSIONLESS
-    dim: (c, 4)
+    dimensions:
+      rank: 2
+      dim: (c, 4)
   orientation_euler(NX_NUMBER):
     unit: NX_ANGLE
     doc: |
@@ -119,59 +133,334 @@ NXrotation_set(NXobject):
       To interpret Euler angles correctly, it is necessary to inspect the
       conventions behind depends_on to resolve which of the many Euler-angle
       conventions possible (Bunge ZXZ, XYZ, Kocks, Tait, etc.) were used.
-    dim: (c, 3)
+    dimensions:
+      rank: 2
+      dim: (c, 3)
+  
   # orientation_rodrigues(NX_NUMBER):
   # orientation_homochoric(NX_NUMBER):
   # orientation_axis_angle(NX_NUMBER):
-
+  
   # misorientation between two orientations
   # not the disorientation because for misorientation we ignore
   # if the angular argument may not have the absolute smallest amount, i.e.
   # misorientation is not necessarily in the fundamental zone
   misorientation_quaternion(NX_NUMBER):
+    unit: NX_DIMENSIONLESS
     doc: |
       The set of misorientations expressed in quaternion parameterization
       obeying symmetry operations for equivalent misorientations
       as defined by crystal_symmetry and sample_symmetry.
-    unit: NX_DIMENSIONLESS
-    dim: (c, 4)
+    dimensions:
+      rank: 2
+      dim: (c, 4)
   misorientation_angle(NX_NUMBER):
+    unit: NX_ANGLE
     doc: |
       Misorientation angular argument (eventually signed) following the same
       symmetry assumptions as expressed for the field misorientation_quaternion.
-    unit: NX_ANGLE
-    dim: (c,)
+    dimensions:
+      rank: 1
+      dim: (c,)
   misorientation_axis(NX_NUMBER):
     unit: NX_DIMENSIONLESS
     doc: |
       Misorientation axis (normalized) and signed following the same
       symmetry assumptions as expressed for the field misorientation_angle.
-    dim: (c, 3)
-
+    dimensions:
+      rank: 2
+      dim: (c, 3)
+  
   # disorientation, misorientation with smallest angular argument inside
   # fundamental zone of SO3 for given crystal and sample symmetry
   disorientation_quaternion(NX_NUMBER):
+    unit: NX_DIMENSIONLESS
     doc: |
       The set of disorientation expressed in quaternion parameterization
       obeying symmetry operations for equivalent misorientations
       as defined by crystal_symmetry and sample_symmetry.
-    unit: NX_DIMENSIONLESS
-    dim: (c, 4)
+    dimensions:
+      rank: 2
+      dim: (c, 4)
   disorientation_angle(NX_NUMBER):
+    unit: NX_ANGLE
     doc: |
       Disorientation angular argument (should not be signed, see
       `D. Rowenhorst et al. <https://doi.org/10.1088/0965-0393/23/8/083501>`_)
       following the same symmetry assumptions as expressed for the field
       disorientation_quaternion.
-    unit: NX_ANGLE
-    dim: (c,)
+    dimensions:
+      rank: 1
+      dim: (c,)
   disorientation_axis(NX_NUMBER):
+    unit: NX_DIMENSIONLESS
     doc: |
       Disorientation axis (normalized) following the same symmetry assumptions
       as expressed for the field disorientation_angle.
-    unit: NX_DIMENSIONLESS
-    dim: (c, 3)
+    dimensions:
+      rank: 2
+      dim: (c, 3)
+  
   # e.g. in this way one could easily, efficiently, store and map familiar habits of microscopists
   # to store e.g. orientations of measurement points or of grains via a (c := Ngrains, n_p := 3)
   # matrix of Bunge-Euler angles, or of (c := Ngrains, n_p := 4) matrix of quaternions.
   # the benefit of such a representation is that with a known NXorientation_set base class one can implement a common parameterization transformation library (of which several already exist) in the microstructure modelling communities so that a program can read the information in the (NXorientation_set) instance and automatically transform/compute between different parameterizations. Super relevant for interoperability e.g. in SEM/EBSD, where this was a long standing issue and right now the most frequently accepted consensus is to report either Bunge-Euler angles or quaternions and then use existent transformation libraries (as implemented by e.g. Marc de Graeff for SEM/EBSD and used by many but not yet the majority of people in the computational materials modelling community within crystal plasticity, crystal growth modeling, DREAM.3D)
+
+# ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
+# 540d039a1af6b381de25e8928e9b03cae09f2df69a15bbc0e8ed899037fb6fdf
+# <?xml version='1.0' encoding='UTF-8'?>
+# <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+# <!--
+# # NeXus - Neutron and X-ray Common Data Format
+# #
+# # Copyright (C) 2025-2025 NeXus International Advisory Committee (NIAC)
+# #
+# # This library is free software; you can redistribute it and/or
+# # modify it under the terms of the GNU Lesser General Public
+# # License as published by the Free Software Foundation; either
+# # version 3 of the License, or (at your option) any later version.
+# #
+# # This library is distributed in the hope that it will be useful,
+# # but WITHOUT ANY WARRANTY; without even the implied warranty of
+# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# # Lesser General Public License for more details.
+# #
+# # You should have received a copy of the GNU Lesser General Public
+# # License along with this library; if not, write to the Free Software
+# # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# #
+# # For further information, see http://www.nexusformat.org
+# -->
+# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXrotation_set" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+#     <!--This class stores a set of specifically parameterized NXtransformations which describe
+# how each object is oriented/rotated with respect to a reference coordinate system.
+# we should offer here support for d==2, d==3
+# several well accepted parameterizations for rotations exists in Materials Science
+# thus not using NXtransformations, different Materials Science groups follow
+# different conventions not every reporting of rotations is consistent and correct
+# having a base class like the one proposed here offers a suggestion to start
+# discussing at all about how to convert between groups who report using
+# different conventions-->
+#     <symbols>
+#         <doc>
+#             The symbols used in the schema to specify e.g. dimensions of arrays.
+#         </doc>
+#         <symbol name="c">
+#             <doc>
+#                 The cardinality of the set, i.e. the number of value tuples.
+#             </doc>
+#         </symbol>
+#         <symbol name="n_phases">
+#             <doc>
+#                 How many phases with usually different crystal and symmetry are distinguished.
+#             </doc>
+#         </symbol>
+#     </symbols>
+#     <doc>
+#         Base class to detail a set of rotations, orientations, and disorientations.
+#         
+#         For getting a more detailed insight into the discussion of the
+#         parameterized description of orientations in materials science see:
+#         
+#         * `H.-J. Bunge &lt;https://doi.org/10.1016/C2013-0-11769-2&gt;`_
+#         * `T. B. Britton et al. &lt;https://doi.org/10.1016/j.matchar.2016.04.008&gt;`_
+#         * `D. Rowenhorst et al. &lt;https://doi.org/10.1088/0965-0393/23/8/083501&gt;`_
+#         * `A. Morawiec &lt;https://doi.org/10.1007/978-3-662-09156-2&gt;`_
+#         
+#         Once orientations are defined, one can continue to characterize the
+#         misorientation and specifically the disorientation. The misorientation describes
+#         the rotation that is required to register the lattices of two oriented objects
+#         (like crystal lattice) into a crystallographic equivalent orientation:
+#         
+#         * `R. Bonnet &lt;https://doi.org/10.1107/S0567739480000186&gt;`_
+#     </doc>
+#     <field name="depends_on" type="NX_CHAR">
+#         <doc>
+#             Reference to an instance of :ref:`NXcoordinate_system_set` which contextualizes
+#             how the here reported parameterized quantities can be interpreted.
+#         </doc>
+#     </field>
+#     <!--2D rotations are a special type of 3D rotations and thus treated in 3D
+# just how to rotate the object into the reference frame defined by depends_on-->
+#     <field name="crystal_symmetry" type="NX_CHAR">
+#         <doc>
+#             Point group which defines the symmetry of the crystal.
+#             
+#             This has to be at least a single string. If crystal_symmetry is not
+#             provided point group 1 is assumed.
+#             
+#             In the case that misorientation or disorientation fields are used
+#             and the two crystal sets resolve for phases with a different
+#             crystal symmetry, this field has to encode two string.
+#             In this case the first string is for phase A the second one for phase B.
+#             An example of this most complex case is the description of the
+#             disorientation between crystals adjoining a hetero-phase boundary.
+#         </doc>
+#         <dimensions rank="1">
+#             <dim index="1" value="n_phases"/>
+#         </dimensions>
+#     </field>
+#     <field name="sample_symmetry" type="NX_CHAR">
+#         <doc>
+#             Point group which defines an assumed symmetry imprinted upon processing
+#             the material/sample which could give rise to or may justify to use a
+#             simplified description of rotations, orientations, misorientations,
+#             and disorientations via numerical procedures that are known as
+#             symmetrization.
+#             
+#             If sample_symmetry is not provided point group 1 is assumed.
+#             
+#             The traditionally used symmetrization operations within the texture
+#             community in Materials Science, though, are thanks to methodology and
+#             software improvements no longer strictly needed. Therefore, users are
+#             encouraged to set the sample_symmetry to 1 (triclinic) and thus assume
+#             there is no justification to assume the imprinting of additional
+#             symmetry because of the processing.
+#             
+#             In practice one often faces situations where indeed these assumed
+#             symmetries are anyway not fully observed, and thus an accepting of
+#             eventual inaccuracies just for the sake of reporting a simplified
+#             symmetrized description should be avoided.
+#         </doc>
+#         <dimensions rank="1">
+#             <dim index="1" value="n_phases"/>
+#         </dimensions>
+#     </field>
+#     <field name="rotation_quaternion" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+#         <doc>
+#             The set of rotations expressed in quaternion parameterization considering
+#             crystal_symmetry and sample_symmetry. Rotations which should be
+#             interpreted as antipodal are not marked as such.
+#         </doc>
+#         <dimensions rank="2">
+#             <dim index="1" value="c"/>
+#             <dim index="2" value="4"/>
+#         </dimensions>
+#     </field>
+#     <field name="rotation_euler" type="NX_NUMBER" units="NX_ANGLE">
+#         <doc>
+#             The set of rotations expressed in Euler angle parameterization considering
+#             the same applied symmetries as detailed for the field rotation_quaternion.
+#             To interpret Euler angles correctly, it is necessary to inspect the
+#             conventions behind depends_on to resolve which of the many Euler-angle
+#             conventions possible (Bunge ZXZ, XYZ, Kocks, Tait, etc.) were used.
+#         </doc>
+#         <dimensions rank="2">
+#             <dim index="1" value="c"/>
+#             <dim index="2" value="3"/>
+#         </dimensions>
+#     </field>
+#     <!--rotation_rodrigues(NX_NUMBER):
+# rotation_homochoric(NX_NUMBER):
+# rotation_axis_angle(NX_NUMBER):-->
+#     <!--orientation how to rotate the crystal into sample and vice versa obeying crystal and sample symmetry-->
+#     <field name="is_antipodal" type="NX_BOOLEAN">
+#         <doc>
+#             True for all those value tuples which have assumed antipodal symmetry.
+#             False for all others.
+#         </doc>
+#         <dimensions rank="1">
+#             <dim index="1" value="c"/>
+#         </dimensions>
+#     </field>
+#     <field name="orientation_quaternion" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+#         <doc>
+#             The set of orientations expressed in quaternion parameterization and
+#             obeying symmetry for equivalent cases as detailed in crystal_symmetry
+#             and sample_symmetry. The supplementary field is_antipodal can be used
+#             to mark orientations with the antipodal property.
+#         </doc>
+#         <dimensions rank="2">
+#             <dim index="1" value="c"/>
+#             <dim index="2" value="4"/>
+#         </dimensions>
+#     </field>
+#     <field name="orientation_euler" type="NX_NUMBER" units="NX_ANGLE">
+#         <doc>
+#             The set of orientations expressed in Euler angle parameterization following
+#             the same assumptions like for orientation_quaternion.
+#             To interpret Euler angles correctly, it is necessary to inspect the
+#             conventions behind depends_on to resolve which of the many Euler-angle
+#             conventions possible (Bunge ZXZ, XYZ, Kocks, Tait, etc.) were used.
+#         </doc>
+#         <dimensions rank="2">
+#             <dim index="1" value="c"/>
+#             <dim index="2" value="3"/>
+#         </dimensions>
+#     </field>
+#     <!--orientation_rodrigues(NX_NUMBER):
+# orientation_homochoric(NX_NUMBER):
+# orientation_axis_angle(NX_NUMBER):-->
+#     <!--misorientation between two orientations
+# not the disorientation because for misorientation we ignore
+# if the angular argument may not have the absolute smallest amount, i.e.
+# misorientation is not necessarily in the fundamental zone-->
+#     <field name="misorientation_quaternion" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+#         <doc>
+#             The set of misorientations expressed in quaternion parameterization
+#             obeying symmetry operations for equivalent misorientations
+#             as defined by crystal_symmetry and sample_symmetry.
+#         </doc>
+#         <dimensions rank="2">
+#             <dim index="1" value="c"/>
+#             <dim index="2" value="4"/>
+#         </dimensions>
+#     </field>
+#     <field name="misorientation_angle" type="NX_NUMBER" units="NX_ANGLE">
+#         <doc>
+#             Misorientation angular argument (eventually signed) following the same
+#             symmetry assumptions as expressed for the field misorientation_quaternion.
+#         </doc>
+#         <dimensions rank="1">
+#             <dim index="1" value="c"/>
+#         </dimensions>
+#     </field>
+#     <field name="misorientation_axis" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+#         <doc>
+#             Misorientation axis (normalized) and signed following the same
+#             symmetry assumptions as expressed for the field misorientation_angle.
+#         </doc>
+#         <dimensions rank="2">
+#             <dim index="1" value="c"/>
+#             <dim index="2" value="3"/>
+#         </dimensions>
+#     </field>
+#     <!--disorientation, misorientation with smallest angular argument inside
+# fundamental zone of SO3 for given crystal and sample symmetry-->
+#     <field name="disorientation_quaternion" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+#         <doc>
+#             The set of disorientation expressed in quaternion parameterization
+#             obeying symmetry operations for equivalent misorientations
+#             as defined by crystal_symmetry and sample_symmetry.
+#         </doc>
+#         <dimensions rank="2">
+#             <dim index="1" value="c"/>
+#             <dim index="2" value="4"/>
+#         </dimensions>
+#     </field>
+#     <field name="disorientation_angle" type="NX_NUMBER" units="NX_ANGLE">
+#         <doc>
+#             Disorientation angular argument (should not be signed, see
+#             `D. Rowenhorst et al. &lt;https://doi.org/10.1088/0965-0393/23/8/083501&gt;`_)
+#             following the same symmetry assumptions as expressed for the field
+#             disorientation_quaternion.
+#         </doc>
+#         <dimensions rank="1">
+#             <dim index="1" value="c"/>
+#         </dimensions>
+#     </field>
+#     <field name="disorientation_axis" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+#         <doc>
+#             Disorientation axis (normalized) following the same symmetry assumptions
+#             as expressed for the field disorientation_angle.
+#         </doc>
+#         <dimensions rank="2">
+#             <dim index="1" value="c"/>
+#             <dim index="2" value="3"/>
+#         </dimensions>
+#     </field>
+#     <!--e.g. in this way one could easily, efficiently, store and map familiar habits of microscopists
+# to store e.g. orientations of measurement points or of grains via a (c := Ngrains, n_p := 3)
+# matrix of Bunge-Euler angles, or of (c := Ngrains, n_p := 4) matrix of quaternions.
+# the benefit of such a representation is that with a known NXorientation_set base class one can implement a common parameterization transformation library (of which several already exist) in the microstructure modelling communities so that a program can read the information in the (NXorientation_set) instance and automatically transform/compute between different parameterizations. Super relevant for interoperability e.g. in SEM/EBSD, where this was a long standing issue and right now the most frequently accepted consensus is to report either Bunge-Euler angles or quaternions and then use existent transformation libraries (as implemented by e.g. Marc de Graeff for SEM/EBSD and used by many but not yet the majority of people in the computational materials modelling community within crystal plasticity, crystal growth modeling, DREAM.3D)-->
+# </definition>
