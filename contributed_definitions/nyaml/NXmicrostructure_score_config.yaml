@@ -46,6 +46,7 @@ NXmicrostructure_score_config(NXobject):
       exists: optional
     userID(NXuser):
       exists: [min, 0, max, infty]
+      nameType: partial
     sample(NXsample):
       exists: recommended
       dimensionality(NX_UINT):
@@ -79,6 +80,7 @@ NXmicrostructure_score_config(NXobject):
         Programs and libraries representing the computational environment
       programID(NXprogram):
         exists: [min, 1, max, infty]
+        nameType: partial
         program(NX_CHAR):
           \@version(NX_CHAR):
     material(NXobject):
@@ -100,9 +102,8 @@ NXmicrostructure_score_config(NXobject):
       # SecondOrderThermalExpCoeff
       melting_temperature(NX_FLOAT):
         doc: |
-          Melting temperature in degrees Celsius.
+          Melting temperature
         unit: NX_TEMPERATURE
-
     deformation(NXobject):
       doc: |
         Details about the geometry and properties of the polycrystal that represents the
@@ -129,7 +130,7 @@ NXmicrostructure_score_config(NXobject):
           Average spherical diameter when model is poisson_voronoi.
         unit: NX_LENGTH
       ensemble(NXobject):
-        # required for cuboidal, poisson
+        exists: optional
         doc: |
           Settings for instantiating properties of deformed grains when model is cuboidal or poisson.
         bunge_euler(NX_FLOAT):
@@ -145,14 +146,14 @@ NXmicrostructure_score_config(NXobject):
             for the bunge_euler and stored_energy fields.
           unit: NX_ANY
           dim: (n_dg_ori,)
-      ebsd(NXserialized):
+      ebsd(NXnote):
         exists: optional
         doc: |
-          The EBSD dataset from which the initial microstructure is
-          instantiated if model is ebsd.
-        type(NX_CHAR):
-        path(NX_CHAR):
+          Settings for instantiating properties of deformed grains from an
+          EBSD orientation map when model is cuboidal or poisson.
+        file_name(NX_CHAR):
         algorithm(NX_CHAR):
+          enumeration: [sha256]
         checksum(NX_CHAR):
         stepsize(NX_FLOAT):
           doc: |
@@ -160,6 +161,17 @@ NXmicrostructure_score_config(NXobject):
             or cube-shaped voxels respectively.
           unit: NX_LENGTH
           dim: (d,)
+      damask(NXnote):
+        exists: optional
+        doc: |
+          Settings for instantiating properties of deformed grains and nuclei when model is damask.
+        file_name(NX_CHAR):
+          doc: |
+            Name of the DREAM.3D HDF5 file that was instantiated from the
+            a previously performed DAMASK simulation.
+        algorithm(NX_CHAR):
+          enumeration: [sha256]
+        checksum(NX_CHAR):
     nucleation(NXobject):
       doc: |
         Phenomenological model according to which recrystallization nuclei
@@ -172,15 +184,20 @@ NXmicrostructure_score_config(NXobject):
           * custom, implementation-specific
           * gb, nuclei placed at grain boundaries
           
-        enumeration: [csr, custom, gb]
+        enumeration: [csr, damask]
       incubation_time(NX_CHAR):
         doc: |
           According to which model will the nuclei start to grow.
         enumeration: [site_saturation]
       orientation(NX_CHAR):
         doc: |
-          According to which model will the nuclei get their orientation assigned.
-        enumeration: [sample_from_nucleus_euler]
+          According to which model will the nuclei get their orientation assigned:
+          
+          * ensemble, picking randomly one from ensemble/bunge_euler
+          * random, picking randomly on the SO3
+          * damask, picking based on information provided in deformation/damask
+          
+        enumeration: [ensemble, random, damask]
       ensemble(NXobject):
         # required unless custom nucleation model
         doc: |

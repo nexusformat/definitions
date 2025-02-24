@@ -42,6 +42,13 @@ NXmicrostructure_score_results(NXobject):
     identifier_simulation(NX_UINT):
       doc: |
         Simulation ID as an alias to refer to this simulation.
+    config(NXnote):
+      doc: |
+        Configuration file with the parameterization of the
+        SCORE model that was used for this simulation.
+      file_name(NX_CHAR):
+      algorithm(NX_CHAR):
+      checksum(NX_CHAR):
     description(NX_CHAR):
       exists: optional
       doc: |
@@ -57,6 +64,7 @@ NXmicrostructure_score_results(NXobject):
         included when the simulation ended.
     profiling(NXcs_profiling):
       exists: optional
+      # consider integrating content that is currently stored in ThreadProfiling.csv
     program1(NXprogram):
       doc: |
         Name of the program with which the simulation was performed.
@@ -68,6 +76,7 @@ NXmicrostructure_score_results(NXobject):
         Programs and libraries representing the computational environment
       programID(NXprogram):
         exists: [min, 1, max, infty]
+        nameType: partial
         program(NX_CHAR):
           \@version(NX_CHAR):
     # rotation_conventions(NXrotation_conventions):
@@ -105,11 +114,11 @@ NXmicrostructure_score_results(NXobject):
         cell_dimensions(NX_NUMBER):
         extent(NX_UINT):
         identifier_offset(NX_INT):
-      boundary(NXcg_polyhedron_set):
+      boundary(NXcg_hexahedron_set):
         doc: |
           A tight bounding box or sphere or bounding primitive about the grid.
         # a good example for a general bounding box description for such a grids of triclinic cells
-        # https://docs.lammps.org/Howto_triclinic.html NXcg_polyhedron because a parallelepiped
+        # https://docs.lammps.org/Howto_triclinic.html NXcg_polyhedron_set because a parallelepiped
         number_of_boundaries(NX_POSINT):
           unit: NX_UNITLESS
           doc: |
@@ -121,12 +130,13 @@ NXmicrostructure_score_results(NXobject):
           doc: |
             The boundary conditions for each boundary:
             
-            0 - undefined
-            1 - open
-            2 - periodic
-            3 - mirror
-            4 - von Neumann
-            5 - Dirichlet
+            * 0 - undefined
+            * 1 - open
+            * 2 - periodic
+            * 3 - mirror
+            * 4 - von Neumann
+            * 5 - Dirichlet
+            
           dim: (6,)
         boundaries:
           doc: |
@@ -135,9 +145,13 @@ NXmicrostructure_score_results(NXobject):
           dim: (6,)
     spatiotemporalID(NXobject):
       exists: [min, 1, max, infty]  # max 1 in case of a single classical CA simulation, i.e. without solitary units
+      nameType: partial
       doc: |
         Documentation of the spatiotemporal evolution for each CA domain.
-      # static quantities for which no change is modelled
+        
+        SCORE is a hybrid parallelized code that can evolve multiple replicas
+        in parallel. The set of replicas is distributed across MPI processes.
+        Each such replica is then evolved via OpenMP multi-threading.
       # the typical lean summary statistics flattened
       summary_statistics(NXprocess):
         doc: |
@@ -159,7 +173,7 @@ NXmicrostructure_score_results(NXobject):
           \@x_indices(NX_UINT):
           title(NX_CHAR):
             exists: recommended
-          time(NX_NUMBER):
+          time(NX_FLOAT):
             doc: |
               Evolution of the physical time not to be confused with wall-clock time or profiling data.
             unit: NX_TIME
@@ -228,7 +242,8 @@ NXmicrostructure_score_results(NXobject):
       # the typically storage-costlier snapshot data
       microstructureID(NXmicrostructure):
         exists: [min, 1, max, infty]  # always storing the starting configuration
-        time(NX_NUMBER):
+        nameType: partial
+        time(NX_FLOAT):
         iteration(NX_UINT):
           doc: |
             Iteration or increment counter.
@@ -241,14 +256,14 @@ NXmicrostructure_score_results(NXobject):
           doc: |
             Current recrystallized volume fraction (taking fractional infections into account).
           unit: NX_DIMENSIONLESS
-        x_set(NX_NUMBER):
+        x_set(NX_FLOAT):
           doc: |
             Target value for which a snapshot was requested for the recrystallized volume fraction.
           unit: NX_DIMENSIONLESS
         # optional places to store the grid for instance if it changes
         grid(NXcg_grid):
           exists: recommended
-          identifier_grain(NX_UINT):
+          identifier_crystal(NX_UINT):
             exists: recommended
             doc: |
               Grain identifier for each cell.
@@ -261,17 +276,23 @@ NXmicrostructure_score_results(NXobject):
             unit: NX_UNITLESS
             dim: (n_x, n_y, n_z)
         crystals(NXobject):
-          representation:
+          representation(NX_CHAR):
             exists: recommended
           number_of_crystals(NX_UINT):
+            exists: recommended
           number_of_phases(NX_UINT):
+            exists: recommended
           identifier_offset_crystal(NX_INT):
+            exists: recommended
           identifier_crystal(NX_INT):
+            exists: recommended
             dim: (n_grains,)
           identifier_offset_phase(NX_INT):
+            exists: recommended
           identifier_phase(NX_INT):
+            exists: recommended
             dim: (n_grains,)
-          volume(NX_NUMBER):
+          volume(NX_FLOAT):
             doc: |
               Volume of each grain accounting also for partially transformed cells.
             unit: NX_VOLUME
