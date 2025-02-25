@@ -86,6 +86,45 @@ NXmx(NXobject):
           4:
             value: k
             required: false
+      data_scaling_factor(NX_NUMBER):
+        exists: optional
+        doc: |
+          An optional scaling factor to apply to the values in ``data``.
+          
+          The elements in ``data`` are often stored as integers for efficiency reasons and need
+          further correction, generating floats.  The two fields data_scaling_factor and
+          data_offset allow linear corrections using the following convention:
+          
+          .. code-block::
+          
+                  corrected_data = (data + offset) * scaling_factor
+          
+          This formula will derive the corrected value, when necessary.
+          
+          data_scaling_factor is sometimes known as gain and data_offset is sometimes
+          known as pedestal or background, depending on the community.
+          
+          Use these fields to specify constants that need to be applied
+          to the data to correct it to physical values.  For example, if the detector gain
+          is 10 counts per photon and a constant background of 400 needs to be subtracted
+          off the pixels, specify data_scaling_factor as 0.1 and data_offset as -400 to
+          specify the required conversion from raw counts to corrected photons. It
+          is implied processing software will apply these corrections on-the-fly during processing.
+          
+          The rank of these fields should either be a single value for the full dataset, a
+          single per-pixel array applied to every image (dimensions (i, j) or (i, j, k)),
+          or a per-image correction specified with an array whose slowest rank is nP (dimensions
+          (np, 1), (np, i, j) or (np, i, j, k)).
+          
+          When omitted, the scaling factor is assumed to be 1.
+      data_offset(NX_NUMBER):
+        exists: optional
+        doc: |
+          An optional offset to apply to the values in data.
+          
+          When omitted, the offset is assumed to be 0.
+          
+          See :ref:`data_scaling_factor </NXmx/ENTRY/DATA/data_scaling_factor-field>` for more information.
     (NXsample):
       name(NX_CHAR):
         doc: |
@@ -511,6 +550,7 @@ NXmx(NXobject):
             
             True when count-rate correction has been applied, false otherwise.
         countrate_correction_lookup_table(NX_NUMBER):
+          exists: optional
           doc: |
             The countrate_correction_lookup_table defines the LUT used for count-rate
             correction. It maps a measured count :math:`c` to its corrected value
@@ -615,6 +655,17 @@ NXmx(NXobject):
             Description of type such as scintillator,
             ccd, pixel, image
             plate, CMOS, ...
+        CHANNELNAME_channel(NXdetector_channel):
+          exists: optional
+          nameType: partial
+          doc: |
+            Group containing the description and metadata for a single channel from a multi-channel
+            detector.
+            
+            Given an :ref:`NXdata` group linked as part of an NXdetector group that has an axis with
+            named channels (see the example in :ref:`NXdata </NXdata@default_slice-attribute>`),
+            the NXdetector will have a series of NXdetector_channel groups, one for each channel,
+            named CHANNELNAME_channel.
       (NXbeam):
         exists: ['min', '1']
         \@flux:
@@ -799,13 +850,13 @@ NXmx(NXobject):
             short name for source, perhaps the acronym
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# b0cd4adb26d3ef5a0c3253e2e83a205aa2ff7ff262cb4f0e74be76f06456bae2
+# 91119aa097488f4613035ea178f883d3dcee6b9418128cb406adbf5acc5d2b7e
 # <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
 # <!--
 #   # NeXus - Neutron and X-ray Common Data Format
 #   #
-#   # Copyright (C) 2013-2022 NeXus International Advisory Committee (NIAC)
+#   # Copyright (C) 2013-2024 NeXus International Advisory Committee (NIAC)
 #   #
 #   # This library is free software; you can redistribute it and/or
 #   # modify it under the terms of the GNU Lesser General Public
@@ -944,6 +995,50 @@ NXmx(NXobject):
 #                         <dim index="4" value="k" required="false"/>
 #                     </dimensions>
 #                 </field>
+# 
+#                 <field name="data_scaling_factor" type="NX_NUMBER" optional="true">
+#                     <doc>
+#                         An optional scaling factor to apply to the values in ``data``.
+# 
+#                         The elements in ``data`` are often stored as integers for efficiency reasons and need
+#                         further correction, generating floats.  The two fields data_scaling_factor and
+#                         data_offset allow linear corrections using the following convention:
+# 
+#                         .. code-block::
+# 
+#                                 corrected_data = (data + offset) * scaling_factor
+# 
+#                         This formula will derive the corrected value, when necessary.
+# 
+#                         data_scaling_factor is sometimes known as gain and data_offset is sometimes
+#                         known as pedestal or background, depending on the community.
+# 
+#                         Use these fields to specify constants that need to be applied
+#                         to the data to correct it to physical values.  For example, if the detector gain
+#                         is 10 counts per photon and a constant background of 400 needs to be subtracted
+#                         off the pixels, specify data_scaling_factor as 0.1 and data_offset as -400 to
+#                         specify the required conversion from raw counts to corrected photons. It
+#                         is implied processing software will apply these corrections on-the-fly during processing.
+# 
+#                         The rank of these fields should either be a single value for the full dataset, a
+#                         single per-pixel array applied to every image (dimensions (i, j) or (i, j, k)),
+#                         or a per-image correction specified with an array whose slowest rank is nP (dimensions
+#                         (np, 1), (np, i, j) or (np, i, j, k)).
+# 
+#                         When omitted, the scaling factor is assumed to be 1.
+#                 </doc>
+#                 </field>
+#                 <field name="data_offset" type="NX_NUMBER" optional="true">
+#                 <doc>
+#                         An optional offset to apply to the values in data.
+# 
+#                         When omitted, the offset is assumed to be 0.
+# 
+#                         See :ref:`data_scaling_factor &lt;/NXmx/ENTRY/DATA/data_scaling_factor-field&gt;` for more information.
+#                 </doc>
+#                 </field>
+# 
+# 
 #             </group>
 # 
 #             <group type="NXsample">
@@ -1437,7 +1532,7 @@ NXmx(NXobject):
 #                             True when count-rate correction has been applied, false otherwise.
 #                         </doc>
 #                     </field>
-#                     <field name="countrate_correction_lookup_table" type="NX_NUMBER" >
+#                     <field name="countrate_correction_lookup_table" type="NX_NUMBER" optional="true">
 #                         <doc>
 #                             The countrate_correction_lookup_table defines the LUT used for count-rate
 #                             correction. It maps a measured count :math:`c` to its corrected value
@@ -1566,6 +1661,19 @@ NXmx(NXobject):
 #                             plate, CMOS, ...
 #                         </doc>
 #                     </field>
+# 
+#                     <group name="CHANNELNAME_channel" type="NXdetector_channel" optional="true" nameType="partial">
+#                         <doc>
+#                             Group containing the description and metadata for a single channel from a multi-channel
+#                             detector.
+# 
+#                             Given an :ref:`NXdata` group linked as part of an NXdetector group that has an axis with
+#                             named channels (see the example in :ref:`NXdata &lt;/NXdata@default_slice-attribute&gt;`),
+#                             the NXdetector will have a series of NXdetector_channel groups, one for each channel,
+#                             named CHANNELNAME_channel.
+#                         </doc>
+#                     </group>
+# 
 #                 </group>
 #                 <group type="NXbeam" minOccurs="1">
 #                     <attribute name="flux" optional="true">
