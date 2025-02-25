@@ -13,7 +13,6 @@ doc: |
   * `M. Kühbach et al. <https://doi.org/10.1016/j.actamat.2016.01.068>`_
   * `C. Haase et al. <https://doi.org/10.1016/j.actamat.2015.08.057>`_
   * `M. Diehl et al. <https://doi.org/10.1088/1361-651X/ab51bd>`_
-  
 symbols:
   doc: |
     The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -33,6 +32,7 @@ symbols:
     Number of active cells in the (recrystallization) front.
   n_grains: |
     Number of grains in the computer simulation.
+
 # inspect comments behind NXmicrostructure
 type: group
 NXmicrostructure_score_results(NXobject):
@@ -49,7 +49,7 @@ NXmicrostructure_score_results(NXobject):
     end_time(NX_DATE_TIME):
       exists: recommended
     (NXuser):
-      exists: [min, 0, max, infty]
+      exists: ['min', '0', 'max', 'unbounded']
     program1(NXprogram):
       program_name:
         \@version:
@@ -60,7 +60,7 @@ NXmicrostructure_score_results(NXobject):
       doc: |
         Programs and libraries representing the computational environment
       programID(NXprogram):
-        exists: [min, 1, max, infty]
+        exists: ['min', '1', 'max', 'unbounded']
         program(NX_CHAR):
           \@version(NX_CHAR):
     coordinate_system_set(NXcoordinate_system_set):
@@ -89,7 +89,7 @@ NXmicrostructure_score_results(NXobject):
         z_direction:
           enumeration: [north]
     discretization(NXmicrostructure):
-      exists: [min, 1, max, 1]
+      exists: ['min', '1', 'max', '1']
       grid(NXcg_grid):
         dimensionality(NX_POSINT):
         cardinality(NX_POSINT):
@@ -101,6 +101,7 @@ NXmicrostructure_score_results(NXobject):
       boundary(NXcg_polyhedron_set):
         doc: |
           A tight bounding box or sphere or bounding primitive about the grid.
+        
         # a good example for a general bounding box description for such a grids of triclinic cells
         # https://docs.lammps.org/Howto_triclinic.html NXcg_polyhedron because a parallelepiped
         number_of_boundaries(NX_POSINT):
@@ -120,16 +121,21 @@ NXmicrostructure_score_results(NXobject):
             3 - mirror
             4 - von Neumann
             5 - Dirichlet
-          dim: (6,)
+          dimensions:
+            rank: 1
+            dim: (6,)
         boundaries:
           doc: |
             Name of the boundaries. Left, right, front, back, bottom, top,
             The field must have as many entries as there are number_of_boundaries.
-          dim: (6,)
+          dimensions:
+            rank: 1
+            dim: (6,)
     spatiotemporalID(NXobject):
-      exists: [min, 1, max, infty]  # max 1 in case of classical CA simulation, i.e. without solitary units
+      exists: ['min', '1', 'max', 'unbounded']
       doc: |
         Documentation of the spatiotemporal evolution
+      
       # static quantities for which no change is modelled
       # the typical lean summary statistics flattened
       summary_statistics(NXobject):
@@ -143,24 +149,31 @@ NXmicrostructure_score_results(NXobject):
           doc: |
             Evolution of the recrystallized volume fraction over time.
           time(NX_NUMBER):
-            doc: |
-              Evolution of the physical time not to be confused with wall-clock time or profiling data.
             unit: NX_TIME
-            dim: (n_summary_stats,)
+            doc: |
+              Evolution of the physical time not to be confused with wall-clock time or
+              profiling data.
+            dimensions:
+              rank: 1
+              dim: (n_summary_stats,)
           iteration(NX_INT):
+            unit: NX_UNITLESS
             doc: |
               Iteration or increment counter.
-            unit: NX_UNITLESS
           temperature(NX_FLOAT):
+            unit: NX_TEMPERATURE
             doc: |
               Evolution of the simulated temperature over time.
-            unit: NX_TEMPERATURE
-            dim: (n_summary_stats,)
+            dimensions:
+              rank: 1
+              dim: (n_summary_stats,)
           recrystallized_volume_fraction(NX_FLOAT):
+            unit: NX_DIMENSIONLESS
             doc: |
               Recrystallized volume fraction.
-            unit: NX_DIMENSIONLESS
-            dim: (n_summary_stats,)
+            dimensions:
+              rank: 1
+              dim: (n_summary_stats,)
         stress(NXprocess):
           exists: optional
           type:
@@ -168,20 +181,24 @@ NXmicrostructure_score_results(NXobject):
               Which type of stress.
             enumeration: [cauchy]
           stress(NX_FLOAT):
+            unit: NX_ANY
             doc: |
               Applied external stress tensor on the ROI.
-            unit: NX_ANY
-            dim: (n_summary_stats, 3, 3)
+            dimensions:
+              rank: 3
+              dim: (n_summary_stats, 3, 3)
         strain(NXprocess):
           exists: optional
           type:
             doc: |
               Which type of strain.
           strain(NX_FLOAT):
+            unit: NX_ANY
             doc: |
               Applied external strain tensor on the ROI.
-            unit: NX_ANY
-            dim: (n_summary_stats, 3, 3)
+            dimensions:
+              rank: 3
+              dim: (n_summary_stats, 3, 3)
         deformation_gradient(NXprocess):
           exists: optional
           type:
@@ -189,57 +206,72 @@ NXmicrostructure_score_results(NXobject):
               Which type of deformation gradient.
             enumeration: [piola]
           value(NX_FLOAT):
+            unit: NX_ANY
             doc: |
               Applied deformation gradient tensor on the ROI.
-            unit: NX_ANY
-            dim: (n_summary_stats, 3, 3)
+            dimensions:
+              rank: 3
+              dim: (n_summary_stats, 3, 3)
         magnetic_field(NXprocess):
           exists: optional
           strength(NX_FLOAT):
+            unit: NX_ANY
             doc: |
               Applied external magnetic field on the ROI.
-            unit: NX_ANY
-            dim: (n_summary_stats, 3, 3)
+            dimensions:
+              rank: 3
+              dim: (n_summary_stats, 3, 3)
         electrical_field(NXprocess):
           exists: optional
+          
           # specify type of field
           strength(NX_FLOAT):
+            unit: NX_ANY
             doc: |
               Applied external electrical field on the ROI.
-            unit: NX_ANY
-            dim: (n_summary_stats, 3, 3)
-       # the typically storage-costlier snapshot data
+            dimensions:
+              rank: 3
+              dim: (n_summary_stats, 3, 3)
+      
+      # the typically storage-costlier snapshot data
       microstructureID(NXmicrostructure):
-        exists: [min, 1, max, infty]  # always storing starting configuration
+        exists: ['min', '1', 'max', 'unbounded']
         time(NX_NUMBER):
         iteration(NX_INT):
         temperature(NX_FLOAT):
+          unit: NX_TEMPERATURE
           doc: |
             Simulated temperature for this snapshot.
-          unit: NX_TEMPERATURE
         x_value(NX_FLOAT):
-          doc: |
-            Current recrystallized volume fraction (taking fractional infections into account).
           unit: NX_DIMENSIONLESS
+          doc: |
+            Current recrystallized volume fraction (taking fractional infections into
+            account).
         x_target(NX_NUMBER):
-          doc: |
-            Target value for which a snapshot was requested for the recrystallized volume fraction.
           unit: NX_DIMENSIONLESS
+          doc: |
+            Target value for which a snapshot was requested for the recrystallized volume
+            fraction.
+        
         # optional places to store the grid for instance if it changes
         grid(NXcg_grid):
           exists: recommended
           grain_identifier(NX_UINT):
             exists: recommended
+            unit: NX_UNITLESS
             doc: |
               Grain identifier for each cell.
-            unit: NX_UNITLESS
-            dim: (n_x, n_y, n_z)
+            dimensions:
+              rank: 3
+              dim: (n_x, n_y, n_z)
           thread_identifier(NX_UINT):
             exists: optional
+            unit: NX_UNITLESS
             doc: |
               Identifier of the OpenMP thread which processed this part of the grid.
-            unit: NX_UNITLESS
-            dim: (n_x, n_y, n_z)
+            dimensions:
+              rank: 3
+              dim: (n_x, n_y, n_z)
         crystal(NXobject):
           representation:
             exists: recommended
@@ -247,96 +279,675 @@ NXmicrostructure_score_results(NXobject):
           number_of_phases(NX_UINT):
           crystal_identifier_offset(NX_INT):
           crystal_identifier(NX_INT):
-            dim: (n_grains,)
+            dimensions:
+              rank: 1
+              dim: (n_grains,)
           phase_identifier_offset(NX_INT):
           phase_identifier(NX_INT):
-            dim: (n_grains,)
+            dimensions:
+              rank: 1
+              dim: (n_grains,)
           volume(NX_NUMBER):
+            unit: NX_VOLUME
             doc: |
               Volume of each grain accounting also for partially transformed cells.
-            unit: NX_VOLUME
-            dim: (n_grains,)
+            dimensions:
+              rank: 1
+              dim: (n_grains,)
+          
           # SCORE specific
-          bunge_euler(NX_FLOAT):  # only in the first snapshot
+          bunge_euler(NX_FLOAT):
+            unit: NX_ANGLE
             doc: |
               Bunge-Euler angle triplets for each grain.
-            unit: NX_ANGLE
-            dim: (n_grains, 3)
+            dimensions:
+              rank: 2
+              dim: (n_grains, 3)
           dislocation_density(NX_FLOAT):
             exists: recommended
+            unit: NX_ANY
             doc: |
               Current value for the dislocation density as a measure of the remaining stored energy
               in assumed crystal defects inside each grain.
-            unit: NX_ANY  # 1/m^2
-            dim: (n_grains,)
+            dimensions:
+              rank: 1
+              dim: (n_grains,)
           is_deformed(NX_BOOLEAN):
             exists: recommended
             doc: |
               Is the grain deformed.
-            dim: (n_grains,)
+            dimensions:
+              rank: 1
+              dim: (n_grains,)
           is_recrystallized(NX_BOOLEAN):
             exists: recommended
             doc: |
               Is the grain recrystallized.
-            dim: (n_grains,)
+            dimensions:
+              rank: 1
+              dim: (n_grains,)
         recrystallization_front(NXobject):
           exists: recommended
           doc: |
-            Details about those cells which in this time step represent the discrete recrystallization front.
+            Details about those cells which in this time step represent the discrete
+            recrystallization front.
           halo_region(NX_UINT):
             exists: optional
+            unit: NX_UNITLESS
             doc: |
               Which cells are currently in a halo region of threads.
-            unit: NX_UNITLESS
-            dim: (n_front,)
+            dimensions:
+              rank: 1
+              dim: (n_front,)
           mobility_weight(NX_FLOAT):
             exists: recommended
+            unit: NX_UNITLESS
             doc: |
               So-called mobility weight which is a scaling factor to
               control the mobility of the grain boundary which is assumed
               to sweep currently this volume.
-            unit: NX_UNITLESS
-            dim: (n_front,)
+            dimensions:
+              rank: 1
+              dim: (n_front,)
           coordinate(NX_NUMBER):
             exists: recommended
+            unit: NX_UNITLESS
             doc: |
               The x, y, z grid coordinates of each cell in the recrystallization front.
-            unit: NX_UNITLESS
-            dim: (n_front, 3)
+            dimensions:
+              rank: 2
+              dim: (n_front, 3)
           deformed_grain_identifier(NX_UINT):
             exists: recommended
+            unit: NX_UNITLESS
             doc: |
               Grain identifier assigned to each cell in the recrystallization front.
-            unit: NX_UNITLESS
-            dim: (n_front,)
+            dimensions:
+              rank: 1
+              dim: (n_front,)
           recrystallized_grain_identifier(NX_UINT):
             exists: recommended
-            doc: |
-              Grain identifier assigned to each nucleus which affected that cell in the recrystallization front.
             unit: NX_UNITLESS
-            dim: (n_front,)
+            doc: |
+              Grain identifier assigned to each nucleus which affected that cell in the
+              recrystallization front.
+            dimensions:
+              rank: 1
+              dim: (n_front,)
           thread_identifier(NX_UINT):
             exists: optional
-            doc: |
-              Identifier of the OpenMP thread processing each cell in the recrystallization front.
             unit: NX_UNITLESS
-            dim: (n_front,)
+            doc: |
+              Identifier of the OpenMP thread processing each cell in the recrystallization
+              front.
+            dimensions:
+              rank: 1
+              dim: (n_front,)
           infection_direction(NX_UINT):
             exists: optional
+            unit: NX_UNITLESS
             doc: |
               Hint about the direction from which the cell was infected.
-            unit: NX_UNITLESS
-            dim: (n_front,)
-    # performance(NXcs_profiling):
-    #   exists: optional
-    #   current_working_directory:
-    #   command_line_call:
-    #     exists: optional
-    #   start_time(NX_DATE_TIME):
-    #     exists: recommended
-    #   end_time(NX_DATE_TIME):
-    #     exists: recommended
-    #   total_elapsed_time(NX_NUMBER):
-    #   number_of_processes(NX_POSINT):
-    #   number_of_threads(NX_POSINT):
-    #   number_of_gpus(NX_POSINT):
+            dimensions:
+              rank: 1
+              dim: (n_front,)
+  
+  # performance(NXcs_profiling):
+  # exists: optional
+  # current_working_directory:
+  # command_line_call:
+  # exists: optional
+  # start_time(NX_DATE_TIME):
+  # exists: recommended
+  # end_time(NX_DATE_TIME):
+  # exists: recommended
+  # total_elapsed_time(NX_NUMBER):
+  # number_of_processes(NX_POSINT):
+  # number_of_threads(NX_POSINT):
+  # number_of_gpus(NX_POSINT):
+
+# ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
+# 948da7e41fa06807004f02cfa2b9cb58683afe09dcea48a4ef3ce1c505776998
+# <?xml version='1.0' encoding='UTF-8'?>
+# <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+# <!--
+# # NeXus - Neutron and X-ray Common Data Format
+# #
+# # Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
+# #
+# # This library is free software; you can redistribute it and/or
+# # modify it under the terms of the GNU Lesser General Public
+# # License as published by the Free Software Foundation; either
+# # version 3 of the License, or (at your option) any later version.
+# #
+# # This library is distributed in the hope that it will be useful,
+# # but WITHOUT ANY WARRANTY; without even the implied warranty of
+# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# # Lesser General Public License for more details.
+# #
+# # You should have received a copy of the GNU Lesser General Public
+# # License along with this library; if not, write to the Free Software
+# # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# #
+# # For further information, see http://www.nexusformat.org
+# -->
+# <!--
+# inspect comments behind NXmicrostructure-->
+# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXmicrostructure_score_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+#     <symbols>
+#         <doc>
+#             The symbols used in the schema to specify e.g. dimensions of arrays.
+#         </doc>
+#         <symbol name="n_summary_stats">
+#             <doc>
+#                 The total number of summary statistic log entries.
+#             </doc>
+#         </symbol>
+#         <symbol name="n_b">
+#             <doc>
+#                 Number of boundaries of the bounding box or primitive to domain.
+#             </doc>
+#         </symbol>
+#         <symbol name="n_p">
+#             <doc>
+#                 Number of parameter required for chosen orientation parameterization.
+#             </doc>
+#         </symbol>
+#         <symbol name="n_tex">
+#             <doc>
+#                 Number of texture components identified.
+#             </doc>
+#         </symbol>
+#         <symbol name="d">
+#             <doc>
+#                 Dimensionality.
+#             </doc>
+#         </symbol>
+#         <symbol name="c">
+#             <doc>
+#                 Cardinality.
+#             </doc>
+#         </symbol>
+#         <symbol name="n_front">
+#             <doc>
+#                 Number of active cells in the (recrystallization) front.
+#             </doc>
+#         </symbol>
+#         <symbol name="n_grains">
+#             <doc>
+#                 Number of grains in the computer simulation.
+#             </doc>
+#         </symbol>
+#     </symbols>
+#     <doc>
+#         Application definition for storing results of the SCORE cellular automaton.
+#         
+#         The SCORE cellular automaton model for primary recrystallization is an
+#         example of typical materials engineering applications used within the field
+#         of so-called Integral Computational Materials Engineering (ICME) whereby
+#         one can simulate the evolution of microstructures.
+#         
+#         Specifically the SCORE model can be used to simulate the growth of static
+#         recrystallization nuclei. The model is described in the literature:
+#         
+#         * `M. Kühbach et al. &lt;https://doi.org/10.1016/j.actamat.2016.01.068&gt;`_
+#         * `C. Haase et al. &lt;https://doi.org/10.1016/j.actamat.2015.08.057&gt;`_
+#         * `M. Diehl et al. &lt;https://doi.org/10.1088/1361-651X/ab51bd&gt;`_
+#     </doc>
+#     <group type="NXentry">
+#         <field name="definition" type="NX_CHAR">
+#             <enumeration>
+#                 <item value="NXmicrostructure_score_results"/>
+#             </enumeration>
+#         </field>
+#         <field name="simulation_identifier" type="NX_UINT">
+#             <doc>
+#                 Simulation ID as an alias to refer to this simulation.
+#             </doc>
+#         </field>
+#         <field name="description" type="NX_CHAR">
+#             <doc>
+#                 Discouraged free-text field to add further details to the computation.
+#             </doc>
+#         </field>
+#         <field name="start_time" type="NX_DATE_TIME"/>
+#         <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+#         <group type="NXuser" minOccurs="0" maxOccurs="unbounded"/>
+#         <group name="program1" type="NXprogram">
+#             <field name="program_name">
+#                 <attribute name="version"/>
+#                 <attribute name="url" recommended="true"/>
+#             </field>
+#         </group>
+#         <group name="environment" type="NXobject" optional="true">
+#             <doc>
+#                 Programs and libraries representing the computational environment
+#             </doc>
+#             <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+#                 <field name="program" type="NX_CHAR">
+#                     <attribute name="version" type="NX_CHAR"/>
+#                 </field>
+#             </group>
+#         </group>
+#         <group name="coordinate_system_set" type="NXcoordinate_system_set">
+#             <field name="rotation_handedness"/>
+#             <field name="rotation_convention"/>
+#             <field name="euler_angle_convention"/>
+#             <field name="axis_angle_convention"/>
+#             <field name="sign_convention"/>
+#             <group name="sample_reference_frame" type="NXcoordinate_system">
+#                 <field name="type">
+#                     <enumeration>
+#                         <item value="cartesian"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="handedness">
+#                     <enumeration>
+#                         <item value="right_handed"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="origin">
+#                     <enumeration>
+#                         <item value="front_bottom_left"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="x_alias">
+#                     <enumeration>
+#                         <item value="rolling_direction"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="x_direction">
+#                     <enumeration>
+#                         <item value="east"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="y_alias">
+#                     <enumeration>
+#                         <item value="transverse_direction"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="y_direction">
+#                     <enumeration>
+#                         <item value="in"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="z_alias">
+#                     <enumeration>
+#                         <item value="normal direction"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="z_direction">
+#                     <enumeration>
+#                         <item value="north"/>
+#                     </enumeration>
+#                 </field>
+#             </group>
+#         </group>
+#         <group name="discretization" type="NXmicrostructure" minOccurs="1" maxOccurs="1">
+#             <group name="grid" type="NXcg_grid">
+#                 <field name="dimensionality" type="NX_POSINT"/>
+#                 <field name="cardinality" type="NX_POSINT"/>
+#                 <field name="origin" type="NX_NUMBER"/>
+#                 <field name="symmetry"/>
+#                 <field name="cell_dimensions" type="NX_NUMBER"/>
+#                 <field name="extent" type="NX_UINT"/>
+#                 <field name="identifier_offset" type="NX_INT"/>
+#             </group>
+#             <group name="boundary" type="NXcg_polyhedron_set">
+#                 <doc>
+#                     A tight bounding box or sphere or bounding primitive about the grid.
+#                 </doc>
+#                 <!--a good example for a general bounding box description for such a grids of triclinic cells
+# https://docs.lammps.org/Howto_triclinic.html NXcg_polyhedron because a parallelepiped-->
+#                 <field name="number_of_boundaries" type="NX_POSINT" units="NX_UNITLESS">
+#                     <doc>
+#                         How many distinct boundaries are distinguished?
+#                         Most grids discretize a cubic or cuboidal region. In this case
+#                         six sides can be distinguished, each making an own boundary.
+#                     </doc>
+#                 </field>
+#                 <field name="boundary_conditions" type="NX_INT" units="NX_UNITLESS">
+#                     <doc>
+#                         The boundary conditions for each boundary:
+#                         
+#                         0 - undefined
+#                         1 - open
+#                         2 - periodic
+#                         3 - mirror
+#                         4 - von Neumann
+#                         5 - Dirichlet
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="6"/>
+#                     </dimensions>
+#                 </field>
+#                 <field name="boundaries">
+#                     <doc>
+#                         Name of the boundaries. Left, right, front, back, bottom, top,
+#                         The field must have as many entries as there are number_of_boundaries.
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="6"/>
+#                     </dimensions>
+#                 </field>
+#             </group>
+#         </group>
+#         <group name="spatiotemporalID" type="NXobject" minOccurs="1" maxOccurs="unbounded">
+#             <doc>
+#                 Documentation of the spatiotemporal evolution
+#             </doc>
+#             <!--static quantities for which no change is modelled
+# the typical lean summary statistics flattened-->
+#             <group name="summary_statistics" type="NXobject">
+#                 <doc>
+#                     Summary quantities which are the result of some post-processing of the snapshot data
+#                     (averaging, integrating, interpolating) happening in for practical reasons though in while
+#                     running the simulation. Place used for storing descriptors from continuum mechanics
+#                     and thermodynamics at the scale of the entire ROI.
+#                 </doc>
+#                 <group name="kinetics" type="NXprocess" optional="true">
+#                     <doc>
+#                         Evolution of the recrystallized volume fraction over time.
+#                     </doc>
+#                     <field name="time" type="NX_NUMBER" units="NX_TIME">
+#                         <doc>
+#                             Evolution of the physical time not to be confused with wall-clock time or
+#                             profiling data.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_summary_stats"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="iteration" type="NX_INT" units="NX_UNITLESS">
+#                         <doc>
+#                             Iteration or increment counter.
+#                         </doc>
+#                     </field>
+#                     <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
+#                         <doc>
+#                             Evolution of the simulated temperature over time.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_summary_stats"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="recrystallized_volume_fraction" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+#                         <doc>
+#                             Recrystallized volume fraction.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_summary_stats"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#                 <group name="stress" type="NXprocess" optional="true">
+#                     <field name="type">
+#                         <doc>
+#                             Which type of stress.
+#                         </doc>
+#                         <enumeration>
+#                             <item value="cauchy"/>
+#                         </enumeration>
+#                     </field>
+#                     <field name="stress" type="NX_FLOAT" units="NX_ANY">
+#                         <doc>
+#                             Applied external stress tensor on the ROI.
+#                         </doc>
+#                         <dimensions rank="3">
+#                             <dim index="1" value="n_summary_stats"/>
+#                             <dim index="2" value="3"/>
+#                             <dim index="3" value="3"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#                 <group name="strain" type="NXprocess" optional="true">
+#                     <field name="type">
+#                         <doc>
+#                             Which type of strain.
+#                         </doc>
+#                     </field>
+#                     <field name="strain" type="NX_FLOAT" units="NX_ANY">
+#                         <doc>
+#                             Applied external strain tensor on the ROI.
+#                         </doc>
+#                         <dimensions rank="3">
+#                             <dim index="1" value="n_summary_stats"/>
+#                             <dim index="2" value="3"/>
+#                             <dim index="3" value="3"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#                 <group name="deformation_gradient" type="NXprocess" optional="true">
+#                     <field name="type">
+#                         <doc>
+#                             Which type of deformation gradient.
+#                         </doc>
+#                         <enumeration>
+#                             <item value="piola"/>
+#                         </enumeration>
+#                     </field>
+#                     <field name="value" type="NX_FLOAT" units="NX_ANY">
+#                         <doc>
+#                             Applied deformation gradient tensor on the ROI.
+#                         </doc>
+#                         <dimensions rank="3">
+#                             <dim index="1" value="n_summary_stats"/>
+#                             <dim index="2" value="3"/>
+#                             <dim index="3" value="3"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#                 <group name="magnetic_field" type="NXprocess" optional="true">
+#                     <field name="strength" type="NX_FLOAT" units="NX_ANY">
+#                         <doc>
+#                             Applied external magnetic field on the ROI.
+#                         </doc>
+#                         <dimensions rank="3">
+#                             <dim index="1" value="n_summary_stats"/>
+#                             <dim index="2" value="3"/>
+#                             <dim index="3" value="3"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#                 <group name="electrical_field" type="NXprocess" optional="true">
+#                     <!--specify type of field-->
+#                     <field name="strength" type="NX_FLOAT" units="NX_ANY">
+#                         <doc>
+#                             Applied external electrical field on the ROI.
+#                         </doc>
+#                         <dimensions rank="3">
+#                             <dim index="1" value="n_summary_stats"/>
+#                             <dim index="2" value="3"/>
+#                             <dim index="3" value="3"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#             </group>
+#             <!--the typically storage-costlier snapshot data-->
+#             <group name="microstructureID" type="NXmicrostructure" minOccurs="1" maxOccurs="unbounded">
+#                 <field name="time" type="NX_NUMBER"/>
+#                 <field name="iteration" type="NX_INT"/>
+#                 <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
+#                     <doc>
+#                         Simulated temperature for this snapshot.
+#                     </doc>
+#                 </field>
+#                 <field name="x_value" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Current recrystallized volume fraction (taking fractional infections into
+#                         account).
+#                     </doc>
+#                 </field>
+#                 <field name="x_target" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Target value for which a snapshot was requested for the recrystallized volume
+#                         fraction.
+#                     </doc>
+#                 </field>
+#                 <!--optional places to store the grid for instance if it changes-->
+#                 <group name="grid" type="NXcg_grid" recommended="true">
+#                     <field name="grain_identifier" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+#                         <doc>
+#                             Grain identifier for each cell.
+#                         </doc>
+#                         <dimensions rank="3">
+#                             <dim index="1" value="n_x"/>
+#                             <dim index="2" value="n_y"/>
+#                             <dim index="3" value="n_z"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="thread_identifier" type="NX_UINT" optional="true" units="NX_UNITLESS">
+#                         <doc>
+#                             Identifier of the OpenMP thread which processed this part of the grid.
+#                         </doc>
+#                         <dimensions rank="3">
+#                             <dim index="1" value="n_x"/>
+#                             <dim index="2" value="n_y"/>
+#                             <dim index="3" value="n_z"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#                 <group name="crystal" type="NXobject">
+#                     <field name="representation" recommended="true"/>
+#                     <field name="number_of_crystals" type="NX_UINT"/>
+#                     <field name="number_of_phases" type="NX_UINT"/>
+#                     <field name="crystal_identifier_offset" type="NX_INT"/>
+#                     <field name="crystal_identifier" type="NX_INT">
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_grains"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="phase_identifier_offset" type="NX_INT"/>
+#                     <field name="phase_identifier" type="NX_INT">
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_grains"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="volume" type="NX_NUMBER" units="NX_VOLUME">
+#                         <doc>
+#                             Volume of each grain accounting also for partially transformed cells.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_grains"/>
+#                         </dimensions>
+#                     </field>
+#                     <!--SCORE specific-->
+#                     <field name="bunge_euler" type="NX_FLOAT" units="NX_ANGLE">
+#                         <doc>
+#                             Bunge-Euler angle triplets for each grain.
+#                         </doc>
+#                         <dimensions rank="2">
+#                             <dim index="1" value="n_grains"/>
+#                             <dim index="2" value="3"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="dislocation_density" type="NX_FLOAT" recommended="true" units="NX_ANY">
+#                         <doc>
+#                             Current value for the dislocation density as a measure of the remaining stored energy
+#                             in assumed crystal defects inside each grain.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_grains"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="is_deformed" type="NX_BOOLEAN" recommended="true">
+#                         <doc>
+#                             Is the grain deformed.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_grains"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="is_recrystallized" type="NX_BOOLEAN" recommended="true">
+#                         <doc>
+#                             Is the grain recrystallized.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_grains"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#                 <group name="recrystallization_front" type="NXobject" recommended="true">
+#                     <doc>
+#                         Details about those cells which in this time step represent the discrete
+#                         recrystallization front.
+#                     </doc>
+#                     <field name="halo_region" type="NX_UINT" optional="true" units="NX_UNITLESS">
+#                         <doc>
+#                             Which cells are currently in a halo region of threads.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_front"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="mobility_weight" type="NX_FLOAT" recommended="true" units="NX_UNITLESS">
+#                         <doc>
+#                             So-called mobility weight which is a scaling factor to
+#                             control the mobility of the grain boundary which is assumed
+#                             to sweep currently this volume.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_front"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="coordinate" type="NX_NUMBER" recommended="true" units="NX_UNITLESS">
+#                         <doc>
+#                             The x, y, z grid coordinates of each cell in the recrystallization front.
+#                         </doc>
+#                         <dimensions rank="2">
+#                             <dim index="1" value="n_front"/>
+#                             <dim index="2" value="3"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="deformed_grain_identifier" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+#                         <doc>
+#                             Grain identifier assigned to each cell in the recrystallization front.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_front"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="recrystallized_grain_identifier" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+#                         <doc>
+#                             Grain identifier assigned to each nucleus which affected that cell in the
+#                             recrystallization front.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_front"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="thread_identifier" type="NX_UINT" optional="true" units="NX_UNITLESS">
+#                         <doc>
+#                             Identifier of the OpenMP thread processing each cell in the recrystallization
+#                             front.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_front"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="infection_direction" type="NX_UINT" optional="true" units="NX_UNITLESS">
+#                         <doc>
+#                             Hint about the direction from which the cell was infected.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_front"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#             </group>
+#         </group>
+#     </group>
+#     <!--performance(NXcs_profiling):
+#   exists: optional
+#   current_working_directory:
+#   command_line_call:
+#     exists: optional
+#   start_time(NX_DATE_TIME):
+#     exists: recommended
+#   end_time(NX_DATE_TIME):
+#     exists: recommended
+#   total_elapsed_time(NX_NUMBER):
+#   number_of_processes(NX_POSINT):
+#   number_of_threads(NX_POSINT):
+#   number_of_gpus(NX_POSINT):-->
+# </definition>
