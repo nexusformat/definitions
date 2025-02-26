@@ -154,30 +154,47 @@ are aligned with what and how to name things-->
                 the detector and actuator (e.g. heating chip) were synchronized.
             </doc>
             <field name="sequence_index" type="NX_POSINT"/>
+            <field name="start_time" type="NX_DATE_TIME">
+                <doc>
+                    ISO8601 with local time zone reference timestamp that tells
+                    with which delta_time can be converted in timestamp.
+                    The reference timestamp is defined as the time when the
+                    actuator started acting on the sample.
+                    
+                    Time differences to this timestamp when correlated signals such
+                    as diffraction pattern matching with a specific state of  the sample
+                    (e.g. obtained temperature via the actuator) are reported through
+                    delta_time.
+                </doc>
+            </field>
             <field name="identifier_pattern" type="NX_UINT" units="NX_UNITLESS">
                 <dimensions rank="1">
                     <dim index="1" value="n_p"/>
                 </dimensions>
             </field>
-            <!--start_time(NX_DATE_TIME):
-  doc: |
-    Timestamp when pattern acquisition started.
-  dim: (n_p,)
-end_time(NX_DATE_TIME):
-  doc: |
-    Timestamp when pattern acquisition ended.
-  dim: (n_p,)-->
-            <field name="timestamp" type="NX_DATE_TIME">
+            <field name="delta_time" type="NX_FLOAT" units="NX_TIME">
                 <doc>
-                    Timestamp that is used for each diffraction pattern to correlate the results obtained from that pattern with associated actuator data.
-                    ISO8601 with local time zone information if possible and as precise as practically possible. The indices follow the same order as
-                    used for identifier_pattern.
+                    Time difference to start_time.
+                    
+                    Collecting diffraction pattern also takes some time.
+                    It is assumed that the acquisition time for each pattern is
+                    substantial shorter than the time it takes the actuator to
+                    cause a change in stimulus (e.g. temperature).
                 </doc>
                 <dimensions rank="1">
                     <dim index="1" value="n_p"/>
                 </dimensions>
             </field>
         </group>
+        <!--timestamp(NX_DATE_TIME):
+  exists: optional
+  doc: |
+    Timestamp that is used for each diffraction pattern to correlate the results
+    obtained from that pattern with associated actuator data.
+    ISO8601 with local time zone information if possible and as precise as practically
+    possible. The indices follow the same order as
+    used for identifier_pattern.
+  dim: (n_p,)-->
         <group name="pattern_center" type="NXprocess">
             <doc>
                 Computation of the centre for each pattern using e.g. a Circular Hough
@@ -222,7 +239,13 @@ NXcg_ellipsoid-->
             </doc>
             <field name="sequence_index" type="NX_POSINT"/>
             <!--TODO config(NXcollection):-->
-            <group name="result" type="NXdata">
+            <group name="resultBACKGROUND" type="NXdata" minOccurs="0" maxOccurs="2">
+                <doc>
+                    The integrated intensities:
+                    
+                    * result_with_background
+                    * result_without_background
+                </doc>
                 <attribute name="signal" type="NX_CHAR"/>
                 <attribute name="axes" type="NX_CHAR"/>
                 <attribute name="AXISNAME_indices" type="NX_CHAR"/>
@@ -238,9 +261,9 @@ NXcg_ellipsoid-->
                     </dimensions>
                     <attribute name="long_name" type="NX_CHAR"/>
                 </field>
-                <field name="identifier_pattern" type="NX_UINT" units="NX_UNITLESS">
+                <field name="identifier_pattern" type="NX_UINT" optional="true" units="NX_UNITLESS">
                     <doc>
-                        identifier for each pattern.
+                        Identifier for each pattern.
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="n_p"/>

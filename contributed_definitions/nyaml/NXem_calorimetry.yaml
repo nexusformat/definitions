@@ -106,23 +106,39 @@ NXem_calorimetry(NXobject):
         Assumptions and computations whereby timestamping data from
         the detector and actuator (e.g. heating chip) were synchronized.
       sequence_index(NX_POSINT):
+      start_time(NX_DATE_TIME):
+        doc: |
+          ISO8601 with local time zone reference timestamp that tells
+          with which delta_time can be converted in timestamp.
+          The reference timestamp is defined as the time when the
+          actuator started acting on the sample.
+          
+          Time differences to this timestamp when correlated signals such
+          as diffraction pattern matching with a specific state of  the sample
+          (e.g. obtained temperature via the actuator) are reported through
+          delta_time.
       identifier_pattern(NX_UINT):
         dim: (n_p,)
         unit: NX_UNITLESS
-      # start_time(NX_DATE_TIME):
-      #   doc: |
-      #     Timestamp when pattern acquisition started.
-      #   dim: (n_p,)
-      # end_time(NX_DATE_TIME):
-      #   doc: |
-      #     Timestamp when pattern acquisition ended.
-      #   dim: (n_p,)
-      timestamp(NX_DATE_TIME):
+      delta_time(NX_FLOAT):
         doc: |
-          Timestamp that is used for each diffraction pattern to correlate the results obtained from that pattern with associated actuator data.
-          ISO8601 with local time zone information if possible and as precise as practically possible. The indices follow the same order as
-          used for identifier_pattern.
+          Time difference to start_time.
+          
+          Collecting diffraction pattern also takes some time.
+          It is assumed that the acquisition time for each pattern is
+          substantial shorter than the time it takes the actuator to
+          cause a change in stimulus (e.g. temperature). 
+        unit: NX_TIME
         dim: (n_p,)
+      # timestamp(NX_DATE_TIME):
+      #   exists: optional
+      #   doc: |
+      #     Timestamp that is used for each diffraction pattern to correlate the results
+      #     obtained from that pattern with associated actuator data.
+      #     ISO8601 with local time zone information if possible and as precise as practically
+      #     possible. The indices follow the same order as
+      #     used for identifier_pattern.
+      #   dim: (n_p,)
     pattern_center(NXprocess):
       doc: |
         Computation of the centre for each pattern using e.g. a Circular Hough Transformation.
@@ -153,7 +169,14 @@ NXem_calorimetry(NXobject):
         azimuthally integrated as a function of time.
       sequence_index(NX_POSINT):
       # TODO config(NXcollection):
-      result(NXdata):
+      resultBACKGROUND(NXdata):
+        exists: [min, 0, max, 2]
+        doc: |
+          The integrated intensities:
+          
+          * result_with_background
+          * result_without_background
+          
         \@signal(NX_CHAR):
         \@axes(NX_CHAR): # [s]
         \@AXISNAME_indices(NX_CHAR):
@@ -165,8 +188,9 @@ NXem_calorimetry(NXobject):
           unit: NX_UNITLESS
           \@long_name(NX_CHAR):
         identifier_pattern(NX_UINT):
+          exists: optional
           doc: |
-            identifier for each pattern.
+            Identifier for each pattern.
           dim: (n_p,)
           unit: NX_UNITLESS
           \@long_name(NX_CHAR):
