@@ -18,27 +18,29 @@ symbols:
     Total number of ions in the reconstructed dataset.
 type: group
 NXapm_compositionspace_results(NXobject):
+  
   # by default for appdefs the value of the exists keyword is required unless it is explicitly specified differently
   (NXentry):
-    exists: [min, 1, max, 1]
+    exists: ['min', '1', 'max', '1']
     definition(NX_CHAR):
       \@version(NX_CHAR):
         exists: optional
       enumeration: [NXapm_compositionspace_results]
+    
     # can be used for the name of the tool and version but also
     # for if desired all the dependencies and libraries
     programID(NXprogram):
-      exists: [min, 1, max, infty]
+      nameType: partial
+      exists: ['min', '1', 'max', 'unbounded']
       program(NX_CHAR):
         \@version(NX_CHAR):
         \@url(NX_CHAR):
           exists: optional
-    (NXidentifier):
-      exists: optional
     analysis_identifier(NX_UINT):
       exists: recommended
+    
     # config
-    config(NXserialized):
+    config(NXnote):
       doc: |
         Configuration file that was used in this analysis.
       type(NX_CHAR):
@@ -48,11 +50,12 @@ NXapm_compositionspace_results(NXobject):
         exists: recommended
       checksum(NX_CHAR):
         exists: recommended
+    
     # results
     (NXuser):
       exists: optional
     voxelization(NXprocess):
-      exists: [min, 0, max, 1]
+      exists: ['min', '0', 'max', '1']
       doc: |
         Step during which the point cloud is discretized to compute element-specific composition fields.
         Iontypes are atomically decomposed to correctly account for the multiplicity of each element that
@@ -71,84 +74,110 @@ NXapm_compositionspace_results(NXobject):
           unit: NX_UNITLESS
         origin(NX_NUMBER):
           unit: NX_LENGTH
-          dim: (grid_dim,)
+          dimensions:
+            rank: 1
+            dim: (grid_dim,)
         symmetry:
           enumeration: [cubic]
         cell_dimensions(NX_NUMBER):
           unit: NX_LENGTH
-          dim: (grid_dim,)
+          dimensions:
+            rank: 1
+            dim: (grid_dim,)
         extent(NX_POSINT):
           unit: NX_UNITLESS
-          dim: (grid_dim,)
+          dimensions:
+            rank: 1
+            dim: (grid_dim,)
         identifier_offset(NX_INT):
           unit: NX_UNITLESS
         position(NX_NUMBER):
+          unit: NX_LENGTH
           doc: |
             Position of each cell in Euclidean space.
-          unit: NX_LENGTH
-          dim: (n_voxels, grid_dim)
+          dimensions:
+            rank: 2
+            dim: (n_voxels, grid_dim)
         coordinate(NX_INT):
+          unit: NX_DIMENSIONLESS
           doc: |
             Discrete coordinate of each voxel.
-          unit: NX_DIMENSIONLESS
-          dim: (n_voxels, grid_dim)
+          dimensions:
+            rank: 2
+            dim: (n_voxels, grid_dim)
+        
         # bounding box if needed
         voxel_identifier(NX_UINT):
+          unit: NX_UNITLESS
           doc: |
             For each ion, the identifier of the voxel into which the ion binned.
-          unit: NX_UNITLESS
-          dim: (n_ions)
+          dimensions:
+            rank: 1
+            dim: (n_ions,)
       weight(NX_NUMBER):
+        unit: NX_UNITLESS
         doc: |
           Total number of weight (counts for discretization with a rectangular transfer function)
           for the occupancy of each voxel with atoms.
-        unit: NX_UNITLESS
-        dim: (n_voxels,)
+        dimensions:
+          rank: 1
+          dim: (n_voxels,)
       elementID(NXion):
-        exists: [min, 1, max, infty]
+        nameType: partial
+        exists: ['min', '1', 'max', 'unbounded']
         name(NX_CHAR):
           doc: |
             Chemical symbol of the element from the periodic table.
         weight(NX_NUMBER):
+          unit: NX_UNITLESS
           doc: |
             Element-specific weight (counts for discretization with a rectangular transfer function)
             for the occupancy of each voxel with atoms of this element.
-          unit: NX_UNITLESS
-          dim: (n_voxels,)
+          dimensions:
+            rank: 1
+            dim: (n_voxels,)
     autophase(NXprocess):
-      exists: [min, 0, max, 1]
+      exists: ['min', '0', 'max', '1']
       doc: |
-        Optional step during which the subsequent segmentation step is prepared to improve the segmentation.
+        Optional step during which the subsequent segmentation step is prepared to
+        improve the segmentation.
       sequence_index(NX_POSINT):
         enumeration: [2]
       result(NXdata):
         \@signal(NX_CHAR):
         \@axes(NX_CHAR):
         \@AXISNAME_indices(NX_CHAR):
+          nameType: partial
         title(NX_CHAR):
           exists: recommended
         axis_feature_identifier(NX_UINT):
+          unit: NX_DIMENSIONLESS
           doc: |
             Element identifier stored sorted in descending order of feature importance.
-          unit: NX_DIMENSIONLESS
-          dim: (i,)
+          dimensions:
+            rank: 1
+            dim: (i,)
           \@long_name(NX_CHAR):
             doc: |
               Axis caption
         axis_feature_importance(NX_FLOAT):
-          doc: |
-            Element relative feature importance stored sorted in descending order of feature importance.
           unit: NX_DIMENSIONLESS
-          dim: (i,)
+          doc: |
+            Element relative feature importance stored sorted in descending order of feature
+            importance.
+          dimensions:
+            rank: 1
+            dim: (i,)
           \@long_name(NX_CHAR):
             doc: |
               Axis caption
     segmentation(NXprocess):
-      exists: [min, 0, max, 1]
+      exists: ['min', '0', 'max', '1']
       doc: |
-        Step during which the voxel set is segmented into voxel sets with different chemical composition.
+        Step during which the voxel set is segmented into voxel sets with different
+        chemical composition.
       pca(NXprocess):
-        exists: [min, 1, max, 1]
+        exists: ['min', '1', 'max', '1']
         doc: |
           PCA in the chemical space (essentially composition correlation analyses).
         sequence_index(NX_POSINT):
@@ -157,61 +186,77 @@ NXapm_compositionspace_results(NXobject):
           \@signal(NX_CHAR):
           \@axes(NX_CHAR):
           \@AXISNAME_indices(NX_CHAR):
+            nameType: partial
           title(NX_CHAR):
             exists: recommended
           axis_explained_variance(NX_FLOAT):
+            unit: NX_DIMENSIONLESS
             doc: |
               Explained variance values
-            unit: NX_DIMENSIONLESS
-            dim: (i,)
+            dimensions:
+              rank: 1
+              dim: (i,)
           axis_pca_dimension(NX_UINT):
-            doc: |
-              Elements identifier matching those from ENTRY/voxelization/elementID as the principal component analysis.
             unit: NX_UNITLESS
-            dim: (i,)
+            doc: |
+              Elements identifier matching those from ENTRY/voxelization/elementID as the
+              principal component analysis.
+            dimensions:
+              rank: 1
+              dim: (i,)
       ic_opt(NXprocess):
         doc: |
           Information criterion minimization.
         sequence_index(NX_POSINT):
           enumeration: [3, 4]
         cluster_analysisID(NXprocess):
+          nameType: partial
           doc: |
             Results of the Gaussian mixture analysis for n_components equal to n_ic_cluster.
           n_ic_cluster(NX_UINT):
+            unit: NX_UNITLESS
             doc: |
               n_components argument of the Gaussian mixture model.
-            unit: NX_UNITLESS
           y_pred(NX_UINT):
+            unit: NX_UNITLESS
             doc: |
               y_pred return values of the computation.
-            unit: NX_UNITLESS
-            dim: (n_voxels,)
+            dimensions:
+              rank: 1
+              dim: (n_voxels,)
         result(NXdata):
           doc: |
             Information criterion as a function of number of n_ic_cluster aka dimensions.
           \@signal(NX_CHAR):
           \@axes(NX_CHAR):
           \@AXISNAME_indices(NX_CHAR):
+            nameType: partial
           title(NX_CHAR):
             exists: recommended
           axis_aic(NX_FLOAT):
             exists: recommended
+            unit: NX_ANY
             doc: |
               Akaike information criterion values
-            unit: NX_ANY
-            dim: (i,)
+            dimensions:
+              rank: 1
+              dim: (i,)
           axis_bic(NX_FLOAT):
+            unit: NX_UNITLESS
             doc: |
               Bayes information criterion values
-            unit: NX_UNITLESS
-            dim: (i,)
+            dimensions:
+              rank: 1
+              dim: (i,)
           axis_dimension(NX_UINT):
+            unit: NX_UNITLESS
             doc: |
               Actual n_ic_cluster values used
-            unit: NX_UNITLESS
-            dim: (i,)
+            dimensions:
+              rank: 1
+              dim: (i,)
     clustering(NXprocess):
-      exists: [min, 0, max, 1]
+      exists: ['min', '0', 'max', '1']
       doc: |
         Step during which the chemically segmented voxel sets are analyzed for their spatial organization
         into different spatial clusters of voxels in the same chemical set but representing individual object
@@ -222,30 +267,38 @@ NXapm_compositionspace_results(NXobject):
         doc: |
           Respective DBScan clustering result for each segmentation/ic_opt case.
         cluster_analysisID(NXprocess):
-          exists: [min, 0, max, infty]
+          nameType: partial
+          exists: ['min', '0', 'max', 'unbounded']
           dbscanID(NXprocess):
-            exists: [min, 1, max, infty]  # max as many as n_ic_cluster
+            nameType: partial
+            exists: ['min', '1', 'max', 'unbounded']
             epsilon(NX_FLOAT):
-              doc: |
-                The maximum distance between voxel pairs in a neighborhood to be considered connected.
               unit: NX_LENGTH
-            min_samples(NX_UINT):
               doc: |
-                The number of voxels in a neighborhood for a voxel to be considered as a core point.
+                The maximum distance between voxel pairs in a neighborhood to be considered
+                connected.
+            min_samples(NX_UINT):
               unit: NX_UNITLESS
+              doc: |
+                The number of voxels in a neighborhood for a voxel to be considered as a core
+                point.
             label(NX_INT):
+              unit: NX_UNITLESS
               doc: |
                 Raw label return values
-              unit: NX_UNITLESS
-              dim: (k,)
+              dimensions:
+                rank: 1
+                dim: (k,)
             voxel(NX_UINT):
+              unit: NX_UNITLESS
               doc: |
                 Voxel identifier
                 
                 Using these identifiers correlated element-wise with the values in the label array
                 specifies for which voxel in the grid clusters from this process were found.
-              unit: NX_UNITLESS
-              dim: (n_voxels,)
+              dimensions:
+                rank: 1
+                dim: (n_voxels,)
     profiling(NXcs_profiling):
       exists: optional
       current_working_directory(NX_CHAR):
@@ -255,6 +308,399 @@ NXapm_compositionspace_results(NXobject):
       end_time(NX_DATE_TIME):
         exists: recommended
       total_elapsed_time(NX_NUMBER):
-      # number_of_processes(NX_POSINT):
-      # number_of_threads(NX_POSINT):
-      # number_of_gpus(NX_POSINT):
+  
+  # number_of_processes(NX_POSINT):
+  # number_of_threads(NX_POSINT):
+  # number_of_gpus(NX_POSINT):
+
+# ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
+# ebab3efef08e9acd6d00b6ef4c52c6a7bdeb2ea5b87c10f7fd9e0547fd8ebbf7
+# <?xml version='1.0' encoding='UTF-8'?>
+# <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+# <!--
+# # NeXus - Neutron and X-ray Common Data Format
+# #
+# # Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
+# #
+# # This library is free software; you can redistribute it and/or
+# # modify it under the terms of the GNU Lesser General Public
+# # License as published by the Free Software Foundation; either
+# # version 3 of the License, or (at your option) any later version.
+# #
+# # This library is distributed in the hope that it will be useful,
+# # but WITHOUT ANY WARRANTY; without even the implied warranty of
+# # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# # Lesser General Public License for more details.
+# #
+# # You should have received a copy of the GNU Lesser General Public
+# # License along with this library; if not, write to the Free Software
+# # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+# #
+# # For further information, see http://www.nexusformat.org
+# -->
+# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXapm_compositionspace_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+#     <symbols>
+#         <doc>
+#             The symbols used in the schema to specify e.g. dimensions of arrays.
+#         </doc>
+#         <symbol name="grid_dim">
+#             <doc>
+#                 The dimensionality of the grid.
+#             </doc>
+#         </symbol>
+#         <symbol name="n_voxels">
+#             <doc>
+#                 Total number of voxels.
+#             </doc>
+#         </symbol>
+#         <symbol name="n_ions">
+#             <doc>
+#                 Total number of ions in the reconstructed dataset.
+#             </doc>
+#         </symbol>
+#     </symbols>
+#     <doc>
+#         Application definition for results of the CompositionSpace tool used in atom probe.
+#         
+#         * `A. Saxena et al. &lt;https://www.github.com/eisenforschung/CompositionSpace.git&gt;`_
+#         
+#         This is an application definition for the common NFDI-MatWerk/FAIRmat infrastructure
+#         use case IUC09 that explores how to improve the organization and results storage of the
+#         CompositionSpace software using NeXus.
+#     </doc>
+#     <!--by default for appdefs the value of the exists keyword is required unless it is explicitly specified differently-->
+#     <group type="NXentry" minOccurs="1" maxOccurs="1">
+#         <field name="definition" type="NX_CHAR">
+#             <attribute name="version" type="NX_CHAR" optional="true"/>
+#             <enumeration>
+#                 <item value="NXapm_compositionspace_results"/>
+#             </enumeration>
+#         </field>
+#         <!--can be used for the name of the tool and version but also
+# for if desired all the dependencies and libraries-->
+#         <group name="programID" type="NXprogram" nameType="partial" minOccurs="1" maxOccurs="unbounded">
+#             <field name="program" type="NX_CHAR">
+#                 <attribute name="version" type="NX_CHAR"/>
+#                 <attribute name="url" type="NX_CHAR" optional="true"/>
+#             </field>
+#         </group>
+#         <field name="analysis_identifier" type="NX_UINT" recommended="true"/>
+#         <!--config-->
+#         <group name="config" type="NXnote">
+#             <doc>
+#                 Configuration file that was used in this analysis.
+#             </doc>
+#             <field name="type" type="NX_CHAR" optional="true"/>
+#             <field name="path" type="NX_CHAR"/>
+#             <field name="algorithm" type="NX_CHAR" recommended="true"/>
+#             <field name="checksum" type="NX_CHAR" recommended="true"/>
+#         </group>
+#         <!--results-->
+#         <group type="NXuser" optional="true"/>
+#         <group name="voxelization" type="NXprocess" minOccurs="0" maxOccurs="1">
+#             <doc>
+#                 Step during which the point cloud is discretized to compute element-specific composition fields.
+#                 Iontypes are atomically decomposed to correctly account for the multiplicity of each element that
+#                 was ranged for each ion.
+#                 
+#                 Using a discretization grid that is larger than the average distance between reconstructed ion positions
+#                 reduces computational costs. This is the key idea of the CompositionSpace tool compared to other methods
+#                 used in atom probe for characterizing microstructural features using the ion position data directly.
+#             </doc>
+#             <field name="sequence_index" type="NX_POSINT">
+#                 <enumeration>
+#                     <item value="1"/>
+#                 </enumeration>
+#             </field>
+#             <group name="cg_grid" type="NXcg_grid">
+#                 <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
+#                     <enumeration>
+#                         <item value="3"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS"/>
+#                 <field name="origin" type="NX_NUMBER" units="NX_LENGTH">
+#                     <dimensions rank="1">
+#                         <dim index="1" value="grid_dim"/>
+#                     </dimensions>
+#                 </field>
+#                 <field name="symmetry">
+#                     <enumeration>
+#                         <item value="cubic"/>
+#                     </enumeration>
+#                 </field>
+#                 <field name="cell_dimensions" type="NX_NUMBER" units="NX_LENGTH">
+#                     <dimensions rank="1">
+#                         <dim index="1" value="grid_dim"/>
+#                     </dimensions>
+#                 </field>
+#                 <field name="extent" type="NX_POSINT" units="NX_UNITLESS">
+#                     <dimensions rank="1">
+#                         <dim index="1" value="grid_dim"/>
+#                     </dimensions>
+#                 </field>
+#                 <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS"/>
+#                 <field name="position" type="NX_NUMBER" units="NX_LENGTH">
+#                     <doc>
+#                         Position of each cell in Euclidean space.
+#                     </doc>
+#                     <dimensions rank="2">
+#                         <dim index="1" value="n_voxels"/>
+#                         <dim index="2" value="grid_dim"/>
+#                     </dimensions>
+#                 </field>
+#                 <field name="coordinate" type="NX_INT" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Discrete coordinate of each voxel.
+#                     </doc>
+#                     <dimensions rank="2">
+#                         <dim index="1" value="n_voxels"/>
+#                         <dim index="2" value="grid_dim"/>
+#                     </dimensions>
+#                 </field>
+#                 <!--bounding box if needed-->
+#                 <field name="voxel_identifier" type="NX_UINT" units="NX_UNITLESS">
+#                     <doc>
+#                         For each ion, the identifier of the voxel into which the ion binned.
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_ions"/>
+#                     </dimensions>
+#                 </field>
+#             </group>
+#             <field name="weight" type="NX_NUMBER" units="NX_UNITLESS">
+#                 <doc>
+#                     Total number of weight (counts for discretization with a rectangular transfer function)
+#                     for the occupancy of each voxel with atoms.
+#                 </doc>
+#                 <dimensions rank="1">
+#                     <dim index="1" value="n_voxels"/>
+#                 </dimensions>
+#             </field>
+#             <group name="elementID" type="NXion" nameType="partial" minOccurs="1" maxOccurs="unbounded">
+#                 <field name="name" type="NX_CHAR">
+#                     <doc>
+#                         Chemical symbol of the element from the periodic table.
+#                     </doc>
+#                 </field>
+#                 <field name="weight" type="NX_NUMBER" units="NX_UNITLESS">
+#                     <doc>
+#                         Element-specific weight (counts for discretization with a rectangular transfer function)
+#                         for the occupancy of each voxel with atoms of this element.
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="n_voxels"/>
+#                     </dimensions>
+#                 </field>
+#             </group>
+#         </group>
+#         <group name="autophase" type="NXprocess" minOccurs="0" maxOccurs="1">
+#             <doc>
+#                 Optional step during which the subsequent segmentation step is prepared to
+#                 improve the segmentation.
+#             </doc>
+#             <field name="sequence_index" type="NX_POSINT">
+#                 <enumeration>
+#                     <item value="2"/>
+#                 </enumeration>
+#             </field>
+#             <group name="result" type="NXdata">
+#                 <attribute name="signal" type="NX_CHAR"/>
+#                 <attribute name="axes" type="NX_CHAR"/>
+#                 <attribute name="AXISNAME_indices" type="NX_CHAR" nameType="partial"/>
+#                 <field name="title" type="NX_CHAR" recommended="true"/>
+#                 <field name="axis_feature_identifier" type="NX_UINT" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Element identifier stored sorted in descending order of feature importance.
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="i"/>
+#                     </dimensions>
+#                     <attribute name="long_name" type="NX_CHAR">
+#                         <doc>
+#                             Axis caption
+#                         </doc>
+#                     </attribute>
+#                 </field>
+#                 <field name="axis_feature_importance" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+#                     <doc>
+#                         Element relative feature importance stored sorted in descending order of feature
+#                         importance.
+#                     </doc>
+#                     <dimensions rank="1">
+#                         <dim index="1" value="i"/>
+#                     </dimensions>
+#                     <attribute name="long_name" type="NX_CHAR">
+#                         <doc>
+#                             Axis caption
+#                         </doc>
+#                     </attribute>
+#                 </field>
+#             </group>
+#         </group>
+#         <group name="segmentation" type="NXprocess" minOccurs="0" maxOccurs="1">
+#             <doc>
+#                 Step during which the voxel set is segmented into voxel sets with different
+#                 chemical composition.
+#             </doc>
+#             <group name="pca" type="NXprocess" minOccurs="1" maxOccurs="1">
+#                 <doc>
+#                     PCA in the chemical space (essentially composition correlation analyses).
+#                 </doc>
+#                 <field name="sequence_index" type="NX_POSINT">
+#                     <enumeration>
+#                         <item value="2"/>
+#                         <item value="3"/>
+#                     </enumeration>
+#                 </field>
+#                 <group name="result" type="NXdata">
+#                     <attribute name="signal" type="NX_CHAR"/>
+#                     <attribute name="axes" type="NX_CHAR"/>
+#                     <attribute name="AXISNAME_indices" type="NX_CHAR" nameType="partial"/>
+#                     <field name="title" type="NX_CHAR" recommended="true"/>
+#                     <field name="axis_explained_variance" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+#                         <doc>
+#                             Explained variance values
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="i"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="axis_pca_dimension" type="NX_UINT" units="NX_UNITLESS">
+#                         <doc>
+#                             Elements identifier matching those from ENTRY/voxelization/elementID as the
+#                             principal component analysis.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="i"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#             </group>
+#             <group name="ic_opt" type="NXprocess">
+#                 <doc>
+#                     Information criterion minimization.
+#                 </doc>
+#                 <field name="sequence_index" type="NX_POSINT">
+#                     <enumeration>
+#                         <item value="3"/>
+#                         <item value="4"/>
+#                     </enumeration>
+#                 </field>
+#                 <group name="cluster_analysisID" type="NXprocess" nameType="partial">
+#                     <doc>
+#                         Results of the Gaussian mixture analysis for n_components equal to n_ic_cluster.
+#                     </doc>
+#                     <field name="n_ic_cluster" type="NX_UINT" units="NX_UNITLESS">
+#                         <doc>
+#                             n_components argument of the Gaussian mixture model.
+#                         </doc>
+#                     </field>
+#                     <field name="y_pred" type="NX_UINT" units="NX_UNITLESS">
+#                         <doc>
+#                             y_pred return values of the computation.
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="n_voxels"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#                 <group name="result" type="NXdata">
+#                     <doc>
+#                         Information criterion as a function of number of n_ic_cluster aka dimensions.
+#                     </doc>
+#                     <attribute name="signal" type="NX_CHAR"/>
+#                     <attribute name="axes" type="NX_CHAR"/>
+#                     <attribute name="AXISNAME_indices" type="NX_CHAR" nameType="partial"/>
+#                     <field name="title" type="NX_CHAR" recommended="true"/>
+#                     <field name="axis_aic" type="NX_FLOAT" recommended="true" units="NX_ANY">
+#                         <doc>
+#                             Akaike information criterion values
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="i"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="axis_bic" type="NX_FLOAT" units="NX_UNITLESS">
+#                         <doc>
+#                             Bayes information criterion values
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="i"/>
+#                         </dimensions>
+#                     </field>
+#                     <field name="axis_dimension" type="NX_UINT" units="NX_UNITLESS">
+#                         <doc>
+#                             Actual n_ic_cluster values used
+#                         </doc>
+#                         <dimensions rank="1">
+#                             <dim index="1" value="i"/>
+#                         </dimensions>
+#                     </field>
+#                 </group>
+#             </group>
+#         </group>
+#         <group name="clustering" type="NXprocess" minOccurs="0" maxOccurs="1">
+#             <doc>
+#                 Step during which the chemically segmented voxel sets are analyzed for their spatial organization
+#                 into different spatial clusters of voxels in the same chemical set but representing individual object
+#                 not-necessarily watertight or topologically closed objects built from individual voxels.
+#             </doc>
+#             <field name="sequence_index" type="NX_POSINT">
+#                 <enumeration>
+#                     <item value="4"/>
+#                     <item value="5"/>
+#                 </enumeration>
+#             </field>
+#             <group name="ic_opt" type="NXobject">
+#                 <doc>
+#                     Respective DBScan clustering result for each segmentation/ic_opt case.
+#                 </doc>
+#                 <group name="cluster_analysisID" type="NXprocess" nameType="partial" minOccurs="0" maxOccurs="unbounded">
+#                     <group name="dbscanID" type="NXprocess" nameType="partial" minOccurs="1" maxOccurs="unbounded">
+#                         <field name="epsilon" type="NX_FLOAT" units="NX_LENGTH">
+#                             <doc>
+#                                 The maximum distance between voxel pairs in a neighborhood to be considered
+#                                 connected.
+#                             </doc>
+#                         </field>
+#                         <field name="min_samples" type="NX_UINT" units="NX_UNITLESS">
+#                             <doc>
+#                                 The number of voxels in a neighborhood for a voxel to be considered as a core
+#                                 point.
+#                             </doc>
+#                         </field>
+#                         <field name="label" type="NX_INT" units="NX_UNITLESS">
+#                             <doc>
+#                                 Raw label return values
+#                             </doc>
+#                             <dimensions rank="1">
+#                                 <dim index="1" value="k"/>
+#                             </dimensions>
+#                         </field>
+#                         <field name="voxel" type="NX_UINT" units="NX_UNITLESS">
+#                             <doc>
+#                                 Voxel identifier
+#                                 
+#                                 Using these identifiers correlated element-wise with the values in the label array
+#                                 specifies for which voxel in the grid clusters from this process were found.
+#                             </doc>
+#                             <dimensions rank="1">
+#                                 <dim index="1" value="n_voxels"/>
+#                             </dimensions>
+#                         </field>
+#                     </group>
+#                 </group>
+#             </group>
+#         </group>
+#         <group name="profiling" type="NXcs_profiling" optional="true">
+#             <field name="current_working_directory" type="NX_CHAR" recommended="true"/>
+#             <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
+#             <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+#             <field name="total_elapsed_time" type="NX_NUMBER"/>
+#         </group>
+#     </group>
+#     <!--number_of_processes(NX_POSINT):
+# number_of_threads(NX_POSINT):
+# number_of_gpus(NX_POSINT):-->
+# </definition>

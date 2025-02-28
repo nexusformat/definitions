@@ -50,7 +50,8 @@ extensions = [
     'sphinx_comments',
     'sphinx.ext.todo',
     'sphinx_tabs.tabs',
-    'contrib_ext'
+    'contrib_ext',
+    'chios.bolditalic'
 ]
 
 
@@ -146,6 +147,9 @@ else:
     def setup(app):
         app.add_css_file('details_summary_hide.css')
 
+def setup(app):
+    app.add_css_file('details_summary_hide.css')
+
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
@@ -157,6 +161,12 @@ htmlhelp_basename = 'NeXusManualdoc'
 comments_config = {
     "hypothesis": True
 }
+html_contexthtml_context = {
+  'css_files': [
+    '_static/bespoke.css',  # custom CSS styling
+    '_static/bolditalic.css',  # bolditalic styling
+    ],
+  }
 
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {
@@ -168,5 +178,7 @@ latex_elements = {
     \DeclareUnicodeCharacter{2906}{<=}
     \DeclareUnicodeCharacter{394}{$\Delta$}
     \DeclareUnicodeCharacter{2206}{$\Delta$}
+    \DeclareUnicodeCharacter{1F517}{X}
+    \DeclareUnicodeCharacter{2906}{<=}
     \listfiles'''
 }
