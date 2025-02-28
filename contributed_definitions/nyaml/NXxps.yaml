@@ -23,68 +23,66 @@ NXxps(NXmpes):
         .. _Clause 11: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:sec:11
     transitions:
       exists: recommended
-    geometries(NXcoordinate_system_set):
+    xps_coordinate_system(NXcoordinate_system):
       exists: recommended
-      xps_coordinate_system(NXcoordinate_system):
+      doc: |
+        In traditional surface science, a left-handed coordinate system is used such that the positive z-axis
+        points along the normal of the sample stage, and the x- and y-axes lie in the plane of the sample stage.
+        However, in NeXus, a coordinate system that is the same as `McStas`_  is used. `xps_coordinate_system`
+        gives the user the opportunity to work in the traditional base coordinate system.
+        
+        .. _McStas: http://mcstas.org/
+        
+        .. image:: xps/xps_cs.png
+            :width: 40%
+      origin:
+        enumeration: [sample stage]
+      handedness:
+        enumeration: [left_handed]
+      z_direction:
+        enumeration: [sample stage normal]
+      x(NX_NUMBER):
+        enumeration: [[-1, 0, 0]]
+      y(NX_NUMBER):
+        enumeration: [[0, 1, 0]]
+      z(NX_NUMBER):
+        enumeration: [[0, 0, 1]]
+      depends_on(NX_CHAR):
+        doc: |
+          Link to transformations defining the XPS base coordinate system,
+          which is defined such that the positive z-axis points along the sample stage normal, and the
+          x- and y-axes lie in the plane of the sample stage.
+      coordinate_system_transformations(NXtransformations):
         exists: optional
         doc: |
-          In traditional surface science, a left-handed coordinate system is used such that the positive z-axis
-          points along the normal of the sample stage, and the x- and y-axes lie in the plane of the sample stage.
-          However, in NeXus, a coordinate system that is the same as `McStas`_  is used. `xps_coordinate_system`
-          gives the user the opportunity to work in the traditional base coordinate system.
+          Set of transformations, describing the orientation of the XPS coordinate system
+          with respect to the beam coordinate system (.) or any other coordinate system.
           
-          .. _McStas: http://mcstas.org/
+          The transformations in `coordinate_system_transformations` depend on the actual instrument geometry.
+          If the z-axis is pointing in the direction of gravity (i.e., if the sample is mounted horizontally),
+          the following transformations can be used for describing the XPS coordinate system
+          with respect to the beam coordinate system (.):
           
-          .. image:: xps/xps_cs.png
-              :width: 40%
-        origin:
-          enumeration: [sample stage]
-        handedness:
-          enumeration: [left_handed]
-        z_direction:
-          enumeration: [sample stage normal]
-        x(NX_NUMBER):
-          enumeration: [[-1, 0, 0]]
-        y(NX_NUMBER):
-          enumeration: [[0, 1, 0]]
-        z(NX_NUMBER):
-          enumeration: [[0, 0, 1]]
-        depends_on(NX_CHAR):
-          doc: |
-            Link to transformations defining the XPS base coordinate system,
-            which is defined such that the positive z-axis points along the sample stage normal, and the
-            x- and y-axes lie in the plane of the sample stage.
-        coordinate_system_transformations(NXtransformations):
-          exists: optional
-          doc: |
-            Set of transformations, describing the orientation of the XPS coordinate system
-            with respect to the beam coordinate system (.) or any other coordinate system.
-            
-            The transformations in `coordinate_system_transformations` depend on the actual instrument geometry.
-            If the z-axis is pointing in the direction of gravity (i.e., if the sample is mounted horizontally),
-            the following transformations can be used for describing the XPS coordinate system
-            with respect to the beam coordinate system (.):
-            
-            .. code-block::
-            
+          .. code-block::
+          
               xps_coordinate_system:NXcoordinate_system
-                depends_on=entry/geometries/xps_coordinate_system/coordinate_transformations/z_rotation
-                coordinate_system_transformations:NXtransformations
+              depends_on=entry/geometries/xps_coordinate_system/coordinate_transformations/z_rotation
+              coordinate_system_transformations:NXtransformations
                   z_rotation=beam_azimuth_angle
-                    @depends_on=y_flip
-                    @transformation_type=rotation
-                    @vector=[0, 0, 1]
-                    @units=degree
+                  @depends_on=y_flip
+                  @transformation_type=rotation
+                  @vector=[0, 0, 1]
+                  @units=degree
                   y_flip=180
-                    @depends_on=y_rotation
-                    @transformation_type=rotation
-                    @vector=[0, 1, 0]
-                    @units=degree
+                  @depends_on=y_rotation
+                  @transformation_type=rotation
+                  @vector=[0, 1, 0]
+                  @units=degree
                   y_rotation=beam_polar_angle_of_incidence
-                    @depends_on=.
-                    @transformation_type=rotation
-                    @vector=[0, 1, 0]
-                    @units=degree
+                  @depends_on=.
+                  @transformation_type=rotation
+                  @vector=[0, 1, 0]
+                  @units=degree
     (NXinstrument):
       doc:
       - |
@@ -247,7 +245,7 @@ NXxps(NXmpes):
               form of the peak should be given by the ``formula_description`` field. The user is also encouraged to use the
               ``description`` field for describing the fit function in a human-readable way.
             enumeration:
-              open_enum: True
+              open_enum: true
               Gaussian:
                 doc: |
                   The Gaussian function models peaks with a symmetric shape, commonly arising from instrumental broadening
@@ -372,10 +370,12 @@ NXxps(NXmpes):
           fit_parameters(NXparameters):
             exists: recommended
             area:
+              unit: NX_ANY
               exists: optional
               doc: |
                 Area of the peak.
             width:
+              unit: NX_ENERGY
               exists: optional
               doc:
               - |
@@ -389,14 +389,11 @@ NXxps(NXmpes):
                   spec: ISO 18115-1:2023
                   term: 3.28
                   url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.28
-              value:
-                unit: NX_ENERGY
             position:
+              unit: NX_ENERGY
               exists: optional
               doc: |
                 Position of the peak on the energy axis.
-              value:
-                unit: NX_ENERGY
         total_area:
           exists: recommended
           doc:
@@ -441,7 +438,7 @@ NXxps(NXmpes):
               form of the background should be given by the ``formula_description`` field. The user is also encouraged to use the
               ``description`` field for describing the fit function in a human-readable way.
             enumeration:
-              open_enum: True
+              open_enum: true
               Linear:
                 doc: |
                   Linear background, i.e., a simple straight line from the minimal to the maximal
@@ -594,7 +591,7 @@ NXxps(NXmpes):
       \@energy_indices(NX_INT):
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 7eb37b2f27efa059389865e1eb10416f32509026d6057d077a675de9ffe7b407
+# 72295a2081dfbda89dc8adf83cf4f65ff160b338b8c89f5bdb1625bf224aea4e
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
@@ -646,88 +643,86 @@ NXxps(NXmpes):
 #             </doc>
 #         </field>
 #         <field name="transitions" recommended="true"/>
-#         <group name="geometries" type="NXcoordinate_system_set" recommended="true">
-#             <group name="xps_coordinate_system" type="NXcoordinate_system" optional="true">
+#         <group name="xps_coordinate_system" type="NXcoordinate_system" recommended="true">
+#             <doc>
+#                 In traditional surface science, a left-handed coordinate system is used such that the positive z-axis
+#                 points along the normal of the sample stage, and the x- and y-axes lie in the plane of the sample stage.
+#                 However, in NeXus, a coordinate system that is the same as `McStas`_  is used. `xps_coordinate_system`
+#                 gives the user the opportunity to work in the traditional base coordinate system.
+#                 
+#                 .. _McStas: http://mcstas.org/
+#                 
+#                 .. image:: xps/xps_cs.png
+#                     :width: 40%
+#             </doc>
+#             <field name="origin">
+#                 <enumeration>
+#                     <item value="sample stage"/>
+#                 </enumeration>
+#             </field>
+#             <field name="handedness">
+#                 <enumeration>
+#                     <item value="left_handed"/>
+#                 </enumeration>
+#             </field>
+#             <field name="z_direction">
+#                 <enumeration>
+#                     <item value="sample stage normal"/>
+#                 </enumeration>
+#             </field>
+#             <field name="x" type="NX_NUMBER">
+#                 <enumeration>
+#                     <item value="[-1, 0, 0]"/>
+#                 </enumeration>
+#             </field>
+#             <field name="y" type="NX_NUMBER">
+#                 <enumeration>
+#                     <item value="[0, 1, 0]"/>
+#                 </enumeration>
+#             </field>
+#             <field name="z" type="NX_NUMBER">
+#                 <enumeration>
+#                     <item value="[0, 0, 1]"/>
+#                 </enumeration>
+#             </field>
+#             <field name="depends_on" type="NX_CHAR">
 #                 <doc>
-#                     In traditional surface science, a left-handed coordinate system is used such that the positive z-axis
-#                     points along the normal of the sample stage, and the x- and y-axes lie in the plane of the sample stage.
-#                     However, in NeXus, a coordinate system that is the same as `McStas`_  is used. `xps_coordinate_system`
-#                     gives the user the opportunity to work in the traditional base coordinate system.
-#                     
-#                     .. _McStas: http://mcstas.org/
-#                     
-#                     .. image:: xps/xps_cs.png
-#                         :width: 40%
+#                     Link to transformations defining the XPS base coordinate system,
+#                     which is defined such that the positive z-axis points along the sample stage normal, and the
+#                     x- and y-axes lie in the plane of the sample stage.
 #                 </doc>
-#                 <field name="origin">
-#                     <enumeration>
-#                         <item value="sample stage"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="handedness">
-#                     <enumeration>
-#                         <item value="left_handed"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="z_direction">
-#                     <enumeration>
-#                         <item value="sample stage normal"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="x" type="NX_NUMBER">
-#                     <enumeration>
-#                         <item value="[-1, 0, 0]"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="y" type="NX_NUMBER">
-#                     <enumeration>
-#                         <item value="[0, 1, 0]"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="z" type="NX_NUMBER">
-#                     <enumeration>
-#                         <item value="[0, 0, 1]"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="depends_on" type="NX_CHAR">
-#                     <doc>
-#                         Link to transformations defining the XPS base coordinate system,
-#                         which is defined such that the positive z-axis points along the sample stage normal, and the
-#                         x- and y-axes lie in the plane of the sample stage.
-#                     </doc>
-#                 </field>
-#                 <group name="coordinate_system_transformations" type="NXtransformations" optional="true">
-#                     <doc>
-#                         Set of transformations, describing the orientation of the XPS coordinate system
-#                         with respect to the beam coordinate system (.) or any other coordinate system.
-#                         
-#                         The transformations in `coordinate_system_transformations` depend on the actual instrument geometry.
-#                         If the z-axis is pointing in the direction of gravity (i.e., if the sample is mounted horizontally),
-#                         the following transformations can be used for describing the XPS coordinate system
-#                         with respect to the beam coordinate system (.):
-#                         
-#                         .. code-block::
-#                         
-#                           xps_coordinate_system:NXcoordinate_system
-#                             depends_on=entry/geometries/xps_coordinate_system/coordinate_transformations/z_rotation
-#                             coordinate_system_transformations:NXtransformations
-#                               z_rotation=beam_azimuth_angle
-#                                 @depends_on=y_flip
-#                                 @transformation_type=rotation
-#                                 @vector=[0, 0, 1]
-#                                 @units=degree
-#                               y_flip=180
-#                                 @depends_on=y_rotation
-#                                 @transformation_type=rotation
-#                                 @vector=[0, 1, 0]
-#                                 @units=degree
-#                               y_rotation=beam_polar_angle_of_incidence
-#                                 @depends_on=.
-#                                 @transformation_type=rotation
-#                                 @vector=[0, 1, 0]
-#                                 @units=degree
-#                     </doc>
-#                 </group>
+#             </field>
+#             <group name="coordinate_system_transformations" type="NXtransformations" optional="true">
+#                 <doc>
+#                     Set of transformations, describing the orientation of the XPS coordinate system
+#                     with respect to the beam coordinate system (.) or any other coordinate system.
+#                     
+#                     The transformations in `coordinate_system_transformations` depend on the actual instrument geometry.
+#                     If the z-axis is pointing in the direction of gravity (i.e., if the sample is mounted horizontally),
+#                     the following transformations can be used for describing the XPS coordinate system
+#                     with respect to the beam coordinate system (.):
+#                     
+#                     .. code-block::
+#                     
+#                         xps_coordinate_system:NXcoordinate_system
+#                         depends_on=entry/geometries/xps_coordinate_system/coordinate_transformations/z_rotation
+#                         coordinate_system_transformations:NXtransformations
+#                             z_rotation=beam_azimuth_angle
+#                             @depends_on=y_flip
+#                             @transformation_type=rotation
+#                             @vector=[0, 0, 1]
+#                             @units=degree
+#                             y_flip=180
+#                             @depends_on=y_rotation
+#                             @transformation_type=rotation
+#                             @vector=[0, 1, 0]
+#                             @units=degree
+#                             y_rotation=beam_polar_angle_of_incidence
+#                             @depends_on=.
+#                             @transformation_type=rotation
+#                             @vector=[0, 1, 0]
+#                             @units=degree
+#                 </doc>
 #             </group>
 #         </group>
 #         <group type="NXinstrument">
@@ -926,7 +921,7 @@ NXxps(NXmpes):
 #                             form of the peak should be given by the ``formula_description`` field. The user is also encouraged to use the
 #                             ``description`` field for describing the fit function in a human-readable way.
 #                         </doc>
-#                         <enumeration open="True">
+#                         <enumeration open="true">
 #                             <item value="Gaussian">
 #                                 <doc>
 #                                     The Gaussian function models peaks with a symmetric shape, commonly arising from instrumental broadening
@@ -1067,12 +1062,12 @@ NXxps(NXmpes):
 #                     </field>
 #                     <field name="formula_description" recommended="true"/>
 #                     <group name="fit_parameters" type="NXparameters" recommended="true">
-#                         <field name="area" optional="true">
+#                         <field name="area" units="NX_ANY" optional="true">
 #                             <doc>
 #                                 Area of the peak.
 #                             </doc>
 #                         </field>
-#                         <field name="width" optional="true">
+#                         <field name="width" units="NX_ENERGY" optional="true">
 #                             <doc>
 #                                 Width of a peak at a defined fraction of the peak height.
 #                                 
@@ -1084,13 +1079,11 @@ NXxps(NXmpes):
 #                                 
 #                                 .. _3.28: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.28
 #                             </doc>
-#                             <field name="value" units="NX_ENERGY"/>
 #                         </field>
-#                         <field name="position" optional="true">
+#                         <field name="position" units="NX_ENERGY" optional="true">
 #                             <doc>
 #                                 Position of the peak on the energy axis.
 #                             </doc>
-#                             <field name="value" units="NX_ENERGY"/>
 #                         </field>
 #                     </group>
 #                 </group>
@@ -1134,7 +1127,7 @@ NXxps(NXmpes):
 #                             form of the background should be given by the ``formula_description`` field. The user is also encouraged to use the
 #                             ``description`` field for describing the fit function in a human-readable way.
 #                         </doc>
-#                         <enumeration open="True">
+#                         <enumeration open="true">
 #                             <item value="Linear">
 #                                 <doc>
 #                                     Linear background, i.e., a simple straight line from the minimal to the maximal
