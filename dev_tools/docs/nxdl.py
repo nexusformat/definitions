@@ -12,8 +12,9 @@ from ..globals.directories import get_nxdl_root
 from ..globals.errors import NXDLParseError
 from ..globals.nxdl import NXDL_NAMESPACE
 from ..globals.urls import REPO_URL
-from ..utils import nxdl_utils as pynxtools_nxlib
 from ..utils.github import get_file_contributors_via_api
+from ..utils.nxdl_utils import get_inherited_nodes
+from ..utils.nxdl_utils import get_rst_formatted_name
 from ..utils.types import PathLike
 from .anchor_list import AnchorRegistry
 
@@ -78,8 +79,10 @@ class NXClassDocGenerator:
                 f'Unexpected class name "{nxclass_name}"; does not start with NX'
             )
         lexical_name = nxclass_name[2:]  # without padding 'NX', for indexing
+
         self._listing_category = self._CATEGORY_TO_LISTING[category]
         self._use_application_defaults = category == "application"
+        self._contribution = nxdl_file.parent.name == "contributed_definitions"
 
         # print ReST comments and section header
         source = os.path.relpath(nxdl_file, get_nxdl_root())
@@ -127,7 +130,12 @@ class NXClassDocGenerator:
 
         self._print("")
         self._print("**Status**:\n")
-        self._print(f"  {self._listing_category.strip()}, extends {extends}")
+        if self._contribution:
+            self._print(
+                f"  *{self._listing_category}* (contribution), extends {extends}"
+            )
+        else:
+            self._print(f"  {self._listing_category}, extends {extends}")
 
         self._print_if_deprecated(ns, root, "")
 
@@ -304,9 +312,12 @@ class NXClassDocGenerator:
         return out_blocks
 
     def _handle_multiline_docstring(self, blocks):
+        link_pattern = re.compile(r"\.\. _([^:]+):(.*)")
+
         links = []
         docstring = ""
         expanded_blocks = []
+
         for block in blocks:
             expanded_blocks += block.split("\n")
 
@@ -314,11 +325,11 @@ class NXClassDocGenerator:
             if not block:
                 continue
 
-            link_match = re.search(r"\.\. _([^:]+):(.*)", block)
+            link_match = link_pattern.search(block)
             if link_match is not None:
                 links.append((link_match.group(1), link_match.group(2).strip()))
             else:
-                docstring += " " + re.sub(r"\n", " ", block.strip())
+                docstring += " " + block.strip().replace("\n", " ")
 
         for name, target in links:
             docstring = docstring.replace(f"`{name}`_", f"`{name} <{target}>`_")
@@ -331,7 +342,7 @@ class NXClassDocGenerator:
             return ""
         if len(blocks) > 1:
             return self._handle_multiline_docstring(blocks)
-        return re.sub(r"\n", " ", blocks[0])
+        return blocks[0].replace("\n", " ")
 
     def _get_minOccurs(self, node):
         """
@@ -501,10 +512,16 @@ class NXClassDocGenerator:
         if len(node_list) == 0:
             return ""
 
-        if len(node_list) == 1:
-            self._print(f"{indent}Obligatory value:", end="")
+        if parent.attrib.get("open", "false") == "true":
+            self._print(
+                f"{indent}Any of these values or a custom value (if you use a custom value, also set @custom=True):",
+                end="",
+            )
         else:
-            self._print(f"{indent}Any of these values:", end="")
+            if len(node_list) == 1:
+                self._print(f"{indent}Obligatory value:", end="")
+            else:
+                self._print(f"{indent}Any of these values:", end="")
 
         docs = OrderedDict()
         for item in node_list:
@@ -579,13 +596,14 @@ class NXClassDocGenerator:
 
     def _print_attribute(self, ns, kind, node, optional, indent, parent_path):
         name = node.get("name")
+        formatted_name = get_rst_formatted_name(node)
         index_name = name
         self._print(
             f"{indent}" f"{self._hyperlink_target(parent_path, name, 'attribute')}"
         )
         self._print(f"{indent}.. index:: {index_name} ({kind} attribute)\n")
         self._print(
-            f"{indent}**@{name}**: {optional}{self._format_type(node)}{self._format_units(node)} {self.get_first_parent_ref(f'{parent_path}/{name}', 'attribute')}\n"
+            f"{indent}{formatted_name}: {optional}{self._format_type(node)}{self._format_units(node)} {self.get_first_parent_ref(f'{parent_path}/{name}', 'attribute')}\n"
         )
         self._print_doc_enum(indent, ns, node)
 
@@ -605,14 +623,9 @@ class NXClassDocGenerator:
         :param indent: to keep track of indentation level
         :param parent_path: NX class path of parent nodes
         """
-
-        self._use_application_defaults = self._listing_category in (
-            "application definition",
-            "contributed definition",
-        )
-
         for node in parent.xpath("nx:field", namespaces=ns):
             name = node.get("name")
+            formatted_name = get_rst_formatted_name(node)
             index_name = name
             dims = self._analyze_dimensions(ns, node)
 
@@ -620,7 +633,7 @@ class NXClassDocGenerator:
             self._print(f"{indent}{self._hyperlink_target(parent_path, name, 'field')}")
             self._print(f"{indent}.. index:: {index_name} (field)\n")
             self._print(
-                f"{indent}**{name}**: "
+                f"{indent}{formatted_name}: "
                 f"{optional_text}"
                 f"{self._format_type(node)}"
                 f"{dims}"
@@ -645,6 +658,7 @@ class NXClassDocGenerator:
 
         for node in parent.xpath("nx:group", namespaces=ns):
             name = node.get("name", "")
+            formatted_name = get_rst_formatted_name(node)
             typ = node.get("type", "untyped (this is an error; please report)")
 
             optional_text = self._get_required_or_optional_text(node)
@@ -657,7 +671,7 @@ class NXClassDocGenerator:
             # TODO: https://github.com/nexusformat/definitions/issues/1057
             self._print(f"{indent}{hTarget}")
             self._print(
-                f"{indent}**{name}**: {optional_text}{typ} {self.get_first_parent_ref(f'{parent_path}/{name}', 'group')}\n"
+                f"{indent}{formatted_name}: {optional_text}{typ} {self.get_first_parent_ref(f'{parent_path}/{name}', 'group')}\n"
             )
 
             self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
@@ -685,9 +699,10 @@ class NXClassDocGenerator:
 
         for node in parent.xpath("nx:link", namespaces=ns):
             name = node.get("name")
+            formatted_name = get_rst_formatted_name(node)
             self._print(f"{indent}{self._hyperlink_target(parent_path, name, 'link')}")
             self._print(
-                f"{indent}**{name}**: "
+                f"{indent}{formatted_name}: "
                 ":ref:`link<Design-Links>` "
                 f"(suggested target: ``{node.get('target')}``)"
                 "\n"
@@ -703,7 +718,7 @@ class NXClassDocGenerator:
         path = path[path.find("/", 1) :]
 
         try:
-            parents = pynxtools_nxlib.get_inherited_nodes(path, nx_name)[2]
+            parents = get_inherited_nodes(path, nx_name)[2]
         except FileNotFoundError:
             return ""
         if len(parents) > 1:
