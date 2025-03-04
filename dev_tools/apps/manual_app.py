@@ -6,6 +6,7 @@ from ..docs.xsd_units import generate_xsd_units_doc
 from ..globals import directories
 from ..nxdl import iter_definitions
 from ..nxdl import validate_definition
+from ..utils.copy import copy_directories
 from ..utils.copy import copy_files
 from ..utils.copy import copydir
 from ..utils.diff import diff_ascii
@@ -107,14 +108,25 @@ def manual_exec(args):
                     with open(index_file, "w") as fh:
                         fh.writelines(rst_lines)
 
-    # Generate the anchor list in several format
     if args.prepare:
+        directories.manual_build_root()
         print("generate anchor list files in", output_path)
         anchor_registry.write()
+
+        print("copy extra files", output_path)
         copy_files(EXTRA_FILES)
+
+        print("copy extra directories", output_path)
+        copy_directories(EXTRA_DIRECTORIES)
 
 
 # Path relative to source directory,
 # Path relative to build directory,
 # Overwrite (boolean)
-EXTRA_FILES = [["NXDL_VERSION", "NXDL_VERSION", True], ["LGPL.txt", "LGPL.txt", True]]
+EXTRA_FILES = [
+    ["NXDL_VERSION", "NXDL_VERSION", True],
+    ["LGPL.txt", "LGPL.txt", True],
+]
+EXTRA_DIRECTORIES = [
+    ["galleries", "galleries", True],
+]
