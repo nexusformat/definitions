@@ -53,7 +53,7 @@
         :ref:`NXinstrument`, in which case it is recommended that the position of the beam is specified by an 
         :ref:`NXtransformations` group, unless the beam is at the origin (which is the sample).
 
-        Note that incident_wavelength and related fields can be a scalar values or arrays, depending on the use case.
+        Note that ``incident_wavelength``, ``incident_energy``, and related fields can be a scalar values or arrays, depending on the use case.
         To support these use cases, the explicit dimensionality of these fields is not specified, but it can be inferred
         by the presense of and shape of accompanying fields, such as incident_wavelength_weights for a polychromatic beam.
         </doc>
@@ -62,22 +62,11 @@
     </field>
     <field name="incident_energy" type="NX_FLOAT" units="NX_ENERGY">
         <doc>
-            Energy carried by each particle of the beam on entering the beamline component.
-            
-            In the case of a monochromatic beam this is the scalar energy.
-            Several other use cases are permitted, depending on the
-            presence of other incident_energy_X fields.
-            
-            * In the case of a polychromatic beam this is an array of length m of energies, with the relative weights in incident_energy_weights.
-            * In the case of a monochromatic beam that varies shot-to-shot, this is an array of energies, one for each recorded shot.
-              Here, incident_energy_weights and incident_energy_spread are not set.
-            * In the case of a polychromatic beam that varies shot-to-shot,
-              this is an array of length m with the relative weights in incident_energy_weights as a 2D array.
-            * In the case of a polychromatic beam that varies shot-to-shot and where the channels also vary,
-              this is a 2D array of dimensions nP by m (slow to fast) with the relative weights in incident_energy_weights as a 2D array.
-            
-            Note, variants are a good way to represent several of these use cases in a single dataset,
-            e.g. if a calibrated, single-value energy value is available along with the original spectrum from which it was calibrated.
+            Energy carried by each particle of the beam on entering the given location.
+
+            Several use cases are permitted, depending on the presence or absence of
+            other ``incident_energy_X`` fields. The usage should follow that of
+            :ref:`incident_wavelength &lt;/NXbeam/incident_wavelength-field&gt;`.
        </doc>
         <dimensions rank="1">
             <dim index="1" value="m"/>
@@ -85,23 +74,20 @@
     </field>
     <field name="incident_energy_spread" type="NX_NUMBER" units="NX_ENERGY">
         <doc>
-             The energy spread FWHM for the corresponding energy(ies) in incident_energy. In the case of shot-to-shot variation in
-             the energy spread, this is a 2D array of dimension nP by m
-             (slow to fast) of the spreads of the corresponding
-             wavelength in incident_wavelength.
+             The energy spread FWHM for the corresponding energy(ies) in incident_energy.
+             The usage of this field should follow that of
+             :ref:`incident_wavelength &lt;/NXbeam/incident_wavelength-field&gt;`.
         </doc>
     </field>
     <field name="incident_energy_weights" type="NX_NUMBER" units="NX_ENERGY">
         <doc>
-             In the case of a polychromatic beam this is an array of length m of the relative
-             weights of the corresponding energies in incident_energy. In the case of a
-             polychromatic beam that varies shot-to-shot, this is a 2D array of dimensions np
-             by m (slow to fast) of the relative weights of the corresponding energies in
-             incident_energy.
+             Relative weights of the corresponding energies in ``incident_energy``.
+             The usage of this field should follow that of
+             :ref:`incident_wavelength &lt;/NXbeam/incident_wavelength-field&gt;`.
         </doc>
     </field>
     <field name="final_energy" type="NX_FLOAT" units="NX_ENERGY">
-        <doc>Energy carried by each particle of the beam on leaving the beamline component</doc>
+        <doc>Energy carried by each particle of the beam on leaving the given location</doc>
         <dimensions rank="1">
             <dim index="1" value="m"/>
         </dimensions>
@@ -195,8 +181,10 @@
         <doc>
             Size of the beam entering this component. Note this represents
             a rectangular beam aperture, and values represent FWHM.
-            If applicable, the first dimension shall be the horizontal extent
-            and the second dimension shall be the vertical extent.
+            If applicable, the first dimension shall represent the extent
+            in the direction parallel to the azimuthal reference plane
+            (by default it is [1,0,0]), and the second dimension shall be
+            the normal to the reference plane (by default it is [0,1,0]).
         </doc>
         <dimensions rank="2">
             <dim index="1" value="nP"/>
@@ -319,27 +307,22 @@
     </field>
     <field name="pulse_energy" type="NX_FLOAT" units="NX_ENERGY">
         <doc>
-             Energy of a single pulse at the diagnostic point
+             Energy of a single pulse at the given location.
         </doc>
     </field>
     <field name="average_power" type="NX_FLOAT" units="NX_POWER">
         <doc>
-             Average power at the diagnostic point
+             Average power at the at the given location.
         </doc>
     </field>
-    <field name="fluence" type="NX_FLOAT" units="NX_ANY">
+    <field name="fluence" type="NX_FLOAT" units="mJ/cm^2">
         <doc>
-             Incident fluence at the diagnostic point
+             Incident energy fluence at the given location.
         </doc>
-        <attribute name="units" type="NX_CHAR">
-            <doc>
-                 Here: SI units are 'J/m2', customary 'mJ/cm2'.
-            </doc>
-        </attribute>
     </field>
     <field name="pulse_duration" type="NX_FLOAT" units="NX_TIME">
         <doc>
-             FWHM duration of the pulses at the diagnostic point
+             FWHM duration of the pulses at the given location.
         </doc>
     </field>
     <field name="pulse_delay" type="NX_FLOAT" units="NX_TIME">
@@ -348,13 +331,21 @@
         </doc>
         <attribute name="reference_beam" type="NX_CHAR">
             <doc>
-                 A reference to the beam in relation to which the delay is.
+                A reference to the beam in relation to which the delay is.
+
+                This should be the path to another instance of ``NXbeam``. The use
+                of this attribute should be similar to that of the
+                :ref:`depends_on attribute &lt;/NXtransformations/AXISNAME@depends_on-attribute&gt;`.
+                in NXtransformations.
             </doc>
         </attribute>
     </field>
     <field name="frog_trace" type="NX_FLOAT">
         <doc>
-             FROG trace of the pulse.
+             FROG (frequency-resolved optical gating) trace of the pulse.
+
+             This is to be used for ultrashort laser pulses in a
+             FROG (frequency-resolved optical gating) setup.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="nx"/>
@@ -364,6 +355,9 @@
     <field name="frog_delays" type="NX_FLOAT" units="NX_TIME">
         <doc>
              Horizontal axis of a FROG trace, i.e. delay.
+
+             This is to be used for ultrashort laser pulses in a
+             FROG (frequency-resolved optical gating) setup.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="nx"/>
@@ -372,30 +366,23 @@
     <field name="frog_frequencies" type="NX_FLOAT" units="NX_FREQUENCY">
         <doc>
              Vertical axis of a FROG trace, i.e. frequency.
+
+             This is to be used for ultrashort laser pulses in a
+             FROG (frequency-resolved optical gating) setup.
         </doc>
         <dimensions rank="1">
             <dim index="1" value="ny"/>
         </dimensions>
     </field>
     <field name="chirp_type" type="NX_CHAR">
+        <!-- REVISIT: should this be an open enumeration? -->
         <doc>
              The type of chirp implemented
         </doc>
     </field>
-    <field name="chirp_GDD" type="NX_FLOAT" units="NX_TIME">
+    <field name="chirp_GDD" type="NX_FLOAT" units="NX_TIME" nameType="specified">
         <doc>
              Group delay dispersion of the pulse for linear chirp
-        </doc>
-    </field>
-    <field name="previous_device">
-        <doc>
-             Indicates the beam device from which this beam originates.
-             This defines, whether the beam in an "input" or "output" beam.
-        </doc>
-    </field>
-    <field name="next_device">
-        <doc>
-             Gives the beam device which this beam will interact with next.
         </doc>
     </field>
     <group type="NXdata">
@@ -404,20 +391,6 @@
             useful for simulations which need to store plottable information at each beamline
             component.</doc>
     </group>
-    <attribute name="default">
-        <doc>
-            .. index:: plotting
-
-            Declares which child group contains a path leading 
-            to a :ref:`NXdata` group.
-
-            It is recommended (as of NIAC2014) to use this attribute
-            to help define the path to the default dataset to be plotted.
-            See https://www.nexusformat.org/2014_How_to_find_default_data.html
-            for a summary of the discussion.
-        </doc>
-    </attribute>
-
     <field name="depends_on" minOccurs="0" type="NX_CHAR">
         <doc>
             The NeXus coordinate system defines the Z axis to be along the nominal beam
@@ -428,7 +401,6 @@
             or a refined beam direction.
         </doc>
     </field>
-
     <group type="NXtransformations" minOccurs="0">
         <doc>
             Direction (and location) for the beam. The location of the beam can be given by

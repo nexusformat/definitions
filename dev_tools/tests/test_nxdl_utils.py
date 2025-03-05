@@ -122,13 +122,13 @@ def test_get_node_at_nxdl_path(nxdl_files, file_name, nxdl_path, expected):
             "NXiv_temp.nxdl.xml",
             "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller",
             None,
-            4,
+            5,
         ),
         (
             "NXiv_temp.nxdl.xml",
             "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller",
             "NXiv_temp",
-            4,
+            5,
         ),
     ],
 )
