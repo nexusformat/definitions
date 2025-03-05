@@ -35,8 +35,8 @@ Application Definitions
 Base Classes
 ############
 
-:ref:`NXelectronanalyser`:
-   A base class to describe electron kinetic energy analizers. Contains the collective characteristics of the instrument such as energy resolution, and includes the following subclasses:
+:ref:`NXelectronanalyzer`:
+   A base class to describe electron kinetic energy analyzers. Contains the collective characteristics of the instrument such as energy resolution, and includes the following classes:
 
       :ref:`NXcollectioncolumn`:
          Base class to describe the set of electronic lenses in the electron collection column (standard, PEEM, momentum-microscope, etc.).
