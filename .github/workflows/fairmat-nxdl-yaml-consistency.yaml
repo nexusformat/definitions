@@ -1,0 +1,32 @@
+name: Check nxdl/yaml consistency
+
+on:
+  push:
+    branches: [fairmat]
+  pull_request:
+    branches: [fairmat]
+
+jobs:
+  check_nxdl:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Python 3.9
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.9"
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: install dependencies
+      run: pip install -r requirements.txt
+    - name: make nxdls
+      run: make nxdl
+    - uses: CatChen/check-git-status-action@v1
+      with:
+        fail-if-not-clean: true
+        request-changes-if-not-clean: false
+        push-if-not-clean: false
+    - name: git diff
+      if: failure()
+      run: git diff
