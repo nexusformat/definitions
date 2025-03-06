@@ -512,10 +512,16 @@ class NXClassDocGenerator:
         if len(node_list) == 0:
             return ""
 
-        if len(node_list) == 1:
-            self._print(f"{indent}Obligatory value:", end="")
+        if parent.attrib.get("open", "false") == "true":
+            self._print(
+                f"{indent}Any of these values or a custom value (if you use a custom value, also set @custom=True):",
+                end="",
+            )
         else:
-            self._print(f"{indent}Any of these values:", end="")
+            if len(node_list) == 1:
+                self._print(f"{indent}Obligatory value:", end="")
+            else:
+                self._print(f"{indent}Any of these values:", end="")
 
         docs = OrderedDict()
         for item in node_list:

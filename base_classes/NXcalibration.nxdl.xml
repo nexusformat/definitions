@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
@@ -21,16 +21,11 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcalibration" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcalibration" extends="NXprocess" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays
         </doc>
-        <symbol name="ncoeff">
-            <doc>
-                 Number of coefficients of the calibration function
-            </doc>
-        </symbol>
         <symbol name="ncal">
             <doc>
                  Number of points of the calibrated and uncalibrated axes
@@ -51,22 +46,22 @@
              energy, momentum, time, etc.
         </doc>
     </field>
-    <group name="calibration_method" type="NXidentifier">
+    <field name="identifier_calibration_method" type="NX_CHAR">
         <doc>
              A digital persistent identifier (e.g., DOI, ISO standard) referring to a detailed description of a
              calibration method but no actual calibration data.
         </doc>
-    </group>
-    <group name="calibration_reference" type="NXidentifier">
+    </field>
+    <field name="identifier_calibration_reference" type="NX_CHAR">
         <doc>
              A digital persistent identifier (e.g., a DOI) referring to a publicly available calibration measurement
              used for this instrument, e.g., a measurement of a known standard containing calibration information.
              The axis values may be copied or linked in the appropriate NXcalibration fields for reference.
         </doc>
-    </group>
-    <group name="calibration_object" type="NXserialized">
+    </field>
+    <group name="calibration_object" type="NXnote">
         <doc>
-             A file serialisation of a calibration which may not be publicly available (externally from the nexus file).
+             A file serialisation of a calibration which may not be publicly available (externally from the NeXus file).
              
              This metadata can be a documentation of the source (file) or database (entry) from which pieces
              of information have been extracted for consumption (e.g. in a research data management system (RDMS)).
@@ -85,19 +80,9 @@
              Has the calibration been applied?
         </doc>
     </field>
-    <field name="calibration_software">
-        <doc>
-             Name of the software used for this calibration.
-        </doc>
-        <attribute name="version">
-            <doc>
-                 Software version.
-            </doc>
-        </attribute>
-    </field>
     <field name="original_axis" type="NX_FLOAT" units="NX_ANY">
         <doc>
-             Vector containing the data coordinates in the original uncalibrated axis
+             Array containing the data coordinates in the original uncalibrated axis
         </doc>
         <dimensions rank="1">
             <dim index="1" value="ncal"/>
@@ -120,60 +105,67 @@
             </doc>
         </attribute>
     </field>
-    <field name="input_SYMBOL" type="NX_FLOAT" units="NX_ANY">
+    <group name="fit_formula_inputs" type="NXparameters">
         <doc>
              Additional input axis to be used in the formula.
-             The part after `input_` is used as the symbol to be used in the `fit_function`, i.e.,
-             if the field name is `input_my_field` you should refer to this axis by `my_field` in the `fit_function`.
         </doc>
-        <dimensions rank="1">
-            <dim index="1" value="ncal"/>
-        </dimensions>
-        <attribute name="input_path">
+        <field name="TERM" nameType="any">
             <doc>
-                 The path from which this data is derived, e.g., raw detector axis.
-                 Should be a valid NeXus path name, e.g., /entry/instrument/detector/raw.
+                The name of each ``TERM`` is used as the symbol to be used in the ``fit_formula_description``, i.e.,
+                if the field name is `my_field` you should refer to this axis by `my_field` in the ``fit_formula_description``.
             </doc>
-        </attribute>
-    </field>
-    <field name="coefficients" type="NX_FLOAT" units="NX_ANY">
+            <attribute name="input_path">
+                <doc>
+                    The path from which this data is derived, e.g., raw detector axis.
+                    Should be a valid NeXus path name, e.g., /entry/instrument/detector/raw.
+                </doc>
+            </attribute>
+        </field>
+    </group>
+    <group name="coefficients" type="NXparameters">
         <doc>
-             For non-linear energy calibrations, e.g. in a TOF, a polynomial function is fit
+             For non-linear energy calibrations, e.g. in a time-of-flight (TOF) detector, a polynomial function is fitted
              to a set of features (peaks) at well defined energy positions to determine
-             E(TOF). Here we can store the array of fit coefficients.
+             E(TOF). Here we can store the fit coefficients.
         </doc>
-        <dimensions rank="1">
-            <dim index="1" value="ncoeff"/>
-        </dimensions>
-    </field>
-    <field name="fit_function" type="NX_CHAR">
+        <field name="aN" nameType="partial">
+            <doc>
+                Use a0, a1, ..., an for the coefficients, corresponding to the values in the ``fit_formula_description``.
+            </doc>
+        </field>
+    </group>
+    <field name="fit_formula_description" type="NX_CHAR">
         <doc>
-             For non-linear energy calibrations. Here we can store the formula of the
-             fit function.
+             For non-linear energy calibrations. Here we can store a description of the formula 
+             used for the fit function.
              
-             Use a0, a1, ..., an for the coefficients, corresponding to the values in the coefficients field.
+             Use a0, a1, ..., an for the coefficients, corresponding to the values in the coefficients group.
              
-             Use x0, x1, ..., xn for the nth position in the `original_axis` field.
+             Use x0, x1, ..., xm for the nth position in the `original_axis` field.
              If there is the symbol attribute specified for the `original_axis` this may be used instead of x.
              If you want to use the whole axis use `x`.
-             Alternate axis can also be available as specified by the `input_SYMBOL` field.
+             Alternate axis can also be available as specified by the `input_SYMBOL` group.
              The data should then be referred here by the `SYMBOL` name, e.g., for a field
              name `input_my_field` it should be referred here by `my_field` or `my_field0` if
              you want to read the zeroth element of the array.
-             
-             The formula should be numpy compliant.
         </doc>
     </field>
-    <field name="scaling" type="NX_FLOAT" units="NX_ANY">
+    <field name="scaling_factor" type="NX_FLOAT" units="NX_ANY">
         <doc>
              For linear calibration. Scaling parameter.
-             This should yield the relation `calibrated_axis` = `scaling` * `original_axis` + `offset`.
+             This should yield the relation `calibrated_axis` = (`original_axis` + `offset`) * `scaling_factor`.
+
+             For a more detailed description of scaling factors, see 
+             :ref:`/NXdata/FIELDNAME_scaling_factor &lt;/NXdata/FIELDNAME_scaling_factor-field&gt;`.
         </doc>
     </field>
     <field name="offset" type="NX_FLOAT" units="NX_ANY">
         <doc>
              For linear calibration. Offset parameter.
-             This should yield the relation `calibrated_axis` = `scaling` * `original_axis` + `offset`.
+             This should yield the relation `calibrated_axis` = (`original_axis` + `offset`) * `scaling_factor`.
+
+             For a more detailed description of offset, see 
+             :ref:`/NXdata/FIELDNAME_offset &lt;/NXdata/FIELDNAME_offset-field&gt;`.
         </doc>
     </field>
     <field name="mapping_MAPPING" type="NX_FLOAT">
@@ -186,17 +178,11 @@
     </field>
     <field name="calibrated_axis" type="NX_FLOAT" units="NX_ANY">
         <doc>
-             A vector representing the axis after calibration, matching the data length
+             An array representing the axis after calibration, matching the data length
         </doc>
         <dimensions rank="1">
             <dim index="1" value="ncal"/>
         </dimensions>
-        <attribute name="output_path">
-            <doc>
-                 The path to which this data is written, e.g., the calibrated energy.
-                 Should be a valid NeXus path name, e.g., /entry/data/energy.
-            </doc>
-        </attribute>
     </field>
     <group type="NXdata">
         <doc>
