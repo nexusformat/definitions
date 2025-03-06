@@ -105,43 +105,37 @@ The following base classes are defined to incentivize the use of NeXus for
 using computational-geometry-based descriptions. In what follows, base classes
 for frequently used shapes and geometric primitives are proposed:
 
-    :ref:`NXcg_sphere_set`:
-        A description for a set of possibly dissimilar spheres.
-
-    :ref:`NXcg_ellipsoid_set`:
+    :ref:`NXcg_ellipsoid`:
         A description for a set of possibly dissimilar oriented ellipsoids.
 
-    :ref:`NXcg_cylinder_set`:
+    :ref:`NXcg_cylinder`:
         A description for a set of possibly dissimilar oriented cylinders.
 
-    :ref:`NXcg_point_set`:
+    :ref:`NXcg_point`:
         A collection of points with labels.
 
-    :ref:`NXcg_polyline_set`:
+    :ref:`NXcg_polyline`:
         A collection of lines and linear segments.
 
-    :ref:`NXcg_triangle_set`:
+    :ref:`NXcg_triangle`:
         A collection of triangles.
 
-    :ref:`NXcg_parallelogram_set`:
+    :ref:`NXcg_parallelogram`:
         A collection of possibly dissimilar parallelograms.
 
-    :ref:`NXcg_triangulated_surface_mesh`:
-        A mesh of triangles.
-
-    :ref:`NXcg_polygon_set`:
+    :ref:`NXcg_polygon`:
         A collection of polygons.
 
-    :ref:`NXcg_polyhedron_set`:
+    :ref:`NXcg_polyhedron`:
         A collection of polyhedra.
 
-    :ref:`NXcg_roi_set`:
+    :ref:`NXcg_roi`:
         A container to host a number of different types of primitives.
 
-    :ref:`NXcg_tetrahedron_set`:
+    :ref:`NXcg_tetrahedron`:
         A collection of tetrahedra.
 
-    :ref:`NXcg_hexahedron_set`:
+    :ref:`NXcg_hexahedron`:
         A collection of hexahedra with capabilities to represent
         also simpler (bounding) boxes for e.g. binary trees.
 
@@ -157,13 +151,9 @@ These base classes describe data structures used for more complex geometries:
         topological analyses and traversal of the graph of how polygons and
         polyhedra are connected.
 
-    :ref:`NXcg_unit_normal_set`:
+    :ref:`NXcg_unit_normal`:
         As an additional structuring element especially for meshes, well-documented
         normal information is crucial for distance computations.
-
-    :ref:`NXcg_geodesic_mesh`:
-        Geodesic meshes are useful for all applications when meshing the surface
-        of a sphere.
 
     :ref:`NXcg_alpha_complex`:
         Alpha shapes and alpha wrappings, specifically the special case of the
@@ -179,11 +169,6 @@ of material (area or volume) which can be useful not only for stencil-based meth
     :ref:`NXisocontour`:
         A description for isocontour descriptions.
 
-    :ref:`NXcg_marching_cubes`:
-        An approach to store metadata of a specific implementation of
-        the Marching Cubes algorithm, whose sensitivity to specific topological
-        configurations is known to result in different triangle collections.
-
     :ref:`NXdelocalization`:
         An approach to document procedures whereby a scalar field
         is smoothed in a controlled manner.
@@ -193,9 +178,6 @@ of material (area or volume) which can be useful not only for stencil-based meth
 
     :ref:`NXclustering`:
         A description for clustering of objects (such as atoms or features).
-
-    :ref:`NXorientation_set`:
-        A set of parameters to describe the relative orientation of members of a set of features/objects.
 
     :ref:`NXslip_system_set`:
         Metadata for a set of slip systems in a given crystal structure.
