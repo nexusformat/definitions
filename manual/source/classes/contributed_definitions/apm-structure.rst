@@ -38,16 +38,11 @@ Base Classes
 
 The following base classes are proposed to support modularizing the storage of pieces of information:
 
-    :ref:`NXchamber`:
-        A base class to describe a component of the instrument which houses other components.
-        A chamber may offer a controlled atmosphere to execute an experiment and/or offer functionalities
-        for storing and loading specimens.
-
     :ref:`NXcoordinate_system_set`, :ref:`NXcoordinate_system`:
         Base classes to describe different coordinate systems used and/or to be harmonized
         or transformed into one another when interpreting the dataset.
 
-    :ref:`NXion`: (about to become replaced by NXatom)
+    :ref:`NXion`: (about to become replaced by :ref:`NXatom`)
        A base class to describe molecular ions with an adjustable number of atoms/isotopes building each ion.
        For the usage in atom probe research the maximum number of atoms supported building a molecular ion
        is currently set to a maximum of 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with
@@ -65,7 +60,7 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXpump`:
         A base class to describe details about pump(s) used as components of an instrument.
 
-    :ref:`NXstage_lab`:
+    :ref:`NXmanipulator`:
         A base class to describe the specimen fixture including the cryo-head.
         Nowadays, stages of microscopes represent small-scale laboratory platforms.
         Therefore, there is a need to define the characteristics of such stages in more detail,

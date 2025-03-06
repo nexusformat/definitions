@@ -49,10 +49,6 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXaperture_em`:
         A base class to describe an aperture.
 
-    :ref:`NXchamber`:
-        A base class to describe the chamber as a part of the microscope or storage unit
-        for transferring specimens in between or within an instrument.
-
     :ref:`NXcoordinate_system_set`:
         A base class to describe different coordinate systems used and/or to be harmonized
         or transformed into one another when interpreting the dataset.
@@ -76,7 +72,7 @@ The following base classes are proposed to support modularizing the storage of p
         A base class serving the possibility to group the components relevant for generating
         and shaping an ion beam of an instrument to offer focused-ion beam (milling) capabilities.
 
-    :ref:`NXimage_set`:
+    :ref:`NXimage`:
         Base classes for storing acquisition details for individual images or stacks of images. Specialized versions can be defined and use controlled vocabulary terms for group name prefixes like **adf** annular dark field, **bf** bright field, **bse** backscattered electron, **chamber** camera to monitor the stage and chamber, **df** darkfield, **diffrac** diffraction, **ecci** electron channeling contrast imaging, **kikuchi** electron backscatter diffraction, **ronchigram** - convergent beam diffraction pattern, or **se** secondary electron.
 
     :ref:`NXinteraction_vol_em`:
@@ -109,7 +105,7 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXspectrum_set`:
         Base class and specializations comparable to NXimage_set but for storing spectra. Specialized base classes should use controlled vocabulary items as prefixes such as **eels** electron energy loss spectroscopy, **xray** X-ray spectroscopy (EDS/STEM, EDX, SEM/EDX, SEM/EDS), **auger** Auger spectroscopy, or **cathodolum** for cathodoluminescence spectra.
 
-    :ref:`NXstage_lab`:
+    :ref:`NXmanipulator`:
         As it was mentioned for atom probe microscopy, this is a base class to describe the stage/specimen holder which offers place for the documentation of the small-scale laboratory functionalities which modern stages of electron microscopes frequently offer.
 
 Method-specific concepts and their usage in application definitions
