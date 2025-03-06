@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXstage_lab" extends="NXcomponent" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <doc>
+         A stage lab can be used to hold, align, orient, and prepare a specimen.
+         
+         Modern stages are multi-functional devices. Many of which offer a controlled
+         environment around (a part) of the specimen. Stages enable experimentalists
+         to apply stimuli. A stage_lab is a multi-purpose/-functional tools which
+         can have multiple actuators, sensors, and other components.
+         
+         With such stages comes the need for storing various (meta)data 
+         that are generated while manipulating the sample.
+         
+         Modern stages realize a hierarchy of components: For example the specimen
+         might be mounted on a multi-axial tilt rotation holder. This holder is 
+         fixed in the support unit which connects the holder to the rest of the
+         microscope.
+         
+         In other examples, taken from atom probe microscopy, researchers may work
+         with wire samples which are clipped into a larger fixing unit for
+         convenience and enable for a more careful specimen handling.
+         This fixture unit is known in atom probe jargon as a stub.
+         Stubs in turn are positioned onto pucks.
+         Pucks are then loaded onto carousels.
+         A carousel is a carrier unit with which eventually entire sets of specimens
+         can be moved in between parts of the microscope.
+         
+         An NXstage_lab instance reflects this hierarchical design. The stage is the 
+         root of the hierarchy. A stage carries the holder.
+         In the case that it is not practical to distinguish these two layers,
+         the holder should be given preference.
+         
+         Some examples for stage_labs in applications:
+         
+         * A nanoparticle on a copper grid. The copper grid is the holder.  
+           The grid itself is fixed to the stage.  
+         * An atom probe specimen fixed in a stub. In this case the stub can be  
+           considered the holder, while the cryostat temperature control unit is  
+           a component of the stage.  
+         * Samples with arrays of specimens, like a microtip on a microtip array  
+           is an example of a three-layer hierarchy commonly employed for  
+           efficient sequential processing of atom probe experiments.  
+         * With one entry of an application definition only one microtip should be  
+           described. Therefore, the microtip is the specimen,  
+           the array is the holder and the remaining mounting unit  
+           that is attached to the cryo-controller is the stage.  
+         * For in-situ experiments with e.g. chips with read-out electronics  
+           as actuators, the chips are again placed in a larger unit.  
+         * Other examples are (quasi) in-situ experiments where experimentalists  
+           anneal or deform the specimen via e.g. in-situ tensile testing machines  
+           which are mounted on the specimen holder.  
+         
+         To cover for an as flexible design of complex stages, users should nest
+         multiple instances of NXstage_lab objects according to their needs to reflect
+         the differences between what they consider as the holder and what 
+         they consider is the stage.
+         
+         Instances should be named with integers starting from 1 as the top level unit.
+         In the microtip example stage_lab_1 for the stage, stage_lab_2 for the holder
+         (microtip array), stage_lab_3 for the microtip specimen, respectively. 
+         The depends_on keyword should be used with relative or absolute naming inside
+         the file to specify how different stage_lab instances build a hierarchy
+         if this is not obvious from numbered identifiers like the stage_lab_1 to 
+         stage_lab 3 example. The lower it is the number the higher it is the
+         rank in the hierarchy.
+         
+         For specific details and inspiration about stages in electron microscopes:
+         
+         * `Holders with multiple axes &lt;https://www.nanotechnik.com/e5as.html&gt;`_  
+         * `Chip-based designs &lt;https://www.protochips.com/products/fusion/fusion-select-components/&gt;`_  
+         * `Further chip-based designs &lt;https://www.nanoprobetech.com/about&gt;`_
+         * `Stages in transmission electron microscopy &lt;https://doi.org/10.1007/978-3-662-14824-2&gt;`_ (page 103, table 4.2)  
+         * `Further stages in transmission electron microscopy &lt;https://doi.org/10.1007/978-1-4757-2519-3&gt;`_ (page 124ff)
+         * `Specimens in atom probe &lt;https://doi.org/10.1007/978-1-4614-8721-0&gt;`_ (page 47ff)
+         * `Exemplar micro-manipulators &lt;https://nano.oxinst.com/products/omniprobe/omniprobe-200&gt;`_
+    </doc>
+    <field name="design">
+        <doc>
+             Principal design of the stage.
+             
+             Exemplar terms could be side_entry, top_entry,
+             single_tilt, quick_change, multiple_specimen,
+             bulk_specimen, double_tilt, tilt_rotate,
+             heating_chip, atmosphere_chip,
+             electrical_biasing_chip, liquid_cell_chip
+        </doc>
+    </field>
+    <field name="tilt_1" type="NX_FLOAT" units="NX_ANGLE">
+        <doc>
+             Should be defined by the application definition.
+        </doc>
+    </field>
+    <field name="tilt_2" type="NX_FLOAT" units="NX_ANGLE">
+        <doc>
+             Should be defined by the application definition.
+        </doc>
+    </field>
+    <field name="rotation" type="NX_FLOAT" units="NX_ANGLE">
+        <doc>
+             Should be defined by the application definition.
+        </doc>
+    </field>
+    <field name="position" type="NX_FLOAT" units="NX_LENGTH">
+        <doc>
+             Should be defined by the application definition.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="3"/>
+        </dimensions>
+    </field>
+    <field name="bias_voltage" type="NX_FLOAT" units="NX_VOLTAGE">
+        <doc>
+             Voltage applied to the stage to decelerate electrons.
+        </doc>
+    </field>
+    <!--NEW ISSUE: rather the field if possible should be specified-->
+    <group type="NXpositioner"/>
+    <!--see for complicated positioning tools like an eucentric five-axis table stage in an SEM
+https://www.nanotechnik.com/e5as.html
+shipswing_tilt(NXpositioner):
+normal_rotate(NXpositioner):
+normal_height(NXpositioner):
+inplane_translate1(NXpositioner):
+inplane_translate2(NXpositioner):
+NEW ISSUE: add temperature control units and components to apply external stimuli
+NEW ISSUE: on the specimen such as NXmech_testing_unit and NXfurnace, NXreaction_cell
+NEW ISSUE: by contrast, the purpose and design of so-called nano/or micromanipulators,
+i.e. automatable devices to perform e.g. site-specific lift out, procedures warrants
+to define an own class NXspecimen_manipulator given this is nothing else than
+miniature robot arm essential one could also think about creating an own NXrobotarm class,
+below are two examples of such tools as they are used in FIB and SEMs-->
+</definition>

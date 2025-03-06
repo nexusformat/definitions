@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--A draft of a new base class to describe a waveplate-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXwaveplate" extends="NXcomponent" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="N_spectrum">
+            <doc>
+                 Size of the wavelength array for which the refractive index of the material
+                 and/or coating is given.
+            </doc>
+        </symbol>
+        <symbol name="N_wavelengths">
+            <doc>
+                 Number of discrete wavelengths for which the waveplate is designed. If it
+                 operates for a range of wavelengths then N_wavelengths = 2 and the minimum
+                 and maximum values of the range should be provided.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         A waveplate or retarder.
+    </doc>
+    <field name="type">
+        <doc>
+             Type of waveplate (e.g. achromatic waveplate or zero-order waveplate).
+        </doc>
+        <!--A waveplate can be e.g. a dual-wavelength multi-order plate
+=> multiple selection needs to be possible-->
+        <enumeration>
+            <item value="zero-order waveplate"/>
+            <item value="achromatic waveplate"/>
+            <item value="multiple-order waveplate"/>
+            <item value="dual-wavelength waveplate"/>
+            <item value="other"/>
+        </enumeration>
+    </field>
+    <!--Are there any other common wave plate types?-->
+    <field name="other_type">
+        <doc>
+             If you selected 'other' in type describe what it is.
+        </doc>
+    </field>
+    <field name="retardance">
+        <doc>
+             Specify the retardance of the waveplate (e.g. full-wave, half-wave
+             (lambda/2), quarter-wave (lambda/4) plate).
+        </doc>
+        <enumeration>
+            <item value="full-wave plate"/>
+            <item value="half-wave plate"/>
+            <item value="quarter-wave plate"/>
+        </enumeration>
+    </field>
+    <field name="wavelengths" type="NX_NUMBER" recommended="true">
+        <doc>
+             Discrete wavelengths for which the waveplate is designed. If the
+             waveplate operates over an entire range of wavelengths, enter the minimum
+             and maximum values of the wavelength range (in this case
+             N_wavelengths = 2).
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_wavelengths"/>
+        </dimensions>
+    </field>
+    <field name="diameter" type="NX_FLOAT" units="NX_LENGTH">
+        <doc>
+             Diameter of the waveplate.
+        </doc>
+    </field>
+    <field name="clear_aperture" type="NX_FLOAT" units="NX_UNITLESS">
+        <doc>
+             Clear aperture of the device (e.g. 90% of diameter for a disc or 90% of
+             length/height for square geometry).
+        </doc>
+    </field>
+    <!--Would it be better to provide the clear aperture as length?-->
+    <group name="substrate" type="NXsample">
+        <doc>
+             Describe the material of the substrate of the wave plate in
+             substrate/substrate_material and provide its index of refraction in
+             substrate/index_of_refraction_substrate, if known.
+        </doc>
+        <field name="substrate_material">
+            <doc>
+                 Specify the material of the wave plate. If the device has a
+                 coating it should be described in coating/coating_material.
+            </doc>
+        </field>
+        <field name="substrate_thickness" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Thickness of the wave plate substrate.
+            </doc>
+        </field>
+        <field name="index_of_refration_substrate" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Complex index of refraction of the wave plate substrate. Specify at
+                 given wavelength (or energy, wavenumber etc.) values.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="2"/>
+                <dim index="2" value="N_spectrum"/>
+            </dimensions>
+        </field>
+    </group>
+    <group name="coating" type="NXsample">
+        <doc>
+             Is the wave plate coated? If yes, specify the type and material of the
+             coating and the wavelength range for which it is designed. If known, you
+             may also provide its index of refraction.
+        </doc>
+        <field name="coating_type">
+            <doc>
+                 Specify the coating type (e.g. dielectric, anti-reflection (AR),
+                 multilayer coating etc.).
+            </doc>
+        </field>
+        <field name="coating_material">
+            <doc>
+                 Specify the coating material.
+            </doc>
+        </field>
+        <field name="coating_thickness" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Thickness of the coating.
+            </doc>
+        </field>
+        <field name="wavelength_range_coating" type="NX_NUMBER" recommended="true">
+            <doc>
+                 Wavelength range for which the coating is designed. Enter the minimum
+                 and maximum values of the wavelength range.
+            </doc>
+            <dimensions rank="1">
+                <dim index="1" value="2"/>
+            </dimensions>
+        </field>
+        <field name="index_of_refraction_coating" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Complex index of refraction of the coating. Specify at given spectral
+                 values (wavelength, energy, wavenumber etc.).
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="2"/>
+                <dim index="2" value="N_spectrum"/>
+            </dimensions>
+        </field>
+    </group>
+    <field name="reflectance" type="NX_NUMBER" units="NX_UNITLESS">
+        <doc>
+             Average reflectance of the waveplate in percentage.
+        </doc>
+    </field>
+</definition>

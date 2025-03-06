@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+# 
+# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# 
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<!--A draft of a new base class describing an optical lens
+(Note: NXlens_em describes an electro-magnetic lens or a compound lens)-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXlens_opt" extends="NXcomponent" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <symbol name="N_spectrum">
+            <doc>
+                 Size of the wavelength array for which the refractive index of the material
+                 is given.
+            </doc>
+        </symbol>
+        <symbol name="N_spectrum_coating">
+            <doc>
+                 Size of the wavelength array for which the refractive index of the coating
+                 is given.
+            </doc>
+        </symbol>
+        <symbol name="N_spectrum_RT">
+            <doc>
+                 Size of the wavelength array for which the reflectance or transmission of
+                 the lens is given.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Description of an optical lens.
+    </doc>
+    <field name="type">
+        <doc>
+             Type of the lens (e.g. concave, convex etc.).
+        </doc>
+        <enumeration>
+            <item value="biconcave"/>
+            <item value="plano-concave"/>
+            <item value="convexo-concave"/>
+            <item value="biconvex"/>
+            <item value="plano-convex"/>
+            <item value="concavo-convex"/>
+            <item value="Fresnel lens"/>
+            <item value="other"/>
+        </enumeration>
+    </field>
+    <field name="other_type">
+        <doc>
+             If you chose 'other' as type specify what it is.
+        </doc>
+    </field>
+    <field name="chromatic" type="NX_BOOLEAN">
+        <doc>
+             Is it a chromatic lens?
+        </doc>
+    </field>
+    <field name="lens_diameter" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Diameter of the lens.
+        </doc>
+    </field>
+    <group name="substrate" type="NXsample">
+        <doc>
+             Properties of the substrate material of the lens. If the lens has a
+             coating specify the coating material and its properties in 'coating'.
+        </doc>
+        <field name="substrate_material">
+            <doc>
+                 Specify the substrate material of the lens.
+            </doc>
+        </field>
+        <field name="substrate_thickness" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Thickness of the lens substrate at the optical axis.
+            </doc>
+        </field>
+        <field name="index_of_refraction" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Complex index of refraction of the lens material. Specify at given
+                 wavelength (or energy, wavenumber etc.) values.
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="2"/>
+                <dim index="2" value="N_spectrum"/>
+            </dimensions>
+        </field>
+    </group>
+    <group name="COATING" type="NXsample">
+        <!--Used captial letters for COATING so that more than one can be defined if
+the lens has different coatings on the front and back side.-->
+        <doc>
+             If the lens has a coating describe the material and its properties.
+             Some basic information can be found e.g. [here]
+             (https://www.opto-e.com/basics/reflection-transmission-and-coatings).
+             If the back and front side of the lens are coated with different
+             materials, use separate COATING(NXsample) fields to describe the coatings
+             on the front and back side, respectively. For example:
+             coating_front(NXsample) and coating_back(NXsample).
+        </doc>
+        <field name="coating_type">
+            <doc>
+                 Specify the coating type (e.g. dielectric, anti-reflection (AR),
+                 multilayer coating etc.).
+            </doc>
+        </field>
+        <field name="coating_material">
+            <doc>
+                 Describe the coating material (e.g. MgF2).
+            </doc>
+        </field>
+        <field name="coating_thickness" type="NX_NUMBER" units="NX_LENGTH">
+            <doc>
+                 Thickness of the coating.
+            </doc>
+        </field>
+        <field name="index_of_refraction_coating" type="NX_NUMBER" units="NX_UNITLESS">
+            <doc>
+                 Complex index of refraction of the coating. Specify at given spectral
+                 values (wavelength, energy, wavenumber etc.).
+            </doc>
+            <dimensions rank="2">
+                <dim index="1" value="2"/>
+                <dim index="2" value="N_spectrum_coating"/>
+            </dimensions>
+        </field>
+    </group>
+    <field name="reflectance" units="NX_UNITLESS">
+        <doc>
+             Reflectance of the lens at given spectral values.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_spectrum_RT"/>
+        </dimensions>
+    </field>
+    <field name="transmission" units="NX_UNITLESS">
+        <doc>
+             Transmission of the lens at given spectral values.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="N_spectrum_RT"/>
+        </dimensions>
+    </field>
+    <field name="focal_length" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
+        <doc>
+             Focal length of the lens on the front side (first value), i.e. where the
+             beam is incident, and on the back side (second value).
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="2"/>
+        </dimensions>
+    </field>
+    <field name="curvature_radius_FACE" type="NX_NUMBER" recommended="true" units="NX_LENGTH">
+        <doc>
+             Curvature radius of the lens.
+             Instead of 'FACE' in the name of this field, the user is advised to
+             specify for which surface (e.g. front or back) the curvature is provided:
+             e.g. curvature_front or curvature_back. The front face is the surface on
+             which the light beam is incident, while the back face is the one from
+             which the light beam exits the lens.
+        </doc>
+    </field>
+    <field name="Abbe_number" type="NX_NUMBER" units="NX_UNITLESS">
+        <doc>
+             Abbe number (or V-number) of the lens.
+        </doc>
+    </field>
+</definition>
