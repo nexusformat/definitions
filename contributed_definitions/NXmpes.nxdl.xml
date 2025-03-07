@@ -764,20 +764,20 @@
                 </group>
                 <group name="sample_heater" type="NXactuator" optional="true">
                     <field name="name" recommended="true"/>
-                    <field name="physical_quantity">
+                    <field name="actuation_target">
                         <enumeration>
                             <item value="temperature"/>
                         </enumeration>
                     </field>
                     <field name="type" optional="true"/>
-                    <field name="heater_power" type="NX_FLOAT"/>
+                    <field name="output_heater_power" type="NX_FLOAT"/>
                     <group type="NXpid_controller" recommended="true">
                         <field name="setpoint" type="NX_FLOAT" recommended="true"/>
                     </group>
                 </group>
                 <group name="cryostat" type="NXactuator" optional="true">
                     <field name="name" recommended="true"/>
-                    <field name="physical_quantity">
+                    <field name="actuation_target">
                         <enumeration>
                             <item value="temperature"/>
                         </enumeration>
@@ -809,7 +809,7 @@
                 </group>
                 <group name="sample_bias_potentiostat" type="NXactuator" recommended="true">
                     <field name="name" recommended="true"/>
-                    <field name="physical_quantity">
+                    <field name="actuation_target">
                         <enumeration>
                             <item value="voltage"/>
                         </enumeration>
@@ -856,7 +856,7 @@
                     Device to bring low-energy electrons to the sample for charge neutralization
                 </doc>
                 <field name="name" recommended="true"/>
-                <field name="physical_quantity">
+                <field name="actuation_target">
                     <enumeration>
                         <item value="current"/>
                     </enumeration>
@@ -876,6 +876,28 @@
                         </doc>
                     </field>
                 </group>
+            </group>
+            <group name="monochromator_TYPE" type="NXmonochromator" optional="true">
+                <doc>
+                    If any of the beams is monochromatized, an ``NXmonochromator`` can be used to describe
+                    the properties of the monochromator.
+                </doc>
+                <field name="energy" type="NX_FLOAT" recommended="true" units="NX_ENERGY"/>
+                <field name="associated_beam">
+                    <doc>
+                        A reference to a beam emitted by this source.
+                        Should be named with the same appendix, e.g.,
+                        for ``monochromator_probe`` it should refer to ``beam_probe``.
+                        
+                        Example:
+                          * /entry/instrument/monochromator_probe/associated_beam = /entry/instrument/beam_probe
+                    </doc>
+                </field>
+            </group>
+            <group type="NXinsertion_device" optional="true">
+                <doc>
+                    Insertion device if synchrotron radiation is used for the MPES experiment.
+                </doc>
             </group>
             <group name="history" type="NXhistory" optional="true">
                 <doc>
@@ -1220,16 +1242,16 @@
                         In most cases this can be a link to /entry/instrument/flood_gun
                         if a flood_gun is present in the instrument.
                     </doc>
-                    <field name="value" type="NX_FLOAT" optional="true" units="NX_CURRENT">
-                        <doc>
-                            This is to be used if there is no actuator/sensor that controls/measures
-                            the drain_current.
-                            
-                            Note that this method for recording the flood gun current is not advised, but using
-                            NXsensor and NXactuator is strongly recommended instead.
-                        </doc>
-                    </field>
                 </group>
+                <field name="value" type="NX_FLOAT" optional="true" units="NX_CURRENT">
+                    <doc>
+                        This is to be used if there is no actuator/sensor that controls/measures
+                        the flood_gun_current.
+                        
+                        Note that this method for recording the flood gun current is not advised, but using
+                        NXsensor and NXactuator is strongly recommended instead.
+                    </doc>
+                </field>
             </group>
         </group>
         <group name="data" type="NXdata">
@@ -1256,7 +1278,8 @@
                     Represents a measure of one- or more-dimensional photoemission counts, where the
                     varied axis may be for example energy, momentum, spatial coordinate, pump-probe
                     delay, spin index, temperature, etc. The axes traces should be linked to the
-                    actual encoder position in NXinstrument or calibrated axes in NXprocess.
+                    actual encoder position in NXinstrument or calibrated axes in NXprocess (or classes
+                    inheriting from NXprocess).
                 </doc>
             </field>
             <field name="energy" type="NX_NUMBER" recommended="true" units="NX_ENERGY">
