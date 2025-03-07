@@ -183,7 +183,7 @@ def get_nx_namefit(hdf_name: str, name: str, name_any: bool = False) -> int:
         int: -1 if no match is found or the number of matching
              characters (case insensitive).
     """
-    path_regex = r"([a-zA-Z0-9_.]+)"
+    path_regex = r"([a-zA-Z0-9_.]*)"
 
     if name == hdf_name:
         return len(name) * 2
