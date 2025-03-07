@@ -7,8 +7,7 @@ import textwrap
 from functools import lru_cache
 from glob import glob
 from pathlib import Path
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
@@ -29,7 +28,7 @@ def decode_or_not(elem, encoding: str = "utf-8", decode: bool = True):
         If `decode` is False, always returns the initial value.
 
     Raises:
-        UnicodeDecodeError: If a byte string cannot be decoded using the provided encoding.
+        ValueError: If a byte string cannot be decoded using the provided encoding.
     """
     if not decode:
         return elem
@@ -46,8 +45,7 @@ def decode_or_not(elem, encoding: str = "utf-8", decode: bool = True):
         try:
             return elem.decode(encoding)
         except UnicodeDecodeError as e:
-            e.add_note(f"Error decoding bytes object: {elem}")
-            raise
+            raise ValueError(f"Error decoding bytes: {e}")
 
     return elem
 
@@ -79,11 +77,9 @@ nexus_def_path = get_nexus_definitions_path()
 
 def get_app_defs_names():
     """Returns all the AppDef names without their extension: .nxdl.xml"""
-    app_def_path_glob = nexus_def_path / "applications" / "*.nxdl.xml"
+    app_def_path_glob = nexus_def_path / "applications" / "*.nxdl*"
 
-    contrib_def_path_glob = (
-        Path(nexus_def_path) / "contributed_definitions" / "*.nxdl.xml"
-    )
+    contrib_def_path_glob = Path(nexus_def_path) / "contributed_definitions" / "*.nxdl*"
 
     files = sorted(glob(str(app_def_path_glob)))
     for nexus_file in sorted(glob(str(contrib_def_path_glob))):
@@ -149,27 +145,22 @@ def get_nx_class(nxdl_elem):
     return nxdl_elem.attrib.get("type", "NX_CHAR")
 
 
-def get_nx_namefit(
-    hdf_name: str, name: str, name_any: bool = False, name_partial: bool = False
-) -> int:
+def get_nx_namefit(hdf_name: str, name: str, name_any: bool = False) -> int:
     """
     Checks if an HDF5 node name corresponds to a child of the NXDL element.
-    Groups of uppercase letters anywhere in the name are treated as freely
-    choosable parts of this name.
-
-    If a match is found, this function returns twice the length of the
-    name for an exact match. If there is no exact match, the function
-    returns the number of matching characters (case insensitive). If
-    `name_any` is set to True, it returns zero instead of a count of
-    matches. All uppercase groups are considered independently, and
-    lowercase matches do not depend on uppercase group lengths. For example,
-    calling `get_nx_namefit("my_fancy_yet_long_name", "my_SOME_name")`
-    would return a score of 8 for the lowercase matches `my_..._name`.
-
-    All characters in `[a-zA-Z0-9_.]` are considered for matching to an
-    uppercase letter. Any other character in the name will result in
-    a non-match and return -1. Periods at the beginning or end of the
-    `hdf_name` are not allowed; only exact matches will be considered.
+    A group of uppercase letters anywhere in the name is treated as freely choosable
+    part of this name.
+    If a match is found this function returns twice the length for an exact match,
+    otherwise the number of matching characters (case insensitive) or zero, if
+    `name_any` is set to True, is returned.
+    All uppercase groups are considered independently.
+    Lowercase matches are independent of uppercase group lengths, e.g.,
+    an hdf_name `get_nx_namefit("my_fancy_yet_long_name", "my_SOME_name")` would
+    return a score of 8 for the lowercase matches `my_..._name`.
+    All characters in `[a-zA-Z0-9_.]` are considered for matching to an uppercase letter.
+    If you use any other letter in the name, it will not match and return -1.
+    Periods at the beginning or end of the hdf_name are not allowed, only exact
+    matches will be considered.
 
     Examples:
 
@@ -187,11 +178,6 @@ def get_nx_namefit(
         name_any (bool, optional):
             Accept any name and return either 0 (match) or -1 (no match).
             Defaults to False.
-        name_partial (bool, optional):
-            If set to True, the function will return the total length of the name
-            plus the number of matching characters, minus the count of uppercase
-            letters in the concept name. This allows for partial matches to
-            contribute to the score. Defaults to False.
 
     Returns:
         int: -1 if no match is found or the number of matching
@@ -223,11 +209,7 @@ def get_nx_namefit(
             if s1 == s2:
                 match_count += 1
 
-    if name_partial:
-        return len(name) + match_count - uppercase_count
-    elif name_any:
-        return match_count
-    return -1
+    return len(name) + match_count - uppercase_count
 
 
 def get_nx_classes():
@@ -307,28 +289,6 @@ def get_node_name(node):
     return name
 
 
-def is_name_type(child, name_type_value: str) -> bool:
-    """
-    Determines if the child XML element's nameType attribute is equal to
-    the specified value or if the child is a group without nameType and name attributes.
-
-    Args:
-        child: The XML element to check.
-        name_type_value (str): The nameType value to compare against ("any" or "partial").
-
-    """
-    if child.attrib.get("nameType") == name_type_value:
-        return True
-
-    if name_type_value == "any" and (
-        get_local_name_from_xml(child) == "group"
-        and "nameType" not in child.attrib
-        and "name" not in child.attrib
-    ):
-        return True
-    return False
-
-
 def belongs_to(nxdl_elem, child, name, class_type=None, hdf_name=None):
     """Checks if an HDF5 node name corresponds to a child of the NXDL element
     uppercase letters in front can be replaced by arbitraty name, but
@@ -341,14 +301,24 @@ def belongs_to(nxdl_elem, child, name, class_type=None, hdf_name=None):
         return True
     if not hdf_name:  # search for name fits is only allowed for hdf_nodes
         return False
-    name_any = is_name_type(child, "any")
+    try:  # check if nameType allows different name
+        name_any = bool(child.attrib["nameType"] == "any")
+    except KeyError:
+        name_any = False
+    params = [act_htmlname, chk_name, name_any, nxdl_elem, child, name]
+    return belongs_to_capital(params)
 
+
+def belongs_to_capital(params):
+    """Checking continues for Upper case"""
+    (act_htmlname, chk_name, name_any, nxdl_elem, child, name) = params
     # or starts with capital and no reserved words used
-    name_partial = is_name_type(child, "partial")
-    if (name_any or name_partial) and name != "doc" and name != "enumeration":
-        fit = get_nx_namefit(
-            chk_name, act_htmlname, name_any=name_any, name_partial=name_partial
-        )  # check if name fits
+    if (
+        (name_any or (act_htmlname[0].isalpha() and act_htmlname[0].isupper()))
+        and name != "doc"
+        and name != "enumeration"
+    ):
+        fit = get_nx_namefit(chk_name, act_htmlname, name_any)  # check if name fits
         if fit < 0:
             return False
         for child2 in nxdl_elem:
@@ -360,17 +330,10 @@ def belongs_to(nxdl_elem, child, name, class_type=None, hdf_name=None):
             ):
                 continue
             # check if the name of another sibling fits better
-            name_any2 = is_name_type(child2, "any")
-            name_partial2 = child2.attrib.get("nameType") == "partial"
-            if name_partial2 or name_any2:
-                fit2 = get_nx_namefit(
-                    chk_name,
-                    get_node_name(child2),
-                    name_any=name_any2,
-                    name_partial=name_partial2,
-                )
-                if fit2 > fit:
-                    return False
+            name_any2 = child2.attrib.get("nameType") == "any"
+            fit2 = get_nx_namefit(chk_name, get_node_name(child2), name_any2)
+            if fit2 > fit:
+                return False
         # accept this fit
         return True
     return False
@@ -592,9 +555,7 @@ def check_attr_name_nxdl(param):
     return logger, elem, nxdl_path, doc, attr, req_str
 
 
-def try_find_default(
-    logger, orig_elem, elem, nxdl_path, doc, attr
-):  # pylint: disable=too-many-arguments
+def try_find_default(logger, orig_elem, elem, nxdl_path, doc, attr):  # pylint: disable=too-many-arguments
     """Try to find if default is defined as a child of the NXDL element"""
     if elem is not None:
         if doc:
@@ -614,9 +575,7 @@ def try_find_default(
     return logger, elem, nxdl_path, doc, attr
 
 
-def other_attrs(
-    logger, orig_elem, elem, nxdl_path, doc, attr
-):  # pylint: disable=too-many-arguments
+def other_attrs(logger, orig_elem, elem, nxdl_path, doc, attr):  # pylint: disable=too-many-arguments
     """Handle remaining attributes"""
     if elem is not None:
         if doc:
@@ -639,7 +598,7 @@ def other_attrs(
 
 def get_node_concept_path(elem):
     """get the short version of nxdlbase:nxdlpath"""
-    return f'{elem.get("nxdlbase").split("/")[-1]}:{elem.get("nxdlpath")}'
+    return f"{elem.get('nxdlbase').split('/')[-1]}:{elem.get('nxdlpath')}"
 
 
 def get_doc(node, ntype, nxhtml, nxpath):
@@ -752,7 +711,7 @@ def add_base_classes(elist, nx_name=None, elem: ET.Element = None):
     elem.set("nxdlpath", "")
     elist.append(elem)
     # add inherited base class
-    if "extends" in elem.attrib and elem.attrib["extends"] != "NXobject":
+    if "extends" in elem.attrib:
         add_base_classes(elist, elem.attrib["extends"])
     else:
         add_base_classes(elist)
@@ -855,15 +814,11 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
         if get_local_name_from_xml(child) == nexus_type and (
             nexus_type != "group" or get_nx_class(child) == hdf_class_name
         ):
-            name_any = is_name_type(child, "any")
-            name_partial = is_name_type(child, "partial")
-            if name_partial or name_any:
-                fit = get_nx_namefit(
-                    hdf_name,
-                    get_node_name(child),
-                    name_any=name_any,
-                    name_partial=name_partial,
-                )
+            name_any = (
+                "nameType" in nxdl_elem.attrib.keys()
+                and nxdl_elem.attrib["nameType"] == "any"
+            )
+            fit = get_nx_namefit(hdf_name, get_node_name(child), name_any)
         if fit > bestfit:
             bestfit = fit
             bestchild = set_nxdlpath(child, nxdl_elem)
@@ -959,60 +914,3 @@ def get_node_at_nxdl_path(
                 "Please check this entry in the template dictionary."
             )
     return elem
-
-
-def get_rst_formatted_name(node):
-    """Return the RST formatted name of the node (field, group, link or attribute).
-
-    The formatting is determined as follows:
-
-    - all characters are bold formatted
-    - substitutable characters are bold and italic formatted
-    - attributes start with a bold "@" character
-    """
-    name = node.get("name", "")
-    nameType = node.get("nameType", "")
-
-    node_type = get_local_name_from_xml(node)
-
-    if not name and node_type == "group":
-        # Derive the name from the type without the NX prefix
-        group_type = node.get("type", "")
-        name = group_type.lstrip("NX").upper()
-        if not nameType:
-            nameType = "any"
-
-    # Characters that are NOT substitutable
-    fixstart = "**"
-    fixstop = "**"
-
-    # Characters that are substitutable
-    varstart = ":bolditalic:`"
-    varstop = "`"
-
-    if nameType == "any":
-        # Formatting: bold and italicized
-        if node_type == "attribute":
-            return rf"{fixstart}@{fixstop}\ {varstart}{name}{varstop}"
-        else:
-            return f"{varstart}{name}{varstop}"
-
-    if nameType == "partial":
-        # Formatting: bold and capital letters italicized
-        substrings = _SPLIT_NAMETYPE_PARTIAL.findall(name)
-        formatted_parts = [
-            f"{varstart}{s}{varstop}" if s.isupper() else f"{fixstart}{s}{fixstop}"
-            for s in substrings
-        ]
-        if node_type == "attribute":
-            formatted_parts.insert(0, f"{fixstart}@{fixstop}")
-        return r"\ ".join(formatted_parts)
-
-    # Formatting: bold only
-    if node_type == "attribute":
-        return f"{fixstart}@{name}{fixstop}"
-    else:
-        return f"{fixstart}{name}{fixstop}"
-
-
-_SPLIT_NAMETYPE_PARTIAL = re.compile(r"[A-Z]+|[^A-Z]+")
