@@ -7,8 +7,7 @@ import textwrap
 from functools import lru_cache
 from glob import glob
 from pathlib import Path
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 import lxml.etree as ET
 from lxml.etree import ParseError as xmlER
@@ -197,7 +196,7 @@ def get_nx_namefit(
         int: -1 if no match is found or the number of matching
              characters (case insensitive).
     """
-    path_regex = r"([a-zA-Z0-9_.]+)"
+    path_regex = r"([a-zA-Z0-9_.]*)"
 
     if name == hdf_name:
         return len(name) * 2
@@ -752,7 +751,7 @@ def add_base_classes(elist, nx_name=None, elem: ET.Element = None):
     elem.set("nxdlpath", "")
     elist.append(elem)
     # add inherited base class
-    if "extends" in elem.attrib and elem.attrib["extends"] != "NXobject":
+    if "extends" in elem.attrib:
         add_base_classes(elist, elem.attrib["extends"])
     else:
         add_base_classes(elist)
