@@ -68,14 +68,11 @@ def nxdl_indices() -> Dict[str, dict]:
             print("---------++++++++-", section)
         if file.endswith("contributed_definitions/index.rst"):
             rst_lines.append(f"{indentation}em-structure\n")
-            rst_lines.append(f"{indentation}optical-spectroscopy-structure\n")
+            rst_lines.append(f"{indentation}ellipsometry-structure\n")
             rst_lines.append(f"{indentation}mpes-structure\n")
             rst_lines.append(f"{indentation}apm-structure\n")
             rst_lines.append(f"{indentation}transport-structure\n")
-            rst_lines.append(f"{indentation}spm-structure\n")
             rst_lines.append(f"{indentation}cgms-structure\n")
-            rst_lines.append(f"{indentation}icme-structure\n")
-            rst_lines.append(f"{indentation}sample-prep-structure\n")
 
         for cname in sorted(classes):
             rst_lines.append(f"{indentation}{cname}\n")
@@ -163,11 +160,11 @@ definitions and provide feedback to the authors before ratification
 and acceptance as either a base class or application definition.
 
 Some contributions are grouped together:
-  :ref:`Optical Spectroscopy <Optical-Spectroscopy-Structure>`
+  :ref:`Optical Spectroscopy <Ellipsometry-Structure>`
 
   :ref:`Multi-dimensional Photoemission Spectroscopy <Mpes-Structure>`
 
-  :ref:`Atomprobe Microscopy <Apm-Structure>`
+  :ref:`Atom Probe Microscopy <Apm-Structure>`
 
   :ref:`Electron Microscopy <Em-Structure>`
 
