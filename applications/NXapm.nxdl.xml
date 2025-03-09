@@ -81,7 +81,7 @@
                  which was used to generate this NeXus file instance.
             </doc>
             <!--command_line_call(NX_CHAR):-->
-            <group name="programID" type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+            <group name="programID" type="NXprogram" minOccurs="0" maxOccurs="unbounded" nameType="partial">
                 <doc>
                      A collection of all programs and libraries which are considered relevant
                      to understand with which software tools this NeXus file instance was
@@ -104,11 +104,7 @@
             </group>
         </group>
         <!--\@url:-->
-        <group name="experiment_identifier" type="NXidentifier" recommended="true">
-            <field name="service" type="NX_CHAR"/>
-            <field name="identifier" type="NX_CHAR"/>
-            <field name="is_persistent" type="NX_BOOLEAN"/>
-        </group>
+        <field name="experiment_identifier" type="NX_CHAR" recommended="true"/>
         <field name="run_number" type="NX_UINT" recommended="true" units="NX_UNITLESS">
             <!--
 cannot be made required as for simulations you do not have a run number!
@@ -123,9 +119,9 @@ cannot be made required as for simulations you do not have a run number!
                  best conceptually to the LEAP run number.
                  The field does not have to be required if the information is recoverable
                  in the dataset which for LEAP instruments is the case (provided these
-                 RHIT or HITS files respectively are stored alongside a data artifact). 
-                 With NXapm the RHIT or HITS can be stored as via the NXserialized group
-                 in the hit_finding algorithm section.
+                 RHIT or HITS files respectively are stored alongside a data artifact).
+                 With NXapm the RHIT or HITS can be stored via NXnote in the
+                 hit_finding algorithm section.
                  
                  As a destructive microscopy technique, a run can be performed only once.
                  It is possible, however, to interrupt a run and restart data acquisition
@@ -193,12 +189,12 @@ the appdef definition here is nothing else then the documentation of this for a 
                  How long did the measurement take e.g. use CRunHeader.CAnalysis.fElapsedTime
             </doc>
         </field>
-        <group type="NXcite" minOccurs="0" maxOccurs="unbounded">
+        <group name="citeID" type="NXcite" minOccurs="0" maxOccurs="unbounded" nameType="partial">
             <field name="doi" type="NX_CHAR"/>
         </group>
-        <group name="serializedID" type="NXserialized" minOccurs="0" maxOccurs="unbounded">
+        <group name="noteID" type="NXnote" minOccurs="0" maxOccurs="unbounded" nameType="partial">
             <field name="type" type="NX_CHAR"/>
-            <field name="path" type="NX_CHAR"/>
+            <field name="file_name" type="NX_CHAR"/>
             <field name="checksum" type="NX_CHAR"/>
             <field name="algorithm" type="NX_CHAR"/>
         </group>
@@ -219,20 +215,15 @@ the appdef definition here is nothing else then the documentation of this for a 
                  
                  If NXapm is used for storing details about a simulation use other for now.
             </doc>
-            <enumeration>
+            <enumeration open="true">
                 <item value="apt"/>
                 <item value="fim"/>
                 <item value="apt_fim"/>
-                <item value="other"/>
             </enumeration>
         </field>
-        <group type="NXuser" recommended="true">
+        <group name="userID" type="NXuser" recommended="true" nameType="partial">
             <field name="name" type="NX_CHAR" optional="true"/>
-            <group name="identifier" type="NXidentifier" recommended="true">
-                <field name="service" type="NX_CHAR"/>
-                <field name="identifier" type="NX_CHAR"/>
-                <field name="is_persistent" type="NX_BOOLEAN"/>
-            </group>
+            <field name="identifierNAME" type="NX_CHAR" recommended="true" nameType="partial"/>
         </group>
         <group name="sample" type="NXsample" recommended="true">
             <doc>
@@ -267,11 +258,7 @@ the appdef definition here is nothing else then the documentation of this for a 
                      Given name/alias for the sample.
                 </doc>
             </field>
-            <group name="identifier" type="NXidentifier" recommended="true">
-                <field name="service" type="NX_CHAR"/>
-                <field name="identifier" type="NX_CHAR"/>
-                <field name="is_persistent" type="NX_BOOLEAN"/>
-            </group>
+            <field name="identifierNAME" type="NX_CHAR" recommended="true" nameType="partial"/>
             <field name="grain_diameter" type="NX_FLOAT" optional="true" units="NX_LENGTH">
                 <doc>
                      Qualitative information about the grain size, here specifically
@@ -359,7 +346,7 @@ schema for heat treatment
                         <item value="weight_percent"/>
                     </enumeration>
                 </field>
-                <group name="ionID" type="NXion" minOccurs="1" maxOccurs="118">
+                <group name="ionID" type="NXion" minOccurs="1" maxOccurs="118" nameType="partial">
                     <field name="chemical_symbol" type="NX_CHAR">
                         <doc>
                              Human-readable name of the element (e.g. Fe).
@@ -395,25 +382,18 @@ schema for heat treatment
             </field>
             <field name="alias" type="NX_CHAR" recommended="true">
                 <doc>
-                     Given name an alias. Better use identifier and parent_identifier instead.
+                     Given name an alias. Better use identifierNAME and identifier_parent instead.
                      A single NXentry should be used only for the characterization of a single specimen.
                 </doc>
             </field>
-            <group name="identifier" type="NXidentifier" recommended="true">
-                <field name="service" type="NX_CHAR"/>
-                <field name="identifier" type="NX_CHAR"/>
-                <field name="is_persistent" type="NX_BOOLEAN"/>
-            </group>
-            <group name="parent_identifier" type="NXidentifier" recommended="true">
+            <field name="identifierNAME" type="NX_CHAR" recommended="true" nameType="partial"/>
+            <field name="identifier_parent" type="NX_CHAR" recommended="true">
                 <doc>
                      Identifier of the sample from which the specimen was cut or the string
                      n/a. The purpose of this field is to support functionalities for
                      tracking sample provenance via a research data management system.
                 </doc>
-                <field name="service" type="NX_CHAR"/>
-                <field name="identifier" type="NX_CHAR"/>
-                <field name="is_persistent" type="NX_BOOLEAN"/>
-            </group>
+            </field>
             <field name="preparation_date" type="NX_DATE_TIME" recommended="true">
                 <doc>
                      ISO 8601 time code with local time zone offset to UTC information
@@ -422,7 +402,7 @@ schema for heat treatment
                      Ideally, report the end of the preparation, i.e. the last known time
                      the measured specimen surface was actively prepared. Ideally, this
                      matches the last timestamp that is mentioned in the digital resource
-                     pointed to by parent_identifier.
+                     pointed to by identifier_parent.
                      
                      Knowing when the specimen was exposed to e.g. specific atmosphere is
                      especially required for environmentally sensitive material such as
@@ -443,7 +423,7 @@ schema for heat treatment
                      
                      The purpose of the field is to offer research data management systems an
                      opportunity to parse the relevant elements without having to interpret
-                     these from the resources pointed to by parent_identifier or walk through
+                     these from the resources pointed to by identifier_parent or walk through
                      eventually deeply nested groups in data instances.
                 </doc>
             </field>
@@ -629,33 +609,37 @@ schema for heat treatment
                 <group name="fabrication" type="NXfabrication" recommended="true">
                     <field name="vendor" type="NX_CHAR"/>
                     <field name="model" type="NX_CHAR"/>
-                    <field name="serial_number" type="NX_CHAR"/>
+                    <field name="serial_number" type="NX_CHAR" recommended="true"/>
                 </group>
-                <group name="reflectron" type="NXobject" optional="true">
-                    <field name="status" type="NX_CHAR"/>
+                <group name="reflectron" type="NXcomponent" optional="true">
+                    <field name="applied" type="NX_BOOLEAN"/>
                 </group>
                 <group name="local_electrode" type="NXlens_em" recommended="true">
                     <field name="name" type="NX_CHAR"/>
                     <group name="fabrication" type="NXfabrication" optional="true">
                         <field name="vendor" type="NX_CHAR"/>
                         <field name="model" type="NX_CHAR"/>
+                        <field name="serial_number" type="NX_CHAR" recommended="true"/>
                     </group>
                 </group>
                 <group name="ion_detector" type="NXdetector" recommended="true">
                     <group name="fabrication" type="NXfabrication" optional="true">
                         <field name="vendor" type="NX_CHAR"/>
                         <field name="model" type="NX_CHAR"/>
+                        <field name="serial_number" type="NX_CHAR" recommended="true"/>
                     </group>
                 </group>
-                <group name="pulser" type="NXobject" recommended="true">
+                <group name="pulser" type="NXcomponent" recommended="true">
                     <group name="fabrication" type="NXfabrication" optional="true">
                         <field name="vendor" type="NX_CHAR"/>
                         <field name="model" type="NX_CHAR"/>
+                        <field name="serial_number" type="NX_CHAR" recommended="true"/>
                     </group>
-                    <group name="sourceID" type="NXsource" minOccurs="0" maxOccurs="2">
+                    <group name="sourceID" type="NXsource" minOccurs="0" maxOccurs="2" nameType="partial">
                         <group name="fabrication" type="NXfabrication" recommended="true">
                             <field name="vendor" type="NX_CHAR"/>
                             <field name="model" type="NX_CHAR"/>
+                            <field name="serial_number" type="NX_CHAR" recommended="true"/>
                         </group>
                     </group>
                 </group>
@@ -699,7 +683,7 @@ details can be useful to convey details about an atom probe instrument in genera
                      document quantities as a function of the evaporated_identifier but as a
                      function of the (pulsing) event_identifier.
                 </doc>
-                <group name="eventID" type="NXevent_data_apm" minOccurs="0" maxOccurs="unbounded">
+                <group name="eventID" type="NXevent_data_apm" minOccurs="0" maxOccurs="unbounded" nameType="partial">
                     <!--all these cannot be made required because for LEAP only stored in RHIT/HITS
 but for M-TAP and Oxcart these pieces of information are available.-->
                     <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
@@ -708,7 +692,7 @@ but for M-TAP and Oxcart these pieces of information are available.-->
 pulse_identifier_offset(NX_INT):
 pulse_identifier(NX_INT):-->
                     <group name="instrument" type="NXinstrument_apm" recommended="true">
-                        <group name="reflectron" type="NXobject" recommended="true">
+                        <group name="reflectron" type="NXcomponent" recommended="true">
                             <field name="voltage" type="NX_FLOAT"/>
                         </group>
                         <!--decelerate_electrode(NXlens_em):-->
@@ -716,7 +700,7 @@ pulse_identifier(NX_INT):-->
                             <field name="voltage" type="NX_FLOAT"/>
                         </group>
                         <!--ion_detector(NXdetector):-->
-                        <group name="pulser" type="NXobject" recommended="true">
+                        <group name="pulser" type="NXcomponent" recommended="true">
                             <field name="pulse_mode" type="NX_CHAR"/>
                             <field name="pulse_frequency" type="NX_FLOAT"/>
                             <!--\@logged_against(NX_CHAR):-->
@@ -740,7 +724,7 @@ pulse_identifier(NX_INT):-->
                                 </dimensions>
                             </field>
                             <!--\@logged_against(NX_CHAR):-->
-                            <group name="sourceID" type="NXsource" minOccurs="0" maxOccurs="2">
+                            <group name="sourceID" type="NXsource" minOccurs="0" maxOccurs="2" nameType="partial">
                                 <field name="pulse_energy" type="NX_FLOAT">
                                     <dimensions rank="1">
                                         <dim index="1" value="n"/>
@@ -752,11 +736,17 @@ pulse_identifier(NX_INT):-->
 laser geometry at the moment has neither a worked out example
 nor any feedback from the community despite the work from B. Gault
 on laser atom probe was granted a Leibnitz award-->
-                        <group name="stage" type="NXstage_lab">
-                            <field name="specimen_temperature" type="NX_FLOAT"/>
+                        <group name="stage" type="NXmanipulator">
+                            <group name="temperature_sensor" type="NXsensor">
+                                <field name="measurement" type="NX_CHAR"/>
+                                <field name="value" type="NX_FLOAT"/>
+                            </group>
                         </group>
-                        <group name="analysis_chamber" type="NXchamber">
-                            <field name="pressure" type="NX_FLOAT"/>
+                        <group name="analysis_chamber" type="NXcomponent">
+                            <group name="pressure_sensor" type="NXsensor">
+                                <field name="measurement" type="NX_CHAR"/>
+                                <field name="value" type="NX_FLOAT"/>
+                            </group>
                         </group>
                         <group name="control" type="NXcollection" recommended="true">
                             <field name="evaporation_control" type="NX_CHAR"/>
@@ -773,20 +763,20 @@ on laser atom probe was granted a Leibnitz award-->
         </group>
         <!--future possibility to reuse concepts from NXinstrument_apm again without
 the need for defining them again-->
-        <group name="atom_probe" type="NXroi" recommended="true">
+        <group name="atom_probe" type="NXobject" recommended="true">
             <doc>
                  A region-of-interest analyzed either during or after the session for which
                  specific processed data of the measured or simulated data are available.
             </doc>
             <!--earlier comments here https://github.com/FAIRmat-NFDI/nexus_definitions/commit/a8602870f13f04b8befc902efb345afe650d8dd3-->
-            <group name="initial_specimen" type="NXimage_set" recommended="true">
+            <group name="initial_specimen" type="NXimage" recommended="true">
                 <doc>
                      SEM or TEM image of the initial specimen (ideally taken prior data acquisition).
                 </doc>
                 <group name="image_2d" type="NXdata">
                     <attribute name="signal" type="NX_CHAR"/>
                     <attribute name="axes" type="NX_CHAR"/>
-                    <attribute name="AXISNAME_indices" type="NX_CHAR"/>
+                    <attribute name="AXISNAME_indices" type="NX_CHAR" nameType="partial"/>
                     <field name="real" type="NX_NUMBER"/>
                     <field name="axis_j" type="NX_NUMBER">
                         <dimensions rank="1">
@@ -814,17 +804,17 @@ the need for defining them again-->
                      From these tuples hits are computed in a process called hit_finding.
                 </doc>
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                <group name="programID" type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+                <group name="programID" type="NXprogram" minOccurs="0" maxOccurs="unbounded" nameType="partial">
                     <field name="program" type="NX_CHAR">
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
                 <!--point at least to the proprietary artifact-->
-                <group name="serialized" type="NXserialized" recommended="true">
+                <group name="source" type="NXnote" recommended="true">
                     <field name="type" type="NX_CHAR"/>
-                    <field name="path" type="NX_CHAR"/>
-                    <field name="checksum" type="NX_CHAR" optional="true"/>
-                    <field name="algorithm" type="NX_CHAR" optional="true"/>
+                    <field name="file_name" type="NX_CHAR"/>
+                    <field name="checksum" type="NX_CHAR"/>
+                    <field name="algorithm" type="NX_CHAR"/>
                 </group>
                 <!--technical details of data the ion_detector collects-->
                 <field name="number_of_dld_wires" type="NX_UINT" recommended="true" units="NX_UNITLESS">
@@ -869,15 +859,15 @@ does not have to be exposed (although this clearly is against FAIR principles bu
 is does not have the authority to decide which portions of proprietary code have to be public
 we can only make recommendations-->
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                <group name="programID" type="NXprogram" minOccurs="0" maxOccurs="unbounded">
+                <group name="programID" type="NXprogram" minOccurs="0" maxOccurs="unbounded" nameType="partial">
                     <field name="program" type="NX_CHAR">
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
                 <!--config of the hit_finding algorithm-->
-                <group name="serialized" type="NXserialized" recommended="true">
+                <group name="config" type="NXnote" recommended="true">
                     <field name="type" type="NX_CHAR"/>
-                    <field name="path" type="NX_CHAR"/>
+                    <field name="file_name" type="NX_CHAR"/>
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
@@ -965,14 +955,14 @@ pulse_identifier(NX_INT):
 at this point the original set of events p has been filtered down to p_out-->
             <group name="hit_spatial_filtering" type="NXprocess" recommended="true">
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded" nameType="partial">
                     <field name="program" type="NX_CHAR">
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
-                <group name="serialized" type="NXserialized" optional="true">
+                <group name="source" type="NXnote" optional="true">
                     <field name="type" type="NX_CHAR"/>
-                    <field name="path" type="NX_CHAR"/>
+                    <field name="file_name" type="NX_CHAR"/>
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
@@ -1021,14 +1011,14 @@ at this point the original set of events p has been filtered down to p_out-->
                      positions for flight path differences, detector biases, and nonlinearities.
                 </doc>
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded" nameType="partial">
                     <field name="program" type="NX_CHAR">
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
-                <group name="serialized" type="NXserialized" optional="true">
+                <group name="source" type="NXserialized" optional="true">
                     <field name="type" type="NX_CHAR"/>
-                    <field name="path" type="NX_CHAR"/>
+                    <field name="file_name" type="NX_CHAR"/>
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
@@ -1061,14 +1051,14 @@ by proprietary hardware with proprietary semantics
             </group>
             <group name="mass_to_charge_conversion" type="NXprocess" recommended="true">
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded" nameType="partial">
                     <field name="program" type="NX_CHAR">
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
-                <group name="serialized" type="NXserialized" recommended="true">
+                <group name="source" type="NXnote" recommended="true">
                     <field name="type" type="NX_CHAR"/>
-                    <field name="path" type="NX_CHAR"/>
+                    <field name="file_name" type="NX_CHAR"/>
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
@@ -1082,12 +1072,12 @@ results-->
             </group>
             <group name="reconstruction" type="NXapm_reconstruction" recommended="true">
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded" nameType="partial">
                     <field name="program" type="NX_CHAR">
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
-                <group name="config" type="NXserialized" recommended="true">
+                <group name="config" type="NXnote" recommended="true">
                     <doc>
                          For LEAP and IVAS/APSuite-based analyses root file which stores
                          the settings whereby an RHIT/HITS file can be used to regenerate the
@@ -1097,11 +1087,11 @@ results-->
                          group of the hit_finding section of this application definition.
                     </doc>
                     <field name="type" type="NX_CHAR"/>
-                    <field name="path" type="NX_CHAR"/>
+                    <field name="file_name" type="NX_CHAR"/>
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
-                <group name="results" type="NXserialized" recommended="true">
+                <group name="results" type="NXnote" recommended="true">
                     <doc>
                          For LEAP and IVAS/APSuite-based analyses the resulting typically
                          file with the reconstructed positions and (calibrated) mass-to-charge
@@ -1115,7 +1105,7 @@ results-->
                          management system.
                     </doc>
                     <field name="type" type="NX_CHAR"/>
-                    <field name="path" type="NX_CHAR"/>
+                    <field name="file_name" type="NX_CHAR"/>
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
@@ -1131,7 +1121,7 @@ results-->
                     </dimensions>
                 </field>
                 <group name="naive_discretization" type="NXprocess">
-                    <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                    <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded" nameType="partial">
                         <field name="program" type="NX_CHAR">
                             <attribute name="version" type="NX_CHAR"/>
                         </field>
@@ -1141,10 +1131,10 @@ results-->
                     <group type="NXdata">
                         <attribute name="signal" type="NX_CHAR"/>
                         <attribute name="axes" type="NX_CHAR"/>
-                        <attribute name="AXISNAME_indices" type="NX_CHAR"/>
+                        <attribute name="AXISNAME_indices" type="NX_CHAR" nameType="partial"/>
                         <!-- dim: (3,)
 \@long_name:-->
-                        <field name="title" type="NX_CHAR"/>
+                        <field name="title" type="NX_CHAR" recommended="true"/>
                         <field name="intensity" type="NX_NUMBER">
                             <dimensions rank="3">
                                 <dim index="1" value="n_z"/>
@@ -1175,23 +1165,23 @@ results-->
             </group>
             <group name="ranging" type="NXapm_ranging" recommended="true">
                 <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded" nameType="partial">
                     <field name="program" type="NX_CHAR">
                         <attribute name="version" type="NX_CHAR"/>
                     </field>
                 </group>
-                <group name="definitions" type="NXserialized" recommended="true">
+                <group name="definitions" type="NXnote" recommended="true">
                     <doc>
                          The respective ranging definitions file RNG/RRNG/ENV/HDF5.
                     </doc>
                     <field name="type" type="NX_CHAR"/>
-                    <field name="path" type="NX_CHAR"/>
+                    <field name="file_name" type="NX_CHAR"/>
                     <field name="checksum" type="NX_CHAR"/>
                     <field name="algorithm" type="NX_CHAR"/>
                 </group>
                 <group name="mass_to_charge_distribution" type="NXprocess" recommended="true">
                     <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                    <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                    <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded" nameType="partial">
                         <field name="program" type="NX_CHAR">
                             <attribute name="version" type="NX_CHAR"/>
                         </field>
@@ -1200,9 +1190,9 @@ results-->
                     <group name="mass_spectrum" type="NXdata">
                         <attribute name="signal" type="NX_CHAR"/>
                         <attribute name="axes" type="NX_CHAR"/>
-                        <attribute name="AXISNAME_indices" type="NX_CHAR"/>
+                        <attribute name="AXISNAME_indices" type="NX_CHAR" nameType="partial"/>
                         <!--\@long_name(NX_CHAR):-->
-                        <field name="title" type="NX_CHAR"/>
+                        <field name="title" type="NX_CHAR" recommended="true"/>
                         <field name="intensity" type="NX_NUMBER">
                             <dimensions rank="1">
                                 <dim index="1" value="n_bins"/>
@@ -1219,7 +1209,7 @@ results-->
                 </group>
                 <group name="background_quantification" type="NXprocess" recommended="true">
                     <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                    <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                    <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded" nameType="partial">
                         <field name="program" type="NX_CHAR">
                             <attribute name="version" type="NX_CHAR"/>
                         </field>
@@ -1248,12 +1238,12 @@ NEW ISSUE: add parameters of the background model
 in an e.g. work of A. London et al.-->
                 <group name="peak_search" type="NXprocess" recommended="true">
                     <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                    <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                    <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded" nameType="partial">
                         <field name="program" type="NX_CHAR">
                             <attribute name="version" type="NX_CHAR"/>
                         </field>
                     </group>
-                    <group name="peakID" type="NXpeak" minOccurs="0" maxOccurs="unbounded">
+                    <group name="peakID" type="NXpeak" minOccurs="0" maxOccurs="unbounded" nameType="partial">
                         <field name="label" type="NX_CHAR" recommended="true"/>
                         <field name="description" type="NX_CHAR"/>
                         <field name="category" type="NX_CHAR" recommended="true">
@@ -1285,14 +1275,14 @@ in an e.g. work of A. London et al.-->
                 <!--peak deconvolution(NXprocess):-->
                 <group name="peak_identification" type="NXprocess" recommended="true">
                     <field name="sequence_index" type="NX_POSINT" recommended="true"/>
-                    <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+                    <group name="programID" type="NXprogram" minOccurs="1" maxOccurs="unbounded" nameType="partial">
                         <field name="program" type="NX_CHAR">
                             <attribute name="version" type="NX_CHAR"/>
                         </field>
                     </group>
                     <field name="number_of_ion_types" type="NX_UINT"/>
                     <field name="maximum_number_of_atoms_per_molecular_ion" type="NX_UINT"/>
-                    <group name="ionID" type="NXion" minOccurs="1" maxOccurs="256">
+                    <group name="ionID" type="NXion" minOccurs="1" maxOccurs="256" nameType="partial">
                         <field name="nuclide_hash" type="NX_UINT"/>
                         <field name="charge_state" type="NX_INT"/>
                         <group name="charge_state_analysis" type="NXapm_charge_state_analysis" optional="true">
