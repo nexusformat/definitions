@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2022-2024 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -23,7 +23,7 @@
 -->
 <!--
 duplicate of an NXoff_geometry ?-->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_face_list_data_structure" extends="NXcg_primitive_set" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_face_list_data_structure" extends="NXcg_primitive" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
@@ -53,27 +53,21 @@ duplicate of an NXoff_geometry ?-->
                  The total number of vertices of all faces. Faces are polygons.
             </doc>
         </symbol>
-        <symbol name="n_weinberg">
-            <doc>
-                 The total number of Weinberg vector values of all faces.
-            </doc>
-        </symbol>
     </symbols>
     <doc>
          Computational geometry of primitives via a face-and-edge-list data structure.
          
-         Primitives must neither be degenerated nor self-intersect but can differ in
-         their properties. A face-and-edge-list-based description of primitives is
+         Primitives must neither be degenerated nor self-intersect but can have different
+         properties. A face-and-edge-list-based description of primitives is
          frequently used for triangles and polyhedra to store them on disk for
          visualization purposes (see OFF, PLY, VTK, or STL file formats).
          
-         Although this description is storage efficient it is not well suited for
-         topological analyses though. In this case, scientists may need a different
-         view on the primitives which is better represented with e.g. a
-         half_edge_data_structure.
+         Although this description is storage efficient, it is not well-suited for
+         topological analyses. In this case using a half-edge data structure is
+         an alternative. 
          
          Having an own base class for the data structure how primitives are stored is
-         useful to embrace both users with small or very detailed specification demands.
+         useful to embrace both users with small or detailed specification demands.
     </doc>
     <!--resulting in a design similar to that of NXoff_geometry and the XDMF mixed primitive topology-->
     <field name="number_of_vertices" type="NX_INT" units="NX_UNITLESS">
@@ -103,34 +97,34 @@ duplicate of an NXoff_geometry ?-->
              Number of faces of the primitives.
         </doc>
     </field>
-    <field name="vertex_identifier_offset" type="NX_INT" units="NX_UNITLESS">
+    <field name="identifier_vertex_offset" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Integer offset whereby the identifier of the first member
              of the vertices differs from zero.
              
              Identifier can be defined explicitly or implicitly.
-             Inspect the definition of NXcg_primitive_set for further details.
+             Inspect the definition of NXcg_primitive for further details.
         </doc>
     </field>
-    <field name="edge_identifier_offset" type="NX_INT" units="NX_UNITLESS">
+    <field name="identifier_edge_offset" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Integer offset whereby the identifier of the first member
              of the edges differs from zero.
              
              Identifier can be defined explicitly or implicitly.
-             Inspect the definition of NXcg_primitive_set for further details.
+             Inspect the definition of NXcg_primitive for further details.
         </doc>
     </field>
-    <field name="face_identifier_offset" type="NX_INT" units="NX_UNITLESS">
+    <field name="identifier_face_offset" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Integer offset whereby the identifier of the first member
              of the faces differs from zero.
              
              Identifier can be defined explicitly or implicitly.
-             Inspect the definition of NXcg_primitive_set for further details.
+             Inspect the definition of NXcg_primitive for further details.
         </doc>
     </field>
-    <field name="vertex_identifier" type="NX_INT" units="NX_UNITLESS">
+    <field name="identifier_vertex" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Integer identifier to distinguish all vertices explicitly.
         </doc>
@@ -138,7 +132,7 @@ duplicate of an NXoff_geometry ?-->
             <dim index="1" value="n_v"/>
         </dimensions>
     </field>
-    <field name="edge_identifier" type="NX_INT" units="NX_UNITLESS">
+    <field name="identifier_edge" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Integer used to distinguish all edges explicitly.
         </doc>
@@ -146,7 +140,7 @@ duplicate of an NXoff_geometry ?-->
             <dim index="1" value="n_e"/>
         </dimensions>
     </field>
-    <field name="face_identifier" type="NX_INT" units="NX_UNITLESS">
+    <field name="identifier_face" type="NX_INT" units="NX_UNITLESS">
         <doc>
              Integer used to distinguish all faces explicitly.
         </doc>
@@ -159,10 +153,10 @@ duplicate of an NXoff_geometry ?-->
              Positions of the vertices.
              
              Users are encouraged to reduce the vertices to a unique set as this may
-             result in a more efficient storage of the geometry data.
-             It is also possible though to store the vertex positions naively in which
-             case vertices_are_unique is likely False. Naively here means that each
-             vertex is stored even though many share the same positions.
+             result in more efficient storage. Alternatively, storing vertex positions naively
+             should be indicated with setting vertices_are_unique to False.
+             Naively means that each vertex is stored even though many vertices may
+             share the same positions.
         </doc>
         <dimensions rank="2">
             <dim index="1" value="n_v"/>
