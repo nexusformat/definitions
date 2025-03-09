@@ -1,10 +1,10 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-#
+# 
 # Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
-#
+# 
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -21,79 +21,67 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXpeak" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXpeak" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
              The symbols used in the schema to specify e.g. dimensions of arrays.
         </doc>
-        <symbol name="dimRank">
+        <symbol name="n_support">
             <doc>
-                 Rank of the dependent and independent data arrays (for
-                 multidimensional/multivariate fit.)
+                 Number of support points
             </doc>
         </symbol>
     </symbols>
     <doc>
-         Base class for describing a peak, its functional form, and support values
-         (i.e., the discretization (points) at which the function has been evaluated).
+         Description of peaks, their functional form or measured support.
     </doc>
-    <field name="label" type="NX_CHAR">
+    <field name="label">
         <doc>
-             Human-readable label which specifies which concept/entity
+             Human-readable identifier to specify which concept/entity
              the peak represents/identifies.
         </doc>
     </field>
-    <group name="data" type="NXdata">
-        <field name="position" type="NX_NUMBER" units="NX_ANY">
-            <doc>
-                 Position values along one or more data dimensions (to hold the
-                 values for the independent variable).
-            </doc>
-            <dimensions rank="dimRank">
-                <doc>
-                     The ``position`` field must have the same rank (``dimRank``)
-                     as the ``intensity`` field. Each individual dimension of ``position``
-                     must have the same number of points as the corresponding dimension in
-                     the ``intensity`` field.
-                </doc>
-            </dimensions>
-        </field>
-        <field name="intensity" type="NX_NUMBER" units="NX_ANY">
-            <doc>
-                 This array holds the intensity/count values of the fitted peak at each position.
-            </doc>
-            <dimensions rank="dimRank">
-                <doc>
-                     The ``intensity`` field must have the same rank (``dimRank``)
-                     as the ``intensity`` field. Each individual dimension of ``position``
-                     must have the same number of points as the corresponding dimension in
-                     the ``position`` field.
-                </doc>
-            </dimensions>
-        </field>
-    </group>
-    <group name="function" type="NXfit_function">
+    <field name="peak_model">
         <doc>
-             The functional form of the peak. This could be a Gaussian, Lorentzian,
-             Voigt, etc.
+             Is the peak described analytically via a functional form
+             or is it empirically defined via measured/reported
+             intensity/counts as a function of an independent variable.
+             
+             If the functional form is not empirical or gaussian, users
+             should enter other for the peak_model and add relevant details
+             in the NXcollection.
         </doc>
-    </group>
-    <field name="total_area" type="NX_NUMBER" units="NX_ANY">
-        <doc>
-             Total area under the curve.
-        </doc>
+        <enumeration>
+            <item value="empirical"/>
+            <item value="gaussian"/>
+            <item value="lorentzian"/>
+            <item value="other"/>
+        </enumeration>
     </field>
-    <attribute name="default">
+    <field name="position" type="NX_NUMBER" units="NX_ANY">
         <doc>
-             .. index:: plotting
-             
-             Declares which child group contains a path leading
-             to a :ref:`NXdata` group.
-             
-             It is recommended (as of NIAC2014) to use this attribute
-             to help define the path to the default dataset to be plotted.
-             See https://www.nexusformat.org/2014_How_to_find_default_data.html
-             for a summary of the discussion.
+             In the case of an empirical description of the peak and its shoulders,
+             this array holds the position values for the independent variable.
         </doc>
-    </attribute>
+        <dimensions rank="1">
+            <dim index="1" value="n_support"/>
+        </dimensions>
+    </field>
+    <field name="intensity" type="NX_NUMBER" units="NX_ANY">
+        <doc>
+             In the case of an empirical description of the peak and its shoulders,
+             this array holds the intensity/count values at each position.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_support"/>
+        </dimensions>
+    </field>
+    <group type="NXcollection">
+        <doc>
+             In the case of an analytical description (or if peak_model is other) this
+             collection holds parameter of (and eventually) the functional form.
+             For example in the case of Gaussians mu, sigma, cut-off values, 
+             and background intensity are relevant parameter.
+        </doc>
+    </group>
 </definition>

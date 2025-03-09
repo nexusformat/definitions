@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2024-2024 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -54,7 +54,7 @@ or volatile (meta)data.-->
         <doc>
              Which type of instrument.
         </doc>
-        <enumeration>
+        <enumeration open="true">
             <item value="Inspico"/>
             <item value="3DAP"/>
             <item value="LAWATAP"/>
@@ -79,7 +79,6 @@ or volatile (meta)data.-->
             <item value="Modular AP"/>
             <item value="Titanium APT"/>
             <item value="Extreme UV APT"/>
-            <item value="unknown"/>
         </enumeration>
     </field>
     <group name="fabrication" type="NXfabrication"/>
@@ -92,7 +91,7 @@ or volatile (meta)data.-->
              preferred.
         </doc>
     </field>
-    <group name="reflectron" type="NXobject">
+    <group name="reflectron" type="NXcomponent">
         <doc>
              Device which reduces ToF differences of ions in ToF experiments.
              
@@ -104,24 +103,9 @@ or volatile (meta)data.-->
              * 3863068 and 6740872 for the reflectron
              * 8134119 for the curved reflectron
         </doc>
-        <field name="status" type="NX_CHAR">
+        <field name="applied" type="NX_BOOLEAN">
             <doc>
-                 Presence and status of the reflectron.
-            </doc>
-            <enumeration>
-                <item value="present"/>
-                <item value="used"/>
-            </enumeration>
-        </field>
-        <field name="name" type="NX_CHAR">
-            <doc>
-                 Given name/alias.
-            </doc>
-        </field>
-        <field name="description" type="NX_CHAR">
-            <doc>
-                 Free-text field to specify further details about the reflectron.
-                 The field can be used to inform e. g. if the reflectron is flat or curved.
+                Was the reflectron used?
             </doc>
         </field>
         <field name="voltage" type="NX_FLOAT" units="NX_VOLTAGE">
@@ -129,15 +113,6 @@ or volatile (meta)data.-->
                  The maximum voltage applied to the reflectron, relative to system ground.
             </doc>
         </field>
-        <group name="fabrication" type="NXfabrication"/>
-        <group type="NXtransformations">
-            <doc>
-                 Affine transformation(s) which detail where the reflectron is located
-                 relative to e.g. the origin of the specimen space reference coordinate
-                 system. This group can also be used for specifying how the reflectron
-                 is rotated relative to a given axis in the instrument.
-            </doc>
-        </group>
     </group>
     <group name="decelerate_electrode" type="NXlens_em">
         <doc>
@@ -192,7 +167,7 @@ NEW ISSUE: local electrode, baking strategies, storage-->
         </field>
     </group>
     <!--model, serial_number, manufacturer_name all inherited from NXdetector base class-->
-    <group name="pulser" type="NXobject">
+    <group name="pulser" type="NXcomponent">
         <doc>
              Laser- and/or voltage-pulsing device to trigger ion removal.
         </doc>
@@ -202,12 +177,10 @@ NEW ISSUE: local electrode, baking strategies, storage-->
             <doc>
                  Detail whereby ion extraction is triggered methodologically.
             </doc>
-            <enumeration>
+            <enumeration open="true">
                 <item value="laser"/>
                 <item value="voltage"/>
                 <item value="laser_and_voltage"/>
-                <item value="other"/>
-                <item value="unknown"/>
             </enumeration>
         </field>
         <!--
@@ -283,13 +256,12 @@ existence constraint is independent of other values.
                 </doc>
             </attribute>
         </field>
-        <group name="sourceID" type="NXsource">
+        <group name="sourceID" type="NXsource" nameType="partial">
             <doc>
                  Atom probe microscopes use controlled laser, voltage, or a combination of
                  pulsing strategies to trigger ion extraction via exciting and eventual field evaporation
                  field emission of ion at the specimen surface.
             </doc>
-            <group name="fabrication" type="NXfabrication"/>
             <field name="wavelength" type="NX_FLOAT" units="NX_WAVELENGTH">
                 <doc>
                      The wavelength of the radiation emitted by the source.
@@ -360,29 +332,38 @@ existence constraint is independent of other values.
             </group>
         </group>
     </group>
-    <group name="stage" type="NXstage_lab">
-        <field name="specimen_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
-            <doc>
-                 CRunHeader.CAnalysis.fSpecimenTemperature
-            </doc>
-        </field>
+    <group name="stage" type="NXmanipulator">
+        <group name="temperature_sensor" type="NXsensor">
+            <field name="value" type="NX_FLOAT">
+                <doc>
+                    CRunHeader.CAnalysis.fSpecimenTemperature
+                </doc>
+            </field>
+        </group>
     </group>
     <!--NEW ISSUE: add NXapm_energy_analyzer, a voltage grid like done in Rouen/GPM-->
-    <group name="analysis_chamber" type="NXchamber">
+    <group name="analysis_chamber" type="NXcomponent">
         <field name="flight_path" type="NX_FLOAT" units="NX_LENGTH">
             <doc>
-                 The space inside the atom probe along which ions pass nominally
-                 when they leave the specimen and travel to the detector.
+                The space inside the atom probe along which ions pass nominally
+                when they leave the specimen and travel to the detector.
             </doc>
         </field>
-        <field name="pressure" type="NX_FLOAT" units="NX_PRESSURE">
-            <doc>
-                 CRunHeader.CLasHeader.fAnalysisPressure
-            </doc>
-        </field>
+        <group name="pressure_sensor" type="NXsensor">
+            <field name="measurement" type="NX_CHAR">
+                <enumeration>
+                    <item value="pressure"/>
+                </enumeration>
+            </field>
+            <field name="value" type="NX_FLOAT" units="NX_PRESSURE">
+                <doc>
+                    CRunHeader.CLasHeader.fAnalysisPressure
+                </doc>
+            </field>
+        </group>
     </group>
-    <group name="buffer_chamber" type="NXchamber"/>
-    <group name="load_lock_chamber" type="NXchamber"/>
+    <group name="buffer_chamber" type="NXcomponent"/>
+    <group name="load_lock_chamber" type="NXcomponent"/>
     <group name="getter_pump" type="NXpump"/>
     <group name="roughening_pump" type="NXpump"/>
     <group name="turbomolecular_pump" type="NXpump"/>
