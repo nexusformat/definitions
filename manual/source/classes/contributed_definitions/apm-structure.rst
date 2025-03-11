@@ -61,7 +61,7 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXpump`:
         A base class to describe details about pump(s) used as components of an instrument.
 
-    :ref:`NXstage_lab`:
+    :ref:`NXmanipulator`:
         A base class to describe the specimen fixture including the cryo-head.
         Nowadays, stages of microscopes represent small-scale laboratory platforms.
         Therefore, there is a need to define the characteristics of such stages in more detail,
@@ -86,8 +86,8 @@ data revealed that it is better to define atom-probe-agnostic reusable concepts 
 
     :ref:`NXspatial_filter`:
         A base class proposing how a point cloud can be spatially filtered in a specific yet general manner.
-        This base class takes advantage of :ref:`NXcg_ellipsoid_set`, :ref:`NXcg_cylinder_set`,
-        and :ref:`NXcg_hexahedron_set` to cater for commonly used geometric primitives in atom probe.
+        This base class takes advantage of :ref:`NXcg_ellipsoid`, :ref:`NXcg_cylinder`, and :ref:`NXcg_hexahedron`
+        to cater for commonly used geometric primitives in atom probe.
         The primitives are used for defining the shape and extent of a region of interest (ROI).
 
     :ref:`NXsubsampling_filter`:

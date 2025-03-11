@@ -1,8 +1,8 @@
 .. _CgmsFeatures-Structure:
 
-=========================
+====================
 Geometry & Microstructure
-=========================
+====================
 
 .. index::
    CgmsBC
@@ -85,9 +85,6 @@ of material (area or volume) which can be useful not only for stencil-based meth
         is smoothed in a controlled manner.
 
     :ref:`NXsimilarity_grouping`:
-        An alternative for NXclustering.
-
-    :ref:`NXclustering`:
         A description for clustering of objects (such as atoms or features).
 
 TODO CHECK THAT MICROSTRUCTURE PART IS COVERED IN ICME WHEN MICROSTRUCTURE PROPOSAL SYNCED UP
