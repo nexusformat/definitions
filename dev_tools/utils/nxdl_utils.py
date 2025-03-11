@@ -199,10 +199,9 @@ def get_nx_namefit(
     """
     path_regex = r"([a-zA-Z0-9_.]*)"
 
-
     if name == hdf_name:
         return len(name) * 2
-    
+
     if " " in hdf_name or hdf_name.startswith(".") or hdf_name.endswith("."):
         return -1
 
@@ -213,7 +212,7 @@ def get_nx_namefit(
     for up in uppercase_parts:
         uppercase_count += len(up)
         regex_name = regex_name.replace(up, path_regex)
-    
+
     name_match = re.search(rf"^{regex_name}$", hdf_name)
     if name_match is None:
         return 0 if name_any else -1
