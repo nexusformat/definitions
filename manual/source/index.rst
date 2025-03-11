@@ -1,35 +1,51 @@
-.. image:: img/NeXus.png
-	:width: 40%
-
 =======================================
 User Manual and Reference Documentation
 =======================================
+
+Welcome to the user manual of the NeXus for FAIRmat project.
 
 https://www.nexusformat.org/
 
 .. toctree::
     :maxdepth: 2
-    :numbered: 4
+    :numbered: 5
 
-    user_manual
-    examples/index
-    ref_doc
+    fairmat-cover
+    nexus-index
+    em-structure
+    mpes-structure
+    optical-spectroscopy-structure
+    apm-structure
+    transport-structure
+    spm-structure
+    cgms-structure
+    north-structure
+    laboratory-structure
+    icme-structure
     napi
-    community
-    installation
-    utilities
     history
-    docs_about
+
+
+
 
 -----------
 
 .. rubric:: Publishing Information
 
-This manual built |today|.  
+| This commit time code <<AUTO_INJECT_COMMIT_TC>>.
+| This commit identifier <<AUTO_INJECT_COMMIT_ID>>.
+| This manual built |today|.
+
+.. rubric:: Acknowledgements
+
+| The FAIRmat project is funded by the Deutsche Forschungsgemeinschaft
+| (`DFG <https://www.dfg.de/en/index.jsp>`_, German Research Foundation) - project 460197019.
+| FAIRmat is a consortium within the `German NFDI <https://www.nfdi.de/?lang=en>`_.
+
 
 .. seealso:: 
 
-   This document is available in these formats online:
+   The extended NeXus documentation:
    
    :HTML:
    	https://manual.nexusformat.org/
@@ -46,11 +62,14 @@ This manual built |today|.
    :PDF:
       https://manual.nexusformat.org/_static/NXImpatient.pdf
 
-..  Suggestions for adding to this manual:
+   FAIRmat website:
 
-    Look for some other "section" such as "introduction.rst" and act similarly.
-    Any examples go as text files in the examples/ subdirectory and are pulled into 
-    Sphinx inside a :directive:`literalcode` directive.  Look for the pattern
-    or wing it.  If you are ambitious, add index entries.  Many examples of the
-    constructs you might use are already in the manual.
-    
+   `<https://www.fair-di.eu/fairmat/fairmat_/consortium>`_
+
+   NOMAD website:
+
+   `<https://nomad-lab.eu/>`_
+
+
+
+
