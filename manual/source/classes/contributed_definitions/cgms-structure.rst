@@ -1,8 +1,8 @@
 .. _CgmsFeatures-Structure:
 
-====================
+=========================
 Geometry & Microstructure
-====================
+=========================
 
 .. index::
    CgmsBC

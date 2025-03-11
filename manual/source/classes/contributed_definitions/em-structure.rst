@@ -1,8 +1,8 @@
 .. _Em-Structure:
 
-===============
+===================
 Electron microscopy
-===============
+===================
 
 .. index::
    IntroductionEm
@@ -14,7 +14,7 @@ Electron microscopy
 .. _IntroductionEm:
 
 Introduction
-##########
+############
 
 A set of data schemas is proposed to describe components of an electron microscope and its eventually available focused-ion beam functionalities.
 The data schemas were designed from the perspective of how electron microscopes are used by colleagues in the materials-science-branch of electron microscopy.
@@ -29,7 +29,7 @@ Electron microscopes are functionally very customizable tools: Examples include 
 .. _EmAppDef:
 
 Application Definition NXem
-######################
+###########################
 
 We acknowledge that it can be difficult to agree on a single application definition which is generally enough applicable yet not unnecessarily complex and useful for applications across a variety of instruments, technology partners, and instrument use cases. In what follows, the proposal conceptualizes first the basic components of an electron microscope and the usual workflow of how an electron microscope is used for collecting data with detectors via probing radiation-specimen-matter interaction mechanisms.
 
@@ -44,7 +44,7 @@ A microscope session ends with the scientist removing the specimen from the inst
 .. _EmBC:
 
 Base Classes
-###########
+############
 
 The following base classes are proposed to support modularizing the storage of pieces of information related to electron microscopy research:
 
@@ -108,7 +108,7 @@ Contextualizing and defining definitions of reference frames and transformations
         Base classes for storing acquisition details for individual images or stacks of images.
 
     :ref:`NXspectrum`:
-        A base class and specializations comparable to :ref:`NXimage_set` but for storing spectra.
+        A base class and specializations comparable to :ref:`NXimage` but for storing spectra.
 
     :ref:`NXion` (about to become replaced by :ref:`NXatom`):
         A base class to describe molecular ions with an adjustable number of atoms/isotopes building each ion. Right now the maximum number of atoms supported building a molecular ion is 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with which all possible isotopes can be described.
@@ -125,7 +125,7 @@ Contextualizing and defining definitions of reference frames and transformations
 .. _EmAnalysisClasses:
 
 Storage of event-base data and results of post-processing
-###############################################
+#########################################################
 
 We provide specific base classes which granularize frequently collected or analyzed quantities in specific application fields of electron microscopy to deal
 with the situation that there are cases were logical connections between generated data artifacts mainly exist for the fact that the data artifacts were
@@ -156,7 +156,7 @@ More consolidation through the use of NXsubentry classes should be considered in
 .. _EMExamples:
 
 Domain-specific data analysis
-########################
+#############################
 
     :ref:`NXem_calorimetry`:
         Example together with the IKZ in Berlin and FAIRmat, in-situ (transmission) electron microscopy with a heating stage.
