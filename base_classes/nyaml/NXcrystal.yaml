@@ -20,7 +20,7 @@ symbols:
   i: |
     number of wavelengths
 type: group
-NXcrystal(NXobject):
+NXcrystal(NXcomponent):
   (NXgeometry):
     deprecated: |
       Use the field `depends_on` and :ref:`NXtransformations` to position the crystal and NXoff_geometry to describe its shape instead
@@ -29,11 +29,11 @@ NXcrystal(NXobject):
   usage(NX_CHAR):
     doc: |
       How this crystal is used.  Choices are in the list.
-    enumeration: 
-      Bragg: 
+    enumeration:
+      Bragg:
         doc: |
           reflection geometry
-      Laue: 
+      Laue:
         doc: |
           The chemical formula specified using CIF conventions.
           Abbreviated version of CIF standard:
@@ -105,7 +105,7 @@ NXcrystal(NXobject):
       Unit cell parameters (lengths and angles)
     dimensions:
       rank: 2
-      dim: [[1, n_comp], [2, 6]]
+      dim: (n_comp, 6)
   
   # NXfilter defines each unit cell parameter separately.  Let's be consistent.
   unit_cell_a(NX_FLOAT):
@@ -154,15 +154,13 @@ NXcrystal(NXobject):
       W. R. Busing and H. A. Levy (1967). Acta Cryst. 22, 457-464
     dimensions:
       rank: 2
-      
-      # 3,3
-      dim: [[1, 3], [2, 3]]
+      dim: (3, 3)
   wavelength(NX_FLOAT):
     unit: NX_WAVELENGTH
     doc: |
       Optimum diffracted wavelength
     dimensions:
-      dim: [[1, i]]
+      dim: (i,)
   d_spacing(NX_FLOAT):
     unit: NX_LENGTH
     doc: |
@@ -176,7 +174,7 @@ NXcrystal(NXobject):
     doc: |
       Miller indices (hkl) values of nominal reflection
     dimensions:
-      dim: [[1, 3]]
+      dim: (3,)
   thickness(NX_FLOAT):
     unit: NX_LENGTH
     doc: |
@@ -239,20 +237,20 @@ NXcrystal(NXobject):
       Note: some instrument geometries call this term 2theta.
       Note: it is recommended to use NXtransformations instead.
     dimensions:
-      dim: [[1, i]]
+      dim: (i,)
   azimuthal_angle(NX_FLOAT):
     unit: NX_ANGLE
     doc: |
       Azimuthal angle at which crystal assembly is positioned.
       Note: it is recommended to use NXtransformations instead.
     dimensions:
-      dim: [[1, i]]
+      dim: (i,)
   bragg_angle(NX_FLOAT):
     unit: NX_ANGLE
     doc: |
       Bragg angle of nominal reflection
     dimensions:
-      dim: [[1, i]]
+      dim: (i,)
   temperature(NX_FLOAT):
     unit: NX_TEMPERATURE
     doc: |
@@ -261,16 +259,16 @@ NXcrystal(NXobject):
     unit: NX_ANY
     doc: |
       how lattice parameter changes with temperature
-  (NXlog)temperature_log:
+  temperature_log(NXlog):
     doc: |
       log file of crystal temperature
-  (NXdata)reflectivity:
+  reflectivity(NXdata):
     doc: |
       crystal reflectivity versus wavelength
-  (NXdata)transmission:
+  transmission(NXdata):
     doc: |
       crystal transmission versus wavelength
-  (NXshape)shape:
+  shape(NXshape):
     deprecated: Use NXoff_geometry instead to describe the shape of the monochromator
     doc: |
       A NXshape group describing the shape of the crystal arrangement
@@ -278,31 +276,10 @@ NXcrystal(NXobject):
     exists: ['min', '0']
     doc: |
       This group describes the shape of the beam line component
-  \@default:
-    doc: |
-      .. index:: plotting
-      
-      Declares which child group contains a path leading
-      to a :ref:`NXdata` group.
-      
-      It is recommended (as of NIAC2014) to use this attribute
-      to help define the path to the default dataset to be plotted.
-      See https://www.nexusformat.org/2014_How_to_find_default_data.html
-      for a summary of the discussion.
   depends_on(NX_CHAR):
     doc: |
-      NeXus positions components by applying a set of translations and rotations
-      to apply to the component starting from 0, 0, 0. The order of these operations
-      is critical and forms what NeXus calls a dependency chain. The depends_on
-      field defines the path to the top most operation of the dependency chain or the
-      string "." if located in the origin. Usually these operations are stored in a
-      NXtransformations group. But NeXus allows them to be stored anywhere.
-      
       .. todo::
         Add a definition for the reference point of a crystal.
-  (NXtransformations):
-    doc: |
-      Transformations used by this component to define its position and orientation.
   
   # TODO need more parameters here, such as ...
   # list from Rainer Gehrke, DESY (some items may already be present)
@@ -331,13 +308,13 @@ NXcrystal(NXobject):
   # 7. Polynomial (degree of polynom, array with polynom coefficients)
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# ff4ce24fb54dfca75794d2f6fcd2b632e90265354d07459acfdd18a8aaaf46a9
+# 15b35664fda589474ae03c6fe2418821a001152c7db5cc84b1b624bb6a7432a1
 # <?xml version="1.0" encoding="UTF-8"?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl" ?>
 # <!--
 # # NeXus - Neutron and X-ray Common Data Format
 # # 
-# # Copyright (C) 2008-2022 NeXus International Advisory Committee (NIAC)
+# # Copyright (C) 2008-2024 NeXus International Advisory Committee (NIAC)
 # # 
 # # This library is free software; you can redistribute it and/or
 # # modify it under the terms of the GNU Lesser General Public
@@ -359,7 +336,7 @@ NXcrystal(NXobject):
 # 	    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 # 	    xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd"
 # 	    name="NXcrystal" 
-# 	    type="group" extends="NXobject"
+# 	    type="group" extends="NXcomponent"
 # 	    >
 # 
 #   <symbols>
@@ -601,37 +578,12 @@ NXcrystal(NXobject):
 #      This group describes the shape of the beam line component
 #     </doc>
 #   </group>
-#   <attribute name="default">
-#       <doc>
-#           .. index:: plotting
-#           
-#           Declares which child group contains a path leading 
-#           to a :ref:`NXdata` group.
-#           
-#           It is recommended (as of NIAC2014) to use this attribute
-#           to help define the path to the default dataset to be plotted.
-#           See https://www.nexusformat.org/2014_How_to_find_default_data.html
-#           for a summary of the discussion.
-#       </doc>
-#   </attribute>
 #   <field name="depends_on" type="NX_CHAR">
 #       <doc>
-#           NeXus positions components by applying a set of translations and rotations
-#           to apply to the component starting from 0, 0, 0. The order of these operations
-#           is critical and forms what NeXus calls a dependency chain. The depends_on
-#           field defines the path to the top most operation of the dependency chain or the
-#           string "." if located in the origin. Usually these operations are stored in a
-#           NXtransformations group. But NeXus allows them to be stored anywhere.
-# 
 #           .. todo::
 #             Add a definition for the reference point of a crystal.
 #       </doc>
 #   </field>
-#   <group type="NXtransformations">
-#     <doc>
-#       Transformations used by this component to define its position and orientation.
-#     </doc>
-#   </group>
 #   <!-- TODO need more parameters here, such as ...
 #        list from Rainer Gehrke, DESY (some items may already be present)
 # 

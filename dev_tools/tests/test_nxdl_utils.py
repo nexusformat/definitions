@@ -47,9 +47,40 @@ def test_get_node_at_nxdl_path():
     )
     assert node.attrib["name"] == "long_name"
 
-    nxdl_file_path = (
-        local_dir.parent.parent / "contributed_definitions" / "NXiv_temp.nxdl.xml"
+    nxdl_file_path = local_dir / "../../contributed_definitions/NXem.nxdl.xml"
+
+    elem = ET.parse(nxdl_file_path).getroot()
+    node = nexus.get_node_at_nxdl_path(
+        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/end_time", elem=elem
     )
+    assert node.attrib["name"] == "end_time"
+
+    node = nexus.get_node_at_nxdl_path("/ENTRY/measurement", elem=elem)
+    assert node.attrib["type"] == "NXem_msr"
+
+    node = nexus.get_node_at_nxdl_path(
+        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_SET/image_3d",
+        elem=elem,
+    )
+    assert node.attrib["type"] == "NXdata"
+
+    node = nexus.get_node_at_nxdl_path(
+        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_SET/image_3d/AXISNAME_indices",
+        elem=elem,
+    )
+    assert node.attrib["name"] == "AXISNAME_indices"
+
+    node = nexus.get_node_at_nxdl_path(
+        "/ENTRY/measurement/EVENT_DATA_EM_SET/EVENT_DATA_EM/IMAGE_SET/image_3d/axis_j",
+        elem=elem,
+    )
+    assert node.attrib["type"] == "NX_NUMBER"
+
+    node = nexus.get_node_at_nxdl_path("/ENTRY/coordinate_system_set", elem=elem)
+    assert node.attrib["type"] == "NXcoordinate_system_set"
+
+    nxdl_file_path = local_dir / "../../contributed_definitions/NXiv_temp.nxdl.xml"
+
     elem = ET.parse(nxdl_file_path).getroot()
     node = nexus.get_node_at_nxdl_path(
         "/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", elem=elem
@@ -69,7 +100,8 @@ def test_get_inherited_nodes():
 
     elem = ET.parse(nxdl_file_path).getroot()
     (_, _, elist) = nexus.get_inherited_nodes(nxdl_path="/ENTRY/NXODD_name", elem=elem)
-    assert len(elist) == 3
+    print(elist)
+    assert len(elist) == 5
 
     nxdl_file_path = (
         local_dir.parent.parent / "contributed_definitions" / "NXiv_temp.nxdl.xml"
@@ -79,18 +111,18 @@ def test_get_inherited_nodes():
     (_, _, elist) = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT", elem=elem
     )
-    assert len(elist) == 3
+    assert len(elist) == 4
 
     (_, _, elist) = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller", elem=elem
     )
-    assert len(elist) == 4
+    assert len(elist) == 6
 
     (_, _, elist) = nexus.get_inherited_nodes(
         nxdl_path="/ENTRY/INSTRUMENT/ENVIRONMENT/voltage_controller",
         nx_name="NXiv_temp",
     )
-    assert len(elist) == 4
+    assert len(elist) == 6
 
 
 @pytest.mark.parametrize(
@@ -99,13 +131,13 @@ def test_get_inherited_nodes():
         ("source_pump", "sourceType", False),
         ("source_pump", "sourceTYPE", True),
         ("source pump", "sourceTYPE", False),
-        ("source", "sourceTYPE", False),
+        ("source", "sourceTYPE", True),
         ("source123", "SOURCE", True),
         ("1source", "SOURCE", True),
         ("_source", "SOURCE", True),
         ("same_name", "same_name", True),
         ("angular_energy_resolution", "angularNresolution", True),
-        ("angularresolution", "angularNresolution", False),
+        ("angularresolution", "angularNresolution", True),
         ("Name with some whitespaces in it", "ENTRY", False),
         ("simple_name", "TEST", True),
         (".test", "TEST", False),

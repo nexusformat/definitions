@@ -21,68 +21,68 @@ NXxps(NXmpes):
         
         .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
         .. _Clause 11: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:sec:11
-    geometries(NXcoordinate_system_set):
+    transitions:
       exists: recommended
-      xps_coordinate_system(NXcoordinate_system):
+    xps_coordinate_system(NXcoordinate_system):
+      exists: recommended
+      doc: |
+        In traditional surface science, a left-handed coordinate system is used such that the positive z-axis
+        points along the normal of the sample stage, and the x- and y-axes lie in the plane of the sample stage.
+        However, in NeXus, a coordinate system that is the same as `McStas`_  is used. `xps_coordinate_system`
+        gives the user the opportunity to work in the traditional base coordinate system.
+        
+        .. _McStas: http://mcstas.org/
+        
+        .. image:: xps/xps_cs.png
+            :width: 40%
+      origin:
+        enumeration: [sample stage]
+      handedness:
+        enumeration: [left_handed]
+      z_direction:
+        enumeration: [sample stage normal]
+      x(NX_NUMBER):
+        enumeration: [[-1, 0, 0]]
+      y(NX_NUMBER):
+        enumeration: [[0, 1, 0]]
+      z(NX_NUMBER):
+        enumeration: [[0, 0, 1]]
+      depends_on(NX_CHAR):
+        doc: |
+          Link to transformations defining the XPS base coordinate system,
+          which is defined such that the positive z-axis points along the sample stage normal, and the
+          x- and y-axes lie in the plane of the sample stage.
+      coordinate_system_transformations(NXtransformations):
         exists: optional
         doc: |
-          In traditional surface science, a left-handed coordinate system is used such that the positive z-axis
-          points along the normal of the sample stage, and the x- and y-axes lie in the plane of the sample stage.
-          However, in NeXus, a coordinate system that is the same as `McStas`_  is used. `xps_coordinate_system`
-          gives the user the opportunity to work in the traditional base coordinate system.
+          Set of transformations, describing the orientation of the XPS coordinate system
+          with respect to the beam coordinate system (.) or any other coordinate system.
           
-          .. _McStas: http://mcstas.org/
+          The transformations in `coordinate_system_transformations` depend on the actual instrument geometry.
+          If the z-axis is pointing in the direction of gravity (i.e., if the sample is mounted horizontally),
+          the following transformations can be used for describing the XPS coordinate system
+          with respect to the beam coordinate system (.):
           
-          .. image:: xps/xps_cs.png
-              :width: 40%
-        origin:
-          enumeration: [sample stage]
-        handedness:
-          enumeration: [left_handed]
-        z_direction:
-          enumeration: [sample stage normal]
-        x:
-          enumeration: [[-1, 0, 0]]
-        y:
-          enumeration: [[0, 1, 0]]
-        z:
-          enumeration: [[0, 0, 1]]
-        depends_on(NX_CHAR):
-          doc: |
-            Link to transformations defining the XPS base coordinate system,
-            which is defined such that the positive z-axis points along the sample stage normal, and the
-            x- and y-axes lie in the plane of the sample stage.
-        coordinate_system_transformations(NXtransformations):
-          exists: optional
-          doc: |
-            Set of transformations, describing the orientation of the XPS coordinate system
-            with respect to the beam coordinate system (.) or any other coordinate system.
-            
-            The transformations in `coordinate_system_transformations` depend on the actual instrument geometry.
-            If the z-axis is pointing in the direction of gravity (i.e., if the sample is mounted horizontally),
-            the following transformations can be used for describing the XPS coordinate system
-            with respect to the beam coordinate system (.):
-            
-            .. code-block::
-            
+          .. code-block::
+          
               xps_coordinate_system:NXcoordinate_system
-                depends_on=entry/geometries/xps_coordinate_system/coordinate_transformations/z_rotation
-                coordinate_system_transformations:NXtransformations
+              depends_on=entry/geometries/xps_coordinate_system/coordinate_transformations/z_rotation
+              coordinate_system_transformations:NXtransformations
                   z_rotation=beam_azimuth_angle
-                    @depends_on=y_flip
-                    @transformation_type=rotation
-                    @vector=[0, 0, 1]
-                    @units=degree
+                  @depends_on=y_flip
+                  @transformation_type=rotation
+                  @vector=[0, 0, 1]
+                  @units=degree
                   y_flip=180
-                    @depends_on=y_rotation
-                    @transformation_type=rotation
-                    @vector=[0, 1, 0]
-                    @units=degree
+                  @depends_on=y_rotation
+                  @transformation_type=rotation
+                  @vector=[0, 1, 0]
+                  @units=degree
                   y_rotation=beam_polar_angle_of_incidence
-                    @depends_on=.
-                    @transformation_type=rotation
-                    @vector=[0, 1, 0]
-                    @units=degree
+                  @depends_on=.
+                  @transformation_type=rotation
+                  @vector=[0, 1, 0]
+                  @units=degree
     (NXinstrument):
       doc:
       - |
@@ -92,12 +92,12 @@ NXxps(NXmpes):
           spec: ISO 18115-1:2023
           term: 12.58
           url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.58
-      sourceTYPE(NXsource):
+      source_probe(NXsource):
         exists: recommended
         power(NX_FLOAT):
           unit: NX_POWER
           exists: recommended
-      beamTYPE(NXbeam):
+      beam_probe(NXbeam):
         depends_on:
           exists: recommended
           doc: |
@@ -112,7 +112,7 @@ NXxps(NXmpes):
               the sample stage.
             \@transformation_type:
               enumeration: [rotation]
-            \@vector:
+            \@vector(NX_NUMBER):
               enumeration: [[0, -1, 0]]
             \@depends_on:
               enumeration: [beam_azimuth_angle]
@@ -123,13 +123,13 @@ NXxps(NXmpes):
               by the sample stage.
             \@transformation_type:
               enumeration: [rotation]
-            \@vector:
+            \@vector(NX_NUMBER):
               enumeration: [[0, 0, -1]]
             \@depends_on:
               doc: |
                 This should point to the last element of the coordinate system transformations defined in
                 /entry/geometries/xps_coordinate_system/coordinate_system_transformations.
-      (NXelectronanalyser):
+      (NXelectronanalyzer):
         work_function(NX_FLOAT):
         transmission_function(NXdata):
           exists: recommended
@@ -149,88 +149,40 @@ NXxps(NXmpes):
             relative to a defined coordinate system.
         transformations(NXtransformations):
           exists: recommended
-          analyser_take_off_polar_angle(NX_NUMBER):
+          analyzer_take_off_polar_angle(NX_NUMBER):
             unit: NX_ANGLE
             doc: |
-              Polar tilt of the analyser with respect to the upward z-direction, defined by
+              Polar tilt of the analyzer with respect to the upward z-direction, defined by
               the sample stage.
               
-              The angle between the incoming beam and the analyser is given by
-              beam_analyser_angle = beam_polar_angle_of_incidence + analyser_take_off_polar_angle.
-              In practice, the analyser axis is often set as the z axis (analyser_take_off_polar_angle = 0),
-              so that beam_analyser_angle = beam_polar_angle_of_incidence. For magic angle configurations,
+              The angle between the incoming beam and the analyzer is given by
+              beam_analyzer_angle = beam_polar_angle_of_incidence + analyzer_take_off_polar_angle.
+              In practice, the analyzer axis is often set as the z axis (analyzer_take_off_polar_angle = 0),
+              so that beam_analyzer_angle = beam_polar_angle_of_incidence. For magic angle configurations,
               this angle is 54.5°.
             \@transformation_type:
               enumeration: [rotation]
-            \@vector:
+            \@vector(NX_NUMBER):
               enumeration: [[0, -1, 0]]
             \@depends_on:
-              enumeration: [analyser_take_off_azimuth_angle]
-          analyser_take_off_azimuth_angle(NX_NUMBER):
+              enumeration: [analyzer_take_off_azimuth_angle]
+          analyzer_take_off_azimuth_angle(NX_NUMBER):
             unit: NX_ANGLE
             doc: |
-              Azimuthal rotation of the analyser from the y-direction towards the operator,
+              Azimuthal rotation of the analyzer from the y-direction towards the operator,
               defined by the sample stage.
             \@transformation_type:
               enumeration: [rotation]
-            \@vector:
+            \@vector(NX_NUMBER):
               enumeration: [[0, 0, -1]]
             \@depends_on:
               doc: |
                 This should point to the last element of the coordinate system transformations defined in
                 /entry/geometries/xps_coordinate_system/coordinate_system_transformations.
-    (NXprocess_mpes):
-      energy_referencing(NXcalibration):
-        exists: recommended
-      transmission_correction(NXcalibration):
-        exists: recommended
-    (NXsample):
-      depends_on:
-        exists: recommended
-        doc: |
-          Reference to the transformation describing the orientation of the sample
-          relative to a defined coordinate system.
-      transformations(NXtransformations):
-        exists: recommended
-        sample_rotation_angle(NX_NUMBER):
-          unit: NX_ANGLE
-          doc: |
-            Clockwise rotation about the sample normal.
-          \@transformation_type:
-            enumeration: [rotation]
-          \@vector:
-            enumeration: [[0, 0, -1]]
-          \@depends_on:
-            enumeration: [sample_normal_polar_angle_of_tilt]
-        sample_normal_polar_angle_of_tilt(NX_NUMBER):
-          unit: NX_ANGLE
-          doc: |
-            Polar tilt of the sample with respect to the upward z-direction, defined by
-            the sample stage.
-          \@transformation_type:
-            enumeration: [rotation]
-          \@vector:
-            enumeration: [[0, -1, 0]]
-          \@depends_on:
-            enumeration: [sample_normal_tilt_azimuth_angle]
-        sample_normal_tilt_azimuth_angle(NX_NUMBER):
-          unit: NX_ANGLE
-          doc: |
-            Azimuthal rotation of the sample from the y-direction towards the operator,
-            defined by the sample stage.
-          \@transformation_type:
-            enumeration: [rotation]
-          \@vector:
-            enumeration: [[0, 0, -1]]
-          \@depends_on:
-            doc: |
-              This should point to the last element of the coordinate system transformations defined in
-              /entry/geometries/xps_coordinate_system/coordinate_system_transformations.
-    data(NXdata):
-      energy(NX_NUMBER):
-        \@reference:
-          exists: recommended
-      \@energy_indices:
+    energy_referencing(NXcalibration):
+      exists: recommended
+    transmission_correction(NXcalibration):
+      exists: recommended
     (NXfit):
       exists: recommended
       doc:
@@ -254,15 +206,18 @@ NXxps(NXmpes):
             
             This could be a link to entry/data/data.
         input_independent(NX_NUMBER):
-          unit: NX_ANY
+          unit: NX_ENERGY
           doc: |
             Independent variable for this fit procedure.
             
             This could be a link to entry/data/energy.
         envelope(NX_NUMBER):
+          unit: NX_ANY
         residual(NX_NUMBER):
           exists: recommended
+          unit: NX_ANY
       peakPEAK(NXpeak):
+        nameType: partial
         label:
         data(NXdata):
           position(NX_NUMBER):
@@ -280,35 +235,165 @@ NXxps(NXmpes):
                 url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.15
         function(NXfit_function):
           exists: recommended
+          function_type:
+            doc: |
+              Type of fit function used.
+                
+              The user is encouraged to use one of the options defined in the enumeration, but in case none of these fit
+              (e.g., in the case of very complex line shapes), a different value for the ``function_type`` field
+              can be used. In that case in particular, but also if one of the suggested values is used, the functional
+              form of the peak should be given by the ``formula_description`` field. The user is also encouraged to use the
+              ``description`` field for describing the fit function in a human-readable way.
+            enumeration:
+              open_enum: true
+              Gaussian:
+                doc: |
+                  The Gaussian function models peaks with a symmetric shape, commonly arising from instrumental broadening
+                  and thermal motion in XPS. It is defined as
+                  
+                  :math:`G(x) = \frac{A}{\sigma \sqrt{2\pi}} \exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)`,
+                  
+                  where
+                  - :math:`A` is the peak amplitude, :math:`\mu` is the peak position
+                  - and :math:`\sigma` is the standard deviation.
+                  
+                  The full width at half maximum (FWHM) is given by: :math:`\text{FWHM} = 2\sqrt{2\ln(2)} \sigma`.
+              Lorentzian:
+                doc: |
+                  The Lorentzian function describes peaks that originate from lifetime broadening due to the finite lifetime
+                  of excited states. It has more pronounced tails compared to the Gaussian function. The Lorentzian function
+                  is defined as
+                  
+                  :math:`L(x) = \frac{A}{\pi} \frac{\gamma}{(x - \mu)^2 + \gamma^2}`,
+                  
+                  where
+                  - :math:`A` is the peak amplitude, :math:`\mu` is the peak center,
+                  - and :math:`\gamma` is the half-width at half-maximum (HWHM).
+                  
+                  The full width at half maximum (FWHM) is given by: :math:`\text{FWHM} = 2\gamma`.
+              Voigt:
+                doc: |
+                  The Voigt function is a convolution of a Gaussian and a Lorentzian function. It provides a more accurate
+                  representation of XPS peaks by incorporating both instrumental broadening (Gaussian) and intrinsic lifetime
+                   broadening (Lorentzian). It is defined as
+                  
+                  :math:`V(x; \sigma, \gamma) = \int_{-\infty}^{\infty} G(x') L(x - x') \,dx'`,
+                  
+                  where
+                  - :math:`G(x')` is the Gaussian function with standard deviation :math:`\sigma`,
+                  - and :math:`L(x - x')` is the Lorentzian function with half-width :math:`\gamma`.
+                  
+                  The FWHM of the Voigt function is approximately:
+                  
+                  :math:`\text{FWHM} \approx 0.5346 \cdot \text{FWHM}_L + \sqrt{0.2166 \cdot \text{FWHM}_L^2 + \text{FWHM}_G^2}`
+                  
+                  where
+                  - :math:`\text{FWHM}_L = 2\gamma` (Lorentzian FWHM) and
+                  - :math:`\text{FWHM}_G = 2\sqrt{2\ln(2)} \sigma` (Gaussian FWHM).
+              Gaussian-Lorentzian Sum:
+                doc: |
+                  The Gaussian-Lorentzian Sum is an approximation to the Voigt function where the line shape is simply the sum of
+                  a Gaussian and a Lorentzian function
+                  
+                  :math:`GL_{\text{sum}}(x) = \eta L(x) + (1 - \eta) G(x)`,
+                  
+                  where :math:`\eta` (ranging from 0 to 1) controls the relative contribution of the Lorentzian component.
+              Gaussian-Lorentzian Product:
+                doc: |
+                  The **Gaussian-Lorentzian Product** function provides an approximation to the true Voigt function by multiplying
+                  a Gaussian and a Lorentzian line shape. This model is often used to describe peak broadening due to both
+                  instrumental resolution (Gaussian component) and intrinsic lifetime effects (Lorentzian component).
+                  The function is defined as:
+                  
+                  :math:`P(x, \eta) = (1 - \eta) G(x) \cdot \eta L(x)`
+                  
+                  where: :math:`\eta` is the **mixing parameter** (:math:`0 \leq \eta \leq 1`), controlling the balance between the
+                  Gaussian and Lorentzian contributions.
+                  
+                  This method ensures that the resulting peak retains characteristics of both functions while avoiding excessive
+                  weight in either the Gaussian or Lorentzian component.
+              Asymmetric Lorentzian:
+                doc: |
+                  The Asymmetric Lorentzian function modifies the standard Lorentzian shape to asymmetry on either side of the
+                  peak. Oftentimes, the the asymmetric modification is achieved by introducing asymmetric broadening through
+                  power-law scaling on either side of the peak. The **asymmetric modification** is introduced using exponents
+                  :math:`\alpha` and :math:`\beta` to alter the line shape differently for :math:`x \leq E` and :math:`x > E`:
+                  
+                  :math:`LA(\alpha, \beta) =
+                  \begin{cases}
+                    [L(x)]^\alpha, & x \leq E \\
+                    [L(x)]^\beta, & x > E
+                  \end{cases}`
+                  
+                  where:
+                  - :math:`L(x)` is the symmetric Lorentzian function.
+                  - :math:`\alpha` controls the asymmetry on the **low-energy** side (:math:`x \leq E`).
+                  - :math:`\beta` controls the asymmetry on the **high-energy** side (:math:`x > E`).
+                  
+                  This asymmetric Lorentzian model is particularly useful in XPS to account for asymmetries
+                  arising from inelastic scattering processes and core-hole screening effects.
+                  
+                  Note that this is not the only possibility to introduce asymmetry. The exact functional form
+                  should be given by the ``formula_description`` field.
+              Doniach-Sunjic:
+                doc: |
+                  The Doniach-Sunjic function models asymmetric peaks arising from many-body interactions in XPS, particularly
+                  for core-level spectra influenced by conduction electrons. It is given by
+                  
+                  :math:`DS(x) = A \frac{\cos\left( \pi\alpha / 2 + (1-\alpha) \tan^{-1} \left(\frac{x - \mu}{\gamma} \right) \right)}{(x - \mu)^2 + \gamma^2}^{(1-\alpha)/2}`,
+                  
+                  where :math:`\alpha` (0 \leq :math:`\alpha` < 1) controls the asymmetry.
+                  
+                  When :math:`\alpha = 0`, the function reduces to a symmetric Lorentzian.
+              Asymmetric Finite:
+                doc: |
+                  One major challenge in using asymmetric peaks is ensuring that the fitted line shape correctly models the peak
+                  intensity while being confined to physically meaningful integration limits. Standard asymmetric peaks, like the
+                  ``Lorentzian Asymmetric`` function, may extend indefinitely, making it difficult to compare intensities when peak
+                  areas exceed the boundaries defined by background subtraction or experimental data constraints.
+                  
+                  The Asymmetric Finite function is an empirical modification of the asymmetric functions that introduces
+                  a damping parameter to gradually suppress the asymmetric tail, ensuring that peak intensity remains localized within
+                  the relevant spectral region. Typically, the asymmetric parameters are modified depending on the distance from the peak
+                  such that the overall area under the peak remains finite.
+                  
+                  This function is especially valuable when standard background approximations like **Shirley or Linear backgrounds** constrain
+                  the data to a specific range, making infinite asymmetric tails impractical.
+                  
+                  The functional form depends on the implementation and should be given by the ``formula_description`` field, if possible.
           description:
-          formula:
             exists: recommended
-          area(NXfit_parameter):
-            exists: optional
             doc: |
-              Area of the peak.
-          width(NXfit_parameter):
-            exists: optional
-            doc:
-            - |
-              Width of a peak at a defined fraction of the peak height.
-            - |
-              Usually, this will be the Full Width at Half Maximum of the peak (FWHM).
-              For asymmetric peaks, convenient measures of peak width are the half-widths of
-              each side of the peak at half maximum intensity.
-            - |
-              xref:
-                spec: ISO 18115-1:2023
-                term: 3.28
-                url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.28
-            value:
+              Human-readable description of the peak fit function.
+          formula_description:
+            exists: recommended
+          fit_parameters(NXparameters):
+            exists: recommended
+            area:
+              unit: NX_ANY
+              exists: optional
+              doc: |
+                Area of the peak.
+            width:
               unit: NX_ENERGY
-          position(NXfit_parameter):
-            exists: optional
-            doc: |
-              Position of the peak on the energy axis.
-            value:
+              exists: optional
+              doc:
+              - |
+                Width of a peak at a defined fraction of the peak height.
+              - |
+                Usually, this will be the Full Width at Half Maximum of the peak (FWHM).
+                For asymmetric peaks, convenient measures of peak width are the half-widths of
+                each side of the peak at half maximum intensity.
+              - |
+                xref:
+                  spec: ISO 18115-1:2023
+                  term: 3.28
+                  url: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.28
+            position:
               unit: NX_ENERGY
+              exists: optional
+              doc: |
+                Position of the peak on the energy axis.
         total_area:
           exists: recommended
           doc:
@@ -326,9 +411,10 @@ NXxps(NXmpes):
             Atomic concentration of the species defined by this peak. This should be a value
             between 0 and 1.
       backgroundBACKGROUND(NXfit_background):
+        nameType: partial
         doc:
         - |
-          Functional form of the fitted XPS background.
+          Functional form of one of the fitted XPS backgrounds.
         - |
           xref:
             spec: ISO 18115-1:2023
@@ -342,46 +428,180 @@ NXxps(NXmpes):
           intensity(NX_NUMBER):
         function(NXfit_function):
           exists: recommended
+          function_type:
+            doc: |
+              Type of fit function used.
+                
+              The user is encouraged to use one of the options defined in the enumeration, but in case none of these fit
+              (e.g., in the case of very complex line shapes), a different value for the ``function_type`` field
+              can be used. In that case in particular, but also if one of the suggested values is used, the functional
+              form of the background should be given by the ``formula_description`` field. The user is also encouraged to use the
+              ``description`` field for describing the fit function in a human-readable way.
+            enumeration:
+              open_enum: true
+              Linear:
+                doc: |
+                  Linear background, i.e., a simple straight line from the minimal to the maximal
+                  abscissa value.
+                  
+                  The Linear background is the simplest background model, which assumes a straight line
+                  between the minimum and maximum binding energy values. This model is used when there is
+                  a gradual, uniform increase or decrease in the background across the spectrum.
+              Shirley:
+                doc: |
+                  The Shirley background is based on the idea that the background intensity at any given
+                  binding energy is  proportional to the total intensity of the peaks above that background
+                  in the lower binding energy range. Essentially, the Shirley background estimates the contribution
+                  of the background under each peak and adds them up to define the overall background shape.
+                  
+                  The Shirley background is commonly used in the analysis of high-resolution XPS data when
+                  peaks are located near edges or in regions of significant overlap with the background signal.
+                  
+                  While the exact mathematical formulation can be complex, the background is represented as an
+                  integral over the lower binding energy range to describe the cumulative contribution to the background:
+                  
+                  :math:`B(x) = \int_{-\infty}^{x} \frac{I(\mu)}{1 + \mu - x} d\mu`
+                  
+                  where
+                  - :math:`I(\mu)` is the intensity of the peaks at binding energy :math:`\mu`,
+                  - :math:`x` is the binding energy at the current point.
+              Tougaard:
+                doc: |
+                  The Tougaard background is based on the concept of universal cross-sections and is used for
+                  modeling the XPS background in situations where the background is integrated from the peak
+                  intensities at each binding energy to higher kinetic energies. It is useful when fitting the
+                  background in spectra that display significant low-energy tailing or when the background
+                  exhibits a non-linear rise with binding energy.
+                  
+                  The model incorporates the notion of electron energy loss and the behavior of the photoelectrons
+                  as they travel through the material and lose energy. It is a more sophisticated background
+                  model compared to the linear and Shirley approaches.
+                  
+                  Mathematically, the Tougaard background can be described as:
+                  
+                  :math:`B(x) = \int_{x_0}^{x} \sigma(E) I(E) \, dE`
+                  
+                  where
+                  - :math:`\sigma(E)` is the universal cross-section at energy :math:`E`,
+                  - :math:`I(E)` is the intensity at energy :math:`E`,
+                  - :math:`x_0` is the threshold energy for the background.
+              Step Down:
+                doc: |
+                  The Step Down background is commonly used to fit data when a sharp decrease in the signal
+                  occurs at a certain binding energy, such as in the case of an abrupt edge or a "step-down"
+                  feature in the spectrum. It is modeled using a complementary error function (erf), which
+                  provides a smooth transition from the higher intensity region to the lower intensity region.
+                  
+                  This model is useful when the data exhibits a sharp cutoff, for example when modelling the
+                  Fermi Edge.
+                  
+                  The mathematical expression for the step down background is:
+                  
+                  :math:`B(x) = A \cdot \text{erfc}\left(\frac{x - x_0}{\sigma}\right)`
+                  
+                  where
+                  - :math:`A` is the amplitude,
+                  - :math:`x_0` is the threshold binding energy where the step occurs,
+                  - :math:`\sigma` is the width of the transition region,
+                  - :math:`\text{erfc}(x)` is the complementary error function.
+              Step Up:
+                doc: |
+                  The Step Up background is similar to the Step Down background but is used to model a sharp
+                  increase in intensity, such as when a peak or feature rises suddenly above the baseline.
+                  This background is also modeled using the complementary error function, providing a smooth
+                  transition from a low intensity region to a high intensity region.
+                                   
+                  The mathematical formulation for the step up background is:
+                  
+                  :math:`B(x) = A \cdot \text{erf}\left(\frac{x - x_0}{\sigma}\right)`
+                  
+                  where
+                  - :math:`A` is the amplitude,
+                  - :math:`x_0` is the binding energy where the step up begins,
+                  - :math:`\sigma` is the width of the transition,
+                  - :math:`\text{erf}(x)` is the error function.
           description:
+            exists: recommended
             doc: |
               Human-readable description of the background fit function.
-              
-              .. csv-table:: Examples for background descriptions
-                :header: "Background Type", "Description"
-                
-                "Linear", "Linear background, i.e., a simple straight line from the minimal to the maximal abscissa value."
-                "Shirley", "Shirley background. In the Shirley background, the background intensity at any given binding energy is proportional to the intensity of the total peak area above the background in the lower binding energy peak range (i.e., the background goes up in proportion to the total number of photoelectrons below its binding energy position)."
-                "Tougaard", "Tougaard background (or Tougaard universal cross-section approach) which is a methodology for integrating the intensity of the background at a given binding energy from the spectral intensities to higher kinetic energies."
-                "Step Down/Step Up", "Background function for fitting a complementary error function to an edge, used for fitting a step in the data."
-              
-              In case none of these examples apply, the functional form of the background should be given by the `formula`
-              field.
-          formula:
+          formula_description:
             exists: recommended
       global_fit_function(NXfit_function):
         exists: recommended
+        function_type:
+          exists: recommended
         description:
           exists: recommended
-        formula:
+        formula_description:
           exists: recommended
       error_function(NXfit_function):
         exists: recommended
+        function_type:
+          exists: recommended
         description:
           exists: recommended
-        formula:
+        formula_description:
           exists: recommended
       figure_of_meritMETRIC(NX_NUMBER):
+        nameType: partial
         exists: recommended
         \@metric:
+    (NXsample):
+      depends_on:
+        exists: recommended
+        doc: |
+          Reference to the transformation describing the orientation of the sample
+          relative to a defined coordinate system.
+      transformations(NXtransformations):
+        exists: recommended
+        sample_rotation_angle(NX_NUMBER):
+          unit: NX_ANGLE
+          doc: |
+            Clockwise rotation about the sample normal.
+          \@transformation_type:
+            enumeration: [rotation]
+          \@vector(NX_NUMBER):
+            enumeration: [[0, 0, -1]]
+          \@depends_on:
+            enumeration: [sample_normal_polar_angle_of_tilt]
+        sample_normal_polar_angle_of_tilt(NX_NUMBER):
+          unit: NX_ANGLE
+          doc: |
+            Polar tilt of the sample with respect to the upward z-direction, defined by
+            the sample stage.
+          \@transformation_type:
+            enumeration: [rotation]
+          \@vector(NX_NUMBER):
+            enumeration: [[0, -1, 0]]
+          \@depends_on:
+            enumeration: [sample_normal_tilt_azimuth_angle]
+        sample_normal_tilt_azimuth_angle(NX_NUMBER):
+          unit: NX_ANGLE
+          doc: |
+            Azimuthal rotation of the sample from the y-direction towards the operator,
+            defined by the sample stage.
+          \@transformation_type:
+            enumeration: [rotation]
+          \@vector(NX_NUMBER):
+            enumeration: [[0, 0, -1]]
+          \@depends_on:
+            doc: |
+              This should point to the last element of the coordinate system transformations defined in
+              /entry/geometries/xps_coordinate_system/coordinate_system_transformations.
+    data(NXdata):
+      energy(NX_NUMBER):
+        \@reference:
+          exists: recommended
+      \@energy_indices(NX_INT):
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# ab951f639c94b65a91a595d1a7c2f281221465d19b9c683f795dd3775a618418
+# fa4095b9097645b7f1cf98d3cb14dc0e4ec2f77332c137b1860db8bfa809d2fa
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
 # # NeXus - Neutron and X-ray Common Data Format
 # #
-# # Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# # Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
 # #
 # # This library is free software; you can redistribute it and/or
 # # modify it under the terms of the GNU Lesser General Public
@@ -401,7 +621,7 @@ NXxps(NXmpes):
 # -->
 # <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXxps" extends="NXmpes" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
 #     <doc>
-#          This is the application definition for X-ray photoelectron spectroscopy.
+#         This is the application definition for X-ray photoelectron spectroscopy.
 #     </doc>
 #     <group type="NXentry">
 #         <field name="definition" type="NX_CHAR">
@@ -411,135 +631,134 @@ NXxps(NXmpes):
 #         </field>
 #         <field name="method">
 #             <doc>
-#                  A name of the experimental method according to `Clause 11`_ of
-#                  the `ISO 18115-1:2023`_ specification.
-#                  
-#                  Examples for XPS-related experiments include:
-#                      * X-ray photoelectron spectroscopy (XPS)
-#                      * angle-resolved X-ray photoelectron spectroscopy (ARXPS)
-#                      * ultraviolet photoelectron spectroscopy (UPS)
-#                      * hard X-ray photoemission spectroscopy (HAXPES)
-#                      * near ambient pressure X-ray photoelectron spectroscopy (NAPXPS)
-#                      * electron spectroscopy for chemical analysis (ESCA)
-#                  
-#                  .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
-#                  .. _Clause 11: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:sec:11
+#                 A name of the experimental method according to `Clause 11`_ of
+#                 the `ISO 18115-1:2023`_ specification.
+#                 
+#                 Examples for XPS-related experiments include:
+#                     * X-ray photoelectron spectroscopy (XPS)
+#                     * angle-resolved X-ray photoelectron spectroscopy (ARXPS)
+#                     * ultraviolet photoelectron spectroscopy (UPS)
+#                     * hard X-ray photoemission spectroscopy (HAXPES)
+#                     * near ambient pressure X-ray photoelectron spectroscopy (NAPXPS)
+#                     * electron spectroscopy for chemical analysis (ESCA)
+#                 
+#                 .. _ISO 18115-1:2023: https://www.iso.org/standard/74811.html
+#                 .. _Clause 11: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:sec:11
 #             </doc>
 #         </field>
-#         <group name="geometries" type="NXcoordinate_system_set" recommended="true">
-#             <group name="xps_coordinate_system" type="NXcoordinate_system" optional="true">
+#         <field name="transitions" recommended="true"/>
+#         <group name="xps_coordinate_system" type="NXcoordinate_system" recommended="true">
+#             <doc>
+#                 In traditional surface science, a left-handed coordinate system is used such that the positive z-axis
+#                 points along the normal of the sample stage, and the x- and y-axes lie in the plane of the sample stage.
+#                 However, in NeXus, a coordinate system that is the same as `McStas`_  is used. `xps_coordinate_system`
+#                 gives the user the opportunity to work in the traditional base coordinate system.
+#                 
+#                 .. _McStas: http://mcstas.org/
+#                 
+#                 .. image:: xps/xps_cs.png
+#                     :width: 40%
+#             </doc>
+#             <field name="origin">
+#                 <enumeration>
+#                     <item value="sample stage"/>
+#                 </enumeration>
+#             </field>
+#             <field name="handedness">
+#                 <enumeration>
+#                     <item value="left_handed"/>
+#                 </enumeration>
+#             </field>
+#             <field name="z_direction">
+#                 <enumeration>
+#                     <item value="sample stage normal"/>
+#                 </enumeration>
+#             </field>
+#             <field name="x" type="NX_NUMBER">
+#                 <enumeration>
+#                     <item value="[-1, 0, 0]"/>
+#                 </enumeration>
+#             </field>
+#             <field name="y" type="NX_NUMBER">
+#                 <enumeration>
+#                     <item value="[0, 1, 0]"/>
+#                 </enumeration>
+#             </field>
+#             <field name="z" type="NX_NUMBER">
+#                 <enumeration>
+#                     <item value="[0, 0, 1]"/>
+#                 </enumeration>
+#             </field>
+#             <field name="depends_on" type="NX_CHAR">
 #                 <doc>
-#                      In traditional surface science, a left-handed coordinate system is used such that the positive z-axis
-#                      points along the normal of the sample stage, and the x- and y-axes lie in the plane of the sample stage.
-#                      However, in NeXus, a coordinate system that is the same as `McStas`_  is used. `xps_coordinate_system`
-#                      gives the user the opportunity to work in the traditional base coordinate system.
-#                      
-#                      .. _McStas: http://mcstas.org/
-#                      
-#                      .. image:: xps/xps_cs.png
-#                          :width: 40%
+#                     Link to transformations defining the XPS base coordinate system,
+#                     which is defined such that the positive z-axis points along the sample stage normal, and the
+#                     x- and y-axes lie in the plane of the sample stage.
 #                 </doc>
-#                 <field name="origin">
-#                     <enumeration>
-#                         <item value="sample stage"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="handedness">
-#                     <enumeration>
-#                         <item value="left_handed"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="z_direction">
-#                     <enumeration>
-#                         <item value="sample stage normal"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="x">
-#                     <enumeration>
-#                         <item value="[-1, 0, 0]"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="y">
-#                     <enumeration>
-#                         <item value="[0, 1, 0]"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="z">
-#                     <enumeration>
-#                         <item value="[0, 0, 1]"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="depends_on" type="NX_CHAR">
-#                     <doc>
-#                          Link to transformations defining the XPS base coordinate system,
-#                          which is defined such that the positive z-axis points along the sample stage normal, and the
-#                          x- and y-axes lie in the plane of the sample stage.
-#                     </doc>
-#                 </field>
-#                 <group name="coordinate_system_transformations" type="NXtransformations" optional="true">
-#                     <doc>
-#                          Set of transformations, describing the orientation of the XPS coordinate system
-#                          with respect to the beam coordinate system (.) or any other coordinate system.
-#                          
-#                          The transformations in `coordinate_system_transformations` depend on the actual instrument geometry.
-#                          If the z-axis is pointing in the direction of gravity (i.e., if the sample is mounted horizontally),
-#                          the following transformations can be used for describing the XPS coordinate system
-#                          with respect to the beam coordinate system (.):
-#                          
-#                          .. code-block::
-#                          
-#                            xps_coordinate_system:NXcoordinate_system
-#                              depends_on=entry/geometries/xps_coordinate_system/coordinate_transformations/z_rotation
-#                              coordinate_system_transformations:NXtransformations
-#                                z_rotation=beam_azimuth_angle
-#                                  @depends_on=y_flip
-#                                  @transformation_type=rotation
-#                                  @vector=[0, 0, 1]
-#                                  @units=degree
-#                                y_flip=180
-#                                  @depends_on=y_rotation
-#                                  @transformation_type=rotation
-#                                  @vector=[0, 1, 0]
-#                                  @units=degree
-#                                y_rotation=beam_polar_angle_of_incidence
-#                                  @depends_on=.
-#                                  @transformation_type=rotation
-#                                  @vector=[0, 1, 0]
-#                                  @units=degree
-#                     </doc>
-#                 </group>
+#             </field>
+#             <group name="coordinate_system_transformations" type="NXtransformations" optional="true">
+#                 <doc>
+#                     Set of transformations, describing the orientation of the XPS coordinate system
+#                     with respect to the beam coordinate system (.) or any other coordinate system.
+#                     
+#                     The transformations in `coordinate_system_transformations` depend on the actual instrument geometry.
+#                     If the z-axis is pointing in the direction of gravity (i.e., if the sample is mounted horizontally),
+#                     the following transformations can be used for describing the XPS coordinate system
+#                     with respect to the beam coordinate system (.):
+#                     
+#                     .. code-block::
+#                     
+#                         xps_coordinate_system:NXcoordinate_system
+#                         depends_on=entry/geometries/xps_coordinate_system/coordinate_transformations/z_rotation
+#                         coordinate_system_transformations:NXtransformations
+#                             z_rotation=beam_azimuth_angle
+#                             @depends_on=y_flip
+#                             @transformation_type=rotation
+#                             @vector=[0, 0, 1]
+#                             @units=degree
+#                             y_flip=180
+#                             @depends_on=y_rotation
+#                             @transformation_type=rotation
+#                             @vector=[0, 1, 0]
+#                             @units=degree
+#                             y_rotation=beam_polar_angle_of_incidence
+#                             @depends_on=.
+#                             @transformation_type=rotation
+#                             @vector=[0, 1, 0]
+#                             @units=degree
+#                 </doc>
 #             </group>
 #         </group>
 #         <group type="NXinstrument">
 #             <doc>
-#                  Description of the XPS spectrometer and its individual parts.
-#                  
-#                  This concept is related to term `12.58`_ of the ISO 18115-1:2023 standard.
-#                  
-#                  .. _12.58: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.58
+#                 Description of the XPS spectrometer and its individual parts.
+#                 
+#                 This concept is related to term `12.58`_ of the ISO 18115-1:2023 standard.
+#                 
+#                 .. _12.58: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:12.58
 #             </doc>
-#             <group name="sourceTYPE" type="NXsource" recommended="true">
+#             <group name="source_probe" type="NXsource" recommended="true">
 #                 <field name="power" type="NX_FLOAT" units="NX_POWER" recommended="true"/>
 #             </group>
-#             <group name="beamTYPE" type="NXbeam">
+#             <group name="beam_probe" type="NXbeam">
 #                 <field name="depends_on" recommended="true">
 #                     <doc>
-#                          Reference to the transformation describing the orientation of the beam
-#                          relative to a defined coordinate system.
+#                         Reference to the transformation describing the orientation of the beam
+#                         relative to a defined coordinate system.
 #                     </doc>
 #                 </field>
 #                 <group name="transformations" type="NXtransformations" recommended="true">
 #                     <field name="beam_polar_angle_of_incidence" type="NX_NUMBER" units="NX_ANGLE">
 #                         <doc>
-#                              Incidence angle of the beam with respect to the upward z-direction, defined by
-#                              the sample stage.
+#                             Incidence angle of the beam with respect to the upward z-direction, defined by
+#                             the sample stage.
 #                         </doc>
 #                         <attribute name="transformation_type">
 #                             <enumeration>
 #                                 <item value="rotation"/>
 #                             </enumeration>
 #                         </attribute>
-#                         <attribute name="vector">
+#                         <attribute name="vector" type="NX_NUMBER">
 #                             <enumeration>
 #                                 <item value="[0, -1, 0]"/>
 #                             </enumeration>
@@ -552,29 +771,29 @@ NXxps(NXmpes):
 #                     </field>
 #                     <field name="beam_azimuth_angle" type="NX_NUMBER" units="NX_ANGLE">
 #                         <doc>
-#                              Azimuthal rotation of the beam from the y-direction towards the operator, defined
-#                              by the sample stage.
+#                             Azimuthal rotation of the beam from the y-direction towards the operator, defined
+#                             by the sample stage.
 #                         </doc>
 #                         <attribute name="transformation_type">
 #                             <enumeration>
 #                                 <item value="rotation"/>
 #                             </enumeration>
 #                         </attribute>
-#                         <attribute name="vector">
+#                         <attribute name="vector" type="NX_NUMBER">
 #                             <enumeration>
 #                                 <item value="[0, 0, -1]"/>
 #                             </enumeration>
 #                         </attribute>
 #                         <attribute name="depends_on">
 #                             <doc>
-#                                  This should point to the last element of the coordinate system transformations defined in
-#                                  /entry/geometries/xps_coordinate_system/coordinate_system_transformations.
+#                                 This should point to the last element of the coordinate system transformations defined in
+#                                 /entry/geometries/xps_coordinate_system/coordinate_system_transformations.
 #                             </doc>
 #                         </attribute>
 #                     </field>
 #                 </group>
 #             </group>
-#             <group type="NXelectronanalyser">
+#             <group type="NXelectronanalyzer">
 #                 <field name="work_function" type="NX_FLOAT"/>
 #                 <group name="transmission_function" type="NXdata" recommended="true"/>
 #                 <group type="NXcollectioncolumn">
@@ -586,85 +805,466 @@ NXxps(NXmpes):
 #                 </group>
 #                 <field name="depends_on" recommended="true">
 #                     <doc>
-#                          Reference to the transformation describing the orientation of the analyzer
-#                          relative to a defined coordinate system.
+#                         Reference to the transformation describing the orientation of the analyzer
+#                         relative to a defined coordinate system.
 #                     </doc>
 #                 </field>
 #                 <group name="transformations" type="NXtransformations" recommended="true">
-#                     <field name="analyser_take_off_polar_angle" type="NX_NUMBER" units="NX_ANGLE">
+#                     <field name="analyzer_take_off_polar_angle" type="NX_NUMBER" units="NX_ANGLE">
 #                         <doc>
-#                              Polar tilt of the analyser with respect to the upward z-direction, defined by
-#                              the sample stage.
-#                              
-#                              The angle between the incoming beam and the analyser is given by
-#                              beam_analyser_angle = beam_polar_angle_of_incidence + analyser_take_off_polar_angle.
-#                              In practice, the analyser axis is often set as the z axis (analyser_take_off_polar_angle = 0),
-#                              so that beam_analyser_angle = beam_polar_angle_of_incidence. For magic angle configurations,
-#                              this angle is 54.5°.
+#                             Polar tilt of the analyzer with respect to the upward z-direction, defined by
+#                             the sample stage.
+#                             
+#                             The angle between the incoming beam and the analyzer is given by
+#                             beam_analyzer_angle = beam_polar_angle_of_incidence + analyzer_take_off_polar_angle.
+#                             In practice, the analyzer axis is often set as the z axis (analyzer_take_off_polar_angle = 0),
+#                             so that beam_analyzer_angle = beam_polar_angle_of_incidence. For magic angle configurations,
+#                             this angle is 54.5°.
 #                         </doc>
 #                         <attribute name="transformation_type">
 #                             <enumeration>
 #                                 <item value="rotation"/>
 #                             </enumeration>
 #                         </attribute>
-#                         <attribute name="vector">
+#                         <attribute name="vector" type="NX_NUMBER">
 #                             <enumeration>
 #                                 <item value="[0, -1, 0]"/>
 #                             </enumeration>
 #                         </attribute>
 #                         <attribute name="depends_on">
 #                             <enumeration>
-#                                 <item value="analyser_take_off_azimuth_angle"/>
+#                                 <item value="analyzer_take_off_azimuth_angle"/>
 #                             </enumeration>
 #                         </attribute>
 #                     </field>
-#                     <field name="analyser_take_off_azimuth_angle" type="NX_NUMBER" units="NX_ANGLE">
+#                     <field name="analyzer_take_off_azimuth_angle" type="NX_NUMBER" units="NX_ANGLE">
 #                         <doc>
-#                              Azimuthal rotation of the analyser from the y-direction towards the operator,
-#                              defined by the sample stage.
+#                             Azimuthal rotation of the analyzer from the y-direction towards the operator,
+#                             defined by the sample stage.
 #                         </doc>
 #                         <attribute name="transformation_type">
 #                             <enumeration>
 #                                 <item value="rotation"/>
 #                             </enumeration>
 #                         </attribute>
-#                         <attribute name="vector">
+#                         <attribute name="vector" type="NX_NUMBER">
 #                             <enumeration>
 #                                 <item value="[0, 0, -1]"/>
 #                             </enumeration>
 #                         </attribute>
 #                         <attribute name="depends_on">
 #                             <doc>
-#                                  This should point to the last element of the coordinate system transformations defined in
-#                                  /entry/geometries/xps_coordinate_system/coordinate_system_transformations.
+#                                 This should point to the last element of the coordinate system transformations defined in
+#                                 /entry/geometries/xps_coordinate_system/coordinate_system_transformations.
 #                             </doc>
 #                         </attribute>
 #                     </field>
 #                 </group>
 #             </group>
 #         </group>
-#         <group type="NXprocess_mpes">
-#             <group name="energy_referencing" type="NXcalibration" recommended="true"/>
-#             <group name="transmission_correction" type="NXcalibration" recommended="true"/>
+#         <group name="energy_referencing" type="NXcalibration" recommended="true"/>
+#         <group name="transmission_correction" type="NXcalibration" recommended="true"/>
+#         <group type="NXfit" recommended="true">
+#             <doc>
+#                 Peak model for XPS fitting. Each `NXfit` instance shall be used for the description of
+#                 _one_ peak fit in _one_ XPS region. As an example, this could be used to describe the
+#                 fitting of one measured C 1s spectrum.
+#                 
+#                 This concept is related to term `3.29`_ of the ISO 18115-1:2023 standard.
+#                 
+#                 .. _3.29: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.29
+#             </doc>
+#             <field name="label"/>
+#             <group name="data" type="NXdata">
+#                 <doc>
+#                     Input data and results of the fit.
+#                 </doc>
+#                 <field name="input_dependent" type="NX_NUMBER" units="NX_ANY">
+#                     <doc>
+#                         Dependent variable for this fit procedure.
+#                         
+#                         This could be a link to entry/data/data.
+#                     </doc>
+#                 </field>
+#                 <field name="input_independent" type="NX_NUMBER" units="NX_ENERGY">
+#                     <doc>
+#                         Independent variable for this fit procedure.
+#                         
+#                         This could be a link to entry/data/energy.
+#                     </doc>
+#                 </field>
+#                 <field name="envelope" type="NX_NUMBER" units="NX_ANY"/>
+#                 <field name="residual" type="NX_NUMBER" recommended="true" units="NX_ANY"/>
+#             </group>
+#             <group name="peakPEAK" type="NXpeak" nameType="partial">
+#                 <field name="label"/>
+#                 <group name="data" type="NXdata">
+#                     <field name="position" type="NX_NUMBER" units="NX_ENERGY">
+#                         <doc>
+#                             This could be a link to entry/data/energy.
+#                         </doc>
+#                     </field>
+#                     <field name="intensity" type="NX_NUMBER">
+#                         <doc>
+#                             Intensity values of the fitted function at each energy in the position field.
+#                             
+#                             This concept is related to term `3.15`_ of the ISO 18115-1:2023 standard.
+#                             
+#                             .. _3.15: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.15
+#                         </doc>
+#                     </field>
+#                 </group>
+#                 <group name="function" type="NXfit_function" recommended="true">
+#                     <field name="function_type">
+#                         <doc>
+#                             Type of fit function used.
+#                               
+#                             The user is encouraged to use one of the options defined in the enumeration, but in case none of these fit
+#                             (e.g., in the case of very complex line shapes), a different value for the ``function_type`` field
+#                             can be used. In that case in particular, but also if one of the suggested values is used, the functional
+#                             form of the peak should be given by the ``formula_description`` field. The user is also encouraged to use the
+#                             ``description`` field for describing the fit function in a human-readable way.
+#                         </doc>
+#                         <enumeration open="true">
+#                             <item value="Gaussian">
+#                                 <doc>
+#                                     The Gaussian function models peaks with a symmetric shape, commonly arising from instrumental broadening
+#                                     and thermal motion in XPS. It is defined as
+#                                     
+#                                     :math:`G(x) = \frac{A}{\sigma \sqrt{2\pi}} \exp\left(-\frac{(x - \mu)^2}{2\sigma^2}\right)`,
+#                                     
+#                                     where
+#                                     - :math:`A` is the peak amplitude, :math:`\mu` is the peak position
+#                                     - and :math:`\sigma` is the standard deviation.
+#                                     
+#                                     The full width at half maximum (FWHM) is given by: :math:`\text{FWHM} = 2\sqrt{2\ln(2)} \sigma`.
+#                                 </doc>
+#                             </item>
+#                             <item value="Lorentzian">
+#                                 <doc>
+#                                     The Lorentzian function describes peaks that originate from lifetime broadening due to the finite lifetime
+#                                     of excited states. It has more pronounced tails compared to the Gaussian function. The Lorentzian function
+#                                     is defined as
+#                                     
+#                                     :math:`L(x) = \frac{A}{\pi} \frac{\gamma}{(x - \mu)^2 + \gamma^2}`,
+#                                     
+#                                     where
+#                                     - :math:`A` is the peak amplitude, :math:`\mu` is the peak center,
+#                                     - and :math:`\gamma` is the half-width at half-maximum (HWHM).
+#                                     
+#                                     The full width at half maximum (FWHM) is given by: :math:`\text{FWHM} = 2\gamma`.
+#                                 </doc>
+#                             </item>
+#                             <item value="Voigt">
+#                                 <doc>
+#                                     The Voigt function is a convolution of a Gaussian and a Lorentzian function. It provides a more accurate
+#                                     representation of XPS peaks by incorporating both instrumental broadening (Gaussian) and intrinsic lifetime
+#                                      broadening (Lorentzian). It is defined as
+#                                     
+#                                     :math:`V(x; \sigma, \gamma) = \int_{-\infty}^{\infty} G(x') L(x - x') \,dx'`,
+#                                     
+#                                     where
+#                                     - :math:`G(x')` is the Gaussian function with standard deviation :math:`\sigma`,
+#                                     - and :math:`L(x - x')` is the Lorentzian function with half-width :math:`\gamma`.
+#                                     
+#                                     The FWHM of the Voigt function is approximately:
+#                                     
+#                                     :math:`\text{FWHM} \approx 0.5346 \cdot \text{FWHM}_L + \sqrt{0.2166 \cdot \text{FWHM}_L^2 + \text{FWHM}_G^2}`
+#                                     
+#                                     where
+#                                     - :math:`\text{FWHM}_L = 2\gamma` (Lorentzian FWHM) and
+#                                     - :math:`\text{FWHM}_G = 2\sqrt{2\ln(2)} \sigma` (Gaussian FWHM).
+#                                 </doc>
+#                             </item>
+#                             <item value="Gaussian-Lorentzian Sum">
+#                                 <doc>
+#                                     The Gaussian-Lorentzian Sum is an approximation to the Voigt function where the line shape is simply the sum of
+#                                     a Gaussian and a Lorentzian function
+#                                     
+#                                     :math:`GL_{\text{sum}}(x) = \eta L(x) + (1 - \eta) G(x)`,
+#                                     
+#                                     where :math:`\eta` (ranging from 0 to 1) controls the relative contribution of the Lorentzian component.
+#                                 </doc>
+#                             </item>
+#                             <item value="Gaussian-Lorentzian Product">
+#                                 <doc>
+#                                     The **Gaussian-Lorentzian Product** function provides an approximation to the true Voigt function by multiplying
+#                                     a Gaussian and a Lorentzian line shape. This model is often used to describe peak broadening due to both
+#                                     instrumental resolution (Gaussian component) and intrinsic lifetime effects (Lorentzian component).
+#                                     The function is defined as:
+#                                     
+#                                     :math:`P(x, \eta) = (1 - \eta) G(x) \cdot \eta L(x)`
+#                                     
+#                                     where: :math:`\eta` is the **mixing parameter** (:math:`0 \leq \eta \leq 1`), controlling the balance between the
+#                                     Gaussian and Lorentzian contributions.
+#                                     
+#                                     This method ensures that the resulting peak retains characteristics of both functions while avoiding excessive
+#                                     weight in either the Gaussian or Lorentzian component.
+#                                 </doc>
+#                             </item>
+#                             <item value="Asymmetric Lorentzian">
+#                                 <doc>
+#                                     The Asymmetric Lorentzian function modifies the standard Lorentzian shape to asymmetry on either side of the
+#                                     peak. Oftentimes, the the asymmetric modification is achieved by introducing asymmetric broadening through
+#                                     power-law scaling on either side of the peak. The **asymmetric modification** is introduced using exponents
+#                                     :math:`\alpha` and :math:`\beta` to alter the line shape differently for :math:`x \leq E` and :math:`x &gt; E`:
+#                                     
+#                                     :math:`LA(\alpha, \beta) =
+#                                     \begin{cases}
+#                                       [L(x)]^\alpha, &amp; x \leq E \\
+#                                       [L(x)]^\beta, &amp; x &gt; E
+#                                     \end{cases}`
+#                                     
+#                                     where:
+#                                     - :math:`L(x)` is the symmetric Lorentzian function.
+#                                     - :math:`\alpha` controls the asymmetry on the **low-energy** side (:math:`x \leq E`).
+#                                     - :math:`\beta` controls the asymmetry on the **high-energy** side (:math:`x &gt; E`).
+#                                     
+#                                     This asymmetric Lorentzian model is particularly useful in XPS to account for asymmetries
+#                                     arising from inelastic scattering processes and core-hole screening effects.
+#                                     
+#                                     Note that this is not the only possibility to introduce asymmetry. The exact functional form
+#                                     should be given by the ``formula_description`` field.
+#                                 </doc>
+#                             </item>
+#                             <item value="Doniach-Sunjic">
+#                                 <doc>
+#                                     The Doniach-Sunjic function models asymmetric peaks arising from many-body interactions in XPS, particularly
+#                                     for core-level spectra influenced by conduction electrons. It is given by
+#                                     
+#                                     :math:`DS(x) = A \frac{\cos\left( \pi\alpha / 2 + (1-\alpha) \tan^{-1} \left(\frac{x - \mu}{\gamma} \right) \right)}{(x - \mu)^2 + \gamma^2}^{(1-\alpha)/2}`,
+#                                     
+#                                     where :math:`\alpha` (0 \leq :math:`\alpha` &lt; 1) controls the asymmetry.
+#                                     
+#                                     When :math:`\alpha = 0`, the function reduces to a symmetric Lorentzian.
+#                                 </doc>
+#                             </item>
+#                             <item value="Asymmetric Finite">
+#                                 <doc>
+#                                     One major challenge in using asymmetric peaks is ensuring that the fitted line shape correctly models the peak
+#                                     intensity while being confined to physically meaningful integration limits. Standard asymmetric peaks, like the
+#                                     ``Lorentzian Asymmetric`` function, may extend indefinitely, making it difficult to compare intensities when peak
+#                                     areas exceed the boundaries defined by background subtraction or experimental data constraints.
+#                                     
+#                                     The Asymmetric Finite function is an empirical modification of the asymmetric functions that introduces
+#                                     a damping parameter to gradually suppress the asymmetric tail, ensuring that peak intensity remains localized within
+#                                     the relevant spectral region. Typically, the asymmetric parameters are modified depending on the distance from the peak
+#                                     such that the overall area under the peak remains finite.
+#                                     
+#                                     This function is especially valuable when standard background approximations like **Shirley or Linear backgrounds** constrain
+#                                     the data to a specific range, making infinite asymmetric tails impractical.
+#                                     
+#                                     The functional form depends on the implementation and should be given by the ``formula_description`` field, if possible.
+#                                 </doc>
+#                             </item>
+#                         </enumeration>
+#                     </field>
+#                     <field name="description" recommended="true">
+#                         <doc>
+#                             Human-readable description of the peak fit function.
+#                         </doc>
+#                     </field>
+#                     <field name="formula_description" recommended="true"/>
+#                     <group name="fit_parameters" type="NXparameters" recommended="true">
+#                         <field name="area" units="NX_ANY" optional="true">
+#                             <doc>
+#                                 Area of the peak.
+#                             </doc>
+#                         </field>
+#                         <field name="width" units="NX_ENERGY" optional="true">
+#                             <doc>
+#                                 Width of a peak at a defined fraction of the peak height.
+#                                 
+#                                 Usually, this will be the Full Width at Half Maximum of the peak (FWHM).
+#                                 For asymmetric peaks, convenient measures of peak width are the half-widths of
+#                                 each side of the peak at half maximum intensity.
+#                                 
+#                                 This concept is related to term `3.28`_ of the ISO 18115-1:2023 standard.
+#                                 
+#                                 .. _3.28: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.28
+#                             </doc>
+#                         </field>
+#                         <field name="position" units="NX_ENERGY" optional="true">
+#                             <doc>
+#                                 Position of the peak on the energy axis.
+#                             </doc>
+#                         </field>
+#                     </group>
+#                 </group>
+#                 <field name="total_area" recommended="true">
+#                     <doc>
+#                         Total area under the peak after background removal.
+#                         
+#                         This concept is related to term `3.16`_ of the ISO 18115-1:2023 standard.
+#                         
+#                         .. _3.16: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.16
+#                     </doc>
+#                 </field>
+#                 <field name="relative_atomic_concentration" type="NX_FLOAT" optional="true" units="NX_ANY">
+#                     <doc>
+#                         Atomic concentration of the species defined by this peak. This should be a value
+#                         between 0 and 1.
+#                     </doc>
+#                 </field>
+#             </group>
+#             <group name="backgroundBACKGROUND" type="NXfit_background" nameType="partial">
+#                 <doc>
+#                     Functional form of one of the fitted XPS backgrounds.
+#                     
+#                     This concept is related to term `3.21`_ of the ISO 18115-1:2023 standard.
+#                     
+#                     .. _3.21: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.21
+#                 </doc>
+#                 <field name="label" recommended="true"/>
+#                 <group name="data" type="NXdata">
+#                     <field name="position" type="NX_NUMBER" units="NX_ENERGY"/>
+#                     <field name="intensity" type="NX_NUMBER"/>
+#                 </group>
+#                 <group name="function" type="NXfit_function" recommended="true">
+#                     <field name="function_type">
+#                         <doc>
+#                             Type of fit function used.
+#                               
+#                             The user is encouraged to use one of the options defined in the enumeration, but in case none of these fit
+#                             (e.g., in the case of very complex line shapes), a different value for the ``function_type`` field
+#                             can be used. In that case in particular, but also if one of the suggested values is used, the functional
+#                             form of the background should be given by the ``formula_description`` field. The user is also encouraged to use the
+#                             ``description`` field for describing the fit function in a human-readable way.
+#                         </doc>
+#                         <enumeration open="true">
+#                             <item value="Linear">
+#                                 <doc>
+#                                     Linear background, i.e., a simple straight line from the minimal to the maximal
+#                                     abscissa value.
+#                                     
+#                                     The Linear background is the simplest background model, which assumes a straight line
+#                                     between the minimum and maximum binding energy values. This model is used when there is
+#                                     a gradual, uniform increase or decrease in the background across the spectrum.
+#                                 </doc>
+#                             </item>
+#                             <item value="Shirley">
+#                                 <doc>
+#                                     The Shirley background is based on the idea that the background intensity at any given
+#                                     binding energy is  proportional to the total intensity of the peaks above that background
+#                                     in the lower binding energy range. Essentially, the Shirley background estimates the contribution
+#                                     of the background under each peak and adds them up to define the overall background shape.
+#                                     
+#                                     The Shirley background is commonly used in the analysis of high-resolution XPS data when
+#                                     peaks are located near edges or in regions of significant overlap with the background signal.
+#                                     
+#                                     While the exact mathematical formulation can be complex, the background is represented as an
+#                                     integral over the lower binding energy range to describe the cumulative contribution to the background:
+#                                     
+#                                     :math:`B(x) = \int_{-\infty}^{x} \frac{I(\mu)}{1 + \mu - x} d\mu`
+#                                     
+#                                     where
+#                                     - :math:`I(\mu)` is the intensity of the peaks at binding energy :math:`\mu`,
+#                                     - :math:`x` is the binding energy at the current point.
+#                                 </doc>
+#                             </item>
+#                             <item value="Tougaard">
+#                                 <doc>
+#                                     The Tougaard background is based on the concept of universal cross-sections and is used for
+#                                     modeling the XPS background in situations where the background is integrated from the peak
+#                                     intensities at each binding energy to higher kinetic energies. It is useful when fitting the
+#                                     background in spectra that display significant low-energy tailing or when the background
+#                                     exhibits a non-linear rise with binding energy.
+#                                     
+#                                     The model incorporates the notion of electron energy loss and the behavior of the photoelectrons
+#                                     as they travel through the material and lose energy. It is a more sophisticated background
+#                                     model compared to the linear and Shirley approaches.
+#                                     
+#                                     Mathematically, the Tougaard background can be described as:
+#                                     
+#                                     :math:`B(x) = \int_{x_0}^{x} \sigma(E) I(E) \, dE`
+#                                     
+#                                     where
+#                                     - :math:`\sigma(E)` is the universal cross-section at energy :math:`E`,
+#                                     - :math:`I(E)` is the intensity at energy :math:`E`,
+#                                     - :math:`x_0` is the threshold energy for the background.
+#                                 </doc>
+#                             </item>
+#                             <item value="Step Down">
+#                                 <doc>
+#                                     The Step Down background is commonly used to fit data when a sharp decrease in the signal
+#                                     occurs at a certain binding energy, such as in the case of an abrupt edge or a "step-down"
+#                                     feature in the spectrum. It is modeled using a complementary error function (erf), which
+#                                     provides a smooth transition from the higher intensity region to the lower intensity region.
+#                                     
+#                                     This model is useful when the data exhibits a sharp cutoff, for example when modelling the
+#                                     Fermi Edge.
+#                                     
+#                                     The mathematical expression for the step down background is:
+#                                     
+#                                     :math:`B(x) = A \cdot \text{erfc}\left(\frac{x - x_0}{\sigma}\right)`
+#                                     
+#                                     where
+#                                     - :math:`A` is the amplitude,
+#                                     - :math:`x_0` is the threshold binding energy where the step occurs,
+#                                     - :math:`\sigma` is the width of the transition region,
+#                                     - :math:`\text{erfc}(x)` is the complementary error function.
+#                                 </doc>
+#                             </item>
+#                             <item value="Step Up">
+#                                 <doc>
+#                                     The Step Up background is similar to the Step Down background but is used to model a sharp
+#                                     increase in intensity, such as when a peak or feature rises suddenly above the baseline.
+#                                     This background is also modeled using the complementary error function, providing a smooth
+#                                     transition from a low intensity region to a high intensity region.
+#                                                      
+#                                     The mathematical formulation for the step up background is:
+#                                     
+#                                     :math:`B(x) = A \cdot \text{erf}\left(\frac{x - x_0}{\sigma}\right)`
+#                                     
+#                                     where
+#                                     - :math:`A` is the amplitude,
+#                                     - :math:`x_0` is the binding energy where the step up begins,
+#                                     - :math:`\sigma` is the width of the transition,
+#                                     - :math:`\text{erf}(x)` is the error function.
+#                                 </doc>
+#                             </item>
+#                         </enumeration>
+#                     </field>
+#                     <field name="description" recommended="true">
+#                         <doc>
+#                             Human-readable description of the background fit function.
+#                         </doc>
+#                     </field>
+#                     <field name="formula_description" recommended="true"/>
+#                 </group>
+#             </group>
+#             <group name="global_fit_function" type="NXfit_function" recommended="true">
+#                 <field name="function_type" recommended="true"/>
+#                 <field name="description" recommended="true"/>
+#                 <field name="formula_description" recommended="true"/>
+#             </group>
+#             <group name="error_function" type="NXfit_function" recommended="true">
+#                 <field name="function_type" recommended="true"/>
+#                 <field name="description" recommended="true"/>
+#                 <field name="formula_description" recommended="true"/>
+#             </group>
+#             <field name="figure_of_meritMETRIC" type="NX_NUMBER" nameType="partial" recommended="true">
+#                 <attribute name="metric"/>
+#             </field>
 #         </group>
 #         <group type="NXsample">
 #             <field name="depends_on" recommended="true">
 #                 <doc>
-#                      Reference to the transformation describing the orientation of the sample
-#                      relative to a defined coordinate system.
+#                     Reference to the transformation describing the orientation of the sample
+#                     relative to a defined coordinate system.
 #                 </doc>
 #             </field>
 #             <group name="transformations" type="NXtransformations" recommended="true">
 #                 <field name="sample_rotation_angle" type="NX_NUMBER" units="NX_ANGLE">
 #                     <doc>
-#                          Clockwise rotation about the sample normal.
+#                         Clockwise rotation about the sample normal.
 #                     </doc>
 #                     <attribute name="transformation_type">
 #                         <enumeration>
 #                             <item value="rotation"/>
 #                         </enumeration>
 #                     </attribute>
-#                     <attribute name="vector">
+#                     <attribute name="vector" type="NX_NUMBER">
 #                         <enumeration>
 #                             <item value="[0, 0, -1]"/>
 #                         </enumeration>
@@ -677,15 +1277,15 @@ NXxps(NXmpes):
 #                 </field>
 #                 <field name="sample_normal_polar_angle_of_tilt" type="NX_NUMBER" units="NX_ANGLE">
 #                     <doc>
-#                          Polar tilt of the sample with respect to the upward z-direction, defined by
-#                          the sample stage.
+#                         Polar tilt of the sample with respect to the upward z-direction, defined by
+#                         the sample stage.
 #                     </doc>
 #                     <attribute name="transformation_type">
 #                         <enumeration>
 #                             <item value="rotation"/>
 #                         </enumeration>
 #                     </attribute>
-#                     <attribute name="vector">
+#                     <attribute name="vector" type="NX_NUMBER">
 #                         <enumeration>
 #                             <item value="[0, -1, 0]"/>
 #                         </enumeration>
@@ -698,23 +1298,23 @@ NXxps(NXmpes):
 #                 </field>
 #                 <field name="sample_normal_tilt_azimuth_angle" type="NX_NUMBER" units="NX_ANGLE">
 #                     <doc>
-#                          Azimuthal rotation of the sample from the y-direction towards the operator,
-#                          defined by the sample stage.
+#                         Azimuthal rotation of the sample from the y-direction towards the operator,
+#                         defined by the sample stage.
 #                     </doc>
 #                     <attribute name="transformation_type">
 #                         <enumeration>
 #                             <item value="rotation"/>
 #                         </enumeration>
 #                     </attribute>
-#                     <attribute name="vector">
+#                     <attribute name="vector" type="NX_NUMBER">
 #                         <enumeration>
 #                             <item value="[0, 0, -1]"/>
 #                         </enumeration>
 #                     </attribute>
 #                     <attribute name="depends_on">
 #                         <doc>
-#                              This should point to the last element of the coordinate system transformations defined in
-#                              /entry/geometries/xps_coordinate_system/coordinate_system_transformations.
+#                             This should point to the last element of the coordinate system transformations defined in
+#                             /entry/geometries/xps_coordinate_system/coordinate_system_transformations.
 #                         </doc>
 #                     </attribute>
 #                 </field>
@@ -724,147 +1324,7 @@ NXxps(NXmpes):
 #             <field name="energy" type="NX_NUMBER">
 #                 <attribute name="reference" recommended="true"/>
 #             </field>
-#             <attribute name="energy_indices"/>
-#         </group>
-#         <group type="NXfit" recommended="true">
-#             <doc>
-#                  Peak model for XPS fitting. Each `NXfit` instance shall be used for the description of
-#                  _one_ peak fit in _one_ XPS region. As an example, this could be used to describe the
-#                  fitting of one measured C 1s spectrum.
-#                  
-#                  This concept is related to term `3.29`_ of the ISO 18115-1:2023 standard.
-#                  
-#                  .. _3.29: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.29
-#             </doc>
-#             <field name="label"/>
-#             <group name="data" type="NXdata">
-#                 <doc>
-#                      Input data and results of the fit.
-#                 </doc>
-#                 <field name="input_dependent" type="NX_NUMBER" units="NX_ANY">
-#                     <doc>
-#                          Dependent variable for this fit procedure.
-#                          
-#                          This could be a link to entry/data/data.
-#                     </doc>
-#                 </field>
-#                 <field name="input_independent" type="NX_NUMBER" units="NX_ANY">
-#                     <doc>
-#                          Independent variable for this fit procedure.
-#                          
-#                          This could be a link to entry/data/energy.
-#                     </doc>
-#                 </field>
-#                 <field name="envelope" type="NX_NUMBER"/>
-#                 <field name="residual" type="NX_NUMBER" recommended="true"/>
-#             </group>
-#             <group name="peakPEAK" type="NXpeak">
-#                 <field name="label"/>
-#                 <group name="data" type="NXdata">
-#                     <field name="position" type="NX_NUMBER" units="NX_ENERGY">
-#                         <doc>
-#                              This could be a link to entry/data/energy.
-#                         </doc>
-#                     </field>
-#                     <field name="intensity" type="NX_NUMBER">
-#                         <doc>
-#                              Intensity values of the fitted function at each energy in the position field.
-#                              
-#                              This concept is related to term `3.15`_ of the ISO 18115-1:2023 standard.
-#                              
-#                              .. _3.15: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.15
-#                         </doc>
-#                     </field>
-#                 </group>
-#                 <group name="function" type="NXfit_function" recommended="true">
-#                     <field name="description"/>
-#                     <field name="formula" recommended="true"/>
-#                     <group name="area" type="NXfit_parameter" optional="true">
-#                         <doc>
-#                              Area of the peak.
-#                         </doc>
-#                     </group>
-#                     <group name="width" type="NXfit_parameter" optional="true">
-#                         <doc>
-#                              Width of a peak at a defined fraction of the peak height.
-#                              
-#                              Usually, this will be the Full Width at Half Maximum of the peak (FWHM).
-#                              For asymmetric peaks, convenient measures of peak width are the half-widths of
-#                              each side of the peak at half maximum intensity.
-#                              
-#                              This concept is related to term `3.28`_ of the ISO 18115-1:2023 standard.
-#                              
-#                              .. _3.28: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.28
-#                         </doc>
-#                         <field name="value" units="NX_ENERGY"/>
-#                     </group>
-#                     <group name="position" type="NXfit_parameter" optional="true">
-#                         <doc>
-#                              Position of the peak on the energy axis.
-#                         </doc>
-#                         <field name="value" units="NX_ENERGY"/>
-#                     </group>
-#                 </group>
-#                 <field name="total_area" recommended="true">
-#                     <doc>
-#                          Total area under the peak after background removal.
-#                          
-#                          This concept is related to term `3.16`_ of the ISO 18115-1:2023 standard.
-#                          
-#                          .. _3.16: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.16
-#                     </doc>
-#                 </field>
-#                 <field name="relative_atomic_concentration" type="NX_FLOAT" optional="true" units="NX_ANY">
-#                     <doc>
-#                          Atomic concentration of the species defined by this peak. This should be a value
-#                          between 0 and 1.
-#                     </doc>
-#                 </field>
-#             </group>
-#             <group name="backgroundBACKGROUND" type="NXfit_background">
-#                 <doc>
-#                      Functional form of the fitted XPS background.
-#                      
-#                      This concept is related to term `3.21`_ of the ISO 18115-1:2023 standard.
-#                      
-#                      .. _3.21: https://www.iso.org/obp/ui/en/#iso:std:iso:18115:-1:ed-3:v1:en:term:3.21
-#                 </doc>
-#                 <field name="label" recommended="true"/>
-#                 <group name="data" type="NXdata">
-#                     <field name="position" type="NX_NUMBER" units="NX_ENERGY"/>
-#                     <field name="intensity" type="NX_NUMBER"/>
-#                 </group>
-#                 <group name="function" type="NXfit_function" recommended="true">
-#                     <field name="description">
-#                         <doc>
-#                              Human-readable description of the background fit function.
-#                              
-#                              .. csv-table:: Examples for background descriptions
-#                                :header: "Background Type", "Description"
-#                                
-#                                "Linear", "Linear background, i.e., a simple straight line from the minimal to the maximal abscissa value."
-#                                "Shirley", "Shirley background. In the Shirley background, the background intensity at any given binding energy is proportional to the intensity of the total peak area above the background in the lower binding energy peak range (i.e., the background goes up in proportion to the total number of photoelectrons below its binding energy position)."
-#                                "Tougaard", "Tougaard background (or Tougaard universal cross-section approach) which is a methodology for integrating the intensity of the background at a given binding energy from the spectral intensities to higher kinetic energies."
-#                                "Step Down/Step Up", "Background function for fitting a complementary error function to an edge, used for fitting a step in the data."
-#                              
-#                              In case none of these examples apply, the functional form of the background should be given by the `formula`
-#                              field.
-#                         </doc>
-#                     </field>
-#                     <field name="formula" recommended="true"/>
-#                 </group>
-#             </group>
-#             <group name="global_fit_function" type="NXfit_function" recommended="true">
-#                 <field name="description" recommended="true"/>
-#                 <field name="formula" recommended="true"/>
-#             </group>
-#             <group name="error_function" type="NXfit_function" recommended="true">
-#                 <field name="description" recommended="true"/>
-#                 <field name="formula" recommended="true"/>
-#             </group>
-#             <field name="figure_of_meritMETRIC" type="NX_NUMBER" recommended="true">
-#                 <attribute name="metric"/>
-#             </field>
+#             <attribute name="energy_indices" type="NX_INT"/>
 #         </group>
 #     </group>
 # </definition>
