@@ -378,7 +378,8 @@ def belongs_to(nxdl_elem, child, name, class_type=None, hdf_name=None):
 
 def get_local_name_from_xml(element):
     """Helper function to extract the element tag without the namespace."""
-    return remove_namespace_from_tag(element.tag)
+    type = remove_namespace_from_tag(element.tag)
+    return "field" if type == "link" else type
 
 
 def get_own_nxdl_child_reserved_elements(child, name, nxdl_elem):
@@ -639,7 +640,7 @@ def other_attrs(
 
 def get_node_concept_path(elem):
     """get the short version of nxdlbase:nxdlpath"""
-    return f'{elem.get("nxdlbase").split("/")[-1]}:{elem.get("nxdlpath")}'
+    return f"{elem.get('nxdlbase').split('/')[-1]}:{elem.get('nxdlpath')}"
 
 
 def get_doc(node, ntype, nxhtml, nxpath):
@@ -857,13 +858,12 @@ def get_best_child(nxdl_elem, hdf_node, hdf_name, hdf_class_name, nexus_type):
         ):
             name_any = is_name_type(child, "any")
             name_partial = is_name_type(child, "partial")
-            if name_partial or name_any:
-                fit = get_nx_namefit(
-                    hdf_name,
-                    get_node_name(child),
-                    name_any=name_any,
-                    name_partial=name_partial,
-                )
+            fit = get_nx_namefit(
+                hdf_name,
+                get_node_name(child),
+                name_any=name_any,
+                name_partial=name_partial,
+            )
         if fit > bestfit:
             bestfit = fit
             bestchild = set_nxdlpath(child, nxdl_elem)
