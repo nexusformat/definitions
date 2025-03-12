@@ -201,8 +201,8 @@ def get_nx_namefit(
 
     if name == hdf_name:
         return len(name) * 2
-    if hdf_name.startswith(".") or hdf_name.endswith("."):
-        # Don't match anything with a dot at the beginning or end
+
+    if " " in hdf_name or hdf_name.startswith(".") or hdf_name.endswith("."):
         return -1
 
     uppercase_parts = re.findall(r"[A-Z]+(?:_[A-Z]+)*", name)
