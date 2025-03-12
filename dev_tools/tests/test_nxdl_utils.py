@@ -129,29 +129,60 @@ def test_get_inherited_nodes():
 
 
 @pytest.mark.parametrize(
-    "hdf_name,concept_name,should_fit",
+    "hdf_name,concept_name, name_type, should_fit",
     [
-        ("source_pump", "sourceType", False),
-        ("source_pump", "sourceTYPE", True),
-        ("source pump", "sourceTYPE", False),
-        ("source", "sourceTYPE", True),
-        ("source123", "SOURCE", True),
-        ("1source", "SOURCE", True),
-        ("_source", "SOURCE", True),
-        ("same_name", "same_name", True),
-        ("angular_energy_resolution", "angularNresolution", True),
-        ("angularresolution", "angularNresolution", True),
-        ("Name with some whitespaces in it", "ENTRY", False),
-        ("simple_name", "TEST", True),
-        (".test", "TEST", False),
+        ("same_name", "same_name", "specified", True),
+        ("same_name", "same_name", "any", True),
+        ("same_name", "same_name", "partial", True),
+        ("source_pump", "source", "specified", False),
+        ("source_pump", "source", "any", True),
+        ("source_pump", "source", "partial", False),
+        ("source_pump", "sourceType", "specified", False),
+        ("source_pump", "sourceType", "any", True),
+        ("source_pump", "sourceType", "partial", False),
+        ("source_pump", "sourceTYPE", "specified", False),
+        ("source_pump", "sourceTYPE", "any", True),
+        ("source_pump", "sourceTYPE", "partial", True),
+        ("source pump", "sourceTYPE", "specified", False),
+        ("source pump", "sourceTYPE", "any", False),
+        ("source pump", "sourceTYPE", "partial", False),
+        ("Name with some whitespaces in it", "ENTRY", "specified", False),
+        ("Name with some whitespaces in it", "ENTRY", "any", False),
+        ("Name with some whitespaces in it", "ENTRY", "partial", False),
+        ("source", "sourceTYPE", "specified", False),
+        ("source", "sourceTYPE", "any", True),
+        ("source", "sourceTYPE", "partial", True),
+        ("SOURCE", "SOURCE", "specified", True),
+        ("SOURCE", "SOURCE", "any", True),
+        ("SOURCE", "SOURCE", "partial", True),
+        ("source123", "SOURCE", "specified", False),
+        ("source123", "SOURCE", "any", True),
+        ("source123", "SOURCE", "partial", True),
+        ("1source", "SOURCE", "specified", False),
+        ("1source", "SOURCE", "any", True),
+        ("1source", "SOURCE", "partial", True),
+        ("_source", "SOURCE", "specified", False),
+        ("_source", "SOURCE", "any", True),
+        ("_source", "SOURCE", "partial", True),
+        ("angular_energy_resolution", "angularNresolution", "specified", False),
+        ("angular_energy_resolution", "angularNresolution", "any", True),
+        ("angular_energy_resolution", "angularNresolution", "partial", True),
+        (".test", "TEST", "specified", False),
+        (".test", "TEST", "any", False),
+        (".test", "TEST", "partial", False),
     ],
 )
-def test_namefitting(hdf_name, concept_name, should_fit):
+def test_namefitting(hdf_name, concept_name, name_type, should_fit):
     """Test namefitting of nexus concept names"""
+    name_any = name_type == "any"
+    name_partial = name_type == "partial"
+
     if should_fit:
-        assert nexus.get_nx_namefit(hdf_name, concept_name, name_partial=True) > -1
+        assert nexus.get_nx_namefit(hdf_name, concept_name, name_any, name_partial) > -1
     else:
-        assert nexus.get_nx_namefit(hdf_name, concept_name, name_partial=True) == -1
+        assert (
+            nexus.get_nx_namefit(hdf_name, concept_name, name_any, name_partial) == -1
+        )
 
 
 @pytest.mark.parametrize(
