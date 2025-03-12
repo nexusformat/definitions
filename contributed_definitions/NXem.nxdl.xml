@@ -157,6 +157,8 @@ but for practical purposes currently is interpretable only by human to provide t
                 The protection of personal data by laws is in different stages of development
                 and strictness. Therefore, the existence of user data has not been made
                 required.
+                
+                Instances should use user as a name prefix.
             </doc>
             <field name="identifierNAME" type="NX_CHAR" recommended="true">
                 <attribute name="type" type="NX_CHAR"/>
@@ -197,24 +199,47 @@ but for practical purposes currently is interpretable only by human to provide t
                 </doc>
             </field>
         </group>
-        <group name="sample" type="NXsample">
+        <group type="NXsample" minOccurs="1" maxOccurs="unbounded">
             <doc>
                 A physical entity which contains material intended to be investigated.
                 Sample and specimen are treated as de facto synonyms. Samples can be real or virtual ones.
+                
+                There are at least two strategies how to store (meta)data when one analyzes multiple
+                samples - not different ROIs on a single sample though - in one session.
+                
+                One strategy is to store each sample and its results under an own NXem/ENTRY.
+                This is one of the most frequent use cases as during most sessions typically only a
+                single sample is investigated. In this case the name of this group should be NXem/ENTRY/sample.
+               
+                If multiple samples are investigated storing each of them in an own ENTRY group eventually will
+                demand an unnecessary duplication though of many details about the instrument.
+                
+                This can be avoided by using another strategy how to store all samples and their results.
+                Namely, by using only one instance of NXem/ENTRY. That NXem/ENTRY should then be named,
+                like in the previous case, NXem/entry1 and the samples should be named sample1, sample2, etc.,
+                i.e. instances should use sample as a name prefix.
+                
+                In this case though the collection of events demands to use Identifier_sample to state clearly
+                for which of the samples loaded the (characterization) event was detected.
                 
                 This concept is related to term `Specimen`_ of the EMglossary standard.
                 
                 .. _Specimen: https://purls.helmholtz-metadaten.de/emg/EMG_00000046
             </doc>
-            <field name="type" type="NX_CHAR">
+            <field name="is_simulation" type="NX_BOOLEAN">
                 <doc>
-                    Qualifier whether the sample is a real or a virtual one.
+                    Qualifier whether the sample is a real (in which case is_simulation should be set to false)
+                    or a virtual one (in which case is_simulation should be set to true).
                 </doc>
-                <enumeration>
-                    <item value="experiment"/>
-                    <item value="simulation"/>
-                </enumeration>
             </field>
+            <field name="physical form" recommended="true">
+                <enumeration open="true">
+                  <item value="bulk"/>
+                  <item value="foil"/>
+                  <item value="thin_film"/>
+                  <item value="powder"/>
+                </enumeration>
+            <field>
             <field name="identifier_sample" type="NX_CHAR" recommended="true">
                 <doc>
                     Ideally, (globally) unique persistent identifier which distinguishes this sample from all others
@@ -467,10 +492,15 @@ but for practical purposes currently is interpretable only by human to provide t
                 </field>
             </group>
             <group name="DETECTOR_REFERENCE_FRAME" type="NXcoordinate_system" nameType="any" minOccurs="0" maxOccurs="unbounded">
+                <doc>
+                    Instances should use detector_reference_frame as a name prefix.
+                </doc>
                 <field name="depends_on" type="NX_CHAR" optional="true">
                     <doc>
                         Reference to the specifically named :ref:`NXdetector` instance for
                         which these conventions apply (e.g. /entry1/instrument/detector1).
+                        
+                        Instances should use detector_reference_frame as a name prefix.
                     </doc>
                 </field>
                 <field name="alias" type="NX_CHAR" optional="true"/>
@@ -551,6 +581,7 @@ hence using optional is sufficient-->
             <group name="instrument" type="NXinstrument_em">
                 <field name="name" type="NX_CHAR" recommended="true"/>
                 <field name="location" type="NX_CHAR" recommended="true"/>
+                <field name="type" type="NX_CHAR" recommended="true"/>
                 <group name="fabrication" type="NXfabrication">
                     <field name="vendor" type="NX_CHAR"/>
                     <field name="model" type="NX_CHAR"/>
@@ -812,9 +843,12 @@ which components that microscope was built from-->
                     </doc>
                     <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
                     <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+                    <field name="identifier_sample" type="NX_CHAR" recommended="true"/>
+                    <!--above field is another example for lacking support to define conditional existence constraints-->
                     <group type="NXimage" minOccurs="0" maxOccurs="unbounded">
                         <doc>
                            Instances should use image as a name prefix.
+                           Each NXimage instance must use only one image or stack instance.
                         </doc>
                         <group type="NXprocess">
                             <group name="source" type="NXnote" recommended="true">
@@ -991,6 +1025,7 @@ which components that microscope was built from-->
                     <group type="NXspectrum" minOccurs="0" maxOccurs="unbounded">
                         <doc>
                             Instances should use spectrum as a name prefix.
+                            Each NXspectrum instance must use only one spectrum or stack instance.
                         </doc>
                         <group type="NXprocess">
                             <group name="source" type="NXnote" recommended="true">
@@ -1187,6 +1222,8 @@ which components that microscope was built from-->
                                 <group name="TABLEAU" type="NXprocess" nameType="any" minOccurs="1" maxOccurs="unbounded">
                                     <!--model(NX_CHAR):-->
                                     <!--ceos-->
+                                    <doc>
+                                        Instances should use tableau as a name prefix.
                                     <group name="c_1" type="NXaberration" optional="true">
                                         <field name="magnitude" type="NX_NUMBER"/>
                                     </group>
@@ -1314,8 +1351,8 @@ basically optional use of NXaberration therein at least some value required-->
                                 <field name="value_x" type="NX_NUMBER"/>
                                 <field name="value_y" type="NX_NUMBER"/>
                             </group>
-                            <!--biprism(NXcomponent):
-phaseplateID(NXcomponent):-->
+                            <!--biprism(NXcomponent):-->
+                            <!--phaseplateID(NXcomponent):-->
                             <group type="NXsensor" minOccurs="0" maxOccurs="unbounded">
                                 <doc>
                                     Instances should use sensor as a name prefix.
@@ -1410,7 +1447,7 @@ phaseplateID(NXcomponent):-->
                         </group>
                         <group type="NXactuator" minOccurs="0" maxOccurs="unbounded">
                             <doc>
-                                Instances should use sensor as a name prefix.
+                                Instances should use actuator as a name prefix.
                             </doc>
                         </group>
                         <group name="stage" type="NXmanipulator" minOccurs="0" maxOccurs="unbounded">
@@ -1496,6 +1533,7 @@ is required to provide such information in this way!-->
                 <group type="NXimage" minOccurs="1" maxOccurs="unbounded">
                     <doc>
                         Instances should use image as a name prefix.
+                        Each NXimage instance must use only one image or stack instance.
                     </doc>
                     <field name="imaging_mode" type="NX_CHAR"/>
                 </group>
@@ -1549,6 +1587,9 @@ exists: optional-->
                     </group>
                     <field name="identifier_phase" type="NX_INT"/>
                     <group type="NXphase" minOccurs="0" maxOccurs="unbounded">
+                        <doc>
+                            Instances should use phase as a name prefix.
+                        </doc>
                         <field name="name" type="NX_CHAR" recommended="true"/>
                         <field name="number_of_scan_points" type="NX_UINT"/>
                         <group name="unit_cell" type="NXunit_cell">
