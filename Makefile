@@ -76,7 +76,7 @@ pdf ::
 	cp $(BUILD_DIR)/manual/build/latex/nexus-fairmat.pdf $(BUILD_DIR)/manual/source/_static/NeXusManual.pdf
 
 html ::
-	$(SPHINX) -b html $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
+	$(SPHINX) -b html -W $(BUILD_DIR)/manual/source/ $(BUILD_DIR)/manual/build/html
 
 impatient-guide ::
 	$(SPHINX) -b html -W $(BUILD_DIR)/impatient-guide/ $(BUILD_DIR)/impatient-guide/build/html
