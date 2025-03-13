@@ -15,7 +15,7 @@ import sys
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
 # add the abs path to the custom extension for collecting the contributor variables from the rst files
-sys.path.insert(0, os.path.abspath('../../../dev_tools/ext'))
+sys.path.insert(0, os.path.abspath("../../../dev_tools/ext"))
 
 # -- Project information -----------------------------------------------------
 
@@ -25,11 +25,11 @@ copyright = u'2022-{}, {}'.format(datetime.datetime.now().year, author)
 description = u'Proposal of NeXus expansion for FAIRmat data'
 
 # The full version, including alpha/beta/rc tags
-version = u'unknown NXDL version'
-release = u'unknown NXDL release'
-nxdl_version = open('../../NXDL_VERSION').read().strip()
+version = "unknown NXDL version"
+release = "unknown NXDL release"
+nxdl_version = open("../../NXDL_VERSION").read().strip()
 if nxdl_version is not None:
-    version = nxdl_version.split('.')[0]
+    version = nxdl_version.split(".")[0]
     release = nxdl_version
 
 
@@ -52,6 +52,7 @@ extensions = [
     'sphinx_tabs.tabs',
     'contrib_ext',
     'chios.bolditalic'
+    "sphinx_gallery.gen_gallery",
 ]
 
 
@@ -59,7 +60,7 @@ extensions = [
 # todo_include_todos = True
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -79,7 +80,7 @@ html_theme = 'alabaster'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # Add extra files
 html_extra_path = ['CNAME']
@@ -154,17 +155,17 @@ else:
 html_favicon = "../../../common/favicon.ico"
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'NeXusManualdoc'
+htmlhelp_basename = "NeXusManualdoc"
 
 comments_config = {
     "hypothesis": True
 }
 html_contexthtml_context = {
-  'css_files': [
-    '_static/bespoke.css',  # custom CSS styling
-    '_static/bolditalic.css',  # bolditalic styling
+    "css_files": [
+        "_static/bespoke.css",  # custom CSS styling
+        "_static/bolditalic.css",  # bolditalic styling
     ],
-  }
+}
 
 # -- Options for Latex output -------------------------------------------------
 latex_elements = {
@@ -179,4 +180,17 @@ latex_elements = {
     \DeclareUnicodeCharacter{1F517}{X}
     \DeclareUnicodeCharacter{2906}{<=}
     \listfiles'''
+}
+
+# -- Options the gallery -------------------------------------------------
+sphinx_gallery_conf = {
+    "examples_dirs": [
+        "../../galleries/nxdata",
+    ],  # paths with .py files that generate plots
+    "gallery_dirs": [
+        "classes/base_classes/data",
+    ],  # paths where to save gallery generated output
+    "download_all_examples": False,  # disable download buttons
+    "write_computation_times": False,  # disable computation time display
+    "show_signature": False,  # disable signature
 }
