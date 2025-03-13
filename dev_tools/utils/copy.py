@@ -28,3 +28,15 @@ def copy_files(files: List[Tuple[str, str, bool]]) -> None:
             copyfile(from_path, to_path)
         else:
             print("already exists", to_path)
+
+
+def copy_directories(dirs: List[Tuple[str, str, bool]]) -> None:
+    source_root = directories.get_source_root()
+    build_root = directories.get_build_root()
+    for from_subname, to_subname, overwrite in dirs:
+        to_path = build_root / to_subname
+        if overwrite or not to_path.exists():
+            from_path = source_root / from_subname
+            copydir(from_path, to_path)
+        else:
+            print("already exists", to_path)
