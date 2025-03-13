@@ -1,0 +1,31 @@
+name: Spell Check
+
+on:
+  pull_request:
+    paths:
+      - "applications/**/*"
+      - "base_classes/**/*"
+      - "contributed_definitions/**/*"
+
+jobs:
+  spellcheck:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install dependencies
+      run: |
+        npm install -g cspell jq
+
+    - name: Run cspell and format results
+      run: |
+        cspell --config .cspell.json "applications/**/*" "base_classes/**/*" "contributed_definitions/**/*" --output json | jq '.items[] | "\(.filename):\(.line):\(.column) - \(.text) (Suggested: \(.suggestions | join(", ")))"'
+
+    - name: Fail on errors
+      run: |
+        if [[ $? -ne 0 ]]; then
+          echo "There are spelling errors in your code. Please fix them and try again."
+          exit 1
+        fi

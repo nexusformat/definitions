@@ -43,7 +43,7 @@ Base Classes
     bias spectroscopy measurement.
 
     :ref:`NXcantilever_spm`:
-    A base class to characterise cantilever used in AFM experiments.
+    A base class to characterize cantilever used in AFM experiments.
 
     :ref:`NXpiezo_config_spm`:
     A base class to describe piezo configuration in SPM experiments.
