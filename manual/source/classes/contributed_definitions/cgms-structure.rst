@@ -16,6 +16,9 @@ The following base classes are defined to incentivize the use of NeXus for
 using computational-geometry-based descriptions. In what follows, base classes
 for frequently used shapes and geometric primitives are proposed:
 
+    :ref:`NXcg_primitive`:
+        Base class from which most other NXcg classes that define specific primitives inherit.
+
     :ref:`NXcg_ellipsoid`:
         A description for a set of possibly dissimilar oriented ellipsoids.
 
