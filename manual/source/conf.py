@@ -42,17 +42,17 @@ needs_sphinx = '2.5'
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    'sphinx_toolbox.collapse',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.ifconfig',
-    'sphinx.ext.viewcode',
-    'sphinx.ext.githubpages',
-    'sphinx_comments',
-    'sphinx.ext.todo',
-    'sphinx_tabs.tabs',
-    'contrib_ext',
-    'chios.bolditalic'
+    "sphinx_toolbox.collapse",
+    "sphinx.ext.mathjax",
+    "sphinx.ext.ifconfig",
+    "sphinx.ext.viewcode",
+    "sphinx.ext.githubpages",
+    "sphinx.ext.todo",
+    "sphinx_tabs.tabs",
+    "contrib_ext",
+    "chios.bolditalic",
     "sphinx_gallery.gen_gallery",
+    "sphinx_comments",
 ]
 
 
