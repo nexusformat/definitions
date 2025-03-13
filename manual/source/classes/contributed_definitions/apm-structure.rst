@@ -38,16 +38,12 @@ Base Classes
 
 The following base classes are proposed to support modularizing the storage of pieces of information:
 
-    :ref:`NXchamber`:
-        A base class to describe a component of the instrument which houses other components.
-        A chamber may offer a controlled atmosphere to execute an experiment and/or offer functionalities
-        for storing and loading specimens.
 
     :ref:`NXcoordinate_system_set`, :ref:`NXcoordinate_system`:
         Base classes to describe different coordinate systems used and/or to be harmonized
         or transformed into one another when interpreting the dataset.
 
-    :ref:`NXion`: (about to become replaced by :ref:`NXatom_set`)
+    :ref:`NXion`: (about to become replaced by :refNXatom)
        A base class to describe molecular ions with an adjustable number of atoms/isotopes building each ion.
        For the usage in atom probe research the maximum number of atoms supported building a molecular ion
        is currently set to a maximum of 32. Suggestions made in reference `DOI: 10.1017/S1431927621012241 <https://doi.org/10.1017/S1431927621012241>`_ are used to map isotope to hash values with
@@ -65,14 +61,7 @@ The following base classes are proposed to support modularizing the storage of p
     :ref:`NXpump`:
         A base class to describe details about pump(s) used as components of an instrument.
 
-    :ref:`NXpulser_apm`:
-        A base class to describe the high-voltage and/or laser pulsing capabilities.
-
-    :ref:`NXreflectron`:
-        A base class to describe a kinetic-energy-sensitive filtering device
-        for time-of-flight (ToF) mass spectrometry.
-
-    :ref:`NXstage_lab`:
+    :ref:`NXmanipulator`:
         A base class to describe the specimen fixture including the cryo-head.
         Nowadays, stages of microscopes represent small-scale laboratory platforms.
         Therefore, there is a need to define the characteristics of such stages in more detail,
@@ -84,29 +73,12 @@ Microscopy experiments, not only taking into account those performed on commerci
 data processing steps. Some of them are frequently applied on-the-fly. For now we represent these steps with specifically named
 instances of the :ref:`NXprocess` base class.
 
-Several base classes were defined to document processing of atom probe data with established algorithms:
-
-    :ref:`NXapm_hit_finding`:
-        A base class to describe hit finding algorithm.
-
-    :ref:`NXapm_volt_and_bowl`:
-        A base class to describe the voltage-and-bowl correction.
-
-    :ref:`NXapm_charge_state_analysis`:
-        A base class to document the resolving of the charge_state.
-
-    :ref:`NXapm_reconstruction`:
-        A base class to document the tomographic reconstruction algorithm.
-
-    :ref:`NXapm_ranging`:
-        A base class to document the ranging process.
-
-    :ref:`NXapm_msr`, :ref:`NXapm_sim`:
-        Respective base classes that serve as templates to compose the :ref:`NXapm` application definition from.
-
-These base classes are examples that substantiate that data processing steps are essential to transform atom probe measurements or simulations into knowledge. Therefore, these steps should be documented
-to enable reproducible research, if possible even numerical reproducibility of the results, 
-and learn how pieces of information are connected. In what follows, an example is presented how an
+Several instances of NXprocess were defined in NXapm to document processing of atom probe data
+including hit finding, voltage-and-bowl correction, combinatorial recovery of charge states, reconstruction,
+and ranging definitions. These base classes are examples that substantiate that data processing steps are
+essential when transforming atom probe measurements or simulations into knowledge. Consequently, these
+steps should be documented to enable reproducible research, if possible even numerical reproducibility
+of the results,  and to learn better the workflow. In what follows, an example is presented how an
 open-source community software can be modified to use descriptions of these computational steps.
 
 A detailed inspection of spatial and other type of filters frequently used in analysis of atom probe
@@ -114,8 +86,8 @@ data revealed that it is better to define atom-probe-agnostic reusable concepts 
 
     :ref:`NXspatial_filter`:
         A base class proposing how a point cloud can be spatially filtered in a specific yet general manner.
-        This base class takes advantage of :ref:`NXcg_ellipsoid_set`, :ref:`NXcg_cylinder_set`,
-        and :ref:`NXcg_hexahedron_set` to cater for commonly used geometric primitives in atom probe.
+        This base class takes advantage of :ref:`NXcg_ellipsoid`, :ref:`NXcg_cylinder`, and :ref:`NXcg_hexahedron`
+        to cater for commonly used geometric primitives in atom probe.
         The primitives are used for defining the shape and extent of a region of interest (ROI).
 
     :ref:`NXsubsampling_filter`:

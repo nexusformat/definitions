@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2025-2024 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -26,59 +26,60 @@ inspect comments behind NXmicrostructure-->
 <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXmicrostructure_score_results" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <symbols>
         <doc>
-            The symbols used in the schema to specify e.g. dimensions of arrays.
+            The symbols used in the schema to specify e.g. dimensions of arrays
         </doc>
         <symbol name="n_summary_stats">
             <doc>
-                The total number of summary statistic log entries.
+                The total number of summary statistic log entries
             </doc>
         </symbol>
         <symbol name="n_b">
             <doc>
-                Number of boundaries of the bounding box or primitive to domain.
+                Number of boundaries of the bounding box or primitive about the computational
+                domain
             </doc>
         </symbol>
         <symbol name="n_p">
             <doc>
-                Number of parameter required for chosen orientation parameterization.
+                Number of parameter required for chosen orientation parameterization
             </doc>
         </symbol>
         <symbol name="n_tex">
             <doc>
-                Number of texture components identified.
+                Number of texture components identified
             </doc>
         </symbol>
         <symbol name="d">
             <doc>
-                Dimensionality.
+                Dimensionality
             </doc>
         </symbol>
         <symbol name="c">
             <doc>
-                Cardinality.
+                Cardinality
             </doc>
         </symbol>
         <symbol name="n_front">
             <doc>
-                Number of active cells in the (recrystallization) front.
+                Number of active cells in the (recrystallization) front
             </doc>
         </symbol>
         <symbol name="n_grains">
             <doc>
-                Number of grains in the computer simulation.
+                Number of grains in the computer simulation
             </doc>
         </symbol>
     </symbols>
     <doc>
-        Application definition for storing results of the SCORE cellular automaton.
+        Application definition for storing results of the SCORE cellular automata model.
         
-        The SCORE cellular automaton model for primary recrystallization is an
-        example of typical materials engineering applications used within the field
-        of so-called Integral Computational Materials Engineering (ICME) whereby
-        one can simulate the evolution of microstructures.
+        The SCORE cellular automata model for primary recrystallization is an example
+        of a typical materials engineering application used within the field of so-called
+        Integral Computational Materials Engineering (ICME) whereby one can simulate
+        the evolution of microstructures.
         
-        Specifically the SCORE model can be used to simulate the growth of static
-        recrystallization nuclei. The model is described in the literature:
+        Specifically the SCORE model can be used to simulate the growth of nuclei during
+        static recrystallization. The model is described in the literature:
         
         * `M. Kühbach et al. &lt;https://doi.org/10.1016/j.actamat.2016.01.068&gt;`_
         * `C. Haase et al. &lt;https://doi.org/10.1016/j.actamat.2015.08.057&gt;`_
@@ -90,100 +91,121 @@ inspect comments behind NXmicrostructure-->
                 <item value="NXmicrostructure_score_results"/>
             </enumeration>
         </field>
-        <field name="simulation_identifier" type="NX_UINT">
+        <field name="identifier_simulation" type="NX_UINT">
             <doc>
                 Simulation ID as an alias to refer to this simulation.
             </doc>
         </field>
-        <field name="description" type="NX_CHAR">
+        <group name="config" type="NXnote">
+            <doc>
+                Configuration file with the parameterization of the
+                SCORE model that was used for this simulation.
+            </doc>
+            <field name="file_name" type="NX_CHAR"/>
+            <field name="algorithm" type="NX_CHAR"/>
+            <field name="checksum" type="NX_CHAR"/>
+        </group>
+        <field name="description" type="NX_CHAR" optional="true">
             <doc>
                 Discouraged free-text field to add further details to the computation.
             </doc>
         </field>
-        <field name="start_time" type="NX_DATE_TIME"/>
-        <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
-        <group type="NXuser" minOccurs="0" maxOccurs="unbounded"/>
+        <field name="start_time" type="NX_DATE_TIME">
+            <doc>
+                ISO 8601 time code with local time zone offset to UTC information
+                included when the simulation was started.
+            </doc>
+        </field>
+        <field name="end_time" type="NX_DATE_TIME" recommended="true">
+            <doc>
+                ISO 8601 time code with local time zone offset to UTC information
+                included when the simulation ended.
+            </doc>
+        </field>
+        <group name="profiling" type="NXcs_profiling" optional="true"/>
+        <!--consider integrating content that is currently stored in ThreadProfiling.csv-->
         <group name="program1" type="NXprogram">
-            <field name="program_name">
+            <doc>
+                Name of the program with which the simulation was performed.
+            </doc>
+            <field name="program" type="NX_CHAR">
                 <attribute name="version"/>
-                <attribute name="url" recommended="true"/>
             </field>
         </group>
         <group name="environment" type="NXobject" optional="true">
             <doc>
                 Programs and libraries representing the computational environment
             </doc>
-            <group name="programID" type="NXprogram" nameType="partial" minOccurs="1" maxOccurs="unbounded">
+            <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
                 <field name="program" type="NX_CHAR">
                     <attribute name="version" type="NX_CHAR"/>
                 </field>
             </group>
         </group>
-        <group name="coordinate_system_set" type="NXcoordinate_system_set">
-            <field name="rotation_handedness"/>
-            <field name="rotation_convention"/>
-            <field name="euler_angle_convention"/>
-            <field name="axis_angle_convention"/>
-            <field name="sign_convention"/>
-            <group name="sample_reference_frame" type="NXcoordinate_system">
-                <field name="type">
-                    <enumeration>
-                        <item value="cartesian"/>
-                    </enumeration>
-                </field>
-                <field name="handedness">
-                    <enumeration>
-                        <item value="right_handed"/>
-                    </enumeration>
-                </field>
-                <field name="origin">
-                    <enumeration>
-                        <item value="front_bottom_left"/>
-                    </enumeration>
-                </field>
-                <field name="x_alias">
-                    <enumeration>
-                        <item value="rolling_direction"/>
-                    </enumeration>
-                </field>
-                <field name="x_direction">
-                    <enumeration>
-                        <item value="east"/>
-                    </enumeration>
-                </field>
-                <field name="y_alias">
-                    <enumeration>
-                        <item value="transverse_direction"/>
-                    </enumeration>
-                </field>
-                <field name="y_direction">
-                    <enumeration>
-                        <item value="in"/>
-                    </enumeration>
-                </field>
-                <field name="z_alias">
-                    <enumeration>
-                        <item value="normal direction"/>
-                    </enumeration>
-                </field>
-                <field name="z_direction">
-                    <enumeration>
-                        <item value="north"/>
-                    </enumeration>
-                </field>
-            </group>
+        <!--rotation_conventions(NXrotation_conventions):
+  rotation_handedness(NX_CHAR):
+  rotation_convention(NX_CHAR):
+  euler_angle_convention(NX_CHAR):
+  axis_angle_convention(NX_CHAR):
+  sign_convention(NX_CHAR):-->
+        <group name="sample_reference_frame" type="NXcoordinate_system">
+            <field name="type">
+                <enumeration>
+                    <item value="cartesian"/>
+                </enumeration>
+            </field>
+            <field name="handedness">
+                <enumeration>
+                    <item value="right_handed"/>
+                </enumeration>
+            </field>
+            <field name="origin">
+                <enumeration>
+                    <item value="front_bottom_left"/>
+                </enumeration>
+            </field>
+            <field name="x_alias">
+                <enumeration>
+                    <item value="rolling_direction"/>
+                </enumeration>
+            </field>
+            <field name="x_direction">
+                <enumeration>
+                    <item value="east"/>
+                </enumeration>
+            </field>
+            <field name="y_alias">
+                <enumeration>
+                    <item value="transverse_direction"/>
+                </enumeration>
+            </field>
+            <field name="y_direction">
+                <enumeration>
+                    <item value="in"/>
+                </enumeration>
+            </field>
+            <field name="z_alias">
+                <enumeration>
+                    <item value="normal direction"/>
+                </enumeration>
+            </field>
+            <field name="z_direction">
+                <enumeration>
+                    <item value="north"/>
+                </enumeration>
+            </field>
         </group>
         <group name="discretization" type="NXmicrostructure" minOccurs="1" maxOccurs="1">
             <group name="grid" type="NXcg_grid">
                 <field name="dimensionality" type="NX_POSINT"/>
                 <field name="cardinality" type="NX_POSINT"/>
                 <field name="origin" type="NX_NUMBER"/>
-                <field name="symmetry"/>
+                <field name="symmetry" type="NX_CHAR"/>
                 <field name="cell_dimensions" type="NX_NUMBER"/>
                 <field name="extent" type="NX_UINT"/>
                 <field name="identifier_offset" type="NX_INT"/>
             </group>
-            <group name="boundary" type="NXcg_polyhedron_set">
+            <group name="boundary" type="NXcg_hexahedron">
                 <doc>
                     A tight bounding box or sphere or bounding primitive about the grid.
                 </doc>
@@ -200,12 +222,12 @@ https://docs.lammps.org/Howto_triclinic.html NXcg_polyhedron because a parallele
                     <doc>
                         The boundary conditions for each boundary:
                         
-                        0 - undefined
-                        1 - open
-                        2 - periodic
-                        3 - mirror
-                        4 - von Neumann
-                        5 - Dirichlet
+                        * 0 - undefined
+                        * 1 - open
+                        * 2 - periodic
+                        * 3 - mirror
+                        * 4 - von Neumann
+                        * 5 - Dirichlet
                     </doc>
                     <dimensions rank="1">
                         <dim index="1" value="6"/>
@@ -222,24 +244,36 @@ https://docs.lammps.org/Howto_triclinic.html NXcg_polyhedron because a parallele
                 </field>
             </group>
         </group>
-        <group name="spatiotemporalID" type="NXobject" nameType="partial" minOccurs="1" maxOccurs="unbounded">
+        <group name="SPATIOTEMPORAL" type="NXobject" nameType="any" minOccurs="1" maxOccurs="unbounded">
             <doc>
-                Documentation of the spatiotemporal evolution
+                Documentation of the spatiotemporal evolution for each CA domain.
+                
+                SCORE is a hybrid parallelized code that can evolve multiple replicas
+                in parallel. The set of replicas is distributed across MPI processes.
+                Each such replica is then evolved via OpenMP multi-threading.
+                
+                Instances should use spatiotemporal as a name prefix.
             </doc>
-            <!--static quantities for which no change is modelled
-the typical lean summary statistics flattened-->
-            <group name="summary_statistics" type="NXobject">
+            <!--the typical lean summary statistics flattened-->
+            <group name="summary_statistics" type="NXprocess">
                 <doc>
                     Summary quantities which are the result of some post-processing of the snapshot data
-                    (averaging, integrating, interpolating) happening in for practical reasons though in while
-                    running the simulation. Place used for storing descriptors from continuum mechanics
+                    (averaging, integrating, interpolating) happening for practical and performance reasons 
+                    during the simulation. Place used for storing descriptors from continuum mechanics
                     and thermodynamics at the scale of the entire ROI.
                 </doc>
-                <group name="kinetics" type="NXprocess" optional="true">
+                <group name="kinetics" type="NXdata" recommended="true">
                     <doc>
                         Evolution of the recrystallized volume fraction over time.
                     </doc>
-                    <field name="time" type="NX_NUMBER" units="NX_TIME">
+                    <attribute name="signal" type="NX_CHAR"/>
+                    <attribute name="axes" type="NX_CHAR"/>
+                    <attribute name="time_indices" type="NX_UINT"/>
+                    <attribute name="iteration_indices" type="NX_UINT" optional="true"/>
+                    <attribute name="temperature_indices" type="NX_UINT" optional="true"/>
+                    <attribute name="x_indices" type="NX_UINT"/>
+                    <field name="title" type="NX_CHAR" recommended="true"/>
+                    <field name="time" type="NX_FLOAT" units="NX_TIME">
                         <doc>
                             Evolution of the physical time not to be confused with wall-clock time or
                             profiling data.
@@ -252,6 +286,9 @@ the typical lean summary statistics flattened-->
                         <doc>
                             Iteration or increment counter.
                         </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_summary_stats"/>
+                        </dimensions>
                     </field>
                     <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
                         <doc>
@@ -261,7 +298,7 @@ the typical lean summary statistics flattened-->
                             <dim index="1" value="n_summary_stats"/>
                         </dimensions>
                     </field>
-                    <field name="recrystallized_volume_fraction" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                    <field name="x" type="NX_FLOAT" units="NX_DIMENSIONLESS">
                         <doc>
                             Recrystallized volume fraction.
                         </doc>
@@ -270,8 +307,8 @@ the typical lean summary statistics flattened-->
                         </dimensions>
                     </field>
                 </group>
-                <group name="stress" type="NXprocess" optional="true">
-                    <field name="type">
+                <group name="stress" type="NXdata" optional="true">
+                    <field name="type" type="NX_CHAR">
                         <doc>
                             Which type of stress.
                         </doc>
@@ -279,7 +316,7 @@ the typical lean summary statistics flattened-->
                             <item value="cauchy"/>
                         </enumeration>
                     </field>
-                    <field name="stress" type="NX_FLOAT" units="NX_ANY">
+                    <field name="tensor" type="NX_FLOAT" units="NX_ANY">
                         <doc>
                             Applied external stress tensor on the ROI.
                         </doc>
@@ -290,13 +327,13 @@ the typical lean summary statistics flattened-->
                         </dimensions>
                     </field>
                 </group>
-                <group name="strain" type="NXprocess" optional="true">
-                    <field name="type">
+                <group name="strain" type="NXdata" optional="true">
+                    <field name="type" type="NX_CHAR">
                         <doc>
                             Which type of strain.
                         </doc>
                     </field>
-                    <field name="strain" type="NX_FLOAT" units="NX_ANY">
+                    <field name="tensor" type="NX_FLOAT" units="NX_ANY">
                         <doc>
                             Applied external strain tensor on the ROI.
                         </doc>
@@ -316,7 +353,7 @@ the typical lean summary statistics flattened-->
                             <item value="piola"/>
                         </enumeration>
                     </field>
-                    <field name="value" type="NX_FLOAT" units="NX_ANY">
+                    <field name="tensor" type="NX_FLOAT" units="NX_ANY">
                         <doc>
                             Applied deformation gradient tensor on the ROI.
                         </doc>
@@ -327,48 +364,44 @@ the typical lean summary statistics flattened-->
                         </dimensions>
                     </field>
                 </group>
-                <group name="magnetic_field" type="NXprocess" optional="true">
-                    <field name="strength" type="NX_FLOAT" units="NX_ANY">
-                        <doc>
-                            Applied external magnetic field on the ROI.
-                        </doc>
-                        <dimensions rank="3">
-                            <dim index="1" value="n_summary_stats"/>
-                            <dim index="2" value="3"/>
-                            <dim index="3" value="3"/>
-                        </dimensions>
-                    </field>
-                </group>
-                <group name="electrical_field" type="NXprocess" optional="true">
-                    <!--specify type of field-->
-                    <field name="strength" type="NX_FLOAT" units="NX_ANY">
-                        <doc>
-                            Applied external electrical field on the ROI.
-                        </doc>
-                        <dimensions rank="3">
-                            <dim index="1" value="n_summary_stats"/>
-                            <dim index="2" value="3"/>
-                            <dim index="3" value="3"/>
-                        </dimensions>
-                    </field>
-                </group>
             </group>
-            <!--the typically storage-costlier snapshot data-->
-            <group name="microstructureID" type="NXmicrostructure" nameType="partial" minOccurs="1" maxOccurs="unbounded">
-                <field name="time" type="NX_NUMBER"/>
-                <field name="iteration" type="NX_INT"/>
+            <!--magnetic_field(NXprocess):
+  exists: optional
+  strength(NX_FLOAT):
+    doc: |
+      Applied external magnetic field on the ROI.
+    unit: NX_ANY
+    dim: (n_summary_stats, 3, 3)
+electrical_field(NXprocess):
+  exists: optional
+  strength(NX_FLOAT):
+    doc: |
+      Applied external electrical field on the ROI.
+    unit: NX_ANY
+    dim: (n_summary_stats, 3, 3)
+the typically storage-costlier snapshot data-->
+            <group type="NXmicrostructure" minOccurs="1" maxOccurs="unbounded">
+                <doc>
+                    Instances should use microstructure as a name prefix.
+                </doc>
+                <field name="time" type="NX_FLOAT"/>
+                <field name="iteration" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                        Iteration or increment counter.
+                    </doc>
+                </field>
                 <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
                     <doc>
                         Simulated temperature for this snapshot.
                     </doc>
                 </field>
-                <field name="x_value" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                <field name="x" type="NX_FLOAT" units="NX_DIMENSIONLESS">
                     <doc>
                         Current recrystallized volume fraction (taking fractional infections into
                         account).
                     </doc>
                 </field>
-                <field name="x_target" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+                <field name="x_set" type="NX_FLOAT" units="NX_DIMENSIONLESS">
                     <doc>
                         Target value for which a snapshot was requested for the recrystallized volume
                         fraction.
@@ -376,7 +409,7 @@ the typical lean summary statistics flattened-->
                 </field>
                 <!--optional places to store the grid for instance if it changes-->
                 <group name="grid" type="NXcg_grid" recommended="true">
-                    <field name="grain_identifier" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+                    <field name="identifier_crystal" type="NX_UINT" recommended="true" units="NX_UNITLESS">
                         <doc>
                             Grain identifier for each cell.
                         </doc>
@@ -386,7 +419,7 @@ the typical lean summary statistics flattened-->
                             <dim index="3" value="n_z"/>
                         </dimensions>
                     </field>
-                    <field name="thread_identifier" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <field name="identifier_thread" type="NX_UINT" optional="true" units="NX_UNITLESS">
                         <doc>
                             Identifier of the OpenMP thread which processed this part of the grid.
                         </doc>
@@ -397,23 +430,23 @@ the typical lean summary statistics flattened-->
                         </dimensions>
                     </field>
                 </group>
-                <group name="crystal" type="NXobject">
-                    <field name="representation" recommended="true"/>
-                    <field name="number_of_crystals" type="NX_UINT"/>
-                    <field name="number_of_phases" type="NX_UINT"/>
-                    <field name="crystal_identifier_offset" type="NX_INT"/>
-                    <field name="crystal_identifier" type="NX_INT">
+                <group name="crystals" type="NXobject">
+                    <field name="representation" type="NX_CHAR" recommended="true"/>
+                    <field name="number_of_crystals" type="NX_UINT" recommended="true"/>
+                    <field name="number_of_phases" type="NX_UINT" recommended="true"/>
+                    <field name="identifier_crystal_offset" type="NX_INT" recommended="true"/>
+                    <field name="identifier_crystal" type="NX_INT" recommended="true">
                         <dimensions rank="1">
                             <dim index="1" value="n_grains"/>
                         </dimensions>
                     </field>
-                    <field name="phase_identifier_offset" type="NX_INT"/>
-                    <field name="phase_identifier" type="NX_INT">
+                    <field name="identifier_phase_offset" type="NX_INT" recommended="true"/>
+                    <field name="identifier_phase" type="NX_INT" recommended="true">
                         <dimensions rank="1">
                             <dim index="1" value="n_grains"/>
                         </dimensions>
                     </field>
-                    <field name="volume" type="NX_NUMBER" units="NX_VOLUME">
+                    <field name="volume" type="NX_FLOAT" units="NX_VOLUME">
                         <doc>
                             Volume of each grain accounting also for partially transformed cells.
                         </doc>
@@ -433,8 +466,8 @@ the typical lean summary statistics flattened-->
                     </field>
                     <field name="dislocation_density" type="NX_FLOAT" recommended="true" units="NX_ANY">
                         <doc>
-                            Current value for the dislocation density as a measure of the remaining stored energy
-                            in assumed crystal defects inside each grain.
+                            Current value for the dislocation density as a measure of the remaining
+                            stored energy in assumed crystal defects inside each grain.
                         </doc>
                         <dimensions rank="1">
                             <dim index="1" value="n_grains"/>
@@ -472,9 +505,9 @@ the typical lean summary statistics flattened-->
                     </field>
                     <field name="mobility_weight" type="NX_FLOAT" recommended="true" units="NX_UNITLESS">
                         <doc>
-                            So-called mobility weight which is a scaling factor to
-                            control the mobility of the grain boundary which is assumed
-                            to sweep currently this volume.
+                            So-called mobility weight which is a scaling factor to control the
+                            mobility of the grain boundary that is modelled sweeping cells that
+                            make the discrete recrystallization front.
                         </doc>
                         <dimensions rank="1">
                             <dim index="1" value="n_front"/>
@@ -489,7 +522,7 @@ the typical lean summary statistics flattened-->
                             <dim index="2" value="3"/>
                         </dimensions>
                     </field>
-                    <field name="deformed_grain_identifier" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+                    <field name="identifier_deformed_grain" type="NX_UINT" recommended="true" units="NX_UNITLESS">
                         <doc>
                             Grain identifier assigned to each cell in the recrystallization front.
                         </doc>
@@ -497,7 +530,7 @@ the typical lean summary statistics flattened-->
                             <dim index="1" value="n_front"/>
                         </dimensions>
                     </field>
-                    <field name="recrystallized_grain_identifier" type="NX_UINT" recommended="true" units="NX_UNITLESS">
+                    <field name="identifier_recrystallized_grain" type="NX_UINT" recommended="true" units="NX_UNITLESS">
                         <doc>
                             Grain identifier assigned to each nucleus which affected that cell in the
                             recrystallization front.
@@ -506,7 +539,7 @@ the typical lean summary statistics flattened-->
                             <dim index="1" value="n_front"/>
                         </dimensions>
                     </field>
-                    <field name="thread_identifier" type="NX_UINT" optional="true" units="NX_UNITLESS">
+                    <field name="identifier_thread" type="NX_UINT" optional="true" units="NX_UNITLESS">
                         <doc>
                             Identifier of the OpenMP thread processing each cell in the recrystallization
                             front.
@@ -527,17 +560,4 @@ the typical lean summary statistics flattened-->
             </group>
         </group>
     </group>
-    <!--performance(NXcs_profiling):
-exists: optional
-current_working_directory:
-command_line_call:
-exists: optional
-start_time(NX_DATE_TIME):
-exists: recommended
-end_time(NX_DATE_TIME):
-exists: recommended
-total_elapsed_time(NX_NUMBER):
-number_of_processes(NX_POSINT):
-number_of_threads(NX_POSINT):
-number_of_gpus(NX_POSINT):-->
 </definition>

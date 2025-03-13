@@ -2,276 +2,251 @@ category: application
 doc: |
   Application definition for minimal example in-situ calorimetry.
   
-  What is the technique about.
+  TODO:
   
-  General context.
-  
-  Literature references.
+  * What is the technique about.
+  * General context.
+  * Literature references.
+
+# intentionally axes are not named x, y, z to
+# i) assure indices can be used for real and complex,
+# ii) that people think hard about how their base vectors
+# are aligned with what and how to name things
 symbols:
   doc: |
     The symbols used in the schema to specify e.g. dimensions of arrays.
-
-  # intentionally axes are not named x, y, z to
-  # i) assure indices can be used for real and complex,
-  # ii) that people think hard about how their base vectors are aligned with what and how to name things
   n_p: |
-    Number of pattern
+    Number of diffraction pattern.
   n_f: |
-    Number of azimuthal integration bins
+    Number of radial integration bins.
   n_i: |
     Number of coordinates along i axis.
   n_j: |
     Number of coordinates along j axis.
-
-# for a proper instance of a NeXus file also root level attributes should be set
-# NeXus version, h5py version, again can be done later, we have tons of examples
 type: group
 NXem_calorimetry(NXobject):
-  
-  # by default for appdefs the value of the exists keyword is required unless it is explicitly specified differently
   (NXentry):
     exists: ['min', '1', 'max', '1']
     definition(NX_CHAR):
-      \@version(NX_CHAR):
-        exists: optional
       enumeration: [NXem_calorimetry]
-    
-    # take here inspiration from the dozens of example appdefs
-    # e.g. NXem, NXapm_paraprobe_* which shows how to add context
-    identifier:
-      exists: optional
-    
-    # a place whereby you can refer to your simulation run, etc
-    (NXuser):
-      exists: optional
-    
-    # a place where you can give details about people who did it
-    (NXsample):
-      exists: optional
-    
-    # a place where you can tell e.g. based on which sample you build this simulation
-    (NXcite):
-      exists: ['min', '0', 'max', 'unbounded']
-    
-    # a place where to add citations for your work ...
-    (NXcoordinate_system_set):
-      diffraction_space(NXcoordinate_system):
-      (NXcoordinate_system):
-        exists: ['min', '0', 'max', 'unbounded']
-    
-    # a place where you can describe your coordinate system conventions
-    # hook-in NXem, alternatively inherit from NXem and just add
-    # add an actuator(NXactuator):
-    # doc: |
-    # DENSsolution heating chip.
-    # physical_quantity(NX_CHAR):
-    # enumeration: [temperature]
-    # event_data for the actual sensor data
-    # alternatively
-    diffraction(NXsource):
-      doc: |
-        Reference to the resource which stores acquired pattern from the experiment.
-        
-        Can refer to the original EMD or MRC files or the parsed NXem in RDM e.g. NOMAD OASIS.
-      type(NX_CHAR):
-      path(NX_CHAR):
-      checksum(NX_CHAR):
-      algorithm(NX_CHAR):
-    actuator(NXnote):
-      doc: |
-        Reference to the resource which stores actuator log file from the experiment.
-      type(NX_CHAR):
-      identifier(NX_CHAR):
-      checksum(NX_CHAR):
-      algorithm(NX_CHAR):
-    time_synchronization(NXprocess):
-      doc: |
-        Assumptions and computations whereby timestamp data from the
-        detector used for collecting diffraction pattern and the actuator
-        (heating chip) were synchronized.
-      sequence_index(NX_POSINT):
-      identifier_pattern(NX_UINT):
-        unit: NX_UNITLESS
-        dimensions:
-          rank: 1
-          dim: (n_p,)
-      start_time(NX_DATE_TIME):
-        doc: |
-          Timestamp when pattern acquisition started.
-        dimensions:
-          rank: 1
-          dim: (n_p,)
-      end_time(NX_DATE_TIME):
-        doc: |
-          Timestamp when pattern acquisition ended.
-        dimensions:
-          rank: 1
-          dim: (n_p,)
-    
-    # alternatively only timestamp
-    pattern_center(NXprocess):
-      sequence_index(NX_POSINT):
-      config(NXcollection):
-      result(NXcg_point_set):
-        
-        # depends_on(NX_CHAR):
-        # doc: |
-        # Hint to help resolve in which coordinate system position values are defined.
-        position(NX_NUMBER):
-          unit: NX_LENGTH
-          dimensions:
-            rank: 2
-            dim: (n_p, 2)
-    
-    # \@units: 1/nm
-    distortion_correction(NXprocess):
-      exists: optional
-      sequence_index(NX_POSINT):
-      programID(NXprogram):
-        nameType: partial
-        exists: optional
-        program(NX_CHAR):
-          \@version(NX_CHAR):
-      config(NXcollection):
-      result(NXcg_ellipsoid_set):
-        
-        # depends_on(NX_CHAR):
-        center(NX_NUMBER):
-          unit: NX_LENGTH
-          dimensions:
-            rank: 2
-            dim: (n_p, 2)
-    
-    # \@units: 1/nm
-    azimuthal_integration(NXprocess):
-      
-      # no exists, i.e. assuming required
-      doc: |
-        Acquired diffraction pattern azimuthally integrated as a function of time.
-      sequence_index(NX_POSINT):
-      programID(NXprogram):
-        nameType: partial
-        exists: optional
-        program(NX_CHAR):
-          \@version(NX_CHAR):
-      config(NXcollection):
-      
-      # TODO integration parameter
-      result(NXdata):
-        \@signal(NX_CHAR):
-        \@axes(NX_CHAR):
-        \@AXISNAME_indices(NX_CHAR):
-          nameType: partial
-        title(NX_CHAR):
-        intensity(NX_FLOAT):
-          unit: NX_UNITLESS
-          dimensions:
-            rank: 2
-            dim: (n_p, n_f)
-          \@long_name(NX_CHAR):
-        identifier_axis_pattern(NX_UINT):
-          unit: NX_UNITLESS
-          dimensions:
-            rank: 1
-            dim: (n_p,)
-          \@long_name(NX_CHAR):
-        axis_s(NX_FLOAT):
-          unit: NX_ANY
-          dimensions:
-            rank: 1
-            dim: (n_f,)
-          
-          # \@units: 1/nm
-          \@long_name(NX_CHAR):
-        axis_time(NX_FLOAT):
-          unit: NX_TIME
-          doc: |
-            Time since start of the in-situ experiment
-          dimensions:
-            rank: 1
-            dim: (n_p,)
-    
-    # \@units: s
-    background_subtraction(NXprocess):
-      exists: recommended
-      sequence_index(NX_POSINT):
-      programID(NXprogram):
-        nameType: partial
-        program(NX_CHAR):
-          \@version(NX_CHAR):
-      config(NXcollection):
-      
-      # TODO integration parameter
-      background(NXcollection):
-      
-      # TODO e.g. could add parameter of functional forms for the background of each pattern
-      result(NXdata):
-        doc: |
-          Azimuthally integrated diffraction intensities corrected for background as a
-          function of time.
-        \@signal(NX_CHAR):
-        \@axes(NX_CHAR):
-        \@AXISNAME_indices(NX_CHAR):
-          nameType: partial
-        title(NX_CHAR):
-        intensity(NX_FLOAT):
-          unit: NX_UNITLESS
-          dimensions:
-            rank: 2
-            dim: (n_p, n_f)
-          \@long_name(NX_CHAR):
-        identifier_axis_pattern(NX_UINT):
-          unit: NX_UNITLESS
-          dimensions:
-            rank: 1
-            dim: (n_p,)
-          \@long_name(NX_CHAR):
-        axis_s(NX_FLOAT):
-          unit: NX_ANY
-          dimensions:
-            rank: 1
-            dim: (n_f,)
-          
-          # \@units: 1/nm
-          \@long_name(NX_CHAR):
-        axis_time(NX_FLOAT):
-          unit: NX_TIME
-          doc: |
-            Time since start of the in-situ experiment
-          dimensions:
-            rank: 1
-            dim: (n_p,)
-    
-    # \@units: s
-    # peak_fitting(NXpeak_fitting):
-    # exists: optional
-    # doc: |
-    # Background-corrected azimuthally integrated signals indexed for peaks.
-    # more NXprocess groups could follow only sky is the limit and your imagination and time devotion
     profiling(NXcs_profiling):
       exists: optional
-      
-      # possible place to store details about performance, profiling, etc.
-      current_working_directory(NX_CHAR):
-        exists: recommended
+      doc: |
+        Details about performance, profiling, etc.
       start_time(NX_DATE_TIME):
         exists: recommended
       end_time(NX_DATE_TIME):
         exists: recommended
       total_elapsed_time(NX_NUMBER):
-  
-  # number_of_processes(NX_POSINT):
-  # number_of_threads(NX_POSINT):
-  # number_of_gpus(NX_POSINT):
+    program1(NXprogram):
+      exists: recommended
+      doc: |
+        Name of the program whereby this config file was created.
+      program(NX_CHAR):
+        \@version(NX_CHAR):
+    environment(NXobject):
+      exists: recommended
+      doc: |
+        Programs and libraries representing the computational environment
+      (NXprogram):
+        exists: ['min', '1', 'max', 'unbounded']
+        program(NX_CHAR):
+          \@version(NX_CHAR):
+    (NXuser):
+      exists: ['min', '0', 'max', 'unbounded']
+    sample(NXsample):
+      exists: recommended
+      type(NX_CHAR):
+        doc: |
+          A qualifier whether the sample is a real one or a virtual one.
+        enumeration: [experiment, simulation]
+      atom_types(NX_CHAR):
+        doc: |
+          List of comma-separated elements from the periodic table that are
+          contained in the specimen. If the specimen substance has multiple
+          components, all elements from each component must be included in
+          `atom_types`.
+          
+          The purpose of the field is to offer research data management systems an
+          opportunity to parse the relevant elements without having to interpret
+          these from the resources pointed to by identifier_parent or walk through
+          eventually deeply nested groups in data instances.
+    (NXcite):
+      exists: ['min', '0', 'max', 'unbounded']
+    
+    # a place where to add citations for your work ...
+    diffraction_space(NXcoordinate_system):
+      exists: optional
+    diffraction(NXnote):
+      doc: |
+        Reference to the resource which stores acquired pattern from the
+        experiment or simulation that are analyzed in this workflow.
+        
+        Can refer to the original EMD or MRC files or the parsed NXem
+        in RDM e.g. NOMAD OASIS.
+      file_name(NX_CHAR):
+      checksum(NX_CHAR):
+      algorithm(NX_CHAR):
+    actuator(NXnote):
+      doc: |
+        Reference to the resource which stores actuator log file from the experiment.
+      file_name(NX_CHAR):
+      checksum(NX_CHAR):
+      algorithm(NX_CHAR):
+    config(NXnote):
+      doc: |
+        Configuration file that was used for parameterizing this analysis workflow.
+      file_name(NX_CHAR):
+      checksum(NX_CHAR):
+      algorithm(NX_CHAR):
+    synchronization(NXprocess):
+      doc: |
+        Assumptions and computations whereby timestamping data from
+        the detector and actuator (e.g. heating chip) were synchronized.
+      sequence_index(NX_POSINT):
+      start_time(NX_DATE_TIME):
+        doc: |
+          ISO8601 with local time zone reference timestamp that tells
+          with which delta_time can be converted in timestamp.
+          The reference timestamp is defined as the time when the
+          actuator started acting on the sample.
+          
+          Time differences to this timestamp when correlated signals such
+          as diffraction pattern matching with a specific state of  the sample
+          (e.g. obtained temperature via the actuator) are reported through
+          delta_time.
+      identifier_pattern(NX_UINT):
+        unit: NX_UNITLESS
+        dimensions:
+          rank: 1
+          dim: (n_p,)
+      delta_time(NX_FLOAT):
+        unit: NX_TIME
+        doc: |
+          Time difference to start_time.
+          
+          Collecting diffraction pattern also takes some time.
+          It is assumed that the acquisition time for each pattern is
+          substantial shorter than the time it takes the actuator to
+          cause a change in stimulus (e.g. temperature).
+        dimensions:
+          rank: 1
+          dim: (n_p,)
+    
+    # timestamp(NX_DATE_TIME):
+    # exists: optional
+    # doc: |
+    # Timestamp that is used for each diffraction pattern to correlate the results
+    # obtained from that pattern with associated actuator data.
+    # ISO8601 with local time zone information if possible and as precise as practically
+    # possible. The indices follow the same order as
+    # used for identifier_pattern.
+    # dim: (n_p,)
+    pattern_center(NXprocess):
+      doc: |
+        Computation of the centre for each pattern using e.g. a Circular Hough
+        Transformation.
+      sequence_index(NX_POSINT):
+      
+      # NXcg_point
+      position(NX_FLOAT):
+        unit: NX_LENGTH
+        doc: |
+          Computed centre for each pattern.
+        dimensions:
+          rank: 2
+          dim: (n_p, 2)
+    
+    # \@units: 1/nm
+    distortion_correction(NXprocess):
+      exists: optional
+      doc: |
+        Elliptical distortion correction as a step when computing the centre for
+        patterns.
+      sequence_index(NX_POSINT):
+      
+      # TODO config(NXcollection):
+      # NXcg_ellipsoid
+      center(NX_NUMBER):
+        unit: NX_LENGTH
+        doc: |
+          Computed centre for each pattern.
+        dimensions:
+          rank: 2
+          dim: (n_p, 2)
+    
+    # \@units: 1/nm
+    integration(NXprocess):
+      doc: |
+        Integrated diffraction pattern intensity as a function of radial distance from the centre
+        azimuthally integrated as a function of time.
+      sequence_index(NX_POSINT):
+      
+      # TODO config(NXcollection):
+      resultBACKGROUND(NXdata):
+        nameType: partial
+        exists: ['min', '0', 'max', '2']
+        doc: |
+          The integrated intensities:
+          
+          * result_with_background
+          * result_without_background
+        \@signal(NX_CHAR):
+        \@axes(NX_CHAR):
+        \@AXISNAME_indices(NX_CHAR):
+          nameType: partial
+        title(NX_CHAR):
+        intensity(NX_FLOAT):
+          unit: NX_UNITLESS
+          doc: |
+            Integrated intensity as a function of time and the radial distance from the
+            pattern centre.
+          dimensions:
+            rank: 2
+            dim: (n_p, n_f)
+          \@long_name(NX_CHAR):
+        identifier_pattern(NX_UINT):
+          exists: optional
+          unit: NX_UNITLESS
+          doc: |
+            Identifier for each pattern.
+          dimensions:
+            rank: 1
+            dim: (n_p,)
+          \@long_name(NX_CHAR):
+        s(NX_FLOAT):
+          unit: NX_ANY
+          doc: |
+            Positions in reciprocal space.
+          dimensions:
+            rank: 1
+            dim: (n_f,)
+          
+          # \@units: 1/nm
+          \@long_name(NX_CHAR):
+        time(NX_FLOAT):
+          unit: NX_TIME
+          doc: |
+            Time since start of the in-situ experiment
+          dimensions:
+            rank: 1
+            dim: (n_p,)
+    
+    # \@units: s
+    # TODO e.g. could add parameter of functional forms for the background of each pattern
+    # more NXprocess groups could follow only sky is the limit and your imagination and time devotion
+    background_subtraction(NXprocess):
+      exists: optional
+      sequence_index(NX_POSINT):
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 915be4fff05119ff3f12e91e93ac520952a3afa1d09ca2f57502bf8673253281
+# 0946878075740fd8bd8803e683f925bf27a081ede4a22315d00c7b17f440b92d
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
 # # NeXus - Neutron and X-ray Common Data Format
 # #
-# # Copyright (C) 2024-2025 NeXus International Advisory Committee (NIAC)
+# # Copyright (C) 2025-2024 NeXus International Advisory Committee (NIAC)
 # #
 # # This library is free software; you can redistribute it and/or
 # # modify it under the terms of the GNU Lesser General Public
@@ -289,25 +264,23 @@ NXem_calorimetry(NXobject):
 # #
 # # For further information, see http://www.nexusformat.org
 # -->
-# <!--
-# for a proper instance of a NeXus file also root level attributes should be set
-# NeXus version, h5py version, again can be done later, we have tons of examples-->
 # <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="application" type="group" name="NXem_calorimetry" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+#     <!--intentionally axes are not named x, y, z to
+# i) assure indices can be used for real and complex,
+# ii) that people think hard about how their base vectors
+# are aligned with what and how to name things-->
 #     <symbols>
 #         <doc>
 #             The symbols used in the schema to specify e.g. dimensions of arrays.
 #         </doc>
-#         <!--intentionally axes are not named x, y, z to
-# i) assure indices can be used for real and complex,
-# ii) that people think hard about how their base vectors are aligned with what and how to name things-->
 #         <symbol name="n_p">
 #             <doc>
-#                 Number of pattern
+#                 Number of diffraction pattern.
 #             </doc>
 #         </symbol>
 #         <symbol name="n_f">
 #             <doc>
-#                 Number of azimuthal integration bins
+#                 Number of radial integration bins.
 #             </doc>
 #         </symbol>
 #         <symbol name="n_i">
@@ -324,51 +297,81 @@ NXem_calorimetry(NXobject):
 #     <doc>
 #         Application definition for minimal example in-situ calorimetry.
 #         
-#         What is the technique about.
+#         TODO:
 #         
-#         General context.
-#         
-#         Literature references.
+#         * What is the technique about.
+#         * General context.
+#         * Literature references.
 #     </doc>
-#     <!--by default for appdefs the value of the exists keyword is required unless it is explicitly specified differently-->
 #     <group type="NXentry" minOccurs="1" maxOccurs="1">
 #         <field name="definition" type="NX_CHAR">
-#             <attribute name="version" type="NX_CHAR" optional="true"/>
 #             <enumeration>
 #                 <item value="NXem_calorimetry"/>
 #             </enumeration>
 #         </field>
-#         <!--take here inspiration from the dozens of example appdefs
-# e.g. NXem, NXapm_paraprobe_* which shows how to add context-->
-#         <field name="identifier" optional="true"/>
-#         <!--a place whereby you can refer to your simulation run, etc-->
-#         <group type="NXuser" optional="true"/>
-#         <!--a place where you can give details about people who did it-->
-#         <group type="NXsample" optional="true"/>
-#         <!--a place where you can tell e.g. based on which sample you build this simulation-->
+#         <group name="profiling" type="NXcs_profiling" optional="true">
+#             <doc>
+#                 Details about performance, profiling, etc.
+#             </doc>
+#             <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
+#             <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+#             <field name="total_elapsed_time" type="NX_NUMBER"/>
+#         </group>
+#         <group name="program1" type="NXprogram" recommended="true">
+#             <doc>
+#                 Name of the program whereby this config file was created.
+#             </doc>
+#             <field name="program" type="NX_CHAR">
+#                 <attribute name="version" type="NX_CHAR"/>
+#             </field>
+#         </group>
+#         <group name="environment" type="NXobject" recommended="true">
+#             <doc>
+#                 Programs and libraries representing the computational environment
+#             </doc>
+#             <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
+#                 <field name="program" type="NX_CHAR">
+#                     <attribute name="version" type="NX_CHAR"/>
+#                 </field>
+#             </group>
+#         </group>
+#         <group type="NXuser" minOccurs="0" maxOccurs="unbounded"/>
+#         <group name="sample" type="NXsample" recommended="true">
+#             <field name="type" type="NX_CHAR">
+#                 <doc>
+#                     A qualifier whether the sample is a real one or a virtual one.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="experiment"/>
+#                     <item value="simulation"/>
+#                 </enumeration>
+#             </field>
+#             <field name="atom_types" type="NX_CHAR">
+#                 <doc>
+#                     List of comma-separated elements from the periodic table that are
+#                     contained in the specimen. If the specimen substance has multiple
+#                     components, all elements from each component must be included in
+#                     `atom_types`.
+#                     
+#                     The purpose of the field is to offer research data management systems an
+#                     opportunity to parse the relevant elements without having to interpret
+#                     these from the resources pointed to by identifier_parent or walk through
+#                     eventually deeply nested groups in data instances.
+#                 </doc>
+#             </field>
+#         </group>
 #         <group type="NXcite" minOccurs="0" maxOccurs="unbounded"/>
 #         <!--a place where to add citations for your work ...-->
-#         <group type="NXcoordinate_system_set">
-#             <group name="diffraction_space" type="NXcoordinate_system"/>
-#             <group type="NXcoordinate_system" minOccurs="0" maxOccurs="unbounded"/>
-#         </group>
-#         <!--a place where you can describe your coordinate system conventions
-# hook-in NXem, alternatively inherit from NXem and just add
-# add an actuator(NXactuator):
-# doc: |
-# DENSsolution heating chip.
-# physical_quantity(NX_CHAR):
-# enumeration: [temperature]
-# event_data for the actual sensor data
-# alternatively-->
-#         <group name="diffraction" type="NXsource">
+#         <group name="diffraction_space" type="NXcoordinate_system" optional="true"/>
+#         <group name="diffraction" type="NXnote">
 #             <doc>
-#                 Reference to the resource which stores acquired pattern from the experiment.
+#                 Reference to the resource which stores acquired pattern from the
+#                 experiment or simulation that are analyzed in this workflow.
 #                 
-#                 Can refer to the original EMD or MRC files or the parsed NXem in RDM e.g. NOMAD OASIS.
+#                 Can refer to the original EMD or MRC files or the parsed NXem
+#                 in RDM e.g. NOMAD OASIS.
 #             </doc>
-#             <field name="type" type="NX_CHAR"/>
-#             <field name="path" type="NX_CHAR"/>
+#             <field name="file_name" type="NX_CHAR"/>
 #             <field name="checksum" type="NX_CHAR"/>
 #             <field name="algorithm" type="NX_CHAR"/>
 #         </group>
@@ -376,166 +379,151 @@ NXem_calorimetry(NXobject):
 #             <doc>
 #                 Reference to the resource which stores actuator log file from the experiment.
 #             </doc>
-#             <field name="type" type="NX_CHAR"/>
-#             <field name="identifier" type="NX_CHAR"/>
+#             <field name="file_name" type="NX_CHAR"/>
 #             <field name="checksum" type="NX_CHAR"/>
 #             <field name="algorithm" type="NX_CHAR"/>
 #         </group>
-#         <group name="time_synchronization" type="NXprocess">
+#         <group name="config" type="NXnote">
 #             <doc>
-#                 Assumptions and computations whereby timestamp data from the
-#                 detector used for collecting diffraction pattern and the actuator
-#                 (heating chip) were synchronized.
+#                 Configuration file that was used for parameterizing this analysis workflow.
+#             </doc>
+#             <field name="file_name" type="NX_CHAR"/>
+#             <field name="checksum" type="NX_CHAR"/>
+#             <field name="algorithm" type="NX_CHAR"/>
+#         </group>
+#         <group name="synchronization" type="NXprocess">
+#             <doc>
+#                 Assumptions and computations whereby timestamping data from
+#                 the detector and actuator (e.g. heating chip) were synchronized.
 #             </doc>
 #             <field name="sequence_index" type="NX_POSINT"/>
+#             <field name="start_time" type="NX_DATE_TIME">
+#                 <doc>
+#                     ISO8601 with local time zone reference timestamp that tells
+#                     with which delta_time can be converted in timestamp.
+#                     The reference timestamp is defined as the time when the
+#                     actuator started acting on the sample.
+#                     
+#                     Time differences to this timestamp when correlated signals such
+#                     as diffraction pattern matching with a specific state of  the sample
+#                     (e.g. obtained temperature via the actuator) are reported through
+#                     delta_time.
+#                 </doc>
+#             </field>
 #             <field name="identifier_pattern" type="NX_UINT" units="NX_UNITLESS">
 #                 <dimensions rank="1">
 #                     <dim index="1" value="n_p"/>
 #                 </dimensions>
 #             </field>
-#             <field name="start_time" type="NX_DATE_TIME">
+#             <field name="delta_time" type="NX_FLOAT" units="NX_TIME">
 #                 <doc>
-#                     Timestamp when pattern acquisition started.
-#                 </doc>
-#                 <dimensions rank="1">
-#                     <dim index="1" value="n_p"/>
-#                 </dimensions>
-#             </field>
-#             <field name="end_time" type="NX_DATE_TIME">
-#                 <doc>
-#                     Timestamp when pattern acquisition ended.
+#                     Time difference to start_time.
+#                     
+#                     Collecting diffraction pattern also takes some time.
+#                     It is assumed that the acquisition time for each pattern is
+#                     substantial shorter than the time it takes the actuator to
+#                     cause a change in stimulus (e.g. temperature).
 #                 </doc>
 #                 <dimensions rank="1">
 #                     <dim index="1" value="n_p"/>
 #                 </dimensions>
 #             </field>
 #         </group>
-#         <!--alternatively only timestamp-->
+#         <!--timestamp(NX_DATE_TIME):
+#   exists: optional
+#   doc: |
+#     Timestamp that is used for each diffraction pattern to correlate the results
+#     obtained from that pattern with associated actuator data.
+#     ISO8601 with local time zone information if possible and as precise as practically
+#     possible. The indices follow the same order as
+#     used for identifier_pattern.
+#   dim: (n_p,)-->
 #         <group name="pattern_center" type="NXprocess">
+#             <doc>
+#                 Computation of the centre for each pattern using e.g. a Circular Hough
+#                 Transformation.
+#             </doc>
 #             <field name="sequence_index" type="NX_POSINT"/>
-#             <group name="config" type="NXcollection"/>
-#             <group name="result" type="NXcg_point_set">
-#                 <!--depends_on(NX_CHAR):
-# doc: |
-# Hint to help resolve in which coordinate system position values are defined.-->
-#                 <field name="position" type="NX_NUMBER" units="NX_LENGTH">
-#                     <dimensions rank="2">
-#                         <dim index="1" value="n_p"/>
-#                         <dim index="2" value="2"/>
-#                     </dimensions>
-#                 </field>
-#             </group>
+#             <!--NXcg_point-->
+#             <field name="position" type="NX_FLOAT" units="NX_LENGTH">
+#                 <doc>
+#                     Computed centre for each pattern.
+#                 </doc>
+#                 <dimensions rank="2">
+#                     <dim index="1" value="n_p"/>
+#                     <dim index="2" value="2"/>
+#                 </dimensions>
+#             </field>
 #         </group>
 #         <!--\@units: 1/nm-->
 #         <group name="distortion_correction" type="NXprocess" optional="true">
-#             <field name="sequence_index" type="NX_POSINT"/>
-#             <group name="programID" type="NXprogram" nameType="partial" optional="true">
-#                 <field name="program" type="NX_CHAR">
-#                     <attribute name="version" type="NX_CHAR"/>
-#                 </field>
-#             </group>
-#             <group name="config" type="NXcollection"/>
-#             <group name="result" type="NXcg_ellipsoid_set">
-#                 <!--depends_on(NX_CHAR):-->
-#                 <field name="center" type="NX_NUMBER" units="NX_LENGTH">
-#                     <dimensions rank="2">
-#                         <dim index="1" value="n_p"/>
-#                         <dim index="2" value="2"/>
-#                     </dimensions>
-#                 </field>
-#             </group>
-#         </group>
-#         <!--\@units: 1/nm-->
-#         <group name="azimuthal_integration" type="NXprocess">
-#             <!--no exists, i.e. assuming required-->
 #             <doc>
-#                 Acquired diffraction pattern azimuthally integrated as a function of time.
+#                 Elliptical distortion correction as a step when computing the centre for
+#                 patterns.
 #             </doc>
 #             <field name="sequence_index" type="NX_POSINT"/>
-#             <group name="programID" type="NXprogram" nameType="partial" optional="true">
-#                 <field name="program" type="NX_CHAR">
-#                     <attribute name="version" type="NX_CHAR"/>
-#                 </field>
-#             </group>
-#             <group name="config" type="NXcollection"/>
-#             <!--TODO integration parameter-->
-#             <group name="result" type="NXdata">
+#             <!--TODO config(NXcollection):
+# NXcg_ellipsoid-->
+#             <field name="center" type="NX_NUMBER" units="NX_LENGTH">
+#                 <doc>
+#                     Computed centre for each pattern.
+#                 </doc>
+#                 <dimensions rank="2">
+#                     <dim index="1" value="n_p"/>
+#                     <dim index="2" value="2"/>
+#                 </dimensions>
+#             </field>
+#         </group>
+#         <!--\@units: 1/nm-->
+#         <group name="integration" type="NXprocess">
+#             <doc>
+#                 Integrated diffraction pattern intensity as a function of radial distance from the centre
+#                 azimuthally integrated as a function of time.
+#             </doc>
+#             <field name="sequence_index" type="NX_POSINT"/>
+#             <!--TODO config(NXcollection):-->
+#             <group name="resultBACKGROUND" type="NXdata" nameType="partial" minOccurs="0" maxOccurs="2">
+#                 <doc>
+#                     The integrated intensities:
+#                     
+#                     * result_with_background
+#                     * result_without_background
+#                 </doc>
 #                 <attribute name="signal" type="NX_CHAR"/>
 #                 <attribute name="axes" type="NX_CHAR"/>
 #                 <attribute name="AXISNAME_indices" type="NX_CHAR" nameType="partial"/>
 #                 <field name="title" type="NX_CHAR"/>
 #                 <field name="intensity" type="NX_FLOAT" units="NX_UNITLESS">
+#                     <doc>
+#                         Integrated intensity as a function of time and the radial distance from the
+#                         pattern centre.
+#                     </doc>
 #                     <dimensions rank="2">
 #                         <dim index="1" value="n_p"/>
 #                         <dim index="2" value="n_f"/>
 #                     </dimensions>
 #                     <attribute name="long_name" type="NX_CHAR"/>
 #                 </field>
-#                 <field name="identifier_axis_pattern" type="NX_UINT" units="NX_UNITLESS">
-#                     <dimensions rank="1">
-#                         <dim index="1" value="n_p"/>
-#                     </dimensions>
-#                     <attribute name="long_name" type="NX_CHAR"/>
-#                 </field>
-#                 <field name="axis_s" type="NX_FLOAT" units="NX_ANY">
-#                     <dimensions rank="1">
-#                         <dim index="1" value="n_f"/>
-#                     </dimensions>
-#                     <!--\@units: 1/nm-->
-#                     <attribute name="long_name" type="NX_CHAR"/>
-#                 </field>
-#                 <field name="axis_time" type="NX_FLOAT" units="NX_TIME">
+#                 <field name="identifier_pattern" type="NX_UINT" optional="true" units="NX_UNITLESS">
 #                     <doc>
-#                         Time since start of the in-situ experiment
+#                         Identifier for each pattern.
 #                     </doc>
 #                     <dimensions rank="1">
 #                         <dim index="1" value="n_p"/>
 #                     </dimensions>
-#                 </field>
-#             </group>
-#         </group>
-#         <!--\@units: s-->
-#         <group name="background_subtraction" type="NXprocess" recommended="true">
-#             <field name="sequence_index" type="NX_POSINT"/>
-#             <group name="programID" type="NXprogram" nameType="partial">
-#                 <field name="program" type="NX_CHAR">
-#                     <attribute name="version" type="NX_CHAR"/>
-#                 </field>
-#             </group>
-#             <group name="config" type="NXcollection"/>
-#             <!--TODO integration parameter-->
-#             <group name="background" type="NXcollection"/>
-#             <!--TODO e.g. could add parameter of functional forms for the background of each pattern-->
-#             <group name="result" type="NXdata">
-#                 <doc>
-#                     Azimuthally integrated diffraction intensities corrected for background as a
-#                     function of time.
-#                 </doc>
-#                 <attribute name="signal" type="NX_CHAR"/>
-#                 <attribute name="axes" type="NX_CHAR"/>
-#                 <attribute name="AXISNAME_indices" type="NX_CHAR" nameType="partial"/>
-#                 <field name="title" type="NX_CHAR"/>
-#                 <field name="intensity" type="NX_FLOAT" units="NX_UNITLESS">
-#                     <dimensions rank="2">
-#                         <dim index="1" value="n_p"/>
-#                         <dim index="2" value="n_f"/>
-#                     </dimensions>
 #                     <attribute name="long_name" type="NX_CHAR"/>
 #                 </field>
-#                 <field name="identifier_axis_pattern" type="NX_UINT" units="NX_UNITLESS">
-#                     <dimensions rank="1">
-#                         <dim index="1" value="n_p"/>
-#                     </dimensions>
-#                     <attribute name="long_name" type="NX_CHAR"/>
-#                 </field>
-#                 <field name="axis_s" type="NX_FLOAT" units="NX_ANY">
+#                 <field name="s" type="NX_FLOAT" units="NX_ANY">
+#                     <doc>
+#                         Positions in reciprocal space.
+#                     </doc>
 #                     <dimensions rank="1">
 #                         <dim index="1" value="n_f"/>
 #                     </dimensions>
 #                     <!--\@units: 1/nm-->
 #                     <attribute name="long_name" type="NX_CHAR"/>
 #                 </field>
-#                 <field name="axis_time" type="NX_FLOAT" units="NX_TIME">
+#                 <field name="time" type="NX_FLOAT" units="NX_TIME">
 #                     <doc>
 #                         Time since start of the in-situ experiment
 #                     </doc>
@@ -546,20 +534,10 @@ NXem_calorimetry(NXobject):
 #             </group>
 #         </group>
 #         <!--\@units: s
-# peak_fitting(NXpeak_fitting):
-# exists: optional
-# doc: |
-# Background-corrected azimuthally integrated signals indexed for peaks.
+# TODO e.g. could add parameter of functional forms for the background of each pattern
 # more NXprocess groups could follow only sky is the limit and your imagination and time devotion-->
-#         <group name="profiling" type="NXcs_profiling" optional="true">
-#             <!--possible place to store details about performance, profiling, etc.-->
-#             <field name="current_working_directory" type="NX_CHAR" recommended="true"/>
-#             <field name="start_time" type="NX_DATE_TIME" recommended="true"/>
-#             <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
-#             <field name="total_elapsed_time" type="NX_NUMBER"/>
+#         <group name="background_subtraction" type="NXprocess" optional="true">
+#             <field name="sequence_index" type="NX_POSINT"/>
 #         </group>
 #     </group>
-#     <!--number_of_processes(NX_POSINT):
-# number_of_threads(NX_POSINT):
-# number_of_gpus(NX_POSINT):-->
 # </definition>

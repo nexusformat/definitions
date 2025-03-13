@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2022-2025 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2014-2025 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -37,20 +37,19 @@ https://doi.org/10.1017/9781316337455.022-->
     <doc>
         Base class for a corrector reducing (spherical) aberrations in electron microscopy.
         
-        Different technology partners use different naming schemes and
+        Different technology partners use different conventions and
         models for quantifying the aberration coefficients.
         
         The corrector in an electron microscope is composed of multiple lenses
-        and multipole stigmators with details specific for the technology partner
-        and microscope. Many of their technical details is proprietary knowledge.
+        and multipole stigmators with details that are specific for the technology partner
+        and microscope. Most technical details are proprietary knowledge.
         
-        If functionalities for correcting multiple aberrations are included in
-        one :ref:`NXcomponent` `like it is reported here &lt;https://www.ceos-gmbh.de/en/research/electrostat&gt;`_
-        use multiple groups:
+        If one component corrects for multiple types of aberrations (like it is the case reported
+        here `CEOS &lt;https://www.ceos-gmbh.de/en/research/electrostat&gt;`_) follow this design:
         
-        * :ref:`NXcorrector_cs` for spherical aberration
-        * :ref:`NXmonochromator` for energy filtering or chromatic aberration
-        * corrector_ax in :ref:`NXem` for axial astigmatism correction
+        * Use :ref:`NXcorrector_cs` for spherical aberration
+        * Use :ref:`NXmonochromator` for energy filtering or chromatic aberration
+        * Use the group corrector_ax in :ref:`NXem` for axial astigmatism aberration
     </doc>
     <!--user perspective-->
     <field name="applied" type="NX_BOOLEAN">
@@ -58,15 +57,13 @@ https://doi.org/10.1017/9781316337455.022-->
             Was the corrector used?
         </doc>
     </field>
-    <!--NEW ISSUE: clarify further mathematical details-->
-    <group name="tableauID" type="NXprocess" nameType="partial">
+    <group name="TABLEAU" type="NXprocess" nameType="any">
         <doc>
             Specific information about the alignment procedure that is a process during which
             the corrector is configured to enable calibrated usage of the instrument.
             
             This :ref:`NXprocess` group should also be used when one describes in a computer
-            simulation the specific details about the modelled or assumed aberration
-            corrections.
+            simulation the specific details about the modelled or assumed aberrations.
         </doc>
         <field name="description" type="NX_CHAR">
             <doc>
@@ -102,14 +99,15 @@ https://doi.org/10.1017/9781316337455.022-->
                 <dim index="1" value="n_img"/>
             </dimensions>
         </field>
-        <group type="NXimage_set">
+        <group type="NXimage">
             <doc>
-                The images taken during the alignment procedure.
+                Image(s) taken during the alignment procedure
             </doc>
         </group>
         <field name="model" type="NX_CHAR">
             <doc>
-                Place for storing measured or estimated aberrations (for each image or final).
+                Convention used for storing measured or estimated aberrations (for each image or final)
+                via fields c_1, a_1, c_1_0, c_1_2_a, and so on and so forth.
                 
                 See `S. J. Pennycock and P. D. Nellist &lt;https://doi.org/10.1007/978-1-4419-7200-2&gt;`_ (page 44ff, and page 118ff)
                 for different definitions available and further details. Table 7-2 of Ibid. publication (page 305ff) documents how
@@ -122,14 +120,10 @@ https://doi.org/10.1017/9781316337455.022-->
         </field>
         <!--specifically-named aberrations following the CEOS / Typke and Dierksen convention-->
         <group name="c_1" type="NXaberration"/>
-        <!--magnitude(NX_NUMBER):
-unit: NX_LENGTH-->
         <group name="a_1" type="NXaberration"/>
         <group name="b_2" type="NXaberration"/>
         <group name="a_2" type="NXaberration"/>
         <group name="c_3" type="NXaberration"/>
-        <!--magnitude(NX_NUMBER):
-unit: NX_LENGTH-->
         <group name="s_3" type="NXaberration"/>
         <group name="a_3" type="NXaberration"/>
         <!--based on feedback from Thilo Remmele the following aberrations could be measured
@@ -138,15 +132,11 @@ unit: NX_LENGTH-->
         <group name="d_4" type="NXaberration"/>
         <group name="a_4" type="NXaberration"/>
         <group name="c_5" type="NXaberration"/>
-        <!--magnitude(NX_NUMBER):
-unit: NX_LENGTH-->
         <group name="s_5" type="NXaberration"/>
         <group name="r_5" type="NXaberration"/>
         <group name="a_6" type="NXaberration"/>
         <!--specifically-named aberrations following the Nion convention-->
         <group name="c_1_0" type="NXaberration"/>
-        <!--magnitude(NX_NUMBER):
-unit: NX_LENGTH-->
         <group name="c_1_2_a" type="NXaberration"/>
         <group name="c_1_2_b" type="NXaberration"/>
         <group name="c_2_1_a" type="NXaberration"/>
@@ -154,8 +144,6 @@ unit: NX_LENGTH-->
         <group name="c_2_3_a" type="NXaberration"/>
         <group name="c_2_3_b" type="NXaberration"/>
         <group name="c_3_0" type="NXaberration"/>
-        <!--magnitude(NX_NUMBER):
-unit: NX_LENGTH-->
         <group name="c_3_2_a" type="NXaberration"/>
         <group name="c_3_2_b" type="NXaberration"/>
         <group name="c_3_4_a" type="NXaberration"/>
@@ -167,8 +155,6 @@ unit: NX_LENGTH-->
         <group name="c_4_5_a" type="NXaberration"/>
         <group name="c_4_5_b" type="NXaberration"/>
         <group name="c_5_0" type="NXaberration"/>
-        <!--magnitude(NX_NUMBER):
-unit: NX_LENGTH-->
         <group name="c_5_2_a" type="NXaberration"/>
         <group name="c_5_2_b" type="NXaberration"/>
         <group name="c_5_4_a" type="NXaberration"/>
@@ -217,5 +203,5 @@ parameter settings for the estimation oft the aberrations.
 technical design perspective-->
     <group type="NXlens_em"/>
     <group type="NXaperture"/>
-    <!--(NXdeflector):-->
+    <group type="NXdeflector"/>
 </definition>

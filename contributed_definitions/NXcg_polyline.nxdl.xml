@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2022-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_polyline" extends="NXcg_primitive" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="d">
+            <doc>
+                 The dimensionality, which has to be at least 1.
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 The cardinality of the set, i.e. the number of polylines.
+            </doc>
+        </symbol>
+        <!--n_unique: The number of unique vertices supporting the polyline.
+multiple vertices possible with the same point coordinates but different names.-->
+        <symbol name="n_v">
+            <doc>
+                 The number of vertices, supporting the polylines.
+            </doc>
+        </symbol>
+        <symbol name="n_total">
+            <doc>
+                 The total number of vertices traversed when visiting every polyline.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Computational geometry description of a set of polylines.
+         
+         Each polyline is built from a sequence of vertices (points with identifiers).
+         Each polyline must have a start and an end point.
+         The sequence describes the traversal along the polyline when
+         walking from the first to the last vertex.
+    </doc>
+    <field name="depends_on" type="NX_CHAR">
+        <doc>
+             Reference to an instance of :ref:`NXcg_point` which defines the
+             location of the vertices that are referred to in this
+             NXcg_polyline instance.
+        </doc>
+    </field>
+    <field name="number_of_unique_vertices" type="NX_POSINT" units="NX_UNITLESS">
+        <doc>
+             The total number of vertices that have different positions.
+        </doc>
+    </field>
+    <field name="number_of_total_vertices" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             The total number of vertices, irrespective of their eventual uniqueness.
+        </doc>
+    </field>
+    <field name="number_of_vertices" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             The total number of vertices of each polyline, irrespectively
+             whether vertices are shared by vertices or not.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <!--Users are encouraged to reduce the vertex set to the unique vertices.
+Unique means not necessarily unique in position only but also unique in
+identifier. In fact, it is possible to distinguish two vertices as two when
+they share the same position in space but have different identifiers.-->
+    <field name="vertices" type="NX_NUMBER" units="NX_ANY">
+        <doc>
+             Positions of the vertices which support the members of the polyline set.
+             
+             Users are encouraged to reduce the vertices to unique positions and vertices
+             as this often supports with storing geometry data more efficiently.
+             It is also possible though to store the vertex positions naively
+             in which case vertices_are_unique is likely False.
+             Naively, here means that one stores each vertex of a triangle mesh
+             even though many vertices are shared between triangles and thus
+             storing multiple copies of their positions is redundant.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="n_v"/>
+            <dim index="2" value="d"/>
+        </dimensions>
+    </field>
+    <field name="vertices_are_unique" type="NX_BOOLEAN">
+        <doc>
+             If true indicates that the vertices are all placed at different
+             positions and have different identifiers, i.e. no points overlap
+             or are counted several times.
+        </doc>
+    </field>
+    <field name="polylines" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Sequence of identifier for vertices how they build each polyline.
+             
+             A trivial example is a set with two polylines with three vertices each.
+             If the polylines meet at a vertex (assume for example that the second vertex
+             is shared and marking the junction between the two polylines), it is possible
+             that there are only five unique positions. This suggests to store five
+             unique vertices.
+             
+             A non-trivial example is a set with several polylines. Assume that each
+             has a different number of vertices. The array stores the identifier of
+             the vertices in the sequence how the polylines are visited:
+             
+             The first entry is the identifier of the first vertex of the first polyline,
+             followed by the second vertex of the first polyline, until the last vertex
+             of the first polyline.
+             Thereafter, the first vertex of the second polyline, and so on and so forth.
+             Using the (cumulated) counts in number_of_vertices (:math:`n^v_i`), 
+             the vertices of the N-th polyline can be accessed on the array
+             index interval :math:`[\sum_{i=0}^{i=N-1} n^v_i, \sum_{i=0}^{i=N} n^v_i]`.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="n_total"/>
+        </dimensions>
+    </field>
+</definition>

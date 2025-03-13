@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2022-2025 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2014-2025 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -21,46 +21,82 @@
 #
 # For further information, see http://www.nexusformat.org
 -->
-<!--symbols:
-  doc: The symbols used in the schema to specify e.g. variables.-->
-<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXebeam_column" extends="NXcomponent" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXebeam_column" extends="NXcomponent" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
     <doc>
-         Base class for a set of components providing a controllable electron beam.
+        Base class for a set of components providing a controllable electron beam.
+        
+        The idea behind defining NXebeam_column as an own base class vs. adding these
+        concepts in NXinstrument_em is that the electron beam generating component
+        might be worthwhile to use in other experiments also.
     </doc>
     <field name="operation_mode" type="NX_CHAR">
         <doc>
-             Typically tech-partner, microscope-, and control software-specific
-             name of the specific operation mode how the ebeam_column and its
-             components are controlled to achieve a specific illumination condition.
-             
-             In most cases users do not know, have to care, or are able to disentangle the
-             details of the spatiotemporal dynamics of the components of the microscope.
-             Instead, they rely on the assumption that the microscope and control software
-             work as expected. Selecting then a specific operation_mode assures some level
-             of reproducibility in the illumination conditions.
+            Tech-partner, microscope-, and control-software-specific name of the
+            specific operation mode how the ebeam_column and its components are controlled
+            to achieve specific illumination conditions.
+            
+            In many cases the users of an instrument do not or can not be expected to know
+            all intricate spatiotemporal dynamics of their hardware. Instead, they rely of
+            assumptions that the instrument, its control software, and components work as
+            expected to focus on their research questions.
+            
+            For these cases, having a place for documenting the operation_mode is useful
+            in as much as at least some constraints on how the illumination conditions were
+            get documented.
         </doc>
     </field>
-    <group type="NXfabrication"/>
-    <group type="NXchamber"/>
     <group name="electron_source" type="NXsource">
         <doc>
-             The source which creates the electron beam.
+            A physical part of an electron or ion microscope from which
+            the particles that form the beam are emitted.
+            
+            The hardware for an electron source in an electron microscope
+            may contain several components which affect the beam path.
+            
+            This concept is related to term `Source`_ of the EMglossary standard.
+            
+            .. _Source: https://purls.helmholtz-metadaten.de/emg/EMG_00000045
         </doc>
-        <field name="name" type="NX_CHAR">
-            <doc>
-                 Given name/alias.
-            </doc>
-        </field>
-        <group type="NXfabrication"/>
         <field name="voltage" type="NX_NUMBER" units="NX_VOLTAGE">
             <doc>
-                 Voltage relevant to compute the energy of the electrons
-                 immediately after they left the gun.
+                The potential difference between anode and cathode.
+                
+                This concept is related to term `Acceleration Voltage`_ of the EMglossary standard.
+                
+                .. _Acceleration Voltage: https://purls.helmholtz-metadaten.de/emg/EMG_00000004
+            </doc>
+        </field>
+        <field name="extraction_voltage" type="NX_NUMBER" units="NX_VOLTAGE">
+            <doc>
+                Voltage which is utilised to create an electric field that draws particles from
+                the source.
+                
+                This concept is related to term `Extraction Voltage`_ of the EMglossary standard.
+                
+                .. _Extraction Voltage: https://purls.helmholtz-metadaten.de/emg/EMG_00000025
+            </doc>
+        </field>
+        <field name="emission_current" type="NX_NUMBER" units="NX_CURRENT">
+            <doc>
+                Electrical current which is released from the source.
+                
+                This concept is related to term `Emission Current`_ of the EMglossary standard.
+                
+                .. _Emission Current: https://purls.helmholtz-metadaten.de/emg/EMG_00000025
+            </doc>
+        </field>
+        <field name="filament_current" type="NX_NUMBER" units="NX_CURRENT">
+            <doc>
+                Electrical current which flows through the source.
+                
+                This concept is related to term `Filament Current`_ of the EMglossary standard.
+                
+                .. _Filament Current: https://purls.helmholtz-metadaten.de/emg/EMG_00000027
             </doc>
         </field>
         <field name="probe" type="NX_CHAR">
             <doc>
-                 Type of radiation.
+                Type of radiation.
             </doc>
             <enumeration>
                 <item value="electron"/>
@@ -68,49 +104,131 @@
         </field>
         <field name="emitter_type" type="NX_CHAR">
             <doc>
-                 Emitter type used to create the beam.
-                 
-                 If the emitter type is other, give further details
-                 in the description field.
+                Emitter type used to create the beam.
+                
+                If the emitter type is other, give further details
+                in the description field.
             </doc>
         </field>
         <!--enumeration: [filament, schottky, cold_cathode_field_emitter, other]-->
         <field name="emitter_material" type="NX_CHAR">
             <doc>
-                 Material of which the emitter is build, e.g. the filament material.
+                Material of which the emitter is build, e.g. the filament material.
             </doc>
         </field>
-        <!--MK could be made an instance of NXsample-->
-        <field name="description" type="NX_CHAR">
+        <!--emitter material could inherit from NXsample-->
+        <field name="lifetime" type="NX_TIME">
             <doc>
-                 Ideally, a (globally) unique persistent identifier, link,
-                 or text to a resource which gives further details.
+                How long has the source been in operation.
             </doc>
         </field>
-        <!--NEW ISSUE: details about the life/up-time of the source
-relevant from maintenance point of view-->
-        <group type="NXtransformations">
-            <doc>
-                 Collection of axis-based translations and rotations to describe the
-                 location and geometry of the component in the instrument.
-            </doc>
-        </group>
     </group>
     <group type="NXlens_em"/>
     <group type="NXaperture"/>
-    <group type="NXmonochromator"/>
-    <group type="NXcorrector_cs"/>
+    <group type="NXdeflector"/>
+    <group type="NXmonochromator">
+        <doc>
+            Device to improve energy resolution or chromatic aberration.
+            
+            Examples are Wien, $\textalpha$-, or $\Omega$- energy filter or `cc corrector
+            like &lt;https://www.ceos-gmbh.de/en/basics/cc-corrector&gt;`_
+        </doc>
+        <!--control level perspective-->
+        <field name="type" type="NX_CHAR">
+            <doc>
+                Qualitative type of the component.
+            </doc>
+            <enumeration>
+                <item value="wien"/>
+                <item value="alfa"/>
+                <item value="omega"/>
+                <item value="castaing_henry"/>
+                <item value="gatan_imaging"/>
+                <item value="sector_analyzer"/>
+            </enumeration>
+        </field>
+        <group type="NXfabrication"/>
+        <field name="applied" type="NX_BOOLEAN">
+            <doc>
+                Was the corrector used?
+            </doc>
+        </field>
+        <!--technical level-->
+        <field name="dispersion" type="NX_NUMBER" units="NX_ANY">
+            <doc>
+                Energy dispersion in e.g. µm/eV.
+            </doc>
+        </field>
+        <field name="voltage" type="NX_NUMBER" units="NX_VOLTAGE">
+            <doc>
+                Corresponding voltage for that energy dispersion.
+            </doc>
+        </field>
+    </group>
+    <group name="corrector_cs" type="NXcorrector_cs"/>
+    <group name="corrector_ax" type="NXcomponent">
+        <doc>
+            Component that reshapes an ellipse-shaped electron beam into a circular one.
+            
+            * `L. Reimer 1998, Springer, 1998 &lt;https://dx.doi.org/10.1007/978-3-540-3896&gt;`_
+            * `M. Tanaka et al., Electron Microscopy Glossary, 2024 &lt;https://www.jeol.com/words/semterms/20201020.111014.php#gsc.tab=0&gt;`_
+            
+            Stigmator is an exact synonym.
+        </doc>
+        <field name="value_x" type="NX_NUMBER" units="NX_ANY">
+            <doc>
+                Descriptor for the correction strength along the first direction when exact technical details
+                are unknown or not directly controllable as the control software of the microscope does not
+                enable or was not configured to display these values for users.
+            </doc>
+        </field>
+        <field name="value_y" type="NX_NUMBER" units="NX_ANY">
+            <doc>
+                Descriptor for the correction strength along the second direction when exact technical details
+                are unknown or not directly controllable as the control software of the microscope does not
+                enable or was not configured to display these values for users.
+            </doc>
+        </field>
+    </group>
+    <group name="BIPRISM" type="NXcomponent" nameType="any">
+        <doc>
+            Electron biprism as it is used e.g. for electron holography.
+        </doc>
+        <group type="NXfabrication"/>
+    </group>
+    <group name="PHASEPLATE" type="NXcomponent" nameType="any">
+        <doc>
+            Device that causes a change in the phase of an electron wave.
+            
+            * `M. Malac et al. &lt;https://doi.org/10.1093/jmicro/dfaa070&gt;`_
+            * `R. R. Schröder et al. &lt;https://www.lem.kit.edu/152.php&gt;`_
+            
+        </doc>
+        <field name="type" type="NX_CHAR">
+            <doc>
+                Qualitative type
+            </doc>
+            <enumeration open="true">
+                <item value="thin_film"/>
+                <item value="electrostatic"/>
+            </enumeration>
+        </field>
+        <group type="NXfabrication"/>
+    </group>
     <group type="NXcomponent"/>
     <group type="NXsensor"/>
     <group type="NXactuator"/>
     <group type="NXbeam">
         <doc>
-             Individual characterization results for the position, shape,
-             and characteristics of the electron beam.
-             
-             :ref:`NXtransformations` should be used to specify the location
-             of the position at which the beam was probed.
+            Individual characterization results for the position, shape,
+            and characteristics of the electron beam at a given location.
+            
+            :ref:`NXtransformations` should be used to specify the location
+            or the position at which details about the beam were probed.
+            
+            This concept is related to term `Electron Beam`_ of the EMglossary standard.
+            
+            .. _Electron Beam: https://purls.helmholtz-metadaten.de/emg/EMG_00000021
         </doc>
     </group>
-    <group type="NXdeflector"/>
 </definition>

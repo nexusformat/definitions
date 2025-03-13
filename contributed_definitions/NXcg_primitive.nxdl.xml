@@ -1,0 +1,245 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
+<!--
+# NeXus - Neutron and X-ray Common Data Format
+#
+# Copyright (C) 2022-2024 NeXus International Advisory Committee (NIAC)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 3 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#
+# For further information, see http://www.nexusformat.org
+-->
+<definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXcg_primitive" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+    <symbols>
+        <doc>
+             The symbols used in the schema to specify e.g. dimensions of arrays.
+        </doc>
+        <symbol name="d">
+            <doc>
+                 The dimensionality of the embedding space.
+            </doc>
+        </symbol>
+        <symbol name="c">
+            <doc>
+                 The cardinality of the set, i.e. the number of members.
+            </doc>
+        </symbol>
+    </symbols>
+    <doc>
+         Computational geometry description of a set of primitives in Euclidean space.
+         
+         Primitives must neither be degenerated nor self-intersect.
+         Individual primitives can differ in their properties (e.g. size, shape, rotation).
+    </doc>
+    <field name="depends_on" type="NX_CHAR">
+        <doc>
+             Reference to an instance of :ref:`NXcoordinate_system` in which these primitives
+             are defined.
+        </doc>
+    </field>
+    <field name="dimensionality" type="NX_POSINT" units="NX_UNITLESS">
+        <doc>
+             The dimensionality of the primitive set with value up to d.
+        </doc>
+        <enumeration>
+            <!-- add when 1521 has been merged open="true"-->
+            <item value="1"/>
+            <item value="2"/>
+            <item value="3"/>
+        </enumeration>
+    </field>
+    <field name="cardinality" type="NX_POSINT" units="NX_UNITLESS">
+        <doc>
+             The cardinality of the primitive set. Value should be equal to c.
+        </doc>
+    </field>
+    <field name="identifier_offset" type="NX_INT" units="NX_UNITLESS">
+        <doc>
+             Integer offset whereby the identifier of the first member
+             of the set differs from zero.
+             
+             Identifiers can be defined either implicitly or explicitly.
+             For implicit indexing identifiers are defined on the interval
+             :math:`[identifier\_offset, identifier\_offset + c - 1]`.
+             
+             Therefore, implicit identifier are completely defined by the value of
+             identifier_offset and cardinality. For example if identifier run from
+             -2 to 3 the value for identifier_offset is -2.
+             
+             For explicit indexing the field identifier has to be used.
+             Fortran-/Matlab- and C-/Python-style indexing have specific implicit
+             identifier conventions where identifier_offset is 1 and 0 respectively.
+        </doc>
+    </field>
+    <field name="identifier" type="NX_INT">
+        <doc>
+             Identifier of each member for explicit indexing.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="center" type="NX_NUMBER" units="NX_ANY">
+        <doc>
+             The center of each primitive
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="c"/>
+            <dim index="2" value="d"/>
+        </dimensions>
+    </field>
+    <field name="is_center_of_mass" type="NX_BOOLEAN">
+        <doc>
+             True if the center is a center of mass.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="shape" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Shape of each primitive
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="c"/>
+            <dim index="2" value="d"/>
+        </dimensions>
+    </field>
+    <field name="length" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Length of each primitive
+             
+             Often the term is associated with the assumption that one
+             edge is parallel to an axis of the coordinate system.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="width" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Width of each primitive
+             
+             Often the term is associated with the assumption that one
+             edge is parallel to an axis of the coordinate system.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="height" type="NX_NUMBER" units="NX_LENGTH">
+        <doc>
+             Height of each primitive
+             
+             Often the term is associated with the assumption that one
+             edge is parallel to an axis of the coordinate system.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="is_closed" type="NX_BOOLEAN">
+        <doc>
+             True if primitive is closed such that it has properties like area or volume.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="volume" type="NX_NUMBER" units="NX_ANY">
+        <doc>
+             Volume of each primitive.
+             
+             Set to NaN if does not apply for primitives for which is_closed is False.
+             Volume is an N-D concept for values of dimensionality larger than 1,
+             Area is an alias for the two-dimensional case.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="area" type="NX_NUMBER" units="NX_AREA">
+        <doc>
+             Alias for surface_area of each primitive.
+             
+             Set to NaN if does not apply for primitives for which is_closed is False.
+        </doc>
+        <dimensions rank="1">
+            <dim index="1" value="c"/>
+        </dimensions>
+    </field>
+    <field name="orientation" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+        <doc>
+             Direction unit vector which points along the
+             longest principal axis of each primitive.
+             
+             Use the depends_on attribute to specify in which coordinate system
+             these direction unit vectors are defined.
+        </doc>
+        <dimensions rank="2">
+            <dim index="1" value="c"/>
+            <dim index="2" value="d"/>
+        </dimensions>
+    </field>
+    <field name="is_mesh" type="NX_BOOLEAN">
+      <doc>
+        Do the primitives define a mesh.
+      </doc>
+    </field>
+    <field name="is_triangle_mesh" type="NX_BOOLEAN">
+      <doc>
+        Do the primitives define a triangle mesh or not.
+      </doc>
+    </field>
+    <field name="is_surface_mesh" type="NX_BOOLEAN">
+      <doc>
+        Do the primitives discretize the surface of an object or not.
+      </doc>
+    </field>
+    <field name="is_geodesic_mesh" type="NX_BOOLEAN">
+      <doc>
+         Do the primitives define a geodesic mesh or not.
+         
+         A geodesic surface mesh is a triangulated surface mesh with metadata which
+         can be used as an approximation to describe the surface of a sphere.
+         Triangulation of spheres are commonly used in Materials Science
+         for quantifying texture of materials, i.e. the relative rotation of
+         crystals to sample directions.
+         
+         For additional details or an introduction into the topic of geodesic meshes
+         see (from which specifically the section on subdivision schemes is relevant).
+         
+         * `E. S. Popko and C. J. Kitrick &lt;https://doi.org/10.1201/9781003134114&gt;`_
+         
+         Earth scientists have specific demands and different views about what should
+         be included in such a base class, given that nested geodesic meshes are a key
+         component of climate modelling software. For now we propose to use this
+         base class as a container for organizing data related to geodesic meshes.
+         
+         Specifically an instance of this base class should detail the rule set how
+         e.g. a geodesic (surface) mesh was instantiated as there are many
+         possibilities to do so.
+       </doc>
+    </field>
+    <field name="description">
+      <doc>
+        Possibility to store details such as when primitives form a (specific) type
+        of mesh such as geodesic meshes.
+      </doc>
+    </field>
+    <group name="vertex_normal" type="NXcg_unit_normal"/>
+    <group name="edge_normal" type="NXcg_unit_normal"/>
+    <group name="face_normal" type="NXcg_unit_normal"/>
+</definition>

@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2025-2024 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -33,6 +33,11 @@
                 Number of Bunge-Euler angle triplets for recrystallization nuclei.
             </doc>
         </symbol>
+        <symbol name="n_ori">
+            <doc>
+                Number of texture components to analyze.
+            </doc>
+        </symbol>
         <symbol name="n_drag">
             <doc>
                 Number of support points for the linearized drag profile.
@@ -59,6 +64,11 @@
                 Number of solitary unit domains to export.
             </doc>
         </symbol>
+        <symbol name="d">
+            <doc>
+                Dimensionality of the simulation.
+            </doc>
+        </symbol>
     </symbols>
     <doc>
         Application definition to configure a simulation with the SCORE model.
@@ -72,63 +82,115 @@
                 <item value="NXmicrostructure_score_config"/>
             </enumeration>
         </field>
-        <field name="simulation_identifier" type="NX_UINT">
+        <field name="identifier_simulation" type="NX_UINT">
             <doc>
-                Simulation ID as an alias to refer to this simulation.
+                An alias to refer to this simulation.
             </doc>
         </field>
-        <field name="description" type="NX_CHAR">
+        <field name="description" type="NX_CHAR" optional="true">
             <doc>
                 Discouraged free-text field to add further details to the computation.
             </doc>
         </field>
-        <field name="start_time" type="NX_DATE_TIME"/>
-        <field name="end_time" type="NX_DATE_TIME" recommended="true"/>
+        <field name="start_time" type="NX_DATE_TIME">
+            <doc>
+                ISO 8601 time code with local time zone offset to UTC information
+                included when the configuration file was created.
+            </doc>
+        </field>
+        <!--end_time(NX_DATE_TIME):
+  exists: optional-->
         <group name="profiling" type="NXcs_profiling" optional="true"/>
         <group type="NXuser" minOccurs="0" maxOccurs="unbounded"/>
-        <group name="program1" type="NXprogram">
-            <field name="program_name">
-                <attribute name="version"/>
-                <attribute name="url" recommended="true"/>
+        <group name="sample" type="NXsample" recommended="true">
+            <field name="dimensionality" type="NX_UINT">
+                <doc>
+                    Dimensionality of the simulation.
+                </doc>
+                <enumeration>
+                    <item value="3"/>
+                </enumeration>
+            </field>
+            <field name="type" type="NX_CHAR">
+                <doc>
+                    A qualifier whether the sample is a real one or a virtual one.
+                </doc>
+                <enumeration>
+                    <item value="experiment"/>
+                    <item value="simulation"/>
+                </enumeration>
+            </field>
+            <field name="atom_types" type="NX_CHAR">
+                <doc>
+                    List of comma-separated elements from the periodic table that are
+                    contained in the specimen. If the specimen substance has multiple
+                    components, all elements from each component must be included in
+                    `atom_types`.
+                    
+                    The purpose of the field is to offer research data management systems an
+                    opportunity to parse the relevant elements without having to interpret
+                    these from the resources pointed to by identifier_parent or walk through
+                    eventually deeply nested groups in data instances.
+                </doc>
             </field>
         </group>
-        <group name="environment" type="NXobject" optional="true">
+        <group name="program1" type="NXprogram" recommended="true">
+            <doc>
+                Name of the program whereby this config file was created.
+            </doc>
+            <field name="program" type="NX_CHAR">
+                <attribute name="version" type="NX_CHAR"/>
+            </field>
+        </group>
+        <group name="environment" type="NXobject" recommended="true">
             <doc>
                 Programs and libraries representing the computational environment
             </doc>
-            <group name="programID" type="NXprogram" nameType="partial" minOccurs="1" maxOccurs="unbounded">
+            <group type="NXprogram" minOccurs="1" maxOccurs="unbounded">
                 <field name="program" type="NX_CHAR">
                     <attribute name="version" type="NX_CHAR"/>
                 </field>
             </group>
         </group>
-        <group name="discretization" type="NXmicrostructure">
+        <group name="material" type="NXobject">
             <doc>
-                Relevant data to instantiate a starting configuration that is typically
-                a microstructure in deformed conditions where stored (elastic) energy
-                is stored in the form of crystal defects, which in the SCORE model are
-                is considered as mean-field dislocation content.
+                (Mechanical) properties of the material which scale the
+                amount of stored (elastic) energy in the system and
+                thus mainly affect recrystallization kinetics.
             </doc>
-            <group name="grid" type="NXcg_grid">
-                <field name="extent" type="NX_UINT">
-                    <doc>
-                        Extend of each CA domain in voxel along the x, y, and z direction.
-                        Deformation of sheet material is assumed.
-                        The x axis is assumed pointing along the rolling direction.
-                        The y axis is assumed pointing along the transverse direction.
-                        The z axis is assumed pointing along the normal direction.
-                    </doc>
-                </field>
-                <field name="cell_dimensions" type="NX_NUMBER"/>
-            </group>
+            <field name="shear_modulus" type="NX_FLOAT" units="NX_PRESSURE">
+                <doc>
+                    Reference shear modulus at zero Kelvin.
+                </doc>
+            </field>
+            <field name="burgers_vector" type="NX_FLOAT" units="NX_LENGTH">
+                <doc>
+                    Magnitude of the Burgers vector at zero Kelvin.
+                </doc>
+            </field>
+            <!--firstOrderdG0dT
+alloyConstantThermalExpCoeff
+FirstOrderThermalExpCoeff
+SecondOrderThermalExpCoeff-->
+            <field name="melting_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
+                <doc>
+                    Melting temperature
+                </doc>
+            </field>
         </group>
         <group name="deformation" type="NXobject">
             <doc>
-                Details how the deformed grains should be modelled.
+                Details about the geometry and properties of the polycrystal that represents the
+                starting configuration (typically a deformed microstructure) for the simulation.
             </doc>
-            <field name="model">
+            <field name="model" type="NX_CHAR">
                 <doc>
                     Which model should be used to generate a starting microstructure.
+                    
+                    * cuboidal, a regular array of equally shaped cuboidal grains
+                    * poisson_voronoi, a discretized poisson voronoi
+                    * ebsd, a microstructure synthesized based on a simulated or measured EBSD orientation map
+                    * damask, the result of a simulation from `DAMASK &lt;https://damask-multiphysics.org&gt;`_.
                 </doc>
                 <enumeration>
                     <item value="cuboidal"/>
@@ -138,9 +200,10 @@
                 </enumeration>
             </field>
             <field name="extent" type="NX_FLOAT" units="NX_LENGTH">
+                <!--an example why a conditional exists statement is necessary to add in NeXus-->
                 <doc>
                     Extent of each deformed grain in voxel along the
-                    x, y, and z direction when type is cuboidal.
+                    x, y, and z direction when model is cuboidal.
                 </doc>
                 <dimensions rank="1">
                     <dim index="1" value="3"/>
@@ -148,59 +211,95 @@
             </field>
             <field name="diameter" type="NX_FLOAT" units="NX_LENGTH">
                 <doc>
-                    Average spherical diameter when type is poisson_voronoi.
+                    Average spherical diameter when model is poisson_voronoi.
                 </doc>
             </field>
-            <field name="bunge_euler" type="NX_FLOAT" optional="true" units="NX_ANGLE">
+            <group name="ensemble" type="NXobject" optional="true">
                 <doc>
-                    Set of Bunge-Euler angles ( :math:`\varphi_1`, :math:`\Phi`, :math:`\varphi_2` )
-                    to sample orientations of deformed grains randomly from.
+                    Settings for instantiating properties of deformed grains when model is cuboidal
+                    or poisson.
                 </doc>
-                <dimensions rank="2">
-                    <dim index="1" value="n_dg_ori"/>
-                    <dim index="2" value="3"/>
-                </dimensions>
-            </field>
-            <group name="ebsd" type="NXnote" optional="true">
-                <doc>
-                    The EBSD dataset from which the initial microstructure is
-                    instantiated if model is ebsd.
-                </doc>
-                <field name="type"/>
-                <field name="identifier"/>
-                <field name="algorithm"/>
-                <field name="checksum"/>
-                <field name="stepsize" type="NX_FLOAT" units="NX_LENGTH">
+                <field name="bunge_euler" type="NX_FLOAT" units="NX_ANGLE">
                     <doc>
-                        Extent of the pixel of the EBSD orientation mapping assuming square-shaped
-                        pixels.
+                        Set of Bunge-Euler orientations (:math:`\varphi_1`, :math:`\Phi`, :math:`\varphi_2` )
+                        out of which the orientations of deformed grains are sampled.
                     </doc>
-                    <dimensions rank="1">
-                        <dim index="1" value="2"/>
+                    <dimensions rank="2">
+                        <dim index="1" value="n_dg_ori"/>
+                        <dim index="2" value="3"/>
                     </dimensions>
                 </field>
+                <field name="stored_energy" type="NX_FLOAT" units="NX_ANY">
+                    <doc>
+                        Set of stored elastic energy quantified as a dislocation density which is assigned
+                        to deformed grains with orientations from bunge_euler with index queries matching
+                        for the bunge_euler and stored_energy fields.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_dg_ori"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="ebsd" type="NXnote" optional="true">
+                <doc>
+                    Settings for instantiating properties of deformed grains from an
+                    EBSD orientation map when model is cuboidal or poisson.
+                </doc>
+                <field name="file_name" type="NX_CHAR"/>
+                <field name="algorithm" type="NX_CHAR">
+                    <enumeration>
+                        <item value="sha256"/>
+                    </enumeration>
+                </field>
+                <field name="checksum" type="NX_CHAR"/>
+                <field name="stepsize" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                        Extent of the pixel of the EBSD orientation mapping assuming square-shaped pixels
+                        or cube-shaped voxels respectively.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="d"/>
+                    </dimensions>
+                </field>
+            </group>
+            <group name="damask" type="NXnote" optional="true">
+                <doc>
+                    Settings for instantiating properties of deformed grains and nuclei when model
+                    is damask.
+                </doc>
+                <field name="file_name" type="NX_CHAR">
+                    <doc>
+                        Name of the DREAM.3D HDF5 file that was instantiated from the
+                        a previously performed DAMASK simulation.
+                    </doc>
+                </field>
+                <field name="algorithm" type="NX_CHAR">
+                    <enumeration>
+                        <item value="sha256"/>
+                    </enumeration>
+                </field>
+                <field name="checksum" type="NX_CHAR"/>
             </group>
         </group>
         <group name="nucleation" type="NXobject">
             <doc>
                 Phenomenological model according to which recrystallization nuclei
-                are placed into the domain and assumed growing.
+                are placed into the domain whose growth is studied with the simulation.
             </doc>
-            <field name="spatial_distribution">
+            <field name="spatial_distribution" type="NX_CHAR">
                 <doc>
                     According to which model will the nuclei become distributed spatially:
                     
-                    * csr, complete spatial randomness.
-                    * custom, implementation specific.
+                    * csr, complete spatial randomness
+                    * custom, implementation-specific
                     * gb, nuclei placed at grain boundaries
                 </doc>
                 <enumeration>
                     <item value="csr"/>
-                    <item value="custom"/>
-                    <item value="gb"/>
+                    <item value="damask"/>
                 </enumeration>
             </field>
-            <field name="incubation_time">
+            <field name="incubation_time" type="NX_CHAR">
                 <doc>
                     According to which model will the nuclei start to grow.
                 </doc>
@@ -208,58 +307,53 @@
                     <item value="site_saturation"/>
                 </enumeration>
             </field>
-            <field name="orientation">
+            <field name="orientation" type="NX_CHAR">
                 <doc>
-                    According to which model will the nuclei get their orientation assigned.
+                    According to which model will the nuclei get their orientation assigned:
+                    
+                    * ensemble, picking randomly one from ensemble/bunge_euler
+                    * random, picking randomly on the SO3
+                    * damask, picking based on information provided in deformation/damask
                 </doc>
                 <enumeration>
-                    <item value="sample_from_nucleus_euler"/>
+                    <item value="ensemble"/>
+                    <item value="random"/>
+                    <item value="damask"/>
                 </enumeration>
             </field>
-            <field name="bunge_euler" type="NX_FLOAT" units="NX_ANGLE">
+            <group name="ensemble" type="NXobject">
+                <!--required unless custom nucleation model-->
                 <doc>
-                    Set of Bunge-Euler angles ( :math:`\varphi_1`, :math:`\Phi`, :math:`\varphi_2` )
-                    to sample orientations of nuclei randomly from.
+                    Settings for instantiating properties of nuclei for recrystallizing grains.
                 </doc>
-                <dimensions rank="2">
-                    <dim index="1" value="n_rx_ori"/>
-                    <dim index="2" value="3"/>
-                </dimensions>
-            </field>
-        </group>
-        <group name="material_properties" type="NXobject">
-            <doc>
-                (Mechanical) properties of the material which scale
-                the amount of stored (elastic) energy in the system and
-                thus mainly affect recrystallization kinetics.
-            </doc>
-            <field name="reference_shear_modulus" type="NX_FLOAT" units="NX_PRESSURE">
-                <doc>
-                    Shear modulus at zero Kelvin.
-                </doc>
-            </field>
-            <field name="reference_burgers_magnitude" type="NX_FLOAT" units="NX_LENGTH">
-                <doc>
-                    Magnitude at the Burgers vector at zero Kelvin.
-                </doc>
-            </field>
-            <!--firstOrderdG0dT
-alloyConstantThermalExpCoeff
-FirstOrderThermalExpCoeff
-SecondOrderThermalExpCoeff-->
-            <field name="melting_temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
-                <doc>
-                    Melting temperature in degrees Celsius.
-                </doc>
-            </field>
+                <field name="bunge_euler" type="NX_FLOAT" units="NX_ANGLE">
+                    <doc>
+                        Set of Bunge-Euler orientations (:math:`\varphi_1`, :math:`\Phi`, :math:`\varphi_2` )
+                        out of which the orientations of nuclei/recrystallized grains are sampled.
+                    </doc>
+                    <dimensions rank="2">
+                        <dim index="1" value="n_rx_ori"/>
+                        <dim index="2" value="3"/>
+                    </dimensions>
+                </field>
+                <field name="incubation_time" type="NX_FLOAT" units="NX_TIME">
+                    <doc>
+                        Incubation time which is assigned to deformed grains with orientations from bunge_euler
+                        with index queries matching for the bunge_euler and stored_energy fields.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_rx_ori"/>
+                    </dimensions>
+                </field>
+            </group>
         </group>
         <group name="grain_boundary_mobility" type="NXobject">
             <doc>
                 Model for the assumed mobility of grain boundaries with different disorientation
-                essentially implementing variations of Turnbull's model for
-                thermally-activated migration.
+                implemented as parameterized Turnbull's model for thermally-activated
+                grain boundary migration.
             </doc>
-            <field name="model">
+            <field name="model" type="NX_CHAR">
                 <doc>
                     Which type of fundamental model for the grain boundary mobility.
                     
@@ -277,12 +371,14 @@ TODO: add equation for the Rollett-Holm model the following equation-->
                 <doc>
                     Parameter of the Sebald-Gottstein migration model.
                 </doc>
-                <field name="lagb_to_hagb_cut" type="NX_FLOAT" units="NX_ANGLE">
-                    <doc>
-                        At which disorientation angle are grain boundary considered as high-angle grain
-                        boundaries.
-                    </doc>
-                </field>
+                <!--constant low value up to lagb_to_hagb_cut
+constant plateau beyond
+single peak function for particular disorientation
+lagb_to_hagb_cut(NX_FLOAT):
+  exists: optional
+  doc: |
+    At which disorientation angle are grain boundary considered as high-angle grain boundaries.
+  unit: NX_ANGLE-->
                 <field name="lagb_pre_factor" type="NX_FLOAT" units="NX_ANY">
                     <doc>
                         Pre-exponential factor for low-angle grain boundaries.
@@ -305,12 +401,16 @@ TODO: add equation for the Rollett-Holm model the following equation-->
                 </field>
                 <field name="special_pre_factor" type="NX_FLOAT" units="NX_ANY">
                     <doc>
-                        Pre-exponential factor for particularly mobile boundaries.
+                        Pre-exponential factor for high-angle grain boundaries which in
+                        bicrystal or other tailored experiments showed a particular high
+                        mobility.
                     </doc>
                 </field>
                 <field name="special_enthalpy" type="NX_FLOAT" units="NX_ANY">
                     <doc>
-                        Migration activation enthalpy for particularly mobile boundaries.
+                        Migration activation enthalpy for high-angle grain boundaries which in
+                        bicrystal or other tailored experiments showed a particular high
+                        mobility.
                     </doc>
                 </field>
             </group>
@@ -319,23 +419,27 @@ TODO: add equation for the Rollett-Holm model the following equation-->
                     Parameter of the Rollett-Holm migration model.
                 </doc>
                 <!--For rollett_holm :math:`m(\Theta) = m_0 \cdot (1 - c_1 * exp(-c_2 \cdot \frac{\Theta}{15}^{c_3}))`.-->
-                <field name="m_null" type="NX_FLOAT" units="NX_ANY">
+                <field name="pre_factor" type="NX_FLOAT" units="NX_ANY">
                     <doc>
-                        The assumed mobility :math:`m_0` of the fastest grain boundary in the system at the assumed
-                        temperature. GraGLeS was developed for modelling isothermal annealing.
+                        Pre-exponential factor for the fastest grain boundary in the system.
                     </doc>
                 </field>
-                <field name="c_one" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                <field name="enthalpy" type="NX_FLOAT" units="NX_ANY">
                     <doc>
-                        Mobility scaling factor :math:`c_1`. Typically 0.99 or higher but not one.
+                        Migration activation enthalpy for the fastest grain boundary in the system.
                     </doc>
                 </field>
-                <field name="c_two" type="NX_FLOAT" units="NX_UNITLESS">
+                <field name="c1" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                    <doc>
+                        Mobility scaling factor :math:`c_1`. Typically 0.99 or higher but not 1.
+                    </doc>
+                </field>
+                <field name="c2" type="NX_FLOAT" units="NX_UNITLESS">
                     <doc>
                         Mobility scaling factor :math:`c_2`. Typically 5.
                     </doc>
                 </field>
-                <field name="c_three" type="NX_FLOAT" units="NX_UNITLESS">
+                <field name="c3" type="NX_FLOAT" units="NX_UNITLESS">
                     <doc>
                         Mobility scaling factor :math:`c_3`. Typically 9.
                     </doc>
@@ -344,9 +448,9 @@ TODO: add equation for the Rollett-Holm model the following equation-->
         </group>
         <group name="stored_energy_recovery" type="NXobject">
             <doc>
-                Time-dependent reduction of the stored (elastic) energy to account for recovery.
+                Time-dependent reduction of the stored energy to account for recovery effects.
             </doc>
-            <field name="model">
+            <field name="model" type="NX_CHAR">
                 <doc>
                     Which type of recovery model.
                 </doc>
@@ -358,9 +462,10 @@ TODO: add equation for the Rollett-Holm model the following equation-->
         <group name="dispersoid_drag" type="NXobject">
             <doc>
                 Reduction of the grain boundary migration speed due to the presence of dispersoids
-                through which the total grain boundary area of the recrystallization front can be reduced.
+                through which the total grain boundary area of the recrystallization front can be reduced
+                while the boundary is arrested at the dispersoids.
             </doc>
-            <field name="model">
+            <field name="model" type="NX_CHAR">
                 <doc>
                     Which type of drag model.
                 </doc>
@@ -369,44 +474,95 @@ TODO: add equation for the Rollett-Holm model the following equation-->
                     <item value="zener_smith"/>
                 </enumeration>
             </field>
-            <group name="zener_smith" type="NXobject" optional="true">
+            <group name="zener_smith" type="NXobject">
+                <!--required when model is zener_smith-->
                 <doc>
-                    Parameter of the Zener-Smith drag model.
+                    Parameter of the Zener-Smith drag model when model is zener_smith.
                 </doc>
-                <field name="pre_factor" type="NX_FLOAT">
+                <field name="pre_factor" type="NX_FLOAT" units="NX_UNITLESS">
                     <doc>
                         Configuration-dependent constant which factorizes the drag pressure.
                     </doc>
                 </field>
-                <field name="surface_energy" type="NX_FLOAT">
+                <field name="surface_energy" type="NX_FLOAT" units="NX_ANY">
                     <doc>
                         Average surface energy of the grain-boundary-dispersoid-surface configuration
                         which factorizes the drag pressure.
                     </doc>
                 </field>
-                <field name="time" type="NX_FLOAT" units="NX_TIME">
+                <group name="radius_evolution" type="NXdata">
+                    <!--required when model is zener_smith
+decorators to make the config file immediately useful
+like showing a r(t) plot-->
                     <doc>
-                        Support point of the linearized curve of simulated time matching
-                        a specific support point of the average dispersoid radius.
+                        Assumed dispersoid mean radius-time profile
                     </doc>
-                    <dimensions rank="1">
-                        <dim index="1" value="n_drag"/>
-                    </dimensions>
-                </field>
-                <field name="radius" type="NX_FLOAT" units="NX_LENGTH">
-                    <doc>
-                        Support point of the linearized curve of the average dispersoid radius.
-                    </doc>
-                    <dimensions rank="1">
-                        <dim index="1" value="n_drag"/>
-                    </dimensions>
-                </field>
+                    <attribute name="signal" type="NX_CHAR"/>
+                    <attribute name="axes" type="NX_CHAR"/>
+                    <attribute name="time_indices" type="NX_UINT"/>
+                    <attribute name="radius_indices" type="NX_UINT"/>
+                    <field name="title" type="NX_CHAR"/>
+                    <field name="time" type="NX_FLOAT" units="NX_TIME">
+                        <doc>
+                            Support point of the linearized curve of simulated time matching
+                            a specific support point of the average dispersoid radius.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_drag"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR"/>
+                    </field>
+                    <field name="radius" type="NX_FLOAT" units="NX_LENGTH">
+                        <doc>
+                            Support point of the linearized curve of the average dispersoid radius.
+                        </doc>
+                        <dimensions rank="1">
+                            <dim index="1" value="n_drag"/>
+                        </dimensions>
+                        <attribute name="long_name" type="NX_CHAR"/>
+                    </field>
+                </group>
             </group>
         </group>
-        <group name="time_temperature" type="NXobject">
+        <group name="component_analysis" type="NXobject">
+            <field name="name" type="NX_CHAR">
+                <doc>
+                    Given name of a texture component.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_ori"/>
+                </dimensions>
+            </field>
+            <field name="bunge_euler" type="NX_FLOAT" units="NX_ANGLE">
+                <doc>
+                    Bunge-Euler angle representation :math:`\varphi_1`, :math:`\Phi`, :math:`\varphi_2` of the
+                    of texture components in sequence of the name field.
+                </doc>
+                <dimensions rank="2">
+                    <dim index="1" value="n_ori"/>
+                    <dim index="2" value="3"/>
+                </dimensions>
+            </field>
+            <field name="theta" type="NX_FLOAT" units="NX_ANGLE">
+                <doc>
+                    Integration radius that constraints the theta angular region of the orientation space (SO3)
+                    about each central location (obeying symmetries) as specified by bunge_euler indexed in
+                    the same sequence as the bunge_euler and name fields.
+                </doc>
+                <dimensions rank="1">
+                    <dim index="1" value="n_ori"/>
+                </dimensions>
+            </field>
+        </group>
+        <group name="time_temperature" type="NXdata">
             <doc>
                 Desired simulated time-temperature profile
             </doc>
+            <attribute name="signal" type="NX_CHAR"/>
+            <attribute name="axes" type="NX_CHAR"/>
+            <attribute name="time_indices" type="NX_UINT"/>
+            <attribute name="temperature_indices" type="NX_UINT"/>
+            <field name="title" type="NX_CHAR"/>
             <field name="time" type="NX_FLOAT" units="NX_TIME">
                 <doc>
                     Support point of the linearized curve of simulated time matching
@@ -415,6 +571,7 @@ TODO: add equation for the Rollett-Holm model the following equation-->
                 <dimensions rank="1">
                     <dim index="1" value="n_temp"/>
                 </dimensions>
+                <attribute name="long_name" type="NX_CHAR"/>
             </field>
             <field name="temperature" type="NX_FLOAT" units="NX_TEMPERATURE">
                 <doc>
@@ -423,19 +580,56 @@ TODO: add equation for the Rollett-Holm model the following equation-->
                 <dimensions rank="1">
                     <dim index="1" value="n_temp"/>
                 </dimensions>
+                <attribute name="long_name" type="NX_CHAR"/>
             </field>
         </group>
-        <group name="simulation_control" type="NXobject">
+        <group name="discretization" type="NXmicrostructure">
+            <doc>
+                Relevant data to instantiate a starting configuration that is typically
+                a microstructure in deformed conditions where (elastic) energy is stored
+                in the form of crystal defects (mostly dislocations). The SCORE model
+                does not resolve individual dislocations but works with one
+                homogenized mean-field density per grain. For simulations that are
+                instantiated from EBSD datasets or crystal plasticity simulations
+                individual values are available for each voxel that may be used as is
+                for each voxel or may need a pre-processing of the data to coarse-grain
+                material point-specific values to values averaged per deformed grain.
+            </doc>
+            <group name="grid" type="NXcg_grid">
+                <field name="extent" type="NX_UINT" units="NX_UNITLESS">
+                    <doc>
+                        Extend of each CA domain in voxel along the x, y, and z direction.
+                        Deformation of sheet material is assumed.
+                        The x axis is assumed pointing along the rolling direction.
+                        The y axis is assumed pointing along the transverse direction.
+                        The z axis is assumed pointing along the normal direction.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="3"/>
+                    </dimensions>
+                </field>
+                <field name="cell_dimensions" type="NX_FLOAT" units="NX_LENGTH">
+                    <doc>
+                        Edge length of the material point that in SCORE
+                        is discretized via equisized cubic voxels.
+                    </doc>
+                </field>
+            </group>
+        </group>
+        <!--dim: (d,)-->
+        <group name="numerics" type="NXobject">
             <doc>
                 Criteria which enable to stop the simulation in a controlled manner.
                 Whichever criterion is fulfilled first stops the simulation.
+                Furthermore, numerical configuration required to achieve
+                a stable numerical integration.
             </doc>
             <field name="max_x" type="NX_FLOAT" units="NX_DIMENSIONLESS">
                 <doc>
                     Maximum recrystallized volume fraction.
                 </doc>
             </field>
-            <field name="max_time" type="NX_NUMBER" units="NX_TIME">
+            <field name="max_time" type="NX_FLOAT" units="NX_TIME">
                 <doc>
                     Maximum simulated physical time.
                 </doc>
@@ -445,11 +639,6 @@ TODO: add equation for the Rollett-Holm model the following equation-->
                     Maximum number of iteration steps.
                 </doc>
             </field>
-        </group>
-        <group name="numerics" type="NXobject">
-            <doc>
-                Settings relevant for stable numerical integration.
-            </doc>
             <field name="max_delta_x" type="NX_FLOAT" units="NX_DIMENSIONLESS">
                 <doc>
                     Maximum fraction equivalent to the migration of the
@@ -457,63 +646,69 @@ TODO: add equation for the Rollett-Holm model the following equation-->
                     may be consumed in a single iteration.
                 </doc>
             </field>
-            <field name="initial_cell_cache" type="NX_FLOAT" units="NX_UNITLESS">
+            <field name="x_set" type="NX_FLOAT" units="NX_DIMENSIONLESS">
                 <doc>
-                    Fraction of the total number of cells in the CA which
-                    should initially be allocated for offering cells in the
+                    List of target values at which recrystallized volume fractions the state
+                    of the CA is evaluated and stored. The code documents summary statistics
+                    like recrystallized volume fraction for each iteration and the volume of each
+                    grain. Furthermore, snapshots of the microstructure are stored.
+                    These can take much disk space though because SCORE is able to evolve CA
+                    with up to :math:`1600^3` cells. Snapshot data document the current microstructure
+                    including the assignment of grains and cells surplus the state of the
                     recrystallization front.
-                </doc>
-            </field>
-            <field name="realloc_cell_cache" type="NX_FLOAT" units="NX_UNITLESS">
-                <doc>
-                    By how much more times should the already allocated memory
-                    be increased to offer space for storing states of cells
-                    in the recrystallization front.
-                </doc>
-            </field>
-            <field name="defragment_cell_cache" type="NX_BOOLEAN">
-                <doc>
-                    Should the cache for cells in the recrystallization front
-                    be defragmented on-the-fly.
-                </doc>
-            </field>
-            <field name="defragment_x" type="NX_FLOAT" units="NX_DIMENSIONLESS">
-                <doc>
-                    Heuristic recrystallized volume target values at which
-                    the cache for cells in the recrystallization front
-                    will be defragmented on-the-fly.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_defrag"/>
-                </dimensions>
-            </field>
-        </group>
-        <group name="sampling" type="NXobject">
-            <field name="x" type="NX_FLOAT" units="NX_DIMENSIONLESS">
-                <doc>
-                    List of recrystallized volume target values at which a
-                    snapshot of the CA state should be stored.
-                    
-                    The code documents summary statistics like recrystallized volume fraction
-                    for each iteration. However, snapshots of the microstructure can take much
-                    space as SCORE is able to evolve automata with up to :math:`1600^3` cells.
-                    Snapshot data document the current microstructure which includes the grain
-                    assigned to each of these cells plus the state of the recrystallization front.
                     
                     Despite these front data make up for approximately one order of magnitude
                     less cells than represented in the domain, more numerical data have to be
-                    collected each cell in the front than just a grain identifier.
+                    collected for each cell in the front than just a grain identifier.
                 </doc>
                 <dimensions rank="1">
                     <dim index="1" value="n_snapshot"/>
                 </dimensions>
             </field>
+            <group name="cell_cache" type="NXobject">
+                <doc>
+                    Parameter which control the memory management
+                    of cells in the recrystallization front.
+                </doc>
+                <field name="initial" type="NX_FLOAT" units="NX_UNITLESS">
+                    <doc>
+                        Fraction of the total number of cells in the CA which
+                        should initially be allocated for offering storage for
+                        cells making up the recrystallization front.
+                    </doc>
+                </field>
+                <field name="realloc" type="NX_FLOAT" units="NX_UNITLESS">
+                    <doc>
+                        By how much more times should the already allocated memory
+                        be increased to offer space for storing states of cells
+                        in the recrystallization front.
+                    </doc>
+                </field>
+                <field name="defragment" type="NX_BOOLEAN">
+                    <doc>
+                        Should the cache for cells in the recrystallization front
+                        be defragmented on-the-fly or not.
+                    </doc>
+                </field>
+                <field name="defragment_x" type="NX_FLOAT" units="NX_DIMENSIONLESS">
+                    <doc>
+                        Target values at which recrystallized volume fraction the cache
+                        for cells in the recrystallization front will be defragmented
+                        on-the-fly. Defragmentation packs active cells closer into
+                        main memory to reduce cache misses in subsequent evaluations
+                        of the recrystallization front.
+                    </doc>
+                    <dimensions rank="1">
+                        <dim index="1" value="n_defrag"/>
+                    </dimensions>
+                </field>
+            </group>
         </group>
         <group name="solitary_unit" type="NXobject">
             <field name="apply" type="NX_BOOLEAN">
                 <doc>
-                    Perform a statistical analyses of the results as it was
-                    proposed by M. Kühbach (solitary unit model ensemble approach).
+                    Perform a statistical analyses of the results as it was proposed
+                    by M. Kühbach (solitary unit model ensemble approach).
                 </doc>
             </field>
             <field name="number_of_domains" type="NX_UINT" units="NX_UNITLESS">
@@ -528,15 +723,12 @@ TODO: add equation for the Rollett-Holm model the following equation-->
                     during post-processing the results with the solitary unit modeling approach.
                 </doc>
             </field>
-            <field name="domain_identifier" type="NX_UINT" units="NX_UNITLESS">
-                <doc>
-                    List of identifier for those domain which should be rendered.
-                    Identifier start from 0.
-                </doc>
-                <dimensions rank="1">
-                    <dim index="1" value="n_su"/>
-                </dimensions>
-            </field>
         </group>
     </group>
+    <!--identifier_domain(NX_UINT):
+  doc: |
+    List of identifier for those CAs domains which should be sampled.
+    Identifier start from 1.
+  unit: NX_UNITLESS
+  dim: (n_su,)-->
 </definition>
