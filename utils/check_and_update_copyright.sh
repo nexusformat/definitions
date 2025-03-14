@@ -8,23 +8,36 @@ current_year=$(date +'%Y')
 
 # List of authors whose starting date can be updated
 allowed_authors=(
+  "Andrea Albino"
+  "aalbino2"
+  "andreaa93"
+  "ca-palma"
+  "Carola Emminger"
   "cmmngr"
-  "domna"
   "Florian Dobener"
-  "mkuehbach"
-  "markus.kuehbach"
-  "Markus Kühbach"
-  "kuehbachm"
-  "lukaspie"
+  "domna"
   "Lukas Pielsticker"
+  "lukaspie"
+  "Laurenz Rettig"
   "rettigl"
+  "Marie Yao"
+  "Markus Kühbach"
+  "atomprobe-tc"
+  "kuehbachm"
+  "markus.kuehbach"
+  "mkuehbach"
+  "Ron"
   "Ron Hildebrandt"
   "Rubel"
   "RubelMozumder"
   "Sandor Brockhauser"
   "sanbrock"
   "Sherjeel Shabih"
+  "Tommaso-Pincelli"
+  "Tommaso"
+  "Yichen"
 )
+
 
 # Iterate over each folder
 for folder in "${folders[@]}"; do
