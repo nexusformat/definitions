@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Set the target folder
-folder="contributed_definitions"
+# Define folders to check
+folders=("applications" "base_classes" "contributed_definitions")
 
 # Get the current year
 current_year=$(date +'%Y')
@@ -21,91 +21,61 @@ allowed_authors=(
   "Ron Hildebrandt"
   "Rubel"
   "RubelMozumder"
-  "RubelMozumder"
   "Sandor Brockhauser"
   "sanbrock"
   "Sherjeel Shabih"
 )
 
-#!/bin/bash
+# Iterate over each folder
+for folder in "${folders[@]}"; do
+  # Iterate over each XML file in the folder
+  for file in "$folder"/*.xml; do
+    # Skip if no XML files are found
+    [[ -e "$file" ]] || continue
 
-# Set the target folder
-folder="contributed_definitions"
+    # Get the first commit year and author for the file
+     first_commit_info=$(git log --diff-filter=A --follow --name-status --date=short --pretty=format:'%ad %an' -- "$file" | head -n 1)
 
-# Get the current year
-current_year=$(date +'%Y')
+    # Extract the first commit year and author
+    first_commit_year=$(echo "$first_commit_info" | awk '{print $1}' | cut -d '-' -f 1)
+    first_author=$(echo "$first_commit_info" | cut -d ' ' -f 2-)
 
-# List of authors whose starting date can be updated
-allowed_authors=(
-  "cmmngr"
-  "domna"
-  "Florian Dobener"
-  "mkuehbach"
-  "markus.kuehbach"
-  "Markus Kühbach"
-  "kuehbachm"
-  "lukaspie"
-  "Lukas Pielsticker"
-  "rettigl"
-  "Ron Hildebrandt"  
-  "Rubel"
-  "RubelMozumder"
-  "sanbrock"
-  "Sandor Brockhauser"
-  "Sherjeel Shabih"
-
-)
-
-# Array to hold files that had the start year updated
-updated_files=()
-
-# Iterate over each XML file in the folder
-for file in "$folder"/*.xml; do
-  # Get the first commit year and first author for the file
-  first_commit_info=$(git log --diff-filter=A --follow --date=short --pretty=format:'%ad %an' -- "$file" | head -n 1)
-  
-  # Extract the first commit year and author
-  first_commit_year=$(echo "$first_commit_info" | cut -d ' ' -f 1 | cut -d '-' -f 1)
-  first_author=$(echo "$first_commit_info" | cut -d ' ' -f 2-)
-
-  # Check if we got a valid year (if no commits are found, skip the file)
-  if [ -z "$first_commit_year" ]; then
-    continue
-  fi
-
-  # Always update the copyright end year to the current year
-  if grep -qE "Copyright \(C\) [0-9]{4}-[0-9]{4\}" "$file"; then
-    # Update the copyright end year for all files
-    sed -i "s/\(Copyright (C) \)[0-9]\{4\}-[0-9]\{4\}/\1$first_commit_year-$current_year/" "$file"
-    
-    # Print the update message and the new copyright
-    new_copyright="$first_commit_year-$current_year"
-    echo "Updated copyright end year for: $file (New copyright: $new_copyright)"
-  fi
-
-  # If the author is in the allowed list, update the copyright start year as well
-  if [[ " ${allowed_authors[@]} " =~ " ${first_author} " ]]; then
-    if grep -qE "Copyright \(C\) [0-9]{4}-[0-9]{4\}" "$file"; then
-      # Update the copyright start year
-      sed -i "s/\(Copyright (C) \)[0-9]\{4\}-[0-9]\{4\}/\1$first_commit_year-$current_year/" "$file"
-      
-      # Print the update message and the new copyright
-      new_copyright="$first_commit_year-$current_year"
-      echo "Updated copyright start and end years for: $file (New copyright: $new_copyright)"
-      
-      # Add to updated files list
-      updated_files+=("$file (First commit by $first_author in $first_commit_year)")
+    # Check if we got a valid year (if no commits are found, skip the file)
+    if [ -z "$first_commit_year" ]; then
+      continue
     fi
-  fi
-done
 
-# Print all files that had the start year updated
-if [ ${#updated_files[@]} -gt 0 ]; then
-  echo "Files with updated copyright start years:"
-  for file in "${updated_files[@]}"; do
-    echo "$file"
+    # Extract the existing copyright from the file
+    old_copyright=$(grep -oE "Copyright \(C\) [0-9]{4}-[0-9]{4}" "$file" | head -n 1)
+
+    # Extract the existing start and end years
+    old_start_year=$(echo "$old_copyright" | cut -d ' ' -f 3 | cut -d '-' -f 1)
+    old_end_year=$(echo "$old_copyright" | cut -d ' ' -f 3 | cut -d '-' -f 2)
+
+    # Default: assume start year is unchanged
+    start_year_changed="No"
+
+    # Determine whether to update the start year
+    if [[ " ${allowed_authors[@]} " =~ " ${first_author} " ]]; then
+      if [[ "$old_start_year" != "$first_commit_year" ]]; then
+        start_year_changed="Yes"
+        old_start_year="$first_commit_year"  # Update the start year
+      fi
+    else
+      echo "Keeping old start year for $file (Original author: $first_author)"
+    fi
+
+    # Update the end year to current year
+    new_copyright="Copyright (C) $old_start_year-$current_year"
+
+    # Replace copyright in the file
+    sed -i "s/Copyright (C) [0-9]\{4\}-[0-9]\{4\}/$new_copyright/" "$file"
+
+    # Print summary
+    echo "File: $file"
+    echo "Old copyright: $old_copyright"
+    echo "New copyright: $new_copyright"
+    echo "Start year changed: $start_year_changed"
+    echo "--------------------------------------"
   done
-else
-  echo "No files were updated."
-fi
-
+done
