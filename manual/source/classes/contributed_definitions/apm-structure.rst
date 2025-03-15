@@ -41,10 +41,6 @@ Base Classes
 
 The following base classes are proposed to support modularizing the storage of pieces of information:
 
-    :ref:`NXchamber`:
-        A base class to describe a component of the instrument which houses other components.
-        A chamber may offer a controlled atmosphere to execute an experiment and/or offer functionalities for storing and loading specimens.
-
     :ref:`NXcoordinate_system_set`
         A base class to describe different coordinate systems used and/or to be harmonized
         or transformed into one another when interpreting the dataset.
@@ -74,7 +70,8 @@ The following base classes are proposed to support modularizing the storage of p
         A base class to describe a kinetic-energy-sensitive filtering device
         for time of flight (ToF) mass spectrometry.
 
-    :ref:`NXstage_lab`:
+    :ref:`NXmanipulator`:
+        TODO CHANGE THIS DOCSTRING
         A base class to describe the specimen fixture including the cryo-head.
         Nowadays, these stages represent small-scale laboratory platforms.
         Therefore, there is a need to define the characteristics of such stages in more detail,
