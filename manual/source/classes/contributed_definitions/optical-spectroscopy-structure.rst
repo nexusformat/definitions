@@ -52,14 +52,6 @@ Base Classes
 
 This is the set of base classes for describing an optical experiment.
 
-    :ref:`NXbeam_device`
-       Beam devices are used to relate a beam, which has always at least one origin
-       and at least one destination. 
-       
-       By referencing the beam devices with each other, a beam path can be
-       constructed. This can be used for vizualization or beam propery modeling
-       along the beam path.
-
     :ref:`NXbeam`
       Beam properties such as intensity, polarization, wavelength or direction.
 
