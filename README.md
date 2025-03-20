@@ -7,12 +7,6 @@
 
 ## NeXus definition developers
 
-After making a change to the NeXus class definitions there are two important checks
-to be made before commiting the change:
-
- 1. check whether the change does not violate any syntax rules
- 2. verify whether the change looks as intended in the HTML documentation
-
 First install the test and build requirements with this command (only run once)
 
     make install
@@ -24,6 +18,17 @@ Then verify syntax and build the HTML manual with this command
 Open the HTML manual in a web brower for visual verification
 
     firefox build/manual/build/html/index.html
+
+Convenient editing of definitions is available in nyaml format. For this, definitions need to be converted first from xml to yaml format by the command
+
+    make nyaml
+
+After editing the definitions in nyaml format in the nyaml subdirectories, the following command can be used to update the definitions in nxdl.xml format:
+
+    make nxdl
+
+> [!WARNING]  
+> Please be aware that your nyaml files might be out of sync with the nxdl files when you update your repo. So it's best practice to stash your changes to the nyaml files and regenerate the files with `make nyaml` before adding any changes.
 
 ### HTML pages with contributor information
 
