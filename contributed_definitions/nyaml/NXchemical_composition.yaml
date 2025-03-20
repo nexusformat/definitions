@@ -8,11 +8,17 @@ symbols:
     The number of samples or things.
 type: group
 NXchemical_composition(NXobject):
-  
-  # molecule descriptor
-  # chemical_formula:
-  # doc: |
-  # IUPAC chemical formula
+  normalization(NX_CHAR):
+    doc: |
+      Reporting compositions as atom and weight percent yields both
+      dimensionless quantities but their conceptual interpretation differs.
+      A normalization based on atom_percent counts relative to the
+      total number of atoms which are of a particular type.
+      By contrast, weight_percent normalization factorizes in the
+      respective mass of the elements. Software libraries that work with units
+      (like pint in Python) are challenged by these differences as at.-% and
+      wt.-% are both fractional quantities.
+    enumeration: [atom_percent, weight_percent]
   total(NX_NUMBER):
     unit: NX_UNITLESS
     doc: |
@@ -20,32 +26,43 @@ NXchemical_composition(NXobject):
     dimensions:
       rank: 1
       dim: (n,)
-  (NXion):
+  ELEMENT(NXatom):
+    exists: ['min', '1', 'max', '118']
+    nameType: any
+    doc: |
+      Instances names for groups should use the chemical symbol of
+      the element as it is defined in the periodic table.
     count(NX_NUMBER):
       unit: NX_UNITLESS
       doc: |
         Count or weight which, when divided by total yields the composition
-        of this element, isotope, molecule or ion.
+        of this element, isotope, molecule, or ion.
       dimensions:
         rank: 1
         dim: (n,)
-    composition(NX_NUMBER):
+    composition(NX_FLOAT):
       unit: NX_DIMENSIONLESS
       doc: |
-        Count divided by total in atom percent.
-      dimensions:
-        rank: 1
-        dim: (n,)
+        Composition value for the element/ion referred to under name.
+        Composition is reported either normalized for atomic or weight
+        percent. The field normalization should be used to communicate
+        this explicitly. Composition should be reported consistently
+        for all instances ELEMENT.
+    composition_error(NX_FLOAT):
+      exists: recommended
+      unit: NX_DIMENSIONLESS
+      doc: |
+        Magnitude of the standard deviation of the composition.
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 6e15c54d538e7c8579228cf237a7f19402e134b6b8aee0d9db1a88abb3fdaad4
-# <?xml version="1.0" encoding="UTF-8"?>
+# eb5e3d5b6319c316bcb36db7e27a737abf5093e7b405147b483b4c2401780663
+# <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
 # # NeXus - Neutron and X-ray Common Data Format
-# # 
+# #
 # # Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
-# # 
+# #
 # # This library is free software; you can redistribute it and/or
 # # modify it under the terms of the GNU Lesser General Public
 # # License as published by the Free Software Foundation; either
@@ -62,49 +79,71 @@ NXchemical_composition(NXobject):
 # #
 # # For further information, see http://www.nexusformat.org
 # -->
-# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" name="NXchemical_composition" extends="NXobject" type="group" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
+# <definition xmlns="http://definition.nexusformat.org/nxdl/3.1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" category="base" type="group" name="NXchemical_composition" extends="NXobject" xsi:schemaLocation="http://definition.nexusformat.org/nxdl/3.1 ../nxdl.xsd">
 #     <symbols>
 #         <doc>
-#              The symbols used in the schema to specify e.g. dimensions of arrays.
+#             The symbols used in the schema to specify e.g. dimensions of arrays.
 #         </doc>
 #         <symbol name="n">
 #             <doc>
-#                  The number of samples or things.
+#                 The number of samples or things.
 #             </doc>
 #         </symbol>
 #     </symbols>
 #     <doc>
-#          (Chemical) composition of a sample or a set of things.
+#         (Chemical) composition of a sample or a set of things.
 #     </doc>
-#     <!--molecule descriptor
-# chemical_formula:
-#   doc: |
-#     IUPAC chemical formula-->
+#     <field name="normalization" type="NX_CHAR">
+#         <doc>
+#             Reporting compositions as atom and weight percent yields both
+#             dimensionless quantities but their conceptual interpretation differs.
+#             A normalization based on atom_percent counts relative to the
+#             total number of atoms which are of a particular type.
+#             By contrast, weight_percent normalization factorizes in the
+#             respective mass of the elements. Software libraries that work with units
+#             (like pint in Python) are challenged by these differences as at.-% and
+#             wt.-% are both fractional quantities.
+#         </doc>
+#         <enumeration>
+#             <item value="atom_percent"/>
+#             <item value="weight_percent"/>
+#         </enumeration>
+#     </field>
 #     <field name="total" type="NX_NUMBER" units="NX_UNITLESS">
 #         <doc>
-#              Total based on which composition information is normalized.
+#             Total based on which composition information is normalized.
 #         </doc>
 #         <dimensions rank="1">
 #             <dim index="1" value="n"/>
 #         </dimensions>
 #     </field>
-#     <group type="NXion">
+#     <group name="ELEMENT" type="NXatom" minOccurs="1" maxOccurs="118" nameType="any">
+#         <doc>
+#             Instances names for groups should use the chemical symbol of
+#             the element as it is defined in the periodic table.
+#         </doc>
 #         <field name="count" type="NX_NUMBER" units="NX_UNITLESS">
 #             <doc>
-#                  Count or weight which, when divided by total yields the composition
-#                  of this element, isotope, molecule or ion.
+#                 Count or weight which, when divided by total yields the composition
+#                 of this element, isotope, molecule, or ion.
 #             </doc>
 #             <dimensions rank="1">
 #                 <dim index="1" value="n"/>
 #             </dimensions>
 #         </field>
-#         <field name="composition" type="NX_NUMBER" units="NX_DIMENSIONLESS">
+#         <field name="composition" type="NX_FLOAT" units="NX_DIMENSIONLESS">
 #             <doc>
-#                  Count divided by total in atom percent.
+#                 Composition value for the element/ion referred to under name.
+#                 Composition is reported either normalized for atomic or weight
+#                 percent. The field normalization should be used to communicate
+#                 this explicitly. Composition should be reported consistently
+#                 for all instances ELEMENT.
 #             </doc>
-#             <dimensions rank="1">
-#                 <dim index="1" value="n"/>
-#             </dimensions>
+#         </field>
+#         <field name="composition_error" type="NX_FLOAT" recommended="true" units="NX_DIMENSIONLESS">
+#             <doc>
+#                 Magnitude of the standard deviation of the composition.
+#             </doc>
 #         </field>
 #     </group>
 # </definition>
