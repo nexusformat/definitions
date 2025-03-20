@@ -149,12 +149,19 @@ NXem(NXobject):
           
           Examples are technician operating the microscope, student, postdoc,
           principle investigator, or guest.
-    sample(NXsample):
+    SAMPLE(NXsample):
       exists: ['min', '1', 'max', 'unbounded']
+      nameType: any
       doc:
       - |
         A physical entity which contains material intended to be investigated.
-        Sample and specimen are treated as de facto synonyms. Samples can be real or virtual ones.
+        Sample and specimen are treated as de facto synonyms.
+        Samples can be real or virtual ones as annotated via is_simulation.
+      - |
+        The suggested best practice is to call this group sample. In those cases when
+        multiple samples need to be grouped inside one entry, these SAMPLE groups
+        should be named using the prefix sample followed an index starting from 1, i.e.
+        (sample1, sample2).
       - |
         There are at least two strategies how to store (meta)data when one analyzes multiple
         samples - not different ROIs on a single sample though - in one session.
@@ -272,142 +279,135 @@ NXem(NXobject):
         exists: optional
         doc: |
           Discouraged free-text field to provide further detail.
-    coordinate_system_set(NXobject):
-      exists: ['min', '1', 'max', '1']
-      doc: |
-        Set to hold different coordinate systems conventions.
-        
-        Inspect the description of the :ref:`NXcoordinate_system_set` and :ref:`NXcoordinate_system` base classes
-        how to define coordinate systems in NeXus.
-      (NXcoordinate_system):
-        exists: ['min', '1', 'max', 'unbounded']
-        alias(NX_CHAR):
-          exists: optional
-        type(NX_CHAR):
-        handedness(NX_CHAR):
-        origin(NX_CHAR):
-      processing_reference_frame(NXcoordinate_system):
+    (NXcoordinate_system):
+      exists: ['min', '1', 'max', 'unbounded']
+      alias(NX_CHAR):
+        exists: optional
+      type(NX_CHAR):
+      handedness(NX_CHAR):
+      origin(NX_CHAR):
+    processing_reference_frame(NXcoordinate_system):
+      exists: recommended
+      alias(NX_CHAR):
+        exists: optional
+      type(NX_CHAR):
+      handedness(NX_CHAR):
+      origin(NX_CHAR):
         exists: recommended
-        alias(NX_CHAR):
-          exists: optional
-        type(NX_CHAR):
-        handedness(NX_CHAR):
-        origin(NX_CHAR):
-          exists: recommended
-          doc: |
-            Location of the origin of the processing_reference_frame.
-            
-            It is assumed that regions-of-interest in this reference frame form a rectangle or cuboid.
-            Edges are interpreted by inspecting the direction of their outer unit normals
-            (which point either parallel or antiparallel) along respective base vector direction
-            of the reference frame.
-            
-            If any of these assumptions is not met, the user is required to explicitly state this.
-          enumeration: [front_top_left, front_top_right, front_bottom_right, front_bottom_left, back_top_left, back_top_right, back_bottom_right, back_bottom_left]
-        x_direction(NX_CHAR):
-          exists: recommended
-          doc: |
-            Direction of the positively pointing x-axis base vector of the
-            processing_reference_frame.
-          enumeration: [north, east, south, west, in, out]
-        y_direction(NX_CHAR):
-          exists: recommended
-          doc: |
-            Direction of the positively pointing y-axis base vector of the
-            processing_reference_frame.
-          enumeration: [north, east, south, west, in, out]
-        z_direction(NX_CHAR):
-          exists: recommended
-          doc: |
-            Direction of the positively pointing z-axis base vector of the
-            processing_reference_frame.
-          enumeration: [north, east, south, west, in, out]
-      sample_reference_frame(NXcoordinate_system):
-        exists: recommended
-        depends_on(NX_CHAR):
-          exists: optional
-          doc: |
-            Reference to the specifically named :ref:`NXsample` instance(s) for
-            which these conventions apply (e.g. /entry1/sample1).
-        alias(NX_CHAR):
-          exists: optional
-        type(NX_CHAR):
-        handedness(NX_CHAR):
-        origin(NX_CHAR):
-          exists: recommended
-          doc: |
-            Location of the origin of the sample_reference_frame.
-            
-            It is assumed that regions-of-interest in this reference frame form a rectangle or cuboid.
-            Edges are interpreted by inspecting the direction of their outer unit normals
-            (which point either parallel or antiparallel) along respective base vector direction
-            of the reference frame.
-            
-            If any of these assumptions is not met, the user is required to explicitly state this.
-          enumeration: [front_top_left, front_top_right, front_bottom_right, front_bottom_left, back_top_left, back_top_right, back_bottom_right, back_bottom_left]
-        x_direction(NX_CHAR):
-          exists: recommended
-          doc: |
-            Direction of the positively pointing x-axis base vector of the
-            sample_reference_frame.
-          enumeration: [north, east, south, west, in, out]
-        y_direction(NX_CHAR):
-          exists: recommended
-          doc: |
-            Direction of the positively pointing y-axis base vector of the
-            sample_reference_frame.
-          enumeration: [north, east, south, west, in, out]
-        z_direction(NX_CHAR):
-          exists: recommended
-          doc: |
-            Direction of the positively pointing z-axis base vector of the
-            sample_reference_frame.
-          enumeration: [north, east, south, west, in, out]
-      DETECTOR_REFERENCE_FRAME(NXcoordinate_system):
-        nameType: any
-        exists: ['min', '0', 'max', 'unbounded']
         doc: |
+          Location of the origin of the processing_reference_frame.
+          
+          It is assumed that regions-of-interest in this reference frame form a rectangle or cuboid.
+          Edges are interpreted by inspecting the direction of their outer unit normals
+          (which point either parallel or antiparallel) along respective base vector direction
+          of the reference frame.
+          
+          If any of these assumptions is not met, the user is required to explicitly state this.
+        enumeration: [front_top_left, front_top_right, front_bottom_right, front_bottom_left, back_top_left, back_top_right, back_bottom_right, back_bottom_left]
+      x_direction(NX_CHAR):
+        exists: recommended
+        doc: |
+          Direction of the positively pointing x-axis base vector of the
+          processing_reference_frame.
+        enumeration: [north, east, south, west, in, out]
+      y_direction(NX_CHAR):
+        exists: recommended
+        doc: |
+          Direction of the positively pointing y-axis base vector of the
+          processing_reference_frame.
+        enumeration: [north, east, south, west, in, out]
+      z_direction(NX_CHAR):
+        exists: recommended
+        doc: |
+          Direction of the positively pointing z-axis base vector of the
+          processing_reference_frame.
+        enumeration: [north, east, south, west, in, out]
+    sample_reference_frame(NXcoordinate_system):
+      exists: recommended
+      depends_on(NX_CHAR):
+        exists: optional
+        doc: |
+          Reference to the specifically named :ref:`NXsample` instance(s) for
+          which these conventions apply (e.g. /entry1/sample1).
+      alias(NX_CHAR):
+        exists: optional
+      type(NX_CHAR):
+      handedness(NX_CHAR):
+      origin(NX_CHAR):
+        exists: recommended
+        doc: |
+          Location of the origin of the sample_reference_frame.
+          
+          It is assumed that regions-of-interest in this reference frame form a rectangle or cuboid.
+          Edges are interpreted by inspecting the direction of their outer unit normals
+          (which point either parallel or antiparallel) along respective base vector direction
+          of the reference frame.
+          
+          If any of these assumptions is not met, the user is required to explicitly state this.
+        enumeration: [front_top_left, front_top_right, front_bottom_right, front_bottom_left, back_top_left, back_top_right, back_bottom_right, back_bottom_left]
+      x_direction(NX_CHAR):
+        exists: recommended
+        doc: |
+          Direction of the positively pointing x-axis base vector of the
+          sample_reference_frame.
+        enumeration: [north, east, south, west, in, out]
+      y_direction(NX_CHAR):
+        exists: recommended
+        doc: |
+          Direction of the positively pointing y-axis base vector of the
+          sample_reference_frame.
+        enumeration: [north, east, south, west, in, out]
+      z_direction(NX_CHAR):
+        exists: recommended
+        doc: |
+          Direction of the positively pointing z-axis base vector of the
+          sample_reference_frame.
+        enumeration: [north, east, south, west, in, out]
+    DETECTOR_REFERENCE_FRAME(NXcoordinate_system):
+      nameType: any
+      exists: ['min', '0', 'max', 'unbounded']
+      doc: |
+        Instances should use detector_reference_frame as a name prefix.
+      depends_on(NX_CHAR):
+        exists: optional
+        doc: |
+          Reference to the specifically named :ref:`NXdetector` instance for
+          which these conventions apply (e.g. /entry1/instrument/detector1).
+          
           Instances should use detector_reference_frame as a name prefix.
-        depends_on(NX_CHAR):
-          exists: optional
-          doc: |
-            Reference to the specifically named :ref:`NXdetector` instance for
-            which these conventions apply (e.g. /entry1/instrument/detector1).
-            
-            Instances should use detector_reference_frame as a name prefix.
-        alias(NX_CHAR):
-          exists: optional
-        type(NX_CHAR):
-        handedness(NX_CHAR):
-        origin(NX_CHAR):
-          exists: recommended
-          doc: |
-            Location of the origin of the detector_reference_frame.
-            
-            If the regions-of-interest forms a rectangle or cuboid, it is assumed that edges are interpreted
-            by inspecting the direction of their outer unit normals (which point either parallel or antiparallel)
-            along respective base vector direction of the reference frame.
-            
-            If any of these assumptions is not met, the user is required to explicitly state this.
-          enumeration: [front_top_left, front_top_right, front_bottom_right, front_bottom_left, back_top_left, back_top_right, back_bottom_right, back_bottom_left]
-        x_direction(NX_CHAR):
-          exists: recommended
-          doc: |
-            Direction of the positively pointing x-axis base vector of the
-            detector_reference_frame.
-          enumeration: [north, east, south, west, in, out]
-        y_direction(NX_CHAR):
-          exists: recommended
-          doc: |
-            Direction of the positively pointing y-axis base vector of the
-            detector_reference_frame.
-          enumeration: [north, east, south, west, in, out]
-        z_direction(NX_CHAR):
-          exists: recommended
-          doc: |
-            Direction of the positively pointing z-axis base vector of the
-            detector_reference_frame.
-          enumeration: [north, east, south, west, in, out]
+      alias(NX_CHAR):
+        exists: optional
+      type(NX_CHAR):
+      handedness(NX_CHAR):
+      origin(NX_CHAR):
+        exists: recommended
+        doc: |
+          Location of the origin of the detector_reference_frame.
+          
+          If the regions-of-interest forms a rectangle or cuboid, it is assumed that edges are interpreted
+          by inspecting the direction of their outer unit normals (which point either parallel or antiparallel)
+          along respective base vector direction of the reference frame.
+          
+          If any of these assumptions is not met, the user is required to explicitly state this.
+        enumeration: [front_top_left, front_top_right, front_bottom_right, front_bottom_left, back_top_left, back_top_right, back_bottom_right, back_bottom_left]
+      x_direction(NX_CHAR):
+        exists: recommended
+        doc: |
+          Direction of the positively pointing x-axis base vector of the
+          detector_reference_frame.
+        enumeration: [north, east, south, west, in, out]
+      y_direction(NX_CHAR):
+        exists: recommended
+        doc: |
+          Direction of the positively pointing y-axis base vector of the
+          detector_reference_frame.
+        enumeration: [north, east, south, west, in, out]
+      z_direction(NX_CHAR):
+        exists: recommended
+        doc: |
+          Direction of the positively pointing z-axis base vector of the
+          detector_reference_frame.
+        enumeration: [north, east, south, west, in, out]
     measurement(NXobject):
       exists: optional
       
@@ -700,7 +700,7 @@ NXem(NXobject):
               Each NXimage instance must use only one image or stack instance.
             (NXprocess):
               exists: recommended
-              source(NXnote):
+              input(NXnote):
                 exists: recommended
                 type(NX_CHAR):
                 file_name(NX_CHAR):
@@ -868,7 +868,7 @@ NXem(NXobject):
               Each NXspectrum instance must use only one spectrum or stack instance.
             (NXprocess):
               exists: recommended
-              source(NXnote):
+              input(NXnote):
                 exists: recommended
                 type(NX_CHAR):
                 file_name(NX_CHAR):
@@ -1293,6 +1293,7 @@ NXem(NXobject):
     
     # remains to be discussed based on examples
     SIMULATION(NXobject):
+      nameType: any
       exists: ['min', '0', 'max', 'unbounded']
       doc: |
         Possibility for documenting a set of simulations of electron beam matter interaction.
@@ -1560,13 +1561,13 @@ NXem(NXobject):
   # in https://github.com/FAIRmat-NFDI/nexus_definitions/commit/0b928c4352bc5636f673b5fb25ce990f1af8a099
 
 # ++++++++++++++++++++++++++++++++++ SHA HASH ++++++++++++++++++++++++++++++++++
-# 8a2a0ed834501f6612b692353977415319376db5bde9cf711a30c24fd90d36be
+# 83550e928a75b618c171e79ab4560dfa15a389a30a827b6655669ef8853db0f0
 # <?xml version='1.0' encoding='UTF-8'?>
 # <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 # <!--
 # # NeXus - Neutron and X-ray Common Data Format
 # #
-# # Copyright (C) 2022-2025 NeXus International Advisory Committee (NIAC)
+# # Copyright (C) 2025-2025 NeXus International Advisory Committee (NIAC)
 # #
 # # This library is free software; you can redistribute it and/or
 # # modify it under the terms of the GNU Lesser General Public
@@ -1749,10 +1750,16 @@ NXem(NXobject):
 #                 </doc>
 #             </field>
 #         </group>
-#         <group name="sample" type="NXsample" minOccurs="1" maxOccurs="unbounded">
+#         <group name="SAMPLE" type="NXsample" minOccurs="1" maxOccurs="unbounded" nameType="any">
 #             <doc>
 #                 A physical entity which contains material intended to be investigated.
-#                 Sample and specimen are treated as de facto synonyms. Samples can be real or virtual ones.
+#                 Sample and specimen are treated as de facto synonyms.
+#                 Samples can be real or virtual ones as annotated via is_simulation.
+#                 
+#                 The suggested best practice is to call this group sample. In those cases when
+#                 multiple samples need to be grouped inside one entry, these SAMPLE groups
+#                 should be named using the prefix sample followed an index starting from 1, i.e.
+#                 (sample1, sample2).
 #                 
 #                 There are at least two strategies how to store (meta)data when one analyzes multiple
 #                 samples - not different ROIs on a single sample though - in one session.
@@ -1884,242 +1891,234 @@ NXem(NXobject):
 #                 </doc>
 #             </field>
 #         </group>
-#         <group name="coordinate_system_set" type="NXobject" minOccurs="1" maxOccurs="1">
-#             <doc>
-#                 Set to hold different coordinate systems conventions.
-#                 
-#                 Inspect the description of the :ref:`NXcoordinate_system_set` and :ref:`NXcoordinate_system` base classes
-#                 how to define coordinate systems in NeXus.
-#             </doc>
-#             <group type="NXcoordinate_system" minOccurs="1" maxOccurs="unbounded">
-#                 <field name="alias" type="NX_CHAR" optional="true"/>
-#                 <field name="type" type="NX_CHAR"/>
-#                 <field name="handedness" type="NX_CHAR"/>
-#                 <field name="origin" type="NX_CHAR"/>
-#             </group>
-#             <group name="processing_reference_frame" type="NXcoordinate_system" recommended="true">
-#                 <field name="alias" type="NX_CHAR" optional="true"/>
-#                 <field name="type" type="NX_CHAR"/>
-#                 <field name="handedness" type="NX_CHAR"/>
-#                 <field name="origin" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Location of the origin of the processing_reference_frame.
-#                         
-#                         It is assumed that regions-of-interest in this reference frame form a rectangle or cuboid.
-#                         Edges are interpreted by inspecting the direction of their outer unit normals
-#                         (which point either parallel or antiparallel) along respective base vector direction
-#                         of the reference frame.
-#                         
-#                         If any of these assumptions is not met, the user is required to explicitly state this.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="front_top_left"/>
-#                         <item value="front_top_right"/>
-#                         <item value="front_bottom_right"/>
-#                         <item value="front_bottom_left"/>
-#                         <item value="back_top_left"/>
-#                         <item value="back_top_right"/>
-#                         <item value="back_bottom_right"/>
-#                         <item value="back_bottom_left"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="x_direction" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Direction of the positively pointing x-axis base vector of the
-#                         processing_reference_frame.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="north"/>
-#                         <item value="east"/>
-#                         <item value="south"/>
-#                         <item value="west"/>
-#                         <item value="in"/>
-#                         <item value="out"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="y_direction" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Direction of the positively pointing y-axis base vector of the
-#                         processing_reference_frame.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="north"/>
-#                         <item value="east"/>
-#                         <item value="south"/>
-#                         <item value="west"/>
-#                         <item value="in"/>
-#                         <item value="out"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="z_direction" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Direction of the positively pointing z-axis base vector of the
-#                         processing_reference_frame.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="north"/>
-#                         <item value="east"/>
-#                         <item value="south"/>
-#                         <item value="west"/>
-#                         <item value="in"/>
-#                         <item value="out"/>
-#                     </enumeration>
-#                 </field>
-#             </group>
-#             <group name="sample_reference_frame" type="NXcoordinate_system" recommended="true">
-#                 <field name="depends_on" type="NX_CHAR" optional="true">
-#                     <doc>
-#                         Reference to the specifically named :ref:`NXsample` instance(s) for
-#                         which these conventions apply (e.g. /entry1/sample1).
-#                     </doc>
-#                 </field>
-#                 <field name="alias" type="NX_CHAR" optional="true"/>
-#                 <field name="type" type="NX_CHAR"/>
-#                 <field name="handedness" type="NX_CHAR"/>
-#                 <field name="origin" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Location of the origin of the sample_reference_frame.
-#                         
-#                         It is assumed that regions-of-interest in this reference frame form a rectangle or cuboid.
-#                         Edges are interpreted by inspecting the direction of their outer unit normals
-#                         (which point either parallel or antiparallel) along respective base vector direction
-#                         of the reference frame.
-#                         
-#                         If any of these assumptions is not met, the user is required to explicitly state this.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="front_top_left"/>
-#                         <item value="front_top_right"/>
-#                         <item value="front_bottom_right"/>
-#                         <item value="front_bottom_left"/>
-#                         <item value="back_top_left"/>
-#                         <item value="back_top_right"/>
-#                         <item value="back_bottom_right"/>
-#                         <item value="back_bottom_left"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="x_direction" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Direction of the positively pointing x-axis base vector of the
-#                         sample_reference_frame.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="north"/>
-#                         <item value="east"/>
-#                         <item value="south"/>
-#                         <item value="west"/>
-#                         <item value="in"/>
-#                         <item value="out"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="y_direction" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Direction of the positively pointing y-axis base vector of the
-#                         sample_reference_frame.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="north"/>
-#                         <item value="east"/>
-#                         <item value="south"/>
-#                         <item value="west"/>
-#                         <item value="in"/>
-#                         <item value="out"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="z_direction" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Direction of the positively pointing z-axis base vector of the
-#                         sample_reference_frame.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="north"/>
-#                         <item value="east"/>
-#                         <item value="south"/>
-#                         <item value="west"/>
-#                         <item value="in"/>
-#                         <item value="out"/>
-#                     </enumeration>
-#                 </field>
-#             </group>
-#             <group name="DETECTOR_REFERENCE_FRAME" type="NXcoordinate_system" nameType="any" minOccurs="0" maxOccurs="unbounded">
+#         <group type="NXcoordinate_system" minOccurs="1" maxOccurs="unbounded">
+#             <field name="alias" type="NX_CHAR" optional="true"/>
+#             <field name="type" type="NX_CHAR"/>
+#             <field name="handedness" type="NX_CHAR"/>
+#             <field name="origin" type="NX_CHAR"/>
+#         </group>
+#         <group name="processing_reference_frame" type="NXcoordinate_system" recommended="true">
+#             <field name="alias" type="NX_CHAR" optional="true"/>
+#             <field name="type" type="NX_CHAR"/>
+#             <field name="handedness" type="NX_CHAR"/>
+#             <field name="origin" type="NX_CHAR" recommended="true">
 #                 <doc>
+#                     Location of the origin of the processing_reference_frame.
+#                     
+#                     It is assumed that regions-of-interest in this reference frame form a rectangle or cuboid.
+#                     Edges are interpreted by inspecting the direction of their outer unit normals
+#                     (which point either parallel or antiparallel) along respective base vector direction
+#                     of the reference frame.
+#                     
+#                     If any of these assumptions is not met, the user is required to explicitly state this.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="front_top_left"/>
+#                     <item value="front_top_right"/>
+#                     <item value="front_bottom_right"/>
+#                     <item value="front_bottom_left"/>
+#                     <item value="back_top_left"/>
+#                     <item value="back_top_right"/>
+#                     <item value="back_bottom_right"/>
+#                     <item value="back_bottom_left"/>
+#                 </enumeration>
+#             </field>
+#             <field name="x_direction" type="NX_CHAR" recommended="true">
+#                 <doc>
+#                     Direction of the positively pointing x-axis base vector of the
+#                     processing_reference_frame.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="north"/>
+#                     <item value="east"/>
+#                     <item value="south"/>
+#                     <item value="west"/>
+#                     <item value="in"/>
+#                     <item value="out"/>
+#                 </enumeration>
+#             </field>
+#             <field name="y_direction" type="NX_CHAR" recommended="true">
+#                 <doc>
+#                     Direction of the positively pointing y-axis base vector of the
+#                     processing_reference_frame.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="north"/>
+#                     <item value="east"/>
+#                     <item value="south"/>
+#                     <item value="west"/>
+#                     <item value="in"/>
+#                     <item value="out"/>
+#                 </enumeration>
+#             </field>
+#             <field name="z_direction" type="NX_CHAR" recommended="true">
+#                 <doc>
+#                     Direction of the positively pointing z-axis base vector of the
+#                     processing_reference_frame.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="north"/>
+#                     <item value="east"/>
+#                     <item value="south"/>
+#                     <item value="west"/>
+#                     <item value="in"/>
+#                     <item value="out"/>
+#                 </enumeration>
+#             </field>
+#         </group>
+#         <group name="sample_reference_frame" type="NXcoordinate_system" recommended="true">
+#             <field name="depends_on" type="NX_CHAR" optional="true">
+#                 <doc>
+#                     Reference to the specifically named :ref:`NXsample` instance(s) for
+#                     which these conventions apply (e.g. /entry1/sample1).
+#                 </doc>
+#             </field>
+#             <field name="alias" type="NX_CHAR" optional="true"/>
+#             <field name="type" type="NX_CHAR"/>
+#             <field name="handedness" type="NX_CHAR"/>
+#             <field name="origin" type="NX_CHAR" recommended="true">
+#                 <doc>
+#                     Location of the origin of the sample_reference_frame.
+#                     
+#                     It is assumed that regions-of-interest in this reference frame form a rectangle or cuboid.
+#                     Edges are interpreted by inspecting the direction of their outer unit normals
+#                     (which point either parallel or antiparallel) along respective base vector direction
+#                     of the reference frame.
+#                     
+#                     If any of these assumptions is not met, the user is required to explicitly state this.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="front_top_left"/>
+#                     <item value="front_top_right"/>
+#                     <item value="front_bottom_right"/>
+#                     <item value="front_bottom_left"/>
+#                     <item value="back_top_left"/>
+#                     <item value="back_top_right"/>
+#                     <item value="back_bottom_right"/>
+#                     <item value="back_bottom_left"/>
+#                 </enumeration>
+#             </field>
+#             <field name="x_direction" type="NX_CHAR" recommended="true">
+#                 <doc>
+#                     Direction of the positively pointing x-axis base vector of the
+#                     sample_reference_frame.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="north"/>
+#                     <item value="east"/>
+#                     <item value="south"/>
+#                     <item value="west"/>
+#                     <item value="in"/>
+#                     <item value="out"/>
+#                 </enumeration>
+#             </field>
+#             <field name="y_direction" type="NX_CHAR" recommended="true">
+#                 <doc>
+#                     Direction of the positively pointing y-axis base vector of the
+#                     sample_reference_frame.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="north"/>
+#                     <item value="east"/>
+#                     <item value="south"/>
+#                     <item value="west"/>
+#                     <item value="in"/>
+#                     <item value="out"/>
+#                 </enumeration>
+#             </field>
+#             <field name="z_direction" type="NX_CHAR" recommended="true">
+#                 <doc>
+#                     Direction of the positively pointing z-axis base vector of the
+#                     sample_reference_frame.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="north"/>
+#                     <item value="east"/>
+#                     <item value="south"/>
+#                     <item value="west"/>
+#                     <item value="in"/>
+#                     <item value="out"/>
+#                 </enumeration>
+#             </field>
+#         </group>
+#         <group name="DETECTOR_REFERENCE_FRAME" type="NXcoordinate_system" nameType="any" minOccurs="0" maxOccurs="unbounded">
+#             <doc>
+#                 Instances should use detector_reference_frame as a name prefix.
+#             </doc>
+#             <field name="depends_on" type="NX_CHAR" optional="true">
+#                 <doc>
+#                     Reference to the specifically named :ref:`NXdetector` instance for
+#                     which these conventions apply (e.g. /entry1/instrument/detector1).
+#                     
 #                     Instances should use detector_reference_frame as a name prefix.
 #                 </doc>
-#                 <field name="depends_on" type="NX_CHAR" optional="true">
-#                     <doc>
-#                         Reference to the specifically named :ref:`NXdetector` instance for
-#                         which these conventions apply (e.g. /entry1/instrument/detector1).
-#                         
-#                         Instances should use detector_reference_frame as a name prefix.
-#                     </doc>
-#                 </field>
-#                 <field name="alias" type="NX_CHAR" optional="true"/>
-#                 <field name="type" type="NX_CHAR"/>
-#                 <field name="handedness" type="NX_CHAR"/>
-#                 <field name="origin" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Location of the origin of the detector_reference_frame.
-#                         
-#                         If the regions-of-interest forms a rectangle or cuboid, it is assumed that edges are interpreted
-#                         by inspecting the direction of their outer unit normals (which point either parallel or antiparallel)
-#                         along respective base vector direction of the reference frame.
-#                         
-#                         If any of these assumptions is not met, the user is required to explicitly state this.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="front_top_left"/>
-#                         <item value="front_top_right"/>
-#                         <item value="front_bottom_right"/>
-#                         <item value="front_bottom_left"/>
-#                         <item value="back_top_left"/>
-#                         <item value="back_top_right"/>
-#                         <item value="back_bottom_right"/>
-#                         <item value="back_bottom_left"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="x_direction" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Direction of the positively pointing x-axis base vector of the
-#                         detector_reference_frame.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="north"/>
-#                         <item value="east"/>
-#                         <item value="south"/>
-#                         <item value="west"/>
-#                         <item value="in"/>
-#                         <item value="out"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="y_direction" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Direction of the positively pointing y-axis base vector of the
-#                         detector_reference_frame.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="north"/>
-#                         <item value="east"/>
-#                         <item value="south"/>
-#                         <item value="west"/>
-#                         <item value="in"/>
-#                         <item value="out"/>
-#                     </enumeration>
-#                 </field>
-#                 <field name="z_direction" type="NX_CHAR" recommended="true">
-#                     <doc>
-#                         Direction of the positively pointing z-axis base vector of the
-#                         detector_reference_frame.
-#                     </doc>
-#                     <enumeration>
-#                         <item value="north"/>
-#                         <item value="east"/>
-#                         <item value="south"/>
-#                         <item value="west"/>
-#                         <item value="in"/>
-#                         <item value="out"/>
-#                     </enumeration>
-#                 </field>
-#             </group>
+#             </field>
+#             <field name="alias" type="NX_CHAR" optional="true"/>
+#             <field name="type" type="NX_CHAR"/>
+#             <field name="handedness" type="NX_CHAR"/>
+#             <field name="origin" type="NX_CHAR" recommended="true">
+#                 <doc>
+#                     Location of the origin of the detector_reference_frame.
+#                     
+#                     If the regions-of-interest forms a rectangle or cuboid, it is assumed that edges are interpreted
+#                     by inspecting the direction of their outer unit normals (which point either parallel or antiparallel)
+#                     along respective base vector direction of the reference frame.
+#                     
+#                     If any of these assumptions is not met, the user is required to explicitly state this.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="front_top_left"/>
+#                     <item value="front_top_right"/>
+#                     <item value="front_bottom_right"/>
+#                     <item value="front_bottom_left"/>
+#                     <item value="back_top_left"/>
+#                     <item value="back_top_right"/>
+#                     <item value="back_bottom_right"/>
+#                     <item value="back_bottom_left"/>
+#                 </enumeration>
+#             </field>
+#             <field name="x_direction" type="NX_CHAR" recommended="true">
+#                 <doc>
+#                     Direction of the positively pointing x-axis base vector of the
+#                     detector_reference_frame.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="north"/>
+#                     <item value="east"/>
+#                     <item value="south"/>
+#                     <item value="west"/>
+#                     <item value="in"/>
+#                     <item value="out"/>
+#                 </enumeration>
+#             </field>
+#             <field name="y_direction" type="NX_CHAR" recommended="true">
+#                 <doc>
+#                     Direction of the positively pointing y-axis base vector of the
+#                     detector_reference_frame.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="north"/>
+#                     <item value="east"/>
+#                     <item value="south"/>
+#                     <item value="west"/>
+#                     <item value="in"/>
+#                     <item value="out"/>
+#                 </enumeration>
+#             </field>
+#             <field name="z_direction" type="NX_CHAR" recommended="true">
+#                 <doc>
+#                     Direction of the positively pointing z-axis base vector of the
+#                     detector_reference_frame.
+#                 </doc>
+#                 <enumeration>
+#                     <item value="north"/>
+#                     <item value="east"/>
+#                     <item value="south"/>
+#                     <item value="west"/>
+#                     <item value="in"/>
+#                     <item value="out"/>
+#                 </enumeration>
+#             </field>
 #         </group>
 #         <group name="measurement" type="NXobject" optional="true">
 #             <!--the choice if a concept filling content in NXfabrication is recommended or optional
@@ -2401,7 +2400,7 @@ NXem(NXobject):
 #                             Each NXimage instance must use only one image or stack instance.
 #                         </doc>
 #                         <group type="NXprocess" recommended="true">
-#                             <group name="source" type="NXnote" recommended="true">
+#                             <group name="input" type="NXnote" recommended="true">
 #                                 <field name="type" type="NX_CHAR"/>
 #                                 <field name="file_name" type="NX_CHAR"/>
 #                                 <field name="checksum" type="NX_CHAR"/>
@@ -2579,7 +2578,7 @@ NXem(NXobject):
 #                             Each NXspectrum instance must use only one spectrum or stack instance.
 #                         </doc>
 #                         <group type="NXprocess" recommended="true">
-#                             <group name="source" type="NXnote" recommended="true">
+#                             <group name="input" type="NXnote" recommended="true">
 #                                 <field name="type" type="NX_CHAR"/>
 #                                 <field name="file_name" type="NX_CHAR"/>
 #                                 <field name="checksum" type="NX_CHAR"/>
@@ -3031,7 +3030,7 @@ NXem(NXobject):
 #             </group>
 #         </group>
 #         <!--remains to be discussed based on examples-->
-#         <group name="SIMULATION" type="NXobject" minOccurs="0" maxOccurs="unbounded">
+#         <group name="SIMULATION" type="NXobject" nameType="any" minOccurs="0" maxOccurs="unbounded">
 #             <doc>
 #                 Possibility for documenting a set of simulations of electron beam matter interaction.
 #                 

@@ -2,9 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
-# 
-# Copyright (C) 2023-2025 NeXus International Advisory Committee (NIAC)
-# 
+#
+# Copyright (C) 2025-2025 NeXus International Advisory Committee (NIAC)
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -35,10 +35,6 @@
     <doc>
         (Chemical) composition of a sample or a set of things.
     </doc>
-    <!--molecule descriptor
-chemical_formula:
-doc: |
-IUPAC chemical formula-->
     <field name="normalization" type="NX_CHAR">
         <doc>
             Reporting compositions as atom and weight percent yields both
@@ -46,9 +42,9 @@ IUPAC chemical formula-->
             A normalization based on atom_percent counts relative to the
             total number of atoms which are of a particular type.
             By contrast, weight_percent normalization factorizes in the
-            respective mass of the elements. Python libraries like pint are
-            challenged by these differences as at.-% and wt.-% are both
-            fractional quantities.
+            respective mass of the elements. Software libraries that work with units
+            (like pint in Python) are challenged by these differences as at.-% and
+            wt.-% are both fractional quantities.
         </doc>
         <enumeration>
             <item value="atom_percent"/>
@@ -65,48 +61,26 @@ IUPAC chemical formula-->
     </field>
     <group name="ELEMENT" type="NXatom" minOccurs="1" maxOccurs="118" nameType="any">
         <doc>
-            Instances should use element as a name prefix and start counting
-            at 1 such that the name of each group already informs humans
-            for which element a composition is provided.
+            Instances names for groups should use the chemical symbol of
+            the element as it is defined in the periodic table.
         </doc>
-        <field name="chemical_symbol" type="NX_CHAR">
+        <field name="count" type="NX_NUMBER" units="NX_UNITLESS">
             <doc>
-                Human-readable name of the element (e.g. Fe).
-                Name has to be a symbol of an element from the periodic table.
-                All symbols in the set of NXion instances inside the group
-                chemical_composition need to be disjoint.
+                Count or weight which, when divided by total yields the composition
+                of this element, isotope, molecule, or ion.
             </doc>
+            <dimensions rank="1">
+                <dim index="1" value="n"/>
+            </dimensions>
         </field>
         <field name="composition" type="NX_FLOAT" units="NX_DIMENSIONLESS">
             <doc>
                 Composition value for the element/ion referred to under name.
-                The value is normalized based on normalization, i.e. composition
-                is either an atom or weight percent quantity.
+                Composition is reported either normalized for atomic or weight
+                percent. The field normalization should be used to communicate
+                this explicitly. Composition should be reported consistently
+                for all instances ELEMENT.
             </doc>
-        </field>
-        <field name="composition_error" type="NX_FLOAT" recommended="true" units="NX_DIMENSIONLESS">
-            <doc>
-                Magnitude of the standard deviation of the composition.
-            </doc>
-        </field>
-    </group>
-    <group name="ION" type="NXion" nameType="any">
-        <field name="count" type="NX_NUMBER" units="NX_UNITLESS">
-            <doc>
-                Count or weight which, when divided by total yields the composition
-                of this element, isotope, molecule or ion.
-            </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n"/>
-            </dimensions>
-        </field>
-        <field name="composition" type="NX_NUMBER" units="NX_DIMENSIONLESS">
-            <doc>
-                Count divided by total in atom percent.
-            </doc>
-            <dimensions rank="1">
-                <dim index="1" value="n"/>
-            </dimensions>
         </field>
         <field name="composition_error" type="NX_FLOAT" recommended="true" units="NX_DIMENSIONLESS">
             <doc>
