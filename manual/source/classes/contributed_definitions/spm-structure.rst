@@ -38,10 +38,6 @@ Base Classes
     :ref:`NXbias_spectroscopy`:
     A base class to describe bias spectroscopy measurement to measure I/V curve in STS expriment.
 
-    :ref:`NXbias_sweep`:
-    A base class to describe bias sweep (a linear voltage vs current scan) step in 
-    bias spectroscopy measurement.
-
     :ref:`NXcantilever_spm`:
     A base class to characterize cantilever used in AFM experiments.
 
