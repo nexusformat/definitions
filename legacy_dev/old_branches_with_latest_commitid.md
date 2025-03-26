@@ -1,4 +1,4 @@
-git ls-remote, 2024-03-26, 11:00:00, consider the removal of these legacy branches:
+# git ls-remote, 2024-03-26, 11:00:00, consider the removal of these legacy branches:
 bd2f0e38cc813ea93f22c8ebae57a722db63b955	refs/heads/412-ff-NXdetector-documentation
 6f74e47f1b866a9d7c91f90974d3da2e52c14f2a	refs/heads/412-ff-NXdetector-documentation_aaron
 3b3981f05fad03fd8a2d392f27c3fe1604b69b9b	refs/heads/771-terminology
