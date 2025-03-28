@@ -607,6 +607,12 @@ class NXClassDocGenerator:
         )
         self._print_doc_enum(indent, ns, node)
 
+    def _print_extends_text(self, ns, node, indent):
+        extends_text = node.get("extends", None)
+        if extends_text is not None:
+            # self._print(f"\n{indent}.. index:: deprecated\n")
+            self._print(f"\n{indent}This field extends: {extends_text}\n")
+
     def _print_if_deprecated(self, ns, node, indent):
         deprecated = node.get("deprecated", None)
         if deprecated is not None:
@@ -642,6 +648,7 @@ class NXClassDocGenerator:
                 "\n"
             )
 
+            self._print_extends_text(ns, node, indent + self._INDENTATION_UNIT)
             self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
             self._print_doc_enum(indent, ns, node)
 
