@@ -607,11 +607,12 @@ class NXClassDocGenerator:
         )
         self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
         self._print_doc_enum(indent, ns, node)
-
-    def _print_extends_text(self, ns, node, indent):
-        extends_text = node.get("extends", None)
-        if extends_text is not None:
-            self._print(f"\n{indent}This field extends: {extends_text}\n")
+   
+    def _get_extends_text(self, node):
+        extends = node.get("extends", None)
+        if extends:
+            return f"(:ref:`{extends.split("/")[-1]} <{extends}-field>`) "
+        return ""
 
     def _print_if_deprecated(self, ns, node, indent):
         deprecated = node.get("deprecated", None)
@@ -640,6 +641,7 @@ class NXClassDocGenerator:
                 dims = self._analyze_dimensions(ns, node)
 
                 optional_text = self._get_required_or_optional_text(node)
+                extends_test = self._get_extends_text(node)
                 self._print(
                     f"{indent}{self._hyperlink_target(parent_path, name, 'field')}"
                 )
@@ -647,6 +649,7 @@ class NXClassDocGenerator:
                 self._print(
                     f"{indent}{formatted_name}: "
                     f"{optional_text}"
+                    f"{extends_test}"
                     f"{self._format_type(node)}"
                     f"{dims}"
                     f"{self._format_units(node)}"
