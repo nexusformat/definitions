@@ -607,7 +607,7 @@ class NXClassDocGenerator:
         )
         self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
         self._print_doc_enum(indent, ns, node)
-   
+
     def _get_extends_text(self, node):
         extends = node.get("extends", None)
         if extends:
