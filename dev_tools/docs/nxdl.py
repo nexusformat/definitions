@@ -606,7 +606,7 @@ class NXClassDocGenerator:
             f"{indent}{formatted_name}: {optional}{self._format_type(node)}{self._format_units(node)} {self.get_first_parent_ref(f'{parent_path}/{name}', 'attribute')}\n"
         )
         self._print_doc_enum(indent, ns, node)
-   
+
     def _get_extends_text(self, node):
         extends = node.get("extends", None)
         if extends:
@@ -649,7 +649,7 @@ class NXClassDocGenerator:
                 f" {self.get_first_parent_ref(f'{parent_path}/{name}', 'field')}"
                 "\n"
             )
-            
+
             self._print_if_deprecated(ns, node, indent + self._INDENTATION_UNIT)
             self._print_doc_enum(indent, ns, node)
 
