@@ -45,10 +45,10 @@
         <doc>
             Data and results of the fit.
         </doc>
-        <field name="input_dependent" type="NX_NUMBER" units="NX_ANY">
+        <field name="input_independent" type="NX_NUMBER" units="NX_ANY">
             <doc>
-                Position values along one or more data dimensions (to hold the
-                values for the independent variable for this fit procedure).
+                Independent variable(s) for this fit procedure, representing the values to be fitted
+                by the ``global_fit_function``.
             </doc>
             <dimensions rank="dimRank">
                 <doc>
@@ -59,9 +59,9 @@
                 </doc>
             </dimensions>
         </field>
-        <field name="input_independent" type="NX_NUMBER" units="NX_ANY">
+        <field name="input_dependent" type="NX_NUMBER" units="NX_ANY">
             <doc>
-                Independent input axis for this fit procedure.
+                Dependent variable(s) for this fit procedure (i.e., the observed data).
             </doc>
             <dimensions rank="dimRank">
                 <doc>
@@ -74,8 +74,9 @@
         </field>
         <field name="envelope" type="NX_NUMBER" units="NX_ANY">
             <doc>
-                Resulting envelope of applying the `global_fit_function` with its parameter to the data stored
-                in `input_independent`.
+                Resulting envelope obtained by evaluating the ``global_fit_function`` at the points
+                specified in ``input_independent`` using the optimized fit parameters. This represents
+                the best-fit curve or surface approximating the input_dependent data.
             </doc>
             <dimensions rank="dimRank">
                 <doc>
@@ -88,7 +89,8 @@
         </field>
         <field name="residual" type="NX_NUMBER" units="NX_ANY">
             <doc>
-                Difference between the envelope and the `input_independent` data to be fitted.
+                The difference between the observed data (``input_dependent``) and the predicted
+                fit values (``envelope``). A lower magnitude of residuals indicates a better fit.
             </doc>
             <dimensions rank="dimRank">
                 <doc>
@@ -103,7 +105,7 @@
     <group name="peakPEAK" type="NXpeak" nameType="partial">
         <doc>
             An instance of the peak model.
-            If there is no characteristic name for each peak component,  the peaks could be
+            If there is no characteristic name for each peak component, the peaks could be
             labeled as peak_0, peak_1, and so on.
         </doc>
         <field name="total_area" type="NX_NUMBER" units="NX_ANY">
@@ -134,7 +136,8 @@
     </group>
     <group name="backgroundBACKGROUND" type="NXfit_background" nameType="partial">
         <doc>
-            One fitted background (functional form, position, and intensities) of the peak fit.
+            One fitted background (functional form, position (see :ref:`data/input_independent &lt;/NXfit/data/input_independent-field&gt;`),
+            and intensities) of the peak fit.
             If there is no characteristic name for each peak component, it is envisioned that backgrounds are labeled
             as background_0, background_1, and so on.
         </doc>
@@ -144,7 +147,7 @@
             Function used to describe the overall fit to the data, taking into account the parameters of the
             individual `NXpeak` and `NXfit_background` components.
         </doc>
-        <field name="formula">
+        <field name="formula_description">
             <doc>
                 Often, if the peaks and fit backgrounds are defined independently (i.e, with their own
                 parameter sets), the resulting global fit is a function of the form
@@ -161,6 +164,7 @@
             <doc>
                 Description of the method used to optimize the parameters during peak fitting.
                 Examples:
+                
                 - least squares
                 - non-linear least squares
                 - Levenberg-Marquardt algorithm (damped least-squares)
@@ -168,13 +172,16 @@
                 - Bayesian linear regression
             </doc>
         </field>
-        <field name="formula">
+        <field name="formula_description">
             <doc>
-                For the optimization, the formula is any optimization process on the `global_fit_function` given above.
-                As an example, for a linear least squared algorithm on independent components, the formula of the error_function
-                would be :math:`LLS(peak_1(p_1) + peak2(p_2) + backgr(p_3))`, where each :math:`p_x` describes the set
-                of parameters for one peak/background.
-                
+                For the optimization, the formula is any optimization process on the ``global_fit_function`` given above.
+                As an example, for a linear least squared algorithm on independent components, the formula of the ``error_function``
+                would be :math:`LLS(peak_1(p_1) + peak_2(p_2) + backgr(p_3))`, where each :math:`p_i` describes the set
+                of parameters for one peak/background. In this case, the ``formula_description`` can be expressed as 
+                :math:`min(\chi^2)`, where :math:`\chi^2` is the sum of squared residuals between the model and the 
+                observed data:
+                :math:`min(\chi^2) = \sum_{i=1}^{N} \left( y_i - \left( \text{peak}_1(p_1, x_i) + \text{peak}_2(p_2, x_i) + \text{backgr}(p_3, x_i) \right) \right)^2`
+
                 It is however also possible to supply more involved formulas (e.g., in the case of constrained fits).
             </doc>
         </field>
@@ -190,6 +197,7 @@
         <attribute name="metric">
             <doc>
                 Metric used to determine the goodness of fit. Examples include:
+
                 - :math:`\chi^2`, the squared sum of the sigma-weighted residuals
                 - reduced :math:`\chi^2`:, :math:`\chi^2`: per degree of freedom
                 - :math:`R^2`, the coefficient of determination
