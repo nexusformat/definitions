@@ -3,7 +3,7 @@
 <!--
 # NeXus - Neutron and X-ray Common Data Format
 #
-# Copyright (C) 2014-2024 NeXus International Advisory Committee (NIAC)
+# Copyright (C) 2023-2024 NeXus International Advisory Committee (NIAC)
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -35,19 +35,29 @@
         should be used at the top-level (i.e, directly below ``NXentry``)
         within an application definition or within a NeXus file.
 
-        How many groups of type :ref:`NXcoordinate_system` should be used in
+        How many groups of type ``NXcoordinate_system`` should be used in
         an application definition?
 
-        * 0; if there is no instance of `NXcoordinate_system`` across
-          the application definition, the default NeXus
-          `McStas &lt;https://mailman2.mcstas.org/pipermail/mcstas-users/2021q2/001431.html&gt;`_
-          coordinate system is assumed.
+        * 0; if there is no instance of ``NXcoordinate_system`` across
+          the application definition, the default
+          `NeXus coordinate system &lt;https://manual.nexusformat.org/design.html#the-nexus-coordinate-system&gt;`_
+          (which is the same as the one used by `McStas &lt;https://mcstas.org/&gt;`_) is assumed.
 
-          McStas is used if no instance of NXcoordinate_system is specified.
           However, for the sake of clarity, even in this case it is better
           to be explicit like for every other coordinate system definition
           to support users with interpreting the content and logic behind
           every instance of the tree.
+
+          The default NeXus coordinate system (i.e., the McStas coordinate system) can be expressed as follows:
+
+          .. code-block::
+                    
+            mcstas@NXcoordinate_system
+                x = [1, 0, 0]
+                y = [0, 1, 0]
+                z = [0, 0, 1]
+                @y_direction = "opposite to gravity"
+                @z_direction = "direction of the primary beam"
 
         * 1; if only one :ref:`NXcoordinate_system` is defined, it should be
           placed as high up in the tree hierarchy (ideally right below an
@@ -67,6 +77,11 @@
           systems have to be mastered especially for complex multi-signal
           modality experiments.
 
+          If this case is realized, the best practice is that in every
+          case where this coordinate system should be referred to the respective
+          group has a ``depends_on`` field, to clearly indicate which 
+          specific coordinate systems is referred to.
+
         * 2 and more; as soon as more than one :ref:`NXcoordinate_system`
           is specified somewhere in the tree, different interpretations are
           possible as to which of these coordinate systems
@@ -80,11 +95,12 @@
           representations in different coordinate systems is not desired
           or available for now.
 
-          If this case is realized, the best practice is that in every
-          case where a coordinate system should be referred to the respective
-          group has a ``depends_on`` field, which resolves the possible
-          ambiguities which specific coordinate systems is referred to.
-
+          To resolve the possible ambiguities which specific coordinate systems 
+          in an :ref:`NXtransformations` train is referred to, it is even more
+          important to use the ``depends_on`` field in groups and the ``depends_on``
+          attribute in NXtransformations to refer to one of the ``NXcoordinate_system``
+          instances. 
+         
           In the case of two or more instances of ``NXcoordinate_system`` it
           is advised to specify the relationship between the two coordinate
           systems by using the :ref:`NXtransformations` group within
@@ -92,12 +108,9 @@
 
         In any case, users are encouraged to write explicit and clean
         ``depends_on`` fields in all groups that encode information for which
-        the interpretation of coordinate systems is relevant. If these
-        ``depends_on`` hints are not provided, it is automatically assumed
-        that all branches (to arbitrary depth) use either the only
-        ``NXcoordinate_system`` instance in the tree or the application
-        definition is considered underconstrained. In the latter case,
-        which ideally should be avoided, McStas is assumed again. Note that
+        the interpretation of coordinate systems and transformations is relevant.
+        If these ``depends_on`` hints are not provided, the application
+        definition is considered underconstrained. Note that
         this is the case for all files that were created before ``NXcoordinate_system``
         was added.
     </doc>
