@@ -28,12 +28,22 @@
         Instances of ``NXcoordinate_system`` can be used to describe coordinate systems
         other than the default `NeXus coordinate system &lt;https://manual.nexusformat.org/design.html#the-nexus-coordinate-system&gt;`_.
 
-        ``NXcoordinate_system`` can be part of the transformations chain using :ref:`NXtransformations`, where it acts as a linear change-of-basis
-        transformation (using a 3x3 matrix with the basis vectors ``x``, ``y``, and ``z`` as columns).
-
         Whenever possible, all instances of :ref:`NXcoordinate_system`
         should be used at the top-level (i.e, directly below ``NXentry``)
         within an application definition or within a NeXus file.
+
+        ``NXcoordinate_system`` can be part of the transformations chain using :ref:`NXtransformations`,
+        where it acts as a linear change-of-basis transformation (using a 3x3 matrix with the basis vectors
+        ``x``, ``y``, and ``z`` as columns).
+
+        Any group that has an optional ``depends_on`` field or any field that
+        has an optional ``depends_on`` attribute has a fallback when ``depends_on``
+        is not provided. The fallback behavior involves traversing up the hierarchy until
+        the first parent that contains one and only one ``NXcoordinate_system`` group is found.
+        If such a parent exists, its coordinate system applies. If none is found, then the current
+        coordinate system is not defined with respect to anything else. As an example, if there is only one
+        NXcoordinate_system called "my_coordinate_system" defined directly under ``NXentry``, each optional
+        ``depends_on`` field/attribute that is not defined automatically defaults to ``depends_on=my_coordinate_system``.
 
         How many groups of type ``NXcoordinate_system`` should be used in
         an application definition?
@@ -109,10 +119,10 @@
         In any case, users are encouraged to write explicit and clean
         ``depends_on`` fields in all groups that encode information for which
         the interpretation of coordinate systems and transformations is relevant.
-        If these ``depends_on`` hints are not provided, the application
-        definition is considered underconstrained. Note that
-        this is the case for all files that were created before ``NXcoordinate_system``
-        was added.
+        If these ``depends_on`` hints are not provided or no instance of ``NX_coordinate_system``
+        exists in the upper part of the hierarchy, the application definition is considered 
+        underconstrained. Note that this is the case for all files that were created before
+        ``NXcoordinate_system`` was added.
     </doc>
     <field name="origin" type="NX_CHAR">
         <doc>
