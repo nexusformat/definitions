@@ -34,14 +34,7 @@ Base Classes
 ------------
 
 This is the set of base classes for describing an optical experiment.
-
-    :ref:`NXbeam_path`
-       A beam path consisting of one or more optical elements.
-       
-       NXbeam_path is used in NXopt to describe the beam path, i.e. the arrangement
-       of optical elements between the excitation source and the sample, or between
-       the sample and the detector unit.
-              
+             
     :ref:`NXbeam_splitter`
        A beam splitter, i.e. a device splitting the light into two or more beams.
        
