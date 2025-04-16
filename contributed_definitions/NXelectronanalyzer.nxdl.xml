@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet type="text/xsl" href="nxdlformat.xsl"?>
 <!--
 # NeXus - Neutron and X-ray Common Data Format
@@ -34,7 +34,7 @@
         </symbol>
         <symbol name="nsa">
             <doc>
-                Number of slow axes (axes acquired scanning a physical quantity)
+                Number of slow axes (axes acquired while scanning a physical quantity)
             </doc>
         </symbol>
         <symbol name="n_transmission_function">
@@ -44,7 +44,7 @@
         </symbol>
     </symbols>
     <doc>
-        Basic class for describing a electron analyzer.
+        Basic class for describing an electron analyzer.
         
         This concept is related to term `12.59`_ of the ISO 18115-1:2023 standard.
         
@@ -72,25 +72,27 @@
             The work function of a uniform surface of a conductor is the minimum energy required to remove
             an electron from the interior of the solid to a vacuum level immediately outside the solid surface.
             
-            The kinetic energy :math:`E_K` of a photoelectron emitted from an energy-level with binding energy
+            The kinetic energy :math:E_K of a photoelectron emitted from an energy level with binding energy
             :math:`E_B` below the Fermi level is given by :math:`E_K = h\nu - E_B - W = h\nu - E_B - e \phi_{\mathrm{sample}}`.
-            Here, :math:`W = e \phi_{\mathrm{sample}}` is the work function of the sample surface (with the potential difference :math:`\phi_{\mathrm{sample}}`
-            between the electrochemical potential of electrons in the bulk and the electrostatic potential of an electron in the vacuum just outside the surface).
-            
-            In PES measurements, the sample and the spectrometer (with work function :math:`\phi_{\mathrm{spectr.}}`)
+
+            Here, :math:`W = e \phi_{\mathrm{sample}}` is the work function of the sample surface, which is directly proportional
+            to the potential difference :math:`\phi_{\mathrm{sample}}` between the electrochemical potential of electrons in
+            the bulk and the electrostatic potential of an electron in the vacuum just outside the surface.
+
+            In PES measurements, the sample and the spectrometer (with work function :math:`W_{\mathrm{spectr.}} = e \phi_{\mathrm{spectr.}}`)
             are electrically connected and therefore their Fermi levels are aligned. Due to the difference in local
-            vacuum level between the sample and spectrometer, there exists an electric potential difference (contact potential)
-            :math:`\Delta\phi = \phi_{\mathrm{sample}} - \phi_{\mathrm{spectr.}}`. The measured kinetic energy of
-            a photoelectron in PES is therefore given by
-            :math:`E_K^{\mathrm{meas.}} = h\nu - E_B + \Delta \phi = h\nu - E_B - e \phi_{\mathrm{spectr.}}`.
-            As a result, the measured kinetic energy :math:`E_K^{\mathrm{meas.}}` of a photoelectron is `independent`
-            of the sample work function. Nonetheless, the work function :math:`\phi_s` needs to be known to
+            vacuum level between the sample and spectrometer, there however exists an electric potential difference (contact potential)
+            :math:`\Delta\phi = \phi_{\mathrm{sample}} - \phi_{\mathrm{spectr.}}`.  The measured kinetic energy of a
+            photoelectron in PES is therefore given by :math:`E_K^{\mathrm{meas.}} = E_K + e\Delta\phi = h\nu - E_B - e\phi_{\mathrm{spectr.}}`.
+
+            Hence, the measured kinetic energy :math:`E_K^{\mathrm{meas.}}` of a photoelectron is independent
+            of the sample work function. Nonetheless, the work function :math:`\phi_{\mathrm{spectr.}}` needs to be known to
             accurately determine the binding energy scale.
         </doc>
     </field>
-    <field name="voltage_energy_range" type="NX_FLOAT" units="NX_VOLTAGE">
+    <field name="voltage_range" type="NX_FLOAT" units="NX_VOLTAGE">
         <doc>
-            Energy range of the voltage supplies. This influences the noise of the supplies,
+            Voltage range of the power supply. This influences the noise of the supply
             and thereby the energy resolution.
         </doc>
     </field>
@@ -169,12 +171,17 @@
         <doc>
             List of the axes that are acquired simultaneously by the detector.
             These refer only to the experimental variables recorded by the electron analyzer.
-            Other variables such as temperature, manipulator angles etc. are labeled as fast or slow in the data.
+            Other variables such as temperature, manipulator angles etc. can be labeled as fast or slow in the data.
+
+            The fast axes should be listed in order of decreasing speed if they describe the same physical quantity
+            or different components of the same quantity (e.g., ['kx', 'ky'] or ['detector_x', 'detector_y']).
+            However, axes representing different physical quantities (e.g., ['energy', 'kx']) do not need to be ordered
+            by speed.
             
             .. csv-table:: Examples
               :header: "Mode", "fast_axes", "slow_axes"
             
-              Hemispherical in ARPES mode,  "['energy', 'kx']",""
+              "Hemispherical in ARPES mode",  "['energy', 'kx']",""
               "Hemispherical with channeltron, sweeping energy mode", "", [\"energy\"]
               "Tof", "['energy', 'kx', 'ky']",""
               "Momentum microscope, spin-resolved", "['energy', 'kx', 'ky']", "['spin up-down', 'spin left-right']"
@@ -206,8 +213,8 @@
             
             The TF is used for calibration of the intensity scale in quantitative XPS. Without proper
             transmission correction, a comparison of results measured from the same sample using different
-            operating modes for an instrument would show significant variations in atomic
-            concentrations.
+            operating modes for an instrument would show significant variations in signal intensity for the same
+            kinetic energies.
             
             This concept is related to term `7.15`_ of the ISO 18115-1:2023 standard.
             
